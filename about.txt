@@ -1,4 +1,5 @@
 Testing SVN access...
 abc
 Testing SVN Access for mobrien - 20070816:1513 #2
+foo
 
