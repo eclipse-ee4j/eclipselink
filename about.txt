@@ -1,11 +1,1 @@
 Testing SVN access...
-abc
-Testing SVN Access for mobrien - 20070816:1513 #2
-foo
-Testing...
-
-More testing ... minorman
-
-Yet another change ... minorman
-
-test-bd
