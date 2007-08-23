@@ -1,0 +1,32 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2007 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0, which accompanies this distribution
+ * and is available at http://www.eclipse.org/legal/epl-v10.html.
+ *
+ * Contributors:
+ *     Oracle - initial API and implementation from Oracle TopLink
+ ******************************************************************************/  
+package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
+
+public class Phone  {
+
+	private String number;
+
+	public Phone() {
+		super();
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String newNumber) {
+		number = newNumber;
+	}
+
+	public String toString() {
+		return "Phone: " + getNumber();
+	}
+
+}

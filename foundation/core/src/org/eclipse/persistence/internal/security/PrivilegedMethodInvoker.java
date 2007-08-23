@@ -1,0 +1,33 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2007 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0, which accompanies this distribution
+ * and is available at http://www.eclipse.org/legal/epl-v10.html.
+ *
+ * Contributors:
+ *     Oracle - initial API and implementation from Oracle TopLink
+ ******************************************************************************/  
+package org.eclipse.persistence.internal.security;
+
+import java.security.PrivilegedExceptionAction;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+
+
+public class PrivilegedMethodInvoker implements PrivilegedExceptionAction {
+
+    private Method method;
+    private Object target;
+    private Object[] args;
+    
+    public PrivilegedMethodInvoker(Method method, Object target, Object[] args){
+        this.method = method;
+        this.target = target;
+        this.args = args;
+    }
+    
+    public Object run() throws IllegalAccessException, InvocationTargetException {
+        return PrivilegedAccessHelper.invokeMethod(method, target, args);
+    }
+    
+}
