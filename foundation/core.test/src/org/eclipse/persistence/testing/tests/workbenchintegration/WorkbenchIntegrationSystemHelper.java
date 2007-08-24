@@ -9,6 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
+import java.lang.reflect.Method;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.sessions.factories.ProjectClassGenerator;
@@ -32,14 +33,19 @@ public class WorkbenchIntegrationSystemHelper {
 
         try {
             String[] source = { filename + ".java" };
-            int result = new com.sun.tools.javac.Main().compile(source);
+            Class mainClass = Class.forName("com.sun.tools.javac.Main");
+            Class[] parameterTypes = new Class[1];
+            parameterTypes[0] = String[].class;
+            Method method = mainClass.getMethod("compile", parameterTypes);
+            int result = ((Integer)method.invoke(null, source)).intValue();           
             if (result != 0) {
-                throw new TestErrorException("Project class generation compile failed.");
+                throw new TestErrorException("Project class generation compile failed. This could either be a legitimate compile " +
+                 		"failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
             }
             Class projectClass = Class.forName(filename);
             return (Project) projectClass.newInstance();
         } catch (Exception exception) {
-            throw new RuntimeException(exception.toString());
+            throw new RuntimeException("Project class generation failed.It may be possible to solve this issue by adding the tools.jar from your JDK to the classpath.", exception);
         }
     }
     

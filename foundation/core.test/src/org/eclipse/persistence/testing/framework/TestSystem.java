@@ -15,6 +15,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.platform.database.TimesTenPlatform;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.tools.schemaframework.*;
@@ -437,8 +438,16 @@ public class TestSystem {
      * Creator: Edwin Tang
      */
     public void useOracleThin(String databaseURL, String userName, String password) {
-        DatabaseLogin login = new DatabaseLogin(new org.eclipse.persistence.platform.database.oracle.Oracle9Platform());
-        login.useOracleThinJDBCDriver();
+    	DatabasePlatform platform = null;
+    	try{
+    		Class platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
+    		platform = (DatabasePlatform)platformClass.newInstance();
+    	} catch (Exception e){
+    		platform = new org.eclipse.persistence.platform.database.oracle.OraclePlatform();
+    	}
+        DatabaseLogin login = new DatabaseLogin(platform);
+
+    	login.useOracleThinJDBCDriver();
         login.setDatabaseURL(databaseURL);
         login.setUserName(userName);
         //set the encrypted password will enable toplink to use the plain text password as is
@@ -453,7 +462,14 @@ public class TestSystem {
      * Creator: Praba Vijayaratnam
      */
     public void useOracle8Thin(String databaseURL, String userName, String password) {
-        DatabaseLogin login = new DatabaseLogin(new org.eclipse.persistence.platform.database.oracle.Oracle8Platform());
+    	DatabasePlatform platform = null;
+    	try{
+    		Class platformClass = Class.forName("org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
+    		platform = (DatabasePlatform)platformClass.newInstance();
+    	} catch (Exception e){
+    		platform = new org.eclipse.persistence.platform.database.oracle.OraclePlatform();
+    	}
+        DatabaseLogin login = new DatabaseLogin(platform);
         login.useOracleThinJDBCDriver();
         login.setDatabaseURL(databaseURL);
         login.setUserName(userName);

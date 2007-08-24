@@ -9,6 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.tools.sessionconsole;
 
+import java.lang.reflect.Method;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -822,9 +823,16 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 writer.write("}\n");
                 writer.flush();
                 writer.close();
-                int result = new com.sun.tools.javac.Main().compile(source);
+
+                // done reflectively to remove dependancy on tools jar
+                Class mainClass = Class.forName("com.sun.tools.javac.Main");
+                Class[] parameterTypes = new Class[1];
+                parameterTypes[0] = String[].class;
+                Method method = mainClass.getMethod("compile", parameterTypes);
+                int result = ((Integer)method.invoke(null, source)).intValue();
                 if (result != 0) {
-                    throw new RuntimeException("Java code compile failed.");
+                    throw new RuntimeException("Java code compile failed. This could either be a legitimate compile " +
+                    		"failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
                 }
                 Class newClass = Class.forName(className);
                 Object newInstance = newClass.newInstance();
