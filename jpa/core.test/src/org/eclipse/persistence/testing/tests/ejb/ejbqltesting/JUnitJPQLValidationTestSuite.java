@@ -37,7 +37,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
-import org.eclipse.persistence.internal.libraries.antlr.ANTLRException;
+import org.antlr.runtime.RecognitionException;
 
 /**
  * <p>
@@ -472,7 +472,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         catch(IllegalArgumentException ex)
         {
             assertFalse("Failed to wrap the exception", ((JPQLException) ex.getCause()).getInternalException() == null);
-            assertTrue("Failed to wrap the ANTLRException", ((JPQLException) ex.getCause()).getInternalException() instanceof ANTLRException);
+            assertTrue("Failed to wrap the ANTLRException", ((JPQLException) ex.getCause()).getInternalException() instanceof RecognitionException);
         }         
     
     }
