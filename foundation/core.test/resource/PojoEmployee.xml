@@ -1,0 +1,72 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<eclipselink:object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:eclipselink="http://xmlns.oracle.com/ias/xsds/eclipselnk" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <eclipselink:name>SimplePojoTest</eclipselink:name>
+   <eclipselink:class-mapping-descriptors>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.tests.simplepojoclient.PojoEmployee</eclipselink:class>
+         <eclipselink:alias>PojoEmployee</eclipselink:alias>
+         <eclipselink:primary-key>
+            <eclipselink:field table="POJO_EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
+         </eclipselink:primary-key>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>empId</eclipselink:attribute-name>
+               <eclipselink:get-method>getEmpId</eclipselink:get-method>
+               <eclipselink:set-method>setEmpId</eclipselink:set-method>
+               <eclipselink:field table="POJO_EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>fName</eclipselink:attribute-name>
+               <eclipselink:get-method>getFName</eclipselink:get-method>
+               <eclipselink:set-method>setFName</eclipselink:set-method>
+               <eclipselink:field table="POJO_EMPLOYEE" name="F_NAME" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>gender</eclipselink:attribute-name>
+               <eclipselink:get-method>getGender</eclipselink:get-method>
+               <eclipselink:set-method>setGender</eclipselink:set-method>
+               <eclipselink:field table="POJO_EMPLOYEE" name="GENDER" xsi:type="eclipselink:column"/>
+               <eclipselink:converter xsi:type="eclipselink:object-type-converter">
+                  <eclipselink:type-mappings>
+                     <eclipselink:type-mapping>
+                        <eclipselink:object-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Male</eclipselink:object-value>
+                        <eclipselink:data-value xsi:type="eclipselink:java-character" xmlns:toplink="http://xmlns.oracle.com/ias/xsds/toplink">M</eclipselink:data-value>
+                     </eclipselink:type-mapping>
+                     <eclipselink:type-mapping>
+                        <eclipselink:object-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Female</eclipselink:object-value>
+                        <eclipselink:data-value xsi:type="eclipselink:java-character" xmlns:toplink="http://xmlns.oracle.com/ias/xsds/toplink">F</eclipselink:data-value>
+                     </eclipselink:type-mapping>
+                  </eclipselink:type-mappings>
+               </eclipselink:converter>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>lName</eclipselink:attribute-name>
+               <eclipselink:get-method>getLName</eclipselink:get-method>
+               <eclipselink:set-method>setLName</eclipselink:set-method>
+               <eclipselink:field table="POJO_EMPLOYEE" name="L_NAME" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>managerId</eclipselink:attribute-name>
+               <eclipselink:get-method>getManagerId</eclipselink:get-method>
+               <eclipselink:set-method>setManagerId</eclipselink:set-method>
+               <eclipselink:field table="POJO_EMPLOYEE" name="MANAGER_ID" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:tables>
+            <eclipselink:table name="POJO_EMPLOYEE"/>
+         </eclipselink:tables>
+      </eclipselink:class-mapping-descriptor>
+   </eclipselink:class-mapping-descriptors>
+   <eclipselink:login xsi:type="eclipselink:database-login">
+      <eclipselink:platform-class>%%dbPlatform%%</eclipselink:platform-class>
+      <eclipselink:user-name>%%dbUser%%</eclipselink:user-name>
+      <eclipselink:password>%%dbPassword%%</eclipselink:password>
+      <eclipselink:driver-class>%%driverClass%%</eclipselink:driver-class>
+      <eclipselink:connection-url>%%dbURL%%</eclipselink:connection-url>
+   </eclipselink:login>
+</eclipselink:object-persistence>

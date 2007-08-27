@@ -1,0 +1,1118 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<eclipselink:object-persistence xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:eclipselink="http://xmlns.oracle.com/ias/xsds/eclipselink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <eclipselink:name>Employee</eclipselink:name>
+   <eclipselink:class-mapping-descriptors>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.Address</eclipselink:class>
+         <eclipselink:alias>Address</eclipselink:alias>
+         <eclipselink:primary-key>
+            <eclipselink:field table="ADDRESS" name="ADDRESS_ID" xsi:type="eclipselink:column"/>
+         </eclipselink:primary-key>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy">
+            <eclipselink:timeout>0</eclipselink:timeout>
+         </eclipselink:querying>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>city</eclipselink:attribute-name>
+               <eclipselink:field table="ADDRESS" name="CITY" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>country</eclipselink:attribute-name>
+               <eclipselink:field table="ADDRESS" name="COUNTRY" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>id</eclipselink:attribute-name>
+               <eclipselink:field table="ADDRESS" name="ADDRESS_ID" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>postalCode</eclipselink:attribute-name>
+               <eclipselink:field table="ADDRESS" name="P_CODE" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>province</eclipselink:attribute-name>
+               <eclipselink:field table="ADDRESS" name="PROVINCE" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>street</eclipselink:attribute-name>
+               <eclipselink:field table="ADDRESS" name="STREET" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
+         <eclipselink:sequencing>
+            <eclipselink:sequence-name>ADDRESS_SEQ</eclipselink:sequence-name>
+            <eclipselink:sequence-field table="ADDRESS" name="ADDRESS_ID" xsi:type="eclipselink:column"/>
+         </eclipselink:sequencing>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:tables>
+            <eclipselink:table name="ADDRESS"/>
+         </eclipselink:tables>
+      </eclipselink:class-mapping-descriptor>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:class>
+         <eclipselink:alias>Employee</eclipselink:alias>
+         <eclipselink:primary-key>
+            <eclipselink:field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
+         </eclipselink:primary-key>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy">
+            <eclipselink:queries>
+               <eclipselink:query name="cacheQueryResultsQuery" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:cache-query-results>true</eclipselink:cache-query-results>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestGetNotLike" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="notLike" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left name="city" xsi:type="eclipselink:query-key-expression">
+                        <eclipselink:base name="address" xsi:type="eclipselink:query-key-expression">
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:base>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:constant-expression">
+                        <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Toronto</eclipselink:value>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="memoryQueryThrowExceptionQuery" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestGetNotEqual" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="notEqual" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left name="city" xsi:type="eclipselink:query-key-expression">
+                        <eclipselink:base name="address" xsi:type="eclipselink:query-key-expression">
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:base>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:constant-expression">
+                        <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Toronto</eclipselink:value>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestGetNotNull" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria function="notNull" xsi:type="eclipselink:function-expression">
+                     <eclipselink:arguments>
+                        <eclipselink:argument name="firstName" xsi:type="eclipselink:query-key-expression">
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:argument>
+                     </eclipselink:arguments>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestAnyOfAllowingNoneEqual" xsi:type="eclipselink:read-all-query">
+                  <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left name="areaCode" xsi:type="eclipselink:query-key-expression">
+                        <eclipselink:base name="phoneNumbers" outer-join="true" any-of="true" xsi:type="eclipselink:query-key-expression">
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:base>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:constant-expression">
+                        <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">613</eclipselink:value>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:query>
+               <eclipselink:query name="memoryQueryReturnConfirmedQuery" xsi:type="eclipselink:read-all-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+                  <eclipselink:in-memory-querying>
+                     <eclipselink:policy>ignore-exceptions-return-conformed</eclipselink:policy>
+                  </eclipselink:in-memory-querying>
+                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:query>
+               <eclipselink:query name="memoryQueryReturnNotConfirmedQuery" xsi:type="eclipselink:read-all-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+                  <eclipselink:in-memory-querying>
+                     <eclipselink:policy>ignore-exceptions-returned-not-conformed</eclipselink:policy>
+                  </eclipselink:in-memory-querying>
+                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestGetIsNull" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria function="isNull" xsi:type="eclipselink:function-expression">
+                     <eclipselink:arguments>
+                        <eclipselink:argument name="address" xsi:type="eclipselink:query-key-expression">
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:argument>
+                     </eclipselink:arguments>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestGetGreaterThanEqual" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="greaterThanEqual" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left name="salary" xsi:type="eclipselink:query-key-expression">
+                        <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:constant-expression">
+                        <eclipselink:value xsi:type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema">0</eclipselink:value>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="maxRowsQuery" xsi:type="eclipselink:read-all-query">
+                  <eclipselink:max-rows>4</eclipselink:max-rows>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestGetAllowingNullEqual" xsi:type="eclipselink:read-all-query">
+                  <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left name="city" xsi:type="eclipselink:query-key-expression">
+                        <eclipselink:base name="address" outer-join="true" xsi:type="eclipselink:query-key-expression">
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:base>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:constant-expression">
+                        <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Toronto</eclipselink:value>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestGetEqualIgnoringCase" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left function="upper" xsi:type="eclipselink:function-expression">
+                        <eclipselink:arguments>
+                           <eclipselink:argument name="city" xsi:type="eclipselink:query-key-expression">
+                              <eclipselink:base name="address" xsi:type="eclipselink:query-key-expression">
+                                 <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                              </eclipselink:base>
+                           </eclipselink:argument>
+                        </eclipselink:arguments>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:constant-expression">
+                        <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">TORONTO</eclipselink:value>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestGetLike" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="like" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left name="city" xsi:type="eclipselink:query-key-expression">
+                        <eclipselink:base name="address" xsi:type="eclipselink:query-key-expression">
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:base>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:constant-expression">
+                        <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Toronto</eclipselink:value>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestGetEqual" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left name="city" xsi:type="eclipselink:query-key-expression">
+                        <eclipselink:base name="address" xsi:type="eclipselink:query-key-expression">
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:base>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:constant-expression">
+                        <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Toronto</eclipselink:value>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestGetLessThan" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="lessThan" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left name="salary" xsi:type="eclipselink:query-key-expression">
+                        <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:constant-expression">
+                        <eclipselink:value xsi:type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema">15</eclipselink:value>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="shouldPrepareQuery" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestGetLessThanEqual" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="lessThanEqual" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left name="salary" xsi:type="eclipselink:query-key-expression">
+                        <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:constant-expression">
+                        <eclipselink:value xsi:type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema">15</eclipselink:value>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestGetNot" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria function="not" xsi:type="eclipselink:function-expression">
+                     <eclipselink:arguments>
+                        <eclipselink:argument operator="equal" xsi:type="eclipselink:relation-expression">
+                           <eclipselink:left name="city" xsi:type="eclipselink:query-key-expression">
+                              <eclipselink:base name="address" xsi:type="eclipselink:query-key-expression">
+                                 <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                              </eclipselink:base>
+                           </eclipselink:left>
+                           <eclipselink:right xsi:type="eclipselink:constant-expression">
+                              <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Toronto</eclipselink:value>
+                           </eclipselink:right>
+                        </eclipselink:argument>
+                     </eclipselink:arguments>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="useDistinctQuery" xsi:type="eclipselink:read-all-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+                  <eclipselink:distinct-state>use-distinct</eclipselink:distinct-state>
+                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:query>
+               <eclipselink:query name="queryTimeOutQuery" xsi:type="eclipselink:read-all-query">
+                  <eclipselink:criteria operator="or" xsi:type="eclipselink:logic-expression">
+                     <eclipselink:left operator="or" xsi:type="eclipselink:logic-expression">
+                        <eclipselink:left operator="or" xsi:type="eclipselink:logic-expression">
+                           <eclipselink:left operator="or" xsi:type="eclipselink:logic-expression">
+                              <eclipselink:left operator="or" xsi:type="eclipselink:logic-expression">
+                                 <eclipselink:left operator="or" xsi:type="eclipselink:logic-expression">
+                                    <eclipselink:left operator="or" xsi:type="eclipselink:logic-expression">
+                                       <eclipselink:left operator="and" xsi:type="eclipselink:logic-expression">
+                                          <eclipselink:left operator="and" xsi:type="eclipselink:logic-expression">
+                                             <eclipselink:left operator="equal" xsi:type="eclipselink:relation-expression">
+                                                <eclipselink:left function="upper" xsi:type="eclipselink:function-expression">
+                                                   <eclipselink:arguments>
+                                                      <eclipselink:argument name="province" xsi:type="eclipselink:query-key-expression">
+                                                         <eclipselink:base name="address" xsi:type="eclipselink:query-key-expression">
+                                                            <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                                         </eclipselink:base>
+                                                      </eclipselink:argument>
+                                                   </eclipselink:arguments>
+                                                </eclipselink:left>
+                                                <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                                   <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">BC</eclipselink:value>
+                                                </eclipselink:right>
+                                             </eclipselink:left>
+                                             <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                                                <eclipselink:left name="firstName" xsi:type="eclipselink:query-key-expression">
+                                                   <eclipselink:base name="manager" xsi:type="eclipselink:query-key-expression">
+                                                      <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                                   </eclipselink:base>
+                                                </eclipselink:left>
+                                                <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                                   <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Bob</eclipselink:value>
+                                                </eclipselink:right>
+                                             </eclipselink:right>
+                                          </eclipselink:left>
+                                          <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                                             <eclipselink:left name="areaCode" xsi:type="eclipselink:query-key-expression">
+                                                <eclipselink:base name="phoneNumbers" any-of="true" xsi:type="eclipselink:query-key-expression">
+                                                   <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                                </eclipselink:base>
+                                             </eclipselink:left>
+                                             <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                                <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">604</eclipselink:value>
+                                             </eclipselink:right>
+                                          </eclipselink:right>
+                                       </eclipselink:left>
+                                       <eclipselink:right operator="and" xsi:type="eclipselink:logic-expression">
+                                          <eclipselink:left operator="and" xsi:type="eclipselink:logic-expression">
+                                             <eclipselink:left operator="equal" xsi:type="eclipselink:relation-expression">
+                                                <eclipselink:left function="upper" xsi:type="eclipselink:function-expression">
+                                                   <eclipselink:arguments>
+                                                      <eclipselink:argument name="province" xsi:type="eclipselink:query-key-expression">
+                                                         <eclipselink:base name="address" xsi:type="eclipselink:query-key-expression">
+                                                            <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                                         </eclipselink:base>
+                                                      </eclipselink:argument>
+                                                   </eclipselink:arguments>
+                                                </eclipselink:left>
+                                                <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                                   <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">ON</eclipselink:value>
+                                                </eclipselink:right>
+                                             </eclipselink:left>
+                                             <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                                                <eclipselink:left name="firstName" xsi:type="eclipselink:query-key-expression">
+                                                   <eclipselink:base name="manager" xsi:type="eclipselink:query-key-expression">
+                                                      <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                                   </eclipselink:base>
+                                                </eclipselink:left>
+                                                <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                                   <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Jill</eclipselink:value>
+                                                </eclipselink:right>
+                                             </eclipselink:right>
+                                          </eclipselink:left>
+                                          <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                                             <eclipselink:left name="areaCode" xsi:type="eclipselink:query-key-expression">
+                                                <eclipselink:base name="phoneNumbers" any-of="true" xsi:type="eclipselink:query-key-expression">
+                                                   <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                                </eclipselink:base>
+                                             </eclipselink:left>
+                                             <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                                <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">416</eclipselink:value>
+                                             </eclipselink:right>
+                                          </eclipselink:right>
+                                       </eclipselink:right>
+                                    </eclipselink:left>
+                                    <eclipselink:right operator="and" xsi:type="eclipselink:logic-expression">
+                                       <eclipselink:left operator="and" xsi:type="eclipselink:logic-expression">
+                                          <eclipselink:left operator="equal" xsi:type="eclipselink:relation-expression">
+                                             <eclipselink:left function="upper" xsi:type="eclipselink:function-expression">
+                                                <eclipselink:arguments>
+                                                   <eclipselink:argument name="city" xsi:type="eclipselink:query-key-expression">
+                                                      <eclipselink:base name="address" xsi:type="eclipselink:query-key-expression">
+                                                         <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                                      </eclipselink:base>
+                                                   </eclipselink:argument>
+                                                </eclipselink:arguments>
+                                             </eclipselink:left>
+                                             <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                                <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Ottawa</eclipselink:value>
+                                             </eclipselink:right>
+                                          </eclipselink:left>
+                                          <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                                             <eclipselink:left name="firstName" xsi:type="eclipselink:query-key-expression">
+                                                <eclipselink:base name="manager" xsi:type="eclipselink:query-key-expression">
+                                                   <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                                </eclipselink:base>
+                                             </eclipselink:left>
+                                             <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                                <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Sarah</eclipselink:value>
+                                             </eclipselink:right>
+                                          </eclipselink:right>
+                                       </eclipselink:left>
+                                       <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                                          <eclipselink:left name="areaCode" xsi:type="eclipselink:query-key-expression">
+                                             <eclipselink:base name="phoneNumbers" any-of="true" xsi:type="eclipselink:query-key-expression">
+                                                <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                             </eclipselink:base>
+                                          </eclipselink:left>
+                                          <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                             <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">613</eclipselink:value>
+                                          </eclipselink:right>
+                                       </eclipselink:right>
+                                    </eclipselink:right>
+                                 </eclipselink:left>
+                                 <eclipselink:right operator="and" xsi:type="eclipselink:logic-expression">
+                                    <eclipselink:left operator="and" xsi:type="eclipselink:logic-expression">
+                                       <eclipselink:left operator="equal" xsi:type="eclipselink:relation-expression">
+                                          <eclipselink:left function="upper" xsi:type="eclipselink:function-expression">
+                                             <eclipselink:arguments>
+                                                <eclipselink:argument name="city" xsi:type="eclipselink:query-key-expression">
+                                                   <eclipselink:base name="address" xsi:type="eclipselink:query-key-expression">
+                                                      <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                                   </eclipselink:base>
+                                                </eclipselink:argument>
+                                             </eclipselink:arguments>
+                                          </eclipselink:left>
+                                          <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                             <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Toronto</eclipselink:value>
+                                          </eclipselink:right>
+                                       </eclipselink:left>
+                                       <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                                          <eclipselink:left name="firstName" xsi:type="eclipselink:query-key-expression">
+                                             <eclipselink:base name="manager" xsi:type="eclipselink:query-key-expression">
+                                                <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                             </eclipselink:base>
+                                          </eclipselink:left>
+                                          <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                             <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">May</eclipselink:value>
+                                          </eclipselink:right>
+                                       </eclipselink:right>
+                                    </eclipselink:left>
+                                    <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                                       <eclipselink:left name="areaCode" xsi:type="eclipselink:query-key-expression">
+                                          <eclipselink:base name="phoneNumbers" any-of="true" xsi:type="eclipselink:query-key-expression">
+                                             <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                          </eclipselink:base>
+                                       </eclipselink:left>
+                                       <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                          <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">416</eclipselink:value>
+                                       </eclipselink:right>
+                                    </eclipselink:right>
+                                 </eclipselink:right>
+                              </eclipselink:left>
+                              <eclipselink:right operator="and" xsi:type="eclipselink:logic-expression">
+                                 <eclipselink:left operator="and" xsi:type="eclipselink:logic-expression">
+                                    <eclipselink:left operator="equal" xsi:type="eclipselink:relation-expression">
+                                       <eclipselink:left function="upper" xsi:type="eclipselink:function-expression">
+                                          <eclipselink:arguments>
+                                             <eclipselink:argument name="province" xsi:type="eclipselink:query-key-expression">
+                                                <eclipselink:base name="address" xsi:type="eclipselink:query-key-expression">
+                                                   <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                                </eclipselink:base>
+                                             </eclipselink:argument>
+                                          </eclipselink:arguments>
+                                       </eclipselink:left>
+                                       <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                          <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">AB</eclipselink:value>
+                                       </eclipselink:right>
+                                    </eclipselink:left>
+                                    <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                                       <eclipselink:left name="firstName" xsi:type="eclipselink:query-key-expression">
+                                          <eclipselink:base name="manager" xsi:type="eclipselink:query-key-expression">
+                                             <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                          </eclipselink:base>
+                                       </eclipselink:left>
+                                       <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                          <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">John</eclipselink:value>
+                                       </eclipselink:right>
+                                    </eclipselink:right>
+                                 </eclipselink:left>
+                                 <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                                    <eclipselink:left name="areaCode" xsi:type="eclipselink:query-key-expression">
+                                       <eclipselink:base name="phoneNumbers" any-of="true" xsi:type="eclipselink:query-key-expression">
+                                          <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                       </eclipselink:base>
+                                    </eclipselink:left>
+                                    <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                       <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">519</eclipselink:value>
+                                    </eclipselink:right>
+                                 </eclipselink:right>
+                              </eclipselink:right>
+                           </eclipselink:left>
+                           <eclipselink:right operator="and" xsi:type="eclipselink:logic-expression">
+                              <eclipselink:left operator="and" xsi:type="eclipselink:logic-expression">
+                                 <eclipselink:left operator="equal" xsi:type="eclipselink:relation-expression">
+                                    <eclipselink:left function="upper" xsi:type="eclipselink:function-expression">
+                                       <eclipselink:arguments>
+                                          <eclipselink:argument name="city" xsi:type="eclipselink:query-key-expression">
+                                             <eclipselink:base name="address" xsi:type="eclipselink:query-key-expression">
+                                                <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                             </eclipselink:base>
+                                          </eclipselink:argument>
+                                       </eclipselink:arguments>
+                                    </eclipselink:left>
+                                    <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                       <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Calgary</eclipselink:value>
+                                    </eclipselink:right>
+                                 </eclipselink:left>
+                                 <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                                    <eclipselink:left name="lastName" xsi:type="eclipselink:query-key-expression">
+                                       <eclipselink:base name="manager" xsi:type="eclipselink:query-key-expression">
+                                          <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                       </eclipselink:base>
+                                    </eclipselink:left>
+                                    <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                       <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Hay</eclipselink:value>
+                                    </eclipselink:right>
+                                 </eclipselink:right>
+                              </eclipselink:left>
+                              <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                                 <eclipselink:left name="areaCode" xsi:type="eclipselink:query-key-expression">
+                                    <eclipselink:base name="phoneNumbers" any-of="true" xsi:type="eclipselink:query-key-expression">
+                                       <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                    </eclipselink:base>
+                                 </eclipselink:left>
+                                 <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                    <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">416</eclipselink:value>
+                                 </eclipselink:right>
+                              </eclipselink:right>
+                           </eclipselink:right>
+                        </eclipselink:left>
+                        <eclipselink:right operator="and" xsi:type="eclipselink:logic-expression">
+                           <eclipselink:left operator="and" xsi:type="eclipselink:logic-expression">
+                              <eclipselink:left operator="equal" xsi:type="eclipselink:relation-expression">
+                                 <eclipselink:left function="upper" xsi:type="eclipselink:function-expression">
+                                    <eclipselink:arguments>
+                                       <eclipselink:argument name="province" xsi:type="eclipselink:query-key-expression">
+                                          <eclipselink:base name="address" xsi:type="eclipselink:query-key-expression">
+                                             <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                          </eclipselink:base>
+                                       </eclipselink:argument>
+                                    </eclipselink:arguments>
+                                 </eclipselink:left>
+                                 <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                    <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">MB</eclipselink:value>
+                                 </eclipselink:right>
+                              </eclipselink:left>
+                              <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                                 <eclipselink:left name="firstName" xsi:type="eclipselink:query-key-expression">
+                                    <eclipselink:base name="manager" xsi:type="eclipselink:query-key-expression">
+                                       <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                    </eclipselink:base>
+                                 </eclipselink:left>
+                                 <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                    <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">James</eclipselink:value>
+                                 </eclipselink:right>
+                              </eclipselink:right>
+                           </eclipselink:left>
+                           <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                              <eclipselink:left name="areaCode" xsi:type="eclipselink:query-key-expression">
+                                 <eclipselink:base name="phoneNumbers" any-of="true" xsi:type="eclipselink:query-key-expression">
+                                    <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                 </eclipselink:base>
+                              </eclipselink:left>
+                              <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                 <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">204</eclipselink:value>
+                              </eclipselink:right>
+                           </eclipselink:right>
+                        </eclipselink:right>
+                     </eclipselink:left>
+                     <eclipselink:right operator="and" xsi:type="eclipselink:logic-expression">
+                        <eclipselink:left operator="and" xsi:type="eclipselink:logic-expression">
+                           <eclipselink:left operator="equal" xsi:type="eclipselink:relation-expression">
+                              <eclipselink:left function="upper" xsi:type="eclipselink:function-expression">
+                                 <eclipselink:arguments>
+                                    <eclipselink:argument name="province" xsi:type="eclipselink:query-key-expression">
+                                       <eclipselink:base name="address" xsi:type="eclipselink:query-key-expression">
+                                          <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                       </eclipselink:base>
+                                    </eclipselink:argument>
+                                 </eclipselink:arguments>
+                              </eclipselink:left>
+                              <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                 <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">BC</eclipselink:value>
+                              </eclipselink:right>
+                           </eclipselink:left>
+                           <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                              <eclipselink:left name="firstName" xsi:type="eclipselink:query-key-expression">
+                                 <eclipselink:base name="manager" xsi:type="eclipselink:query-key-expression">
+                                    <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                                 </eclipselink:base>
+                              </eclipselink:left>
+                              <eclipselink:right xsi:type="eclipselink:constant-expression">
+                                 <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Bob</eclipselink:value>
+                              </eclipselink:right>
+                           </eclipselink:right>
+                        </eclipselink:left>
+                        <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                           <eclipselink:left name="areaCode" xsi:type="eclipselink:query-key-expression">
+                              <eclipselink:base name="phoneNumbers" any-of="true" xsi:type="eclipselink:query-key-expression">
+                                 <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                              </eclipselink:base>
+                           </eclipselink:left>
+                           <eclipselink:right xsi:type="eclipselink:constant-expression">
+                              <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">416</eclipselink:value>
+                           </eclipselink:right>
+                        </eclipselink:right>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:timeout>1</eclipselink:timeout>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:query>
+               <eclipselink:query name="refreshIdentityMapResultsQuery" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+                  <eclipselink:refresh>true</eclipselink:refresh>
+                  <eclipselink:remote-refresh>true</eclipselink:remote-refresh>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestEmptyStringAndNull" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="or" xsi:type="eclipselink:logic-expression">
+                     <eclipselink:left operator="lessThan" xsi:type="eclipselink:relation-expression">
+                        <eclipselink:left name="firstName" xsi:type="eclipselink:query-key-expression">
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:left>
+                        <eclipselink:right xsi:type="eclipselink:constant-expression"/>
+                     </eclipselink:left>
+                     <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                        <eclipselink:left name="firstName" xsi:type="eclipselink:query-key-expression">
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:left>
+                        <eclipselink:right xsi:type="eclipselink:constant-expression">
+                           <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"></eclipselink:value>
+                        </eclipselink:right>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+               <eclipselink:query name="memoryQueryTriggerIndirectionQuery" xsi:type="eclipselink:read-all-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+                  <eclipselink:in-memory-querying>
+                     <eclipselink:policy>throw-indirection-exception</eclipselink:policy>
+                  </eclipselink:in-memory-querying>
+                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestAnyOfEqual" xsi:type="eclipselink:read-all-query">
+                  <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left name="areaCode" xsi:type="eclipselink:query-key-expression">
+                        <eclipselink:base name="phoneNumbers" any-of="true" xsi:type="eclipselink:query-key-expression">
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:base>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:constant-expression">
+                        <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">613</eclipselink:value>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:query>
+               <eclipselink:query name="doNotUseDistinctQuery" xsi:type="eclipselink:read-all-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+                  <eclipselink:distinct-state>dont-use-distinct</eclipselink:distinct-state>
+                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:query>
+               <eclipselink:query name="PersistenceTestGetGreaterThan" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="greaterThan" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left name="salary" xsi:type="eclipselink:query-key-expression">
+                        <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:constant-expression">
+                        <eclipselink:value xsi:type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema">0</eclipselink:value>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:query>
+            </eclipselink:queries>
+            <eclipselink:timeout>0</eclipselink:timeout>
+         </eclipselink:querying>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>firstName</eclipselink:attribute-name>
+               <eclipselink:field table="EMPLOYEE" name="F_NAME" xsi:type="eclipselink:column"/>
+               <eclipselink:null-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"></eclipselink:null-value>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>id</eclipselink:attribute-name>
+               <eclipselink:field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>lastName</eclipselink:attribute-name>
+               <eclipselink:field table="EMPLOYEE" name="L_NAME" xsi:type="eclipselink:column"/>
+               <eclipselink:null-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"></eclipselink:null-value>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>salary</eclipselink:attribute-name>
+               <eclipselink:field table="SALARY" name="SALARY" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>gender</eclipselink:attribute-name>
+               <eclipselink:field table="EMPLOYEE" name="GENDER" xsi:type="eclipselink:column"/>
+               <eclipselink:converter xsi:type="eclipselink:object-type-converter">
+                  <eclipselink:type-mappings>
+                     <eclipselink:type-mapping>
+                        <eclipselink:object-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Male</eclipselink:object-value>
+						<eclipselink:data-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">M</eclipselink:data-value>
+                     </eclipselink:type-mapping>
+                     <eclipselink:type-mapping>
+                        <eclipselink:object-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Female</eclipselink:object-value>
+						<eclipselink:data-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">F</eclipselink:data-value>
+                     </eclipselink:type-mapping>
+                  </eclipselink:type-mappings>
+               </eclipselink:converter>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:transformation-mapping">
+               <eclipselink:attribute-name>normalHours</eclipselink:attribute-name>
+               <eclipselink:attribute-method>buildNormalHours</eclipselink:attribute-method>
+               <eclipselink:field-transformations>
+                  <eclipselink:field-transformation xsi:type="eclipselink:method-based-field-transformation">
+                     <eclipselink:field table="EMPLOYEE" name="START_TIME" xsi:type="eclipselink:column"/>
+                     <eclipselink:method>getStartTime</eclipselink:method>
+                  </eclipselink:field-transformation>
+                  <eclipselink:field-transformation xsi:type="eclipselink:method-based-field-transformation">
+                     <eclipselink:field table="EMPLOYEE" name="END_TIME" xsi:type="eclipselink:column"/>
+                     <eclipselink:method>getEndTime</eclipselink:method>
+                  </eclipselink:field-transformation>
+               </eclipselink:field-transformations>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:aggregate-object-mapping">
+               <eclipselink:attribute-name>period</eclipselink:attribute-name>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod</eclipselink:reference-class>
+               <eclipselink:field-translations>
+                  <eclipselink:field-translation>
+                     <eclipselink:source-field name="endDate->DIRECT" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="EMPLOYEE" name="END_DATE" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-translation>
+                  <eclipselink:field-translation>
+                     <eclipselink:source-field name="startDate->DIRECT" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="EMPLOYEE" name="START_DATE" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-translation>
+               </eclipselink:field-translations>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-collection-mapping">
+               <eclipselink:attribute-name>responsibilitiesList</eclipselink:attribute-name>
+               <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+               </eclipselink:container>
+               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
+               <eclipselink:selection-query xsi:type="eclipselink:direct-read-query">
+                  <eclipselink:maintain-cache>false</eclipselink:maintain-cache>
+                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:selection-query>
+               <eclipselink:reference-table>RESPONS</eclipselink:reference-table>
+               <eclipselink:direct-field table="RESPONS" name="DESCRIP" xsi:type="eclipselink:column"/>
+               <eclipselink:reference-foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="RESPONS" name="EMP_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:reference-foreign-key>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-one-mapping">
+               <eclipselink:attribute-name>address</eclipselink:attribute-name>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Address</eclipselink:reference-class>
+               <eclipselink:private-owned>true</eclipselink:private-owned>
+               <eclipselink:foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="EMPLOYEE" name="ADDR_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="ADDRESS" name="ADDRESS_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:foreign-key>
+               <eclipselink:foreign-key-fields>
+                  <eclipselink:field table="EMPLOYEE" name="ADDR_ID" xsi:type="eclipselink:column"/>
+               </eclipselink:foreign-key-fields>
+               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
+               <eclipselink:selection-query xsi:type="eclipselink:read-object-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Address</eclipselink:reference-class>
+               </eclipselink:selection-query>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-one-mapping">
+               <eclipselink:attribute-name>manager</eclipselink:attribute-name>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               <eclipselink:foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="EMPLOYEE" name="MANAGER_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:foreign-key>
+               <eclipselink:foreign-key-fields>
+                  <eclipselink:field table="EMPLOYEE" name="MANAGER_ID" xsi:type="eclipselink:column"/>
+               </eclipselink:foreign-key-fields>
+               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
+               <eclipselink:selection-query xsi:type="eclipselink:read-object-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:selection-query>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-many-mapping">
+               <eclipselink:attribute-name>managedEmployees</eclipselink:attribute-name>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               <eclipselink:target-foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="EMPLOYEE" name="MANAGER_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:target-foreign-key>
+               <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+               </eclipselink:container>
+               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
+               <eclipselink:selection-query xsi:type="eclipselink:read-all-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:selection-query>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-many-mapping">
+               <eclipselink:attribute-name>phoneNumbers</eclipselink:attribute-name>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</eclipselink:reference-class>
+               <eclipselink:private-owned>true</eclipselink:private-owned>
+               <eclipselink:target-foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="PHONE" name="EMP_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:target-foreign-key>
+               <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+               </eclipselink:container>
+               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
+               <eclipselink:selection-query xsi:type="eclipselink:read-all-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</eclipselink:reference-class>
+                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:selection-query>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:many-to-many-mapping">
+               <eclipselink:attribute-name>projects</eclipselink:attribute-name>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Project</eclipselink:reference-class>
+               <eclipselink:relation-table>PROJ_EMP</eclipselink:relation-table>
+               <eclipselink:source-relation-foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="PROJ_EMP" name="EMP_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:source-relation-foreign-key>
+               <eclipselink:target-relation-foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="PROJ_EMP" name="PROJ_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="PROJECT" name="PROJ_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:target-relation-foreign-key>
+               <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+               </eclipselink:container>
+               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
+               <eclipselink:selection-query xsi:type="eclipselink:read-all-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Project</eclipselink:reference-class>
+                  <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                     <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:selection-query>
+               <eclipselink:insert-query xsi:type="eclipselink:data-modify-query"/>
+               <eclipselink:delete-query xsi:type="eclipselink:data-modify-query"/>
+               <eclipselink:delete-all-query xsi:type="eclipselink:data-modify-query"/>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
+         <eclipselink:interfaces>
+            <eclipselink:interface>org.eclipse.persistence.testing.models.employee.interfaces.Employee</eclipselink:interface>
+         </eclipselink:interfaces>
+         <eclipselink:locking xsi:type="eclipselink:version-locking-policy">
+            <eclipselink:version-field table="EMPLOYEE" name="VERSION" xsi:type="eclipselink:column"/>
+         </eclipselink:locking>
+         <eclipselink:sequencing>
+            <eclipselink:sequence-name>EMP_SEQ</eclipselink:sequence-name>
+            <eclipselink:sequence-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
+         </eclipselink:sequencing>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:tables>
+            <eclipselink:table name="EMPLOYEE"/>
+            <eclipselink:table name="SALARY"/>
+         </eclipselink:tables>
+      </eclipselink:class-mapping-descriptor>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod</eclipselink:class>
+         <eclipselink:alias>EmploymentPeriod</eclipselink:alias>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>endDate</eclipselink:attribute-name>
+               <eclipselink:field name="endDate->DIRECT" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>startDate</eclipselink:attribute-name>
+               <eclipselink:field name="startDate->DIRECT" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>aggregate</eclipselink:descriptor-type>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+      </eclipselink:class-mapping-descriptor>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.LargeProject</eclipselink:class>
+         <eclipselink:alias>LargeProject</eclipselink:alias>
+         <eclipselink:inheritance xsi:type="eclipselink:inheritance-policy">
+            <eclipselink:parent-class>org.eclipse.persistence.testing.models.employee.domain.Project</eclipselink:parent-class>
+            <eclipselink:read-subclasses-on-queries>false</eclipselink:read-subclasses-on-queries>
+         </eclipselink:inheritance>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy">
+            <eclipselink:timeout>0</eclipselink:timeout>
+         </eclipselink:querying>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>budget</eclipselink:attribute-name>
+               <eclipselink:field table="LPROJECT" name="BUDGET" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>milestoneVersion</eclipselink:attribute-name>
+               <eclipselink:field table="LPROJECT" name="MILESTONE" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
+         <eclipselink:interfaces>
+            <eclipselink:interface>org.eclipse.persistence.testing.models.employee.interfaces.LargeProject</eclipselink:interface>
+         </eclipselink:interfaces>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:tables>
+            <eclipselink:table name="LPROJECT"/>
+         </eclipselink:tables>
+      </eclipselink:class-mapping-descriptor>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</eclipselink:class>
+         <eclipselink:alias>PhoneNumber</eclipselink:alias>
+         <eclipselink:primary-key>
+            <eclipselink:field table="PHONE" name="EMP_ID" xsi:type="eclipselink:column"/>
+            <eclipselink:field table="PHONE" name="TYPE" xsi:type="eclipselink:column"/>
+         </eclipselink:primary-key>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy">
+            <eclipselink:queries>
+               <eclipselink:query name="localNumbers" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="and" xsi:type="eclipselink:logic-expression">
+                     <eclipselink:left operator="equal" xsi:type="eclipselink:relation-expression">
+                        <eclipselink:left name="id" xsi:type="eclipselink:query-key-expression">
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:left>
+                        <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                           <eclipselink:parameter name="ID" xsi:type="eclipselink:column"/>
+                        </eclipselink:right>
+                     </eclipselink:left>
+                     <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                        <eclipselink:left name="areaCode" xsi:type="eclipselink:query-key-expression">
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:left>
+                        <eclipselink:right xsi:type="eclipselink:constant-expression">
+                           <eclipselink:value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">613</eclipselink:value>
+                        </eclipselink:right>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:arguments>
+                     <eclipselink:argument name="ID">
+                        <eclipselink:type>java.lang.Number</eclipselink:type>
+                     </eclipselink:argument>
+                  </eclipselink:arguments>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.PhoneNumber</eclipselink:reference-class>
+                  <eclipselink:cache-usage>primary-key</eclipselink:cache-usage>
+                  <eclipselink:lock-mode>none</eclipselink:lock-mode>
+               </eclipselink:query>
+            </eclipselink:queries>
+            <eclipselink:timeout>0</eclipselink:timeout>
+         </eclipselink:querying>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>areaCode</eclipselink:attribute-name>
+               <eclipselink:field table="PHONE" name="AREA_CODE" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>number</eclipselink:attribute-name>
+               <eclipselink:field table="PHONE" name="P_NUMBER" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>type</eclipselink:attribute-name>
+               <eclipselink:field table="PHONE" name="TYPE" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-one-mapping">
+               <eclipselink:attribute-name>owner</eclipselink:attribute-name>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               <eclipselink:foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="PHONE" name="EMP_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:foreign-key>
+               <eclipselink:foreign-key-fields>
+                  <eclipselink:field table="PHONE" name="EMP_ID" xsi:type="eclipselink:column"/>
+               </eclipselink:foreign-key-fields>
+               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
+               <eclipselink:selection-query xsi:type="eclipselink:read-object-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:selection-query>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:query-keys>
+            <eclipselink:query-key name="id" xsi:type="eclipselink:direct-query-key">
+               <eclipselink:field table="PHONE" name="EMP_ID" xsi:type="eclipselink:column"/>
+            </eclipselink:query-key>
+         </eclipselink:query-keys>
+         <eclipselink:tables>
+            <eclipselink:table name="PHONE"/>
+         </eclipselink:tables>
+      </eclipselink:class-mapping-descriptor>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.Project</eclipselink:class>
+         <eclipselink:alias>Project</eclipselink:alias>
+         <eclipselink:primary-key>
+            <eclipselink:field table="PROJECT" name="PROJ_ID" xsi:type="eclipselink:column"/>
+         </eclipselink:primary-key>
+         <eclipselink:inheritance xsi:type="eclipselink:inheritance-policy">
+            <eclipselink:class-indicator-field table="PROJECT" name="PROJ_TYPE" xsi:type="eclipselink:column"/>
+            <eclipselink:class-indicator-mappings>
+               <eclipselink:class-indicator-mapping>
+                  <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.SmallProject</eclipselink:class>
+                  <eclipselink:class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">S</eclipselink:class-indicator>
+               </eclipselink:class-indicator-mapping>
+               <eclipselink:class-indicator-mapping>
+                  <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.LargeProject</eclipselink:class>
+                  <eclipselink:class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">L</eclipselink:class-indicator>
+               </eclipselink:class-indicator-mapping>
+            </eclipselink:class-indicator-mappings>
+         </eclipselink:inheritance>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy">
+            <eclipselink:timeout>250</eclipselink:timeout>
+         </eclipselink:querying>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>description</eclipselink:attribute-name>
+               <eclipselink:field table="PROJECT" name="DESCRIP" xsi:type="eclipselink:column"/>
+               <eclipselink:null-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"></eclipselink:null-value>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>id</eclipselink:attribute-name>
+               <eclipselink:field table="PROJECT" name="PROJ_ID" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>name</eclipselink:attribute-name>
+               <eclipselink:field table="PROJECT" name="PROJ_NAME" xsi:type="eclipselink:column"/>
+               <eclipselink:null-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"></eclipselink:null-value>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-one-mapping">
+               <eclipselink:attribute-name>teamLeader</eclipselink:attribute-name>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               <eclipselink:foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="PROJECT" name="LEADER_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="EMPLOYEE" name="EMP_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:foreign-key>
+               <eclipselink:foreign-key-fields>
+                  <eclipselink:field table="PROJECT" name="LEADER_ID" xsi:type="eclipselink:column"/>
+               </eclipselink:foreign-key-fields>
+               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
+               <eclipselink:selection-query xsi:type="eclipselink:read-object-query">
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.employee.domain.Employee</eclipselink:reference-class>
+               </eclipselink:selection-query>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
+         <eclipselink:interfaces>
+            <eclipselink:interface>org.eclipse.persistence.testing.models.employee.interfaces.Project</eclipselink:interface>
+         </eclipselink:interfaces>
+         <eclipselink:locking xsi:type="eclipselink:version-locking-policy">
+            <eclipselink:version-field table="PROJECT" name="VERSION" xsi:type="eclipselink:column"/>
+         </eclipselink:locking>
+         <eclipselink:sequencing>
+            <eclipselink:sequence-name>PROJ_SEQ</eclipselink:sequence-name>
+            <eclipselink:sequence-field table="PROJECT" name="PROJ_ID" xsi:type="eclipselink:column"/>
+         </eclipselink:sequencing>
+         <eclipselink:caching>
+            <eclipselink:cache-invalidation-policy xsi:type="eclipselink:no-expiry-cache-invalidation-policy"/>
+            <eclipselink:cache-sync-type>change-set-with-new-objects</eclipselink:cache-sync-type>
+         </eclipselink:caching>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:tables>
+            <eclipselink:table name="PROJECT"/>
+         </eclipselink:tables>
+      </eclipselink:class-mapping-descriptor>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.employee.domain.SmallProject</eclipselink:class>
+         <eclipselink:alias>SmallProject</eclipselink:alias>
+         <eclipselink:inheritance xsi:type="eclipselink:inheritance-policy">
+            <eclipselink:parent-class>org.eclipse.persistence.testing.models.employee.domain.Project</eclipselink:parent-class>
+            <eclipselink:read-subclasses-on-queries>false</eclipselink:read-subclasses-on-queries>
+         </eclipselink:inheritance>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy">
+            <eclipselink:timeout>0</eclipselink:timeout>
+         </eclipselink:querying>
+         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
+         <eclipselink:interfaces>
+            <eclipselink:interface>org.eclipse.persistence.testing.models.employee.interfaces.SmallProject</eclipselink:interface>
+         </eclipselink:interfaces>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:tables>
+            <eclipselink:table name="PROJECT"/>
+         </eclipselink:tables>
+      </eclipselink:class-mapping-descriptor>
+   </eclipselink:class-mapping-descriptors>
+   <eclipselink:login xsi:type="eclipselink:database-login">
+      <eclipselink:platform-class>org.eclipse.persistence.platform.database.oracle.OraclePlatform</eclipselink:platform-class>
+      <eclipselink:user-name>scott</eclipselink:user-name>
+      <eclipselink:password>3E20F8982C53F4ABA825E30206EC8ADE</eclipselink:password>
+      <eclipselink:driver-class>oracle.jdbc.OracleDriver</eclipselink:driver-class>
+      <eclipselink:connection-url>jdbc:oracle:thin:@localhost:1521:orcl</eclipselink:connection-url>
+   </eclipselink:login>
+</eclipselink:object-persistence>

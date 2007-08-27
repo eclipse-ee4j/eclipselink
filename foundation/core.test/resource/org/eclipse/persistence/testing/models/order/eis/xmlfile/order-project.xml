@@ -1,0 +1,180 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<eclipselink:object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:eclipselink="http://xmlns.oracle.com/ias/xsds/eclipselink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <eclipselink:name>OrderProject</eclipselink:name>
+   <eclipselink:class-mapping-descriptors>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:eis-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.order.Address</eclipselink:class>
+         <eclipselink:alias>Address</eclipselink:alias>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
+               <eclipselink:attribute-name>addressee</eclipselink:attribute-name>
+               <eclipselink:field name="@addressee" xsi:type="eclipselink:node">
+                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</eclipselink:schema-type>
+               </eclipselink:field>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
+               <eclipselink:attribute-name>city</eclipselink:attribute-name>
+               <eclipselink:field name="@city" xsi:type="eclipselink:node">
+                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</eclipselink:schema-type>
+               </eclipselink:field>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
+               <eclipselink:attribute-name>country</eclipselink:attribute-name>
+               <eclipselink:field name="@country" xsi:type="eclipselink:node">
+                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</eclipselink:schema-type>
+               </eclipselink:field>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
+               <eclipselink:attribute-name>state</eclipselink:attribute-name>
+               <eclipselink:field name="@state" xsi:type="eclipselink:node">
+                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</eclipselink:schema-type>
+               </eclipselink:field>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
+               <eclipselink:attribute-name>street</eclipselink:attribute-name>
+               <eclipselink:field name="@street" xsi:type="eclipselink:node">
+                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</eclipselink:schema-type>
+               </eclipselink:field>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
+               <eclipselink:attribute-name>zipCode</eclipselink:attribute-name>
+               <eclipselink:field name="@zip" xsi:type="eclipselink:node">
+                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</eclipselink:schema-type>
+               </eclipselink:field>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>aggregate</eclipselink:descriptor-type>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:datatype>address</eclipselink:datatype>
+         <eclipselink:namespace-resolver>
+            <eclipselink:namespaces>
+               <eclipselink:namespace>
+                  <eclipselink:prefix>xsd</eclipselink:prefix>
+                  <eclipselink:namespace-uri>http://www.w3.org/2001/XMLSchema</eclipselink:namespace-uri>
+               </eclipselink:namespace>
+               <eclipselink:namespace>
+                  <eclipselink:prefix>xsi</eclipselink:prefix>
+                  <eclipselink:namespace-uri>http://www.w3.org/2001/XMLSchema-instance</eclipselink:namespace-uri>
+               </eclipselink:namespace>
+            </eclipselink:namespaces>
+         </eclipselink:namespace-resolver>
+      </eclipselink:class-mapping-descriptor>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:eis-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.order.LineItem</eclipselink:class>
+         <eclipselink:alias>LineItem</eclipselink:alias>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
+               <eclipselink:attribute-name>itemName</eclipselink:attribute-name>
+               <eclipselink:field name="@name" xsi:type="eclipselink:node">
+                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</eclipselink:schema-type>
+               </eclipselink:field>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
+               <eclipselink:attribute-name>itemPrice</eclipselink:attribute-name>
+               <eclipselink:field name="@price" xsi:type="eclipselink:node">
+                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}double</eclipselink:schema-type>
+               </eclipselink:field>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
+               <eclipselink:attribute-name>lineNumber</eclipselink:attribute-name>
+               <eclipselink:field name="@number" xsi:type="eclipselink:node">
+                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}integer</eclipselink:schema-type>
+               </eclipselink:field>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
+               <eclipselink:attribute-name>quantity</eclipselink:attribute-name>
+               <eclipselink:field name="@quanity" xsi:type="eclipselink:node">
+                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}integer</eclipselink:schema-type>
+               </eclipselink:field>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>aggregate</eclipselink:descriptor-type>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:datatype>line-item</eclipselink:datatype>
+         <eclipselink:namespace-resolver>
+            <eclipselink:namespaces>
+               <eclipselink:namespace>
+                  <eclipselink:prefix>xsd</eclipselink:prefix>
+                  <eclipselink:namespace-uri>http://www.w3.org/2001/XMLSchema</eclipselink:namespace-uri>
+               </eclipselink:namespace>
+               <eclipselink:namespace>
+                  <eclipselink:prefix>xsi</eclipselink:prefix>
+                  <eclipselink:namespace-uri>http://www.w3.org/2001/XMLSchema-instance</eclipselink:namespace-uri>
+               </eclipselink:namespace>
+            </eclipselink:namespaces>
+         </eclipselink:namespace-resolver>
+      </eclipselink:class-mapping-descriptor>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:eis-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.order.Order</eclipselink:class>
+         <eclipselink:alias>Order</eclipselink:alias>
+         <eclipselink:primary-key>
+            <eclipselink:field name="@id" xsi:type="eclipselink:node">
+               <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}integer</eclipselink:schema-type>
+            </eclipselink:field>
+         </eclipselink:primary-key>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy">
+            <eclipselink:timeout>0</eclipselink:timeout>
+         </eclipselink:querying>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
+               <eclipselink:attribute-name>id</eclipselink:attribute-name>
+               <eclipselink:field name="@id" xsi:type="eclipselink:node">
+                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}integer</eclipselink:schema-type>
+               </eclipselink:field>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-direct-mapping">
+               <eclipselink:attribute-name>orderedBy</eclipselink:attribute-name>
+               <eclipselink:field name="@ordered-by" xsi:type="eclipselink:node">
+                  <eclipselink:schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</eclipselink:schema-type>
+               </eclipselink:field>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-composite-object-mapping">
+               <eclipselink:attribute-name>address</eclipselink:attribute-name>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.order.Address</eclipselink:reference-class>
+               <eclipselink:field name="address" xsi:type="eclipselink:node"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:eis-composite-collection-mapping">
+               <eclipselink:attribute-name>lineItems</eclipselink:attribute-name>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.order.LineItem</eclipselink:reference-class>
+               <eclipselink:field name="line-item" xsi:type="eclipselink:node"/>
+               <eclipselink:container xsi:type="eclipselink:list-container-policy">
+                  <eclipselink:collection-type>java.util.Vector</eclipselink:collection-type>
+               </eclipselink:container>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
+         <eclipselink:amendment>
+            <eclipselink:amendment-class>org.eclipse.persistence.testing.models.order.eis.xmlfile.OrderAmendments</eclipselink:amendment-class>
+            <eclipselink:amendment-method>addToOrderDescriptor</eclipselink:amendment-method>
+         </eclipselink:amendment>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:datatype>order</eclipselink:datatype>
+         <eclipselink:namespace-resolver>
+            <eclipselink:namespaces>
+               <eclipselink:namespace>
+                  <eclipselink:prefix>xsd</eclipselink:prefix>
+                  <eclipselink:namespace-uri>http://www.w3.org/2001/XMLSchema</eclipselink:namespace-uri>
+               </eclipselink:namespace>
+               <eclipselink:namespace>
+                  <eclipselink:prefix>xsi</eclipselink:prefix>
+                  <eclipselink:namespace-uri>http://www.w3.org/2001/XMLSchema-instance</eclipselink:namespace-uri>
+               </eclipselink:namespace>
+            </eclipselink:namespaces>
+         </eclipselink:namespace-resolver>
+      </eclipselink:class-mapping-descriptor>
+   </eclipselink:class-mapping-descriptors>
+   <eclipselink:login xsi:type="eclipselink:eis-login">
+      <eclipselink:platform-class>org.eclipse.persistence.eis.adapters.attunity.AttunityPlatform</eclipselink:platform-class>
+      <eclipselink:user-name></eclipselink:user-name>
+      <eclipselink:password></eclipselink:password>
+      <eclipselink:connection-spec-class>org.eclipse.persistence.eis.EISConnectionSpec</eclipselink:connection-spec-class>
+   </eclipselink:login>
+</eclipselink:object-persistence>
