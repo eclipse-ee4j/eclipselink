@@ -1,0 +1,24 @@
+<project name="Eclipse Persistence Services" default="all" basedir=".">
+
+    <property file="./build.properties"/>
+
+    <target name="process.resource">
+        <filter token="dbUser" value="${db.user}"/>
+        <filter token="dbPassword" value="${db.password}"/>
+        <filter token="driverClass" value="${db.driver}"/>
+        <filter token="dbURL" value="${db.url}"/>
+        <filter token="loglevel" value="${eclipselink.log.level}"/>
+        <filter token="boolvalue" value="${eclipselink.logging.boolvalue}"/>
+        <filter token="dbPlatform" value="${db.platform}"/>
+        <copy todir="${classes.dir}" filtering="true">
+            <fileset dir="${resource.dir}"/>
+         </copy>
+    </target>
+
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+        </delete>
+    </target>
+
+</project>
