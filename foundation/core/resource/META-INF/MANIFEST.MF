@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Implementation-Title: Eclipse Persistence Services project
+Implementation-Version: 0.0
+Implementation-Vendor: Oracle
+Release-Designation: Eclipse Incubation
+Premain-Class: org.eclipse.persistence.internal.jpa.JavaSECMPInitializerAgent
