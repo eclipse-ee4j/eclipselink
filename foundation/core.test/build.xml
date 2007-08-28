@@ -1,4 +1,4 @@
-<project name="Eclipse Persistence Services" default="all" basedir=".">
+<project name="Eclipse Persistence Services" default="process.resource" basedir=".">
 
     <property file="./build.properties"/>
 
