@@ -1,0 +1,144 @@
+<project name="Eclipse Persistence Services Testing" default="all" basedir=".">
+
+    <property file="./build.properties"/>
+
+
+    <!-- all -->
+    <target name="all" depends="package" description="build EclipseLink testing jars"/>
+
+
+    <target name="package" depends="package.annotation, package.ddl, package.xml-only, package.xml-merge, package.validation-failed, package.jpa-advanced-field-access, package.jpa-advanced-properties" description="build EclipseLink jar">
+        <jar jarfile="eclipselink-tests.jar">
+           <fileset dir="${classes.dir}"
+                    includes="org/eclipse/persistence/testing/framework/**/*.class,
+                        org/eclipse/persistence/testing/tests/**/*.class"/>
+      </jar>
+    </target>
+
+    <target name="package.annotation" depends="">
+        <copy todir="${build.dir}/${annotation_model.classes.dir}/META-INF">
+            <fileset dir="./resource/annotation-model" includes="*.xml"/>
+        </copy>
+        <copy todir="${build.dir}/${annotation_model.classes.dir}">
+            <fileset dir="${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/"
+                     excludes="org/eclipse/persistence/testing/models/jpa/xml/**
+                               org/eclipse/persistence/testing/models/jpa/ddlgeneration/**
+                               org/eclipse/persistence/testing/models/jpa/validationfailed/**
+                               org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**
+                               org/eclipse/persistence/testing/models/jpa/jpaadvancedproperties/**
+                               org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**
+                               org/eclipse/persistence/testing/models/weaving/**"/>
+        </copy>
+        <jar jarfile="eclipselink-annotation-model.jar">
+            <fileset dir="${build.dir}/${annotation_model.classes.dir}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package.ddl" depends="">
+        <copy todir="${build.dir}/${ddl_generation.classes.dir}/META-INF">
+            <fileset dir="./resource/ddl-generation-model" includes="*.xml"/>
+        </copy>
+        <copy todir="${build.dir}/${ddl_generation.classes.dir}">
+            <fileset dir="${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/ddlgeneration/**,
+                                org/eclipse/persistence/testing/models/jpa/xml/merge/inherited**"/>
+        </copy>
+        <jar jarfile="eclipselink-ddl-generation-model.jar">
+            <fileset dir="${build.dir}/${ddl_generation.classes.dir}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package.xml-only" depends="">
+        <copy todir="${build.dir}/${xml_only_model.classes.dir}/META-INF">
+            <fileset dir="./resource/xml-only-model" includes="*.xml"/>
+        </copy>
+        <copy todir="${build.dir}/${xml_only_model.classes.dir}">
+            <fileset dir="${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/xml/**"
+                     excludes="org/eclipse/persistence/testing/models/jpa/xml/merge/**"/>
+        </copy>
+        <jar jarfile="eclipselink-xml-only-model.jar">
+            <fileset dir="${build.dir}/${xml_only_model.classes.dir}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package.xml-merge" depends="">
+        <copy todir="${build.dir}/${xml_merge_model.classes.dir}/META-INF">
+            <fileset dir="./resource/xml-merge-model" includes="*.xml"/>
+        </copy>
+        <copy todir="${build.dir}/${xml_merge_model.classes.dir}">
+            <fileset dir="${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/xml/merge/**"
+                     excludes="org/eclipse/persistence/testing/models/jpa/xml/merge/inhertied/**"/>
+        </copy>
+        <jar jarfile="eclipselink-xml-merge-model.jar">
+            <fileset dir="${build.dir}/${xml_merge_model.classes.dir}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package.validation-failed" depends="">
+        <copy todir="${build.dir}/${validation.classes.dir}/META-INF">
+            <fileset dir="./resource/validation-failed-model" includes="*.xml"/>
+        </copy>
+        <copy todir="${build.dir}/${validation.classes.dir}">
+            <fileset dir="${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/validationfailed/**"/>
+        </copy>
+        <jar jarfile="eclipselink-validation-failed-model.jar">
+            <fileset dir="${build.dir}/${validation.classes.dir}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package.jpa-advanced-field-access" depends="">
+        <copy todir="${build.dir}/${jpa_advanced_field_access.classes.dir}/META-INF">
+            <fileset dir="./resource/jpa-advanced-field-access-model" includes="*.xml"/>
+        </copy>
+        <copy todir="${build.dir}/${jpa_advanced_field_access.classes.dir}">
+            <fileset dir="${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**"/>
+        </copy>
+        <jar jarfile="eclipselink-advanced-field-access-model.jar">
+            <fileset dir="${build.dir}/${jpa_advanced_field_access.classes.dir}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package.jpa-advanced-properties" depends="">
+        <copy todir="${build.dir}/${jpa_advanced_properties.classes.dir}/META-INF">
+            <fileset dir="./resource/jpa-advanced-properties-model" includes="*.xml"/>
+        </copy>
+        <copy todir="${build.dir}/${jpa_advanced_properties.classes.dir}/">
+            <fileset dir="./resource/jpa-advanced-properties-model" includes="org/eclipse/persistence/testing/models/jpa/jpaadvancedproperties/*.xml"/>
+        </copy>
+        <copy todir="${build.dir}/${jpa_advanced_properties.classes.dir}">
+            <fileset dir="${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/jpaadvancedproperties/**"/>
+        </copy>
+        <jar jarfile="eclipselink-advanced-properties.jar">
+            <fileset dir="${build.dir}/${jpa_advanced_properties.classes.dir}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="${build.dir}"/>
+            <fileset file="./eclipselink-advanced-field-access-model.jar"/>
+            <fileset file="./eclipselink-advanced-properties.jar"/>
+            <fileset file="./eclipselink-annotation-model.jar"/>
+            <fileset file="./eclipselink-ddl-generation-model.jar"/>
+            <fileset file="./eclipselink-tests.jar"/>
+            <fileset file="./eclipselink-validation-failed-model.jar"/>
+            <fileset file="./eclipselink-xml-merge-model.jar"/>
+            <fileset file="./eclipselink-xml-only-model.jar"/>
+        </delete>
+    </target>
+
+</project>
