@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
-import org.eclipse.persistence.platform.server.was.WebSphere_6_0_Platform;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -63,8 +62,5 @@ public class SessionsXMLSchemaWebsphere61PlatformTest extends AutoVerifyTestCase
             throw new TestErrorException("Loaded session was null");
         }
 
-        if (!(m_employeeSession.getServerPlatform() instanceof WebSphere_6_0_Platform)) {
-            throw new TestErrorException("The loaded server platform was not the correct type.");
-        }
     }
 }
