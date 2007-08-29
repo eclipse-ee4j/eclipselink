@@ -1,4 +1,4 @@
-// $ANTLR 3.0 JPQL.g3 2007-08-21 16:20:25
+// $ANTLR 3.0 JPQL.g3 2007-08-29 14:24:22
 
     package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
 
@@ -131,7 +131,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
     
         /** The root node of the parsed EJBQL query. */
-        private Object root;
+        private Object queryRoot;
     
         /** Flag indicating whether aggregates are allowed. */
         private boolean aggregatesAllowed = false;
@@ -204,7 +204,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     
         /** */
         public Object getRootNode() {
-            return root;
+            return queryRoot;
         }
     /*
     }
@@ -253,26 +253,35 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     root=selectStatement();
                     _fsp--;
                     if (failed) return ;
+                    if ( backtracking==0 ) {
+                      queryRoot = root;
+                    }
                     
                     }
                     break;
                 case 2 :
                     // JPQL.g3:196:7: root= updateStatement
                     {
-                    pushFollow(FOLLOW_updateStatement_in_document662);
+                    pushFollow(FOLLOW_updateStatement_in_document664);
                     root=updateStatement();
                     _fsp--;
                     if (failed) return ;
+                    if ( backtracking==0 ) {
+                      queryRoot = root;
+                    }
                     
                     }
                     break;
                 case 3 :
                     // JPQL.g3:197:7: root= deleteStatement
                     {
-                    pushFollow(FOLLOW_deleteStatement_in_document674);
+                    pushFollow(FOLLOW_deleteStatement_in_document678);
                     root=deleteStatement();
                     _fsp--;
                     if (failed) return ;
+                    if ( backtracking==0 ) {
+                      queryRoot = root;
+                    }
                     
                     }
                     break;
@@ -316,11 +325,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:204:7: (select= selectClause from= fromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? (orderBy= orderByClause )? EOF )
             // JPQL.g3:204:7: select= selectClause from= fromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? (orderBy= orderByClause )? EOF
             {
-            pushFollow(FOLLOW_selectClause_in_selectStatement705);
+            pushFollow(FOLLOW_selectClause_in_selectStatement711);
             select=selectClause();
             _fsp--;
             if (failed) return node;
-            pushFollow(FOLLOW_fromClause_in_selectStatement720);
+            pushFollow(FOLLOW_fromClause_in_selectStatement726);
             from=fromClause();
             _fsp--;
             if (failed) return node;
@@ -335,7 +344,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:206:8: where= whereClause
                     {
-                    pushFollow(FOLLOW_whereClause_in_selectStatement735);
+                    pushFollow(FOLLOW_whereClause_in_selectStatement741);
                     where=whereClause();
                     _fsp--;
                     if (failed) return node;
@@ -356,7 +365,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:207:8: groupBy= groupByClause
                     {
-                    pushFollow(FOLLOW_groupByClause_in_selectStatement750);
+                    pushFollow(FOLLOW_groupByClause_in_selectStatement756);
                     groupBy=groupByClause();
                     _fsp--;
                     if (failed) return node;
@@ -377,7 +386,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:208:8: having= havingClause
                     {
-                    pushFollow(FOLLOW_havingClause_in_selectStatement766);
+                    pushFollow(FOLLOW_havingClause_in_selectStatement772);
                     having=havingClause();
                     _fsp--;
                     if (failed) return node;
@@ -398,7 +407,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:209:8: orderBy= orderByClause
                     {
-                    pushFollow(FOLLOW_orderByClause_in_selectStatement781);
+                    pushFollow(FOLLOW_orderByClause_in_selectStatement787);
                     orderBy=orderByClause();
                     _fsp--;
                     if (failed) return node;
@@ -408,7 +417,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            match(input,EOF,FOLLOW_EOF_in_selectStatement791); if (failed) return node;
+            match(input,EOF,FOLLOW_EOF_in_selectStatement797); if (failed) return node;
             if ( backtracking==0 ) {
                
                           node = factory.newSelectStatement(0, 0, select, from, where, 
@@ -450,11 +459,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:223:7: (update= updateClause set= setClause (where= whereClause )? EOF )
             // JPQL.g3:223:7: update= updateClause set= setClause (where= whereClause )? EOF
             {
-            pushFollow(FOLLOW_updateClause_in_updateStatement834);
+            pushFollow(FOLLOW_updateClause_in_updateStatement840);
             update=updateClause();
             _fsp--;
             if (failed) return node;
-            pushFollow(FOLLOW_setClause_in_updateStatement849);
+            pushFollow(FOLLOW_setClause_in_updateStatement855);
             set=setClause();
             _fsp--;
             if (failed) return node;
@@ -469,7 +478,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:225:8: where= whereClause
                     {
-                    pushFollow(FOLLOW_whereClause_in_updateStatement863);
+                    pushFollow(FOLLOW_whereClause_in_updateStatement869);
                     where=whereClause();
                     _fsp--;
                     if (failed) return node;
@@ -479,7 +488,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            match(input,EOF,FOLLOW_EOF_in_updateStatement873); if (failed) return node;
+            match(input,EOF,FOLLOW_EOF_in_updateStatement879); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newUpdateStatement(0, 0, update, set, where); 
             }
@@ -517,8 +526,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:233:7: u= UPDATE schema= abstractSchemaName ( ( AS )? ident= IDENT )?
             {
             u=(Token)input.LT(1);
-            match(input,UPDATE,FOLLOW_UPDATE_in_updateClause905); if (failed) return node;
-            pushFollow(FOLLOW_abstractSchemaName_in_updateClause911);
+            match(input,UPDATE,FOLLOW_UPDATE_in_updateClause911); if (failed) return node;
+            pushFollow(FOLLOW_abstractSchemaName_in_updateClause917);
             schema=abstractSchemaName();
             _fsp--;
             if (failed) return node;
@@ -544,7 +553,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         case 1 :
                             // JPQL.g3:234:11: AS
                             {
-                            match(input,AS,FOLLOW_AS_in_updateClause924); if (failed) return node;
+                            match(input,AS,FOLLOW_AS_in_updateClause930); if (failed) return node;
                             
                             }
                             break;
@@ -552,7 +561,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
 
                     ident=(Token)input.LT(1);
-                    match(input,IDENT,FOLLOW_IDENT_in_updateClause932); if (failed) return node;
+                    match(input,IDENT,FOLLOW_IDENT_in_updateClause938); if (failed) return node;
                     
                     }
                     break;
@@ -605,8 +614,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:249:7: t= SET n= setAssignmentClause ( COMMA n= setAssignmentClause )*
             {
             t=(Token)input.LT(1);
-            match(input,SET,FOLLOW_SET_in_setClause981); if (failed) return node;
-            pushFollow(FOLLOW_setAssignmentClause_in_setClause987);
+            match(input,SET,FOLLOW_SET_in_setClause987); if (failed) return node;
+            pushFollow(FOLLOW_setAssignmentClause_in_setClause993);
             n=setAssignmentClause();
             _fsp--;
             if (failed) return node;
@@ -628,8 +637,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:250:10: COMMA n= setAssignmentClause
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_setClause1000); if (failed) return node;
-            	    pushFollow(FOLLOW_setAssignmentClause_in_setClause1006);
+            	    match(input,COMMA,FOLLOW_COMMA_in_setClause1006); if (failed) return node;
+            	    pushFollow(FOLLOW_setAssignmentClause_in_setClause1012);
             	    n=setAssignmentClause();
             	    _fsp--;
             	    if (failed) return node;
@@ -683,13 +692,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:262:7: (target= setAssignmentTarget t= EQUALS value= newValue )
             // JPQL.g3:262:7: target= setAssignmentTarget t= EQUALS value= newValue
             {
-            pushFollow(FOLLOW_setAssignmentTarget_in_setAssignmentClause1064);
+            pushFollow(FOLLOW_setAssignmentTarget_in_setAssignmentClause1070);
             target=setAssignmentTarget();
             _fsp--;
             if (failed) return node;
             t=(Token)input.LT(1);
-            match(input,EQUALS,FOLLOW_EQUALS_in_setAssignmentClause1068); if (failed) return node;
-            pushFollow(FOLLOW_newValue_in_setAssignmentClause1074);
+            match(input,EQUALS,FOLLOW_EQUALS_in_setAssignmentClause1074); if (failed) return node;
+            pushFollow(FOLLOW_newValue_in_setAssignmentClause1080);
             value=newValue();
             _fsp--;
             if (failed) return node;
@@ -762,7 +771,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:269:7: n= attribute
                     {
-                    pushFollow(FOLLOW_attribute_in_setAssignmentTarget1104);
+                    pushFollow(FOLLOW_attribute_in_setAssignmentTarget1110);
                     n=attribute();
                     _fsp--;
                     if (failed) return node;
@@ -775,7 +784,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:270:7: n= pathExpression
                     {
-                    pushFollow(FOLLOW_pathExpression_in_setAssignmentTarget1119);
+                    pushFollow(FOLLOW_pathExpression_in_setAssignmentTarget1125);
                     n=pathExpression();
                     _fsp--;
                     if (failed) return node;
@@ -832,7 +841,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:275:7: n= simpleArithmeticExpression
                     {
-                    pushFollow(FOLLOW_simpleArithmeticExpression_in_newValue1151);
+                    pushFollow(FOLLOW_simpleArithmeticExpression_in_newValue1157);
                     n=simpleArithmeticExpression();
                     _fsp--;
                     if (failed) return node;
@@ -846,7 +855,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:276:7: n1= NULL
                     {
                     n1=(Token)input.LT(1);
-                    match(input,NULL,FOLLOW_NULL_in_newValue1165); if (failed) return node;
+                    match(input,NULL,FOLLOW_NULL_in_newValue1171); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newNullLiteral(n1.getLine(), n1.getCharPositionInLine()); 
                     }
@@ -885,7 +894,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:286:7: (delete= deleteClause (where= whereClause )? EOF )
             // JPQL.g3:286:7: delete= deleteClause (where= whereClause )? EOF
             {
-            pushFollow(FOLLOW_deleteClause_in_deleteStatement1209);
+            pushFollow(FOLLOW_deleteClause_in_deleteStatement1215);
             delete=deleteClause();
             _fsp--;
             if (failed) return node;
@@ -900,7 +909,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:287:8: where= whereClause
                     {
-                    pushFollow(FOLLOW_whereClause_in_deleteStatement1222);
+                    pushFollow(FOLLOW_whereClause_in_deleteStatement1228);
                     where=whereClause();
                     _fsp--;
                     if (failed) return node;
@@ -910,7 +919,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            match(input,EOF,FOLLOW_EOF_in_deleteStatement1232); if (failed) return node;
+            match(input,EOF,FOLLOW_EOF_in_deleteStatement1238); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newDeleteStatement(0, 0, delete, where); 
             }
@@ -955,9 +964,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:299:7: t= DELETE FROM schema= abstractSchemaName ( ( AS )? ident= IDENT )?
             {
             t=(Token)input.LT(1);
-            match(input,DELETE,FOLLOW_DELETE_in_deleteClause1265); if (failed) return node;
-            match(input,FROM,FOLLOW_FROM_in_deleteClause1267); if (failed) return node;
-            pushFollow(FOLLOW_abstractSchemaName_in_deleteClause1273);
+            match(input,DELETE,FOLLOW_DELETE_in_deleteClause1271); if (failed) return node;
+            match(input,FROM,FOLLOW_FROM_in_deleteClause1273); if (failed) return node;
+            pushFollow(FOLLOW_abstractSchemaName_in_deleteClause1279);
             schema=abstractSchemaName();
             _fsp--;
             if (failed) return node;
@@ -983,7 +992,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         case 1 :
                             // JPQL.g3:300:11: AS
                             {
-                            match(input,AS,FOLLOW_AS_in_deleteClause1286); if (failed) return node;
+                            match(input,AS,FOLLOW_AS_in_deleteClause1292); if (failed) return node;
                             
                             }
                             break;
@@ -991,7 +1000,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
 
                     ident=(Token)input.LT(1);
-                    match(input,IDENT,FOLLOW_IDENT_in_deleteClause1292); if (failed) return node;
+                    match(input,IDENT,FOLLOW_IDENT_in_deleteClause1298); if (failed) return node;
                     if ( backtracking==0 ) {
                        ((deleteClause_scope)deleteClause_stack.peek()).variable = ident.getText(); 
                     }
@@ -1050,7 +1059,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:319:7: t= SELECT ( DISTINCT )? n= selectExpression ( COMMA n= selectExpression )*
             {
             t=(Token)input.LT(1);
-            match(input,SELECT,FOLLOW_SELECT_in_selectClause1339); if (failed) return node;
+            match(input,SELECT,FOLLOW_SELECT_in_selectClause1345); if (failed) return node;
             // JPQL.g3:319:16: ( DISTINCT )?
             int alt15=2;
             int LA15_0 = input.LA(1);
@@ -1062,7 +1071,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:319:17: DISTINCT
                     {
-                    match(input,DISTINCT,FOLLOW_DISTINCT_in_selectClause1342); if (failed) return node;
+                    match(input,DISTINCT,FOLLOW_DISTINCT_in_selectClause1348); if (failed) return node;
                     if ( backtracking==0 ) {
                        ((selectClause_scope)selectClause_stack.peek()).distinct = true; 
                     }
@@ -1072,7 +1081,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            pushFollow(FOLLOW_selectExpression_in_selectClause1358);
+            pushFollow(FOLLOW_selectExpression_in_selectClause1364);
             n=selectExpression();
             _fsp--;
             if (failed) return node;
@@ -1094,8 +1103,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:321:9: COMMA n= selectExpression
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_selectClause1370); if (failed) return node;
-            	    pushFollow(FOLLOW_selectExpression_in_selectClause1376);
+            	    match(input,COMMA,FOLLOW_COMMA_in_selectClause1376); if (failed) return node;
+            	    pushFollow(FOLLOW_selectExpression_in_selectClause1382);
             	    n=selectExpression();
             	    _fsp--;
             	    if (failed) return node;
@@ -1183,7 +1192,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:330:7: n= pathExprOrVariableAccess
                     {
-                    pushFollow(FOLLOW_pathExprOrVariableAccess_in_selectExpression1422);
+                    pushFollow(FOLLOW_pathExprOrVariableAccess_in_selectExpression1428);
                     n=pathExprOrVariableAccess();
                     _fsp--;
                     if (failed) return node;
@@ -1196,7 +1205,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:331:7: n= aggregateExpression
                     {
-                    pushFollow(FOLLOW_aggregateExpression_in_selectExpression1436);
+                    pushFollow(FOLLOW_aggregateExpression_in_selectExpression1442);
                     n=aggregateExpression();
                     _fsp--;
                     if (failed) return node;
@@ -1209,13 +1218,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:332:7: OBJECT LEFT_ROUND_BRACKET n= variableAccess RIGHT_ROUND_BRACKET
                     {
-                    match(input,OBJECT,FOLLOW_OBJECT_in_selectExpression1446); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_selectExpression1448); if (failed) return node;
-                    pushFollow(FOLLOW_variableAccess_in_selectExpression1454);
+                    match(input,OBJECT,FOLLOW_OBJECT_in_selectExpression1452); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_selectExpression1454); if (failed) return node;
+                    pushFollow(FOLLOW_variableAccess_in_selectExpression1460);
                     n=variableAccess();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_selectExpression1456); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_selectExpression1462); if (failed) return node;
                     if ( backtracking==0 ) {
                       node = n;
                     }
@@ -1225,7 +1234,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 4 :
                     // JPQL.g3:333:7: n= constructorExpression
                     {
-                    pushFollow(FOLLOW_constructorExpression_in_selectExpression1471);
+                    pushFollow(FOLLOW_constructorExpression_in_selectExpression1477);
                     n=constructorExpression();
                     _fsp--;
                     if (failed) return node;
@@ -1268,7 +1277,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:340:7: (n= variableAccess (d= DOT right= attribute )* )
             // JPQL.g3:340:7: n= variableAccess (d= DOT right= attribute )*
             {
-            pushFollow(FOLLOW_variableAccess_in_pathExprOrVariableAccess1504);
+            pushFollow(FOLLOW_variableAccess_in_pathExprOrVariableAccess1510);
             n=variableAccess();
             _fsp--;
             if (failed) return node;
@@ -1291,8 +1300,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    // JPQL.g3:341:10: d= DOT right= attribute
             	    {
             	    d=(Token)input.LT(1);
-            	    match(input,DOT,FOLLOW_DOT_in_pathExprOrVariableAccess1519); if (failed) return node;
-            	    pushFollow(FOLLOW_attribute_in_pathExprOrVariableAccess1525);
+            	    match(input,DOT,FOLLOW_DOT_in_pathExprOrVariableAccess1525); if (failed) return node;
+            	    pushFollow(FOLLOW_attribute_in_pathExprOrVariableAccess1531);
             	    right=attribute();
             	    _fsp--;
             	    if (failed) return node;
@@ -1389,8 +1398,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:354:7: t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
                     t1=(Token)input.LT(1);
-                    match(input,AVG,FOLLOW_AVG_in_aggregateExpression1582); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1584); if (failed) return node;
+                    match(input,AVG,FOLLOW_AVG_in_aggregateExpression1588); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1590); if (failed) return node;
                     // JPQL.g3:354:33: ( DISTINCT )?
                     int alt19=2;
                     int LA19_0 = input.LA(1);
@@ -1402,7 +1411,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         case 1 :
                             // JPQL.g3:354:34: DISTINCT
                             {
-                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1587); if (failed) return node;
+                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1593); if (failed) return node;
                             if ( backtracking==0 ) {
                                ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
                             }
@@ -1412,11 +1421,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     }
 
-                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression1605);
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression1611);
                     n=stateFieldPathExpression();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1607); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1613); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newAvg(t1.getLine(), t1.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
                     }
@@ -1427,8 +1436,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:357:7: t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
                     t2=(Token)input.LT(1);
-                    match(input,MAX,FOLLOW_MAX_in_aggregateExpression1628); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1630); if (failed) return node;
+                    match(input,MAX,FOLLOW_MAX_in_aggregateExpression1634); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1636); if (failed) return node;
                     // JPQL.g3:357:33: ( DISTINCT )?
                     int alt20=2;
                     int LA20_0 = input.LA(1);
@@ -1440,7 +1449,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         case 1 :
                             // JPQL.g3:357:34: DISTINCT
                             {
-                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1633); if (failed) return node;
+                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1639); if (failed) return node;
                             if ( backtracking==0 ) {
                                ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
                             }
@@ -1450,11 +1459,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     }
 
-                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression1652);
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression1658);
                     n=stateFieldPathExpression();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1654); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1660); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newMax(t2.getLine(), t2.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
                     }
@@ -1465,8 +1474,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:360:7: t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
                     t3=(Token)input.LT(1);
-                    match(input,MIN,FOLLOW_MIN_in_aggregateExpression1674); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1676); if (failed) return node;
+                    match(input,MIN,FOLLOW_MIN_in_aggregateExpression1680); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1682); if (failed) return node;
                     // JPQL.g3:360:33: ( DISTINCT )?
                     int alt21=2;
                     int LA21_0 = input.LA(1);
@@ -1478,7 +1487,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         case 1 :
                             // JPQL.g3:360:34: DISTINCT
                             {
-                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1679); if (failed) return node;
+                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1685); if (failed) return node;
                             if ( backtracking==0 ) {
                                ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
                             }
@@ -1488,11 +1497,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     }
 
-                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression1697);
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression1703);
                     n=stateFieldPathExpression();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1699); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1705); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newMin(t3.getLine(), t3.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
                     }
@@ -1503,8 +1512,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:363:7: t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
                     t4=(Token)input.LT(1);
-                    match(input,SUM,FOLLOW_SUM_in_aggregateExpression1719); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1721); if (failed) return node;
+                    match(input,SUM,FOLLOW_SUM_in_aggregateExpression1725); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1727); if (failed) return node;
                     // JPQL.g3:363:33: ( DISTINCT )?
                     int alt22=2;
                     int LA22_0 = input.LA(1);
@@ -1516,7 +1525,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         case 1 :
                             // JPQL.g3:363:34: DISTINCT
                             {
-                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1724); if (failed) return node;
+                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1730); if (failed) return node;
                             if ( backtracking==0 ) {
                                ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
                             }
@@ -1526,11 +1535,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     }
 
-                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression1742);
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_aggregateExpression1748);
                     n=stateFieldPathExpression();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1744); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1750); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newSum(t4.getLine(), t4.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
                     }
@@ -1541,8 +1550,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:366:7: t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET
                     {
                     t5=(Token)input.LT(1);
-                    match(input,COUNT,FOLLOW_COUNT_in_aggregateExpression1764); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1766); if (failed) return node;
+                    match(input,COUNT,FOLLOW_COUNT_in_aggregateExpression1770); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1772); if (failed) return node;
                     // JPQL.g3:366:35: ( DISTINCT )?
                     int alt23=2;
                     int LA23_0 = input.LA(1);
@@ -1554,7 +1563,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         case 1 :
                             // JPQL.g3:366:36: DISTINCT
                             {
-                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1769); if (failed) return node;
+                            match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregateExpression1775); if (failed) return node;
                             if ( backtracking==0 ) {
                                ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct = true; 
                             }
@@ -1564,11 +1573,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     }
 
-                    pushFollow(FOLLOW_pathExprOrVariableAccess_in_aggregateExpression1787);
+                    pushFollow(FOLLOW_pathExprOrVariableAccess_in_aggregateExpression1793);
                     n=pathExprOrVariableAccess();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1789); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1795); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newCount(t5.getLine(), t5.getCharPositionInLine(), ((aggregateExpression_scope)aggregateExpression_stack.peek()).distinct, n); 
                     }
@@ -1617,13 +1626,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:379:7: t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET
             {
             t=(Token)input.LT(1);
-            match(input,NEW,FOLLOW_NEW_in_constructorExpression1832); if (failed) return node;
-            pushFollow(FOLLOW_constructorName_in_constructorExpression1838);
+            match(input,NEW,FOLLOW_NEW_in_constructorExpression1838); if (failed) return node;
+            pushFollow(FOLLOW_constructorName_in_constructorExpression1844);
             className=constructorName();
             _fsp--;
             if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_constructorExpression1848); if (failed) return node;
-            pushFollow(FOLLOW_constructorItem_in_constructorExpression1863);
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_constructorExpression1854); if (failed) return node;
+            pushFollow(FOLLOW_constructorItem_in_constructorExpression1869);
             n=constructorItem();
             _fsp--;
             if (failed) return node;
@@ -1645,8 +1654,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:382:11: COMMA n= constructorItem
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_constructorExpression1878); if (failed) return node;
-            	    pushFollow(FOLLOW_constructorItem_in_constructorExpression1884);
+            	    match(input,COMMA,FOLLOW_COMMA_in_constructorExpression1884); if (failed) return node;
+            	    pushFollow(FOLLOW_constructorItem_in_constructorExpression1890);
             	    n=constructorItem();
             	    _fsp--;
             	    if (failed) return node;
@@ -1662,7 +1671,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 }
             } while (true);
 
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_constructorExpression1899); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_constructorExpression1905); if (failed) return node;
             if ( backtracking==0 ) {
                
                           node = factory.newConstructor(t.getLine(), t.getCharPositionInLine(), 
@@ -1709,7 +1718,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:398:7: i1= IDENT ( DOT i2= IDENT )*
             {
             i1=(Token)input.LT(1);
-            match(input,IDENT,FOLLOW_IDENT_in_constructorName1940); if (failed) return className;
+            match(input,IDENT,FOLLOW_IDENT_in_constructorName1946); if (failed) return className;
             if ( backtracking==0 ) {
                ((constructorName_scope)constructorName_stack.peek()).buf.append(i1.getText()); 
             }
@@ -1728,9 +1737,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:399:11: DOT i2= IDENT
             	    {
-            	    match(input,DOT,FOLLOW_DOT_in_constructorName1954); if (failed) return className;
+            	    match(input,DOT,FOLLOW_DOT_in_constructorName1960); if (failed) return className;
             	    i2=(Token)input.LT(1);
-            	    match(input,IDENT,FOLLOW_IDENT_in_constructorName1958); if (failed) return className;
+            	    match(input,IDENT,FOLLOW_IDENT_in_constructorName1964); if (failed) return className;
             	    if ( backtracking==0 ) {
             	       ((constructorName_scope)constructorName_stack.peek()).buf.append('.').append(i2.getText()); 
             	    }
@@ -1794,7 +1803,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:405:7: n= pathExprOrVariableAccess
                     {
-                    pushFollow(FOLLOW_pathExprOrVariableAccess_in_constructorItem2002);
+                    pushFollow(FOLLOW_pathExprOrVariableAccess_in_constructorItem2008);
                     n=pathExprOrVariableAccess();
                     _fsp--;
                     if (failed) return node;
@@ -1807,7 +1816,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:406:7: n= aggregateExpression
                     {
-                    pushFollow(FOLLOW_aggregateExpression_in_constructorItem2016);
+                    pushFollow(FOLLOW_aggregateExpression_in_constructorItem2022);
                     n=aggregateExpression();
                     _fsp--;
                     if (failed) return node;
@@ -1856,8 +1865,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:417:7: t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )*
             {
             t=(Token)input.LT(1);
-            match(input,FROM,FOLLOW_FROM_in_fromClause2049); if (failed) return node;
-            pushFollow(FOLLOW_identificationVariableDeclaration_in_fromClause2051);
+            match(input,FROM,FOLLOW_FROM_in_fromClause2055); if (failed) return node;
+            pushFollow(FOLLOW_identificationVariableDeclaration_in_fromClause2057);
             identificationVariableDeclaration(((fromClause_scope)fromClause_stack.peek()).varDecls);
             _fsp--;
             if (failed) return node;
@@ -1876,7 +1885,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:418:10: COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_fromClause2063); if (failed) return node;
+            	    match(input,COMMA,FOLLOW_COMMA_in_fromClause2069); if (failed) return node;
             	    // JPQL.g3:418:17: ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration )
             	    int alt28=2;
             	    int LA28_0 = input.LA(1);
@@ -1912,7 +1921,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	        case 1 :
             	            // JPQL.g3:418:19: identificationVariableDeclaration[$fromClause::varDecls]
             	            {
-            	            pushFollow(FOLLOW_identificationVariableDeclaration_in_fromClause2068);
+            	            pushFollow(FOLLOW_identificationVariableDeclaration_in_fromClause2074);
             	            identificationVariableDeclaration(((fromClause_scope)fromClause_stack.peek()).varDecls);
             	            _fsp--;
             	            if (failed) return node;
@@ -1922,7 +1931,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	        case 2 :
             	            // JPQL.g3:419:19: n= collectionMemberDeclaration
             	            {
-            	            pushFollow(FOLLOW_collectionMemberDeclaration_in_fromClause2093);
+            	            pushFollow(FOLLOW_collectionMemberDeclaration_in_fromClause2099);
             	            n=collectionMemberDeclaration();
             	            _fsp--;
             	            if (failed) return node;
@@ -1973,7 +1982,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:426:7: (node= rangeVariableDeclaration (node= join )* )
             // JPQL.g3:426:7: node= rangeVariableDeclaration (node= join )*
             {
-            pushFollow(FOLLOW_rangeVariableDeclaration_in_identificationVariableDeclaration2159);
+            pushFollow(FOLLOW_rangeVariableDeclaration_in_identificationVariableDeclaration2165);
             node=rangeVariableDeclaration();
             _fsp--;
             if (failed) return ;
@@ -1995,7 +2004,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:427:11: node= join
             	    {
-            	    pushFollow(FOLLOW_join_in_identificationVariableDeclaration2178);
+            	    pushFollow(FOLLOW_join_in_identificationVariableDeclaration2184);
             	    node=join();
             	    _fsp--;
             	    if (failed) return ;
@@ -2043,7 +2052,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:434:7: (schema= abstractSchemaName ( AS )? i= IDENT )
             // JPQL.g3:434:7: schema= abstractSchemaName ( AS )? i= IDENT
             {
-            pushFollow(FOLLOW_abstractSchemaName_in_rangeVariableDeclaration2213);
+            pushFollow(FOLLOW_abstractSchemaName_in_rangeVariableDeclaration2219);
             schema=abstractSchemaName();
             _fsp--;
             if (failed) return node;
@@ -2058,7 +2067,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:434:36: AS
                     {
-                    match(input,AS,FOLLOW_AS_in_rangeVariableDeclaration2216); if (failed) return node;
+                    match(input,AS,FOLLOW_AS_in_rangeVariableDeclaration2222); if (failed) return node;
                     
                     }
                     break;
@@ -2066,7 +2075,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
 
             i=(Token)input.LT(1);
-            match(input,IDENT,FOLLOW_IDENT_in_rangeVariableDeclaration2222); if (failed) return node;
+            match(input,IDENT,FOLLOW_IDENT_in_rangeVariableDeclaration2228); if (failed) return node;
             if ( backtracking==0 ) {
                
                           node = factory.newRangeVariableDecl(i.getLine(), i.getCharPositionInLine(), 
@@ -2144,7 +2153,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:458:7: (outerJoin= joinSpec (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression ) )
             // JPQL.g3:458:7: outerJoin= joinSpec (n= joinAssociationPathExpression ( AS )? i= IDENT | t= FETCH n= joinAssociationPathExpression )
             {
-            pushFollow(FOLLOW_joinSpec_in_join2305);
+            pushFollow(FOLLOW_joinSpec_in_join2311);
             outerJoin=joinSpec();
             _fsp--;
             if (failed) return node;
@@ -2169,7 +2178,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:459:9: n= joinAssociationPathExpression ( AS )? i= IDENT
                     {
-                    pushFollow(FOLLOW_joinAssociationPathExpression_in_join2319);
+                    pushFollow(FOLLOW_joinAssociationPathExpression_in_join2325);
                     n=joinAssociationPathExpression();
                     _fsp--;
                     if (failed) return node;
@@ -2184,7 +2193,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         case 1 :
                             // JPQL.g3:459:44: AS
                             {
-                            match(input,AS,FOLLOW_AS_in_join2322); if (failed) return node;
+                            match(input,AS,FOLLOW_AS_in_join2328); if (failed) return node;
                             
                             }
                             break;
@@ -2192,7 +2201,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
 
                     i=(Token)input.LT(1);
-                    match(input,IDENT,FOLLOW_IDENT_in_join2328); if (failed) return node;
+                    match(input,IDENT,FOLLOW_IDENT_in_join2334); if (failed) return node;
                     if ( backtracking==0 ) {
                       
                                   node = factory.newJoinVariableDecl(i.getLine(), i.getCharPositionInLine(), 
@@ -2206,8 +2215,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:464:9: t= FETCH n= joinAssociationPathExpression
                     {
                     t=(Token)input.LT(1);
-                    match(input,FETCH,FOLLOW_FETCH_in_join2350); if (failed) return node;
-                    pushFollow(FOLLOW_joinAssociationPathExpression_in_join2356);
+                    match(input,FETCH,FOLLOW_FETCH_in_join2356); if (failed) return node;
+                    pushFollow(FOLLOW_joinAssociationPathExpression_in_join2362);
                     n=joinAssociationPathExpression();
                     _fsp--;
                     if (failed) return node;
@@ -2262,7 +2271,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:473:8: LEFT ( OUTER )?
                     {
-                    match(input,LEFT,FOLLOW_LEFT_in_joinSpec2402); if (failed) return outer;
+                    match(input,LEFT,FOLLOW_LEFT_in_joinSpec2408); if (failed) return outer;
                     // JPQL.g3:473:13: ( OUTER )?
                     int alt34=2;
                     int LA34_0 = input.LA(1);
@@ -2274,7 +2283,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         case 1 :
                             // JPQL.g3:473:14: OUTER
                             {
-                            match(input,OUTER,FOLLOW_OUTER_in_joinSpec2405); if (failed) return outer;
+                            match(input,OUTER,FOLLOW_OUTER_in_joinSpec2411); if (failed) return outer;
                             
                             }
                             break;
@@ -2290,14 +2299,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:473:44: INNER
                     {
-                    match(input,INNER,FOLLOW_INNER_in_joinSpec2414); if (failed) return outer;
+                    match(input,INNER,FOLLOW_INNER_in_joinSpec2420); if (failed) return outer;
                     
                     }
                     break;
             
             }
 
-            match(input,JOIN,FOLLOW_JOIN_in_joinSpec2420); if (failed) return outer;
+            match(input,JOIN,FOLLOW_JOIN_in_joinSpec2426); if (failed) return outer;
             
             }
     
@@ -2330,13 +2339,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:478:7: t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT
             {
             t=(Token)input.LT(1);
-            match(input,IN,FOLLOW_IN_in_collectionMemberDeclaration2448); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_collectionMemberDeclaration2450); if (failed) return node;
-            pushFollow(FOLLOW_collectionValuedPathExpression_in_collectionMemberDeclaration2456);
+            match(input,IN,FOLLOW_IN_in_collectionMemberDeclaration2454); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_collectionMemberDeclaration2456); if (failed) return node;
+            pushFollow(FOLLOW_collectionValuedPathExpression_in_collectionMemberDeclaration2462);
             n=collectionValuedPathExpression();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_collectionMemberDeclaration2458); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_collectionMemberDeclaration2464); if (failed) return node;
             // JPQL.g3:479:7: ( AS )?
             int alt36=2;
             int LA36_0 = input.LA(1);
@@ -2348,7 +2357,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:479:8: AS
                     {
-                    match(input,AS,FOLLOW_AS_in_collectionMemberDeclaration2468); if (failed) return node;
+                    match(input,AS,FOLLOW_AS_in_collectionMemberDeclaration2474); if (failed) return node;
                     
                     }
                     break;
@@ -2356,7 +2365,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             }
 
             i=(Token)input.LT(1);
-            match(input,IDENT,FOLLOW_IDENT_in_collectionMemberDeclaration2474); if (failed) return node;
+            match(input,IDENT,FOLLOW_IDENT_in_collectionMemberDeclaration2480); if (failed) return node;
             if ( backtracking==0 ) {
                
                         node = factory.newCollectionMemberVariableDecl(
@@ -2392,7 +2401,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:488:7: (n= pathExpression )
             // JPQL.g3:488:7: n= pathExpression
             {
-            pushFollow(FOLLOW_pathExpression_in_collectionValuedPathExpression2512);
+            pushFollow(FOLLOW_pathExpression_in_collectionValuedPathExpression2518);
             n=pathExpression();
             _fsp--;
             if (failed) return node;
@@ -2428,7 +2437,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:493:7: (n= pathExpression )
             // JPQL.g3:493:7: n= pathExpression
             {
-            pushFollow(FOLLOW_pathExpression_in_associationPathExpression2544);
+            pushFollow(FOLLOW_pathExpression_in_associationPathExpression2550);
             n=pathExpression();
             _fsp--;
             if (failed) return node;
@@ -2469,13 +2478,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:500:7: (left= variableAccess d= DOT right= attribute )
             // JPQL.g3:500:7: left= variableAccess d= DOT right= attribute
             {
-            pushFollow(FOLLOW_variableAccess_in_joinAssociationPathExpression2576);
+            pushFollow(FOLLOW_variableAccess_in_joinAssociationPathExpression2582);
             left=variableAccess();
             _fsp--;
             if (failed) return node;
             d=(Token)input.LT(1);
-            match(input,DOT,FOLLOW_DOT_in_joinAssociationPathExpression2580); if (failed) return node;
-            pushFollow(FOLLOW_attribute_in_joinAssociationPathExpression2586);
+            match(input,DOT,FOLLOW_DOT_in_joinAssociationPathExpression2586); if (failed) return node;
+            pushFollow(FOLLOW_attribute_in_joinAssociationPathExpression2592);
             right=attribute();
             _fsp--;
             if (failed) return node;
@@ -2511,7 +2520,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:506:7: (n= pathExpression )
             // JPQL.g3:506:7: n= pathExpression
             {
-            pushFollow(FOLLOW_pathExpression_in_singleValuedPathExpression2626);
+            pushFollow(FOLLOW_pathExpression_in_singleValuedPathExpression2632);
             n=pathExpression();
             _fsp--;
             if (failed) return node;
@@ -2547,7 +2556,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:511:7: (n= pathExpression )
             // JPQL.g3:511:7: n= pathExpression
             {
-            pushFollow(FOLLOW_pathExpression_in_stateFieldPathExpression2658);
+            pushFollow(FOLLOW_pathExpression_in_stateFieldPathExpression2664);
             n=pathExpression();
             _fsp--;
             if (failed) return node;
@@ -2588,10 +2597,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:518:7: (n= variableAccess (d= DOT right= attribute )+ )
             // JPQL.g3:518:7: n= variableAccess (d= DOT right= attribute )+
             {
-            pushFollow(FOLLOW_variableAccess_in_pathExpression2690);
+            pushFollow(FOLLOW_variableAccess_in_pathExpression2696);
             n=variableAccess();
             _fsp--;
             if (failed) return node;
+            if ( backtracking==0 ) {
+              node = n;
+            }
             // JPQL.g3:519:9: (d= DOT right= attribute )+
             int cnt37=0;
             loop37:
@@ -2609,14 +2621,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    // JPQL.g3:519:10: d= DOT right= attribute
             	    {
             	    d=(Token)input.LT(1);
-            	    match(input,DOT,FOLLOW_DOT_in_pathExpression2703); if (failed) return node;
-            	    pushFollow(FOLLOW_attribute_in_pathExpression2709);
+            	    match(input,DOT,FOLLOW_DOT_in_pathExpression2711); if (failed) return node;
+            	    pushFollow(FOLLOW_attribute_in_pathExpression2717);
             	    right=attribute();
             	    _fsp--;
             	    if (failed) return node;
             	    if ( backtracking==0 ) {
             	      
-            	                      node = factory.newDot(d.getLine(), d.getCharPositionInLine(), n, right); 
+            	                      node = factory.newDot(d.getLine(), d.getCharPositionInLine(), node, right); 
             	                  
             	    }
             	    
@@ -2698,7 +2710,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:542:7: i= IDENT
             {
             i=(Token)input.LT(1);
-            match(input,IDENT,FOLLOW_IDENT_in_variableAccess2805); if (failed) return node;
+            match(input,IDENT,FOLLOW_IDENT_in_variableAccess2813); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newVariableAccess(i.getLine(), i.getCharPositionInLine(), i.getText()); 
             }
@@ -2733,8 +2745,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:548:7: t= WHERE n= conditionalExpression
             {
             t=(Token)input.LT(1);
-            match(input,WHERE,FOLLOW_WHERE_in_whereClause2843); if (failed) return node;
-            pushFollow(FOLLOW_conditionalExpression_in_whereClause2849);
+            match(input,WHERE,FOLLOW_WHERE_in_whereClause2851); if (failed) return node;
+            pushFollow(FOLLOW_conditionalExpression_in_whereClause2857);
             n=conditionalExpression();
             _fsp--;
             if (failed) return node;
@@ -2777,10 +2789,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:558:7: (n= conditionalTerm (t= OR right= conditionalTerm )* )
             // JPQL.g3:558:7: n= conditionalTerm (t= OR right= conditionalTerm )*
             {
-            pushFollow(FOLLOW_conditionalTerm_in_conditionalExpression2891);
+            pushFollow(FOLLOW_conditionalTerm_in_conditionalExpression2899);
             n=conditionalTerm();
             _fsp--;
             if (failed) return node;
+            if ( backtracking==0 ) {
+              node = n;
+            }
             // JPQL.g3:559:9: (t= OR right= conditionalTerm )*
             loop38:
             do {
@@ -2797,8 +2812,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    // JPQL.g3:559:10: t= OR right= conditionalTerm
             	    {
             	    t=(Token)input.LT(1);
-            	    match(input,OR,FOLLOW_OR_in_conditionalExpression2905); if (failed) return node;
-            	    pushFollow(FOLLOW_conditionalTerm_in_conditionalExpression2911);
+            	    match(input,OR,FOLLOW_OR_in_conditionalExpression2914); if (failed) return node;
+            	    pushFollow(FOLLOW_conditionalTerm_in_conditionalExpression2920);
             	    right=conditionalTerm();
             	    _fsp--;
             	    if (failed) return node;
@@ -2848,10 +2863,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:568:7: (n= conditionalFactor (t= AND right= conditionalFactor )* )
             // JPQL.g3:568:7: n= conditionalFactor (t= AND right= conditionalFactor )*
             {
-            pushFollow(FOLLOW_conditionalFactor_in_conditionalTerm2966);
+            pushFollow(FOLLOW_conditionalFactor_in_conditionalTerm2975);
             n=conditionalFactor();
             _fsp--;
             if (failed) return node;
+            if ( backtracking==0 ) {
+              node = n;
+            }
             // JPQL.g3:569:9: (t= AND right= conditionalFactor )*
             loop39:
             do {
@@ -2868,8 +2886,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    // JPQL.g3:569:10: t= AND right= conditionalFactor
             	    {
             	    t=(Token)input.LT(1);
-            	    match(input,AND,FOLLOW_AND_in_conditionalTerm2980); if (failed) return node;
-            	    pushFollow(FOLLOW_conditionalFactor_in_conditionalTerm2986);
+            	    match(input,AND,FOLLOW_AND_in_conditionalTerm2990); if (failed) return node;
+            	    pushFollow(FOLLOW_conditionalFactor_in_conditionalTerm2996);
             	    right=conditionalFactor();
             	    _fsp--;
             	    if (failed) return node;
@@ -2927,7 +2945,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:576:8: n= NOT
                     {
                     n=(Token)input.LT(1);
-                    match(input,NOT,FOLLOW_NOT_in_conditionalFactor3040); if (failed) return node;
+                    match(input,NOT,FOLLOW_NOT_in_conditionalFactor3051); if (failed) return node;
                     
                     }
                     break;
@@ -2955,7 +2973,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:577:11: n1= conditionalPrimary
                     {
-                    pushFollow(FOLLOW_conditionalPrimary_in_conditionalFactor3059);
+                    pushFollow(FOLLOW_conditionalPrimary_in_conditionalFactor3070);
                     n1=conditionalPrimary();
                     _fsp--;
                     if (failed) return node;
@@ -2973,7 +2991,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:584:11: n1= existsExpression[(n!=null)]
                     {
-                    pushFollow(FOLLOW_existsExpression_in_conditionalFactor3088);
+                    pushFollow(FOLLOW_existsExpression_in_conditionalFactor3099);
                     n1=existsExpression((n!=null));
                     _fsp--;
                     if (failed) return node;
@@ -6948,12 +6966,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:590:7: ( LEFT_ROUND_BRACKET conditionalExpression )=> LEFT_ROUND_BRACKET n= conditionalExpression RIGHT_ROUND_BRACKET
                     {
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_conditionalPrimary3145); if (failed) return node;
-                    pushFollow(FOLLOW_conditionalExpression_in_conditionalPrimary3151);
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_conditionalPrimary3156); if (failed) return node;
+                    pushFollow(FOLLOW_conditionalExpression_in_conditionalPrimary3162);
                     n=conditionalExpression();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_conditionalPrimary3153); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_conditionalPrimary3164); if (failed) return node;
                     if ( backtracking==0 ) {
                       node = n;
                     }
@@ -6963,7 +6981,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:592:7: n= simpleConditionalExpression
                     {
-                    pushFollow(FOLLOW_simpleConditionalExpression_in_conditionalPrimary3167);
+                    pushFollow(FOLLOW_simpleConditionalExpression_in_conditionalPrimary3178);
                     n=simpleConditionalExpression();
                     _fsp--;
                     if (failed) return node;
@@ -7005,11 +7023,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:599:7: (left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node] )
             // JPQL.g3:599:7: left= arithmeticExpression n= simpleConditionalExpressionRemainder[$left.node]
             {
-            pushFollow(FOLLOW_arithmeticExpression_in_simpleConditionalExpression3199);
+            pushFollow(FOLLOW_arithmeticExpression_in_simpleConditionalExpression3210);
             left=arithmeticExpression();
             _fsp--;
             if (failed) return node;
-            pushFollow(FOLLOW_simpleConditionalExpressionRemainder_in_simpleConditionalExpression3214);
+            pushFollow(FOLLOW_simpleConditionalExpressionRemainder_in_simpleConditionalExpression3225);
             n=simpleConditionalExpressionRemainder(left);
             _fsp--;
             if (failed) return node;
@@ -7083,7 +7101,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:605:7: n= comparisonExpression[left]
                     {
-                    pushFollow(FOLLOW_comparisonExpression_in_simpleConditionalExpressionRemainder3249);
+                    pushFollow(FOLLOW_comparisonExpression_in_simpleConditionalExpressionRemainder3260);
                     n=comparisonExpression(left);
                     _fsp--;
                     if (failed) return node;
@@ -7108,14 +7126,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             // JPQL.g3:606:8: n1= NOT
                             {
                             n1=(Token)input.LT(1);
-                            match(input,NOT,FOLLOW_NOT_in_simpleConditionalExpressionRemainder3263); if (failed) return node;
+                            match(input,NOT,FOLLOW_NOT_in_simpleConditionalExpressionRemainder3274); if (failed) return node;
                             
                             }
                             break;
                     
                     }
 
-                    pushFollow(FOLLOW_conditionWithNotExpression_in_simpleConditionalExpressionRemainder3271);
+                    pushFollow(FOLLOW_conditionWithNotExpression_in_simpleConditionalExpressionRemainder3282);
                     n=conditionWithNotExpression((n1!=null),  left);
                     _fsp--;
                     if (failed) return node;
@@ -7128,7 +7146,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:607:7: IS (n2= NOT )? n= isExpression[(n2!=null), left]
                     {
-                    match(input,IS,FOLLOW_IS_in_simpleConditionalExpressionRemainder3282); if (failed) return node;
+                    match(input,IS,FOLLOW_IS_in_simpleConditionalExpressionRemainder3293); if (failed) return node;
                     // JPQL.g3:607:10: (n2= NOT )?
                     int alt44=2;
                     int LA44_0 = input.LA(1);
@@ -7141,14 +7159,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                             // JPQL.g3:607:11: n2= NOT
                             {
                             n2=(Token)input.LT(1);
-                            match(input,NOT,FOLLOW_NOT_in_simpleConditionalExpressionRemainder3287); if (failed) return node;
+                            match(input,NOT,FOLLOW_NOT_in_simpleConditionalExpressionRemainder3298); if (failed) return node;
                             
                             }
                             break;
                     
                     }
 
-                    pushFollow(FOLLOW_isExpression_in_simpleConditionalExpressionRemainder3295);
+                    pushFollow(FOLLOW_isExpression_in_simpleConditionalExpressionRemainder3306);
                     n=isExpression((n2!=null),  left);
                     _fsp--;
                     if (failed) return node;
@@ -7218,7 +7236,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:612:7: n= betweenExpression[not, left]
                     {
-                    pushFollow(FOLLOW_betweenExpression_in_conditionWithNotExpression3330);
+                    pushFollow(FOLLOW_betweenExpression_in_conditionWithNotExpression3341);
                     n=betweenExpression(not,  left);
                     _fsp--;
                     if (failed) return node;
@@ -7231,7 +7249,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:613:7: n= likeExpression[not, left]
                     {
-                    pushFollow(FOLLOW_likeExpression_in_conditionWithNotExpression3345);
+                    pushFollow(FOLLOW_likeExpression_in_conditionWithNotExpression3356);
                     n=likeExpression(not,  left);
                     _fsp--;
                     if (failed) return node;
@@ -7244,7 +7262,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:614:7: n= inExpression[not, left]
                     {
-                    pushFollow(FOLLOW_inExpression_in_conditionWithNotExpression3359);
+                    pushFollow(FOLLOW_inExpression_in_conditionWithNotExpression3370);
                     n=inExpression(not,  left);
                     _fsp--;
                     if (failed) return node;
@@ -7257,7 +7275,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 4 :
                     // JPQL.g3:615:7: n= collectionMemberExpression[not, left]
                     {
-                    pushFollow(FOLLOW_collectionMemberExpression_in_conditionWithNotExpression3373);
+                    pushFollow(FOLLOW_collectionMemberExpression_in_conditionWithNotExpression3384);
                     n=collectionMemberExpression(not,  left);
                     _fsp--;
                     if (failed) return node;
@@ -7313,7 +7331,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:620:7: n= nullComparisonExpression[not, left]
                     {
-                    pushFollow(FOLLOW_nullComparisonExpression_in_isExpression3408);
+                    pushFollow(FOLLOW_nullComparisonExpression_in_isExpression3419);
                     n=nullComparisonExpression(not,  left);
                     _fsp--;
                     if (failed) return node;
@@ -7326,7 +7344,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:621:7: n= emptyCollectionComparisonExpression[not, left]
                     {
-                    pushFollow(FOLLOW_emptyCollectionComparisonExpression_in_isExpression3423);
+                    pushFollow(FOLLOW_emptyCollectionComparisonExpression_in_isExpression3434);
                     n=emptyCollectionComparisonExpression(not,  left);
                     _fsp--;
                     if (failed) return node;
@@ -7370,13 +7388,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:628:7: t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression
             {
             t=(Token)input.LT(1);
-            match(input,BETWEEN,FOLLOW_BETWEEN_in_betweenExpression3456); if (failed) return node;
-            pushFollow(FOLLOW_arithmeticExpression_in_betweenExpression3470);
+            match(input,BETWEEN,FOLLOW_BETWEEN_in_betweenExpression3467); if (failed) return node;
+            pushFollow(FOLLOW_arithmeticExpression_in_betweenExpression3481);
             lowerBound=arithmeticExpression();
             _fsp--;
             if (failed) return node;
-            match(input,AND,FOLLOW_AND_in_betweenExpression3472); if (failed) return node;
-            pushFollow(FOLLOW_arithmeticExpression_in_betweenExpression3478);
+            match(input,AND,FOLLOW_AND_in_betweenExpression3483); if (failed) return node;
+            pushFollow(FOLLOW_arithmeticExpression_in_betweenExpression3489);
             upperBound=arithmeticExpression();
             _fsp--;
             if (failed) return node;
@@ -7428,8 +7446,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:644:7: t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET
             {
             t=(Token)input.LT(1);
-            match(input,IN,FOLLOW_IN_in_inExpression3521); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_inExpression3531); if (failed) return node;
+            match(input,IN,FOLLOW_IN_in_inExpression3532); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_inExpression3542); if (failed) return node;
             // JPQL.g3:646:9: (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery )
             int alt49=2;
             int LA49_0 = input.LA(1);
@@ -7451,7 +7469,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:646:11: itemNode= inItem ( COMMA itemNode= inItem )*
                     {
-                    pushFollow(FOLLOW_inItem_in_inExpression3547);
+                    pushFollow(FOLLOW_inItem_in_inExpression3558);
                     itemNode=inItem();
                     _fsp--;
                     if (failed) return node;
@@ -7473,8 +7491,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     	case 1 :
                     	    // JPQL.g3:647:15: COMMA itemNode= inItem
                     	    {
-                    	    match(input,COMMA,FOLLOW_COMMA_in_inExpression3565); if (failed) return node;
-                    	    pushFollow(FOLLOW_inItem_in_inExpression3571);
+                    	    match(input,COMMA,FOLLOW_COMMA_in_inExpression3576); if (failed) return node;
+                    	    pushFollow(FOLLOW_inItem_in_inExpression3582);
                     	    itemNode=inItem();
                     	    _fsp--;
                     	    if (failed) return node;
@@ -7502,7 +7520,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:652:11: subqueryNode= subquery
                     {
-                    pushFollow(FOLLOW_subquery_in_inExpression3606);
+                    pushFollow(FOLLOW_subquery_in_inExpression3617);
                     subqueryNode=subquery();
                     _fsp--;
                     if (failed) return node;
@@ -7518,7 +7536,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_inExpression3640); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_inExpression3651); if (failed) return node;
             
             }
     
@@ -7581,7 +7599,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:663:7: n= literalString
                     {
-                    pushFollow(FOLLOW_literalString_in_inItem3670);
+                    pushFollow(FOLLOW_literalString_in_inItem3681);
                     n=literalString();
                     _fsp--;
                     if (failed) return node;
@@ -7594,7 +7612,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:664:7: n= literalNumeric
                     {
-                    pushFollow(FOLLOW_literalNumeric_in_inItem3684);
+                    pushFollow(FOLLOW_literalNumeric_in_inItem3695);
                     n=literalNumeric();
                     _fsp--;
                     if (failed) return node;
@@ -7607,7 +7625,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:665:7: n= inputParameter
                     {
-                    pushFollow(FOLLOW_inputParameter_in_inItem3698);
+                    pushFollow(FOLLOW_inputParameter_in_inItem3709);
                     n=inputParameter();
                     _fsp--;
                     if (failed) return node;
@@ -7651,8 +7669,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:672:7: t= LIKE pattern= likeValue (escapeChars= escape )?
             {
             t=(Token)input.LT(1);
-            match(input,LIKE,FOLLOW_LIKE_in_likeExpression3730); if (failed) return node;
-            pushFollow(FOLLOW_likeValue_in_likeExpression3736);
+            match(input,LIKE,FOLLOW_LIKE_in_likeExpression3741); if (failed) return node;
+            pushFollow(FOLLOW_likeValue_in_likeExpression3747);
             pattern=likeValue();
             _fsp--;
             if (failed) return node;
@@ -7667,7 +7685,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:673:10: escapeChars= escape
                     {
-                    pushFollow(FOLLOW_escape_in_likeExpression3751);
+                    pushFollow(FOLLOW_escape_in_likeExpression3762);
                     escapeChars=escape();
                     _fsp--;
                     if (failed) return node;
@@ -7716,8 +7734,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:684:7: t= ESCAPE escapeClause= likeValue
             {
             t=(Token)input.LT(1);
-            match(input,ESCAPE,FOLLOW_ESCAPE_in_escape3791); if (failed) return node;
-            pushFollow(FOLLOW_likeValue_in_escape3797);
+            match(input,ESCAPE,FOLLOW_ESCAPE_in_escape3802); if (failed) return node;
+            pushFollow(FOLLOW_likeValue_in_escape3808);
             escapeClause=likeValue();
             _fsp--;
             if (failed) return node;
@@ -7771,7 +7789,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:690:7: n= literalString
                     {
-                    pushFollow(FOLLOW_literalString_in_likeValue3837);
+                    pushFollow(FOLLOW_literalString_in_likeValue3848);
                     n=literalString();
                     _fsp--;
                     if (failed) return node;
@@ -7784,7 +7802,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:691:7: n= inputParameter
                     {
-                    pushFollow(FOLLOW_inputParameter_in_likeValue3851);
+                    pushFollow(FOLLOW_inputParameter_in_likeValue3862);
                     n=inputParameter();
                     _fsp--;
                     if (failed) return node;
@@ -7822,7 +7840,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:696:7: t= NULL
             {
             t=(Token)input.LT(1);
-            match(input,NULL,FOLLOW_NULL_in_nullComparisonExpression3884); if (failed) return node;
+            match(input,NULL,FOLLOW_NULL_in_nullComparisonExpression3895); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newIsNull(t.getLine(), t.getCharPositionInLine(), not, left); 
             }
@@ -7855,7 +7873,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:702:7: t= EMPTY
             {
             t=(Token)input.LT(1);
-            match(input,EMPTY,FOLLOW_EMPTY_in_emptyCollectionComparisonExpression3925); if (failed) return node;
+            match(input,EMPTY,FOLLOW_EMPTY_in_emptyCollectionComparisonExpression3936); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newIsEmpty(t.getLine(), t.getCharPositionInLine(), not, left); 
             }
@@ -7890,7 +7908,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:708:7: t= MEMBER ( OF )? n= collectionValuedPathExpression
             {
             t=(Token)input.LT(1);
-            match(input,MEMBER,FOLLOW_MEMBER_in_collectionMemberExpression3966); if (failed) return node;
+            match(input,MEMBER,FOLLOW_MEMBER_in_collectionMemberExpression3977); if (failed) return node;
             // JPQL.g3:708:17: ( OF )?
             int alt53=2;
             int LA53_0 = input.LA(1);
@@ -7902,14 +7920,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:708:18: OF
                     {
-                    match(input,OF,FOLLOW_OF_in_collectionMemberExpression3969); if (failed) return node;
+                    match(input,OF,FOLLOW_OF_in_collectionMemberExpression3980); if (failed) return node;
                     
                     }
                     break;
             
             }
 
-            pushFollow(FOLLOW_collectionValuedPathExpression_in_collectionMemberExpression3977);
+            pushFollow(FOLLOW_collectionValuedPathExpression_in_collectionMemberExpression3988);
             n=collectionValuedPathExpression();
             _fsp--;
             if (failed) return node;
@@ -7952,13 +7970,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:719:7: t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET
             {
             t=(Token)input.LT(1);
-            match(input,EXISTS,FOLLOW_EXISTS_in_existsExpression4017); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_existsExpression4019); if (failed) return node;
-            pushFollow(FOLLOW_subquery_in_existsExpression4025);
+            match(input,EXISTS,FOLLOW_EXISTS_in_existsExpression4028); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_existsExpression4030); if (failed) return node;
+            pushFollow(FOLLOW_subquery_in_existsExpression4036);
             subqueryNode=subquery();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_existsExpression4027); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_existsExpression4038); if (failed) return node;
             if ( backtracking==0 ) {
                
                           node = factory.newExists(t.getLine(), t.getCharPositionInLine(), 
@@ -8043,8 +8061,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:728:7: t1= EQUALS n= comparisonExpressionRightOperand
                     {
                     t1=(Token)input.LT(1);
-                    match(input,EQUALS,FOLLOW_EQUALS_in_comparisonExpression4067); if (failed) return node;
-                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4073);
+                    match(input,EQUALS,FOLLOW_EQUALS_in_comparisonExpression4078); if (failed) return node;
+                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4084);
                     n=comparisonExpressionRightOperand();
                     _fsp--;
                     if (failed) return node;
@@ -8058,8 +8076,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:730:7: t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand
                     {
                     t2=(Token)input.LT(1);
-                    match(input,NOT_EQUAL_TO,FOLLOW_NOT_EQUAL_TO_in_comparisonExpression4094); if (failed) return node;
-                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4100);
+                    match(input,NOT_EQUAL_TO,FOLLOW_NOT_EQUAL_TO_in_comparisonExpression4105); if (failed) return node;
+                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4111);
                     n=comparisonExpressionRightOperand();
                     _fsp--;
                     if (failed) return node;
@@ -8073,8 +8091,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:732:7: t3= GREATER_THAN n= comparisonExpressionRightOperand
                     {
                     t3=(Token)input.LT(1);
-                    match(input,GREATER_THAN,FOLLOW_GREATER_THAN_in_comparisonExpression4121); if (failed) return node;
-                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4127);
+                    match(input,GREATER_THAN,FOLLOW_GREATER_THAN_in_comparisonExpression4132); if (failed) return node;
+                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4138);
                     n=comparisonExpressionRightOperand();
                     _fsp--;
                     if (failed) return node;
@@ -8088,8 +8106,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:734:7: t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand
                     {
                     t4=(Token)input.LT(1);
-                    match(input,GREATER_THAN_EQUAL_TO,FOLLOW_GREATER_THAN_EQUAL_TO_in_comparisonExpression4148); if (failed) return node;
-                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4154);
+                    match(input,GREATER_THAN_EQUAL_TO,FOLLOW_GREATER_THAN_EQUAL_TO_in_comparisonExpression4159); if (failed) return node;
+                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4165);
                     n=comparisonExpressionRightOperand();
                     _fsp--;
                     if (failed) return node;
@@ -8103,8 +8121,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:736:7: t5= LESS_THAN n= comparisonExpressionRightOperand
                     {
                     t5=(Token)input.LT(1);
-                    match(input,LESS_THAN,FOLLOW_LESS_THAN_in_comparisonExpression4175); if (failed) return node;
-                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4181);
+                    match(input,LESS_THAN,FOLLOW_LESS_THAN_in_comparisonExpression4186); if (failed) return node;
+                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4192);
                     n=comparisonExpressionRightOperand();
                     _fsp--;
                     if (failed) return node;
@@ -8118,8 +8136,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:738:7: t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand
                     {
                     t6=(Token)input.LT(1);
-                    match(input,LESS_THAN_EQUAL_TO,FOLLOW_LESS_THAN_EQUAL_TO_in_comparisonExpression4202); if (failed) return node;
-                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4208);
+                    match(input,LESS_THAN_EQUAL_TO,FOLLOW_LESS_THAN_EQUAL_TO_in_comparisonExpression4213); if (failed) return node;
+                    pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4219);
                     n=comparisonExpressionRightOperand();
                     _fsp--;
                     if (failed) return node;
@@ -8175,7 +8193,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:744:7: n= arithmeticExpression
                     {
-                    pushFollow(FOLLOW_arithmeticExpression_in_comparisonExpressionRightOperand4249);
+                    pushFollow(FOLLOW_arithmeticExpression_in_comparisonExpressionRightOperand4260);
                     n=arithmeticExpression();
                     _fsp--;
                     if (failed) return node;
@@ -8188,7 +8206,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:745:7: n= anyOrAllExpression
                     {
-                    pushFollow(FOLLOW_anyOrAllExpression_in_comparisonExpressionRightOperand4263);
+                    pushFollow(FOLLOW_anyOrAllExpression_in_comparisonExpressionRightOperand4274);
                     n=anyOrAllExpression();
                     _fsp--;
                     if (failed) return node;
@@ -8258,7 +8276,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:750:7: n= simpleArithmeticExpression
                     {
-                    pushFollow(FOLLOW_simpleArithmeticExpression_in_arithmeticExpression4295);
+                    pushFollow(FOLLOW_simpleArithmeticExpression_in_arithmeticExpression4306);
                     n=simpleArithmeticExpression();
                     _fsp--;
                     if (failed) return node;
@@ -8271,12 +8289,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:751:7: LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticExpression4305); if (failed) return node;
-                    pushFollow(FOLLOW_subquery_in_arithmeticExpression4311);
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticExpression4316); if (failed) return node;
+                    pushFollow(FOLLOW_subquery_in_arithmeticExpression4322);
                     n=subquery();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticExpression4313); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticExpression4324); if (failed) return node;
                     if ( backtracking==0 ) {
                       node = n;
                     }
@@ -8317,7 +8335,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:758:7: (n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )* )
             // JPQL.g3:758:7: n= arithmeticTerm (p= PLUS right= arithmeticTerm | m= MINUS right= arithmeticTerm )*
             {
-            pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4345);
+            pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4356);
             n=arithmeticTerm();
             _fsp--;
             if (failed) return node;
@@ -8343,8 +8361,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    // JPQL.g3:759:11: p= PLUS right= arithmeticTerm
             	    {
             	    p=(Token)input.LT(1);
-            	    match(input,PLUS,FOLLOW_PLUS_in_simpleArithmeticExpression4361); if (failed) return node;
-            	    pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4367);
+            	    match(input,PLUS,FOLLOW_PLUS_in_simpleArithmeticExpression4372); if (failed) return node;
+            	    pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4378);
             	    right=arithmeticTerm();
             	    _fsp--;
             	    if (failed) return node;
@@ -8358,8 +8376,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    // JPQL.g3:761:11: m= MINUS right= arithmeticTerm
             	    {
             	    m=(Token)input.LT(1);
-            	    match(input,MINUS,FOLLOW_MINUS_in_simpleArithmeticExpression4396); if (failed) return node;
-            	    pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4402);
+            	    match(input,MINUS,FOLLOW_MINUS_in_simpleArithmeticExpression4407); if (failed) return node;
+            	    pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4413);
             	    right=arithmeticTerm();
             	    _fsp--;
             	    if (failed) return node;
@@ -8410,7 +8428,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:770:7: (n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )* )
             // JPQL.g3:770:7: n= arithmeticFactor (m= MULTIPLY right= arithmeticFactor | d= DIVIDE right= arithmeticFactor )*
             {
-            pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4459);
+            pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4470);
             n=arithmeticFactor();
             _fsp--;
             if (failed) return node;
@@ -8436,8 +8454,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    // JPQL.g3:771:11: m= MULTIPLY right= arithmeticFactor
             	    {
             	    m=(Token)input.LT(1);
-            	    match(input,MULTIPLY,FOLLOW_MULTIPLY_in_arithmeticTerm4475); if (failed) return node;
-            	    pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4481);
+            	    match(input,MULTIPLY,FOLLOW_MULTIPLY_in_arithmeticTerm4486); if (failed) return node;
+            	    pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4492);
             	    right=arithmeticFactor();
             	    _fsp--;
             	    if (failed) return node;
@@ -8451,8 +8469,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    // JPQL.g3:773:11: d= DIVIDE right= arithmeticFactor
             	    {
             	    d=(Token)input.LT(1);
-            	    match(input,DIVIDE,FOLLOW_DIVIDE_in_arithmeticTerm4510); if (failed) return node;
-            	    pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4516);
+            	    match(input,DIVIDE,FOLLOW_DIVIDE_in_arithmeticTerm4521); if (failed) return node;
+            	    pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4527);
             	    right=arithmeticFactor();
             	    _fsp--;
             	    if (failed) return node;
@@ -8557,8 +8575,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:780:7: p= PLUS n= arithmeticPrimary
                     {
                     p=(Token)input.LT(1);
-                    match(input,PLUS,FOLLOW_PLUS_in_arithmeticFactor4570); if (failed) return node;
-                    pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor4577);
+                    match(input,PLUS,FOLLOW_PLUS_in_arithmeticFactor4581); if (failed) return node;
+                    pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor4588);
                     n=arithmeticPrimary();
                     _fsp--;
                     if (failed) return node;
@@ -8572,8 +8590,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:782:7: m= MINUS n= arithmeticPrimary
                     {
                     m=(Token)input.LT(1);
-                    match(input,MINUS,FOLLOW_MINUS_in_arithmeticFactor4599); if (failed) return node;
-                    pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor4605);
+                    match(input,MINUS,FOLLOW_MINUS_in_arithmeticFactor4610); if (failed) return node;
+                    pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor4616);
                     n=arithmeticPrimary();
                     _fsp--;
                     if (failed) return node;
@@ -8586,7 +8604,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:784:7: n= arithmeticPrimary
                     {
-                    pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor4629);
+                    pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor4640);
                     n=arithmeticPrimary();
                     _fsp--;
                     if (failed) return node;
@@ -8725,7 +8743,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         if (backtracking>0) {failed=true; return node;}
                         throw new FailedPredicateException(input, "arithmeticPrimary", " aggregatesAllowed() ");
                     }
-                    pushFollow(FOLLOW_aggregateExpression_in_arithmeticPrimary4663);
+                    pushFollow(FOLLOW_aggregateExpression_in_arithmeticPrimary4674);
                     n=aggregateExpression();
                     _fsp--;
                     if (failed) return node;
@@ -8738,7 +8756,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:790:7: n= variableAccess
                     {
-                    pushFollow(FOLLOW_variableAccess_in_arithmeticPrimary4677);
+                    pushFollow(FOLLOW_variableAccess_in_arithmeticPrimary4688);
                     n=variableAccess();
                     _fsp--;
                     if (failed) return node;
@@ -8751,7 +8769,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:791:7: n= stateFieldPathExpression
                     {
-                    pushFollow(FOLLOW_stateFieldPathExpression_in_arithmeticPrimary4691);
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_arithmeticPrimary4702);
                     n=stateFieldPathExpression();
                     _fsp--;
                     if (failed) return node;
@@ -8764,7 +8782,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 4 :
                     // JPQL.g3:792:7: n= functionsReturningNumerics
                     {
-                    pushFollow(FOLLOW_functionsReturningNumerics_in_arithmeticPrimary4705);
+                    pushFollow(FOLLOW_functionsReturningNumerics_in_arithmeticPrimary4716);
                     n=functionsReturningNumerics();
                     _fsp--;
                     if (failed) return node;
@@ -8777,7 +8795,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 5 :
                     // JPQL.g3:793:7: n= functionsReturningDatetime
                     {
-                    pushFollow(FOLLOW_functionsReturningDatetime_in_arithmeticPrimary4719);
+                    pushFollow(FOLLOW_functionsReturningDatetime_in_arithmeticPrimary4730);
                     n=functionsReturningDatetime();
                     _fsp--;
                     if (failed) return node;
@@ -8790,7 +8808,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 6 :
                     // JPQL.g3:794:7: n= functionsReturningStrings
                     {
-                    pushFollow(FOLLOW_functionsReturningStrings_in_arithmeticPrimary4733);
+                    pushFollow(FOLLOW_functionsReturningStrings_in_arithmeticPrimary4744);
                     n=functionsReturningStrings();
                     _fsp--;
                     if (failed) return node;
@@ -8803,7 +8821,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 7 :
                     // JPQL.g3:795:7: n= inputParameter
                     {
-                    pushFollow(FOLLOW_inputParameter_in_arithmeticPrimary4747);
+                    pushFollow(FOLLOW_inputParameter_in_arithmeticPrimary4758);
                     n=inputParameter();
                     _fsp--;
                     if (failed) return node;
@@ -8816,7 +8834,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 8 :
                     // JPQL.g3:796:7: n= literalNumeric
                     {
-                    pushFollow(FOLLOW_literalNumeric_in_arithmeticPrimary4761);
+                    pushFollow(FOLLOW_literalNumeric_in_arithmeticPrimary4772);
                     n=literalNumeric();
                     _fsp--;
                     if (failed) return node;
@@ -8829,7 +8847,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 9 :
                     // JPQL.g3:797:7: n= literalString
                     {
-                    pushFollow(FOLLOW_literalString_in_arithmeticPrimary4775);
+                    pushFollow(FOLLOW_literalString_in_arithmeticPrimary4786);
                     n=literalString();
                     _fsp--;
                     if (failed) return node;
@@ -8842,7 +8860,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 10 :
                     // JPQL.g3:798:7: n= literalBoolean
                     {
-                    pushFollow(FOLLOW_literalBoolean_in_arithmeticPrimary4789);
+                    pushFollow(FOLLOW_literalBoolean_in_arithmeticPrimary4800);
                     n=literalBoolean();
                     _fsp--;
                     if (failed) return node;
@@ -8855,12 +8873,12 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 11 :
                     // JPQL.g3:799:7: LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
                     {
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticPrimary4799); if (failed) return node;
-                    pushFollow(FOLLOW_simpleArithmeticExpression_in_arithmeticPrimary4805);
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticPrimary4810); if (failed) return node;
+                    pushFollow(FOLLOW_simpleArithmeticExpression_in_arithmeticPrimary4816);
                     n=simpleArithmeticExpression();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticPrimary4807); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticPrimary4818); if (failed) return node;
                     if ( backtracking==0 ) {
                       node = n;
                     }
@@ -8926,13 +8944,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:804:7: a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
                     a=(Token)input.LT(1);
-                    match(input,ALL,FOLLOW_ALL_in_anyOrAllExpression4837); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4839); if (failed) return node;
-                    pushFollow(FOLLOW_subquery_in_anyOrAllExpression4845);
+                    match(input,ALL,FOLLOW_ALL_in_anyOrAllExpression4848); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4850); if (failed) return node;
+                    pushFollow(FOLLOW_subquery_in_anyOrAllExpression4856);
                     n=subquery();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression4847); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression4858); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newAll(a.getLine(), a.getCharPositionInLine(), n); 
                     }
@@ -8943,13 +8961,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:806:7: y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
                     y=(Token)input.LT(1);
-                    match(input,ANY,FOLLOW_ANY_in_anyOrAllExpression4867); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4869); if (failed) return node;
-                    pushFollow(FOLLOW_subquery_in_anyOrAllExpression4875);
+                    match(input,ANY,FOLLOW_ANY_in_anyOrAllExpression4878); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4880); if (failed) return node;
+                    pushFollow(FOLLOW_subquery_in_anyOrAllExpression4886);
                     n=subquery();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression4877); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression4888); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newAny(y.getLine(), y.getCharPositionInLine(), n); 
                     }
@@ -8960,13 +8978,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:808:7: s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
                     s=(Token)input.LT(1);
-                    match(input,SOME,FOLLOW_SOME_in_anyOrAllExpression4897); if (failed) return node;
-                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4899); if (failed) return node;
-                    pushFollow(FOLLOW_subquery_in_anyOrAllExpression4905);
+                    match(input,SOME,FOLLOW_SOME_in_anyOrAllExpression4908); if (failed) return node;
+                    match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4910); if (failed) return node;
+                    pushFollow(FOLLOW_subquery_in_anyOrAllExpression4916);
                     n=subquery();
                     _fsp--;
                     if (failed) return node;
-                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression4907); if (failed) return node;
+                    match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression4918); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newSome(s.getLine(), s.getCharPositionInLine(), n); 
                     }
@@ -9039,7 +9057,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:814:7: n= literalString
                     {
-                    pushFollow(FOLLOW_literalString_in_stringPrimary4947);
+                    pushFollow(FOLLOW_literalString_in_stringPrimary4958);
                     n=literalString();
                     _fsp--;
                     if (failed) return node;
@@ -9052,7 +9070,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:815:7: n= functionsReturningStrings
                     {
-                    pushFollow(FOLLOW_functionsReturningStrings_in_stringPrimary4961);
+                    pushFollow(FOLLOW_functionsReturningStrings_in_stringPrimary4972);
                     n=functionsReturningStrings();
                     _fsp--;
                     if (failed) return node;
@@ -9065,7 +9083,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:816:7: n= inputParameter
                     {
-                    pushFollow(FOLLOW_inputParameter_in_stringPrimary4975);
+                    pushFollow(FOLLOW_inputParameter_in_stringPrimary4986);
                     n=inputParameter();
                     _fsp--;
                     if (failed) return node;
@@ -9078,7 +9096,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 4 :
                     // JPQL.g3:817:7: n= stateFieldPathExpression
                     {
-                    pushFollow(FOLLOW_stateFieldPathExpression_in_stringPrimary4989);
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_stringPrimary5000);
                     n=stateFieldPathExpression();
                     _fsp--;
                     if (failed) return node;
@@ -9148,7 +9166,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:824:7: n= literalNumeric
                     {
-                    pushFollow(FOLLOW_literalNumeric_in_literal5023);
+                    pushFollow(FOLLOW_literalNumeric_in_literal5034);
                     n=literalNumeric();
                     _fsp--;
                     if (failed) return node;
@@ -9161,7 +9179,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:825:7: n= literalBoolean
                     {
-                    pushFollow(FOLLOW_literalBoolean_in_literal5037);
+                    pushFollow(FOLLOW_literalBoolean_in_literal5048);
                     n=literalBoolean();
                     _fsp--;
                     if (failed) return node;
@@ -9174,7 +9192,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:826:7: n= literalString
                     {
-                    pushFollow(FOLLOW_literalString_in_literal5051);
+                    pushFollow(FOLLOW_literalString_in_literal5062);
                     n=literalString();
                     _fsp--;
                     if (failed) return node;
@@ -9247,7 +9265,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:831:7: i= NUM_INT
                     {
                     i=(Token)input.LT(1);
-                    match(input,NUM_INT,FOLLOW_NUM_INT_in_literalNumeric5081); if (failed) return node;
+                    match(input,NUM_INT,FOLLOW_NUM_INT_in_literalNumeric5092); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   node = factory.newIntegerLiteral(i.getLine(), i.getCharPositionInLine(), 
@@ -9261,7 +9279,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:836:7: l= NUM_LONG
                     {
                     l=(Token)input.LT(1);
-                    match(input,NUM_LONG,FOLLOW_NUM_LONG_in_literalNumeric5102); if (failed) return node;
+                    match(input,NUM_LONG,FOLLOW_NUM_LONG_in_literalNumeric5113); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   String text = l.getText();
@@ -9278,7 +9296,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:844:7: f= NUM_FLOAT
                     {
                     f=(Token)input.LT(1);
-                    match(input,NUM_FLOAT,FOLLOW_NUM_FLOAT_in_literalNumeric5123); if (failed) return node;
+                    match(input,NUM_FLOAT,FOLLOW_NUM_FLOAT_in_literalNumeric5134); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   node = factory.newFloatLiteral(f.getLine(), f.getCharPositionInLine(),
@@ -9292,7 +9310,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:849:7: d= NUM_DOUBLE
                     {
                     d=(Token)input.LT(1);
-                    match(input,NUM_DOUBLE,FOLLOW_NUM_DOUBLE_in_literalNumeric5143); if (failed) return node;
+                    match(input,NUM_DOUBLE,FOLLOW_NUM_DOUBLE_in_literalNumeric5154); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   node = factory.newDoubleLiteral(d.getLine(), d.getCharPositionInLine(),
@@ -9349,7 +9367,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:858:7: t= TRUE
                     {
                     t=(Token)input.LT(1);
-                    match(input,TRUE,FOLLOW_TRUE_in_literalBoolean5181); if (failed) return node;
+                    match(input,TRUE,FOLLOW_TRUE_in_literalBoolean5192); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newBooleanLiteral(t.getLine(), t.getCharPositionInLine(), Boolean.TRUE); 
                     }
@@ -9360,7 +9378,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:860:7: f= FALSE
                     {
                     f=(Token)input.LT(1);
-                    match(input,FALSE,FOLLOW_FALSE_in_literalBoolean5203); if (failed) return node;
+                    match(input,FALSE,FOLLOW_FALSE_in_literalBoolean5214); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newBooleanLiteral(f.getLine(), f.getCharPositionInLine(), Boolean.FALSE); 
                     }
@@ -9414,7 +9432,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:866:7: d= STRING_LITERAL_DOUBLE_QUOTED
                     {
                     d=(Token)input.LT(1);
-                    match(input,STRING_LITERAL_DOUBLE_QUOTED,FOLLOW_STRING_LITERAL_DOUBLE_QUOTED_in_literalString5242); if (failed) return node;
+                    match(input,STRING_LITERAL_DOUBLE_QUOTED,FOLLOW_STRING_LITERAL_DOUBLE_QUOTED_in_literalString5253); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   node = factory.newStringLiteral(d.getLine(), d.getCharPositionInLine(), 
@@ -9428,7 +9446,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:871:7: s= STRING_LITERAL_SINGLE_QUOTED
                     {
                     s=(Token)input.LT(1);
-                    match(input,STRING_LITERAL_SINGLE_QUOTED,FOLLOW_STRING_LITERAL_SINGLE_QUOTED_in_literalString5263); if (failed) return node;
+                    match(input,STRING_LITERAL_SINGLE_QUOTED,FOLLOW_STRING_LITERAL_SINGLE_QUOTED_in_literalString5274); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   node = factory.newStringLiteral(s.getLine(), s.getCharPositionInLine(), 
@@ -9485,7 +9503,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:880:7: p= POSITIONAL_PARAM
                     {
                     p=(Token)input.LT(1);
-                    match(input,POSITIONAL_PARAM,FOLLOW_POSITIONAL_PARAM_in_inputParameter5301); if (failed) return node;
+                    match(input,POSITIONAL_PARAM,FOLLOW_POSITIONAL_PARAM_in_inputParameter5312); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   // skip the leading ?
@@ -9500,7 +9518,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:886:7: n= NAMED_PARAM
                     {
                     n=(Token)input.LT(1);
-                    match(input,NAMED_PARAM,FOLLOW_NAMED_PARAM_in_inputParameter5321); if (failed) return node;
+                    match(input,NAMED_PARAM,FOLLOW_NAMED_PARAM_in_inputParameter5332); if (failed) return node;
                     if ( backtracking==0 ) {
                        
                                   // skip the leading :
@@ -9581,7 +9599,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:896:7: n= abs
                     {
-                    pushFollow(FOLLOW_abs_in_functionsReturningNumerics5361);
+                    pushFollow(FOLLOW_abs_in_functionsReturningNumerics5372);
                     n=abs();
                     _fsp--;
                     if (failed) return node;
@@ -9594,7 +9612,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:897:7: n= length
                     {
-                    pushFollow(FOLLOW_length_in_functionsReturningNumerics5375);
+                    pushFollow(FOLLOW_length_in_functionsReturningNumerics5386);
                     n=length();
                     _fsp--;
                     if (failed) return node;
@@ -9607,7 +9625,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:898:7: n= mod
                     {
-                    pushFollow(FOLLOW_mod_in_functionsReturningNumerics5389);
+                    pushFollow(FOLLOW_mod_in_functionsReturningNumerics5400);
                     n=mod();
                     _fsp--;
                     if (failed) return node;
@@ -9620,7 +9638,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 4 :
                     // JPQL.g3:899:7: n= sqrt
                     {
-                    pushFollow(FOLLOW_sqrt_in_functionsReturningNumerics5403);
+                    pushFollow(FOLLOW_sqrt_in_functionsReturningNumerics5414);
                     n=sqrt();
                     _fsp--;
                     if (failed) return node;
@@ -9633,7 +9651,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 5 :
                     // JPQL.g3:900:7: n= locate
                     {
-                    pushFollow(FOLLOW_locate_in_functionsReturningNumerics5417);
+                    pushFollow(FOLLOW_locate_in_functionsReturningNumerics5428);
                     n=locate();
                     _fsp--;
                     if (failed) return node;
@@ -9646,7 +9664,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 6 :
                     // JPQL.g3:901:7: n= size
                     {
-                    pushFollow(FOLLOW_size_in_functionsReturningNumerics5431);
+                    pushFollow(FOLLOW_size_in_functionsReturningNumerics5442);
                     n=size();
                     _fsp--;
                     if (failed) return node;
@@ -9713,7 +9731,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:906:7: d= CURRENT_DATE
                     {
                     d=(Token)input.LT(1);
-                    match(input,CURRENT_DATE,FOLLOW_CURRENT_DATE_in_functionsReturningDatetime5461); if (failed) return node;
+                    match(input,CURRENT_DATE,FOLLOW_CURRENT_DATE_in_functionsReturningDatetime5472); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newCurrentDate(d.getLine(), d.getCharPositionInLine()); 
                     }
@@ -9724,7 +9742,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:908:7: t= CURRENT_TIME
                     {
                     t=(Token)input.LT(1);
-                    match(input,CURRENT_TIME,FOLLOW_CURRENT_TIME_in_functionsReturningDatetime5482); if (failed) return node;
+                    match(input,CURRENT_TIME,FOLLOW_CURRENT_TIME_in_functionsReturningDatetime5493); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newCurrentTime(t.getLine(), t.getCharPositionInLine()); 
                     }
@@ -9735,7 +9753,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:910:7: ts= CURRENT_TIMESTAMP
                     {
                     ts=(Token)input.LT(1);
-                    match(input,CURRENT_TIMESTAMP,FOLLOW_CURRENT_TIMESTAMP_in_functionsReturningDatetime5502); if (failed) return node;
+                    match(input,CURRENT_TIMESTAMP,FOLLOW_CURRENT_TIMESTAMP_in_functionsReturningDatetime5513); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newCurrentTimestamp(ts.getLine(), ts.getCharPositionInLine()); 
                     }
@@ -9807,7 +9825,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:916:7: n= concat
                     {
-                    pushFollow(FOLLOW_concat_in_functionsReturningStrings5542);
+                    pushFollow(FOLLOW_concat_in_functionsReturningStrings5553);
                     n=concat();
                     _fsp--;
                     if (failed) return node;
@@ -9820,7 +9838,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:917:7: n= substring
                     {
-                    pushFollow(FOLLOW_substring_in_functionsReturningStrings5556);
+                    pushFollow(FOLLOW_substring_in_functionsReturningStrings5567);
                     n=substring();
                     _fsp--;
                     if (failed) return node;
@@ -9833,7 +9851,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:918:7: n= trim
                     {
-                    pushFollow(FOLLOW_trim_in_functionsReturningStrings5570);
+                    pushFollow(FOLLOW_trim_in_functionsReturningStrings5581);
                     n=trim();
                     _fsp--;
                     if (failed) return node;
@@ -9846,7 +9864,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 4 :
                     // JPQL.g3:919:7: n= upper
                     {
-                    pushFollow(FOLLOW_upper_in_functionsReturningStrings5584);
+                    pushFollow(FOLLOW_upper_in_functionsReturningStrings5595);
                     n=upper();
                     _fsp--;
                     if (failed) return node;
@@ -9859,7 +9877,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 5 :
                     // JPQL.g3:920:7: n= lower
                     {
-                    pushFollow(FOLLOW_lower_in_functionsReturningStrings5598);
+                    pushFollow(FOLLOW_lower_in_functionsReturningStrings5609);
                     n=lower();
                     _fsp--;
                     if (failed) return node;
@@ -9903,18 +9921,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:928:7: c= CONCAT LEFT_ROUND_BRACKET firstArg= stringPrimary COMMA secondArg= stringPrimary RIGHT_ROUND_BRACKET
             {
             c=(Token)input.LT(1);
-            match(input,CONCAT,FOLLOW_CONCAT_in_concat5629); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_concat5640); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_concat5655);
+            match(input,CONCAT,FOLLOW_CONCAT_in_concat5640); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_concat5651); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_concat5666);
             firstArg=stringPrimary();
             _fsp--;
             if (failed) return node;
-            match(input,COMMA,FOLLOW_COMMA_in_concat5657); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_concat5663);
+            match(input,COMMA,FOLLOW_COMMA_in_concat5668); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_concat5674);
             secondArg=stringPrimary();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_concat5673); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_concat5684); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newConcat(c.getLine(), c.getCharPositionInLine(), firstArg, secondArg); 
             }
@@ -9955,23 +9973,23 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:939:7: s= SUBSTRING LEFT_ROUND_BRACKET string= stringPrimary COMMA start= simpleArithmeticExpression COMMA lengthNode= simpleArithmeticExpression RIGHT_ROUND_BRACKET
             {
             s=(Token)input.LT(1);
-            match(input,SUBSTRING,FOLLOW_SUBSTRING_in_substring5711); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_substring5724); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_substring5738);
+            match(input,SUBSTRING,FOLLOW_SUBSTRING_in_substring5722); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_substring5735); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_substring5749);
             string=stringPrimary();
             _fsp--;
             if (failed) return node;
-            match(input,COMMA,FOLLOW_COMMA_in_substring5740); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_substring5754);
+            match(input,COMMA,FOLLOW_COMMA_in_substring5751); if (failed) return node;
+            pushFollow(FOLLOW_simpleArithmeticExpression_in_substring5765);
             start=simpleArithmeticExpression();
             _fsp--;
             if (failed) return node;
-            match(input,COMMA,FOLLOW_COMMA_in_substring5756); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_substring5770);
+            match(input,COMMA,FOLLOW_COMMA_in_substring5767); if (failed) return node;
+            pushFollow(FOLLOW_simpleArithmeticExpression_in_substring5781);
             lengthNode=simpleArithmeticExpression();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_substring5780); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_substring5791); if (failed) return node;
             if ( backtracking==0 ) {
                
                           node = factory.newSubstring(s.getLine(), s.getCharPositionInLine(), 
@@ -10015,8 +10033,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:955:7: t= TRIM LEFT_ROUND_BRACKET ( ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET
             {
             t=(Token)input.LT(1);
-            match(input,TRIM,FOLLOW_TRIM_in_trim5818); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_trim5828); if (failed) return node;
+            match(input,TRIM,FOLLOW_TRIM_in_trim5829); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_trim5839); if (failed) return node;
             // JPQL.g3:957:9: ( ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )?
             int alt71=2;
             int LA71_0 = input.LA(1);
@@ -10065,26 +10083,26 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:957:11: ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM
                     {
-                    pushFollow(FOLLOW_trimSpec_in_trim5856);
+                    pushFollow(FOLLOW_trimSpec_in_trim5867);
                     trimSpecIndicator=trimSpec();
                     _fsp--;
                     if (failed) return node;
-                    pushFollow(FOLLOW_trimChar_in_trim5862);
+                    pushFollow(FOLLOW_trimChar_in_trim5873);
                     trimCharNode=trimChar();
                     _fsp--;
                     if (failed) return node;
-                    match(input,FROM,FOLLOW_FROM_in_trim5864); if (failed) return node;
+                    match(input,FROM,FOLLOW_FROM_in_trim5875); if (failed) return node;
                     
                     }
                     break;
             
             }
 
-            pushFollow(FOLLOW_stringPrimary_in_trim5882);
+            pushFollow(FOLLOW_stringPrimary_in_trim5893);
             n=stringPrimary();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_trim5892); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_trim5903); if (failed) return node;
             if ( backtracking==0 ) {
               
                           node = factory.newTrim(t.getLine(), t.getCharPositionInLine(), 
@@ -10153,7 +10171,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:968:7: LEADING
                     {
-                    match(input,LEADING,FOLLOW_LEADING_in_trimSpec5928); if (failed) return trimSpec;
+                    match(input,LEADING,FOLLOW_LEADING_in_trimSpec5939); if (failed) return trimSpec;
                     if ( backtracking==0 ) {
                        trimSpec = TrimSpecification.LEADING; 
                     }
@@ -10163,7 +10181,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:970:7: TRAILING
                     {
-                    match(input,TRAILING,FOLLOW_TRAILING_in_trimSpec5946); if (failed) return trimSpec;
+                    match(input,TRAILING,FOLLOW_TRAILING_in_trimSpec5957); if (failed) return trimSpec;
                     if ( backtracking==0 ) {
                        trimSpec = TrimSpecification.TRAILING; 
                     }
@@ -10173,7 +10191,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:972:7: BOTH
                     {
-                    match(input,BOTH,FOLLOW_BOTH_in_trimSpec5964); if (failed) return trimSpec;
+                    match(input,BOTH,FOLLOW_BOTH_in_trimSpec5975); if (failed) return trimSpec;
                     if ( backtracking==0 ) {
                        trimSpec = TrimSpecification.BOTH; 
                     }
@@ -10242,7 +10260,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:979:7: n= literalString
                     {
-                    pushFollow(FOLLOW_literalString_in_trimChar6011);
+                    pushFollow(FOLLOW_literalString_in_trimChar6022);
                     n=literalString();
                     _fsp--;
                     if (failed) return node;
@@ -10255,7 +10273,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:980:7: n= inputParameter
                     {
-                    pushFollow(FOLLOW_inputParameter_in_trimChar6025);
+                    pushFollow(FOLLOW_inputParameter_in_trimChar6036);
                     n=inputParameter();
                     _fsp--;
                     if (failed) return node;
@@ -10300,13 +10318,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:986:7: u= UPPER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET
             {
             u=(Token)input.LT(1);
-            match(input,UPPER,FOLLOW_UPPER_in_upper6062); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_upper6064); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_upper6070);
+            match(input,UPPER,FOLLOW_UPPER_in_upper6073); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_upper6075); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_upper6081);
             n=stringPrimary();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_upper6072); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_upper6083); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newUpper(u.getLine(), u.getCharPositionInLine(), n); 
             }
@@ -10341,13 +10359,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:992:7: l= LOWER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET
             {
             l=(Token)input.LT(1);
-            match(input,LOWER,FOLLOW_LOWER_in_lower6110); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_lower6112); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_lower6118);
+            match(input,LOWER,FOLLOW_LOWER_in_lower6121); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_lower6123); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_lower6129);
             n=stringPrimary();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_lower6120); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_lower6131); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newLower(l.getLine(), l.getCharPositionInLine(), n); 
             }
@@ -10382,13 +10400,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:999:7: a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
             {
             a=(Token)input.LT(1);
-            match(input,ABS,FOLLOW_ABS_in_abs6159); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_abs6161); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_abs6167);
+            match(input,ABS,FOLLOW_ABS_in_abs6170); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_abs6172); if (failed) return node;
+            pushFollow(FOLLOW_simpleArithmeticExpression_in_abs6178);
             n=simpleArithmeticExpression();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_abs6169); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_abs6180); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newAbs(a.getLine(), a.getCharPositionInLine(), n); 
             }
@@ -10423,13 +10441,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1005:7: l= LENGTH LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET
             {
             l=(Token)input.LT(1);
-            match(input,LENGTH,FOLLOW_LENGTH_in_length6207); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_length6209); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_length6215);
+            match(input,LENGTH,FOLLOW_LENGTH_in_length6218); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_length6220); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_length6226);
             n=stringPrimary();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_length6217); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_length6228); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newLength(l.getLine(), l.getCharPositionInLine(), n); 
             }
@@ -10470,14 +10488,14 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1013:7: l= LOCATE LEFT_ROUND_BRACKET pattern= stringPrimary COMMA n= stringPrimary ( COMMA startPos= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET
             {
             l=(Token)input.LT(1);
-            match(input,LOCATE,FOLLOW_LOCATE_in_locate6255); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_locate6265); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_locate6280);
+            match(input,LOCATE,FOLLOW_LOCATE_in_locate6266); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_locate6276); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_locate6291);
             pattern=stringPrimary();
             _fsp--;
             if (failed) return node;
-            match(input,COMMA,FOLLOW_COMMA_in_locate6282); if (failed) return node;
-            pushFollow(FOLLOW_stringPrimary_in_locate6288);
+            match(input,COMMA,FOLLOW_COMMA_in_locate6293); if (failed) return node;
+            pushFollow(FOLLOW_stringPrimary_in_locate6299);
             n=stringPrimary();
             _fsp--;
             if (failed) return node;
@@ -10492,8 +10510,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:1016:11: COMMA startPos= simpleArithmeticExpression
                     {
-                    match(input,COMMA,FOLLOW_COMMA_in_locate6300); if (failed) return node;
-                    pushFollow(FOLLOW_simpleArithmeticExpression_in_locate6306);
+                    match(input,COMMA,FOLLOW_COMMA_in_locate6311); if (failed) return node;
+                    pushFollow(FOLLOW_simpleArithmeticExpression_in_locate6317);
                     startPos=simpleArithmeticExpression();
                     _fsp--;
                     if (failed) return node;
@@ -10503,7 +10521,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_locate6319); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_locate6330); if (failed) return node;
             if ( backtracking==0 ) {
                
                           node = factory.newLocate(l.getLine(), l.getCharPositionInLine(), 
@@ -10541,13 +10559,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1026:7: s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET
             {
             s=(Token)input.LT(1);
-            match(input,SIZE,FOLLOW_SIZE_in_size6357); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_size6368); if (failed) return node;
-            pushFollow(FOLLOW_collectionValuedPathExpression_in_size6374);
+            match(input,SIZE,FOLLOW_SIZE_in_size6368); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_size6379); if (failed) return node;
+            pushFollow(FOLLOW_collectionValuedPathExpression_in_size6385);
             n=collectionValuedPathExpression();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_size6376); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_size6387); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newSize(s.getLine(), s.getCharPositionInLine(), n);
             }
@@ -10586,18 +10604,18 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1035:7: m= MOD LEFT_ROUND_BRACKET left= simpleArithmeticExpression COMMA right= simpleArithmeticExpression RIGHT_ROUND_BRACKET
             {
             m=(Token)input.LT(1);
-            match(input,MOD,FOLLOW_MOD_in_mod6414); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_mod6416); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_mod6430);
+            match(input,MOD,FOLLOW_MOD_in_mod6425); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_mod6427); if (failed) return node;
+            pushFollow(FOLLOW_simpleArithmeticExpression_in_mod6441);
             left=simpleArithmeticExpression();
             _fsp--;
             if (failed) return node;
-            match(input,COMMA,FOLLOW_COMMA_in_mod6432); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_mod6447);
+            match(input,COMMA,FOLLOW_COMMA_in_mod6443); if (failed) return node;
+            pushFollow(FOLLOW_simpleArithmeticExpression_in_mod6458);
             right=simpleArithmeticExpression();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_mod6457); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_mod6468); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newMod(m.getLine(), m.getCharPositionInLine(), left, right); 
             }
@@ -10632,13 +10650,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1044:7: s= SQRT LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
             {
             s=(Token)input.LT(1);
-            match(input,SQRT,FOLLOW_SQRT_in_sqrt6495); if (failed) return node;
-            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_sqrt6506); if (failed) return node;
-            pushFollow(FOLLOW_simpleArithmeticExpression_in_sqrt6512);
+            match(input,SQRT,FOLLOW_SQRT_in_sqrt6506); if (failed) return node;
+            match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_sqrt6517); if (failed) return node;
+            pushFollow(FOLLOW_simpleArithmeticExpression_in_sqrt6523);
             n=simpleArithmeticExpression();
             _fsp--;
             if (failed) return node;
-            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_sqrt6514); if (failed) return node;
+            match(input,RIGHT_ROUND_BRACKET,FOLLOW_RIGHT_ROUND_BRACKET_in_sqrt6525); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newSqrt(s.getLine(), s.getCharPositionInLine(), n); 
             }
@@ -10681,11 +10699,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1053:7: (select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )? )
             // JPQL.g3:1053:7: select= simpleSelectClause from= subqueryFromClause (where= whereClause )? (groupBy= groupByClause )? (having= havingClause )?
             {
-            pushFollow(FOLLOW_simpleSelectClause_in_subquery6555);
+            pushFollow(FOLLOW_simpleSelectClause_in_subquery6566);
             select=simpleSelectClause();
             _fsp--;
             if (failed) return node;
-            pushFollow(FOLLOW_subqueryFromClause_in_subquery6570);
+            pushFollow(FOLLOW_subqueryFromClause_in_subquery6581);
             from=subqueryFromClause();
             _fsp--;
             if (failed) return node;
@@ -10700,7 +10718,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:1055:8: where= whereClause
                     {
-                    pushFollow(FOLLOW_whereClause_in_subquery6585);
+                    pushFollow(FOLLOW_whereClause_in_subquery6596);
                     where=whereClause();
                     _fsp--;
                     if (failed) return node;
@@ -10721,7 +10739,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:1056:8: groupBy= groupByClause
                     {
-                    pushFollow(FOLLOW_groupByClause_in_subquery6600);
+                    pushFollow(FOLLOW_groupByClause_in_subquery6611);
                     groupBy=groupByClause();
                     _fsp--;
                     if (failed) return node;
@@ -10742,7 +10760,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:1057:8: having= havingClause
                     {
-                    pushFollow(FOLLOW_havingClause_in_subquery6616);
+                    pushFollow(FOLLOW_havingClause_in_subquery6627);
                     having=havingClause();
                     _fsp--;
                     if (failed) return node;
@@ -10798,7 +10816,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1072:7: s= SELECT ( DISTINCT )? n= simpleSelectExpression
             {
             s=(Token)input.LT(1);
-            match(input,SELECT,FOLLOW_SELECT_in_simpleSelectClause6659); if (failed) return node;
+            match(input,SELECT,FOLLOW_SELECT_in_simpleSelectClause6670); if (failed) return node;
             // JPQL.g3:1072:16: ( DISTINCT )?
             int alt78=2;
             int LA78_0 = input.LA(1);
@@ -10810,7 +10828,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:1072:17: DISTINCT
                     {
-                    match(input,DISTINCT,FOLLOW_DISTINCT_in_simpleSelectClause6662); if (failed) return node;
+                    match(input,DISTINCT,FOLLOW_DISTINCT_in_simpleSelectClause6673); if (failed) return node;
                     if ( backtracking==0 ) {
                        ((simpleSelectClause_scope)simpleSelectClause_stack.peek()).distinct = true; 
                     }
@@ -10820,7 +10838,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            pushFollow(FOLLOW_simpleSelectExpression_in_simpleSelectClause6678);
+            pushFollow(FOLLOW_simpleSelectExpression_in_simpleSelectClause6689);
             n=simpleSelectExpression();
             _fsp--;
             if (failed) return node;
@@ -10894,7 +10912,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:1084:7: n= singleValuedPathExpression
                     {
-                    pushFollow(FOLLOW_singleValuedPathExpression_in_simpleSelectExpression6718);
+                    pushFollow(FOLLOW_singleValuedPathExpression_in_simpleSelectExpression6729);
                     n=singleValuedPathExpression();
                     _fsp--;
                     if (failed) return node;
@@ -10907,7 +10925,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:1085:7: n= aggregateExpression
                     {
-                    pushFollow(FOLLOW_aggregateExpression_in_simpleSelectExpression6733);
+                    pushFollow(FOLLOW_aggregateExpression_in_simpleSelectExpression6744);
                     n=aggregateExpression();
                     _fsp--;
                     if (failed) return node;
@@ -10920,7 +10938,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:1086:7: n= variableAccess
                     {
-                    pushFollow(FOLLOW_variableAccess_in_simpleSelectExpression6748);
+                    pushFollow(FOLLOW_variableAccess_in_simpleSelectExpression6759);
                     n=variableAccess();
                     _fsp--;
                     if (failed) return node;
@@ -10967,8 +10985,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1098:7: f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] )*
             {
             f=(Token)input.LT(1);
-            match(input,FROM,FOLLOW_FROM_in_subqueryFromClause6783); if (failed) return node;
-            pushFollow(FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause6785);
+            match(input,FROM,FOLLOW_FROM_in_subqueryFromClause6794); if (failed) return node;
+            pushFollow(FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause6796);
             subselectIdentificationVariableDeclaration(((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls);
             _fsp--;
             if (failed) return node;
@@ -10987,8 +11005,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:1099:11: COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls]
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_subqueryFromClause6799); if (failed) return node;
-            	    pushFollow(FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause6801);
+            	    match(input,COMMA,FOLLOW_COMMA_in_subqueryFromClause6810); if (failed) return node;
+            	    pushFollow(FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause6812);
             	    subselectIdentificationVariableDeclaration(((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls);
             	    _fsp--;
             	    if (failed) return node;
@@ -11174,7 +11192,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:1105:7: identificationVariableDeclaration[varDecls]
                     {
-                    pushFollow(FOLLOW_identificationVariableDeclaration_in_subselectIdentificationVariableDeclaration6839);
+                    pushFollow(FOLLOW_identificationVariableDeclaration_in_subselectIdentificationVariableDeclaration6850);
                     identificationVariableDeclaration(varDecls);
                     _fsp--;
                     if (failed) return ;
@@ -11184,7 +11202,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:1106:7: n= associationPathExpression ( AS )? i= IDENT
                     {
-                    pushFollow(FOLLOW_associationPathExpression_in_subselectIdentificationVariableDeclaration6852);
+                    pushFollow(FOLLOW_associationPathExpression_in_subselectIdentificationVariableDeclaration6863);
                     n=associationPathExpression();
                     _fsp--;
                     if (failed) return ;
@@ -11199,7 +11217,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         case 1 :
                             // JPQL.g3:1106:38: AS
                             {
-                            match(input,AS,FOLLOW_AS_in_subselectIdentificationVariableDeclaration6855); if (failed) return ;
+                            match(input,AS,FOLLOW_AS_in_subselectIdentificationVariableDeclaration6866); if (failed) return ;
                             
                             }
                             break;
@@ -11207,7 +11225,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
 
                     i=(Token)input.LT(1);
-                    match(input,IDENT,FOLLOW_IDENT_in_subselectIdentificationVariableDeclaration6861); if (failed) return ;
+                    match(input,IDENT,FOLLOW_IDENT_in_subselectIdentificationVariableDeclaration6872); if (failed) return ;
                     if ( backtracking==0 ) {
                        
                                   varDecls.add(factory.newVariableDecl(i.getLine(), i.getCharPositionInLine(), 
@@ -11220,7 +11238,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:1111:7: n= collectionMemberDeclaration
                     {
-                    pushFollow(FOLLOW_collectionMemberDeclaration_in_subselectIdentificationVariableDeclaration6883);
+                    pushFollow(FOLLOW_collectionMemberDeclaration_in_subselectIdentificationVariableDeclaration6894);
                     n=collectionMemberDeclaration();
                     _fsp--;
                     if (failed) return ;
@@ -11269,9 +11287,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1122:7: o= ORDER BY n= orderByItem ( COMMA n= orderByItem )*
             {
             o=(Token)input.LT(1);
-            match(input,ORDER,FOLLOW_ORDER_in_orderByClause6916); if (failed) return node;
-            match(input,BY,FOLLOW_BY_in_orderByClause6918); if (failed) return node;
-            pushFollow(FOLLOW_orderByItem_in_orderByClause6932);
+            match(input,ORDER,FOLLOW_ORDER_in_orderByClause6927); if (failed) return node;
+            match(input,BY,FOLLOW_BY_in_orderByClause6929); if (failed) return node;
+            pushFollow(FOLLOW_orderByItem_in_orderByClause6943);
             n=orderByItem();
             _fsp--;
             if (failed) return node;
@@ -11293,8 +11311,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:1124:10: COMMA n= orderByItem
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_orderByClause6947); if (failed) return node;
-            	    pushFollow(FOLLOW_orderByItem_in_orderByClause6953);
+            	    match(input,COMMA,FOLLOW_COMMA_in_orderByClause6958); if (failed) return node;
+            	    pushFollow(FOLLOW_orderByItem_in_orderByClause6964);
             	    n=orderByItem();
             	    _fsp--;
             	    if (failed) return node;
@@ -11345,7 +11363,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1130:7: (n= stateFieldPathExpression (a= ASC | d= DESC | ) )
             // JPQL.g3:1130:7: n= stateFieldPathExpression (a= ASC | d= DESC | )
             {
-            pushFollow(FOLLOW_stateFieldPathExpression_in_orderByItem6999);
+            pushFollow(FOLLOW_stateFieldPathExpression_in_orderByItem7010);
             n=stateFieldPathExpression();
             _fsp--;
             if (failed) return node;
@@ -11381,7 +11399,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:1131:11: a= ASC
                     {
                     a=(Token)input.LT(1);
-                    match(input,ASC,FOLLOW_ASC_in_orderByItem7013); if (failed) return node;
+                    match(input,ASC,FOLLOW_ASC_in_orderByItem7024); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newAscOrdering(a.getLine(), a.getCharPositionInLine(), n); 
                     }
@@ -11392,7 +11410,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     // JPQL.g3:1133:11: d= DESC
                     {
                     d=(Token)input.LT(1);
-                    match(input,DESC,FOLLOW_DESC_in_orderByItem7042); if (failed) return node;
+                    match(input,DESC,FOLLOW_DESC_in_orderByItem7053); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newDescOrdering(d.getLine(), d.getCharPositionInLine(), n); 
                     }
@@ -11451,9 +11469,9 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1148:7: g= GROUP BY n= groupByItem ( COMMA n= groupByItem )*
             {
             g=(Token)input.LT(1);
-            match(input,GROUP,FOLLOW_GROUP_in_groupByClause7122); if (failed) return node;
-            match(input,BY,FOLLOW_BY_in_groupByClause7124); if (failed) return node;
-            pushFollow(FOLLOW_groupByItem_in_groupByClause7138);
+            match(input,GROUP,FOLLOW_GROUP_in_groupByClause7133); if (failed) return node;
+            match(input,BY,FOLLOW_BY_in_groupByClause7135); if (failed) return node;
+            pushFollow(FOLLOW_groupByItem_in_groupByClause7149);
             n=groupByItem();
             _fsp--;
             if (failed) return node;
@@ -11475,8 +11493,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:1150:10: COMMA n= groupByItem
             	    {
-            	    match(input,COMMA,FOLLOW_COMMA_in_groupByClause7151); if (failed) return node;
-            	    pushFollow(FOLLOW_groupByItem_in_groupByClause7157);
+            	    match(input,COMMA,FOLLOW_COMMA_in_groupByClause7162); if (failed) return node;
+            	    pushFollow(FOLLOW_groupByItem_in_groupByClause7168);
             	    n=groupByItem();
             	    _fsp--;
             	    if (failed) return node;
@@ -11554,7 +11572,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:1156:7: n= stateFieldPathExpression
                     {
-                    pushFollow(FOLLOW_stateFieldPathExpression_in_groupByItem7203);
+                    pushFollow(FOLLOW_stateFieldPathExpression_in_groupByItem7214);
                     n=stateFieldPathExpression();
                     _fsp--;
                     if (failed) return node;
@@ -11567,7 +11585,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:1157:7: n= variableAccess
                     {
-                    pushFollow(FOLLOW_variableAccess_in_groupByItem7217);
+                    pushFollow(FOLLOW_variableAccess_in_groupByItem7228);
                     n=variableAccess();
                     _fsp--;
                     if (failed) return node;
@@ -11607,11 +11625,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1162:7: h= HAVING n= conditionalExpression
             {
             h=(Token)input.LT(1);
-            match(input,HAVING,FOLLOW_HAVING_in_havingClause7247); if (failed) return node;
+            match(input,HAVING,FOLLOW_HAVING_in_havingClause7258); if (failed) return node;
             if ( backtracking==0 ) {
                setAggregatesAllowed(true); 
             }
-            pushFollow(FOLLOW_conditionalExpression_in_havingClause7264);
+            pushFollow(FOLLOW_conditionalExpression_in_havingClause7275);
             n=conditionalExpression();
             _fsp--;
             if (failed) return node;
@@ -11640,8 +11658,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         // JPQL.g3:590:7: ( LEFT_ROUND_BRACKET conditionalExpression )
         // JPQL.g3:590:8: LEFT_ROUND_BRACKET conditionalExpression
         {
-        match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_synpred13130); if (failed) return ;
-        pushFollow(FOLLOW_conditionalExpression_in_synpred13132);
+        match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_synpred13141); if (failed) return ;
+        pushFollow(FOLLOW_conditionalExpression_in_synpred13143);
         conditionalExpression();
         _fsp--;
         if (failed) return ;
@@ -11655,15 +11673,15 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         // JPQL.g3:957:11: ( trimSpec trimChar FROM )
         // JPQL.g3:957:13: trimSpec trimChar FROM
         {
-        pushFollow(FOLLOW_trimSpec_in_synpred25843);
+        pushFollow(FOLLOW_trimSpec_in_synpred25854);
         trimSpec();
         _fsp--;
         if (failed) return ;
-        pushFollow(FOLLOW_trimChar_in_synpred25845);
+        pushFollow(FOLLOW_trimChar_in_synpred25856);
         trimChar();
         _fsp--;
         if (failed) return ;
-        match(input,FROM,FOLLOW_FROM_in_synpred25847); if (failed) return ;
+        match(input,FROM,FOLLOW_FROM_in_synpred25858); if (failed) return ;
         
         }
     }
@@ -11702,384 +11720,384 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
  
 
     public static final BitSet FOLLOW_selectStatement_in_document650 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_updateStatement_in_document662 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_deleteStatement_in_document674 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_selectClause_in_selectStatement705 = new BitSet(new long[]{0x0000000008000000L});
-    public static final BitSet FOLLOW_fromClause_in_selectStatement720 = new BitSet(new long[]{0x0004000030000000L,0x0000000000000002L});
-    public static final BitSet FOLLOW_whereClause_in_selectStatement735 = new BitSet(new long[]{0x0004000030000000L});
-    public static final BitSet FOLLOW_groupByClause_in_selectStatement750 = new BitSet(new long[]{0x0004000020000000L});
-    public static final BitSet FOLLOW_havingClause_in_selectStatement766 = new BitSet(new long[]{0x0004000000000000L});
-    public static final BitSet FOLLOW_orderByClause_in_selectStatement781 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_selectStatement791 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_updateClause_in_updateStatement834 = new BitSet(new long[]{0x0020000000000000L});
-    public static final BitSet FOLLOW_setClause_in_updateStatement849 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000002L});
-    public static final BitSet FOLLOW_whereClause_in_updateStatement863 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_updateStatement873 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_UPDATE_in_updateClause905 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
-    public static final BitSet FOLLOW_abstractSchemaName_in_updateClause911 = new BitSet(new long[]{0x0000000000000102L,0x0000000000000004L});
-    public static final BitSet FOLLOW_AS_in_updateClause924 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_updateClause932 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_in_setClause981 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
-    public static final BitSet FOLLOW_setAssignmentClause_in_setClause987 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_COMMA_in_setClause1000 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
-    public static final BitSet FOLLOW_setAssignmentClause_in_setClause1006 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_setAssignmentTarget_in_setAssignmentClause1064 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000010L});
-    public static final BitSet FOLLOW_EQUALS_in_setAssignmentClause1068 = new BitSet(new long[]{0x36C04DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_newValue_in_setAssignmentClause1074 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_attribute_in_setAssignmentTarget1104 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_pathExpression_in_setAssignmentTarget1119 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_newValue1151 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NULL_in_newValue1165 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_deleteClause_in_deleteStatement1209 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000002L});
-    public static final BitSet FOLLOW_whereClause_in_deleteStatement1222 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_deleteStatement1232 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DELETE_in_deleteClause1265 = new BitSet(new long[]{0x0000000008000000L});
-    public static final BitSet FOLLOW_FROM_in_deleteClause1267 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
-    public static final BitSet FOLLOW_abstractSchemaName_in_deleteClause1273 = new BitSet(new long[]{0x0000000000000102L,0x0000000000000004L});
-    public static final BitSet FOLLOW_AS_in_deleteClause1286 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_deleteClause1292 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SELECT_in_selectClause1339 = new BitSet(new long[]{0x0400950000208400L,0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_selectClause1342 = new BitSet(new long[]{0x0400950000008400L,0x0000000000000004L});
-    public static final BitSet FOLLOW_selectExpression_in_selectClause1358 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_COMMA_in_selectClause1370 = new BitSet(new long[]{0x0400950000008400L,0x0000000000000004L});
-    public static final BitSet FOLLOW_selectExpression_in_selectClause1376 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_pathExprOrVariableAccess_in_selectExpression1422 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_aggregateExpression_in_selectExpression1436 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_OBJECT_in_selectExpression1446 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_selectExpression1448 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_variableAccess_in_selectExpression1454 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_selectExpression1456 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_constructorExpression_in_selectExpression1471 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_variableAccess_in_pathExprOrVariableAccess1504 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000080L});
-    public static final BitSet FOLLOW_DOT_in_pathExprOrVariableAccess1519 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
-    public static final BitSet FOLLOW_attribute_in_pathExprOrVariableAccess1525 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000080L});
-    public static final BitSet FOLLOW_AVG_in_aggregateExpression1582 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1584 = new BitSet(new long[]{0x0000000000200000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1587 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression1605 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1607 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MAX_in_aggregateExpression1628 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1630 = new BitSet(new long[]{0x0000000000200000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1633 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression1652 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1654 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MIN_in_aggregateExpression1674 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1676 = new BitSet(new long[]{0x0000000000200000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1679 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression1697 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1699 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SUM_in_aggregateExpression1719 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1721 = new BitSet(new long[]{0x0000000000200000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1724 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression1742 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1744 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_COUNT_in_aggregateExpression1764 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1766 = new BitSet(new long[]{0x0000000000200000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1769 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_pathExprOrVariableAccess_in_aggregateExpression1787 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1789 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NEW_in_constructorExpression1832 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_constructorName_in_constructorExpression1838 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_constructorExpression1848 = new BitSet(new long[]{0x0400050000008400L,0x0000000000000004L});
-    public static final BitSet FOLLOW_constructorItem_in_constructorExpression1863 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000048L});
-    public static final BitSet FOLLOW_COMMA_in_constructorExpression1878 = new BitSet(new long[]{0x0400050000008400L,0x0000000000000004L});
-    public static final BitSet FOLLOW_constructorItem_in_constructorExpression1884 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000048L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_constructorExpression1899 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_constructorName1940 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000080L});
-    public static final BitSet FOLLOW_DOT_in_constructorName1954 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_constructorName1958 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000080L});
-    public static final BitSet FOLLOW_pathExprOrVariableAccess_in_constructorItem2002 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_aggregateExpression_in_constructorItem2016 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FROM_in_fromClause2049 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
-    public static final BitSet FOLLOW_identificationVariableDeclaration_in_fromClause2051 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_COMMA_in_fromClause2063 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
-    public static final BitSet FOLLOW_identificationVariableDeclaration_in_fromClause2068 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_collectionMemberDeclaration_in_fromClause2093 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_rangeVariableDeclaration_in_identificationVariableDeclaration2159 = new BitSet(new long[]{0x0000000A80000002L});
-    public static final BitSet FOLLOW_join_in_identificationVariableDeclaration2178 = new BitSet(new long[]{0x0000000A80000002L});
-    public static final BitSet FOLLOW_abstractSchemaName_in_rangeVariableDeclaration2213 = new BitSet(new long[]{0x0000000000000100L,0x0000000000000004L});
-    public static final BitSet FOLLOW_AS_in_rangeVariableDeclaration2216 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_rangeVariableDeclaration2222 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_joinSpec_in_join2305 = new BitSet(new long[]{0x0000000004000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_joinAssociationPathExpression_in_join2319 = new BitSet(new long[]{0x0000000000000100L,0x0000000000000004L});
-    public static final BitSet FOLLOW_AS_in_join2322 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_join2328 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FETCH_in_join2350 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_joinAssociationPathExpression_in_join2356 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEFT_in_joinSpec2402 = new BitSet(new long[]{0x0008000200000000L});
-    public static final BitSet FOLLOW_OUTER_in_joinSpec2405 = new BitSet(new long[]{0x0000000200000000L});
-    public static final BitSet FOLLOW_INNER_in_joinSpec2414 = new BitSet(new long[]{0x0000000200000000L});
-    public static final BitSet FOLLOW_JOIN_in_joinSpec2420 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IN_in_collectionMemberDeclaration2448 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_collectionMemberDeclaration2450 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_collectionValuedPathExpression_in_collectionMemberDeclaration2456 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_collectionMemberDeclaration2458 = new BitSet(new long[]{0x0000000000000100L,0x0000000000000004L});
-    public static final BitSet FOLLOW_AS_in_collectionMemberDeclaration2468 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_collectionMemberDeclaration2474 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_pathExpression_in_collectionValuedPathExpression2512 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_pathExpression_in_associationPathExpression2544 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_variableAccess_in_joinAssociationPathExpression2576 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000080L});
-    public static final BitSet FOLLOW_DOT_in_joinAssociationPathExpression2580 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
-    public static final BitSet FOLLOW_attribute_in_joinAssociationPathExpression2586 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_pathExpression_in_singleValuedPathExpression2626 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_pathExpression_in_stateFieldPathExpression2658 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_variableAccess_in_pathExpression2690 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000080L});
-    public static final BitSet FOLLOW_DOT_in_pathExpression2703 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
-    public static final BitSet FOLLOW_attribute_in_pathExpression2709 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000080L});
-    public static final BitSet FOLLOW_IDENT_in_variableAccess2805 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WHERE_in_whereClause2843 = new BitSet(new long[]{0x36C02DD00307C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_conditionalExpression_in_whereClause2849 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_conditionalTerm_in_conditionalExpression2891 = new BitSet(new long[]{0x0002000000000002L});
-    public static final BitSet FOLLOW_OR_in_conditionalExpression2905 = new BitSet(new long[]{0x36C02DD00307C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_conditionalTerm_in_conditionalExpression2911 = new BitSet(new long[]{0x0002000000000002L});
-    public static final BitSet FOLLOW_conditionalFactor_in_conditionalTerm2966 = new BitSet(new long[]{0x0000000000000042L});
-    public static final BitSet FOLLOW_AND_in_conditionalTerm2980 = new BitSet(new long[]{0x36C02DD00307C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_conditionalFactor_in_conditionalTerm2986 = new BitSet(new long[]{0x0000000000000042L});
-    public static final BitSet FOLLOW_NOT_in_conditionalFactor3040 = new BitSet(new long[]{0x36C00DD00307C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_conditionalPrimary_in_conditionalFactor3059 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_existsExpression_in_conditionalFactor3088 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_conditionalPrimary3145 = new BitSet(new long[]{0x36C02DD00307C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_conditionalExpression_in_conditionalPrimary3151 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_conditionalPrimary3153 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_simpleConditionalExpression_in_conditionalPrimary3167 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_arithmeticExpression_in_simpleConditionalExpression3199 = new BitSet(new long[]{0x0000222140000800L,0x0000000000001F10L});
-    public static final BitSet FOLLOW_simpleConditionalExpressionRemainder_in_simpleConditionalExpression3214 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_comparisonExpression_in_simpleConditionalExpressionRemainder3249 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NOT_in_simpleConditionalExpressionRemainder3263 = new BitSet(new long[]{0x0000022040000800L});
-    public static final BitSet FOLLOW_conditionWithNotExpression_in_simpleConditionalExpressionRemainder3271 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IS_in_simpleConditionalExpressionRemainder3282 = new BitSet(new long[]{0x0000600000400000L});
-    public static final BitSet FOLLOW_NOT_in_simpleConditionalExpressionRemainder3287 = new BitSet(new long[]{0x0000400000400000L});
-    public static final BitSet FOLLOW_isExpression_in_simpleConditionalExpressionRemainder3295 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_betweenExpression_in_conditionWithNotExpression3330 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_likeExpression_in_conditionWithNotExpression3345 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_inExpression_in_conditionWithNotExpression3359 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_collectionMemberExpression_in_conditionWithNotExpression3373 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_nullComparisonExpression_in_isExpression3408 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_emptyCollectionComparisonExpression_in_isExpression3423 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BETWEEN_in_betweenExpression3456 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_arithmeticExpression_in_betweenExpression3470 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_AND_in_betweenExpression3472 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_arithmeticExpression_in_betweenExpression3478 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IN_in_inExpression3521 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_inExpression3531 = new BitSet(new long[]{0x0010000000000000L,0x0000000001FE0000L});
-    public static final BitSet FOLLOW_inItem_in_inExpression3547 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000048L});
-    public static final BitSet FOLLOW_COMMA_in_inExpression3565 = new BitSet(new long[]{0x0000000000000000L,0x0000000001FE0000L});
-    public static final BitSet FOLLOW_inItem_in_inExpression3571 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000048L});
-    public static final BitSet FOLLOW_subquery_in_inExpression3606 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_inExpression3640 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalString_in_inItem3670 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalNumeric_in_inItem3684 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_inputParameter_in_inItem3698 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LIKE_in_likeExpression3730 = new BitSet(new long[]{0x0000000000000000L,0x0000000001E00000L});
-    public static final BitSet FOLLOW_likeValue_in_likeExpression3736 = new BitSet(new long[]{0x0000000000800002L});
-    public static final BitSet FOLLOW_escape_in_likeExpression3751 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ESCAPE_in_escape3791 = new BitSet(new long[]{0x0000000000000000L,0x0000000001E00000L});
-    public static final BitSet FOLLOW_likeValue_in_escape3797 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalString_in_likeValue3837 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_inputParameter_in_likeValue3851 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NULL_in_nullComparisonExpression3884 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EMPTY_in_emptyCollectionComparisonExpression3925 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MEMBER_in_collectionMemberExpression3966 = new BitSet(new long[]{0x0001000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_OF_in_collectionMemberExpression3969 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_collectionValuedPathExpression_in_collectionMemberExpression3977 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EXISTS_in_existsExpression4017 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_existsExpression4019 = new BitSet(new long[]{0x0010000000000000L});
-    public static final BitSet FOLLOW_subquery_in_existsExpression4025 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_existsExpression4027 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EQUALS_in_comparisonExpression4067 = new BitSet(new long[]{0x37C00DD00207C4B0L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4073 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NOT_EQUAL_TO_in_comparisonExpression4094 = new BitSet(new long[]{0x37C00DD00207C4B0L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4100 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_GREATER_THAN_in_comparisonExpression4121 = new BitSet(new long[]{0x37C00DD00207C4B0L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4127 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_GREATER_THAN_EQUAL_TO_in_comparisonExpression4148 = new BitSet(new long[]{0x37C00DD00207C4B0L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4154 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LESS_THAN_in_comparisonExpression4175 = new BitSet(new long[]{0x37C00DD00207C4B0L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4181 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LESS_THAN_EQUAL_TO_in_comparisonExpression4202 = new BitSet(new long[]{0x37C00DD00207C4B0L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4208 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_arithmeticExpression_in_comparisonExpressionRightOperand4249 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_anyOrAllExpression_in_comparisonExpressionRightOperand4263 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_arithmeticExpression4295 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticExpression4305 = new BitSet(new long[]{0x0010000000000000L});
-    public static final BitSet FOLLOW_subquery_in_arithmeticExpression4311 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticExpression4313 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4345 = new BitSet(new long[]{0x0000000000000002L,0x0000000000006000L});
-    public static final BitSet FOLLOW_PLUS_in_simpleArithmeticExpression4361 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4367 = new BitSet(new long[]{0x0000000000000002L,0x0000000000006000L});
-    public static final BitSet FOLLOW_MINUS_in_simpleArithmeticExpression4396 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4402 = new BitSet(new long[]{0x0000000000000002L,0x0000000000006000L});
-    public static final BitSet FOLLOW_arithmeticFactor_in_arithmeticTerm4459 = new BitSet(new long[]{0x0000000000000002L,0x0000000000018000L});
-    public static final BitSet FOLLOW_MULTIPLY_in_arithmeticTerm4475 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_arithmeticFactor_in_arithmeticTerm4481 = new BitSet(new long[]{0x0000000000000002L,0x0000000000018000L});
-    public static final BitSet FOLLOW_DIVIDE_in_arithmeticTerm4510 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_arithmeticFactor_in_arithmeticTerm4516 = new BitSet(new long[]{0x0000000000000002L,0x0000000000018000L});
-    public static final BitSet FOLLOW_PLUS_in_arithmeticFactor4570 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE0025L});
-    public static final BitSet FOLLOW_arithmeticPrimary_in_arithmeticFactor4577 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_arithmeticFactor4599 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE0025L});
-    public static final BitSet FOLLOW_arithmeticPrimary_in_arithmeticFactor4605 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_arithmeticPrimary_in_arithmeticFactor4629 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_aggregateExpression_in_arithmeticPrimary4663 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_variableAccess_in_arithmeticPrimary4677 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_arithmeticPrimary4691 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_functionsReturningNumerics_in_arithmeticPrimary4705 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_functionsReturningDatetime_in_arithmeticPrimary4719 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_functionsReturningStrings_in_arithmeticPrimary4733 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_inputParameter_in_arithmeticPrimary4747 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalNumeric_in_arithmeticPrimary4761 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalString_in_arithmeticPrimary4775 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalBoolean_in_arithmeticPrimary4789 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticPrimary4799 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_arithmeticPrimary4805 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticPrimary4807 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ALL_in_anyOrAllExpression4837 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4839 = new BitSet(new long[]{0x0010000000000000L});
-    public static final BitSet FOLLOW_subquery_in_anyOrAllExpression4845 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression4847 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ANY_in_anyOrAllExpression4867 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4869 = new BitSet(new long[]{0x0010000000000000L});
-    public static final BitSet FOLLOW_subquery_in_anyOrAllExpression4875 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression4877 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SOME_in_anyOrAllExpression4897 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4899 = new BitSet(new long[]{0x0010000000000000L});
-    public static final BitSet FOLLOW_subquery_in_anyOrAllExpression4905 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression4907 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalString_in_stringPrimary4947 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_functionsReturningStrings_in_stringPrimary4961 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_inputParameter_in_stringPrimary4975 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_stringPrimary4989 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalNumeric_in_literal5023 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalBoolean_in_literal5037 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalString_in_literal5051 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_INT_in_literalNumeric5081 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_LONG_in_literalNumeric5102 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_FLOAT_in_literalNumeric5123 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_DOUBLE_in_literalNumeric5143 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TRUE_in_literalBoolean5181 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FALSE_in_literalBoolean5203 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STRING_LITERAL_DOUBLE_QUOTED_in_literalString5242 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STRING_LITERAL_SINGLE_QUOTED_in_literalString5263 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_POSITIONAL_PARAM_in_inputParameter5301 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NAMED_PARAM_in_inputParameter5321 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_abs_in_functionsReturningNumerics5361 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_length_in_functionsReturningNumerics5375 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_mod_in_functionsReturningNumerics5389 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_sqrt_in_functionsReturningNumerics5403 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_locate_in_functionsReturningNumerics5417 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_size_in_functionsReturningNumerics5431 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CURRENT_DATE_in_functionsReturningDatetime5461 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CURRENT_TIME_in_functionsReturningDatetime5482 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CURRENT_TIMESTAMP_in_functionsReturningDatetime5502 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_concat_in_functionsReturningStrings5542 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_substring_in_functionsReturningStrings5556 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_trim_in_functionsReturningStrings5570 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_upper_in_functionsReturningStrings5584 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lower_in_functionsReturningStrings5598 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CONCAT_in_concat5629 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_concat5640 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
-    public static final BitSet FOLLOW_stringPrimary_in_concat5655 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
-    public static final BitSet FOLLOW_COMMA_in_concat5657 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
-    public static final BitSet FOLLOW_stringPrimary_in_concat5663 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_concat5673 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SUBSTRING_in_substring5711 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_substring5724 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
-    public static final BitSet FOLLOW_stringPrimary_in_substring5738 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
-    public static final BitSet FOLLOW_COMMA_in_substring5740 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_substring5754 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
-    public static final BitSet FOLLOW_COMMA_in_substring5756 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_substring5770 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_substring5780 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TRIM_in_trim5818 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_trim5828 = new BitSet(new long[]{0x1A00008408005000L,0x0000000001E00005L});
-    public static final BitSet FOLLOW_trimSpec_in_trim5856 = new BitSet(new long[]{0x0000000008000000L,0x0000000001E00000L});
-    public static final BitSet FOLLOW_trimChar_in_trim5862 = new BitSet(new long[]{0x0000000008000000L});
-    public static final BitSet FOLLOW_FROM_in_trim5864 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
-    public static final BitSet FOLLOW_stringPrimary_in_trim5882 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_trim5892 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEADING_in_trimSpec5928 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TRAILING_in_trimSpec5946 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BOTH_in_trimSpec5964 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literalString_in_trimChar6011 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_inputParameter_in_trimChar6025 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_UPPER_in_upper6062 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_upper6064 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
-    public static final BitSet FOLLOW_stringPrimary_in_upper6070 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_upper6072 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LOWER_in_lower6110 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_lower6112 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
-    public static final BitSet FOLLOW_stringPrimary_in_lower6118 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_lower6120 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ABS_in_abs6159 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_abs6161 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_abs6167 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_abs6169 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LENGTH_in_length6207 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_length6209 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
-    public static final BitSet FOLLOW_stringPrimary_in_length6215 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_length6217 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LOCATE_in_locate6255 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_locate6265 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
-    public static final BitSet FOLLOW_stringPrimary_in_locate6280 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
-    public static final BitSet FOLLOW_COMMA_in_locate6282 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
-    public static final BitSet FOLLOW_stringPrimary_in_locate6288 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000048L});
-    public static final BitSet FOLLOW_COMMA_in_locate6300 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_locate6306 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_locate6319 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SIZE_in_size6357 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_size6368 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_collectionValuedPathExpression_in_size6374 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_size6376 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MOD_in_mod6414 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_mod6416 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_mod6430 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
-    public static final BitSet FOLLOW_COMMA_in_mod6432 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_mod6447 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_mod6457 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SQRT_in_sqrt6495 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_sqrt6506 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_simpleArithmeticExpression_in_sqrt6512 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_sqrt6514 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_simpleSelectClause_in_subquery6555 = new BitSet(new long[]{0x0000000008000000L});
-    public static final BitSet FOLLOW_subqueryFromClause_in_subquery6570 = new BitSet(new long[]{0x0000000030000002L,0x0000000000000002L});
-    public static final BitSet FOLLOW_whereClause_in_subquery6585 = new BitSet(new long[]{0x0000000030000002L});
-    public static final BitSet FOLLOW_groupByClause_in_subquery6600 = new BitSet(new long[]{0x0000000020000002L});
-    public static final BitSet FOLLOW_havingClause_in_subquery6616 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SELECT_in_simpleSelectClause6659 = new BitSet(new long[]{0x0400050000208400L,0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_simpleSelectClause6662 = new BitSet(new long[]{0x0400050000008400L,0x0000000000000004L});
-    public static final BitSet FOLLOW_simpleSelectExpression_in_simpleSelectClause6678 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_singleValuedPathExpression_in_simpleSelectExpression6718 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_aggregateExpression_in_simpleSelectExpression6733 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_variableAccess_in_simpleSelectExpression6748 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FROM_in_subqueryFromClause6783 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
-    public static final BitSet FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause6785 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_COMMA_in_subqueryFromClause6799 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
-    public static final BitSet FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause6801 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_identificationVariableDeclaration_in_subselectIdentificationVariableDeclaration6839 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_associationPathExpression_in_subselectIdentificationVariableDeclaration6852 = new BitSet(new long[]{0x0000000000000100L,0x0000000000000004L});
-    public static final BitSet FOLLOW_AS_in_subselectIdentificationVariableDeclaration6855 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_subselectIdentificationVariableDeclaration6861 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_collectionMemberDeclaration_in_subselectIdentificationVariableDeclaration6883 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ORDER_in_orderByClause6916 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_BY_in_orderByClause6918 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_orderByItem_in_orderByClause6932 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_COMMA_in_orderByClause6947 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_orderByItem_in_orderByClause6953 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_orderByItem6999 = new BitSet(new long[]{0x0000000000080202L});
-    public static final BitSet FOLLOW_ASC_in_orderByItem7013 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DESC_in_orderByItem7042 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_GROUP_in_groupByClause7122 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_BY_in_groupByClause7124 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_groupByItem_in_groupByClause7138 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_COMMA_in_groupByClause7151 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_groupByItem_in_groupByClause7157 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
-    public static final BitSet FOLLOW_stateFieldPathExpression_in_groupByItem7203 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_variableAccess_in_groupByItem7217 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_HAVING_in_havingClause7247 = new BitSet(new long[]{0x36C02DD00307C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_conditionalExpression_in_havingClause7264 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_synpred13130 = new BitSet(new long[]{0x36C02DD00307C410L,0x0000000001FE6025L});
-    public static final BitSet FOLLOW_conditionalExpression_in_synpred13132 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_trimSpec_in_synpred25843 = new BitSet(new long[]{0x0000000008000000L,0x0000000001E00000L});
-    public static final BitSet FOLLOW_trimChar_in_synpred25845 = new BitSet(new long[]{0x0000000008000000L});
-    public static final BitSet FOLLOW_FROM_in_synpred25847 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_updateStatement_in_document664 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_deleteStatement_in_document678 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_selectClause_in_selectStatement711 = new BitSet(new long[]{0x0000000008000000L});
+    public static final BitSet FOLLOW_fromClause_in_selectStatement726 = new BitSet(new long[]{0x0004000030000000L,0x0000000000000002L});
+    public static final BitSet FOLLOW_whereClause_in_selectStatement741 = new BitSet(new long[]{0x0004000030000000L});
+    public static final BitSet FOLLOW_groupByClause_in_selectStatement756 = new BitSet(new long[]{0x0004000020000000L});
+    public static final BitSet FOLLOW_havingClause_in_selectStatement772 = new BitSet(new long[]{0x0004000000000000L});
+    public static final BitSet FOLLOW_orderByClause_in_selectStatement787 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_selectStatement797 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_updateClause_in_updateStatement840 = new BitSet(new long[]{0x0020000000000000L});
+    public static final BitSet FOLLOW_setClause_in_updateStatement855 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000002L});
+    public static final BitSet FOLLOW_whereClause_in_updateStatement869 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_updateStatement879 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_UPDATE_in_updateClause911 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
+    public static final BitSet FOLLOW_abstractSchemaName_in_updateClause917 = new BitSet(new long[]{0x0000000000000102L,0x0000000000000004L});
+    public static final BitSet FOLLOW_AS_in_updateClause930 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_IDENT_in_updateClause938 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_in_setClause987 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
+    public static final BitSet FOLLOW_setAssignmentClause_in_setClause993 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_COMMA_in_setClause1006 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
+    public static final BitSet FOLLOW_setAssignmentClause_in_setClause1012 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_setAssignmentTarget_in_setAssignmentClause1070 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000010L});
+    public static final BitSet FOLLOW_EQUALS_in_setAssignmentClause1074 = new BitSet(new long[]{0x36C04DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_newValue_in_setAssignmentClause1080 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_attribute_in_setAssignmentTarget1110 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_pathExpression_in_setAssignmentTarget1125 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_newValue1157 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NULL_in_newValue1171 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_deleteClause_in_deleteStatement1215 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000002L});
+    public static final BitSet FOLLOW_whereClause_in_deleteStatement1228 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_deleteStatement1238 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DELETE_in_deleteClause1271 = new BitSet(new long[]{0x0000000008000000L});
+    public static final BitSet FOLLOW_FROM_in_deleteClause1273 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
+    public static final BitSet FOLLOW_abstractSchemaName_in_deleteClause1279 = new BitSet(new long[]{0x0000000000000102L,0x0000000000000004L});
+    public static final BitSet FOLLOW_AS_in_deleteClause1292 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_IDENT_in_deleteClause1298 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SELECT_in_selectClause1345 = new BitSet(new long[]{0x0400950000208400L,0x0000000000000004L});
+    public static final BitSet FOLLOW_DISTINCT_in_selectClause1348 = new BitSet(new long[]{0x0400950000008400L,0x0000000000000004L});
+    public static final BitSet FOLLOW_selectExpression_in_selectClause1364 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_COMMA_in_selectClause1376 = new BitSet(new long[]{0x0400950000008400L,0x0000000000000004L});
+    public static final BitSet FOLLOW_selectExpression_in_selectClause1382 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_pathExprOrVariableAccess_in_selectExpression1428 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregateExpression_in_selectExpression1442 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_OBJECT_in_selectExpression1452 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_selectExpression1454 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_variableAccess_in_selectExpression1460 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_selectExpression1462 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_constructorExpression_in_selectExpression1477 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_variableAccess_in_pathExprOrVariableAccess1510 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000080L});
+    public static final BitSet FOLLOW_DOT_in_pathExprOrVariableAccess1525 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
+    public static final BitSet FOLLOW_attribute_in_pathExprOrVariableAccess1531 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000080L});
+    public static final BitSet FOLLOW_AVG_in_aggregateExpression1588 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1590 = new BitSet(new long[]{0x0000000000200000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1593 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression1611 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1613 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MAX_in_aggregateExpression1634 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1636 = new BitSet(new long[]{0x0000000000200000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1639 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression1658 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1660 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MIN_in_aggregateExpression1680 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1682 = new BitSet(new long[]{0x0000000000200000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1685 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression1703 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1705 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SUM_in_aggregateExpression1725 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1727 = new BitSet(new long[]{0x0000000000200000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1730 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_aggregateExpression1748 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1750 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_COUNT_in_aggregateExpression1770 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1772 = new BitSet(new long[]{0x0000000000200000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_DISTINCT_in_aggregateExpression1775 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_pathExprOrVariableAccess_in_aggregateExpression1793 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_aggregateExpression1795 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NEW_in_constructorExpression1838 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_constructorName_in_constructorExpression1844 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_constructorExpression1854 = new BitSet(new long[]{0x0400050000008400L,0x0000000000000004L});
+    public static final BitSet FOLLOW_constructorItem_in_constructorExpression1869 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000048L});
+    public static final BitSet FOLLOW_COMMA_in_constructorExpression1884 = new BitSet(new long[]{0x0400050000008400L,0x0000000000000004L});
+    public static final BitSet FOLLOW_constructorItem_in_constructorExpression1890 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000048L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_constructorExpression1905 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_constructorName1946 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000080L});
+    public static final BitSet FOLLOW_DOT_in_constructorName1960 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_IDENT_in_constructorName1964 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000080L});
+    public static final BitSet FOLLOW_pathExprOrVariableAccess_in_constructorItem2008 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregateExpression_in_constructorItem2022 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FROM_in_fromClause2055 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
+    public static final BitSet FOLLOW_identificationVariableDeclaration_in_fromClause2057 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_COMMA_in_fromClause2069 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
+    public static final BitSet FOLLOW_identificationVariableDeclaration_in_fromClause2074 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_collectionMemberDeclaration_in_fromClause2099 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_rangeVariableDeclaration_in_identificationVariableDeclaration2165 = new BitSet(new long[]{0x0000000A80000002L});
+    public static final BitSet FOLLOW_join_in_identificationVariableDeclaration2184 = new BitSet(new long[]{0x0000000A80000002L});
+    public static final BitSet FOLLOW_abstractSchemaName_in_rangeVariableDeclaration2219 = new BitSet(new long[]{0x0000000000000100L,0x0000000000000004L});
+    public static final BitSet FOLLOW_AS_in_rangeVariableDeclaration2222 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_IDENT_in_rangeVariableDeclaration2228 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_joinSpec_in_join2311 = new BitSet(new long[]{0x0000000004000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_joinAssociationPathExpression_in_join2325 = new BitSet(new long[]{0x0000000000000100L,0x0000000000000004L});
+    public static final BitSet FOLLOW_AS_in_join2328 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_IDENT_in_join2334 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FETCH_in_join2356 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_joinAssociationPathExpression_in_join2362 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEFT_in_joinSpec2408 = new BitSet(new long[]{0x0008000200000000L});
+    public static final BitSet FOLLOW_OUTER_in_joinSpec2411 = new BitSet(new long[]{0x0000000200000000L});
+    public static final BitSet FOLLOW_INNER_in_joinSpec2420 = new BitSet(new long[]{0x0000000200000000L});
+    public static final BitSet FOLLOW_JOIN_in_joinSpec2426 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IN_in_collectionMemberDeclaration2454 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_collectionMemberDeclaration2456 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_collectionValuedPathExpression_in_collectionMemberDeclaration2462 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_collectionMemberDeclaration2464 = new BitSet(new long[]{0x0000000000000100L,0x0000000000000004L});
+    public static final BitSet FOLLOW_AS_in_collectionMemberDeclaration2474 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_IDENT_in_collectionMemberDeclaration2480 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_pathExpression_in_collectionValuedPathExpression2518 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_pathExpression_in_associationPathExpression2550 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_variableAccess_in_joinAssociationPathExpression2582 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000080L});
+    public static final BitSet FOLLOW_DOT_in_joinAssociationPathExpression2586 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
+    public static final BitSet FOLLOW_attribute_in_joinAssociationPathExpression2592 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_pathExpression_in_singleValuedPathExpression2632 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_pathExpression_in_stateFieldPathExpression2664 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_variableAccess_in_pathExpression2696 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000080L});
+    public static final BitSet FOLLOW_DOT_in_pathExpression2711 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
+    public static final BitSet FOLLOW_attribute_in_pathExpression2717 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000080L});
+    public static final BitSet FOLLOW_IDENT_in_variableAccess2813 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WHERE_in_whereClause2851 = new BitSet(new long[]{0x36C02DD00307C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_conditionalExpression_in_whereClause2857 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_conditionalTerm_in_conditionalExpression2899 = new BitSet(new long[]{0x0002000000000002L});
+    public static final BitSet FOLLOW_OR_in_conditionalExpression2914 = new BitSet(new long[]{0x36C02DD00307C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_conditionalTerm_in_conditionalExpression2920 = new BitSet(new long[]{0x0002000000000002L});
+    public static final BitSet FOLLOW_conditionalFactor_in_conditionalTerm2975 = new BitSet(new long[]{0x0000000000000042L});
+    public static final BitSet FOLLOW_AND_in_conditionalTerm2990 = new BitSet(new long[]{0x36C02DD00307C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_conditionalFactor_in_conditionalTerm2996 = new BitSet(new long[]{0x0000000000000042L});
+    public static final BitSet FOLLOW_NOT_in_conditionalFactor3051 = new BitSet(new long[]{0x36C00DD00307C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_conditionalPrimary_in_conditionalFactor3070 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_existsExpression_in_conditionalFactor3099 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_conditionalPrimary3156 = new BitSet(new long[]{0x36C02DD00307C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_conditionalExpression_in_conditionalPrimary3162 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_conditionalPrimary3164 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_simpleConditionalExpression_in_conditionalPrimary3178 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_arithmeticExpression_in_simpleConditionalExpression3210 = new BitSet(new long[]{0x0000222140000800L,0x0000000000001F10L});
+    public static final BitSet FOLLOW_simpleConditionalExpressionRemainder_in_simpleConditionalExpression3225 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_comparisonExpression_in_simpleConditionalExpressionRemainder3260 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NOT_in_simpleConditionalExpressionRemainder3274 = new BitSet(new long[]{0x0000022040000800L});
+    public static final BitSet FOLLOW_conditionWithNotExpression_in_simpleConditionalExpressionRemainder3282 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IS_in_simpleConditionalExpressionRemainder3293 = new BitSet(new long[]{0x0000600000400000L});
+    public static final BitSet FOLLOW_NOT_in_simpleConditionalExpressionRemainder3298 = new BitSet(new long[]{0x0000400000400000L});
+    public static final BitSet FOLLOW_isExpression_in_simpleConditionalExpressionRemainder3306 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_betweenExpression_in_conditionWithNotExpression3341 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_likeExpression_in_conditionWithNotExpression3356 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_inExpression_in_conditionWithNotExpression3370 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_collectionMemberExpression_in_conditionWithNotExpression3384 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_nullComparisonExpression_in_isExpression3419 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_emptyCollectionComparisonExpression_in_isExpression3434 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_BETWEEN_in_betweenExpression3467 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_arithmeticExpression_in_betweenExpression3481 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_AND_in_betweenExpression3483 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_arithmeticExpression_in_betweenExpression3489 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IN_in_inExpression3532 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_inExpression3542 = new BitSet(new long[]{0x0010000000000000L,0x0000000001FE0000L});
+    public static final BitSet FOLLOW_inItem_in_inExpression3558 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000048L});
+    public static final BitSet FOLLOW_COMMA_in_inExpression3576 = new BitSet(new long[]{0x0000000000000000L,0x0000000001FE0000L});
+    public static final BitSet FOLLOW_inItem_in_inExpression3582 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000048L});
+    public static final BitSet FOLLOW_subquery_in_inExpression3617 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_inExpression3651 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalString_in_inItem3681 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalNumeric_in_inItem3695 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_inputParameter_in_inItem3709 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LIKE_in_likeExpression3741 = new BitSet(new long[]{0x0000000000000000L,0x0000000001E00000L});
+    public static final BitSet FOLLOW_likeValue_in_likeExpression3747 = new BitSet(new long[]{0x0000000000800002L});
+    public static final BitSet FOLLOW_escape_in_likeExpression3762 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ESCAPE_in_escape3802 = new BitSet(new long[]{0x0000000000000000L,0x0000000001E00000L});
+    public static final BitSet FOLLOW_likeValue_in_escape3808 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalString_in_likeValue3848 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_inputParameter_in_likeValue3862 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NULL_in_nullComparisonExpression3895 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EMPTY_in_emptyCollectionComparisonExpression3936 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MEMBER_in_collectionMemberExpression3977 = new BitSet(new long[]{0x0001000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_OF_in_collectionMemberExpression3980 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_collectionValuedPathExpression_in_collectionMemberExpression3988 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EXISTS_in_existsExpression4028 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_existsExpression4030 = new BitSet(new long[]{0x0010000000000000L});
+    public static final BitSet FOLLOW_subquery_in_existsExpression4036 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_existsExpression4038 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EQUALS_in_comparisonExpression4078 = new BitSet(new long[]{0x37C00DD00207C4B0L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4084 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NOT_EQUAL_TO_in_comparisonExpression4105 = new BitSet(new long[]{0x37C00DD00207C4B0L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4111 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_GREATER_THAN_in_comparisonExpression4132 = new BitSet(new long[]{0x37C00DD00207C4B0L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4138 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_GREATER_THAN_EQUAL_TO_in_comparisonExpression4159 = new BitSet(new long[]{0x37C00DD00207C4B0L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4165 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LESS_THAN_in_comparisonExpression4186 = new BitSet(new long[]{0x37C00DD00207C4B0L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4192 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LESS_THAN_EQUAL_TO_in_comparisonExpression4213 = new BitSet(new long[]{0x37C00DD00207C4B0L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4219 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_arithmeticExpression_in_comparisonExpressionRightOperand4260 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_anyOrAllExpression_in_comparisonExpressionRightOperand4274 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_arithmeticExpression4306 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticExpression4316 = new BitSet(new long[]{0x0010000000000000L});
+    public static final BitSet FOLLOW_subquery_in_arithmeticExpression4322 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticExpression4324 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4356 = new BitSet(new long[]{0x0000000000000002L,0x0000000000006000L});
+    public static final BitSet FOLLOW_PLUS_in_simpleArithmeticExpression4372 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4378 = new BitSet(new long[]{0x0000000000000002L,0x0000000000006000L});
+    public static final BitSet FOLLOW_MINUS_in_simpleArithmeticExpression4407 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4413 = new BitSet(new long[]{0x0000000000000002L,0x0000000000006000L});
+    public static final BitSet FOLLOW_arithmeticFactor_in_arithmeticTerm4470 = new BitSet(new long[]{0x0000000000000002L,0x0000000000018000L});
+    public static final BitSet FOLLOW_MULTIPLY_in_arithmeticTerm4486 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_arithmeticFactor_in_arithmeticTerm4492 = new BitSet(new long[]{0x0000000000000002L,0x0000000000018000L});
+    public static final BitSet FOLLOW_DIVIDE_in_arithmeticTerm4521 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_arithmeticFactor_in_arithmeticTerm4527 = new BitSet(new long[]{0x0000000000000002L,0x0000000000018000L});
+    public static final BitSet FOLLOW_PLUS_in_arithmeticFactor4581 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE0025L});
+    public static final BitSet FOLLOW_arithmeticPrimary_in_arithmeticFactor4588 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_arithmeticFactor4610 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE0025L});
+    public static final BitSet FOLLOW_arithmeticPrimary_in_arithmeticFactor4616 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_arithmeticPrimary_in_arithmeticFactor4640 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregateExpression_in_arithmeticPrimary4674 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_variableAccess_in_arithmeticPrimary4688 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_arithmeticPrimary4702 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_functionsReturningNumerics_in_arithmeticPrimary4716 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_functionsReturningDatetime_in_arithmeticPrimary4730 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_functionsReturningStrings_in_arithmeticPrimary4744 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_inputParameter_in_arithmeticPrimary4758 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalNumeric_in_arithmeticPrimary4772 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalString_in_arithmeticPrimary4786 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalBoolean_in_arithmeticPrimary4800 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_arithmeticPrimary4810 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_arithmeticPrimary4816 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_arithmeticPrimary4818 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ALL_in_anyOrAllExpression4848 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4850 = new BitSet(new long[]{0x0010000000000000L});
+    public static final BitSet FOLLOW_subquery_in_anyOrAllExpression4856 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression4858 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ANY_in_anyOrAllExpression4878 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4880 = new BitSet(new long[]{0x0010000000000000L});
+    public static final BitSet FOLLOW_subquery_in_anyOrAllExpression4886 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression4888 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SOME_in_anyOrAllExpression4908 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4910 = new BitSet(new long[]{0x0010000000000000L});
+    public static final BitSet FOLLOW_subquery_in_anyOrAllExpression4916 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_anyOrAllExpression4918 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalString_in_stringPrimary4958 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_functionsReturningStrings_in_stringPrimary4972 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_inputParameter_in_stringPrimary4986 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_stringPrimary5000 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalNumeric_in_literal5034 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalBoolean_in_literal5048 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalString_in_literal5062 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_INT_in_literalNumeric5092 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_LONG_in_literalNumeric5113 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_FLOAT_in_literalNumeric5134 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_DOUBLE_in_literalNumeric5154 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TRUE_in_literalBoolean5192 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FALSE_in_literalBoolean5214 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STRING_LITERAL_DOUBLE_QUOTED_in_literalString5253 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STRING_LITERAL_SINGLE_QUOTED_in_literalString5274 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_POSITIONAL_PARAM_in_inputParameter5312 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NAMED_PARAM_in_inputParameter5332 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_abs_in_functionsReturningNumerics5372 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_length_in_functionsReturningNumerics5386 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_mod_in_functionsReturningNumerics5400 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_sqrt_in_functionsReturningNumerics5414 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_locate_in_functionsReturningNumerics5428 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_size_in_functionsReturningNumerics5442 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CURRENT_DATE_in_functionsReturningDatetime5472 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CURRENT_TIME_in_functionsReturningDatetime5493 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CURRENT_TIMESTAMP_in_functionsReturningDatetime5513 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_concat_in_functionsReturningStrings5553 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_substring_in_functionsReturningStrings5567 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_trim_in_functionsReturningStrings5581 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_upper_in_functionsReturningStrings5595 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lower_in_functionsReturningStrings5609 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CONCAT_in_concat5640 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_concat5651 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
+    public static final BitSet FOLLOW_stringPrimary_in_concat5666 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
+    public static final BitSet FOLLOW_COMMA_in_concat5668 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
+    public static final BitSet FOLLOW_stringPrimary_in_concat5674 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_concat5684 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SUBSTRING_in_substring5722 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_substring5735 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
+    public static final BitSet FOLLOW_stringPrimary_in_substring5749 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
+    public static final BitSet FOLLOW_COMMA_in_substring5751 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_substring5765 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
+    public static final BitSet FOLLOW_COMMA_in_substring5767 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_substring5781 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_substring5791 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TRIM_in_trim5829 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_trim5839 = new BitSet(new long[]{0x1A00008408005000L,0x0000000001E00005L});
+    public static final BitSet FOLLOW_trimSpec_in_trim5867 = new BitSet(new long[]{0x0000000008000000L,0x0000000001E00000L});
+    public static final BitSet FOLLOW_trimChar_in_trim5873 = new BitSet(new long[]{0x0000000008000000L});
+    public static final BitSet FOLLOW_FROM_in_trim5875 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
+    public static final BitSet FOLLOW_stringPrimary_in_trim5893 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_trim5903 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEADING_in_trimSpec5939 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TRAILING_in_trimSpec5957 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_BOTH_in_trimSpec5975 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literalString_in_trimChar6022 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_inputParameter_in_trimChar6036 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_UPPER_in_upper6073 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_upper6075 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
+    public static final BitSet FOLLOW_stringPrimary_in_upper6081 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_upper6083 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LOWER_in_lower6121 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_lower6123 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
+    public static final BitSet FOLLOW_stringPrimary_in_lower6129 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_lower6131 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ABS_in_abs6170 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_abs6172 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_abs6178 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_abs6180 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LENGTH_in_length6218 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_length6220 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
+    public static final BitSet FOLLOW_stringPrimary_in_length6226 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_length6228 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LOCATE_in_locate6266 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_locate6276 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
+    public static final BitSet FOLLOW_stringPrimary_in_locate6291 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
+    public static final BitSet FOLLOW_COMMA_in_locate6293 = new BitSet(new long[]{0x1200008000004000L,0x0000000001E00005L});
+    public static final BitSet FOLLOW_stringPrimary_in_locate6299 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000048L});
+    public static final BitSet FOLLOW_COMMA_in_locate6311 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_locate6317 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_locate6330 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SIZE_in_size6368 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_size6379 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_collectionValuedPathExpression_in_size6385 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_size6387 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MOD_in_mod6425 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_mod6427 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_mod6441 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
+    public static final BitSet FOLLOW_COMMA_in_mod6443 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_mod6458 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_mod6468 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SQRT_in_sqrt6506 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000020L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_sqrt6517 = new BitSet(new long[]{0x36C00DD00207C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_simpleArithmeticExpression_in_sqrt6523 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_RIGHT_ROUND_BRACKET_in_sqrt6525 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_simpleSelectClause_in_subquery6566 = new BitSet(new long[]{0x0000000008000000L});
+    public static final BitSet FOLLOW_subqueryFromClause_in_subquery6581 = new BitSet(new long[]{0x0000000030000002L,0x0000000000000002L});
+    public static final BitSet FOLLOW_whereClause_in_subquery6596 = new BitSet(new long[]{0x0000000030000002L});
+    public static final BitSet FOLLOW_groupByClause_in_subquery6611 = new BitSet(new long[]{0x0000000020000002L});
+    public static final BitSet FOLLOW_havingClause_in_subquery6627 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SELECT_in_simpleSelectClause6670 = new BitSet(new long[]{0x0400050000208400L,0x0000000000000004L});
+    public static final BitSet FOLLOW_DISTINCT_in_simpleSelectClause6673 = new BitSet(new long[]{0x0400050000008400L,0x0000000000000004L});
+    public static final BitSet FOLLOW_simpleSelectExpression_in_simpleSelectClause6689 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_singleValuedPathExpression_in_simpleSelectExpression6729 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregateExpression_in_simpleSelectExpression6744 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_variableAccess_in_simpleSelectExpression6759 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FROM_in_subqueryFromClause6794 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
+    public static final BitSet FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause6796 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_COMMA_in_subqueryFromClause6810 = new BitSet(new long[]{0xFFFFFFFFFFFFFFF0L,0x000000003FFFFFFFL});
+    public static final BitSet FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause6812 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_identificationVariableDeclaration_in_subselectIdentificationVariableDeclaration6850 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_associationPathExpression_in_subselectIdentificationVariableDeclaration6863 = new BitSet(new long[]{0x0000000000000100L,0x0000000000000004L});
+    public static final BitSet FOLLOW_AS_in_subselectIdentificationVariableDeclaration6866 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_IDENT_in_subselectIdentificationVariableDeclaration6872 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_collectionMemberDeclaration_in_subselectIdentificationVariableDeclaration6894 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ORDER_in_orderByClause6927 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_BY_in_orderByClause6929 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_orderByItem_in_orderByClause6943 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_COMMA_in_orderByClause6958 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_orderByItem_in_orderByClause6964 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_orderByItem7010 = new BitSet(new long[]{0x0000000000080202L});
+    public static final BitSet FOLLOW_ASC_in_orderByItem7024 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DESC_in_orderByItem7053 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_GROUP_in_groupByClause7133 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_BY_in_groupByClause7135 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_groupByItem_in_groupByClause7149 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_COMMA_in_groupByClause7162 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_groupByItem_in_groupByClause7168 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000008L});
+    public static final BitSet FOLLOW_stateFieldPathExpression_in_groupByItem7214 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_variableAccess_in_groupByItem7228 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_HAVING_in_havingClause7258 = new BitSet(new long[]{0x36C02DD00307C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_conditionalExpression_in_havingClause7275 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEFT_ROUND_BRACKET_in_synpred13141 = new BitSet(new long[]{0x36C02DD00307C410L,0x0000000001FE6025L});
+    public static final BitSet FOLLOW_conditionalExpression_in_synpred13143 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_trimSpec_in_synpred25854 = new BitSet(new long[]{0x0000000008000000L,0x0000000001E00000L});
+    public static final BitSet FOLLOW_trimChar_in_synpred25856 = new BitSet(new long[]{0x0000000008000000L});
+    public static final BitSet FOLLOW_FROM_in_synpred25858 = new BitSet(new long[]{0x0000000000000002L});
 
 }

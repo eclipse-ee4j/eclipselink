@@ -17,6 +17,7 @@ import java.io.StringReader;
 
 //toplink imports
 import org.eclipse.persistence.internal.jpa.parsing.jpql.CaseInsensitiveJPQLLexer;
+import org.eclipse.persistence.internal.jpa.parsing.jpql.CaseInsensitiveANTLRStringStream;
 import org.eclipse.persistence.internal.jpa.parsing.jpql.antlr.JPQLParser;
 
 /*****************************************************************
@@ -33,7 +34,7 @@ public class JPQLParserBuilder {
     public static JPQLParser buildParser(String queryText) {
    	
     	JPQLLexer lexer = new CaseInsensitiveJPQLLexer();
-    	lexer.setCharStream(new ANTLRStringStream(queryText));
+    	lexer.setCharStream(new CaseInsensitiveANTLRStringStream(queryText));
     	CommonTokenStream tokens = new CommonTokenStream();
     	tokens.setTokenSource(lexer);
     	JPQLParser parser = new JPQLParser(tokens);

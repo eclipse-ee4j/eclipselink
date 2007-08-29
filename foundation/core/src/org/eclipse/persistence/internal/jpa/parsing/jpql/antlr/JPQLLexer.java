@@ -1,4 +1,4 @@
-// $ANTLR 3.0 JPQL.g3 2007-08-21 16:20:27
+// $ANTLR 3.0 JPQL.g3 2007-08-29 14:24:24
 
     package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;  
 
