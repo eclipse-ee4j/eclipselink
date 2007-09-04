@@ -17,7 +17,7 @@ import org.eclipse.persistence.oxm.mappings.*;
  * Define the TopLink OX project and descriptor information to read a OracleAS TopLink 10<i>g</i> (10.0.3) project from an XML file.
  * Note any changes must be reflected in the OPM XML schema.
  */
-public class ObjectPersistenceWorkbenchXMLProject extends ObjectPersistenceRuntimeXMLProject_11_1_1 {
+public class ObjectPersistenceWorkbenchXMLProject extends EclipseLinkObjectPersistenceRuntimeXMLProject {
 
     /**
      * INTERNAL:

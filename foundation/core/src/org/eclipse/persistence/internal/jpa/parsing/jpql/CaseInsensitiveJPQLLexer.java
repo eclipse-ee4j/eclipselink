@@ -3,6 +3,12 @@ package org.eclipse.persistence.internal.jpa.parsing.jpql;
 import org.antlr.runtime.*;
 import org.eclipse.persistence.internal.jpa.parsing.jpql.antlr.JPQLLexer;
 
+/*
+ * This Lexer matches in a case insensitive manner.
+ * This is required because starting in ANTLR v3, case insensitivity is not provided
+ * as an option in ANTLR and JPQL requires case insensitivity
+ * @author tware
+ */
 public class CaseInsensitiveJPQLLexer extends JPQLLexer {
 		
 	public void match(String s) throws MismatchedTokenException {

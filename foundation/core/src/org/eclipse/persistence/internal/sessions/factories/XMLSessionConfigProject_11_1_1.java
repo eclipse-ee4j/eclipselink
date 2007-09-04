@@ -94,7 +94,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         descriptor.getInheritancePolicy().addClassIndicator(SunAS9PlatformConfig.class, "sunas-9-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_9_PlatformConfig.class, "weblogic-9-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_10_PlatformConfig.class, "weblogic-10-platform");
-        descriptor.getInheritancePolicy().addClassIndicator(WebSphere_6_1_PlatformConfig.class, "websphere-6-1-platform");
+        descriptor.getInheritancePolicy().addClassIndicator(WebSphere_6_1_PlatformConfig.class, "websphere-61-platform");
 	
         return descriptor;
     }

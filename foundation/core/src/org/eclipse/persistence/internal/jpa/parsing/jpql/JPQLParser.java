@@ -290,7 +290,7 @@ public abstract class JPQLParser extends org.antlr.runtime.Parser {
             }
         }
         else*/ 
-        	if (ex instanceof MismatchedTokenException) {
+        if (ex instanceof MismatchedTokenException) {
             MismatchedTokenException mismatched = (MismatchedTokenException)ex;
             Token token = mismatched.token;
             if (token != null) {
@@ -319,18 +319,31 @@ public abstract class JPQLParser extends org.antlr.runtime.Parser {
                         token.getText(), ex);
                 }
             }
-        }
-        	// TODO figure out the equivalent
-        	/*
-        else if (ex instanceof NoViableAltForCharException) {
-            NoViableAltForCharException noViableAlt = (NoViableAltForCharException)ex;
+        } else if (ex instanceof InvalidIdentifierException){
+        	InvalidIdentifierException invalid = (InvalidIdentifierException)ex;
+            Token token = invalid.getToken();
+            if (token != null) {
+                if (token.equals(Token.EOF_TOKEN)) {
+                    result = JPQLException.unexpectedEOF(getQueryInfo(),
+                    		token.getLine(), token.getCharPositionInLine(), ex);
+                }
+                else {
+                    result = JPQLException.unexpectedToken(getQueryInfo(), 
+                    		token.getLine(), token.getCharPositionInLine(), 
+                        token.getText(), ex);
+                }
+            }
+        } else if (ex instanceof InvalidIdentifierStartException) {
+        	InvalidIdentifierStartException invalid = (InvalidIdentifierStartException)ex;
             result = JPQLException.unexpectedChar(getQueryInfo(),
-                noViableAlt.getLine(), noViableAlt.getColumn(),
-                String.valueOf((char)noViableAlt.foundChar), ex);
+            		invalid.line, invalid.charPositionInLine,
+                String.valueOf((char)invalid.c), ex);
         }
+        /*
         else if (ex instanceof TokenStreamRecognitionException) {
             result = handleANTLRException(((TokenStreamRecognitionException)ex).recog);
         }*/
+        
         
         if (result == null) {
             // no special handling from aboves matches the exception if this

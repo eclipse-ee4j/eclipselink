@@ -463,7 +463,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         keyMapping.setAttributeName("comparatorClass");
         keyMapping.setGetMethodName("getComparatorClass");
         keyMapping.setSetMethodName("setComparatorClass");
-        keyMapping.setXPath("toplink:comparator-class/text()");
+        keyMapping.setXPath("eclipselink:comparator-class/text()");
         descriptor.addMapping(keyMapping);
 
         return descriptor;
@@ -765,7 +765,8 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.getInheritancePolicy().addClassIndicator(
                 CursoredStreamPolicy.class,
                 "eclipselink:cursored-stream-policy");
-         descriptor.getInheritancePolicy().addClassIndicator(SortedCollectionContainerPolicy.class, "toplink:sorted-collection-container-policy");
+         descriptor.getInheritancePolicy().addClassIndicator(SortedCollectionContainerPolicy.class, 
+        		 "eclipselink:sorted-collection-container-policy");
         return descriptor;
     }
 

@@ -60,7 +60,7 @@ public class XMLProjectWriter {
      * @param project the project instance to write
      */
     public static void write(Project project, Writer writer) {
-        XMLContext context = new XMLContext(new EclipseLinkObjectPersistenceRuntimeXMLProject());
+        XMLContext context = new XMLContext(new ObjectPersistenceWorkbenchXMLProject());
         context.getSession(project).getEventManager().addListener(new MissingDescriptorListener());
         XMLMarshaller marshaller = context.createMarshaller();
         marshaller.marshal(project, writer);
