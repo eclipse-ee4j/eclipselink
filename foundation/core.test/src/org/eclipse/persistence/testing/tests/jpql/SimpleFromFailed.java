@@ -40,7 +40,7 @@ class SimpleFromFailed extends org.eclipse.persistence.testing.tests.jpql.JPQLTe
         if (errorMessage == null) {
             setTestException(new TestErrorException(getName() + " Verify Failed: " + "No error thrown"));
         }
-        if (errorMessage.indexOf("expecting \"from\", found \'Frow\'") == -1) {
+        if (errorMessage.indexOf("syntax error at [Frow]") == -1) {
             setTestException(new TestErrorException("Frow should have thrown exception"));
         }
     }

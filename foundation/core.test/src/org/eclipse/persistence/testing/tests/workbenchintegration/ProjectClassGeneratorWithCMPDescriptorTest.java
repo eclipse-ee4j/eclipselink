@@ -76,12 +76,14 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
         }
 
         try {
+        	Object[] params = new Object[1];
             String[] source = { fileName };
+            params[0] = source;
             Class mainClass = Class.forName("com.sun.tools.javac.Main");
             Class[] parameterTypes = new Class[1];
             parameterTypes[0] = String[].class;
             Method method = mainClass.getMethod("compile", parameterTypes);
-            int result = ((Integer)method.invoke(null, source)).intValue();
+            int result = ((Integer)method.invoke(null, params)).intValue();
             if (result != 0) {
                 throw new TestErrorException("Failed to compiled the generated project file " + fileName + ". This could either be a legitimate compile " +
                  		"failure, or could result if you do not have the tools.jar from your JDK on the classpath.");

@@ -47,7 +47,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
 
     public static JPQLExceptionTest malformedEjbqlExceptionTest2() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
-        theTest.expectedException = JPQLException.unexpectedToken(null, 0, 0, null, null);
+        theTest.expectedException = JPQLException.unexpectedEOF(null, 0, 0, null);
         theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"Fred\" AND 1");
         theTest.setName("Malformed EJBQL Exception Test2");
         return theTest;
@@ -55,7 +55,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
 
     public static JPQLExceptionTest malformedEjbqlExceptionTest3() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
-        theTest.expectedException = JPQLException.unexpectedToken(null, 0, 0, null, null);
+        theTest.expectedException = JPQLException.unexpectedEOF(null, 0, 0, null);
         theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"Fred\" OR \"Freda\"");
         theTest.setName("Malformed EJBQL Exception Test3");
         return theTest;
@@ -185,10 +185,10 @@ public class JPQLExceptionTest extends JPQLTestCase {
         if (caughtException.getErrorCode() == expectedException.getErrorCode()) {
             return;
         }
-        if (caughtException.getClass() == EJBQLException.class) {
-            Vector exceptions = (Vector)((EJBQLException)caughtException).getInternalExceptions();
+        if (caughtException.getClass() == JPQLException.class) {
+            Vector exceptions = (Vector)((JPQLException)caughtException).getInternalExceptions();
             if (exceptions.size() > 0) {
-                EJBQLException internalException = (EJBQLException)exceptions.firstElement();
+            	JPQLException internalException = (JPQLException)exceptions.firstElement();
                 if (internalException.getErrorCode() == expectedException.getErrorCode()) {
                     return;
                 }

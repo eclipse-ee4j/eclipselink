@@ -55,7 +55,7 @@ public class SessionsXMLSchemaWebsphere61PlatformTest extends AutoVerifyTestCase
 
     protected void verify() {
         if (m_exceptionCaught != null) {
-            throw new TestErrorException("Loading of the session failed: " + m_exceptionCaught);
+            throw new TestErrorException("Loading of the session failed: " + m_exceptionCaught, m_exceptionCaught);
         }
 
         if (m_employeeSession == null) {
