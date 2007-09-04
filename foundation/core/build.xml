@@ -1,0 +1,58 @@
+<project name="Eclipse Persistence Services" default="all" basedir=".">
+
+    <property file="./build.properties"/>
+
+
+    <!-- all -->
+    <target name="all" depends="init, package, package.src" description="build EclipseLink jar"/>
+
+    <target name="init">
+        <tstamp>
+            <format property="start.time" pattern="MM/dd/yyyy hh:mm aa"/>
+        </tstamp> 
+    </target>
+
+
+    <target name="package" depends="init" description="build EclipseLink jar">
+        <jar jarfile="eclipselink.jar"
+            manifest="${resource.dir}/META-INF/manifest.mf">
+           <fileset dir="classes">
+              <include name="org/eclipse/persistence/**/*.class"/>
+              <include name="deprecated/**/*.class"/>
+          </fileset>
+          <fileset dir="${asm.build.dir}/classes">
+              <include name="org/eclipse/persistence/internal/libraries/asm/**/*.class"/>
+          </fileset>
+          <fileset dir="${extensions.oracle.build.dir}/classes">
+              <include name="org/eclipse/persistence/**/*.class"/>
+          </fileset>
+          <fileset dir="${jpa.build.dir}/classes">
+              <include name="org/eclipse/persistence/**/*.class"/>
+          </fileset>
+          <fileset dir="${resource.dir}">
+              <include name="xsd/*.xsd"/>
+              <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
+              <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+          </fileset>
+      </jar>
+    </target>
+
+    <target name="package.src" depends="init" description="build EclipseLink source jar">
+        <zip zipfile="eclipselink-src.zip">
+           <fileset dir="src">
+              <include name="org/eclipse/persistence/**/*.java"/>
+              <include name="deprecated/**/*.java"/>
+          </fileset>
+          <fileset dir="${asm.build.dir}/src">
+              <include name="org/eclipse/persistence/internal/libraries/asm/**/*.java"/>
+          </fileset>
+          <fileset dir="${extensions.oracle.build.dir}/src">
+              <include name="org/eclipse/persistence/**/*.java"/>
+          </fileset>
+          <fileset dir="${jpa.build.dir}/src">
+              <include name="org/eclipse/persistence/**/*.java"/>
+          </fileset>
+      </zip>
+    </target>
+
+</project>
