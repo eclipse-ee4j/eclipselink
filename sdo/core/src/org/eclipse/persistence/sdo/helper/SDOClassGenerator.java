@@ -18,6 +18,7 @@ import java.io.Reader;
 import java.lang.UnsupportedOperationException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -339,17 +340,18 @@ public class SDOClassGenerator {
     private void addJavaDocLinesToBuffer(StringBuffer javaDocBuffer, java.util.List documentationList, boolean getterSetter) {
         for (int i = 0; i < documentationList.size(); i++) {
             String documentation = (String)documentationList.get(i);
+            StringTokenizer stok = new StringTokenizer(documentation, lsep);
 
-            String[] documentationLines = documentation.split(Helper.cr());
-
-            for (int j = 0; j < documentationLines.length; j++) {
-                String nextLine = documentationLines[j].trim();
+            int lineCount = 0;
+            while (stok.hasMoreTokens()) {
+                String nextLine = stok.nextToken().trim();
                 if (nextLine.length() > 0) {
-                    if ((j > 0) || ((j == 0) && !getterSetter)) {
+                    if (lineCount > 0 || (lineCount == 0 && !getterSetter)) {
                         javaDocBuffer.append(indent).append(SDOConstants.JAVADOC_LINE);
                     }
                     javaDocBuffer.append(nextLine).append(lsep);
                 }
+                lineCount++;
             }
             if (i < (documentationList.size() - 1)) {
                 javaDocBuffer.append(indent).append(SDOConstants.JAVADOC_LINE);

@@ -35,6 +35,7 @@ import org.eclipse.persistence.sdo.helper.SchemaResolver;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.w3c.dom.Element;
 
 /**
@@ -374,14 +375,16 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
                 if (nextElement.getNamespaceURI().equals(XMLConstants.SCHEMA_URL) && nextElement.getLocalName().equals("appinfo")) {
                     String key = nextElement.getAttribute(SDOConstants.APPINFO_SOURCE_ATTRIBUTE);
                     String value = (String)appInfoMap.get(key);
+                    XMLTransformer xmlTransformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
+                    xmlTransformer.setFragment(true);
                     if (value == null) {
                         StringWriter sw = new StringWriter();
-                        XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer().transform(nextElement, sw);
+                        xmlTransformer.transform(nextElement, sw);
                         appInfoMap.put(key, sw.toString());
                     } else {
                         //need to concatenate Strings
                         StringWriter sw = new StringWriter();
-                        XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer().transform(nextElement, sw);
+                        xmlTransformer.transform(nextElement, sw);
                         String concat = value + sw.toString();
                         appInfoMap.put(key, concat);
                     }
