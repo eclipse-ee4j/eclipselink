@@ -12,10 +12,10 @@
 		<additional-project xsi:type="xml">org/eclipse/persistence/testing/models/insurance/insurance.xml</additional-project>
 		<additional-project xsi:type="xml">testDeployment.xml</additional-project>
 		<login xsi:type="database-login">
-			<user-name>%%dbUser%%</user-name>
-			<password>%%dbPassword%%</password>
-			<driver-class>%%driverClass%%</driver-class>
-			<connection-url>%%dbURL%%</connection-url>
+			<user-name>@dbUser@</user-name>
+			<password>@dbPassword@</password>
+			<driver-class>@driverClass@</driver-class>
+			<connection-url>@dbURL@</connection-url>
 		</login>
 	</session>
 	<session xsi:type="database-session">
@@ -35,10 +35,10 @@
 		<additional-project xsi:type="xml">org/eclipse/persistence/testing/models/insurance/insurance.xml</additional-project>
 		<additional-project xsi:type="xml">testDeployment.xml</additional-project>
 		<login xsi:type="database-login">
-			<user-name>%%dbUser%%</user-name>
-			<password>%%dbPassword%%</password>
-			<driver-class>%%driverClass%%</driver-class>
-			<connection-url>%%dbURL%%</connection-url>
+			<user-name>@dbUser@</user-name>
+			<password>@dbPassword@</password>
+			<driver-class>@driverClass@</driver-class>
+			<connection-url>@dbURL@</connection-url>
 		</login>
 	</session>
 	<session xsi:type="database-session">
@@ -58,10 +58,10 @@
 		<additional-project xsi:type="xml">org/eclipse/persistence/testing/models/insurance/insurance.xml</additional-project>
 		<additional-project xsi:type="xml">testDeployment.xml</additional-project>
 		<login xsi:type="database-login">
-			<user-name>%%dbUser%%</user-name>
-			<password>%%dbPassword%%</password>
-			<driver-class>%%driverClass%%</driver-class>
-			<connection-url>%%dbURL%%</connection-url>
+			<user-name>@dbUser@</user-name>
+			<password>@dbPassword@</password>
+			<driver-class>@driverClass@</driver-class>
+			<connection-url>@dbURL@</connection-url>
 		</login>
 	</session>
 	<session xsi:type="database-session">
@@ -81,10 +81,10 @@
 		<additional-project xsi:type="xml">org/eclipse/persistence/testing/models/insurance/insurance.xml</additional-project>
 		<additional-project xsi:type="xml">testDeployment.xml</additional-project>
 		<login xsi:type="database-login">
-			<user-name>%%dbUser%%</user-name>
-			<password>%%dbPassword%%</password>
-			<driver-class>%%driverClass%%</driver-class>
-			<connection-url>%%dbURL%%</connection-url>
+			<user-name>@dbUser@</user-name>
+			<password>@dbPassword@</password>
+			<driver-class>@driverClass@</driver-class>
+			<connection-url>@dbURL@</connection-url>
 		</login>
 	</session>
 </sessions>

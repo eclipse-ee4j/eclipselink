@@ -3,17 +3,17 @@
 	<session xsi:type="database-session">
 		<name>EmployeeSession</name>
 		<logging xsi:type="eclipselink-log">
-			<log-level>%%loglevel%%</log-level>
+			<log-level>@loglevel@</log-level>
 			<file-name>guyBlah</file-name>
 		</logging>
 		<primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
 		<additional-project xsi:type="xml">org/eclipse/persistence/testing/models/insurance/insurance.xml</additional-project>
 		<additional-project xsi:type="xml">testDeployment.xml</additional-project>
 		<login xsi:type="database-login">
-			<user-name>%%dbUser%%</user-name>
-			<password>%%dbPassword%%</password>
-			<driver-class>%%driverClass%%</driver-class>
-			<connection-url>%%dbURL%%</connection-url>
+			<user-name>@dbUser@</user-name>
+			<password>@dbPassword@</password>
+			<driver-class>@driverClass@</driver-class>
+			<connection-url>@dbURL@</connection-url>
 		</login>
 	</session>
 	<session xsi:type="database-session">
@@ -23,10 +23,10 @@
 		</remote-command>
 		<primary-project xsi:type="xml">org/eclipse/persistence/testing/models/insurance/insurance.xml</primary-project>
 		<login xsi:type="database-login">
-			<user-name>%%dbUser%%</user-name>
-			<password>%%dbPassword%%</password>
-			<driver-class>%%driverClass%%</driver-class>
-			<connection-url>%%dbURL%%</connection-url>
+			<user-name>@dbUser@</user-name>
+			<password>@dbPassword@</password>
+			<driver-class>@driverClass@</driver-class>
+			<connection-url>@dbURL@</connection-url>
 		</login>
 	</session>
 </sessions>

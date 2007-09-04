@@ -5,16 +5,16 @@
       <event-listener-classes/>
       <primary-project xsi:type="xml">EmployeeProject.xml</primary-project>
       <login xsi:type="database-login">
-         <platform-class>%%dbPlatform%%</platform-class>
-         <user-name>%%dbUser%%</user-name>
-         <password>%%dbPassword%%</password>
+         <platform-class>@dbPlatform@</platform-class>
+         <user-name>@dbUser@</user-name>
+         <password>@dbPassword@</password>
          <sequencing>
             <default-sequence xsi:type="table-sequence">
                <name>Default</name>
             </default-sequence>
          </sequencing>
-         <driver-class>%%driverClass%%</driver-class>
-         <connection-url>%%dbURL%%</connection-url>
+         <driver-class>@driverClass@</driver-class>
+         <connection-url>@dbURL@</connection-url>
       </login>
    </session>
 </sessions>

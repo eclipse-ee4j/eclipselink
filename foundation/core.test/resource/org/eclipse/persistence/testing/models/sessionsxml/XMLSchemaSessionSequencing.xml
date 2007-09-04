@@ -4,18 +4,18 @@
 		<name>NoDefaultSequence_NoSequences</name>
 		<primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
 		<login xsi:type="database-login">
-			<user-name>%%dbUser%%</user-name>
-			<password>%%dbPassword%%</password>
-			<driver-class>%%driverClass%%</driver-class>
-			<connection-url>%%dbURL%%</connection-url>
+			<user-name>@dbUser@</user-name>
+			<password>@dbPassword@</password>
+			<driver-class>@driverClass@</driver-class>
+			<connection-url>@%dbUR@</connection-url>
 		</login>
 	</session>
 	<session xsi:type="database-session">
 		<name>DefaultSequence_NoSequences</name>
 		<primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
 		<login xsi:type="database-login">
-			<user-name>%%dbUser%%</user-name>
-			<password>%%dbPassword%%</password>
+			<user-name>@dbUser@</user-name>
+			<password>@dbPassword@</password>
 			<sequencing>
 				<default-sequence xsi:type="table-sequence">
 					<preallocation-size>25</preallocation-size>
@@ -24,16 +24,16 @@
 					<counter-field>MY_SEQ_COUNT</counter-field>
 				</default-sequence>
 			</sequencing>
-			<driver-class>%%driverClass%%</driver-class>
-			<connection-url>%%dbURL%%</connection-url>
+			<driver-class>@driverClass@</driver-class>
+			<connection-url>@dbURL@</connection-url>
 		</login>
 	</session>
 	<session xsi:type="database-session">
 		<name>NoDefaultSequence_Sequences</name>
 		<primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
 		<login xsi:type="database-login">
-			<user-name>%%dbUser%%</user-name>
-			<password>%%dbPassword%%</password>
+			<user-name>@dbUser@</user-name>
+			<password>@dbPassword@</password>
 			<sequencing>
 				<sequences>
 					<sequence xsi:type="unary-table-sequence">
@@ -51,16 +51,16 @@
 					</sequence>
 				</sequences>
 			</sequencing>
-			<driver-class>%%driverClass%%</driver-class>
-			<connection-url>%%dbURL%%</connection-url>
+			<driver-class>@driverClass@</driver-class>
+			<connection-url>@dbURL@</connection-url>
 		</login>
 	</session>
 	<session xsi:type="database-session">
 		<name>DefaultSequence_Sequences</name>
 		<primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
 		<login xsi:type="database-login">
-			<user-name>%%dbUser%%</user-name>
-			<password>%%dbPassword%%</password>
+			<user-name>@dbUser@</user-name>
+			<password>@dbPassword@</password>
 			<sequencing>
 				<default-sequence xsi:type="table-sequence">
 					<preallocation-size>25</preallocation-size>
@@ -84,8 +84,8 @@
 					</sequence>
 				</sequences>
 			</sequencing>
-			<driver-class>%%driverClass%%</driver-class>
-			<connection-url>%%dbURL%%</connection-url>
+			<driver-class>@driverClass@</driver-class>
+			<connection-url>@dbURL@</connection-url>
 		</login>
 	</session>
 </sessions>

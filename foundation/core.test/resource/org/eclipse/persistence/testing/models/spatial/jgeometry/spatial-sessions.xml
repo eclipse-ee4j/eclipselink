@@ -15,11 +15,11 @@
       </logging>
       <primary-project xsi:type="class">org.eclipse.persistence.testing.models.spatial.jgeometry.JGeometryProject</primary-project>
       <login xsi:type="database-login">
-             <platform-class>%%dbPlatform%%</platform-class>
-             <user-name>%%dbUser%%</user-name>
-            <password>%%dbPassword%%</password>
-            <driver-class>%%driverClass%%</driver-class>
-            <connection-url>%%dbURL%%</connection-url>
+             <platform-class>@dbPlatform@</platform-class>
+             <user-name>@dbUser@</user-name>
+            <password>@dbPassword@</password>
+            <driver-class>@driverClass@</driver-class>
+            <connection-url>@dbURL@</connection-url>
           <struct-converters>
             <struct-converter>org.eclipse.persistence.platform.database.oracle.converters.JGeometryConverter</struct-converter>
             <struct-converter>org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.MyGeometryConverter</struct-converter>
