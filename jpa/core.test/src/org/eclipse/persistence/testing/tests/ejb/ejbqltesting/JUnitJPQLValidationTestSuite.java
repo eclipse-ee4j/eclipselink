@@ -37,7 +37,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
-import org.antlr.runtime.RecognitionException;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionException;
 
 /**
  * <p>
