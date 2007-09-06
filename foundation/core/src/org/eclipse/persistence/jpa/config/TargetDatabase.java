@@ -21,6 +21,10 @@ package org.eclipse.persistence.jpa.config;
 public class TargetDatabase {
     public static final String  Auto = "Auto";
     public static final String  Oracle = "Oracle";
+    public static final String  Oracle11 = "Oracle11";
+    public static final String  Oracle10 = "Oracle10g";
+    public static final String  Oracle9 = "Oracle9i";
+    public static final String  Oracle8 = "Oracle8i";
     public static final String  Attunity = "Attunity";
     public static final String  Cloudscape = "Cloudscape";
     public static final String  Database = "Database";
