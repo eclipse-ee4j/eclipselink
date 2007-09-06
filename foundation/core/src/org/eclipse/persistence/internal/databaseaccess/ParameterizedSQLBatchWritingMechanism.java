@@ -126,11 +126,11 @@ public class ParameterizedSQLBatchWritingMechanism implements BatchWritingMechan
         session.log(SessionLog.FINER, SessionLog.SQL, "end_batch_statements", null, this.databaseAccessor);
 
         try {
-            this.databaseAccessor.writeStatementsCount++;
             this.databaseAccessor.incrementCallCount(session);// Decrement occurs in close.
             //bug 4241441: need to keep track of rows modified and throw opti lock exception if needed
             PreparedStatement statement = this.prepareBatchStatements(session);
             executionCount += this.databaseAccessor.executeJDK12BatchStatement(statement, this.lastCallAppended, session, true);
+            this.databaseAccessor.writeStatementsCount++;
             
             if (this.previousCall.hasOptimisticLock() && (executionCount!=statementCount)){
                 throw OptimisticLockException.batchStatementExecutionFailure();
