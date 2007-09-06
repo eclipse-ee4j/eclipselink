@@ -22,7 +22,8 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 /**
  *  @author  xiaosche
- *  @since   release specific (what release of product did this appear in)
+ *  The test verifies whether the number executed statements being caculated properly. The test is prepared for
+ *  bug 5888543 and 6022960.
  */
 public class WriteChangesFailed_StatementCountTestCase extends AutoVerifyTestCase {
     public BigDecimal id = null;
@@ -63,40 +64,29 @@ public class WriteChangesFailed_StatementCountTestCase extends AutoVerifyTestCas
                 uow.writeChanges();
             } catch (Exception e) {
                 if (uow.getProperties() != null) {
-                    if (uow.getProperties().get(DatasourceAccessor.READ_STATEMENTS_COUNT_PROPERTY) != null) {
-                        readStatementsCount = 
-                                ((Integer)uow.getProperties().get(DatasourceAccessor.READ_STATEMENTS_COUNT_PROPERTY)).intValue();
+                    if (uow.getProperties().get(DatasourceAccessor.READ_STATEMENTS_COUNT_PROPERTY) == null) {
+                        throw new TestErrorException("The read statments count property should be set if writechanges get failed.");
                     }
-                    if (uow.getProperties().get(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY) != null) {
+                    if (uow.getProperties().get(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY) == null) {
+                        throw new TestErrorException("The write statments count property should be set if writechanges get failed.");
+                    }else {
                         writeStatementsCount = 
                                 ((Integer)uow.getProperties().get(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY)).intValue();
                     }
-                    if (uow.getProperties().get(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY) != 
-                        null) {
-                        storedprocedureStatementsCount = 
-                                ((Integer)uow.getProperties().get(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY)).intValue();
+                    if (uow.getProperties().get(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY) == null) {
+                        throw new TestErrorException("The store procedure statments count property should be set if writechanges get failed.");
                     }
                 }
             }
-
         } finally {
             uow.release();
         }
     }
 
     public void verify() {
-        if ((readStatementsCount - originalReadStatementsCount) != 0) {
-            throw new TestErrorException("The desirable number of read statement is 0, it however return:" + 
-                                         (readStatementsCount - originalReadStatementsCount));
-        }
-        if ((writeStatementsCount - originalWriteStatementsCount) != 1) {
-            throw new TestErrorException("The desirable number of write statement is 1, it however return:" + 
+        if ((writeStatementsCount - originalWriteStatementsCount) != 0) {
+            throw new TestErrorException("The desirable number of write statement being executed should be 0, it however has more than 0 statement being executed:" + 
                                          (writeStatementsCount - originalWriteStatementsCount));
-        }
-        if ((storedprocedureStatementsCount - originalStoredProcedureStatementsCount) != 0) {
-            throw new TestErrorException("The desirable number of write statement is 0, it however return:" + 
-                                         (storedprocedureStatementsCount - 
-                                          originalStoredProcedureStatementsCount));
         }
     }
 
