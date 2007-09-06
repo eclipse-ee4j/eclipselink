@@ -23,6 +23,9 @@
           <fileset dir="${asm.build.dir}/classes">
               <include name="org/eclipse/persistence/internal/libraries/asm/**/*.class"/>
           </fileset>
+          <fileset dir="${antlr.build.dir}/classes">
+              <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.class"/>
+          </fileset>
           <fileset dir="${extensions.oracle.build.dir}/classes">
               <include name="org/eclipse/persistence/**/*.class"/>
           </fileset>
@@ -45,6 +48,9 @@
           </fileset>
           <fileset dir="${asm.build.dir}/src">
               <include name="org/eclipse/persistence/internal/libraries/asm/**/*.java"/>
+          </fileset>
+           <fileset dir="${antlr.build.dir}/src">
+              <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.java"/>
           </fileset>
           <fileset dir="${extensions.oracle.build.dir}/src">
               <include name="org/eclipse/persistence/**/*.java"/>
