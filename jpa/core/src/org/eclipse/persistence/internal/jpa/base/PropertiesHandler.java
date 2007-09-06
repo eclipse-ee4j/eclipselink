@@ -406,6 +406,10 @@ public class PropertiesHandler {
             valueArray = new Object[][] { 
                 {TargetDatabase.Auto, pcg + "DatabasePlatform"},
                 {TargetDatabase.Oracle, pcg + "oracle.OraclePlatform"},
+                {TargetDatabase.Oracle8, pcg + "oracle.Oracle8Platform"},
+                {TargetDatabase.Oracle9, pcg + "oracle.Oracle9Platform"},
+                {TargetDatabase.Oracle10, pcg + "oracle.Oracle10Platform"},
+                {TargetDatabase.Oracle11, pcg + "oracle.Oracle11Platform"},
                 {TargetDatabase.Attunity, pcg + "AttunityPlatform"},
                 {TargetDatabase.Cloudscape, pcg + "CloudscapePlatform"},
                 {TargetDatabase.Database, pcg + "DatabasePlatform"},
