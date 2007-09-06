@@ -523,25 +523,25 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
             // effectively this means that someone is executing an update type query.
             if (dbCall.isNothingReturned()) {
+                result = executeNoSelect(dbCall, statement, session);
                 if (!isInBatchWritingMode(session)) {
                     writeStatementsCount++;
                 }
-                result = executeNoSelect(dbCall, statement, session);
                 if (dbCall.isLOBLocatorNeeded()) {
                     // add original (insert or update) call to the LOB locator
                     // Bug 2804663 - LOBValueWriter is no longer a singleton
                     getLOBWriter().addCall(dbCall);
                 }
             } else if (!dbCall.getReturnsResultSet() || (dbCall.getReturnsResultSet() && dbCall.shouldBuildOutputRow())) {
+                result = session.getPlatform().executeStoredProcedure(dbCall, (PreparedStatement)statement, this, session);
                 if (!isInBatchWritingMode(session)) {
                     storedProcedureStatementsCount++;
                 }
-                result = session.getPlatform().executeStoredProcedure(dbCall, (PreparedStatement)statement, this, session);
             } else {// not a stored procedure
+                resultSet = executeSelect(dbCall, statement, session);
                 if (!isInBatchWritingMode(session)) {
                     readStatementsCount++;
                 }
-                resultSet = executeSelect(dbCall, statement, session);
                 if (!dbCall.shouldIgnoreFirstRowMaxResultsSettings() && dbCall.getFirstResult() != 0) {
                     resultSet.absolute(dbCall.getFirstResult());
                 }
