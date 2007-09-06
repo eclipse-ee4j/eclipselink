@@ -62,10 +62,13 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     public int writeStatementsCount;
     
+    //Stores the number of executed read SQL statements
     public static final String READ_STATEMENTS_COUNT_PROPERTY = "Read_Statements_Count_Property";
 
+    //Stores the number of executed write SQL statements
     public static final String WRITE_STATEMENTS_COUNT_PROPERTY = "Write_Statements_Count_Property";
     
+    //Stores the number of executed store procedure statements
     public static final String STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY = "StoredProcedure_Statements_Count_Property";
     
 
@@ -226,7 +229,7 @@ public abstract class DatasourceAccessor implements Accessor {
     }
 
     /**
-     * Used for reset a set of the numbers of statements being prepared into zero.
+     * Reset statment count.
      */
     public void resetStatmentsCount() {
         readStatementsCount=0;
