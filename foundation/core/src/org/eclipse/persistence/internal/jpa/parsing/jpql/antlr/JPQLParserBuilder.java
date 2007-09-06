@@ -9,7 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
 
-import org.antlr.runtime.*;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.*;
 //import org.eclipse.persistence.internal.libraries.antlr.TokenBuffer;
 
 //java imports

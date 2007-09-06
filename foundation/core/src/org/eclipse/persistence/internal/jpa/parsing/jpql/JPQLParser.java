@@ -12,7 +12,7 @@ package org.eclipse.persistence.internal.jpa.parsing.jpql;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.antlr.runtime.*;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.*;
 // Third party (ANLTR) stuff
 /*import org.eclipse.persistence.internal.libraries.antlr.ANTLRException;
 import org.eclipse.persistence.internal.libraries.antlr.LLkParser;
@@ -39,7 +39,7 @@ import org.eclipse.persistence.internal.jpa.parsing.jpql.antlr.JPQLParserBuilder
 /**
  * EJBQLParser is the superclass of the ANTLR generated parser.
  */
-public abstract class JPQLParser extends org.antlr.runtime.Parser {
+public abstract class JPQLParser extends org.eclipse.persistence.internal.libraries.antlr.runtime.Parser {
 
     /** The ANTLR end of file character. */
     private static final int EOF_CHAR = 65535; // = (char) -1 = EOF

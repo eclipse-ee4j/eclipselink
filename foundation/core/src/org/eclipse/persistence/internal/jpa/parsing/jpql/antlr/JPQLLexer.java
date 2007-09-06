@@ -5,7 +5,7 @@
     import org.eclipse.persistence.internal.jpa.parsing.jpql.InvalidIdentifierStartException;
 
 
-import org.antlr.runtime.*;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.*;
 import java.util.Stack;
 import java.util.List;
 import java.util.ArrayList;
