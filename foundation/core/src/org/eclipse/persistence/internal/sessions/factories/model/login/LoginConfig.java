@@ -69,13 +69,15 @@ public abstract class LoginConfig {
      * @param password
      */
     public void setPassword(String password) {
-        // Bug 4117441 - Secure programming practices, store password in char[]
-        String encryptedPassword = m_securableObjectHolder.getSecurableObject().encryptPassword(password);
-        if (encryptedPassword != null) {
-            m_encryptedPassword = encryptedPassword.toCharArray();
-        } else {
-             // respect explicit de-referencing of password
+        if(password == null){
+            //Bug5965531, add null value support and blank string should be encrypted.
             m_encryptedPassword = null;
+        }else if(password.length()==0){
+            m_encryptedPassword=new char[0];
+        }else{
+            // Bug 4117441 - Secure programming practices, store password in char[]
+            String encryptedPassword=m_securableObjectHolder.getSecurableObject().encryptPassword(password);
+            m_encryptedPassword = encryptedPassword.toCharArray();
         }
     }
 
@@ -111,7 +113,7 @@ public abstract class LoginConfig {
             String passwordString = new String(m_encryptedPassword);
             decryptedPassword = m_securableObjectHolder.getSecurableObject().decryptPassword(passwordString);
             
-            if (decryptedPassword.equals(passwordString)) {
+            if (decryptedPassword==null || decryptedPassword.equals(passwordString)) {
                 // Password was never encrypted so encrypt it.
                 setPassword(decryptedPassword);
             }
