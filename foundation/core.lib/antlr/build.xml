@@ -1,0 +1,48 @@
+<project name="Eclipse Persistence Services - asm" default="all" basedir=".">
+
+    <property file="./build.properties"/>
+
+    <path id="compile.path">
+        <pathelement path="${string-template-lib}"/>
+        <pathelement path="${antlr-v3-lib}"/>
+        
+    </path>
+
+
+    <!-- all -->
+    <target name="all" depends="compile, package.compile.jar" description="build antlr classes"/>
+
+    <target name="init">
+        <mkdir dir="${classes.dir}"/>
+    </target>
+
+    <!-- compile --> 
+    <target name="compile" depends="init" description="compile antlr">  
+        <javac srcdir="${src.dir}" 
+               destdir="${classes.dir}"
+               includes="org/eclipse/persistence/internal/libraries/antlr/**"
+               debug="${javac.debug}" 
+               optimize="${javac.optimize}"
+               source="1.5" 
+               deprecation="${javac.deprecation}"
+               failonerror="true">
+             <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="package.compile.jar" depends="compile">
+        <jar jarfile="../eclipselink-antlr.jar">
+            <fileset dir="${classes.dir}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+        </delete>
+    </target>
+
+</project>
