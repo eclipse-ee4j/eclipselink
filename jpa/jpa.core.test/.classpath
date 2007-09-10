@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.jpa.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jpa.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core.test"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
