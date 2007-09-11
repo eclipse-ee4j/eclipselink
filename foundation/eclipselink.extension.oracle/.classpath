@@ -4,6 +4,12 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/extension.oracle.lib.external"/>
+	<classpathentry exported="true" kind="var" path="AQAPI_LIB"/>
+	<classpathentry exported="true" kind="var" path="DMS_LIB"/>
+	<classpathentry exported="true" kind="var" path="JDBC_LIB"/>
+	<classpathentry exported="true" kind="var" path="SPATIAL_LIB"/>
+	<classpathentry exported="true" kind="var" path="XDB_LIB"/>
+	<classpathentry exported="true" kind="var" path="XMLPARSERV2_LIB"/>
+	<classpathentry exported="true" kind="var" path="XML_LIB"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
