@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>eclipselink.moxy.test</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>src/org/eclipse/persistence/testing/oxm</name>
+			<type>2</type>
+			<location>C:/EclipseLink/eclipse-main/moxy/eclipselink.moxy.test/src/org/eclipse/persistence/testing/oxm</location>
+		</link>
+		<link>
+			<name>src/org/eclipse/persistence/testing/jaxb</name>
+			<type>2</type>
+			<location>C:/EclipseLink/eclipse-main/moxy/eclipselink.moxy.test/src/org/eclipse/persistence/testing/jaxb</location>
+		</link>
+	</linkedResources>
+</projectDescription>
