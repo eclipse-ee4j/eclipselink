@@ -3,6 +3,7 @@
 	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/eclipselink.core"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
+	<classpathentry kind="lib" path="resource"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

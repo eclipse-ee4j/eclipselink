@@ -1,4 +1,4 @@
-<project name="Compile/Run MOXy Testing" default="run.tests"  basedir=".">
+<project name="Compile/Run MOXy Testing" default="run.tests">
     <property file="./build.properties"/>
     <propertyset id="parser.properties">
 	    <propertyref prefix="javax.xml"/>
