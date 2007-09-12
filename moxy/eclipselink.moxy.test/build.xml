@@ -1,0 +1,141 @@
+<project name="Compile/Run MOXy Testing" default="run.tests"  basedir=".">
+    <property file="./build.properties"/>
+    <propertyset id="parser.properties">
+	    <propertyref prefix="javax.xml"/>
+	</propertyset>
+    <path id="jaxb.compile.path">
+        <fileset
+            dir="${_javaeeDir}"
+            includes="javaee.jar"/>
+        <pathelement path="${core.classes.dir}"/>
+    </path>
+    <path id="jaxb.run.path">
+        <pathelement path="${core.resource.dir}"/>
+        <pathelement path="${test.resource.dir}"/>
+        <pathelement path="${test.classes.dir}"/>
+        <path refid="jaxb.compile.path"/>
+    </path>
+    <path id="oxm.compile.path">
+        <fileset
+            dir="${_javaeeDir}"
+            includes="javaee.jar"/>
+		<path refid="jaxb.compile.path"/>
+    </path>
+    <path id="oxm.run.path">
+        <path refid="oxm.compile.path"/>
+        <pathelement path="${core.resource.dir}"/>
+        <pathelement path="${test.resource.dir}"/>
+        <pathelement path="${test.classes.dir}"/>
+    </path>
+	<target name="compile.oxm.tests" depends="clean, compile.core">
+	   <javac srcdir="${test.source.dir}"
+              destdir="${oxm.classes.dir}"
+              includes="${oxm.package}**/*.java">
+			  <classpath>
+                  <path refid="oxm.compile.path"/>
+              </classpath>
+		</javac>
+	</target>
+	<target name="compile.jaxb.tests" depends="clean, compile.core">
+	     <javac srcdir="${test.source.dir}"
+            destdir="${jaxb.classes.dir}"
+            includes="${jaxb.package}**/*.java">
+            <classpath>
+                <path refid="jaxb.compile.path"/>
+            </classpath>
+		</javac>
+	</target>
+	<target name="compile.tests" depends="compile.oxm.tests, compile.jaxb.tests"/>
+	<target name="compile.core">
+		<!-- Uncomment the following lines to clean and compile the foundation classes before building -->
+		<!--ant antfile="${_foundationDir}/eclipselink.core/build.xml" target="clean" inheritAll="false"/-->
+		<!--ant antfile="${_foundationDir}/eclipselink.core/build.xml" target="all" inheritAll="false"/-->
+	</target>
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${test.classes.dir}"/>
+        </delete>
+		<mkdir dir="${test.classes.dir}"/>
+    </target>
+	<target name="run.tests" depends="run.oxm.tests, run.jaxb.tests"/>
+	<target name="run.jaxb.tests" depends="compile.tests">
+	    <mkdir dir="${jaxb.reports.dir}"/>
+	    <mkdir dir="${tmp.dir}"/>
+		<junit printsummary="yes" fork="true" dir="${basedir}/resource" showoutput="yes">
+		    <env key="T_WORK" value="${tmp.dir}"/>
+			<sysproperty key="useDeploymentXML" value="false"/>
+			<sysproperty key="useSAXParsing" value="false"/>
+			<sysproperty key="useLogging" value="false"/>
+			<sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+			<sysproperty key="parser" value="${parser}"/>
+			<syspropertyset refid="parser.properties"/>
+			<batchtest todir="${jaxb.reports.dir}">
+			    <fileset dir="${test.source.dir}">
+				    <include name="**/JAXBTestSuite.java"/>
+				</fileset>
+				<formatter type="xml"/>
+			</batchtest>
+            <classpath>
+                <path refid="jaxb.run.path"/>
+            </classpath>
+		</junit>
+		<junitreport todir="${jaxb.reports.dir}">
+			<fileset dir="${jaxb.reports.dir}">
+				<include name="**/*.xml"/>
+			</fileset>
+			<report format="noframes" todir="${jaxb.reports.dir}"/>
+		</junitreport>		
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${tmp.dir}"/>
+			<fileset dir="${jaxb.reports.dir}">
+				<include name="**/*.xml"/>
+			</fileset>
+        </delete>
+	</target>
+    <target name="run.oxm.tests" depends="compile.tests">
+	    <mkdir dir="${oxm.reports.dir}"/>
+	    <mkdir dir="${tmp.dir}"/>
+        <junit printsummary="yes" fork="true" dir="${basedir}/resource" showoutput="yes">
+		    <sysproperty key="useDeploymentXML" value="false"/>
+			<sysproperty key="useSAXParsing" value="true"/>
+			<sysproperty key="useDocPres" value="false"/>
+			<sysproperty key="useLogging" value="false"/>
+			<sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+			<sysproperty key="parser" value="${parser}"/>
+			<syspropertyset refid="parser.properties"/>
+			<batchtest todir="${oxm.reports.dir}">
+		        <fileset dir="${test.source.dir}">
+					<!-- Run the tests with SAX parsing -->
+					<include name="**/*MappingTestSuite.java"/>
+					<include name="**/InheritanceTestSuite.java"/>
+					<include name="**/XMLMarshalTestCases.java"/>
+					<include name="**/XMLMarshalFragmentTestCases.java"/>
+					<include name="**/XMLUnmarshalTestCases.java"/>
+					<include name="**/XMLMarshallerValidationModeTestCases.java"/>
+					<include name="**/*amespaceTestSuite.java"/>
+					<include name="**/ClassLoaderTestCases.java"/>
+					<exclude name="**/MappingTestSuite.java"/>
+					<exclude name="**/OneTo*TestSuite.java"/>
+					<exclude name="**/DeploymentXMLMappingTestSuite.java"/>
+			        <exclude name="org/eclipse/persistence/testing/oxm/mappings/DocPresMappingTestSuite.java"/>
+                    <exclude name="org/eclipse/persistence/testing/oxm/mappings/anyobjectandanycollection/XMLAnyObjectAndAnyCollectionMappingTestSuite.java"/>
+					<exclude name="**/SAXMappingTestSuite.java"/>
+	    		</fileset>
+		    	<formatter type="xml"/>
+    		</batchtest>
+	    	<classpath refid="oxm.run.path"/>
+		</junit>
+		<junitreport todir="${oxm.reports.dir}">
+			<fileset dir="${oxm.reports.dir}">
+				<include name="**/*.xml"/>
+			</fileset>
+			<report format="noframes" todir="${oxm.reports.dir}"/>
+		</junitreport>		
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${tmp.dir}"/>
+			<fileset dir="${oxm.reports.dir}">
+				<include name="**/*.xml"/>
+			</fileset>
+        </delete>
+	</target>
+</project>	
