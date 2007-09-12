@@ -1,4 +1,4 @@
-<project name="Compile/Run MOXy Testing" default="run.tests">
+<project name="MOXy Testing" default="run.tests" basedir=".">
     <property file="./build.properties"/>
     <propertyset id="parser.properties">
 	    <propertyref prefix="javax.xml"/>
@@ -7,6 +7,9 @@
         <fileset
             dir="${_javaeeDir}"
             includes="javaee.jar"/>
+        <fileset
+            dir="${_junitDir}"
+            includes="junit.jar"/>
         <pathelement path="${core.classes.dir}"/>
     </path>
     <path id="jaxb.run.path">
@@ -19,6 +22,9 @@
         <fileset
             dir="${_javaeeDir}"
             includes="javaee.jar"/>
+        <fileset
+            dir="${_junitDir}"
+            includes="junit.jar"/>
 		<path refid="jaxb.compile.path"/>
     </path>
     <path id="oxm.run.path">
