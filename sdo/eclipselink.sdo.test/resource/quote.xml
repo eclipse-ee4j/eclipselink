@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ASCII"?>
+<simple:stockQuote xmlns:simple="http://www.example.com/simple">
+  <symbol>fbnt</symbol>
+  <companyName>FlyByNightTechnology</companyName>
+  <price>1000.0</price>
+  <open1>1000.0</open1>
+  <high>1000.0</high>
+  <low>1000.0</low>
+  <volume>1000.0</volume>
+  <change1>1000.0</change1>
+  <quotes>
+    <price>2000.0</price>
+  </quotes>
+</simple:stockQuote>

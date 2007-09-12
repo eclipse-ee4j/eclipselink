@@ -1,0 +1,69 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://www.example.org"
+            xmlns:sdo="commonj.sdo"
+            targetNamespace="http://www.example.org"
+            elementFormDefault="unqualified"
+            attributeFormDefault="unqualified"> 
+
+	<xsd:element name="customer" type="customer-type"/>
+
+        <xsd:element name="company" type="companyType"/>
+
+	<xsd:element name="phone" type="phoneType"/>
+
+	<xsd:element name="blahphone" type="phoneType" minOccurs="0" maxOccurs="unbounded"/>
+
+	<xsd:element name="order" type="orderType"/>
+
+	<xsd:element name="extraName" type="xsd:string"/>
+
+	<xsd:element name="price" type="xsd:float"/>
+
+	<xsd:element name="birthDate" type="xsd:date"/>
+
+	<xsd:element name="age" type="xsd:string"/>
+	
+	<xsd:complexType name="address-type">
+    		<xsd:sequence>
+      			<xsd:element name="zipcode" type="xsd:string"/>
+			<xsd:element name="permanent" type="xsd:boolean"/>			
+		</xsd:sequence>
+		<xsd:attribute name="street" type="xsd:string"/>
+		<xsd:attribute name="city" type="xsd:string"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="customer-type">
+	 	<xsd:sequence>
+     			<xsd:element name="firstName" type="xsd:string"/>			
+			<xsd:element name="lastName" type="xsd:string"/>			
+			<xsd:element name="address" type="address-type"/>			
+	  	        <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xsd:sequence>
+		<xsd:attribute name="customerID" type="xsd:int"/>
+		<xsd:attribute name="sin" type="xsd:string"/>	
+
+	</xsd:complexType>
+
+	<xsd:complexType name="companyType">
+	 	<xsd:sequence>
+    			<xsd:element name="customer" type="customer-type"/>					
+			<xsd:element name="theCS" type="sdo:ChangeSummaryType"/>			
+                 </xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string"/>	
+	</xsd:complexType>			
+
+	<xsd:complexType name="phoneType">
+    		<xsd:sequence>
+      			<xsd:element name="areaCode" type="xsd:string"/>
+			<xsd:element name="number" type="xsd:string"/>			
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="orderType">
+    		<xsd:sequence>
+      			<xsd:element name="orderName" type="xsd:string"/>
+			<xsd:element name="orderQuantity" type="xsd:int"/>			
+		</xsd:sequence>
+	</xsd:complexType>
+
+</xsd:schema>

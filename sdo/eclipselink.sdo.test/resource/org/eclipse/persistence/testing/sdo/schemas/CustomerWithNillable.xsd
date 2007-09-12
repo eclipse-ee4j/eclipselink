@@ -1,0 +1,14 @@
+<xsd:schema elementFormDefault="qualified"
+            targetNamespace="http://www.example.org"
+            xmlns="http://www.example.org"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:element name="customer" type="CustomerType"/>
+   <xsd:complexType name="CustomerType">
+	<xsd:sequence>
+            <xsd:element name="myNonSpecified" type="xsd:int"/>	
+            <xsd:element name="myNonNillable" type="xsd:int" nillable="false"/>	
+            <xsd:element name="myNillable" type="xsd:int" nillable="true"/>	
+	 </xsd:sequence>
+         <xsd:attribute name="myAttr" type="xsd:int"/>	
+   </xsd:complexType>
+</xsd:schema>

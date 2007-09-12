@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:datatype="http://www.example.com/datatype" xmlns:sdoJava="commonj.sdo/java" targetNamespace="http://www.example.com/datatype"> 
+
+	<xsd:simpleType name="SimpleSDOType">
+		<xsd:restriction base="xsd:string"/>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="SimpleSDOTypeInstanceClass" sdoJava:instanceClass="java.lang.Integer">
+		<xsd:restriction base="xsd:string"/>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="SimpleSDOTypeExtendedInstanceClass" sdoJava:extendedInstanceClass="java.lang.String">
+		<xsd:restriction base="xsd:string"/>
+	</xsd:simpleType>
+
+</xsd:schema>

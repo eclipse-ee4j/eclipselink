@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+  targetNamespace="http://www.example.com/mixed"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:simple="http://www.example.com/mixed"> 
+  
+   <xsd:element name="mixedStockQuote" type="simple:MixedQuote"/>
+
+   <xsd:complexType name="MixedQuote" mixed="true">
+       <xsd:sequence>
+          <xsd:element name="symbol" type="xsd:string"/>
+          <xsd:element name="companyName" type="xsd:string"/>
+          <xsd:element name="price" type="xsd:decimal"/>
+          <xsd:element name="open1" type="xsd:decimal"/>
+          <xsd:element name="high" type="xsd:decimal"/>
+          <xsd:element name="low" type="xsd:decimal"/>
+          <xsd:element name="volume" type="xsd:double"/>
+          <xsd:element name="change1" type="xsd:double"/>
+          <xsd:element name="quotes" type="simple:MixedQuote" minOccurs="0" maxOccurs="unbounded"/>
+       </xsd:sequence>
+   </xsd:complexType>
+
+</xsd:schema>

@@ -1,0 +1,28 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://www.example.org"
+            targetNamespace="http://www.example.org"
+            elementFormDefault="unqualified"
+            attributeFormDefault="unqualified"> 
+
+	<xsd:element name="customer" type="customer-type"/>
+
+	<xsd:complexType name="address-type">
+    		<xsd:sequence>
+      			<xsd:element name="zipcode" type="xsd:string"/>
+			<xsd:element name="permanent" type="xsd:boolean"/>			
+		</xsd:sequence>
+		<xsd:attribute name="street" type="xsd:string"/>
+		<xsd:attribute name="city" type="xsd:string"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="customer-type">
+	 	<xsd:sequence>
+      			<xsd:element name="firstName" type="xsd:string"/>			
+			<xsd:element name="lastName" type="xsd:string"/>			
+			<xsd:element name="address" type="address-type"/>			
+		</xsd:sequence>
+		<xsd:attribute name="customerID" type="xsd:int"/>
+		<xsd:attribute name="sin" type="xsd:string"/>	
+	</xsd:complexType>
+
+</xsd:schema>

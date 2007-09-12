@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ASCII"?>
+<mixed:mixedStockQuote xmlns:mixed="http://www.example.com/mixed">
+  <symbol>fbnt</symbol>
+  <companyName>FlyByNightTechnology</companyName>
+  some text
+  <quotes><price>2000.0</price></quotes>
+  more text
+  <price>1000.0</price>
+</mixed:mixedStockQuote>

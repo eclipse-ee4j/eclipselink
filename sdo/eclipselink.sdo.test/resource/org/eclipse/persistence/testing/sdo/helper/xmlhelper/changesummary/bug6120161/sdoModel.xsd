@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+/**
+ * <copyright>
+ *
+ * Service Data Objects
+ * Version 2.1.0
+ * Licensed Materials
+ *
+ * (c) Copyright BEA Systems, Inc., International Business Machines Corporation, 
+ * Oracle Corporation, Primeton Technologies Ltd., Rogue Wave Software, SAP AG., 
+ * Software AG., Sun Microsystems, Sybase Inc., Xcalia, Zend Technologies, 
+ * 2005, 2006. All rights reserved.
+ *
+ * </copyright>
+ * 
+ */
+
+-->
+
+<xsd:schema 
+  targetNamespace="commonj.sdo"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:sdo="commonj.sdo"
+  xmlns:sdoXML="commonj.sdo/xml"
+  xmlns:sdoJava="commonj.sdo/java"
+  elementFormDefault="qualified"
+  xsi:schemaLocation="commonj.sdo/xml sdoXML.xsd
+                  commonj.sdo/java sdoJava.xsd"> 
+  
+<xsd:include schemaLocation="datagraph.xsd"/>
+  
+<!-- Root element for defining several Types in one document.
+       Is not part of the model.
+-->
+<xsd:element name="types" type="sdo:Types"/>
+<xsd:complexType name="Types">
+  <xsd:sequence>
+    <xsd:element name="type" type="sdo:Type" minOccurs="0" maxOccurs="unbounded"/>
+  </xsd:sequence>
+</xsd:complexType>
+
+<!-- Any data object may be serialized with this element,
+      with xsi:type to declare the
+      actual type of the DataObject serialized.
+-->      
+<xsd:element name="dataObject" type="xsd:anyType"/>
+
+<!-- Model Types 
+   SDO Type and Property are defined in terms of themselves.
+-->
+<xsd:element name="type" type="sdo:Type"/>
+<xsd:complexType name="Type">
+  <xsd:sequence>
+    <xsd:element name="baseType" type="sdo:URI" 
+      minOccurs="0" maxOccurs="unbounded"
+      sdoXML:propertyType="sdo:Type" />
+    <xsd:element name="property" type="sdo:Property" 
+      minOccurs="0" maxOccurs="unbounded" />
+    <xsd:element name="aliasName" type="sdo:String"
+      minOccurs="0" maxOccurs="unbounded" />
+    <xsd:any namespace="##other" processContents="lax" 
+      minOccurs="0" maxOccurs="unbounded" />
+  </xsd:sequence>
+  <xsd:attribute name="name" type="xsd:ID" sdoXML:dataType="sdo:String"/>
+  <xsd:attribute name="uri" type="sdo:URI"/>
+  <xsd:attribute name="dataType" type="sdo:Boolean"/>
+  <xsd:attribute name="open" type="sdo:Boolean"/>
+  <xsd:attribute name="sequenced" type="sdo:Boolean"/>
+  <xsd:attribute name="abstract" type="sdo:Boolean"/>
+  <xsd:anyAttribute namespace="##any" processContents="lax"/>
+</xsd:complexType>
+
+<xsd:complexType name="Property">
+  <xsd:sequence>
+    <xsd:element name="aliasName" type="sdo:String"
+      minOccurs="0" maxOccurs="unbounded" />
+    <xsd:any namespace="##other" processContents="lax" 
+      minOccurs="0" maxOccurs="unbounded" />
+  </xsd:sequence>
+  <xsd:attribute name="name" type="sdo:String"/>
+  <xsd:attribute name="many" type="sdo:Boolean"/>
+  <xsd:attribute name="containment" type="sdo:Boolean"/>
+  <xsd:attribute name="default" type="sdo:String"/>
+  <xsd:attribute name="readOnly" type="sdo:Boolean"/>
+  <xsd:attribute name="type" type="sdo:URI" sdoXML:propertyType="sdo:Type"/>
+  <xsd:attribute name="opposite" type="sdo:URI" sdoXML:propertyType="sdo:Property"/>
+  <xsd:attribute name="nullable" type="sdo:Boolean"/>
+  <xsd:anyAttribute namespace="##any" processContents="lax"/>
+</xsd:complexType>
+
+<!-- Special Types -->
+<xsd:complexType name="DataObject" abstract="true"/>
+
+<!-- TextType deprecated in 2.1.0 -->
+      <xsd:complexType name="TextType" abstract="true">
+        <xsd:sequence>
+          <xsd:element name="text" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+<!-- ChangeSummaryType is defined in datagraph.xsd.
+       Although declared there as a ComplexType,
+       at the model level it is treated as a SimpleType
+       with a special XML serialization.
+-->
+
+<!-- Data Types -->
+<xsd:simpleType name="Boolean" sdoJava:instanceClass="boolean">
+  <xsd:restriction base="xsd:boolean"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Byte" sdoJava:instanceClass="byte">
+  <xsd:restriction base="xsd:byte"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Bytes" sdoJava:instanceClass="byte[]">
+  <xsd:restriction base="xsd:hexBinary"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Character" sdoJava:instanceClass="char">
+  <xsd:restriction base="xsd:string"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Date" sdoJava:instanceClass="java.util.Date">
+  <xsd:restriction base="xsd:dateTime"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="DateTime" sdoJava:instanceClass="java.lang.String">
+  <xsd:restriction base="xsd:dateTime"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Day" sdoJava:instanceClass="java.lang.String">
+  <xsd:restriction base="xsd:gDay"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Decimal" sdoJava:instanceClass="java.math.BigDecimal">
+  <xsd:restriction base="xsd:decimal"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Double" sdoJava:instanceClass="double">
+  <xsd:restriction base="xsd:double"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Duration" sdoJava:instanceClass="java.lang.String">
+  <xsd:restriction base="xsd:duration"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Float" sdoJava:instanceClass="float">
+  <xsd:restriction base="xsd:float"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Int" sdoJava:instanceClass="int">
+  <xsd:restriction base="xsd:int"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Integer" sdoJava:instanceClass="java.math.BigInteger">
+  <xsd:restriction base="xsd:integer"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Long"  sdoJava:instanceClass="long">
+  <xsd:restriction base="xsd:long"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Month" sdoJava:instanceClass="java.lang.String">
+  <xsd:restriction base="xsd:gMonth"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="MonthDay" sdoJava:instanceClass="java.lang.String">
+  <xsd:restriction base="xsd:gMonthDay"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Object"  sdoJava:instanceClass="java.lang.Object">
+  <!-- Only the schema for schemas is allowed to restrict anySimpleType.
+         <xsd:restriction base="xsd:anySimpleType"/>
+       The equivalent declaration is a union of the predefined XSD data types.
+  -->
+  <xsd:union memberTypes="xsd:anyURI xsd:base64Binary xsd:boolean xsd:byte
+    xsd:date xsd:dateTime xsd:decimal xsd:double xsd:duration xsd:ENTITIES xsd:ENTITY xsd:float
+    xsd:gDay xsd:gMonth xsd:gMonthDay xsd:gYear xsd:gYearMonth xsd:hexBinary xsd:ID xsd:IDREF xsd:IDREFS
+    xsd:int xsd:integer xsd:language xsd:long xsd:Name xsd:NCName xsd:negativeInteger
+    xsd:NMTOKEN xsd:NMTOKENS xsd:nonNegativeInteger xsd:nonPositiveInteger
+    xsd:normalizedString xsd:NOTATION xsd:positiveInteger xsd:QName xsd:short xsd:string
+    xsd:time xsd:token xsd:unsignedByte xsd:unsignedInt xsd:unsignedLong xsd:unsignedShort"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Short" sdoJava:instanceClass="short">
+  <xsd:restriction base="xsd:short"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="String" sdoJava:instanceClass="java.lang.String">
+  <xsd:restriction base="xsd:string"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Strings" sdoJava:instanceClass="java.util.List">
+  <xsd:restriction base="xsd:string"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Time" sdoJava:instanceClass="java.lang.String">
+  <xsd:restriction base="xsd:time"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="Year" sdoJava:instanceClass="java.lang.String">
+  <xsd:restriction base="xsd:gYear"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="YearMonth" sdoJava:instanceClass="java.lang.String">
+  <xsd:restriction base="xsd:gYearMonth"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="YearMonthDay" sdoJava:instanceClass="java.lang.String">
+  <xsd:restriction base="xsd:date"/>
+</xsd:simpleType>
+
+<xsd:simpleType name="URI" sdoJava:instanceClass="java.lang.String">
+  <xsd:restriction base="xsd:anyURI"/>
+</xsd:simpleType>
+
+</xsd:schema>

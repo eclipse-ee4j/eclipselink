@@ -1,0 +1,25 @@
+<xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema'
+       xmlns='http://www.example.org'
+       targetNamespace='http://www.example.org'
+       elementFormDefault='qualified'>
+    <xsd:simpleType name='my-int'>
+         <xsd:union memberTypes='xsd:positiveInteger xsd:negativeInteger'>
+            <xsd:simpleType>
+              <xsd:restriction base='xsd:integer'/>
+            </xsd:simpleType>
+            <xsd:simpleType>
+              <xsd:restriction base='my-other-integer'/>
+            </xsd:simpleType>
+         </xsd:union>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name='my-other-integer'>
+      <xsd:restriction base='xsd:integer'/>
+    </xsd:simpleType>
+    
+    <xsd:complexType name='testComplexType'>
+      <xsd:sequence>
+        <xsd:element name='testElement' type='my-int'/>
+      </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>

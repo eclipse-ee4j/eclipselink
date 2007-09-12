@@ -1,0 +1,43 @@
+<xsd:schema targetNamespace="http://xmnls.oracle.com/apps/sv/address/addressService/v1/" xmlns="http://xmnls.oracle.com/apps/sv/address/addressService/v1/"
+     elementFormDefault="qualified" sdoJava:package="oracle.apps.sv.address.addressService.v1"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="http://xmlns.oracle.com/adf/svc/types/">
+    <xsd:import schemaLocation="BC4JService.xsd" namespace="http://xmlns.oracle.com/adf/svc/types/"/>
+    <xsd:import namespace="commonj.sdo/java"/>
+    <xsd:complexType name="Address">
+        <xsd:annotation>
+            <xsd:appinfo source="http://xmlns.oracle.com/adf/svc/metadata/">
+                <key xmlns="http://xmlns.oracle.com/adf/svc/metadata/">
+                    <attribute>AddressId</attribute>
+                </key>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="AddressId" type="xsd:decimal" minOccurs="0"/>
+            <xsd:element name="AddressName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="AddressLine1" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="AddressLine2" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="AddressLine3" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="Description" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="EmailAddress" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="Country" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="TownOrCity" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="PostalCode" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="StartDate" type="ns0:date-Date" minOccurs="0" nillable="true"/>
+            <xsd:element name="EndDate" type="ns0:date-Date" minOccurs="0" nillable="true"/>
+            <xsd:element name="TelephoneNumber1" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="TelephoneNumber2" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="TelephoneNumber3" type="xsd:string" minOccurs="0" nillable="true"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="AddressResult">
+        <xsd:complexContent>
+            <xsd:extension base="ns0:MethodResult">
+                <xsd:sequence>
+                    <xsd:element name="Value" type="Address" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="addressResult" type="AddressResult"/>
+    <xsd:element name="address" type="Address"/>
+</xsd:schema>

@@ -1,0 +1,11 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://schemas.xmlsoap.org/soap/encoding/" 
+	   elementFormDefault="qualified">
+
+  <xs:attributeGroup name="includedAG" >
+    <xs:attribute name="included1" type="xs:string"/> 
+    <xs:attribute name="included2" type="xs:string"/> 
+    <xs:attribute name="included3" type="xs:string"/> 
+  </xs:attributeGroup>    
+
+</xs:schema>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:processData xsi:type="ns0:ProcessData" xmlns:sdo="commonj.sdo" xmlns:ns1="http://xmnls.oracle.com/apps/sv/supplier/supplierService/v1/types/" xmlns:ns0="http://xmlns.oracle.com/adf/svc/types/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:Value xsi:type="ns2:Supplier" xmlns:ns2="http://xmnls.oracle.com/apps/sv/supplier/supplierService/v1/">
+      <ns2:SupplierId>163002</ns2:SupplierId>
+      <ns2:Name>NDSvc</ns2:Name>
+      <ns2:OnHoldFlag>N</ns2:OnHoldFlag>
+      <ns2:StartDate xsi:nil="true"/>
+      <ns2:EndDate xsi:nil="true"/>
+      <ns2:LastUpdateDate>2007-08-16T17:04:03.0</ns2:LastUpdateDate>
+      <ns2:SupplierSite xmlns:ns1="http://xmnls.oracle.com/apps/sv/address/addressService/v1/">
+         <ns2:SupplierId>163002</ns2:SupplierId>
+         <ns2:SupplierSiteId>163003</ns2:SupplierSiteId>
+         <ns2:SiteName>NDSvcSite</ns2:SiteName>
+         <ns2:PaymentTermsCode>NET_30</ns2:PaymentTermsCode>
+         <ns2:CarrierCode>DHL</ns2:CarrierCode>
+         <ns2:PurchasingSiteFlag xsi:nil="true"/>
+         <ns2:AddressId xsi:nil="true"/>
+         <ns2:StartDate>2007-08-16</ns2:StartDate>
+         <ns2:EndDate xsi:nil="true"/>
+      </ns2:SupplierSite>
+   </ns0:Value>
+   <ns0:Value xsi:type="ns2:Supplier" xmlns:ns2="http://xmnls.oracle.com/apps/sv/supplier/supplierService/v1/">
+      <ns2:Name>NDSvc2</ns2:Name>
+      <ns2:OnHoldFlag>N</ns2:OnHoldFlag>
+      <ns2:SupplierSite xmlns:ns1="http://xmnls.oracle.com/apps/sv/address/addressService/v1/">
+         <ns2:SiteName>NDSvc2Site</ns2:SiteName>
+         <ns2:PaymentTermsCode>NET_30</ns2:PaymentTermsCode>
+         <ns2:CarrierCode>DHL</ns2:CarrierCode>
+         <ns2:StartDate xsi:nil="true"/>
+      </ns2:SupplierSite>
+   </ns0:Value>
+   <ns0:ChangeSummary create="#/ns0:Value[2] #/ns0:Value[2]/ns2:SupplierSite[1]">
+      <ns0:processData sdo:ref="#/">
+         <ns0:Value sdo:ref="#/ns0:Value[1]" xmlns:ns2="http://xmnls.oracle.com/apps/sv/supplier/supplierService/v1/" xsi:type="ns2:Supplier"/>
+      </ns0:processData>
+   </ns0:ChangeSummary>
+</ns1:processData>

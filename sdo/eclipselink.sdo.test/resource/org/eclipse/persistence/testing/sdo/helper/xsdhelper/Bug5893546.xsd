@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://example.com/commemp/" xmlns="http://example.com/commemp/" elementFormDefault="qualified" sdoJava:package="com.example.commemp" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="http://example.com/emp/">
+   <xsd:complexType name="CommEmp">
+      <xsd:complexContent>
+         <xsd:extension base="ns0:Emp">
+            <xsd:sequence>
+               <xsd:element name="agent" type="ns0:Emp" minOccurs="0"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="commEmp" type="CommEmp"/>
+</xsd:schema>

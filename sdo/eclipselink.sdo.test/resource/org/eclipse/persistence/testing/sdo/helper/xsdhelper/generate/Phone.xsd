@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri2" xmlns="my.uri2" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="PhoneType">
+      <xsd:attribute name="number" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:element name="phoneType" type="PhoneType"/>
+</xsd:schema>

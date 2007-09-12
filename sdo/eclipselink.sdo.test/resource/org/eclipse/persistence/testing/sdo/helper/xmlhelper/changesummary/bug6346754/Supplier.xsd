@@ -1,0 +1,38 @@
+<xsd:schema targetNamespace="http://xmnls.oracle.com/apps/sv/supplier/supplierService/v1/" xmlns="http://xmnls.oracle.com/apps/sv/supplier/supplierService/v1/"
+     elementFormDefault="qualified" sdoJava:package="oracle.apps.sv.supplier.supplierService.v1"
+     xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java"
+     xmlns:ns0="http://xmlns.oracle.com/adf/svc/types/">
+    <xsd:import schemaLocation="BC4JService.xsd" namespace="http://xmlns.oracle.com/adf/svc/types/"/>
+    <xsd:import namespace="commonj.sdo/java"/>
+    <xsd:import namespace="commonj.sdo/xml"/>
+    <xsd:include schemaLocation="SupplierSite.xsd"/>
+    <xsd:complexType name="SupplierResult">
+        <xsd:complexContent>
+            <xsd:extension base="ns0:MethodResult">
+                <xsd:sequence>
+                    <xsd:element name="Value" type="Supplier" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="Supplier">
+        <xsd:annotation>
+            <xsd:appinfo source="http://xmlns.oracle.com/adf/svc/metadata/">
+                <key xmlns="http://xmlns.oracle.com/adf/svc/metadata/">
+                    <attribute>SupplierId</attribute>
+                </key>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="SupplierId" type="xsd:long" minOccurs="0" sdoXML:dataType="sdoJava:LongObject"/>
+            <xsd:element name="Name" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="OnHoldFlag" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="StartDate" type="ns0:date-Date" minOccurs="0" nillable="true"/>
+            <xsd:element name="EndDate" type="ns0:date-Date" minOccurs="0" nillable="true"/>
+            <xsd:element name="LastUpdateDate" type="ns0:dateTime-Timestamp" minOccurs="0"/>
+            <xsd:element name="SupplierSite" type="SupplierSite" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="supplierResult" type="SupplierResult"/>
+    <xsd:element name="supplier" type="Supplier"/>
+</xsd:schema>
