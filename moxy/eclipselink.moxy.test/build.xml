@@ -4,12 +4,14 @@
 	    <propertyref prefix="javax.xml"/>
 	</propertyset>
     <path id="jaxb.compile.path">
-        <fileset
+        <!--fileset
             dir="${_javaeeDir}"
             includes="javaee.jar"/>
         <fileset
             dir="${_junitDir}"
-            includes="junit.jar"/>
+            includes="junit.jar"/-->
+        <pathelement path="${_javaeeJar}"/>
+        <pathelement path="${_junitJar}"/>
         <pathelement path="${core.classes.dir}"/>
     </path>
     <path id="jaxb.run.path">
@@ -19,12 +21,14 @@
         <path refid="jaxb.compile.path"/>
     </path>
     <path id="oxm.compile.path">
-        <fileset
+        <!--fileset
             dir="${_javaeeDir}"
             includes="javaee.jar"/>
         <fileset
             dir="${_junitDir}"
-            includes="junit.jar"/>
+            includes="junit.jar"/-->
+        <pathelement path="${_javaeeJar}"/>
+        <pathelement path="${_junitJar}"/>
 		<path refid="jaxb.compile.path"/>
     </path>
     <path id="oxm.run.path">
