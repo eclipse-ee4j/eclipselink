@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<employee>
+    <id>123</id>
+    <name>Jane</name>
+    <name/>
+    <name>Doe</name>
+</employee>

@@ -1,0 +1,39 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<test-object>
+	<binary>MTIzNDU2Nzg5</binary>
+	<binary>313233343536373839</binary>
+	<date>1976-02-17</date>
+	<time>23:21:00.0</time>
+	<date-time>1976-02-17T23:21:00.0</date-time>
+	<date-vector>
+		<date-element>1976-02-17</date-element>
+		<date-element>1976-04-09</date-element>
+		<date-element>1978-04-18</date-element>
+	</date-vector>
+	<time-vector>
+		<time-element>23:21:00.0</time-element>
+		<time-element>23:58:00.0</time-element>
+		<time-element>06:00:00.0</time-element>
+	</time-vector>
+	<date-time-vector>
+		<date-time-element>1976-02-17T23:21:00.0</date-time-element>
+		<date-time-element>1976-04-09T23:58:00.0</date-time-element>
+		<date-time-element>1978-04-18T06:00:00.0</date-time-element>
+	</date-time-vector>
+	<base-64-vector>
+		<base-64-element>MTEx</base-64-element>
+		<base-64-element>MjIy</base-64-element>
+		<base-64-element>MzMz</base-64-element>
+	</base-64-vector>
+	<hex-vector>
+		<hex-element>313131</hex-element>
+		<hex-element>323232</hex-element>
+		<hex-element>333333</hex-element>
+	</hex-vector>
+	<untyped-date>1978-08-02T01:00:00.0</untyped-date>
+	<typed-date>1978-08-02</typed-date>
+	<untyped-sql-date>1978-08-02</untyped-sql-date>
+	<typed-sql-date>1978-08-02</typed-sql-date>
+	<untyped-timestamp>1978-08-02T01:00:00.0</untyped-timestamp>
+	<typed-timestamp>01:00:00.0</typed-timestamp>
+</test-object>

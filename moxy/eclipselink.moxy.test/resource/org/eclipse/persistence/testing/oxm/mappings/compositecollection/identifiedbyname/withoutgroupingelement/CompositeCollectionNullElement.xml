@@ -1,0 +1,10 @@
+<employee id="123">
+	<email-address>
+		<user-id>jane.doe</user-id>
+		<domain>oracle.com</domain>
+	</email-address>
+	<email-address>
+		<user-id>jdoe</user-id>
+		<domain>us.oraclecorp.com</domain>
+	</email-address>
+</employee>

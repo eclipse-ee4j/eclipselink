@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<root:employee xmlns:root="www.oracle.com/some-dir/root.xsd" xmlns:first="www.oracle.com/some-dir/first.xsd" xmlns:last="www.oracle.com/some-dir/last.xsd">
+    <first:name>Jane</first:name>
+    <last:name>Doe</last:name>
+</root:employee>

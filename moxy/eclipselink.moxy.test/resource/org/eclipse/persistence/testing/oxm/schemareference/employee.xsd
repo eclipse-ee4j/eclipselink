@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs = "http://www.w3.org/2001/XMLSchema" >
+  <xs:element name="EMPLOYEE">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name = "ID" type = "xs:integer" />
+        <xs:element name = "COUNTRY_CODE" type = "xs:string" />
+        <xs:element name = "FIRST_NAME" type = "xs:string" />
+        <xs:element name = "LAST_NAME" type = "xs:string" />
+        <xs:element ref = "ADDRESS_INFO" />
+        <xs:element ref = "PHONE_INFO" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name = "ADDRESS_INFO">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "ADDRESS" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name = "PHONE_INFO">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref = "PHONE" minOccurs="1" maxOccurs="3" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name = "ADDRESS">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name = "STREET" type = "xs:string" />
+        <xs:element name = "CITY" type = "xs:string" />
+        <xs:element name = "PROVINCE" type = "xs:string" />
+        <xs:element name = "POSTAL_CODE" type = "xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name = "PHONE">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name = "AREA_CODE" type = "areaCode" />
+        <xs:element name = "EXCHANGE" type = "xs:integer" />
+        <xs:element name = "NUMBER" type = "xs:integer" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name = "areaCode">
+    <xs:restriction base = "xs:integer">
+      <xs:totalDigits value="3"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+</xs:schema>
+

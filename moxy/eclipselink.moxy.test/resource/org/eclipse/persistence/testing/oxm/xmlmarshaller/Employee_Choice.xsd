@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  jaxb:version="1.0" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb">
+
+	<xs:element name="employee">
+		<xs:complexType>
+			<xs:choice>
+				<xs:annotation>
+					<xs:appinfo>
+						<jaxb:class name="period"/>
+					</xs:appinfo>
+				</xs:annotation>
+				<xs:element name="startDate" type="xs:date"/>
+				<xs:element name="endDate" type="xs:date"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>
