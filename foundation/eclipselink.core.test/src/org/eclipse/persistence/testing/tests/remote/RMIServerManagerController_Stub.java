@@ -32,7 +32,7 @@ public final class RMIServerManagerController_Stub
 	throws java.rmi.RemoteException
     {
 	try {
-	    Object $result = ref.invoke(this, $method_createRemoteSessionController_0, null, 8990065176536303129L);
+	    Object $result = ref.invoke(this, $method_createRemoteSessionController_0, null, 1192999235963804723L);
 	    return ((org.eclipse.persistence.sessions.remote.rmi.RMIRemoteSessionController) $result);
 	} catch (java.lang.RuntimeException e) {
 	    throw e;
