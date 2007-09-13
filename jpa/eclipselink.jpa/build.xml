@@ -1,6 +1,6 @@
 <project name="Eclipse Persistence Services" default="all" basedir=".">
 
-    <property file="${eclipselink.jpa}/build.properties"/>
+    <property file="./build.properties"/>
 
     <path id="compile.path">
         <pathelement path="${antlr}/${classes.dir}"/>
