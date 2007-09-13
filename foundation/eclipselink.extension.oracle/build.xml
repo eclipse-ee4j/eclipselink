@@ -1,6 +1,6 @@
 <project name="Eclipse Persistence Services" default="all" basedir=".">
 
-    <property file="${eclipselink.extension.oracle}/build.properties"/>
+    <property file="./build.properties"/>
 
     <path id="compile.path">
         <pathelement path="${javaee.lib}"/>
@@ -14,7 +14,8 @@
     <target name="all" depends="clean, compile" description="build oracle specific classes"/>
 
     <!-- compile --> 
-    <target name="compile" depends="" description="Compile EclipseLink's Oracle extensions">  
+    <target name="compile" depends="" description="Compile EclipseLink's Oracle extensions"> 
+    	<mkdir dir="${classes.dir}"/>
         <mkdir dir="${eclipselink.extension.oracle}/${classes.dir}"/>
         <javac srcdir="${eclipselink.extension.oracle}/${src.dir}" 
                destdir="${eclipselink.extension.oracle}/${classes.dir}"
