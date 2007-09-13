@@ -1,6 +1,6 @@
 <project name="Eclipse Persistence Services" default="all" basedir=".">
 
-    <property file="./build.properties"/>
+    <property file="${eclipselink.core}/build.properties"/>
 
     <path id="compile.path">
         <pathelement path="${antlr}/${classes.dir}"/>
@@ -9,7 +9,7 @@
     </path>
 	
     <!-- all -->
-    <target name="all" depends="clean, init, compile, package, package.src" description="build EclipseLink jar"/>
+    <target name="all" depends="clean, init, compile" description="build EclipseLink jar"/>
 
     <target name="init">
         <tstamp>
@@ -19,73 +19,26 @@
 
     <!-- compile --> 
     <target name="compile" depends="init" description="compile EclipseLink">  
-        <javac srcdir="${src.dir}" 
-               destdir="${classes.dir}"
+        <mkdir dir="${eclipselink.core}/${classes.dir}"/>
+        <javac srcdir="${eclipselink.core}/${src.dir}" 
+               destdir="${eclipselink.core}/${classes.dir}"
                includes="org/eclipse/persistence/**, deprecated/**"
                debug="${javac.debug}" 
                optimize="${javac.optimize}"
                source="1.5" 
                deprecation="${javac.deprecation}"
                failonerror="true"
-			   memoryMaximumSize="512m"
-			   fork="true">
+               memoryMaximumSize="512m"
+               fork="true">
             <classpath>
                 <path refid="compile.path"/>
             </classpath>
         </javac>
     </target>
 
-    <target name="package" depends="init" description="build EclipseLink jar">
-        <jar jarfile="${eclipselink.jar}"
-            manifest="${resource.dir}/META-INF/manifest.mf">
-           <fileset dir="${classes.dir}">
-              <include name="org/eclipse/persistence/**/*.class"/>
-              <include name="deprecated/**/*.class"/>
-          </fileset>
-          <fileset dir="${asm}/${classes.dir}">
-              <include name="org/eclipse/persistence/internal/libraries/asm/**/*.class"/>
-          </fileset>
-          <fileset dir="${antlr}/${classes.dir}">
-              <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.class"/>
-          </fileset>
-          <fileset dir="${eclipselink.extensions.oracle}/${classes.dir}">
-              <include name="org/eclipse/persistence/**/*.class"/>
-          </fileset>
-          <fileset dir="${eclipselink.jpa}/${classes.dir}">
-              <include name="org/eclipse/persistence/**/*.class"/>
-          </fileset>
-          <fileset dir="${eclipselink.core}/${resource.dir}">
-              <include name="xsd/*.xsd"/>
-              <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
-              <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-          </fileset>
-      </jar>
-    </target>
-
-    <target name="package.src" depends="init" description="build EclipseLink source jar">
-        <zip zipfile="${eclipselink.src}">
-           <fileset dir="src">
-              <include name="org/eclipse/persistence/**/*.java"/>
-              <include name="deprecated/**/*.java"/>
-          </fileset>
-          <fileset dir="${asm}/${src.dir}">
-              <include name="org/eclipse/persistence/internal/libraries/asm/**/*.java"/>
-          </fileset>
-           <fileset dir="${antlr}/${src.dir}">
-              <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.java"/>
-          </fileset>
-          <fileset dir="${eclipselink.extensions.oracle}/${src.dir}">
-              <include name="org/eclipse/persistence/**/*.java"/>
-          </fileset>
-          <fileset dir="${eclipselink.jpa}/${src.dir}">
-              <include name="org/eclipse/persistence/**/*.java"/>
-          </fileset>
-      </zip>
-    </target>
-
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${classes.dir}/org"/>
+            <fileset dir="${eclipselink.core}/${classes.dir}/org"/>
         </delete>
     </target>
 	
