@@ -74,18 +74,18 @@ public class EntityManagerFactoryProvider implements javax.persistence.spi.Persi
     // Used to warn users about deprecated property name and suggest the valid name.
     // TEMPORARY the old property names will be translated to the new ones and processed.
     protected static final String oldPropertyNames[][] = {
-        {PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MAX, "toplink.max-write-connections"},
-        {PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MIN, "toplink.min-write-connections"},
-        {PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MAX, "toplink.max-read-connections"},
-        {PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MIN, "toplink.min-read-connections"},
-        {PersistenceUnitProperties.JDBC_BIND_PARAMETERS, "toplink.bind-all-parameters"},
-        {PersistenceUnitProperties.TARGET_DATABASE, "toplink.platform.class.name"},
-        {PersistenceUnitProperties.TARGET_SERVER, "toplink.server.platform.class.name"},
+        {PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MAX, "eclipselink.max-write-connections"},
+        {PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MIN, "eclipselink.min-write-connections"},
+        {PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MAX, "eclipselink.max-read-connections"},
+        {PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MIN, "eclipselink.min-read-connections"},
+        {PersistenceUnitProperties.JDBC_BIND_PARAMETERS, "eclipselink.bind-all-parameters"},
+        {PersistenceUnitProperties.TARGET_DATABASE, "eclipselink.platform.class.name"},
+        {PersistenceUnitProperties.TARGET_SERVER, "eclipselink.server.platform.class.name"},
         {PersistenceUnitProperties.CACHE_SIZE_DEFAULT, "eclipselink.cache.default-size"}
     };
 
     /**
-     * A default constructor is required by all Providers accoring the the EJB 3.0 specification
+     * A default constructor is required by all Providers according the the EJB 3.0 specification
      */
     public EntityManagerFactoryProvider() {      
     }
