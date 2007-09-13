@@ -13,13 +13,13 @@
     <target name="all" depends="compile, package.compile.jar" description="build antlr classes"/>
 
     <target name="init">
-        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${antlr}/${classes.dir}"/>
     </target>
 
     <!-- compile --> 
     <target name="compile" depends="init" description="compile antlr">  
-        <javac srcdir="${src.dir}" 
-               destdir="${classes.dir}"
+        <javac srcdir="${antlr}/${src.dir}" 
+               destdir="${antlr}/${classes.dir}"
                includes="org/eclipse/persistence/internal/libraries/antlr/**"
                debug="${javac.debug}" 
                optimize="${javac.optimize}"
@@ -33,8 +33,8 @@
     </target>
 
     <target name="package.compile.jar" depends="compile">
-        <jar jarfile="../eclipselink-antlr.jar">
-            <fileset dir="${classes.dir}">
+        <jar jarfile="${antlr}/../eclipselink-antlr.jar">
+            <fileset dir="${antlr}/${classes.dir}">
             </fileset>
         </jar>
     </target>
