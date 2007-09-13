@@ -9,27 +9,62 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.sql.*;
-import java.util.*;
-import java.math.*;
-import java.io.*;
+// javase imports
+import java.io.ByteArrayInputStream;
+import java.io.CharArrayReader;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Array;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Ref;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Struct;
+import java.sql.Types;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
+
+// EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.mappings.structures.*;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sequencing.Sequencing;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+import org.eclipse.persistence.platform.database.AccessPlatform;
+import org.eclipse.persistence.platform.database.DB2Platform;
+import org.eclipse.persistence.platform.database.DBasePlatform;
+import org.eclipse.persistence.platform.database.SybasePlatform;
+import org.eclipse.persistence.platform.database.converters.StructConverter;
+import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.sequencing.*;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
-import org.eclipse.persistence.internal.sequencing.Sequencing;
-import org.eclipse.persistence.platform.database.converters.StructConverter;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * DatabasePlatform is private to TopLink. It encapsulates behavior specific to a database platform
@@ -1662,7 +1697,23 @@ public class DatabasePlatform extends DatasourcePlatform {
      *  Note that index (not index+1) is used in statement.setObject(index, parameter)
      *    Binding starts with a 1 not 0, so make sure that index > 0.
      */
-    public void setParameterValueInDatabaseCall(Object parameter, PreparedStatement statement, int index, AbstractSession session) throws SQLException {
+    public void setParameterValuesInDatabaseCall(DatabaseCall call, Vector parameters,
+        PreparedStatement statement, AbstractSession session) throws SQLException {
+
+        for (int index = 0, l = parameters.size(); index < l; index++) {
+            Object parameter = parameters.get(index);
+            setParameterValueInDatabaseCall(parameter, (PreparedStatement)statement, index+1,
+                session);
+        }
+        
+    }
+    
+    /**
+     *  INTERNAL
+     *  handle complex parameter values if necessary
+     */
+    public void setParameterValueInDatabaseCall(Object parameter, PreparedStatement statement,
+        int index, AbstractSession session) throws SQLException {
         // 2.0p22: Added the following conversion before binding into prepared statement
         parameter = convertToDatabaseType(parameter);
         if (! setComplexParameterValue(session, statement, index, parameter)) {

@@ -9,17 +9,39 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database.oracle;
 
-import java.util.*;
-import java.io.*;
-import java.sql.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.expressions.*;
+// javase imports
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Calendar;
+import java.util.Hashtable;
+import java.util.Vector;
+
+// EclipseLink imports
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.expressions.*;
+import org.eclipse.persistence.internal.databaseaccess.InOutputParameterForCallableStatement;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.RelationExpression;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseType;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
 
 /**
  *    <p><b>Purpose</b>: Provides Oracle specific behaviour.
@@ -169,6 +191,195 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
+     * INTERNAL: override implementation in DatabasePlatform
+     * If we have any non-JDBC parameters, build the procedure call invocation differently
+     */
+    @Override
+    public String buildProcedureCallString(StoredProcedureCall call, AbstractSession session) {
+        
+        if (!call.hasNonJDBCTypes()) {
+            return super.buildProcedureCallString(call, session);
+        }
+        else {
+            return buildNonJDBCTypesProcedureCallString(call, session);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Build the procedure call invocation as an Anonymous PL/SQL block
+     */
+    protected String buildNonJDBCTypesProcedureCallString(StoredProcedureCall call,
+        AbstractSession session) {
+        
+        // force use of CallableStatement
+        call.setIsCallableStatementRequired(true);
+    
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n");
+        sb.append(getDeclareBeginString());
+        buildDeclareBlock(call, sb);
+        sb.append("\n");
+        sb.append(getBatchBeginString());
+        buildBeginBlock(call, sb);
+        sb.append("\n ");
+        sb.append(call.getProcedureName());
+        if (requiresProcedureCallBrackets()) {
+            sb.append("(");
+        }
+        else {
+            sb.append(" ");
+        }
+        for (int i = call.getFirstParameterIndexForCallString();
+            i < call.getParameters().size(); i++) {
+            String name = (String)call.getProcedureArgumentNames().elementAt(i);
+            Integer parameterType = (Integer)call.getParameterTypes().elementAt(i);
+            Object databaseField = call.getParameters().get(i);
+            sb.append(getProcedureArgumentString());
+            sb.append(name);
+            sb.append(getProcedureArgumentSetter());
+            sb.append(name.toUpperCase());
+            sb.append("_TARGET");
+            if ((i + 1) < call.getParameters().size()) {
+                sb.append(", ");
+            }
+        }
+        if (requiresProcedureCallBrackets()) {
+            sb.append("); ");
+        }
+        sb.append("\n");
+        buildOutAssignments(call, sb);
+        sb.append("\n");
+        sb.append(getBatchEndString());
+        return sb.toString();
+    }
+
+    /**
+     * INTERNAL:
+     * Build the DECLARE stanza of the Anonymous PL/SQL block
+     */
+    protected void buildDeclareBlock(StoredProcedureCall call, StringBuilder sb) {
+
+        for (int i = call.getFirstParameterIndexForCallString();
+            i < call.getParameters().size(); i++) {
+            Object parameter = call.getParameters().get(i);
+            if (parameter instanceof DatabaseField) {
+                DatabaseField databaseField = (DatabaseField)parameter;
+                DatabaseType databaseType = databaseField.getDatabaseType();
+                if (databaseType != null) {
+                    Integer direction = (Integer)call.getParameterTypes().get(i);
+                    String target = databaseType.buildTargetDeclaration(databaseField, direction, i+1);
+                    if (target != null) {
+                        sb.append("\n ");
+                        sb.append(target);
+                    }
+                }
+            }
+            else {
+                Object[] outParameters = (Object[])parameter;
+                Object outParameter = outParameters[0];
+                if (outParameter instanceof DatabaseField) {
+                    DatabaseField databaseField = (DatabaseField)outParameters[0];
+                    DatabaseType databaseType = databaseField.getDatabaseType();
+                    if (databaseType != null) {
+                        Integer direction = (Integer)call.getParameterTypes().get(i);
+                        String target = databaseType.buildTargetDeclaration(databaseField, direction, i+1);
+                        if (target != null) {
+                            sb.append("\n ");
+                            sb.append(target);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Inside the Anonymous PL/SQL block, after the target procedure has been invoked,
+     * assign the value of any '_TARGET' variables from the DECLARE stanza to the
+     * actual out parameter of the PL/SQL block
+     */
+    public void buildOutAssignments(StoredProcedureCall call, StringBuilder sb) {
+
+        for (int i = 0, index = 1, l = call.getParameters().size(); i < l; i++, index++) {
+            Object parameter = call.getParameters().get(i);
+            if (parameter instanceof DatabaseField) {
+                DatabaseField databaseField = (DatabaseField)parameter;
+                DatabaseType databaseType = databaseField.getDatabaseType();
+                if (databaseType != null) {
+                    Integer direction = (Integer)call.getParameterTypes().get(i);
+                    if (direction == INOUT || direction == OUT) {
+                        if (direction == INOUT) {
+                            ++index; 
+                        }
+                        sb.append(databaseType.buildOutAssignment(databaseField, direction,  index));
+                        sb.append("\n ");
+                    }
+                }
+            }
+            else {
+                Object[] outParameters = (Object[])parameter;
+                DatabaseField outParameter = (DatabaseField)outParameters[0];
+                DatabaseType databaseType = outParameter.getDatabaseType();
+                if (databaseType != null) {
+                    Integer direction = (Integer)call.getParameterTypes().get(i);
+                    if (direction == INOUT || direction == OUT) {
+                        if (direction == INOUT) {
+                            ++index; 
+                        }
+                        String target = databaseType.buildOutAssignment(outParameter, direction, index);
+                        if (target != null) {
+                            sb.append(target);
+                            sb.append("\n ");
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+
+    /**
+     * INTERNAL:
+     * TODO - build the BEGIN stanza for Complex database types (PL/SQL records, PL/SQL collections)
+     */
+    public void buildBeginBlock(StoredProcedureCall call, StringBuilder sb) {
+    }
+
+    @Override
+    public void setParameterValuesInDatabaseCall(DatabaseCall call, Vector parameters,
+        PreparedStatement statement, AbstractSession session) throws SQLException {
+        
+        if (call instanceof StoredProcedureCall && ((StoredProcedureCall)call).hasNonJDBCTypes()) {
+            for (int index = 1, i = 0, l = parameters.size(); i < l; i++, index++) {
+                Object parameter = parameters.get(i);
+                setParameterValueInDatabaseCall(parameter, statement, index, session);
+                if (parameter instanceof InOutputParameterForCallableStatement) {
+                    // have to compute the bind index for 'extra' INOUT parameter
+                    InOutputParameterForCallableStatement iopfcstmt = 
+                        (InOutputParameterForCallableStatement)parameter;
+                    DatabaseField databaseField = iopfcstmt.getOutputField();
+                    if (databaseField != null ) {
+                        DatabaseType databaseType = databaseField.getDatabaseType();
+                        if (databaseType != null) {
+                            Integer direction = (Integer)call.getParameterTypes().get(i);
+                            if (direction == INOUT) {
+                                ++index;
+                                iopfcstmt.set(this, statement, index, session);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            super.setParameterValuesInDatabaseCall(call, parameters, statement, session);
+        }
+        
+    }
+
+    /**
      * INTERNAL:
      * Returns null unless the platform supports call with returning
      */
@@ -231,6 +442,14 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
+     * INTERNAL:
+     * DECLARE stanza header for Anonymous PL/SQL block
+     */
+    public String getDeclareBeginString() {
+        return "DECLARE ";
+    }
+
+    /**
      * Used for batch writing and sp defs.
      */
     public String getBatchBeginString() {
@@ -274,7 +493,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                 query = query + " AND OWNER = " + creator;
             }
         }
-        return session.executeSelectingCall(new org.eclipse.persistence.queries.SQLCall(query));
+        return session.executeSelectingCall(new SQLCall(query));
     }
 
     /**
@@ -381,7 +600,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     protected ExpressionOperator logOperator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Log);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        Vector v = NonSynchronizedVector.newInstance(2);
         v.addElement("LOG(");
         v.addElement(", 10)");
         result.printsAs(v);
@@ -456,7 +675,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     protected ExpressionOperator operatorOuterJoin() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.EqualOuterJoin);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        Vector v = NonSynchronizedVector.newInstance(2);
         v.addElement(" (+) = ");
         result.printsAs(v);
         result.bePostfix();
@@ -472,7 +691,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     protected ExpressionOperator operatorLocate() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Locate);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        Vector v = NonSynchronizedVector.newInstance(2);
         v.addElement("INSTR(");
         v.addElement(", ");
         v.addElement(")");
@@ -489,7 +708,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     protected ExpressionOperator operatorLocate2() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Locate2);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        Vector v = NonSynchronizedVector.newInstance(2);
         v.addElement("INSTR(");
         v.addElement(", ");
         v.addElement(", ");

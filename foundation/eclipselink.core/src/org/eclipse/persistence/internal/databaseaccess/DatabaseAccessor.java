@@ -9,14 +9,37 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.util.*;
-import java.sql.*;
-import java.io.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.exceptions.*;
+// javase imports
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
+
+// EclipseLink imports
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.internal.localization.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.LOBValueWriter;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.helper.ThreadCursoredList;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
@@ -24,6 +47,7 @@ import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
+import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
 
 /**
  * INTERNAL:
@@ -972,7 +996,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         try {
             // PERF: Cache the JDBC type in the field to avoid JDBC call.
             int type = field.sqlType;
-            if (type == -1) {
+            if (type == NULL_SQL_TYPE) {
                 type = metaData.getColumnType(columnNumber);
                 field.setSqlType(type);
             }
