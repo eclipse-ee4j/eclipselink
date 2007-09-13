@@ -430,7 +430,7 @@ public class PackageRenamer {
         // Rename the file name if required.
         sourceFileNameWithoutRoot = returnNewFileNameIfRequired(sourceFileNameWithoutRoot);
 
-        String destinationFileName = destinationRootDir.toString() + sourceFile.separator + sourceFileNameWithoutRoot;
+        String destinationFileName = destinationRootDir.toString() + File.separator + sourceFileNameWithoutRoot;
 
         // Reading file into string.
         // stringContainAllFile = readAllStringsFromFile(sourceFileName);
@@ -464,7 +464,7 @@ public class PackageRenamer {
         String[] aStringArrayOfSortedKeyPackageName = new String[aVector.size()];
         aVector.copyInto(aStringArrayOfSortedKeyPackageName);
         Arrays anArray = null;
-        anArray.sort(aStringArrayOfSortedKeyPackageName);
+        Arrays.sort(aStringArrayOfSortedKeyPackageName);
 
         // Starting to rename.
         boolean alreadyPrint = false;

@@ -857,7 +857,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             call.setFields(statement.printSQL(printer));
             printer.printString(END_FROM);
             printer.printString(MAX_ROW);
-            printer.printParameter(call.MAXROW_FIELD);
+            printer.printParameter(DatabaseCall.MAXROW_FIELD);
             printer.printString(MIN_ROW);
             printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
         }else {// firstRow>0

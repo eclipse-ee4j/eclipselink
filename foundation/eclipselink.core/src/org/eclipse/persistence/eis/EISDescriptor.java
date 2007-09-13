@@ -104,7 +104,7 @@ public class EISDescriptor extends ClassDescriptor {
      */
     public InheritancePolicy getInheritancePolicy() {
         if (inheritancePolicy == null) {
-            if(getDataFormat() == this.XML) {
+            if(getDataFormat() == EISDescriptor.XML) {
                 // Lazy initialize to conserve space in non-inherited classes.
                 setInheritancePolicy(new org.eclipse.persistence.internal.oxm.QNameInheritancePolicy(this));
             } else {
