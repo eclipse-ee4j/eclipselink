@@ -236,8 +236,6 @@ public class EntityManagerSetupImpl {
                         }
                     }
                 }
-            //TODO: Ensure queries add correctly
-            // This has been ported from AbstractSession to allow separation of components
             List queries = session.getEjbqlPlaceHolderQueries();
             for (Iterator iterator = queries.iterator(); iterator.hasNext();) {
                 EJBQLPlaceHolderQuery existingQuery = (EJBQLPlaceHolderQuery)iterator.next();
