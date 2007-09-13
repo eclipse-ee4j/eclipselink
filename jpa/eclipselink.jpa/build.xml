@@ -1,5 +1,6 @@
 <project name="Eclipse Persistence Services" default="all" basedir=".">
 
+    <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
 
     <path id="compile.path">
