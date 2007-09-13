@@ -225,7 +225,6 @@ public class FormattedWriterRecord extends WriterRecord {
             try {
             	if (isStartElementOpen) {
                     getWriter().write('>');
-                    isStartElementOpen = false;
             	}
                 getWriter().write(Helper.cr());
                 for (int x = 0; x < numberOfTabs; x++) {
@@ -234,12 +233,12 @@ public class FormattedWriterRecord extends WriterRecord {
                 getWriter().write('<');
                 getWriter().write(qName);
                 numberOfTabs++;
+                isStartElementOpen = true;
                 
                 // Handle attributes
                 handleAttributes(atts);
                 // Handle prefix mappings
                 writePrefixMappings();
-                getWriter().write('>');
             } catch (IOException e) {
                 throw XMLMarshalException.marshalException(e);
             }
@@ -248,6 +247,12 @@ public class FormattedWriterRecord extends WriterRecord {
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
             try {
                 numberOfTabs--;
+                if (isStartElementOpen) {
+                    getWriter().write('/');
+                    getWriter().write('>');
+                    isStartElementOpen = false;
+                    return;
+                }
                 if (complexType) {
                     getWriter().write(Helper.cr());
                     for (int x = 0; x < numberOfTabs; x++) {

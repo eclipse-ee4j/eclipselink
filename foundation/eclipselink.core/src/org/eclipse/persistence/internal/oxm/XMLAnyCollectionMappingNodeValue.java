@@ -27,6 +27,8 @@ import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -101,8 +103,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                     marshalRecord.endElement(xmlRootFragment, namespaceResolver);
                 }
             } else if (((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) && objectValue instanceof org.w3c.dom.Node) {
-                MarshalRecordContentHandler handler = new MarshalRecordContentHandler(marshalRecord, namespaceResolver);
-                marshaller.getTransformer().transform((org.w3c.dom.Node)objectValue, handler);
+                marshalRecord.node((org.w3c.dom.Node)objectValue, marshalRecord.getNamespaceResolver());
             } else {
                 childSession = marshaller.getXMLContext().getSession(objectValue);
                 descriptor = (XMLDescriptor)childSession.getDescriptor(objectValue);
@@ -168,7 +169,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
         return true;
     }
-
+    
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
             // Mixed Content

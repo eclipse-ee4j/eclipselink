@@ -288,17 +288,15 @@ public class WriterRecord extends MarshalRecord {
             try {
             	if (isStartElementOpen) {
                     getWriter().write('>');
-                    isStartElementOpen = false;
             	}
             	
             	writer.write('<');
                 writer.write(qName);
-                
+                isStartElementOpen = true;                
                 // Handle attributes
                 handleAttributes(atts);
                 // Handle prefix mappings
                 writePrefixMappings();
-                writer.write('>');
             } catch (IOException e) {
                 throw XMLMarshalException.marshalException(e);
             }
@@ -306,10 +304,16 @@ public class WriterRecord extends MarshalRecord {
 
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
             try {
+                if (isStartElementOpen) {
+                    getWriter().write('/');
+                    getWriter().write('>');
+                } else {
                 writer.write('<');
                 writer.write('/');
                 writer.write(qName);
                 writer.write('>');
+                }
+                isStartElementOpen = false;
             } catch (IOException e) {
                 throw XMLMarshalException.marshalException(e);
             }
@@ -320,6 +324,14 @@ public class WriterRecord extends MarshalRecord {
         }
 
         public void characters(char[] ch, int start, int length) throws SAXException {
+            if (isStartElementOpen) {
+                try {
+                    getWriter().write('>');
+                    isStartElementOpen = false;
+                } catch (IOException e) {
+                    throw XMLMarshalException.marshalException(e);
+                }
+            }
             writeValue(new String(ch));
         }
 
@@ -348,7 +360,7 @@ public class WriterRecord extends MarshalRecord {
         protected void handleAttributes(Attributes atts) {
             for (int i=0; i<atts.getLength(); i++) {
                 if((atts.getQName(i) != null && atts.getQName(i).startsWith(XMLConstants.XMLNS + ":"))) {
-                    return;
+                    continue;
                 }
                 attribute(atts.getURI(i), atts.getLocalName(i), atts.getQName(i), atts.getValue(i));
             }

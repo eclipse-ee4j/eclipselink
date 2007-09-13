@@ -274,15 +274,21 @@ public class ContentHandlerRecord extends MarshalRecord {
                     attribute(XMLConstants.XMLNS_URL, "",XMLConstants.XMLNS + ":" + attr.getPrefix(), attr.getNamespaceURI());
                 }
             }
-        } else if (node.getNodeType() == Node.TEXT_NODE) {
-            characters(node.getNodeValue());
         } else {
-            XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
-            xfragReader.setContentHandler(contentHandler);
-            try {
-                xfragReader.parse(node);
-            } catch (SAXException sex) {
-                throw XMLMarshalException.marshalException(sex);
+            if (isStartElementOpen) {
+                openAndCloseStartElement();
+                isStartElementOpen = false;
+            }
+            if (node.getNodeType() == Node.TEXT_NODE) {
+                characters(node.getNodeValue());
+            } else {
+                XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
+                xfragReader.setContentHandler(contentHandler);
+                try {
+                    xfragReader.parse(node);
+                } catch (SAXException sex) {
+                    throw XMLMarshalException.marshalException(sex);
+                }
             }
         }
     }
