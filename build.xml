@@ -1,7 +1,7 @@
 <project name="Eclipse Persistence Services" default="all" basedir=".">
 
+    <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
-
 
     <!-- all -->
     <target name="all" depends="package, package.src" description="build EclipseLink jar"/>
