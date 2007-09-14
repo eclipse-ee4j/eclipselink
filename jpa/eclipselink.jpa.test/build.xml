@@ -3,6 +3,12 @@
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
 
+    <property name="test.properties" location="${eclipselink.jpa.test}/test.properties"/>
+    <property file="${test.properties}"/>
+	
+    <property name="test.class" value="org.eclipse.persistence.testing.tests.jpa.FullRegressionTestSuite"/>
+    <property name="eclipselink.logging.level" value="INFO"/>
+	
     <!-- all -->
     <target name="all" depends="clean, init, compile, package" description="build EclipseLink testing jars"/>
 
@@ -13,6 +19,20 @@
         <pathelement path="${javaee.lib}"/>
         <pathelement path="${eclipselink.jar}"/>
         <pathelement path="${junit.lib}"/>
+    </path>
+	
+    <path id="run.classpath">
+    	<pathelement path="${jdbc.driver.jar}"/>
+        <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+        <pathelement path="${eclipselink.jpa.test}/${eclipselink-annotation-model}.jar"/>
+        <pathelement path="${eclipselink.jpa.test}/${eclipselink-ddl-generation-model}.jar"/>
+        <pathelement path="${eclipselink.jpa.test}/${eclipselink-xml-only-model}.jar"/>
+        <pathelement path="${eclipselink.jpa.test}/${eclipselink-xml-merge-model}.jar"/>
+        <pathelement path="${eclipselink.jpa.test}/${eclipselink-validation-failed-model}.jar"/>
+        <pathelement path="${eclipselink.jpa.test}/${eclipselink-advanced-field-access-model}.jar"/>
+        <pathelement path="${eclipselink.jpa.test}/${eclipselink-advanced-properties}.jar"/>
+        <pathelement path="${eclipselink.extension.oracle.test}/${eclipselink-struct-converter-model}.jar"/>
+        <pathelement path="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
     </path>
 
     <target name="init">
@@ -46,6 +66,9 @@
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/framework/**/*.class,
                         org/eclipse/persistence/testing/tests/**/*.class"/>
+            <fileset dir="${eclipselink.extension.oracle.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/tests/spatial/jgeometry/**/*.class,
+                               org/eclipse/persistence/testing/tests/jpa/structconverter/**/*.class"/>
       </jar>
     </target>
 
@@ -160,6 +183,26 @@
         </jar>
     </target>
 
+
+    <target name="test" depends="package">
+        <echo>Running test with ${test.properties} on ${db.url}</echo>
+        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="256m">
+            <jvmarg value="-javaagent:${eclipselink.jar}"/>
+            <jvmarg value="-Dtoplink.logging.level=${eclipselink.logging.level}"/>
+            <jvmarg value="-Dtest.properties=${test.properties}"/>
+            <classpath>
+                <path refid="compile.path"/>
+                <path refid="run.classpath"/>
+            </classpath>
+            <formatter type="plain"/>
+            <test name="${test.class}" haltonfailure="no" outfile="${result.file}">
+            </test>
+        </junit>
+        <fail message="Some of the junit tests failed.  See the ${result.file} file for details." if="junit.failed"/>
+
+    </target>
+	
+	
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"/>
