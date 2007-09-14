@@ -9,10 +9,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.security;
 
+import java.lang.reflect.Method;
 import java.security.PrivilegedExceptionAction;
 
 
-public class PrivilegedGetMethod implements PrivilegedExceptionAction {
+public class PrivilegedGetMethod implements PrivilegedExceptionAction<Method> {
 
     private Class clazz;
     private String methodName;
@@ -25,7 +26,7 @@ public class PrivilegedGetMethod implements PrivilegedExceptionAction {
         this.methodParameterTypes = methodParameterTypes;
     }
 
-    public Object run() throws NoSuchMethodException {
+    public Method run() throws NoSuchMethodException {
         return PrivilegedAccessHelper.getMethod(clazz, methodName, methodParameterTypes, shouldSetAccessible);
     }
 

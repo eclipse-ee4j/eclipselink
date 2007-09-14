@@ -51,7 +51,7 @@ public class WebSphereTransactionController_5_1 extends JTATransactionController
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
                 Class clazz = (Class) AccessController.doPrivileged(new PrivilegedClassForName(TX_MANAGER_FACTORY_CLASS));
-                Method method = (Method)AccessController.doPrivileged(new PrivilegedGetMethod(clazz, TX_MANAGER_FACTORY_METHOD, null, false));
+                Method method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, TX_MANAGER_FACTORY_METHOD, null, false));
                 return (TransactionManager) AccessController.doPrivileged(new PrivilegedMethodInvoker(method, null, null));
             }catch (PrivilegedActionException ex){
                 if (ex.getCause() instanceof ClassNotFoundException){

@@ -264,7 +264,7 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    cloneMethod = (Method)AccessController.doPrivileged(new PrivilegedGetMethod(this.getDelegate().getClass(), "clone", (Class[])null, false));
+                    cloneMethod = AccessController.doPrivileged(new PrivilegedGetMethod(this.getDelegate().getClass(), "clone", (Class[])null, false));
                 } catch (PrivilegedActionException exception) {
                     throw QueryException.cloneMethodRequired();
                 }

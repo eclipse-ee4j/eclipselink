@@ -270,14 +270,14 @@ public class EISPlatform extends DatasourcePlatform {
             argumentTypes[0] = Element.class;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    domMethod = (Method) AccessController.doPrivileged(new PrivilegedGetMethod(record.getClass(), "setDom", argumentTypes, false));
+                    domMethod = AccessController.doPrivileged(new PrivilegedGetMethod(record.getClass(), "setDom", argumentTypes, false));
                 }else{
                     domMethod = PrivilegedAccessHelper.getMethod(record.getClass(), "setDom", argumentTypes, false);
                 }
             } catch (Exception notFound) {
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        domMethod = (Method) AccessController.doPrivileged(new PrivilegedGetMethod(record.getClass(), "setDOM", argumentTypes, false));
+                        domMethod = AccessController.doPrivileged(new PrivilegedGetMethod(record.getClass(), "setDOM", argumentTypes, false));
                     }else{
                         domMethod = PrivilegedAccessHelper.getMethod(record.getClass(), "setDOM", argumentTypes, false);
                     }

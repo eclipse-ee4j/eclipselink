@@ -113,7 +113,7 @@ public class DTD2SessionConfigLoader {
             try {
                 Class[] args = { Node.class, ObjectHolder.class };
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    Method method = (Method)AccessController.doPrivileged(new PrivilegedGetMethod(getClass(), convertNodeToMethodName(childNode), args, false));
+                    Method method = AccessController.doPrivileged(new PrivilegedGetMethod(getClass(), convertNodeToMethodName(childNode), args, false));
                     Object[] objectList = { childNode, sessionConfigHolder };
                     AccessController.doPrivileged(new PrivilegedMethodInvoker(method, this, objectList));
                 }else{
@@ -1108,7 +1108,7 @@ public class DTD2SessionConfigLoader {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     Class[] args = { Node.class, ObjectHolder.class };
-                    Method method = (Method)AccessController.doPrivileged(new PrivilegedGetMethod(getClass(), convertNodeToMethodName(childNode), args, false));
+                    Method method = AccessController.doPrivileged(new PrivilegedGetMethod(getClass(), convertNodeToMethodName(childNode), args, false));
                     Object[] objectList = { childNode, objectHolder };
                     AccessController.doPrivileged(new PrivilegedMethodInvoker(method, this, objectList));
                 }else{
@@ -1134,7 +1134,7 @@ public class DTD2SessionConfigLoader {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     Class[] args = { Node.class, ObjectHolder.class };
-                    Method method = (Method)AccessController.doPrivileged(new PrivilegedGetMethod(getClass(), convertNodeToMethodName(childNode), args, false));
+                    Method method = AccessController.doPrivileged(new PrivilegedGetMethod(getClass(), convertNodeToMethodName(childNode), args, false));
                     Object[] objectList = { childNode, objectHolder };
                     AccessController.doPrivileged(new PrivilegedMethodInvoker(method, this, objectList));
                 }else{

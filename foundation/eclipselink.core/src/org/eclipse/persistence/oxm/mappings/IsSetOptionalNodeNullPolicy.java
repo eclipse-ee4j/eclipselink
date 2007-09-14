@@ -72,7 +72,7 @@ public class IsSetOptionalNodeNullPolicy extends OptionalNodeNullPolicy {
         Class objectClass = object.getClass();
         try {            
             PrivilegedGetMethod privilegedGetMethod = new PrivilegedGetMethod(objectClass, getIsSetMethodName(), getParameterTypes(), false);
-            Method isSetMethod = (Method) privilegedGetMethod.run();
+            Method isSetMethod = privilegedGetMethod.run();
             PrivilegedMethodInvoker privilegedMethodInvoker = new PrivilegedMethodInvoker(isSetMethod, object, parameters); 
             isSet = (Boolean) privilegedMethodInvoker.run();
         } catch(Exception e) {
@@ -95,7 +95,7 @@ public class IsSetOptionalNodeNullPolicy extends OptionalNodeNullPolicy {
         try {
             Class objectClass = object.getClass();
             PrivilegedGetMethod privilegedGetMethod = new PrivilegedGetMethod(objectClass, getIsSetMethodName(), getParameterTypes(), false);
-            Method isSetMethod = (Method) privilegedGetMethod.run();
+            Method isSetMethod = privilegedGetMethod.run();
             PrivilegedMethodInvoker privilegedMethodInvoker = new PrivilegedMethodInvoker(isSetMethod, object, parameters); 
             isSet = (Boolean) privilegedMethodInvoker.run();
         } catch(Exception e) {

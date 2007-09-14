@@ -141,7 +141,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
             // This must not be set "accessible" - clone() must be public, and some JVM's do not allow access to JDK classes.
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return (Method)AccessController.doPrivileged(new PrivilegedGetMethod(javaClass, "clone", (Class[])null, false));
+                    return AccessController.doPrivileged(new PrivilegedGetMethod(javaClass, "clone", (Class[])null, false));
                 } catch (PrivilegedActionException exception) {
                     throw QueryException.methodDoesNotExistInContainerClass("clone", javaClass);
                 }

@@ -293,7 +293,7 @@ public class TransformerFactory {
                 if (checkSuperclass){
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
-                            method = (Method)AccessController.doPrivileged(new PrivilegedGetMethod(clz, getterMethod, null, false));
+                            method = AccessController.doPrivileged(new PrivilegedGetMethod(clz, getterMethod, null, false));
                         } catch (PrivilegedActionException exception) {
                         }
                     } else {

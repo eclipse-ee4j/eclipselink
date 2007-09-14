@@ -83,7 +83,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try{
-                        domMethod = (Method)AccessController.doPrivileged(new PrivilegedGetMethod(record.getClass(), "getDom", null, false));
+                        domMethod = AccessController.doPrivileged(new PrivilegedGetMethod(record.getClass(), "getDom", null, false));
                     }catch (PrivilegedActionException ex){
                         throw (Exception)ex.getCause();
                     }
@@ -94,7 +94,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try{
-                            domMethod = (Method)AccessController.doPrivileged(new PrivilegedGetMethod(record.getClass(), "getDOM", null, false));
+                            domMethod = AccessController.doPrivileged(new PrivilegedGetMethod(record.getClass(), "getDOM", null, false));
                         }catch (PrivilegedActionException ex){
                             throw (Exception)ex.getCause();
                         }

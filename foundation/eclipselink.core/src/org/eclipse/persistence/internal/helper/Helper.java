@@ -837,9 +837,17 @@ public class Helper implements Serializable {
     public static Method getDeclaredMethod(Class javaClass, String methodName, Class[] methodParameterTypes) throws NoSuchMethodException {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
-                return (Method)AccessController.doPrivileged(new PrivilegedGetMethod(javaClass, methodName, methodParameterTypes, true));
-            } catch (PrivilegedActionException exception) {
-                return null;
+                return AccessController.doPrivileged(
+                    new PrivilegedGetMethod(javaClass, methodName, methodParameterTypes, true));
+            }
+            catch (PrivilegedActionException pae){
+                if (pae.getCause() instanceof NoSuchMethodException){
+                    throw (NoSuchMethodException)pae.getCause();
+                }
+                else {
+                    // really shouldn't happen
+                    throw (RuntimeException)pae.getCause();
+                }
             }
         } else {
             return PrivilegedAccessHelper.getMethod(javaClass, methodName, methodParameterTypes, true);
