@@ -31,7 +31,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.oxm.mappings.*;
-import org.eclipse.persistence.oxm.mappings.converters.XMLJavaTypeConverter;
+import org.eclipse.persistence.internal.jaxb.XMLJavaTypeConverter;
 import org.eclipse.persistence.sessions.Project;
 
 /**

@@ -7,7 +7,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.oxm.mappings.converters;
+package org.eclipse.persistence.internal.jaxb;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;

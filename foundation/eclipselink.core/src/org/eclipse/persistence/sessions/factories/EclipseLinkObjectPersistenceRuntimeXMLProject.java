@@ -110,9 +110,9 @@ import org.eclipse.persistence.internal.queries.ListContainerPolicy;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
@@ -319,7 +319,12 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildObjectTypeMappingDescriptor());
         addDescriptor(buildSerializedObjectMappingDescriptor());
         addDescriptor(buildTypeConversionMappingDescriptor());
-        addDescriptor(buildTypesafeEnumConverterDescriptor());
+		try {
+			Class typesafeenumClass = (Class) new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
+			addDescriptor(buildTypesafeEnumConverterDescriptor(typesafeenumClass));
+		} catch (ClassNotFoundException cnfe) {
+			// The JAXB component isn't available, so no need to do anything
+		}
         addDescriptor(buildConverterDescriptor());
         addDescriptor(buildObjectTypeConverterDescriptor());
         addDescriptor(buildSerializedObjectConverterDescriptor());
@@ -3826,9 +3831,13 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.getInheritancePolicy().addClassIndicator(
                 SerializedObjectConverter.class,
                 "eclipselink:serialized-object-converter");
-        descriptor.getInheritancePolicy().addClassIndicator(
-                JAXBTypesafeEnumConverter.class,
-                "eclipselink:typesafe-enumeration-converter");
+
+		try {
+			Class typesafeenumClass = (Class) new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
+			descriptor.getInheritancePolicy().addClassIndicator(typesafeenumClass,"eclipselink:typesafe-enumeration-converter");
+		} catch (ClassNotFoundException cnfe) {
+			// The JAXB component isn't available, so no need to do anything
+		}
 
         return descriptor;
     }
@@ -5559,9 +5568,9 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildTypesafeEnumConverterDescriptor() {
+    protected ClassDescriptor buildTypesafeEnumConverterDescriptor(Class jaxbTypesafeEnumConverter) {
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(JAXBTypesafeEnumConverter.class);
+        descriptor.setJavaClass(jaxbTypesafeEnumConverter);
 
         descriptor.getInheritancePolicy().setParentClass(Converter.class);
         return descriptor;

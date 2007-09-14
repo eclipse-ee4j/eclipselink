@@ -1,0 +1,32 @@
+<project name="MOXy Compilation" default="compile.moxy" basedir=".">
+    <property file="./build.properties"/>
+    <propertyset id="parser.properties">
+	    <propertyref prefix="javax.xml"/>
+	</propertyset>
+    <path id="moxy.compile.path">
+        <pathelement path="${_javaeeJar}"/>
+        <pathelement path="${_junitJar}"/>
+        <pathelement path="${core.classes.dir}"/>
+    </path>
+	<target name="compile.moxy" depends="compile.jaxb"></target>
+	<target name="compile.jaxb" depends="compile.core">
+		<javac srcdir="${jaxb.source.dir}"
+			destdir="${jaxb.classes.dir}"
+			includes="${moxy.package}**/*.java">
+			<classpath>
+				<path refid="moxy.compile.path"/>
+			</classpath>
+		</javac>
+	</target>
+	<target name="compile.core">
+		<!-- Uncomment the following lines to clean and compile the foundation classes before building -->
+		<!--ant antfile="${_foundationDir}/eclipselink.core/build.xml" target="clean" inheritAll="false"/-->
+		<!--ant antfile="${_foundationDir}/eclipselink.core/build.xml" target="all" inheritAll="false"/-->
+	</target>
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${jaxb.classes.dir}"/>
+        </delete>
+		<mkdir dir="${jaxb.classes.dir}"/>
+    </target>
+</project>	
