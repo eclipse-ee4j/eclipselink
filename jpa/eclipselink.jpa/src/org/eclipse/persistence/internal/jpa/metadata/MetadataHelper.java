@@ -457,7 +457,7 @@ public class MetadataHelper {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return (Method)AccessController.doPrivileged(new PrivilegedGetMethod(cls, methodName, params, true));
+                    return AccessController.doPrivileged(new PrivilegedGetMethod(cls, methodName, params, true));
                 } catch (PrivilegedActionException exception) {
                     return null;
                 }

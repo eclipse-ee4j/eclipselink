@@ -325,7 +325,7 @@ public class CMP3Policy extends CMPPolicy {
                             Method method = null;
                             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                                 try {
-                                    method = (Method)AccessController.doPrivileged(new PrivilegedGetMethod(keyClass, buffer.toString(), new Class[] {  }, true));
+                                    method = AccessController.doPrivileged(new PrivilegedGetMethod(keyClass, buffer.toString(), new Class[] {  }, true));
                                 } catch (PrivilegedActionException exception) {
                                     throw (NoSuchMethodException)exception.getException();
                                 }
