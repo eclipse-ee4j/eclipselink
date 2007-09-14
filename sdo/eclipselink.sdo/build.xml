@@ -19,9 +19,8 @@
 		</javac>
     </target>
 	<target name="compile.core">
-		<!-- Uncomment the following line to clean the foundation classes before building -->
-		<!--ant antfile="${_foundationDir}/core/build.xml" target="clean" inheritAll="false"/-->
-		<!--ant antfile="${_foundationDir}/core/build.xml" target="all" inheritAll="false"/-->
+		<!-- Uncomment the following line to compile the foundation classes before building -->
+		<ant antfile="${_foundationDir}/core/build.xml" target="all" inheritAll="false"/>
 	</target>
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
