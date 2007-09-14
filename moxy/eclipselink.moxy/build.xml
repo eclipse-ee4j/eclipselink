@@ -8,7 +8,7 @@
         <pathelement path="${_junitJar}"/>
         <pathelement path="${core.classes.dir}"/>
     </path>
-	<target name="compile.moxy" depends="compile.jaxb"></target>
+	<target name="compile.moxy" depends="clean, compile.jaxb"></target>
 	<target name="compile.jaxb" depends="compile.core">
 		<javac srcdir="${jaxb.source.dir}"
 			destdir="${jaxb.classes.dir}"
@@ -19,9 +19,8 @@
 		</javac>
 	</target>
 	<target name="compile.core">
-		<!-- Uncomment the following lines to clean and compile the foundation classes before building -->
-		<!--ant antfile="${_foundationDir}/eclipselink.core/build.xml" target="clean" inheritAll="false"/-->
-		<!--ant antfile="${_foundationDir}/eclipselink.core/build.xml" target="all" inheritAll="false"/-->
+		<!-- Uncomment the following line to compile the foundation classes before building -->
+		<ant antfile="${_foundationDir}/eclipselink.core/build.xml" target="all" inheritAll="false"/>
 	</target>
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
