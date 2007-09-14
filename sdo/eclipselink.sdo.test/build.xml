@@ -29,8 +29,6 @@
 	<target name="compile.sdo">
 		<ant antfile="../eclipselink.sdo/build.xml" target="compile.sdo" inheritAll="false"/>
 	</target>
-    
-	<!--target name="run.sdo.tests" depends="compile.sdo.tests, jar.sdo"-->
 	<target name="run.sdo.tests" depends="compile.sdo.tests">
 	    <mkdir dir="${tmp.dir}"/>
 		<run-sdo-tests custom-context="false"/>
@@ -84,25 +82,6 @@
 			</delete>
 		</sequential>
 	</macrodef>
-	<!--target name="jar.sdo">
-	    <mkdir dir="${tmp.dir}"/>
-        <jar jarfile="${tmp.dir}/${sdo.tests.jar}">
-            <manifest>
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
-            </manifest>
-            <fileset dir="${test.classes.dir}" includes="**"/>
-            <fileset dir="${test.resource.dir}" includes="**"/>
-        </jar>
-        <jar jarfile="${tmp.dir}/${sdo.source.jar}">
-            <manifest>
-                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
-            </manifest>
-            <fileset dir="${sdo.classes.dir}" includes="**"/>
-        </jar>
-		<copy todir="${tmp.dir}">
-			<fileset dir="${_dependsDir}" includes="${sdo.depend.jars}"/>
-		</copy>
-	</target-->
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${test.classes.dir}"/>
