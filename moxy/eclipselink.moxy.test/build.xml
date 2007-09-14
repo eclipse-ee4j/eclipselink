@@ -4,12 +4,6 @@
 	    <propertyref prefix="javax.xml"/>
 	</propertyset>
     <path id="jaxb.compile.path">
-        <!--fileset
-            dir="${_javaeeDir}"
-            includes="javaee.jar"/>
-        <fileset
-            dir="${_junitDir}"
-            includes="junit.jar"/-->
         <pathelement path="${_javaeeJar}"/>
         <pathelement path="${_junitJar}"/>
         <pathelement path="${jaxb.source.classes.dir}"/>
@@ -22,12 +16,6 @@
         <path refid="jaxb.compile.path"/>
     </path>
     <path id="oxm.compile.path">
-        <!--fileset
-            dir="${_javaeeDir}"
-            includes="javaee.jar"/>
-        <fileset
-            dir="${_junitDir}"
-            includes="junit.jar"/-->
         <pathelement path="${_javaeeJar}"/>
         <pathelement path="${_junitJar}"/>
 		<path refid="jaxb.compile.path"/>
@@ -59,12 +47,10 @@
 	</target>
 	<target name="compile.tests" depends="compile.oxm.tests, compile.jaxb.tests"/>
 	<target name="compile.jaxb">
-		<ant antfile="${basedir}/../eclipselink.moxy/build.xml" target="clean" inheritAll="false"/>
 		<ant antfile="${basedir}/../eclipselink.moxy/build.xml" target="compile.moxy" inheritAll="false"/>
 	</target>
 	<target name="compile.core">
-		<!-- Uncomment the following lines to clean and compile the foundation classes before building -->
-		<ant antfile="${_foundationDir}/eclipselink.core/build.xml" target="clean" inheritAll="false"/>
+		<!-- Uncomment the following line to compile the foundation classes before building -->
 		<ant antfile="${_foundationDir}/eclipselink.core/build.xml" target="all" inheritAll="false"/>
 	</target>
     <target name="clean" description="Clean the build">
@@ -121,7 +107,6 @@
 			<syspropertyset refid="parser.properties"/>
 			<batchtest todir="${oxm.reports.dir}">
 		        <fileset dir="${test.source.dir}">
-					<!-- Run the tests with SAX parsing -->
 					<include name="**/*MappingTestSuite.java"/>
 					<include name="**/InheritanceTestSuite.java"/>
 					<include name="**/XMLMarshalTestCases.java"/>
