@@ -12,11 +12,11 @@ package org.eclipse.persistence.testing.oxm.xmlmarshaller.setschemas;
 import java.net.URL;
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
+import org.xml.sax.ErrorHandler;
 
 public class SetSchemasTestCases extends OXTestCase {
     private static final String VALID_XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlmarshaller/setschemas/valid.xml";
     private static final String INVALID_XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlmarshaller/setschemas/invalid.xml";
-    private XMLMarshaller xmlMarshaller;
     private XMLContext xmlContext;
     private XMLUnmarshaller xmlUnmarshaller;
 
@@ -28,13 +28,14 @@ public class SetSchemasTestCases extends OXTestCase {
         EmployeeProject project = new EmployeeProject();
         xmlContext = getXMLContext(project);
         xmlUnmarshaller = xmlContext.createUnmarshaller();
+        xmlUnmarshaller.setErrorHandler(new MyErrorHandler());
     }
 
     public void testInvalidFile() {
         URL url = ClassLoader.getSystemResource(INVALID_XML_RESOURCE);
         xmlUnmarshaller.unmarshal(url);
     }
-
+   
     public void testValidateInvalidFile() {
         boolean wasExceptionCaught = false;
         try {
@@ -56,5 +57,20 @@ public class SetSchemasTestCases extends OXTestCase {
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.SCHEMA_VALIDATION);
         URL url = ClassLoader.getSystemResource(VALID_XML_RESOURCE);
         xmlUnmarshaller.unmarshal(url);
+    }
+    
+    /**
+     * Error handler implementation for handling parser errors
+     */
+    class MyErrorHandler implements ErrorHandler {
+    	public void warning(org.xml.sax.SAXParseException sex) throws org.xml.sax.SAXParseException {
+    		throw sex;
+    	}
+    	public void error(org.xml.sax.SAXParseException sex) throws org.xml.sax.SAXParseException {
+    		throw sex;
+    	}
+    	public void fatalError(org.xml.sax.SAXParseException sex) throws org.xml.sax.SAXParseException {
+    		throw sex;
+    	}
     }
 }
