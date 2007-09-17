@@ -6134,6 +6134,14 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setJavaClass(org.eclipse.persistence.oxm.XMLLogin.class);
         descriptor.getInheritancePolicy().setParentClass(DatasourceLogin.class);
 
+        XMLDirectMapping equalNamespaceResolversMapping = new XMLDirectMapping();
+        equalNamespaceResolversMapping.setAttributeName("equalNamespaceResolvers");
+        equalNamespaceResolversMapping.setGetMethodName("hasEqualNamespaceResolvers");
+        equalNamespaceResolversMapping.setSetMethodName("setEqualNamespaceResolvers");
+        equalNamespaceResolversMapping.setXPath("eclipselink:equal-namespace-resolvers/text()");
+        equalNamespaceResolversMapping.setNullValue(Boolean.TRUE);
+        descriptor.addMapping(equalNamespaceResolversMapping);
+
         return descriptor;
     }
 
