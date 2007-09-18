@@ -2,6 +2,7 @@
 
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
+    <property file="${eclipselink.jpa.test}/local.build.properties"/>
 
     <property name="test.properties" location="${eclipselink.jpa.test}/test.properties"/>
     <property file="${test.properties}"/>
