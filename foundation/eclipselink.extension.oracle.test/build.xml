@@ -1,28 +1,59 @@
 <project name="Eclipse Persistence Services" default="all" basedir=".">
 
+	<property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
 
+    <path id="compile.path">
+        <pathelement path="${javaee.lib}"/>
+        <pathelement path="${eclipselink.core}/${classes.dir}"/>
+        <pathelement path="${eclipselink.core.test}/${classes.dir}"/>
+        <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
+        <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
+        <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
+        <pathelement path="${oracle.extensions.depend.dir}/${spatial.jar}"/>
+        <pathelement path="${junit.lib}"/>
+    </path>
+	
     <!-- all -->
-    <target name="all" depends="package.structconverter" description="package the struct converter model"/>
-
+    <target name="all" depends="clean, compile, package.structconverter" description="package the struct converter model"/>
+	
+    <!-- compile --> 
+    <target name="compile" depends="" description="compile EclipseLink core tests">  
+        <mkdir dir="${eclipselink.extension.oracle}/${classes.dir}"/>
+        <javac srcdir="${eclipselink.extension.oracle}/${src.dir}" 
+               destdir="${eclipselink.extension.oracle}/${classes.dir}"
+               includes="org/eclipse/persistence/**, deprecated/**"
+               debug="${javac.debug}" 
+               optimize="${javac.optimize}"
+               source="1.5" 
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true">
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+	
     <target name="package.structconverter">
-        <copy todir="${build.dir}/${struct_converter.classes.dir}/META-INF">
+        <copy todir="${eclipselink.extension.oracle}/${build.dir}/${struct_converter.classes.dir}/META-INF">
             <fileset dir="./resource/structconverter" includes="*.xml"/>
         </copy>
-        <copy todir="${build.dir}/${struct_converter.classes.dir}">
+        <copy todir="${eclipselink.extension.oracle}/${build.dir}/${struct_converter.classes.dir}">
             <fileset dir="${classes.dir}"
                      includes="org/eclipse/persistence/testing/models/jpa/structconverter/**"/>
         </copy>
-        <jar jarfile="eclipselink-struct-converter-model.jar">
-            <fileset dir="${build.dir}/${struct_converter.classes.dir}">
+        <jar jarfile="${eclipselink.extension.oracle}/eclipselink-struct-converter-model.jar">
+            <fileset dir="${eclipselink.extension.oracle}/${build.dir}/${struct_converter.classes.dir}">
             </fileset>
         </jar>
     </target>
 
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${classes.dir}"/>
-            <fileset dir="${struct_converter.classes.dir}"/>
+            <fileset dir="${eclipselink.extension.oracle}/${classes.dir}"/>
+            <fileset dir="${eclipselink.extension.oracle}/${struct_converter.classes.dir}"/>
         </delete>
     </target>
 
