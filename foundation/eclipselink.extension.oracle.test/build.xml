@@ -10,7 +10,9 @@
         <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
         <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
         <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
-        <pathelement path="${oracle.extensions.depend.dir}/${spatial.jar}"/>
+        <fileset
+            dir="${oracle.extensions.depend.dir}"
+            includes="${oracle.extensions.depend.jars}"/>
         <pathelement path="${junit.lib}"/>
     </path>
 	
