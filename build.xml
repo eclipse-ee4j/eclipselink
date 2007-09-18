@@ -10,6 +10,8 @@
         <ant antfile="${eclipselink.core}/build.xml" target="all"/>
         <ant antfile="${eclipselink.extension.oracle}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.jpa.test}/build.xml" target="all"/>
 
         <jar jarfile="${eclipselink.jar}"
             manifest="${eclipselink.core}/${resource.dir}/META-INF/manifest.mf">
@@ -50,6 +52,10 @@
               <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.java"/>
           </fileset>
       </zip>
+    </target>
+
+    <target name="test.jpa" description="run the jpa tests">
+            <ant antfile="${eclipselink.jpa.test}/build.xml" target="test"/>
     </target>
 
     <target name="clean" description="Clean the build">
