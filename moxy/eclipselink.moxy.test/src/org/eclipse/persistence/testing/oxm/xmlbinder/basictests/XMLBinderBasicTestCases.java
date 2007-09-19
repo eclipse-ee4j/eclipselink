@@ -44,6 +44,7 @@ public class XMLBinderBasicTestCases extends OXTestCase {
         binder = context.createBinder();
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setIgnoringElementContentWhitespace(true);
+        builderFactory.setNamespaceAware(true);
         parser = builderFactory.newDocumentBuilder();
     }
 
