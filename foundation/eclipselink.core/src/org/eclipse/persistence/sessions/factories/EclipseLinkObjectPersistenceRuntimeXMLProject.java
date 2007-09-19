@@ -6135,14 +6135,14 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.getInheritancePolicy().setParentClass(DatasourceLogin.class);
 
         XMLDirectMapping equalNamespaceResolversMapping = new XMLDirectMapping();
-        equalNamespaceResolversMapping.setAttributeName("equalNamespaceResolvers");
-        equalNamespaceResolversMapping.setGetMethodName("hasEqualNamespaceResolvers");
-        equalNamespaceResolversMapping.setSetMethodName("setEqualNamespaceResolvers");
-        equalNamespaceResolversMapping.setXPath("eclipselink:equal-namespace-resolvers/text()");
-        equalNamespaceResolversMapping.setNullValue(Boolean.TRUE);
-        descriptor.addMapping(equalNamespaceResolversMapping);
-
-        return descriptor;
+		equalNamespaceResolversMapping.setAttributeName("equalNamespaceResolvers");
+		equalNamespaceResolversMapping.setGetMethodName("hasEqualNamespaceResolvers");
+		equalNamespaceResolversMapping.setSetMethodName("setEqualNamespaceResolvers");
+		equalNamespaceResolversMapping.setXPath("eclipselink:equal-namespace-resolvers/text()");
+		equalNamespaceResolversMapping.setNullValue(Boolean.TRUE);
+		descriptor.addMapping(equalNamespaceResolversMapping);
+		
+		return descriptor;
     }
 
     protected ClassDescriptor buildNamespaceResolverDescriptor() {
