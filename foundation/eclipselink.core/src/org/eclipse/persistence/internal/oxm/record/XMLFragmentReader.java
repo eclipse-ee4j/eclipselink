@@ -19,6 +19,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
@@ -42,7 +43,15 @@ public class XMLFragmentReader extends DOMReader {
         tmpresolverMap = new HashMap<Element, NamespaceResolver>();
     }
     
-    protected void reportElementEvents(Element elem, Object obk) throws SAXException {
+    public void parse (Node node) throws SAXException {
+        if (node.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE) {
+        	handleChildNodes(node.getChildNodes());
+        } else {
+        	super.parse(node);
+        }
+    }
+
+    protected void reportElementEvents(Element elem) throws SAXException {
         super.reportElementEvents(elem);
         // Clean up any temporary namespace resolvers created while processing this element
         cleanupNamespaceResolvers(elem);
