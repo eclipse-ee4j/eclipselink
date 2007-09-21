@@ -19,6 +19,7 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
+import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -101,9 +102,9 @@ public class DOMReader extends XMLReader {
             return;
         }
         Element rootNode = null;
-        if(node.getNodeType() == Node.DOCUMENT_NODE) {
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
             rootNode = ((Document)node).getDocumentElement();
-        }  else {
+        } else {
             rootNode = (Element)node;
         }
         startDocument();
@@ -198,6 +199,11 @@ public class DOMReader extends XMLReader {
             if(next.getNodeType() == Node.TEXT_NODE) {
                 char[] value = ((Text)next).getNodeValue().toCharArray();
                 getContentHandler().characters(value, 0, value.length);
+            } else if(next.getNodeType() == Node.COMMENT_NODE) {
+                char[] value = ((Comment)next).getNodeValue().toCharArray();
+                if (lexicalHandler != null) {
+                	lexicalHandler.comment(value, 0, value.length);
+                }
             } else if(next.getNodeType() == Node.ELEMENT_NODE) {
                 Element childElement = (Element)next;
                 reportElementEvents(childElement);
