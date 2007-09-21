@@ -7,5 +7,6 @@
 	<classpathentry kind="var" path="COMMONJ_SDO_LIB"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="TOOLS_LIB"/>
+	<classpathentry kind="lib" path="resource"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
