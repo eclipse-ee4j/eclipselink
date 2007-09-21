@@ -27,7 +27,7 @@
         <pathelement path="${test.classes.dir}"/>
         <pathelement path="${jaxb.source.classes.dir}"/>
     </path>
-	<target name="run.tests" depends="compile.tests, clean.report, run.oxm.tests, run.oxm.deploymentxml.tests, run.oxm.docpres.tests,run.jaxb.tests, update.package.names, junit.report"/>
+	<target name="run.tests" depends="compile.tests, clean.report, run.oxm.tests, run.oxm.sax.tests, run.oxm.deploymentxml.tests, run.oxm.docpres.tests,run.jaxb.tests, update.package.names, junit.report"/>
 	<target name="compile.tests" depends="clean, compile.core, compile.jaxb, compile.oxm.tests, compile.jaxb.tests"/>
     <target name="clean">
         <delete includeEmptyDirs="true" failonerror="false">
@@ -100,6 +100,38 @@
 	    <mkdir dir="${oxm.default.reports.dir}"/>
 	    <mkdir dir="${tmp.dir}"/>
         <junit printsummary="yes" fork="true" dir="${basedir}/resource" showoutput="yes">
+		    <env key="T_WORK" value="${tmp.dir}"/>
+		    <sysproperty key="useDeploymentXML" value="false"/>
+			<sysproperty key="useSAXParsing" value="false"/>
+			<sysproperty key="useDocPres" value="false"/>
+			<sysproperty key="useLogging" value="false"/>
+			<sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+			<sysproperty key="parser" value="${parser}"/>
+			<syspropertyset refid="parser.properties"/>
+			<batchtest todir="${oxm.default.reports.dir}">
+		        <fileset dir="${test.source.dir}">
+					<include name="**/*TestSuite.java"/>
+					<include name="**/ClassLoaderTestCases.java"/>
+					<exclude name="**/JAXBSAXTestSuite.java"/>
+					<exclude name="**/JAXBTestSuite.java"/>
+					<exclude name="**/OXTestSuite.java"/>
+					<exclude name="**/OneTo*TestSuite.java"/>
+					<exclude name="**/DeploymentXMLOXTestSuite.java"/>						
+					<exclude name="org/eclipse/persistence/testing/oxm/mappings/MappingTestSuite.java"/>
+					<exclude name="org/eclipse/persistence/testing/oxm/mappings/DeploymentXMLMappingTestSuite.java"/>
+					<exclude name="org/eclipse/persistence/testing/oxm/mappings/DocPresMappingTestSuite.java"/>
+					<exclude name="org/eclipse/persistence/testing/oxm/mappings/SAXMappingTestSuite.java"/>
+					<exclude name="org/eclipse/persistence/testing/oxm/mappings/anyobjectandanycollection/XMLAnyObjectAndAnyCollectionMappingTestSuite.java"/>
+	    		</fileset>
+		    	<formatter type="xml"/>
+    		</batchtest>
+	    	<classpath refid="oxm.run.path"/>
+		</junit>
+	</target>
+    <target name="run.oxm.sax.tests">
+	    <mkdir dir="${oxm.sax.reports.dir}"/>
+	    <mkdir dir="${tmp.dir}"/>
+        <junit printsummary="yes" fork="true" dir="${basedir}/resource" showoutput="yes">
 		    <sysproperty key="useDeploymentXML" value="false"/>
 			<sysproperty key="useSAXParsing" value="true"/>
 			<sysproperty key="useDocPres" value="false"/>
@@ -107,7 +139,7 @@
 			<sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
 			<sysproperty key="parser" value="${parser}"/>
 			<syspropertyset refid="parser.properties"/>
-			<batchtest todir="${oxm.default.reports.dir}">
+			<batchtest todir="${oxm.sax.reports.dir}">
 		        <fileset dir="${test.source.dir}">
 					<include name="**/*MappingTestSuite.java"/>
 					<include name="**/InheritanceTestSuite.java"/>
@@ -205,15 +237,20 @@
 	    	<classpath refid="oxm.run.path"/>
 		</junit>
 	</target>
-	<target name="update.package.names">
+	<target name="update.package.names" depends="update.sax.package, update.deploymentxml.package, update.docpres.package"/>
+	<target name="update.sax.package">
+		<replace dir="${oxm.sax.reports.dir}" value='"org.eclipse.persistence.testing.oxm.sax'
+			token='"org.eclipse.persistence.testing.oxm'>
+			  <include name="**/*.xml"/>
+		</replace>
+	</target>
+	<target name="update.deploymentxml.package">
 		<replace dir="${oxm.deploymentxml.reports.dir}" value='"org.eclipse.persistence.testing.oxm.deploymentxml'
 			token='"org.eclipse.persistence.testing.oxm'>
 			  <include name="**/*.xml"/>
 		</replace>
-		<!--replace dir="${oxm.sax.reports.dir}" value='"org.eclipse.persistence.testing.oxm.sax'
-			token='"org.eclipse.persistence.testing.oxm'>
-			  <include name="**/*.xml"/>
-		</replace-->
+	</target>
+	<target name="update.docpres.package">
 		<replace dir="${oxm.docpres.reports.dir}" value='"org.eclipse.persistence.testing.oxm.docpres'
 			token='"org.eclipse.persistence.testing.oxm'>
 			  <include name="**/*.xml"/>
@@ -228,6 +265,7 @@
 			<report format="noframes" todir="${oxm.reports.dir}"/>
 		</junitreport>		
         <delete dir="${oxm.default.reports.dir}" failonerror="false"/>
+        <delete dir="${oxm.sax.reports.dir}" failonerror="false"/>
         <delete dir="${oxm.deploymentxml.reports.dir}" failonerror="false"/>
         <delete dir="${oxm.docpres.reports.dir}" failonerror="false"/>
         <delete failonerror="false">
