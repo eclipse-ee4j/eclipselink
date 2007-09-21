@@ -25,6 +25,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
 
 /**
  * <p>Use this type of MarshalRecord when the marshal target is a Writer and the
@@ -50,6 +51,7 @@ import org.xml.sax.SAXException;
 public class WriterRecord extends MarshalRecord {
     protected Writer writer;
     protected boolean isStartElementOpen = false;
+    protected boolean isProcessingCData = false;
 
     /**
      * Return the Writer that the object will be marshalled to.
@@ -258,10 +260,11 @@ public class WriterRecord extends MarshalRecord {
         } else if (node.getNodeType() == Node.TEXT_NODE) {
             characters(node.getNodeValue());
         } else {
-            WriterRecordContentHandler wrcHandler = new WriterRecordContentHandler();
-            XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
-            xfragReader.setContentHandler(wrcHandler);
             try {
+                WriterRecordContentHandler wrcHandler = new WriterRecordContentHandler();
+                XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
+                xfragReader.setContentHandler(wrcHandler);
+                xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", wrcHandler);
                 xfragReader.parse(node);
             } catch (SAXException sex) {
                 throw XMLMarshalException.marshalException(sex);
@@ -277,21 +280,22 @@ public class WriterRecord extends MarshalRecord {
      * 
      * @see org.eclipse.persistence.internal.oxm.record.XMLFragmentReader
      */
-    protected class WriterRecordContentHandler implements ContentHandler {
+    protected class WriterRecordContentHandler implements ContentHandler, LexicalHandler {
         Map<String, String> prefixMappings;
         
         WriterRecordContentHandler() {
             prefixMappings = new HashMap<String, String>();
         }
         
+        // --------------------- CONTENTHANDLER METHODS --------------------- //
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
             try {
             	if (isStartElementOpen) {
                     getWriter().write('>');
             	}
             	
-            	writer.write('<');
-                writer.write(qName);
+            	getWriter().write('<');
+            	getWriter().write(qName);
                 isStartElementOpen = true;                
                 // Handle attributes
                 handleAttributes(atts);
@@ -308,10 +312,10 @@ public class WriterRecord extends MarshalRecord {
                     getWriter().write('/');
                     getWriter().write('>');
                 } else {
-                writer.write('<');
-                writer.write('/');
-                writer.write(qName);
-                writer.write('>');
+                        getWriter().write('<');
+                        getWriter().write('/');
+                        getWriter().write(qName);
+                        getWriter().write('>');
                 }
                 isStartElementOpen = false;
             } catch (IOException e) {
@@ -324,6 +328,11 @@ public class WriterRecord extends MarshalRecord {
         }
 
         public void characters(char[] ch, int start, int length) throws SAXException {
+            if (isProcessingCData) {
+            	cdata(new String (ch, start, length));
+            	return;
+            }
+            
             if (isStartElementOpen) {
                 try {
                     getWriter().write('>');
@@ -332,23 +341,44 @@ public class WriterRecord extends MarshalRecord {
                     throw XMLMarshalException.marshalException(e);
                 }
             }
-            writeValue(new String(ch));
+        	writeValue(new String(ch, start, length));
         }
 
+        // --------------------- LEXICALHANDLER METHODS --------------------- //
+		public void comment(char[] ch, int start, int length) throws SAXException {
+            try {
+            	if (isStartElementOpen) {
+	                getWriter().write('>');
+                    isStartElementOpen = false;
+                }
+            	writeComment(ch, start, length);
+            } catch (IOException e) {
+            	throw XMLMarshalException.marshalException(e);
+            }
+		}
+		
+		public void startCDATA() throws SAXException {
+			isProcessingCData = true;
+		}
+		
+		public void endCDATA() throws SAXException {
+			isProcessingCData = false;
+		}
+        
         // --------------------- CONVENIENCE METHODS --------------------- //
         protected void writePrefixMappings() {
             try {
                 if (!prefixMappings.isEmpty()) {
                     for (java.util.Iterator<String> keys = prefixMappings.keySet().iterator(); keys.hasNext();) {
                         String prefix = keys.next();
-                        writer.write(' ');
-                        writer.write(XMLConstants.XMLNS);
-                        writer.write(":");
-                        writer.write(prefix);
-                        writer.write('=');
-                        writer.write('"');
-                        writer.write((String) prefixMappings.get(prefix));
-                        writer.write('"');
+                        getWriter().write(' ');
+                        getWriter().write(XMLConstants.XMLNS);
+                        getWriter().write(":");
+                        getWriter().write(prefix);
+                        getWriter().write('=');
+                        getWriter().write('"');
+                        getWriter().write((String) prefixMappings.get(prefix));
+                        getWriter().write('"');
                     }
                     prefixMappings.clear();
                 }
@@ -366,6 +396,32 @@ public class WriterRecord extends MarshalRecord {
             }
         }
         
+        protected void writeComment(char[] chars, int start, int length) {
+            try {
+                getWriter().write('<');
+                getWriter().write('!');
+                getWriter().write('-');
+                getWriter().write('-');
+                for (int x = start; x < length; x++) {
+                    getWriter().write(chars[x]);
+                }
+                getWriter().write('-');
+                getWriter().write('-');
+                getWriter().write('>');
+            } catch (IOException e) {
+                throw XMLMarshalException.marshalException(e);
+            }
+        }
+        
+        protected void writeCharacters(char[] chars, int start, int length) {
+            try {
+                for (int x = start; x < length; x++) {
+                    getWriter().write(chars[x]);
+                }
+            } catch (IOException e) {
+                throw XMLMarshalException.marshalException(e);
+            }
+        }
         // --------------- SATISFY CONTENTHANDLER INTERFACE --------------- //
         public void endPrefixMapping(String prefix) throws SAXException {}
         public void processingInstruction(String target, String data) throws SAXException {}
@@ -374,5 +430,11 @@ public class WriterRecord extends MarshalRecord {
         public void endDocument() throws SAXException {}
         public void skippedEntity(String name) throws SAXException {}
         public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {}
+
+        // --------------- SATISFY LEXICALHANDLER INTERFACE --------------- //
+        public void startEntity(String name) throws SAXException {}
+		public void endEntity(String name) throws SAXException {}
+		public void startDTD(String name, String publicId, String systemId) throws SAXException {}
+		public void endDTD() throws SAXException {}
     }
 }

@@ -42,10 +42,12 @@ import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.w3c.dom.Attr;
+import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
@@ -270,8 +272,11 @@ public class XMLMarshaller {
         try {
             OutputStreamWriter writer = new OutputStreamWriter(outputStream, getEncoding());
             marshal(object, writer);
+            writer.flush();
         } catch (UnsupportedEncodingException exception) {
             throw XMLMarshalException.marshalException(exception);
+        } catch (Exception ex) {
+            throw XMLMarshalException.marshalException(ex);
         }
     }
 
@@ -286,19 +291,33 @@ public class XMLMarshaller {
         if ((object == null) || (writer == null)) {
             throw XMLMarshalException.nullArgumentException();
         }
+        boolean isXMLRoot = false;
+        String version = DEFAULT_XML_VERSION;
+        String encoding = getEncoding();
+        if (object instanceof XMLRoot) {
+        	isXMLRoot = true;
+        	
+        	// UNCOMMENT THE FOLLOWING AFTER NEXT MAIN MERGE INTO ECLIPSELINK 
+        	/*
+        	XMLRoot xroot = (XMLRoot) object;
+        	version  = xroot.getVersion()  != null ? xroot.getVersion()  : version;
+        	encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
+        	*/
+        }
 
-        boolean isXMLRoot = (object instanceof XMLRoot);
         XMLDescriptor xmlDescriptor = getDescriptor(object, isXMLRoot);
         AbstractSession session = xmlContext.getSession(xmlDescriptor);
+        
+        WriterRecord writerRecord;
+        if (isFormattedOutput()) {
+            writerRecord = new FormattedWriterRecord();
+        } else {
+            writerRecord = new WriterRecord();
+        }
+        writerRecord.setWriter(writer);
+        
         //if this is a simple xml root, the session and descriptor will be null
         if (session == null || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
-            WriterRecord writerRecord;
-            if (isFormattedOutput()) {
-                writerRecord = new FormattedWriterRecord();
-            } else {
-                writerRecord = new WriterRecord();
-            }
-            writerRecord.setWriter(writer);
             marshal(object, writerRecord, xmlDescriptor, isXMLRoot);
             try {
                 writer.flush();
@@ -310,7 +329,13 @@ public class XMLMarshaller {
 
         try {
             Node xmlDocument = objectToXMLNode(object, xmlDescriptor, isXMLRoot);
-            transformer.transform(xmlDocument, writer);
+            if (isFragment()) {
+                writerRecord.node(xmlDocument, xmlDescriptor.getNamespaceResolver());
+            } else {
+	        	writerRecord.startDocument(encoding, version);
+	            writerRecord.node(xmlDocument, xmlDescriptor.getNamespaceResolver());
+	        	writerRecord.endDocument();
+            }
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.marshalException(e);
         }

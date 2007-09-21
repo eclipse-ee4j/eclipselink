@@ -200,10 +200,11 @@ public class FormattedWriterRecord extends WriterRecord {
                 }
             }
         } else {
-            FormattedWriterRecordContentHandler wrcHandler = new FormattedWriterRecordContentHandler();
-            XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
-            xfragReader.setContentHandler(wrcHandler);
             try {
+                FormattedWriterRecordContentHandler wrcHandler = new FormattedWriterRecordContentHandler();
+                XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
+                xfragReader.setContentHandler(wrcHandler);
+	            xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", wrcHandler);
                 xfragReader.parse(node);
             } catch (SAXException sex) {
                 throw XMLMarshalException.marshalException(sex);
@@ -221,6 +222,7 @@ public class FormattedWriterRecord extends WriterRecord {
      * @see org.eclipse.persistence.oxm.record.WriterRecord.WriterRecordContentHandler
      */
     private class FormattedWriterRecordContentHandler extends WriterRecordContentHandler {
+        // --------------------- CONTENTHANDLER METHODS --------------------- //
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
             try {
             	if (isStartElementOpen) {
@@ -268,11 +270,30 @@ public class FormattedWriterRecord extends WriterRecord {
         }
 
         public void characters(char[] ch, int start, int length) throws SAXException {
+        	if (isProcessingCData) {
+            	cdata(new String (ch, start, length));
+        		return;
+        	}
         	if (new String(ch).trim().length() == 0) {
         		return;
         	}        	
             super.characters(ch, start, length);
             complexType = false;
         }
+        
+        // --------------------- LEXICALHANDLER METHODS --------------------- //
+		public void comment(char[] ch, int start, int length) throws SAXException {
+            try {
+            	if (isStartElementOpen) {
+	                getWriter().write('>');
+	                getWriter().write(Helper.cr());
+                    isStartElementOpen = false;
+                }
+            	writeComment(ch, start, length);
+                complexType = false;
+            } catch (IOException e) {
+            	throw XMLMarshalException.marshalException(e);
+            }
+		}
     }
 }
