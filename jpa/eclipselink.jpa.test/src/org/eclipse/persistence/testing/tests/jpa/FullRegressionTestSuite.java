@@ -170,7 +170,7 @@ public class FullRegressionTestSuite extends TestSuite{
 
         try{
 	        Class structConverterClass = Class.forName("org.eclipse.persistence.testing.tests.jpa.structconverter.StructConverterTestSuite");
-	        Test testCase = (Test)(structConverterClass.getMethod("suite", null).invoke(null, null));
+	        Test testCase = (Test)(structConverterClass.getMethod("suite", (Class[])null).invoke(null, (Object[])null));
 	        fullSuite.addTest(testCase);
         } catch (Exception e){
         	// TODO print a proper warning

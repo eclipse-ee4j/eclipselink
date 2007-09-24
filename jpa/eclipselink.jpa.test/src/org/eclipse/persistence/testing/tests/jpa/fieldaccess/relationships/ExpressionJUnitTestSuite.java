@@ -88,10 +88,9 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
                 }
-            }finally{
-                em.close();
-                throw e;
             }
+            em.close();
+            throw e;
         }
     }
 
@@ -139,10 +138,9 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
                 }
-            }finally{
-                em.close();
-                throw e;
             }
+            em.close();
+            throw e;
         }
     }
     
@@ -195,10 +193,9 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
                 }
-            }finally{
-                em.close();
-                throw e;
             }
+            em.close();
+            throw e;
         }
     }
 
@@ -247,10 +244,9 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
                 }
-            }finally{
-                em.close();
-                throw e;
             }
+            em.close();
+            throw e;
         }
     }
 
@@ -302,10 +298,9 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
                 }
-            }finally{
-                em.close();
-                throw e;
             }
+            em.close();
+            throw e;
         }
     }
 
@@ -357,10 +352,9 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
                 }
-            }finally{
-                em.close();
-                throw e;
             }
+            em.close();
+            throw e;
         }
     }
 
@@ -407,10 +401,9 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
                 }
-            }finally{
-                em.close();
-                throw e;
             }
+            em.close();
+            throw e;
         }
     }
 
@@ -457,10 +450,9 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
                 }
-            }finally{
-                em.close();
-                throw e;
             }
+            em.close();
+            throw e;
         }
     }
 
