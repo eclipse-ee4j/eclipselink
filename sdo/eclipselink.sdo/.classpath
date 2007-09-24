@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/eclipselink.core"/>
-	<classpathentry exported="true" kind="lib" path="/eclipselink.sdo.lib/commonj.sdo.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/eclipselink.sdo.lib"/>
 	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
