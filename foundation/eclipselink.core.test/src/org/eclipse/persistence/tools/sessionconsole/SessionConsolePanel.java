@@ -842,8 +842,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 Object value;
                 try {
                     value = 
-                            newClass.getMethod("exec", null).invoke(newInstance, 
-                                                                    null);
+                            newClass.getMethod("exec", (Class[])null).invoke(newInstance, 
+                                                                    (Object[])null);
                 } catch (java.lang.reflect.InvocationTargetException exception) {
                     throw exception.getCause();
                 }

@@ -24,7 +24,7 @@ public class Budget {
 
     public Budget(double amount) {
         super();
-        amount = amount;
+        this.amount = amount;
         currency = "CDN";
     }
 

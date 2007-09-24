@@ -37,7 +37,7 @@ public class BudgettedProject extends BaseProject {
     }
 
     public void setTitle(String thing) {
-        this.title = title;
+        this.title = thing;
     }
 
     public String toString() {

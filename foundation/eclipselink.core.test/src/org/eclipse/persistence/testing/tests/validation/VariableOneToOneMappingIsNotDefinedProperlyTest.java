@@ -53,7 +53,7 @@ public class VariableOneToOneMappingIsNotDefinedProperlyTest extends ExceptionTe
 
     protected void setup() {
 
-        descriptor = descriptor = ((DatabaseSession)getSession()).getDescriptor(Actor.class);
+        descriptor = ((DatabaseSession)getSession()).getDescriptor(Actor.class);
         mapping = (VariableOneToOneMapping)descriptor.getMappingForAttributeName("program");
 
         sourceField = new DatabaseField("ACTOR.PROGRAM_ID");
