@@ -47,7 +47,7 @@ public class EclipseLinkQueryHints {
     * such as ReadObjectQuery which can be used for queries that are know to return a single object, and has different caching semantics.
     * Valid values are all declared in QueryType class.
     */
-    public static final String QUERY_TYPE = "toplink.query-type";
+    public static final String QUERY_TYPE = "eclipselink.query-type";
     
    /**
     * Configures  the query to acquire a pessimisitc lock (write-lock) on the resulting rows in the database.

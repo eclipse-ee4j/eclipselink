@@ -258,7 +258,7 @@ public class PersistenceUnitProperties {
     /** INTERNAL: The following properties will not be displayed through logging but instead have an alternate value shown in the log. */
     public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<String, String>(1);
     //for gf3334, this property force persistence context to read through JTA-managed ("write") connection in case there is an active transaction.    
-    public static final String JOIN_EXISTING_TRANSACTION = "toplink.transaction.join-existing";
+    public static final String JOIN_EXISTING_TRANSACTION = "eclipselink.transaction.join-existing";
     static {
         PROPERTY_LOG_OVERRIDES.put(JDBC_PASSWORD, "xxxxxx");
     }
