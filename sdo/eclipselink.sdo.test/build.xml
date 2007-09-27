@@ -1,59 +1,87 @@
-<project name="Compile SDO Testing" default="run.sdo.tests"  basedir=".">
+<project name="Compile SDO Testing" default="run.sdo.tests">
     <property file="./build.properties"/>
     <propertyset id="parser.properties">
 	    <propertyref prefix="javax.xml"/>
 	</propertyset>
     <path id="sdo.compile.path">
-        <pathelement path="${sdo.classes.dir}"/>
-        <pathelement path="${core.classes.dir}"/>
-        <pathelement path="${_javaeeJar}"/>
-        <pathelement path="${_junitJar}"/>
-        <fileset dir="${_dependsDir}" includes="${sdo.depend.jars}"/>
+        <pathelement path="${eclipselink.sdo}/${classes.dir}"/>
+        <pathelement path="${eclipselink.core}/${classes.dir}"/>
+        <pathelement path="${javaee.lib}"/>
+        <pathelement path="${junit.lib}"/>
+        <pathelement path="${commonj.sdo.lib}"/>
     </path>
     <path id="sdo.run.path">
 		<path refid="sdo.compile.path"/>
-        <pathelement path="${_toolsJar}"/>
-        <pathelement path="${test.resource.dir}"/>
-        <pathelement path="${test.classes.dir}"/>
-        <pathelement path="${asm.classes.dir}"/>
+        <pathelement path="${tools.lib}"/>
+        <pathelement path="${eclipselink.sdo.test}/${resource.dir}"/>
+        <pathelement path="${eclipselink.sdo.test}/${classes.dir}"/>
+        <pathelement path="${asm}/${classes.dir}"/>
     </path>
-	<target name="compile.sdo.tests" depends="clean, compile.sdo">
-	   <javac srcdir="${test.source.dir}"
-              destdir="${test.classes.dir}"
-              includes="${sdo.package}**/*.java">
+
+	<!-- Clean targets -->
+    <target name="clean" description="clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.sdo.test}/${classes.dir}"/>
+        </delete>
+		<mkdir dir="${eclipselink.sdo.test}/${classes.dir}"/>
+    </target>
+
+	<!-- Build targets -->
+	<target name="compile.sdo.tests" depends="clean, compile.sdo" description="build sdo test classes">
+	   <javac srcdir="${eclipselink.sdo.test}/${src.dir}"
+              destdir="${eclipselink.sdo.test}/${classes.dir}"
+              includes="org/eclipse/persistence/testing/sdo/**/*.java">
 			  <classpath>
                   <path refid="sdo.compile.path"/>
               </classpath>
 		</javac>
 	</target>
-	<target name="compile.sdo">
-		<ant antfile="../eclipselink.sdo/build.xml" target="compile.sdo" inheritAll="false"/>
+	<target name="compile.sdo" description="build sdo classes">
+		<ant antfile="${eclipselink.sdo}/build.xml" target="compile.sdo" inheritAll="false"/>
 	</target>
-	<target name="run.sdo.tests" depends="compile.sdo.tests">
-	    <mkdir dir="${tmp.dir}"/>
-		<run-sdo-tests custom-context="false"/>
-		<delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${tmp.dir}"/>
-        </delete>
+
+	<!-- Run targets -->
+	<target name="run.sdo.tests" depends="compile.sdo.tests" description="run sdo tests">
+	    <mkdir dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
+		<run-sdo-tests custom-context="true"/>
+		<!--run-sdo-tests custom-context="false"/-->
+		<!-- Clean up generated files -->
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/baseTypes"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/complextypes"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/elements"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/invalidtypename"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/list"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/nestedBaseTypes"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/poJavaDocs"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/poJavaDocsListener"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/schemaTypes"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcImports"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcImportsDontProcess"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcPO"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcPOAnnotations"/>
+        <delete dir="${eclipselink.sdo.test}/${resource.dir}/union"/>
 	</target>
+
+	<!-- Test run macros -->
     <macrodef name="run-sdo-tests">
         <attribute name="custom-context"/>
         <sequential>
-			<delete dir="${sdo.reports.dir}/@{custom-context}"/>
-			<mkdir dir="${sdo.reports.dir}/@{custom-context}"/>
+			<delete dir="${report.dir}/@{custom-context}"/>
+			<mkdir dir="${report.dir}/@{custom-context}"/>
 			<echo message="customContext=@{custom-context}"/>
-			<junit printsummary="withOutAndErr" fork="yes" dir="${test.resource.dir}" maxmemory="512m" showoutput="yes">
+			<junit printsummary="withOutAndErr" fork="yes" dir="${eclipselink.sdo.test}/${resource.dir}" maxmemory="512m" showoutput="yes">
 				<sysproperty key="loggingLevelFinest" value="false"/>
 				<sysproperty key="customContext" value="@{custom-context}"/>
-				<sysproperty key="eclipselink.xml.platform" value="${eclipselink.xml.platform}"/>
+				<sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
 				<sysproperty key="tempFileDir" value="${tmp.dir}"/>
 				<sysproperty key="ignoreCRLF" value="true"/>
 				<sysproperty key="useLogging" value="false"/>
-				<sysproperty key="sdo.classgen.compile.path" value="${sdo.run.path}"/>
+				<sysproperty key="sdo.classgen.compile.path" value="${sdo.classgen.run.path}"/>
 				<sysproperty key="useSAXParsing" value="true"/>
 				<sysproperty key="useDeploymentXML" value="false"/>
 				<sysproperty key="jaxb.test.contextpath" value="oracle.toplink.testing.ox.jaxb.sax"/>
-				<batchtest todir="${sdo.reports.dir}/@{custom-context}">
+				<batchtest todir="${report.dir}/@{custom-context}">
 					<fileset dir="src">
 						<include name="**/*TestSuite.java"/>
 						<exclude name="org/eclipse/persistence/testing/sdo/SDOTestSuite.java"/>
@@ -68,24 +96,18 @@
 				</batchtest>
 				<classpath refid="sdo.run.path"/>
 			</junit>
-			<mkdir dir="${sdo.reports.dir}/@{custom-context}"/>
-			<junitreport todir="${sdo.reports.dir}/@{custom-context}">
-				<fileset dir="${sdo.reports.dir}/@{custom-context}">
+			<mkdir dir="${report.dir}/@{custom-context}"/>
+			<junitreport todir="${report.dir}/@{custom-context}">
+				<fileset dir="${report.dir}/@{custom-context}">
 					<include name="**/*.xml"/>
 				</fileset>
-				<report format="noframes" todir="${sdo.reports.dir}/@{custom-context}"/>
+				<report format="noframes" todir="${report.dir}/@{custom-context}"/>
 			</junitreport> 
 			<delete includeEmptyDirs="true" failonerror="false">
-				<fileset dir="${sdo.reports.dir}/@{custom-context}">
+				<fileset dir="${report.dir}/@{custom-context}">
 					<include name="**/*.xml"/>
 				</fileset>
 			</delete>
 		</sequential>
 	</macrodef>
-    <target name="clean" description="Clean the build">
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${test.classes.dir}"/>
-        </delete>
-		<mkdir dir="${test.classes.dir}"/>
-    </target>
 </project>
