@@ -951,7 +951,8 @@ public abstract class DatabaseCall extends DatasourceCall {
                 } else if (parameterType == LITERAL) {
                     parametersValues.add(parameter);
                 } else if (parameterType == IN) {
-                    Object value = getValueForInParameter(parameter, translationRow, modifyRow, session, true);
+                    Object value = getValueForInParameter(parameter, parametersValues, 
+                        translationRow, modifyRow, session, true);
                     parametersValues.add(value);
                 } else if (parameterType == INOUT) {
                     Object value = getValueForInOutParameter(parameter, translationRow, modifyRow, session);

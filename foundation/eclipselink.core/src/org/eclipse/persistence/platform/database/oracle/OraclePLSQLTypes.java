@@ -11,6 +11,7 @@
 package org.eclipse.persistence.platform.database.oracle;
 
 // Javse imports
+import static java.sql.Types.OTHER;
 
 // Java extension imports
 
@@ -71,17 +72,24 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
         this.typeName = typeName;
     }
 
+    public boolean isComplexDatabaseType() {
+        return false;
+    }
     public int getTypeCode() {
-        return java.sql.Types.OTHER; // same as oracle.jdbc.OracleTypes.OTHER
+        return OTHER;
     }
 
     public String getTypeName() {
         return typeName;
     }
-
+    
     public String buildTargetDeclaration(DatabaseField databaseField, Integer direction, int index) {
         return databaseTypeHelper.buildTargetDeclaration(databaseField.getName(), getTypeName(),
             direction, index);
+    }
+
+    public String buildBeginBlock(DatabaseField databaseField, Integer direction, int i) {
+        return null;
     }
 
     public String buildOutAssignment(DatabaseField databaseField, Integer direction, int index) {

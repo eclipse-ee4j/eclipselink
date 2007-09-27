@@ -630,7 +630,7 @@ public abstract class DatasourceCall implements Call {
                         appendParameter(writer, value, session);
                     } else if (parameterType == IN) {
                         Object parameter = parameterFields.get(parameterIndex);
-                        Object value = getValueForInParameter(parameter, translationRow, modifyRow, session, false);
+                        Object value = getValueForInParameter(parameter, null, translationRow, modifyRow, session, false);
                         appendParameter(writer, value, session);
                     } else if (parameterType == INOUT) {
                         Object parameter = parameterFields.get(parameterIndex);
@@ -655,7 +655,10 @@ public abstract class DatasourceCall implements Call {
      * In case shouldBind==true tries to return a DatabaseField with type instead of null,
      * returns null only in case no DatabaseField with type was found.
      */
-    protected Object getValueForInParameter(Object parameter, AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session, boolean shouldBind) {
+    protected Object getValueForInParameter(Object parameter, Vector parameterValues,
+        AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session,
+        boolean shouldBind) {
+        
         Object value = parameter;
 
         // Parameter expressions are used for nesting and correct mapping conversion of the value.
@@ -712,7 +715,7 @@ public abstract class DatasourceCall implements Call {
     protected Object getValueForInOutParameter(Object parameter, AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
         // parameter ts an array of two Objects: inParameter and outParameter
         Object inParameter = ((Object[])parameter)[0];
-        Object inValue = getValueForInParameter(inParameter, translationRow, modifyRow, session, true);
+        Object inValue = getValueForInParameter(inParameter, null, translationRow, modifyRow, session, true);
         Object outParameter = ((Object[])parameter)[1];
         return createInOutParameter(inValue, outParameter, session);
     }

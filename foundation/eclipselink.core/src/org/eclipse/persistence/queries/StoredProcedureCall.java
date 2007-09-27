@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.InOutputParameterForCallableStatement;
 import org.eclipse.persistence.internal.databaseaccess.OutputParameterForCallableStatement;
+import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -174,7 +175,6 @@ public class StoredProcedureCall extends DatabaseCall {
         field.setDatabaseType(databaseType);
         appendIn(field);
     }
-
 
     /**
      * PUBLIC:
@@ -516,7 +516,18 @@ public class StoredProcedureCall extends DatabaseCall {
     public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName,
         DatabaseType databaseType) {
         getProcedureArgumentNames().add(procedureParameterName);
-        DatabaseField field = new DatabaseField(argumentFieldName);
+        
+        DatabaseField field = null;
+        if (databaseType.isComplexDatabaseType()) {
+            field = new ObjectRelationalDatabaseField(argumentFieldName);
+            field.setSqlType(databaseType.getTypeCode());
+            ((ObjectRelationalDatabaseField)field).setSqlTypeName(
+                ((ComplexDatabaseType)databaseType).getTypeName());
+            ((ComplexDatabaseType)databaseType).setCall(this);
+        }
+        else {
+            field = new DatabaseField(argumentFieldName);
+        }
         field.setDatabaseType(databaseType);
         appendOut(field);
     }
@@ -534,28 +545,45 @@ public class StoredProcedureCall extends DatabaseCall {
         boolean hasNonJDBCTypes = false;
         int size = getParameters().size();
         for (int i = 0; i < size; i++) {
-            Object parameter = getParameters().get(i);
-            DatabaseField fieldParameter = null;
-            if (parameter instanceof DatabaseField) {
-                fieldParameter = (DatabaseField)parameter;
-            }
-            else if (parameter instanceof OutputParameterForCallableStatement) {
-                fieldParameter = ((OutputParameterForCallableStatement)parameter).getOutputField();
-            }
-            else if (parameter instanceof Object []) {
-                Object[] outParameters = (Object[])parameter;
-                Object outParameter = outParameters[0];
-                if (outParameter instanceof DatabaseField) {
-                    fieldParameter = (DatabaseField)outParameter;
-                }
-            }
-            if (fieldParameter != null && fieldParameter.getDatabaseType() != null &&
-                (fieldParameter.getDatabaseType() instanceof OraclePLSQLType)) {
+            if (isNonJDBCParameter(getParameters().get(i))) {
                 hasNonJDBCTypes = true;
                 break;
             }
         }
         return hasNonJDBCTypes;
+    }
+    
+    protected DatabaseField getFieldParameterFor(Object parameter) {
+
+        DatabaseField fieldParameter = null;
+        if (parameter instanceof DatabaseField) {
+            fieldParameter = (DatabaseField)parameter;
+        }
+        else if (parameter instanceof OutputParameterForCallableStatement) {
+            fieldParameter = ((OutputParameterForCallableStatement)parameter).getOutputField();
+        }
+        else if (parameter instanceof Object []) {
+            Object[] outParameters = (Object[])parameter;
+            Object outParameter = outParameters[0];
+            if (outParameter instanceof DatabaseField) {
+                fieldParameter = (DatabaseField)outParameter;
+            }
+        }
+        if (fieldParameter != null && fieldParameter.getDatabaseType() != null &&
+            (fieldParameter.getDatabaseType() instanceof OraclePLSQLType)) {
+        }
+        return fieldParameter;
+    }
+    
+    protected boolean isNonJDBCParameter(Object parameter) {
+
+        boolean isNonJDBCParameter = false;
+        DatabaseField fieldParameter = getFieldParameterFor(parameter);
+        if (fieldParameter != null && fieldParameter.getDatabaseType() != null &&
+            (fieldParameter.getDatabaseType() instanceof OraclePLSQLType)) {
+            isNonJDBCParameter = true;
+        }
+        return isNonJDBCParameter;
     }
 
     /**
@@ -878,7 +906,8 @@ public class StoredProcedureCall extends DatabaseCall {
      * inout parameter to be shuffled down.
      */
     @Override
-    public AbstractRecord buildOutputRow(CallableStatement statement) throws SQLException {
+    public AbstractRecord buildOutputRow(CallableStatement statement)
+        throws SQLException {
         
         if (!hasNonJDBCTypes()) {
             return super.buildOutputRow(statement);
@@ -896,20 +925,32 @@ public class StoredProcedureCall extends DatabaseCall {
                 // TODO - borrowed verbatim from implementation in DatabaseCall; this should be
                 // refactored
                 if (!outParameter.isCursor()) {
-                    Object value = statement.getObject(index);
-                    DatabaseField field = outParameter.getOutputField();
-                    if (value instanceof Struct){
-                        ClassDescriptor descriptor = this.getQuery().getSession().getDescriptor(field.getType());
-                        if ((value!=null) && (descriptor!=null) && (descriptor.isObjectRelationalDataTypeDescriptor())){
-                            AbstractRecord nestedRow = ((ObjectRelationalDataTypeDescriptor)descriptor).buildRowFromStructure((Struct)value);
-                            ReadObjectQuery query = new ReadObjectQuery();
-                            query.setSession(this.getQuery().getSession());
-                            value = descriptor.getObjectBuilder().buildObject(query, nestedRow);
-                        }
-                    } else if ((value instanceof Array)&&( field.isObjectRelationalDatabaseField() )){
-                        value = ObjectRelationalDataTypeDescriptor.buildContainerFromArray((Array)value, (ObjectRelationalDatabaseField)field, this.getQuery().getSession());
+                    DatabaseField outputField = outParameter.getOutputField();
+                    DatabaseType databaseType = outputField.getDatabaseType();
+                    if (databaseType != null && databaseType.isComplexDatabaseType()) {
+                        ((ComplexDatabaseType)databaseType).buildOutputRow(row, statement, index);
                     }
-                    row.put(field, value);
+                    else {
+                        Object value = statement.getObject(index);
+                        DatabaseField field = outParameter.getOutputField();
+                        if (value instanceof Struct){
+                            ClassDescriptor descriptor = this.getQuery().getSession().getDescriptor(field.getType());
+                            if ((value!=null) && (descriptor!=null) && 
+                                (descriptor.isObjectRelationalDataTypeDescriptor())){
+                                AbstractRecord nestedRow = 
+                                    ((ObjectRelationalDataTypeDescriptor)descriptor).
+                                        buildRowFromStructure((Struct)value);
+                                ReadObjectQuery query = new ReadObjectQuery();
+                                query.setSession(this.getQuery().getSession());
+                                value = descriptor.getObjectBuilder().buildObject(query, nestedRow);
+                            }
+                        } else if ((value instanceof Array)&&( field.isObjectRelationalDatabaseField() )){
+                            value = ObjectRelationalDataTypeDescriptor.buildContainerFromArray(
+                                (Array)value, (ObjectRelationalDatabaseField)field,
+                                this.getQuery().getSession());
+                        }
+                        row.put(field, value);
+                    }
                 }
             }
         }
@@ -917,6 +958,30 @@ public class StoredProcedureCall extends DatabaseCall {
         return row;
     }
     
+    @Override
+    protected Object getValueForInParameter(Object parameter, Vector parameterValues,
+        AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session,
+        boolean shouldBind) {
+        
+        DatabaseField fieldParameter = getFieldParameterFor(parameter);
+        if (!isNonJDBCParameter(fieldParameter)) {
+            return super.getValueForInParameter(parameter, parameterValues, translationRow,
+                modifyRow, session, shouldBind);
+        }
+        else {
+            DatabaseType databaseType = fieldParameter.getDatabaseType();
+            if (databaseType.isComplexDatabaseType()) {
+               ComplexDatabaseType complexDatabaseType = (ComplexDatabaseType)databaseType;
+               return complexDatabaseType.getValueForInParameter(parameter, parameterValues,
+                   translationRow, modifyRow, session, shouldBind);
+            }
+            else {
+                return super.getValueForInParameter(parameter, parameterValues, translationRow,
+                    modifyRow, session, shouldBind);
+            }
+        }
+    }
+   
     /**
      * INTERNAL:
      * Return call header for the call string.

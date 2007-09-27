@@ -28,10 +28,12 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.databaseaccess.InOutputParameterForCallableStatement;
+import org.eclipse.persistence.internal.databaseaccess.OutputParameterForCallableStatement;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -345,38 +347,99 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * TODO - build the BEGIN stanza for Complex database types (PL/SQL records, PL/SQL collections)
      */
     public void buildBeginBlock(StoredProcedureCall call, StringBuilder sb) {
+
+        for (int i = call.getFirstParameterIndexForCallString();
+            i < call.getParameters().size(); i++) {
+            call.getParameterTypes().get(i);
+            Object parameter = call.getParameters().get(i);
+            if (parameter instanceof DatabaseField) {
+                DatabaseField databaseField = (DatabaseField)parameter;
+                DatabaseType databaseType = databaseField.getDatabaseType();
+                if (databaseType != null) {
+                    Integer direction = (Integer)call.getParameterTypes().get(i);
+                    String target = databaseType.buildBeginBlock(databaseField, direction, i+1);
+                    if (target != null) {
+                        sb.append(target);
+                        sb.append("\n ");
+                    }
+                }
+            }
+            else {
+                Object[] outParameters = (Object[])parameter;
+                Object outParameter = outParameters[0];
+                if (outParameter instanceof DatabaseField) {
+                    DatabaseField databaseField = (DatabaseField)outParameters[0];
+                    DatabaseType databaseType = databaseField.getDatabaseType();
+                    if (databaseType != null) {
+                        Integer direction = (Integer)call.getParameterTypes().get(i);
+                        String target = databaseType.buildBeginBlock(databaseField, direction, i+1);
+                        if (target != null) {
+                            sb.append(target);
+                            sb.append("\n ");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public void setParameterValuesInDatabaseCall(DatabaseCall call, Vector parameters,
         PreparedStatement statement, AbstractSession session) throws SQLException {
         
-        if (call instanceof StoredProcedureCall && ((StoredProcedureCall)call).hasNonJDBCTypes()) {
-            for (int index = 1, i = 0, l = parameters.size(); i < l; i++, index++) {
-                Object parameter = parameters.get(i);
-                setParameterValueInDatabaseCall(parameter, statement, index, session);
-                if (parameter instanceof InOutputParameterForCallableStatement) {
-                    // have to compute the bind index for 'extra' INOUT parameter
-                    InOutputParameterForCallableStatement iopfcstmt = 
-                        (InOutputParameterForCallableStatement)parameter;
-                    DatabaseField databaseField = iopfcstmt.getOutputField();
-                    if (databaseField != null ) {
-                        DatabaseType databaseType = databaseField.getDatabaseType();
-                        if (databaseType != null) {
-                            Integer direction = (Integer)call.getParameterTypes().get(i);
-                            if (direction == INOUT) {
-                                ++index;
-                                iopfcstmt.set(this, statement, index, session);
+        if (!(call instanceof StoredProcedureCall)) {
+            super.setParameterValuesInDatabaseCall(call, parameters, statement, session);
+        }
+        else {
+            StoredProcedureCall spc = (StoredProcedureCall)call;
+            if (spc.hasNonJDBCTypes()) {
+                for (int index = 1, i = 0, l = parameters.size(); i < l; i++, index++) {
+                    spc.getParameters();
+                    Object parameter = parameters.get(i);
+                    setParameterValueInDatabaseCall(parameter, statement, index, session);
+                    if (parameter instanceof InOutputParameterForCallableStatement) {
+                        // have to compute the bind index for 'extra' INOUT parameter
+                        InOutputParameterForCallableStatement iopfcstmt = 
+                            (InOutputParameterForCallableStatement)parameter;
+                        DatabaseField databaseField = iopfcstmt.getOutputField();
+                        if (databaseField != null ) {
+                            DatabaseType databaseType = databaseField.getDatabaseType();
+                            if (databaseType != null) {
+                                Integer direction = (Integer)call.getParameterTypes().get(i);
+                                if (direction == INOUT) {
+                                    ++index;
+                                    iopfcstmt.set(this, statement, index, session);
+                                }
                             }
                         }
                     }
                 }
             }
+            else {
+                super.setParameterValuesInDatabaseCall(call, parameters, statement, session);
+            }
+        }
+    }
+    
+    @Override
+    protected boolean setComplexParameterValue(final AbstractSession session, 
+        final PreparedStatement statement, final int index, Object parameter) throws SQLException {
+    
+        if (parameter != null && parameter instanceof OutputParameterForCallableStatement) {
+            OutputParameterForCallableStatement opfcs = 
+                (OutputParameterForCallableStatement)parameter;
+            DatabaseType databaseType = opfcs.getOutputField().getDatabaseType();
+            if (databaseType != null && databaseType.isComplexDatabaseType()) {
+                ((ComplexDatabaseType)databaseType).setComplexOutParameterValue(statement, index);
+            }
+            else {
+                super.setComplexParameterValue(session, statement, index, parameter);
+            }
         }
         else {
-            super.setParameterValuesInDatabaseCall(call, parameters, statement, session);
+            super.setComplexParameterValue(session, statement, index, parameter);
         }
-        
+        return true;
     }
 
     /**

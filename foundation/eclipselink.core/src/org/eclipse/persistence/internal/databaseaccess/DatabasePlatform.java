@@ -1734,7 +1734,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Set a complex parameter.
      * @return true if parameter was successfully set by this method, false otherwise.
      */
-    private boolean setComplexParameterValue(final AbstractSession session, final PreparedStatement statement, final int index, Object parameter) throws SQLException {
+    protected boolean setComplexParameterValue(final AbstractSession session, final PreparedStatement statement, final int index, Object parameter) throws SQLException {
         if (parameter == null) {
             // no DatabaseField available
             statement.setNull(index, getJDBCType((Class)null));

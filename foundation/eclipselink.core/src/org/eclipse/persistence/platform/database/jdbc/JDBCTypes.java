@@ -110,6 +110,10 @@ public enum JDBCTypes implements JDBCType {
             this.typeCode = typeCode;
             this.typeName = typeName;
         }
+        
+        public boolean isComplexDatabaseType() {
+            return false;
+        }
 
         public int getTypeCode() {
             return typeCode;
@@ -123,6 +127,10 @@ public enum JDBCTypes implements JDBCType {
             int index) {
             return databaseTypeHelper.buildTargetDeclaration(databaseField.getName(), getTypeName(),
                 direction, index);
+        }
+
+        public String buildBeginBlock(DatabaseField databaseField, Integer direction, int i) {
+            return null;
         }
 
         public String buildOutAssignment(DatabaseField databaseField, Integer direction, int index) {

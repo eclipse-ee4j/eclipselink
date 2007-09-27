@@ -28,6 +28,8 @@ import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INO
  */
 public interface DatabaseType {
 
+    public boolean isComplexDatabaseType();
+    
     public int getTypeCode();
 
     public String getTypeName();
@@ -38,6 +40,8 @@ public interface DatabaseType {
 
     public void setConversionType(DatabaseField databaseField);
 
+    public String buildBeginBlock(DatabaseField databaseField, Integer direction, int i);
+    
     public enum DatabaseTypeHelper {
         databaseTypeHelper;
 
