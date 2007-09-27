@@ -1,15 +1,14 @@
-<project name="Compile SDO" default="compile.sdo"  basedir=".">
+<project name="EclipseLink SDO Build" default="compile.sdo">
+    <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
     <path id="sdo.compile.path">
-        <fileset
-            dir="${_dependsDir}"
-            includes="${sdo.depend.jars}"/>
-        <pathelement path="${asm.lib.dir}"/>
-		<pathelement path="${core.classes.dir}"/>
+        <pathelement path="${commonj.sdo.lib}"/>
+        <pathelement path="${asm}/${classes.dir}"/>
+		<pathelement path="${eclipselink.core}/${classes.dir}"/>
     </path>
-	<target name="compile.sdo" depends="clean, compile.core">
-        <javac srcdir="${sdo.source.dir}" 
-               destdir="${sdo.classes.dir}"
+	<target name="compile.sdo" depends="clean, compile.core" description="build sdo classes">
+        <javac srcdir="${eclipselink.sdo}/${src.dir}" 
+               destdir="${eclipselink.sdo}/${classes.dir}"
                includes="**/*.java"
 			   memoryMaximumSize="512m"
 			   fork="true">
@@ -18,14 +17,13 @@
             </classpath>
 		</javac>
     </target>
-	<target name="compile.core">
-		<!-- Uncomment the following line to compile the foundation classes before building -->
-		<ant antfile="${_foundationDir}/core/build.xml" target="all" inheritAll="false"/>
+	<target name="compile.core" description="build core classes">
+		<ant antfile="${eclipselink.core}/build.xml" target="all" inheritAll="false"/>
 	</target>
-    <target name="clean" description="Clean the build">
+    <target name="clean" description="clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${sdo.classes.dir}"/>
+            <fileset dir="${eclipselink.sdo}/${classes.dir}"/>
         </delete>
-		<mkdir dir="${sdo.classes.dir}"/>
+		<mkdir dir="${eclipselink.sdo}/${classes.dir}"/>
     </target>
 </project>	
