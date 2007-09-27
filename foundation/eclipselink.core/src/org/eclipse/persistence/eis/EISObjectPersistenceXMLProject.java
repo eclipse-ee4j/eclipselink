@@ -31,9 +31,9 @@ import org.eclipse.persistence.sessions.*;
 
 /**
  * INTERNAL:
- * <p><code>EISObjectPersistenceXMLProject</code> defines the TopLink EIS 
- * project and descriptor information to read a TopLink project from an XML 
- * file.  The EIS meta-data must be defined seperately as it has seperate jar 
+ * <p><code>EISObjectPersistenceXMLProject</code> defines the EclipseLink EIS 
+ * project and descriptor information to read a EclipseLink project from an XML 
+ * file.  The EIS meta-data must be defined separately as it has separate jar 
  * dependencies that must not be required if not using EIS.
  */
 public class EISObjectPersistenceXMLProject extends Project {
@@ -59,8 +59,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         NamespaceResolver namespaceResolver = new NamespaceResolver();
         namespaceResolver.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaceResolver.put("xsd", "http://www.w3.org/2001/XMLSchema");
-        namespaceResolver.put("opm", "http://xmlns.oracle.com/ias/xsds/opm");
-        namespaceResolver.put("toplink", "http://xmlns.oracle.com/ias/xsds/toplink");
+        namespaceResolver.put("eclipselink", "http://xmlns.oracle.com/ias/xsds/eclipselink");
 
         for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
             XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
@@ -78,11 +77,11 @@ public class EISObjectPersistenceXMLProject extends Project {
         structureMapping.setAttributeName("dataTypeName");
         structureMapping.setGetMethodName("getDataTypeName");
         structureMapping.setSetMethodName("setDataTypeName");
-        structureMapping.setXPath("toplink:datatype/text()");
+        structureMapping.setXPath("eclipselink:datatype/text()");
         descriptor.addMapping(structureMapping);
 
         XMLCompositeObjectMapping namespaceResolverMapping = new XMLCompositeObjectMapping();
-        namespaceResolverMapping.setXPath("toplink:namespace-resolver");
+        namespaceResolverMapping.setXPath("eclipselink:namespace-resolver");
         namespaceResolverMapping.setAttributeName("namespaceResolver");
         namespaceResolverMapping.setGetMethodName("getNamespaceResolver");
         namespaceResolverMapping.setSetMethodName("setNamespaceResolver");
@@ -102,7 +101,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         functionNameMapping.setAttributeName("functionName");
         functionNameMapping.setGetMethodName("getFunctionName");
         functionNameMapping.setSetMethodName("setFunctionName");
-        functionNameMapping.setXPath("toplink:function-name/text()");
+        functionNameMapping.setXPath("eclipselink:function-name/text()");
         functionNameMapping.setNullValue("");
         descriptor.addMapping(functionNameMapping);
 
@@ -110,7 +109,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         inputRecordNameMapping.setAttributeName("inputRecordName");
         inputRecordNameMapping.setGetMethodName("getInputRecordName");
         inputRecordNameMapping.setSetMethodName("setInputRecordName");
-        inputRecordNameMapping.setXPath("toplink:input-record-name/text()");
+        inputRecordNameMapping.setXPath("eclipselink:input-record-name/text()");
         inputRecordNameMapping.setNullValue("");
         descriptor.addMapping(inputRecordNameMapping);
 
@@ -118,7 +117,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         inputRootElementNameMapping.setAttributeName("inputRootElementName");
         inputRootElementNameMapping.setGetMethodName("getInputRootElementName");
         inputRootElementNameMapping.setSetMethodName("setInputRootElementName");
-        inputRootElementNameMapping.setXPath("toplink:input-root-element-name/text()");
+        inputRootElementNameMapping.setXPath("eclipselink:input-root-element-name/text()");
         inputRootElementNameMapping.setNullValue("");
         descriptor.addMapping(inputRootElementNameMapping);
 
@@ -126,7 +125,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         inputResultPathMapping.setAttributeName("inputResultPath");
         inputResultPathMapping.setGetMethodName("getInputResultPath");
         inputResultPathMapping.setSetMethodName("setInputResultPath");
-        inputResultPathMapping.setXPath("toplink:input-result-path/text()");
+        inputResultPathMapping.setXPath("eclipselink:input-result-path/text()");
         inputResultPathMapping.setNullValue("");
         descriptor.addMapping(inputResultPathMapping);
 
@@ -134,7 +133,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         outputResultPathMapping.setAttributeName("outputResultPath");
         outputResultPathMapping.setGetMethodName("getOutputResultPath");
         outputResultPathMapping.setSetMethodName("setOutputResultPath");
-        outputResultPathMapping.setXPath("toplink:output-result-path/text()");
+        outputResultPathMapping.setXPath("eclipselink:output-result-path/text()");
         outputResultPathMapping.setNullValue("");
         descriptor.addMapping(outputResultPathMapping);
 
@@ -190,7 +189,7 @@ public class EISObjectPersistenceXMLProject extends Project {
                 }
             });
         argumentsMapping.setAttributeName("arguments");
-        argumentsMapping.setXPath("toplink:input-arguments/toplink:argument");
+        argumentsMapping.setXPath("eclipselink:input-arguments/eclipselink:argument");
         argumentsMapping.setReferenceClass(InteractionArgument.class);
         descriptor.addMapping(argumentsMapping);
 
@@ -227,7 +226,7 @@ public class EISObjectPersistenceXMLProject extends Project {
                 }
             });
         outputArgumentsMapping.setAttributeName("outputArguments");
-        outputArgumentsMapping.setXPath("toplink:output-arguments/toplink:argument");
+        outputArgumentsMapping.setXPath("eclipselink:output-arguments/eclipselink:argument");
         outputArgumentsMapping.setReferenceClass(InteractionArgument.class);
         descriptor.addMapping(outputArgumentsMapping);
 
@@ -245,14 +244,14 @@ public class EISObjectPersistenceXMLProject extends Project {
         connectionSpecClassMapping.setGetMethodName("getConnectionSpec");
         connectionSpecClassMapping.setSetMethodName("setConnectionSpec");
         connectionSpecClassMapping.setConverter(new ClassInstanceConverter());
-        connectionSpecClassMapping.setXPath("toplink:connection-spec-class/text()");
+        connectionSpecClassMapping.setXPath("eclipselink:connection-spec-class/text()");
         descriptor.addMapping(connectionSpecClassMapping);
 
         XMLDirectMapping connectionFactoryURLMapping = new XMLDirectMapping();
         connectionFactoryURLMapping.setAttributeName("connectionFactoryURL");
         connectionFactoryURLMapping.setGetMethodName("getConnectionFactoryURL");
         connectionFactoryURLMapping.setSetMethodName("setConnectionFactoryURL");
-        connectionFactoryURLMapping.setXPath("toplink:connection-factory-url/text()");
+        connectionFactoryURLMapping.setXPath("eclipselink:connection-factory-url/text()");
         descriptor.addMapping(connectionFactoryURLMapping);
 
         return descriptor;
@@ -281,7 +280,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         valueMapping.setAttributeName("value");
         valueMapping.setGetMethodName("getValue");
         valueMapping.setSetMethodName("setValue");
-        valueMapping.setField(buildTypedField("toplink:argument-value/text()"));
+        valueMapping.setField(buildTypedField("eclipselink:argument-value/text()"));
         descriptor.addMapping(valueMapping);
 
         return descriptor;
@@ -362,14 +361,14 @@ public class EISObjectPersistenceXMLProject extends Project {
                 }
             });
         sourceToTargetKeyFieldAssociationsMapping.setAttributeName("sourceToTargetKeyFieldAssociations");
-        sourceToTargetKeyFieldAssociationsMapping.setXPath("opm:foreign-key/opm:field-reference");
+        sourceToTargetKeyFieldAssociationsMapping.setXPath("eclipselink:foreign-key/eclipselink:field-reference");
         descriptor.addMapping(sourceToTargetKeyFieldAssociationsMapping);
 
         XMLCompositeCollectionMapping foreignKeyFieldNamesMapping = new XMLCompositeCollectionMapping();
         foreignKeyFieldNamesMapping.setAttributeName("foreignKeyFields");
         foreignKeyFieldNamesMapping.setGetMethodName("getForeignKeyFields");
         foreignKeyFieldNamesMapping.setSetMethodName("setForeignKeyFields");
-        foreignKeyFieldNamesMapping.setXPath("opm:foreign-key-fields/opm:field");
+        foreignKeyFieldNamesMapping.setXPath("eclipselink:foreign-key-fields/eclipselink:field");
         foreignKeyFieldNamesMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(foreignKeyFieldNamesMapping);
 
@@ -377,7 +376,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         relationshipPartnerAttributeNameMapping.setAttributeName("relationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setGetMethodName("getRelationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setSetMethodName("setRelationshipPartnerAttributeName");
-        relationshipPartnerAttributeNameMapping.setXPath("toplink:bidirectional-target-attribute/text()");
+        relationshipPartnerAttributeNameMapping.setXPath("eclipselink:bidirectional-target-attribute/text()");
         descriptor.addMapping(relationshipPartnerAttributeNameMapping);
 
         XMLCompositeObjectMapping indirectionPolicyMapping = new XMLCompositeObjectMapping();
@@ -401,7 +400,7 @@ public class EISObjectPersistenceXMLProject extends Project {
                 }
             });
         indirectionPolicyMapping.setAttributeName("indirectionPolicy");
-        indirectionPolicyMapping.setXPath("toplink:indirection");
+        indirectionPolicyMapping.setXPath("eclipselink:indirection");
         descriptor.addMapping(indirectionPolicyMapping);
 
         XMLCompositeObjectMapping selectionQueryMapping = new XMLCompositeObjectMapping();
@@ -421,7 +420,7 @@ public class EISObjectPersistenceXMLProject extends Project {
                     }
                 }
             });
-        selectionQueryMapping.setXPath("toplink:selection-query");
+        selectionQueryMapping.setXPath("eclipselink:selection-query");
         descriptor.addMapping(selectionQueryMapping);
 
         return descriptor;
@@ -436,7 +435,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         foreignKeyFieldNamesMapping.useCollectionClass(java.util.ArrayList.class);
         foreignKeyFieldNamesMapping.setGetMethodName("getSourceForeignKeyFields");
         foreignKeyFieldNamesMapping.setSetMethodName("setSourceForeignKeyFields");
-        foreignKeyFieldNamesMapping.setXPath("toplink:source-foreign-key-fields/toplink:field");
+        foreignKeyFieldNamesMapping.setXPath("eclipselink:source-foreign-key-fields/eclipselink:field");
         foreignKeyFieldNamesMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(foreignKeyFieldNamesMapping);
 
@@ -445,7 +444,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         targetForeignKeyFieldNamesMapping.useCollectionClass(java.util.ArrayList.class);
         targetForeignKeyFieldNamesMapping.setGetMethodName("getTargetForeignKeyFields");
         targetForeignKeyFieldNamesMapping.setSetMethodName("setTargetForeignKeyFields");
-        targetForeignKeyFieldNamesMapping.setXPath("toplink:target-foreign-key-fields/toplink:field");
+        targetForeignKeyFieldNamesMapping.setXPath("eclipselink:target-foreign-key-fields/eclipselink:field");
         targetForeignKeyFieldNamesMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(targetForeignKeyFieldNamesMapping);
 
@@ -454,14 +453,14 @@ public class EISObjectPersistenceXMLProject extends Project {
         foreignKeyGroupingElementMapping.setReferenceClass(DatabaseField.class);
         foreignKeyGroupingElementMapping.setGetMethodName("getForeignKeyGroupingElement");
         foreignKeyGroupingElementMapping.setSetMethodName("setForeignKeyGroupingElement");
-        foreignKeyGroupingElementMapping.setXPath("toplink:foreign-key-grouping-element");
+        foreignKeyGroupingElementMapping.setXPath("eclipselink:foreign-key-grouping-element");
         descriptor.addMapping(foreignKeyGroupingElementMapping);
 
         XMLDirectMapping relationshipPartnerAttributeNameMapping = new XMLDirectMapping();
         relationshipPartnerAttributeNameMapping.setAttributeName("relationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setGetMethodName("getRelationshipPartnerAttributeName");
         relationshipPartnerAttributeNameMapping.setSetMethodName("setRelationshipPartnerAttributeName");
-        relationshipPartnerAttributeNameMapping.setXPath("toplink:bidirectional-target-attribute/text()");
+        relationshipPartnerAttributeNameMapping.setXPath("eclipselink:bidirectional-target-attribute/text()");
         descriptor.addMapping(relationshipPartnerAttributeNameMapping);
 
         XMLCompositeObjectMapping containerPolicyMapping = new XMLCompositeObjectMapping();
@@ -469,7 +468,7 @@ public class EISObjectPersistenceXMLProject extends Project {
         containerPolicyMapping.setGetMethodName("getContainerPolicy");
         containerPolicyMapping.setSetMethodName("setContainerPolicy");
         containerPolicyMapping.setReferenceClass(org.eclipse.persistence.internal.queries.ContainerPolicy.class);
-        containerPolicyMapping.setXPath("toplink:container");
+        containerPolicyMapping.setXPath("eclipselink:container");
         descriptor.addMapping(containerPolicyMapping);
 
         XMLCompositeObjectMapping indirectionPolicyMapping = new XMLCompositeObjectMapping();
@@ -493,7 +492,7 @@ public class EISObjectPersistenceXMLProject extends Project {
                 }
             });
         indirectionPolicyMapping.setAttributeName("indirectionPolicy");
-        indirectionPolicyMapping.setXPath("toplink:indirection");
+        indirectionPolicyMapping.setXPath("eclipselink:indirection");
         descriptor.addMapping(indirectionPolicyMapping);
 
         XMLCompositeObjectMapping selectionQueryMapping = new XMLCompositeObjectMapping();
@@ -514,7 +513,7 @@ public class EISObjectPersistenceXMLProject extends Project {
                 }
             });
 
-        selectionQueryMapping.setXPath("toplink:selection-query");
+        selectionQueryMapping.setXPath("eclipselink:selection-query");
         descriptor.addMapping(selectionQueryMapping);
 
         // delete-all query
@@ -537,7 +536,7 @@ public class EISObjectPersistenceXMLProject extends Project {
                     }
                 }
             });
-        deleteAllQueryMapping.setXPath("toplink:delete-all-query");
+        deleteAllQueryMapping.setXPath("eclipselink:delete-all-query");
         descriptor.addMapping(deleteAllQueryMapping);
 
         descriptor.getInheritancePolicy().setParentClass(CollectionMapping.class);
@@ -550,9 +549,9 @@ public class EISObjectPersistenceXMLProject extends Project {
         field.setIsTypedTextField(true);
         field.addConversion(new QName(XMLConstants.SCHEMA_URL, XMLConstants.TIME), java.sql.Time.class);
         field.addConversion(new QName(XMLConstants.SCHEMA_URL, XMLConstants.DATE), java.sql.Date.class);
-        field.addConversion(new QName("http://xmlns.oracle.com/ias/xsds/toplink", "java-character"), Character.class);
-        field.addConversion(new QName("http://xmlns.oracle.com/ias/xsds/toplink", "java-util-date"), java.util.Date.class);
-        field.addConversion(new QName("http://xmlns.oracle.com/ias/xsds/toplink", "java-timestamp"), java.sql.Timestamp.class);
+        field.addConversion(new QName("http://xmlns.oracle.com/ias/xsds/eclipselink", "java-character"), Character.class);
+        field.addConversion(new QName("http://xmlns.oracle.com/ias/xsds/eclipselink", "java-util-date"), java.util.Date.class);
+        field.addConversion(new QName("http://xmlns.oracle.com/ias/xsds/eclipselink", "java-timestamp"), java.sql.Timestamp.class);
         return field;
     }
 }
