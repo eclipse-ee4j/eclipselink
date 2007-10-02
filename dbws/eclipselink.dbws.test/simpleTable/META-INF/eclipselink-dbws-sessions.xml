@@ -5,7 +5,7 @@
       <logging xsi:type="eclipselink-log">
          <log-level>off</log-level>
       </logging>
-      <primary-project xsi:type="xml">/meta-inf/eclipselink-dbws-or.xml</primary-project>
+      <primary-project xsi:type="xml">meta-inf/eclipselink-dbws-or.xml</primary-project>
       <login xsi:type="database-login">
          <platform-class>org.eclipse.persistence.platform.database.oracle.OraclePlatform</platform-class>
          <user-name>scott</user-name>
@@ -23,6 +23,6 @@
       <logging xsi:type="eclipselink-log">
          <log-level>off</log-level>
       </logging>
-      <primary-project xsi:type="xml">/meta-inf/eclipselink-dbws-ox.xml</primary-project>
+      <primary-project xsi:type="xml">meta-inf/eclipselink-dbws-ox.xml</primary-project>
    </session>
 </sessions>
