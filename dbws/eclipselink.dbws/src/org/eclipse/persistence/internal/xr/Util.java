@@ -446,19 +446,19 @@ public class Util {
     public static final String[] SEARCH_PATHS =
         {"meta-inf/", "/meta-inf/", "META-INF/", "/META-INF/"};
     public static final String DBWS_SERVICE_XML =
-        "toplink-dbws.xml";
+        "eclipselink-dbws.xml";
     public static final String DBWS_OR_LABEL =
         "dbws-or";
     public static final String DBWS_OX_LABEL =
         "dbws-ox";
     public static final String DBWS_OR_XML =
-        "toplink-" + DBWS_OR_LABEL + ".xml";
+        "eclipselink-" + DBWS_OR_LABEL + ".xml";
     public static final String DBWS_OX_XML =
-        "toplink-" + DBWS_OX_LABEL + ".xml";
+        "eclipselink-" + DBWS_OX_LABEL + ".xml";
     public static final String DBWS_SCHEMA_XML =
-        "toplink-dbws-schema.xsd";
+        "eclipselink-dbws-schema.xsd";
     public static final String DBWS_SESSIONS_XML =
-        "toplink-dbws-sessions.xml";
+        "eclipselink-dbws-sessions.xml";
     public static final String DBWS_OR_SESSION_NAME_SUFFIX =
         DBWS_OR_LABEL + "-session";
     public static final String DBWS_OX_SESSION_NAME_SUFFIX =
