@@ -1,5 +1,0 @@
-The ant.jar file in this directory is from the Orbit Ant 1.6.5 bundle
-org.apache.ant_1.6.5.v200706080840.zip
-
-The bundle can be downloaded from:
-    http://download.eclipse.org/tools/orbit/downloads
