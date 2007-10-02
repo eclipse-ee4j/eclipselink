@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="WINDOWS-1252"?>
+<jardesc>
+<jar path="./eclipselink.commons.testing/lib/junit4-ext-pb4.jar"/>
+<options buildIfNeeded="true" compress="true" descriptionLocation="/eclipselink.commons.testing/pb4.jardesc" exportErrors="false" exportWarnings="true" includeDirectoryEntries="true" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+<storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+<selectedProjects/>
+<manifest generateManifest="true" mainClassHandleIdentifier="=eclipselink.commons.testing/pb4&lt;junit.extensions.pb4{ParameterizedBeforeJUnit4Runner.java[ParameterizedBeforeJUnit4Runner" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+<sealing sealJar="false">
+<packagesToSeal/>
+<packagesToUnSeal/>
+</sealing>
+</manifest>
+<selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
+<javaElement handleIdentifier="=eclipselink.commons.testing/pb4"/>
+</selectedElements>
+</jardesc>
