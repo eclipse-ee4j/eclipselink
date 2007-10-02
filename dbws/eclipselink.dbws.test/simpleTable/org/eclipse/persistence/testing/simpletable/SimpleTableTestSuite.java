@@ -54,6 +54,6 @@ public class SimpleTableTestSuite extends DBWSTestSuite {
     "<xr_simpletable>" +
        "<id>1</id>" +
        "<name>mike</name>" +
-       "<since>2001-12-25T00:00:00.0</since>" +
+       "<since>2001-12-25T15:14:13.0</since>" +
     "</xr_simpletable>";
 }
