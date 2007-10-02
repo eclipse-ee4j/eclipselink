@@ -316,7 +316,4 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         assertFalse("employees.isEmpty()==true ", employees.isEmpty());
     }
 
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }

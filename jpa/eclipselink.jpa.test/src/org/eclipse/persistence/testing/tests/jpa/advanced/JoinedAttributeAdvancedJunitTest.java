@@ -973,11 +973,6 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
         return JoinedAttributeTestHelper.executeQueriesAndCompareResults(controlQuery, queryWithJoins, (AbstractSession)getDbSession());
     }
 
-    public static void main(String[] args) {
-        // Now run JUnit.
-        junit.swingui.TestRunner.main(args);
-    }
-
     protected boolean compare() {
         for(int i=0; i < classes.length; i++) {
             if(!compare(i)) {

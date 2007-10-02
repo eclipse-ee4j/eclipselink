@@ -217,8 +217,4 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         em.remove(dt);
         em.getTransaction().commit();
     }
-
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }

@@ -1184,10 +1184,5 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     
     public static EntityManager createAlternateEntityManager() {
         return Persistence.createEntityManagerFactory("default1", JUnitTestCaseHelper.getDatabaseProperties()).createEntityManager();
-    }   
-       
-    public static void main(String[] args)
-    {
-        junit.swingui.TestRunner.main(args);
     }
 }

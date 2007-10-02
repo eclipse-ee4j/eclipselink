@@ -86,8 +86,4 @@ public class PrimitiveArrayPKCachingJUnitTestCase extends JUnitTestCase{
             throw e;
         }
     }
-    
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }

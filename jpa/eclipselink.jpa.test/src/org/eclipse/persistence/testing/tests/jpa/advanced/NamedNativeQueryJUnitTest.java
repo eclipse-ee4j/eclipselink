@@ -57,9 +57,4 @@ public class NamedNativeQueryJUnitTest extends JUnitTestCase {
         
         assertNull("Exception was caught", exception);
     }
-    
-    public static void main(String[] args) {
-        // Now run JUnit.
-        junit.swingui.TestRunner.main(args);
-    }
 }

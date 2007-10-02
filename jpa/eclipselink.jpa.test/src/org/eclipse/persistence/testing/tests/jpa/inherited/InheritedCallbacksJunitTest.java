@@ -192,8 +192,4 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
     public void verifyNotCalled(int countBefore, int countAfter, String callback) {
         assertTrue("The callback method [" + callback + "] was called.", countBefore == countAfter);
     }
-    
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }

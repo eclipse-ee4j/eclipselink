@@ -171,9 +171,4 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
         Object result = q.getSingleResult();
         return ((Number)result).intValue();
     }
-
-    public static void main(String[] args)
-    {
-        junit.swingui.TestRunner.main(args);
-    }
 }

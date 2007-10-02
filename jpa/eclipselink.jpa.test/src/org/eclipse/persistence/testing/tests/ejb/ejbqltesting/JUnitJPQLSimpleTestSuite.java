@@ -2043,8 +2043,4 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         }
         em.close();
     }
-
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }

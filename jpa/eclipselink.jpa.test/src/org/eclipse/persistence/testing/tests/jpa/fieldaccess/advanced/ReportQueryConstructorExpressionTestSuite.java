@@ -40,11 +40,6 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
     public ReportQueryConstructorExpressionTestSuite(String name) {
         super(name);
     }
-    
-    public static void main(String[] args){
-        junit.swingui.TestRunner.main(args);  
-    }
-  
         
     public void setUp () {
         m_reset = true;

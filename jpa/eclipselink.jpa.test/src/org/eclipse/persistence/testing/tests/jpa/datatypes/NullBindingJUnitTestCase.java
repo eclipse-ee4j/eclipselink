@@ -542,7 +542,4 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         em.getTransaction().commit();
     }
 
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }

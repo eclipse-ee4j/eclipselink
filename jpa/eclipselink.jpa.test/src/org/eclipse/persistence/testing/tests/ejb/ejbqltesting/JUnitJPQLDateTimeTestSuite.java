@@ -272,8 +272,4 @@ public class JUnitJPQLDateTimeTestSuite extends JUnitTestCase {
         assertTrue("There should be four result", result.size() == 4);
     }
 
-    public static void main(String[] args) {
-        // Now run JUnit.
-        junit.swingui.TestRunner.main(args);
-    }
 }

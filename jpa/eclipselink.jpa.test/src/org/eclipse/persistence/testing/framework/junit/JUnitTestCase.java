@@ -257,11 +257,4 @@ public abstract class JUnitTestCase extends TestCase {
     public void tearDown() {
     }
     
-    /**
-     * Launch the JUnit TestRunner UI.
-     */
-    public static void main(String[] args) {
-        // Run JUnit.
-        junit.swingui.TestRunner.main(args);
-    }
 }

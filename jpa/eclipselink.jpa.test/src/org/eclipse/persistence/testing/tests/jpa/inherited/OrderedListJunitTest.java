@@ -247,8 +247,4 @@ public class OrderedListJunitTest extends JUnitTestCase {
         assertTrue("Alpine 4 was not at the correct index.", alpinesFromCache.indexOf(alpine4) == 3);
         
     }
-    
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }

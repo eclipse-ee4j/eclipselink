@@ -116,8 +116,4 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             em.close();
         }
     }
-    
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }

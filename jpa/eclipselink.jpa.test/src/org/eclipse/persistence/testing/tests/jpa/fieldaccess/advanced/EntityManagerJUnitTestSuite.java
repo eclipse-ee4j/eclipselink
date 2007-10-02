@@ -4160,9 +4160,4 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-        
-    public static void main(String[] args) {
-        // Now run JUnit.
-        junit.swingui.TestRunner.main(args);
-    }
 }

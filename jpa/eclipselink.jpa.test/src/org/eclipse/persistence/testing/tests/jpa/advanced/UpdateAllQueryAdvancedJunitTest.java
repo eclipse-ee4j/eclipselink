@@ -220,11 +220,6 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
             fail(errorMsg);
         }
     }
-    
-    public static void main(String[] args) {
-        // Now run JUnit.
-        junit.swingui.TestRunner.main(args);
-    }
 
     protected static boolean compare() {
         for(int i=0; i < classes.length; i++) {

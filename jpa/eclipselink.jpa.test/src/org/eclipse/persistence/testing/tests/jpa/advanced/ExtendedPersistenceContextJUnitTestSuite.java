@@ -72,9 +72,4 @@ public class ExtendedPersistenceContextJUnitTestSuite extends JUnitTestCase {
         assertTrue("Extended PersistenceContext did not continue to maintain object after commit.", em.contains(obj));
         em.close();
     }
-
-    public static void main(String[] args) {
-        // Now run JUnit.
-        junit.swingui.TestRunner.main(args);
-    }
 }

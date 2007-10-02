@@ -180,10 +180,4 @@ public class FullRegressionTestSuite extends TestSuite{
         
         return fullSuite;
     }
-    
-
-    public static void main(String[] args)
-    {
-         junit.swingui.TestRunner.main(args);
-    }
 }

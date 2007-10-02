@@ -749,9 +749,4 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             throw e;
         }
     }
-    
-    public static void main(String[] args) {
-        // Now run JUnit.
-        junit.swingui.TestRunner.main(args);
-    }
 }

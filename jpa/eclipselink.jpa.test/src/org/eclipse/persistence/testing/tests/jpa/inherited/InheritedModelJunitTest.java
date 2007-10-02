@@ -81,9 +81,4 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         assertTrue("Error on reading back a Blue beer", blue != null);
     }
-    
-    public static void main(String[] args) {
-        // Now run JUnit.
-        junit.swingui.TestRunner.main(args);
-    }
 }

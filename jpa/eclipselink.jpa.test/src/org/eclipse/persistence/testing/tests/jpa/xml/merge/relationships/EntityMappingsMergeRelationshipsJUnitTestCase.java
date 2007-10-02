@@ -308,7 +308,4 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
         assertTrue("Error updating Customer", ((Order) newCustomer.getOrders().iterator().next()).getQuantity() == 100);
     }
 
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }

@@ -260,8 +260,4 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         assertTrue("The PrePersist callback method on Car was called.", carPrePersistCountBefore == carPrePersistCountAfter);
         assertFalse("The PrePersist callback method on Sports car was not called.", sportsCarPrePersistCountBefore == sportsCarPrePersistCountAfter);
     }
-    
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }

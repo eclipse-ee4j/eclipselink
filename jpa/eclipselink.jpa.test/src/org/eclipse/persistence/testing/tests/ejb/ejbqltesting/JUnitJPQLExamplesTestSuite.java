@@ -840,8 +840,4 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         Assert.assertTrue("aggregateParameterTest failed", comparer.compareObjects(expectedResult, result));
     }
 
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
-
 }

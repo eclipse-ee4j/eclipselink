@@ -1284,11 +1284,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Assert.assertTrue("Complex navigation of two level of embeededs in the select clause failed", result.contains(expected));
     }
 
-    public static void main(String[] args)
-    {
-         junit.swingui.TestRunner.main(args);
-    }
-
     // Helper methods and classes for constructor query test cases
 
     public static boolean equals(Object o1, Object o2) {

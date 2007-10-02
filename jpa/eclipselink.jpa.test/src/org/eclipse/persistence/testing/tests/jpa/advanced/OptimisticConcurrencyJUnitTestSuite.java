@@ -207,8 +207,4 @@ import javax.persistence.PersistenceException;
             em.close();
         }
     }
-
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }

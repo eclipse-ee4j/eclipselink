@@ -39,10 +39,6 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         super(name);
     }
     
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
-    
     public void setUp() {
         clearCache();
         super.setUp();

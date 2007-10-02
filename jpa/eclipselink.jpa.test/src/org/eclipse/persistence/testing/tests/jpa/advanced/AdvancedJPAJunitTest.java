@@ -57,10 +57,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         super(name);
     }
     
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
-    
     public void setUp() {
         super.setUp();
         clearCache();

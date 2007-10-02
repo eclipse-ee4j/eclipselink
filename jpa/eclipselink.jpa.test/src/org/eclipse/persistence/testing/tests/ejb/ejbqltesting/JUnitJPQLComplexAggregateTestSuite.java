@@ -582,9 +582,5 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         Assert.assertEquals("Complex COUNT on joined variable over ManyToMany self refrenceing relationship failed", 
                             expectedResult, result);
     }
-    
-    public static void main(String[] args)
-    {
-         junit.swingui.TestRunner.main(args);
-    }
+
 }

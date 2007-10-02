@@ -283,8 +283,4 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         assertTrue("Error deleting Customer", em.find(org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer.class, customerId) == null);
         
     }
-    
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }

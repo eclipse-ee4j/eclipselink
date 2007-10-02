@@ -347,7 +347,4 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         assertTrue("Error updating NonFueledVehicle [Boat]", newBoat.getOwner().getName().equals("XYZ"));
     }
 
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }

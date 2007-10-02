@@ -129,7 +129,4 @@ public class EntityMappingsIncompleteOwningJUnitTestCase extends JUnitTestCase {
         assertTrue("Error updating Employee's Security Badge", newEmployee.getSecurityBadge().getBadgeNumber() == 69);
     }
 
-	public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }

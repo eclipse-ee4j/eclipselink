@@ -36,8 +36,5 @@ public class EntityMappingsMergeJUnitTestSuite extends TestCase {
 
         return suite;
     }
-    public static void main(String[] args) {
-        junit.swingui.TestRunner.main(args);
-    }
 }
 
