@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.sdo"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
-	<classpathentry kind="var" path="COMMONJ_SDO_LIB"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="var" path="COMMONJ_SDO_LIB"/>
 	<classpathentry kind="var" path="TOOLS_LIB"/>
-	<classpathentry kind="lib" path="resource"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/eclipselink.commons.testing"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/eclipselink.core"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/eclipselink.sdo"/>
+	<classpathentry exported="true" kind="lib" path="resource"/>
+	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
