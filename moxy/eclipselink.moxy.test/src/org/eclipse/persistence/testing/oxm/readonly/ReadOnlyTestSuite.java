@@ -19,7 +19,7 @@ public class ReadOnlyTestSuite extends TestCase {
     super(name);
   }
   public static void main(String[] args) {
-    junit.swingui.TestRunner.main(new String[] {"-c", "org.eclipse.persistence.testing.oxm.readonly.ReadOnlyTestSuite"});
+    junit.textui.TestRunner.main(new String[] {"-c", "org.eclipse.persistence.testing.oxm.readonly.ReadOnlyTestSuite"});
   }
   public static Test suite() {
     TestSuite suite = new TestSuite("ReadOnly Test Cases");

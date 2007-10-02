@@ -17,7 +17,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
-import junit.swingui.TestRunner;
+import junit.textui.TestRunner;
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;

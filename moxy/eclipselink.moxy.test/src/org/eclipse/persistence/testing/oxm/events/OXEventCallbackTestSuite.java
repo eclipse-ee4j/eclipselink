@@ -23,7 +23,7 @@ public class OXEventCallbackTestSuite extends TestCase {
     }
 
     public static void main(String[] args) {
-        junit.swingui.TestRunner.main(new String[] { "-c", "org.eclipse.persistence.testing.oxm.events.OXEventCallbackTestSuite" });
+        junit.textui.TestRunner.main(new String[] { "-c", "org.eclipse.persistence.testing.oxm.events.OXEventCallbackTestSuite" });
     }
 
     public static Test suite() {

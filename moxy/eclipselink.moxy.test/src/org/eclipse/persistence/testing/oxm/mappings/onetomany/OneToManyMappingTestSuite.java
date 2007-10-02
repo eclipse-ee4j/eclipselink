@@ -30,6 +30,6 @@ public class OneToManyMappingTestSuite extends TestCase {
   public static void main(String[] args)
   {
     String[] arguments = {"-c", "org.eclipse.persistence.testing.oxm.mappings.onetoone.OneToManyMappingTestSuite"};
-    junit.swingui.TestRunner.main(arguments);
+    junit.textui.TestRunner.main(arguments);
   }
 }

@@ -35,7 +35,7 @@ public class OXTestSuite extends TestCase {
     }
 
     public static void main(String[] args) {
-        junit.swingui.TestRunner.main(new String[] { "-c", "org.eclipse.persistence.testing.oxm.OXTestSuite" });
+        junit.textui.TestRunner.main(new String[] { "-c", "org.eclipse.persistence.testing.oxm.OXTestSuite" });
     }
 
     public static Test suite() {

@@ -51,7 +51,7 @@ public class CompositeObjectIdentifiedByNamespaceTestCases extends XMLMappingTes
   }
 
   public static void main(String[] args) {
-    junit.swingui.TestRunner.main(new String[] {"-c", "org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbynamespace.CompositeObjectIdentifiedByNamespaceTestCases"});
+    junit.textui.TestRunner.main(new String[] {"-c", "org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbynamespace.CompositeObjectIdentifiedByNamespaceTestCases"});
   }
 
 }

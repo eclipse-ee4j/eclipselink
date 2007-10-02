@@ -37,6 +37,6 @@ public class OneToOneKeyOnSourceEISTestCases extends TestCase {
   public static void main(String[] args)
   {
     String[] arguments = {"-c", "org.eclipse.persistence.testing.oxm.mappings.onetoone.keyonsource.eis.OneToOneKeyOnSourceEISTestCases"};
-    junit.swingui.TestRunner.main(arguments);
+    junit.textui.TestRunner.main(arguments);
   }
 }

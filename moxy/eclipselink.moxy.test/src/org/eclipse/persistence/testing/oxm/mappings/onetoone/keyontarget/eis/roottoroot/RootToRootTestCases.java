@@ -123,7 +123,7 @@ public class RootToRootTestCases extends EISMappingTestCases {
 	public static void main(String[] args)
   {
     String[] arguments = {"-c", "org.eclipse.persistence.testing.oxm.mappings.onetoone.keyontarget.eis.roottoroot.RootToRootTestCases"};
-    junit.swingui.TestRunner.main(arguments);		
+    junit.textui.TestRunner.main(arguments);		
   }
 }
 

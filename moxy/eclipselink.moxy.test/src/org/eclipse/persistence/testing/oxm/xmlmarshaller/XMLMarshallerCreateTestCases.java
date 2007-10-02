@@ -11,7 +11,7 @@ package org.eclipse.persistence.testing.oxm.xmlmarshaller;
 
 import java.io.StringWriter;
 import java.util.Vector;
-import junit.swingui.TestRunner;
+import junit.textui.TestRunner;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.exceptions.ValidationException;

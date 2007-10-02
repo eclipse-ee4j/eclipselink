@@ -20,7 +20,7 @@ public class XPathEngineTestSuite extends TestCase {
 	}
 
 	public static void main(String[] args) {
-		junit.swingui.TestRunner.main(new String[] {"-c", "org.eclipse.persistence.testing.oxm.xpathengine.XPathEngineTestSuite"});
+		junit.textui.TestRunner.main(new String[] {"-c", "org.eclipse.persistence.testing.oxm.xpathengine.XPathEngineTestSuite"});
 	}
 
 	public static Test suite() {

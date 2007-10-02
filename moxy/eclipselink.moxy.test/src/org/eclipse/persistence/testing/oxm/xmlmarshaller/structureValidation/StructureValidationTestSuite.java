@@ -12,7 +12,7 @@ package org.eclipse.persistence.testing.oxm.xmlmarshaller.structureValidation;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+import junit.textui.TestRunner;
 import org.eclipse.persistence.testing.oxm.xmlmarshaller.structureValidation.choice.ChoiceTestCases;
 import org.eclipse.persistence.testing.oxm.xmlmarshaller.structureValidation.group.GroupTestCases;
 import org.eclipse.persistence.testing.oxm.xmlmarshaller.structureValidation.group.nestedGroup.GroupWithNestedGroupTestCases;

@@ -28,6 +28,6 @@ public class IdentifiedByPositionTestCases extends TestCase {
   public static void main(String[] args)
   {
     String[] arguments = {"-c", "org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbyposition.IdentifiedByPositionTestCases"};
-    junit.swingui.TestRunner.main(arguments);
+    junit.textui.TestRunner.main(arguments);
   }
 }

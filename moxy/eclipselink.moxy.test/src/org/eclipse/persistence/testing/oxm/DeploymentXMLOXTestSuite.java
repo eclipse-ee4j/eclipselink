@@ -28,10 +28,6 @@ public class DeploymentXMLOXTestSuite extends TestCase
 	    super(name);
 	}
 	
-  public static void main(String[] args) {
-    junit.swingui.TestRunner.main(new String[] {"-c", "org.eclipse.persistence.testing.oxm.DeploymentXMLOXTestSuite"});
-  }
-	
   public static Test suite(){
     TestSuite suite = new TestSuite("Deployment XML OX Test Suite");
     

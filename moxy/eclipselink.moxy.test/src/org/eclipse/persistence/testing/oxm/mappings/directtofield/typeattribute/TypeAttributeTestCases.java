@@ -36,6 +36,6 @@ public class TypeAttributeTestCases extends TestCase {
 
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.mappings.directtofield.typeattribute.TypeAttributeTestCases" };
-        junit.swingui.TestRunner.main(arguments);
+        junit.textui.TestRunner.main(arguments);
     }
 }

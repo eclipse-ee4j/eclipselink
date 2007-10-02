@@ -35,6 +35,6 @@ public class SimpleTypeMappingTestSuite extends TestCase {
 
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.mappings.simpletypes.SimpleTypeMappingTestSuite" };
-        junit.swingui.TestRunner.main(arguments);
+        junit.textui.TestRunner.main(arguments);
     }
 }

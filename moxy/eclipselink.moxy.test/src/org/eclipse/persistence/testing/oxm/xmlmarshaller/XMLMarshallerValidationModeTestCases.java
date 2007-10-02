@@ -15,7 +15,7 @@ import java.io.StringWriter;
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
-import junit.swingui.TestRunner;
+import junit.textui.TestRunner;
 
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
