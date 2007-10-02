@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  >
+  <name>simpletable</name>
+  <query>
+    <name>findByPrimaryKey</name>
+    <parameter>
+       <name>id</name>
+       <type>xsd:decimal</type>
+    </parameter>
+    <result>
+       <type>xr_simpletableType</type>
+    </result>
+    <named-query>
+      <name>findByPrimaryKey</name>
+      <descriptor>xr_simpletable</descriptor>
+    </named-query>
+  </query>
+</dbws>

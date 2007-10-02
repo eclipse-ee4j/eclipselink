@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipselink:object-persistence version="Eclipse Persistence Services - 0.1-incubation (Build 070904)" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:eclipselink="http://xmlns.oracle.com/ias/xsds/eclipselink">
+   <eclipselink:name>simpletable</eclipselink:name>
+   <eclipselink:class-mapping-descriptors>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
+         <eclipselink:class>simpletable.Xr_simpletable</eclipselink:class>
+         <eclipselink:alias>xr_simpletable</eclipselink:alias>
+         <eclipselink:primary-key>
+            <eclipselink:field table="XR_SIMPLETABLE" name="ID" xsi:type="eclipselink:column"/>
+         </eclipselink:primary-key>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy">
+            <eclipselink:queries>
+               <eclipselink:query name="findByPrimaryKey" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left xsi:type="eclipselink:field-expression">
+                        <eclipselink:field table="XR_SIMPLETABLE" name="ID" xsi:type="eclipselink:column"/>
+                        <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                        <eclipselink:parameter name="id" xsi:type="eclipselink:column"/>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:arguments>
+                     <eclipselink:argument name="id">
+                        <eclipselink:type>java.lang.Object</eclipselink:type>
+                     </eclipselink:argument>
+                  </eclipselink:arguments>
+                  <eclipselink:reference-class>simpletable.Xr_simpletable</eclipselink:reference-class>
+               </eclipselink:query>
+            </eclipselink:queries>
+         </eclipselink:querying>
+
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>id</eclipselink:attribute-name>
+               <eclipselink:field table="XR_SIMPLETABLE" name="ID" xsi:type="eclipselink:column"/>
+               <eclipselink:attribute-classification>java.math.BigInteger</eclipselink:attribute-classification>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>name</eclipselink:attribute-name>
+               <eclipselink:field table="XR_SIMPLETABLE" name="NAME" xsi:type="eclipselink:column"/>
+               <eclipselink:attribute-classification>java.lang.String</eclipselink:attribute-classification>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>since</eclipselink:attribute-name>
+               <eclipselink:field table="XR_SIMPLETABLE" name="SINCE" xsi:type="eclipselink:column"/>
+               <eclipselink:attribute-classification>java.sql.Date</eclipselink:attribute-classification>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
+         <eclipselink:caching>
+            <eclipselink:cache-type>weak-reference</eclipselink:cache-type>
+         </eclipselink:caching>
+         <eclipselink:remote-caching>
+            <eclipselink:cache-type>weak-reference</eclipselink:cache-type>
+         </eclipselink:remote-caching>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:change-policy xsi:type="eclipselink:deferred-detection-change-policy"/>
+         <eclipselink:tables>
+            <eclipselink:table name="XR_SIMPLETABLE"/>
+         </eclipselink:tables>
+      </eclipselink:class-mapping-descriptor>
+   </eclipselink:class-mapping-descriptors>
+   <eclipselink:login xsi:type="eclipselink:database-login">
+      <eclipselink:platform-class>org.eclipse.persistence.platform.database.oracle.OraclePlatform</eclipselink:platform-class>
+   </eclipselink:login>
+</eclipselink:object-persistence>
