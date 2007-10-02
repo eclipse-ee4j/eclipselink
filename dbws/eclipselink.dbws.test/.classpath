@@ -4,6 +4,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/eclipselink.commons.testing"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/eclipselink.dbws"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/eclipselink.dbws.lib"/>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="simpleTable"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
