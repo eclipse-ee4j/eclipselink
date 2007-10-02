@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry including="src" excluding="**/.svn/**" kind="src" path=""/>
-	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/eclipselink.commons.testing"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/eclipselink.core"/>
+	<classpathentry excluding="**/.svn/**" including="src" kind="src" path=""/>
+	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
