@@ -3,5 +3,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="eclipselink-antlr.jar"/>
 	<classpathentry exported="true" kind="lib" path="eclipselink-asm.jar"/>
+	<classpathentry exported="true" kind="lib" path="ant.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
