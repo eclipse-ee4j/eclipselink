@@ -6,7 +6,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.dbws"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.dbws.lib"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core.test"/>
-	<classpathentry kind="src" path="simpleTable"/>
+	<classpathentry excluding="META-INF/|META-INF/eclipselink-dbws-or.xml|META-INF/eclipselink-dbws-ox.xml|META-INF/eclipselink-dbws-sessions.xml|META-INF/eclipselink-dbws.xml|eclipselink-dbws-schema.xsd|simpleTable.jar|simpleTable.jardesc" kind="src" path="simpleTable"/>
 	<classpathentry kind="src" path="common"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
