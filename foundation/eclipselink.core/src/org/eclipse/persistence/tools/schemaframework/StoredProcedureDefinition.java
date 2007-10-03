@@ -307,9 +307,12 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
             } else {
                 fieldType = new FieldTypeDefinition(argument.getTypeName());
             }
+            if (platform.shouldPrintOutputTokenAtStart()) {
+                writer.write(" " + platform.getCreationInOutputProcedureToken());
+            }
             writer.write(platform.getProcedureArgumentString());
             writer.write(argument.getName());
-            if (platform.shouldPrintOutputTokenBeforeType()) {
+            if (platform.shouldPrintOutputTokenBeforeType() && !platform.shouldPrintOutputTokenAtStart()) {
                 writer.write(" " + platform.getCreationInOutputProcedureToken());
             }
             writer.write(" " + fieldType.getName());
@@ -329,7 +332,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
                 }
                 writer.write(")");
             }
-            if (!platform.shouldPrintOutputTokenBeforeType()) {
+            if (!platform.shouldPrintOutputTokenBeforeType()  && !platform.shouldPrintOutputTokenAtStart()) {
                 writer.write(" " + platform.getCreationInOutputProcedureToken());
             }
         } catch (IOException ioException) {

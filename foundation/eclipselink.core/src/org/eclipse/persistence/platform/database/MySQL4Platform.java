@@ -137,6 +137,35 @@ public class MySQL4Platform extends DatabasePlatform {
     }
 
     /**
+     * This method is used to print the output parameter token when stored
+     * procedures are called
+     */
+    public String getInOutputProcedureToken() {
+        return "INOUT ";
+    }
+    
+    /**
+     * Used for stored procedure defs.
+     */
+    public String getProcedureAsString() {
+        return "";
+    }
+
+    /**
+     * Used for sp calls.
+     */
+    public String getProcedureArgumentSetter() {
+        return "";
+    }
+    
+    /**
+     * Used for sp calls.
+     */
+    public String getProcedureCallHeader() {
+        return "CALL ";
+    }
+    
+    /**
      * INTERNAL:
      * Used for constraint deletion.
      */
@@ -347,6 +376,14 @@ public class MySQL4Platform extends DatabasePlatform {
         return true;
     }
 
+    /**
+     * This is required in the construction of the stored procedures with
+     * output parameters
+     */
+    public boolean shouldPrintOutputTokenAtStart() {
+        return true;
+    }
+    
     /**
      * INTERNAL:
      * JDBC defines an outer join syntax which many drivers do not support. So we normally avoid it.
