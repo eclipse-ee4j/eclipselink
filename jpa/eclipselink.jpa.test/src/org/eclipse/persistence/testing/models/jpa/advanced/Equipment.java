@@ -29,7 +29,7 @@ import static javax.persistence.GenerationType.TABLE;
     resultClass=org.eclipse.persistence.testing.models.jpa.advanced.Equipment.class
 )
 public class Equipment  {
-    private Integer id;
+    private int id;
     private String description;
 	private Department department;
     private EquipmentCode equipmentCode;
@@ -62,7 +62,7 @@ public class Equipment  {
         valueColumnName="SEQ_COUNT",
         pkColumnValue="EQUIP_SEQ"
     )
-	public Integer getId() { 
+	public int getId() { 
         return id; 
     }
     
@@ -78,7 +78,7 @@ public class Equipment  {
         this.equipmentCode = equipmentCode; 
     }
     
-    public void setId(Integer id) { 
+    public void setId(int id) { 
         this.id = id; 
     }
 }

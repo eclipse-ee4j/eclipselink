@@ -17,27 +17,36 @@ import static javax.persistence.FetchType.*;
 
 @Entity
 public class Man {
-    private Integer id;
+    private int id;
     private PartnerLink partnerLink;
+    private String name;
 
 	public Man() {}
     
     @Id
     @GeneratedValue(strategy=SEQUENCE, generator="MAN_SEQUENCE_GENERATOR")
 	@SequenceGenerator(name="MAN_SEQUENCE_GENERATOR", sequenceName="MAN_SEQ")
-	public Integer getId() { 
+	public int getId() { 
         return id; 
     }
+    
+	public String getName(){
+		return name;
+	}
     
     @OneToOne(mappedBy="man")
 	public PartnerLink getPartnerLink() { 
         return partnerLink; 
     }
     
-	public void setId(Integer id) { 
+	public void setId(int id) { 
         this.id = id; 
     }
     
+	public void setName(String name){
+		this.name = name;
+	}
+	
     public void setPartnerLink(PartnerLink partnerLink) { 
         this.partnerLink = partnerLink; 
     }

@@ -187,7 +187,7 @@ public class AdvancedTableCreator extends TableCreator {
         FieldDefinition fieldBUYINGDAYS = new FieldDefinition();
         fieldBUYINGDAYS.setName("BUY_DAYS");
         fieldBUYINGDAYS.setTypeName("LONG RAW");
-        fieldBUYINGDAYS.setSize(100);
+        fieldBUYINGDAYS.setSize(1000);
         fieldBUYINGDAYS.setSubSize(0);
         fieldBUYINGDAYS.setIsPrimaryKey(false);
         fieldBUYINGDAYS.setIsIdentity(false);
@@ -664,6 +664,17 @@ public class AdvancedTableCreator extends TableCreator {
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
         
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(100);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
         return table;
     }
     
@@ -1059,6 +1070,17 @@ public class AdvancedTableCreator extends TableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(100);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
         
         return table;
     }

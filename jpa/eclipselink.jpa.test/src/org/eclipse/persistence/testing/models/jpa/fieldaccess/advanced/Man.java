@@ -24,6 +24,8 @@ public class Man {
     private Integer id;
 	@OneToOne(mappedBy="man")
     private PartnerLink partnerLink;
+	
+	private String name;
 
 	public Man() {}    
     
@@ -31,6 +33,10 @@ public class Man {
         return id; 
     }    
     
+	public String getName(){
+		return name;
+	}
+	
 	public PartnerLink getPartnerLink() { 
         return partnerLink; 
     }
@@ -39,6 +45,10 @@ public class Man {
         this.id = id; 
     }
     
+	public void setName(String name){
+		this.name = name;
+	}
+	
     public void setPartnerLink(PartnerLink partnerLink) { 
         this.partnerLink = partnerLink; 
     }

@@ -271,8 +271,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             buyer.addMastercard(mastercard);
             buyer.setSaturdayToSundayBuyingDays();
             em.persist(buyer);
+            em.getTransaction().commit();   
             buyerId = buyer.getId();
-            em.getTransaction().commit();    
         } catch (RuntimeException e) {
             if (em.getTransaction().isActive()){
                 em.getTransaction().rollback();

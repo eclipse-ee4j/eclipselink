@@ -188,7 +188,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // Delete Address outside of JPA so that the object still stored in the cache.
             em2 = createEntityManager();
             em2.getTransaction().begin();
-            em2.createNativeQuery("DELETE FROM CMP3_ADDRESS a where a.address_id = ?1").setParameter(1, address.getId()).executeUpdate();
+            em2.createNativeQuery("DELETE FROM CMP3_ADDRESS where address_id = ?1").setParameter(1, address.getId()).executeUpdate();
             em2.getTransaction().commit();
             
             //Call refresh to invalidate the object
@@ -2768,16 +2768,17 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     //bug6180972: Tests calling merge on a new Entity that uses int as its ID, verifying it is set and cached correctly
     public void testMergeNewObject2() {
-        //create an Address
-        Address address = new Address("46 O'Connor", "Ottawa", "Ont", "Canada", "K1P1A4");
+        //create an Equipment
+        Equipment equip = new Equipment();
+        equip.setDescription("New Equipment");
 
         EntityManager em = createEntityManager();
         try{
             em.getTransaction().begin();
-            Address managedAddress = em.merge(address);
+            Equipment managedEquip = em.merge(equip);
             
-            this.assertTrue("merged Address doesn't have its ID generated", managedAddress.getId()!=0);
-            this.assertNotNull("merged Employee cannot be found using find", em.find(Address.class, managedAddress.getId()));
+            this.assertTrue("merged Equipment doesn't have its ID generated", managedEquip.getId()!=0);
+            this.assertNotNull("merged Equipment cannot be found using find", em.find(Equipment.class, managedEquip.getId()));
         }finally {
             if (em.getTransaction().isActive()){
                 em.getTransaction().rollback();

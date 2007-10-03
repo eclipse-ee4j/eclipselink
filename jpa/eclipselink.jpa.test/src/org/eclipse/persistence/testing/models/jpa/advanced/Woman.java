@@ -18,6 +18,7 @@ import static javax.persistence.CascadeType.*;
 public class Woman {
     private Integer id;
     private PartnerLink partnerLink;
+    private String name;
 
 	public Woman() {}
     
@@ -28,6 +29,10 @@ public class Woman {
         return id; 
     }
     
+	public String getName(){
+		return name;
+	}
+    
     @OneToOne(mappedBy="woman")
 	public PartnerLink getPartnerLink() { 
         return partnerLink; 
@@ -37,6 +42,10 @@ public class Woman {
         this.id = id; 
     }
     
+	public void setName(String name){
+		this.name = name;
+	}
+	
     public void setPartnerLink(PartnerLink partnerLink) { 
         this.partnerLink = partnerLink; 
     }
