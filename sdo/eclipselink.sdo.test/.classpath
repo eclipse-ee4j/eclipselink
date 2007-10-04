@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="COMMONJ_SDO_LIB"/>
 	<classpathentry kind="var" path="TOOLS_LIB"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core.test"/>
