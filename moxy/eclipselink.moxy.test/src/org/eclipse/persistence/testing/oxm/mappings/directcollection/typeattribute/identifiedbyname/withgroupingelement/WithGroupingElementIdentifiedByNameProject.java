@@ -19,8 +19,8 @@ import org.eclipse.persistence.internal.oxm.*;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 
-public class DirectCollectionTypeAttributeWithGroupingElementIdentifiedByNameProject extends Project {
-    public DirectCollectionTypeAttributeWithGroupingElementIdentifiedByNameProject() {
+public class WithGroupingElementIdentifiedByNameProject extends Project {
+    public WithGroupingElementIdentifiedByNameProject() {
         addDescriptor(getEmployeeDescriptor());
     }
 

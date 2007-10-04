@@ -19,8 +19,8 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.Employee;
 
-public class DirectCollectionTypeAttributeWithoutGroupingElementIdentifiedByNameProject extends Project {
-    public DirectCollectionTypeAttributeWithoutGroupingElementIdentifiedByNameProject() {
+public class WithoutGroupingElementIdentifiedByNameProject extends Project {
+    public WithoutGroupingElementIdentifiedByNameProject() {
         addDescriptor(getEmployeeDescriptor());
     }
 

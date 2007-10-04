@@ -15,18 +15,18 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.Employee;
 
 
-public class DirectCollectionTypeAttributeWithGroupingElementIdentifiedByNameTestCases extends XMLMappingTestCases {
+public class WithGroupingElementIdentifiedByNameIntegerTestCases extends XMLMappingTestCases {
 
-  private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/typeattribute/identifiedbyname/withgroupingelement/DirectCollectionTypeAttributeWithGroupingElementIdentifiedByName.xml";
+  private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/typeattribute/identifiedbyname/withgroupingelement/WithGroupingElementIntegerIdentifiedByName.xml";
   private final static int CONTROL_ID = 123;
-	private final static String CONTROL_RESPONSIBILITY1 = "make the coffee";
-  private final static String CONTROL_RESPONSIBILITY2 = "do the dishes";
-  private final static String CONTROL_RESPONSIBILITY3 = "take out the garbage";
+	private final static Integer CONTROL_RESPONSIBILITY1 = new Integer(100);
+  private final static Integer CONTROL_RESPONSIBILITY2 = new Integer(200);
+  private final static Integer CONTROL_RESPONSIBILITY3 = new Integer(300);
 
-  public DirectCollectionTypeAttributeWithGroupingElementIdentifiedByNameTestCases(String name) throws Exception {
+  public WithGroupingElementIdentifiedByNameIntegerTestCases(String name) throws Exception {
     super(name);
     setControlDocument(XML_RESOURCE);
-		setProject(new DirectCollectionTypeAttributeWithGroupingElementIdentifiedByNameProject());
+		setProject(new WithGroupingElementIdentifiedByNameProject());
   }
 
   protected Object getControlObject() {

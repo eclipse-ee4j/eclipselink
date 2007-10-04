@@ -7,25 +7,26 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.testing.oxm.mappings.directcollection.typeattribute.identifiedbyname.withoutgroupingelement;
+package org.eclipse.persistence.testing.oxm.mappings.directcollection.typeattribute.identifiedbyname.withgroupingelement;
 
 import java.util.Vector;
 
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.Employee;
 
-public class DirectCollectionTypeAttributeWithoutGroupingElementIdentifiedByNameIntegerTestCases extends XMLMappingTestCases {
 
-  private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/typeattribute/identifiedbyname/withoutgroupingelement/DirectCollectionTypeAttributeWithoutGroupingElementIntegerIdentifiedByName.xml";
+public class WithGroupingElementIdentifiedByNameTestCases extends XMLMappingTestCases {
+
+  private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/typeattribute/identifiedbyname/withgroupingelement/WithGroupingElementIdentifiedByName.xml";
   private final static int CONTROL_ID = 123;
-	private final static Integer CONTROL_RESPONSIBILITY1 = new Integer(100);
-  private final static Integer CONTROL_RESPONSIBILITY2 = new Integer(200);
-  private final static Integer CONTROL_RESPONSIBILITY3 = new Integer(300);
+	private final static String CONTROL_RESPONSIBILITY1 = "make the coffee";
+  private final static String CONTROL_RESPONSIBILITY2 = "do the dishes";
+  private final static String CONTROL_RESPONSIBILITY3 = "take out the garbage";
 
-  public DirectCollectionTypeAttributeWithoutGroupingElementIdentifiedByNameIntegerTestCases(String name) throws Exception {
+  public WithGroupingElementIdentifiedByNameTestCases(String name) throws Exception {
     super(name);
     setControlDocument(XML_RESOURCE);
-		setProject(new DirectCollectionTypeAttributeWithoutGroupingElementIdentifiedByNameProject());
+		setProject(new WithGroupingElementIdentifiedByNameProject());
   }
 
   protected Object getControlObject() {
@@ -41,3 +42,4 @@ public class DirectCollectionTypeAttributeWithoutGroupingElementIdentifiedByName
   }
 
 }
+

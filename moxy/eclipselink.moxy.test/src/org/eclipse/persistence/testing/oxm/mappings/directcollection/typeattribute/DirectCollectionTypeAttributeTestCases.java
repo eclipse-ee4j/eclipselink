@@ -19,11 +19,11 @@ public class DirectCollectionTypeAttributeTestCases extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("DirectCollection  Type Attribute Test Cases");
 
-        suite.addTestSuite(DirectCollectionTypeAttributeWithGroupingElementIdentifiedByNameIntegerTestCases.class);
-        suite.addTestSuite(DirectCollectionTypeAttributeWithGroupingElementIdentifiedByNameTestCases.class);        
+        suite.addTestSuite(WithGroupingElementIdentifiedByNameIntegerTestCases.class);
+        suite.addTestSuite(WithGroupingElementIdentifiedByNameTestCases.class);        
 
-        suite.addTestSuite(DirectCollectionTypeAttributeWithoutGroupingElementIdentifiedByNameIntegerTestCases.class);
-        suite.addTestSuite(DirectCollectionTypeAttributeWithoutGroupingElementIdentifiedByNameTestCases.class);        
+        suite.addTestSuite(WithoutGroupingElementIdentifiedByNameIntegerTestCases.class);
+        suite.addTestSuite(WithoutGroupingElementIdentifiedByNameTestCases.class);        
 
         return suite;
     }
