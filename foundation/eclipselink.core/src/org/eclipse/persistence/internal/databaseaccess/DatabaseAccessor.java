@@ -1449,18 +1449,20 @@ public class DatabaseAccessor extends DatasourceAccessor {
             Enumeration fieldEnum = eligableFields.elements();
             while (fieldEnum.hasMoreElements()) {
                 field = (DatabaseField)fieldEnum.nextElement();
-                if (DatabasePlatform.shouldIgnoreCaseOnFieldComparisons()) {
-                    if (field.getName().equalsIgnoreCase(columnName)) {
-                        valueFound = true;
-                        sortedFields.addElement(field);
-                        break;
-                    }
-                } else {
-                    if (field.getName().equals(columnName)) {
-                        valueFound = true;
-                        sortedFields.addElement(field);
-                        break;
-                    }
+                if(field != null){
+                    if (DatabasePlatform.shouldIgnoreCaseOnFieldComparisons()) {
+                        if (field.getName().equalsIgnoreCase(columnName)) {
+                            valueFound = true;
+                            sortedFields.addElement(field);
+                            break;
+                        }
+                    } else {
+                        if (field.getName().equals(columnName)) {
+                            valueFound = true;
+                            sortedFields.addElement(field);
+                            break;
+                        }
+                   }
                 }
             }
 
