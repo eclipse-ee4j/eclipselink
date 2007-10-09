@@ -2,7 +2,6 @@
 package org.eclipse.persistence.testing.tests.spatial.jgeometry;
 
 import java.util.List;
-
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -22,6 +21,9 @@ import org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.WrappedJ
 import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.platform.database.oracle.converters.JGeometryConverter;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
+import org.eclipse.persistence.sessions.JNDIConnector;
+import org.eclipse.persistence.sessions.Connector;
+import org.eclipse.persistence.sessions.DefaultConnector;
 
 /**
  * Base test case for the tests using the SimpleSpatial model.
@@ -43,7 +45,7 @@ public abstract class SimpleSpatialTestCase extends TestCase {
         super(name);
     }
     
-    public static DatabaseSession getSession() { 
+    public static DatabaseSession getSession() throws Exception{ 
         DatabaseSession spatialSession = null;
         if (isJunit){
             // look up the session from sessions.xml
@@ -58,7 +60,16 @@ public abstract class SimpleSpatialTestCase extends TestCase {
                 spatialSession = new org.eclipse.persistence.internal.sessions.DatabaseSessionImpl(project);
                 spatialSession.getPlatform().addStructConverter(new JGeometryConverter());
                 // make the MyGeometryConverter type point at a user defined type for the current user
-                MyGeometryConverter.MY_GEOMETRY_TYPE = spatialSession.getLogin().getUserName() + "." + MyGeometryConverter.MY_GEOMETRY_TYPE_NAME;
+                //Bug5837254, in case test running on the server, the user name should extract from the metadata
+                //of the datasource.
+                Connector connector = spatialSession.getLogin().getConnector();
+                String userName="";
+                if(connector instanceof DefaultConnector){
+                     userName = spatialSession.getLogin().getUserName();
+                }else if (connector instanceof JNDIConnector){
+                     userName= ((JNDIConnector)spatialSession.getLogin().getConnector()).getDataSource().getConnection().getMetaData().getUserName();
+                }
+                MyGeometryConverter.MY_GEOMETRY_TYPE = userName + "." + MyGeometryConverter.MY_GEOMETRY_TYPE_NAME;
                 MyGeometryConverter.MY_GEOMETRY_TYPE = MyGeometryConverter.MY_GEOMETRY_TYPE.toUpperCase();
                 spatialSession.getPlatform().addStructConverter(new MyGeometryConverter());
                 ((DatabaseSession)spatialSession).login();
