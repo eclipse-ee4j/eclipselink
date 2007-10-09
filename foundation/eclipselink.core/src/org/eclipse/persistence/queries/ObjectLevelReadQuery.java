@@ -460,7 +460,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             builder.setSession(getSession().getRootSession(null));
             builder.setQueryClass(getReferenceClass());
             ClassDescriptor descriptor = objectExpression.getMapping().getReferenceDescriptor();
-            fields.addAll(descriptor.getFields());
+            fields.addAll(descriptor.getAllFields());
         }
     }
 
@@ -1205,49 +1205,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * J.D. Only return the partial attributes not included in the descriptor as key fields
-     * If the partial attribute is a key field for the object, it will automatically be added
-     * to the select statement.
-     */
-    public Vector getPartialAttributeExpressionsWithoutKeyFields(ClassDescriptor descriptor) {
-        Vector partialAttributes = new Vector(getPartialAttributeExpressions().size());
-
-        // For each partial attribute being tracked
-        for (Enumeration e = getPartialAttributeExpressions().elements(); e.hasMoreElements();) {
-            Expression expression = (Expression)e.nextElement();
-            String attributeName = expression.getName();
-            DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(attributeName);
-
-            //prs 23803, merged from 2.5.1.8
-            if (expression.isQueryKeyExpression()) {
-                //If this is a first level expression and the query key is the primary key then do not add it
-                if (((QueryKeyExpression)expression).getBaseExpression().isExpressionBuilder()) {
-                    // Bug 3947911 - Ensure this partial attribute actually exists
-                    if (mapping == null) {
-                        throw QueryException.specifiedPartialAttributeDoesNotExist(this, attributeName, descriptor.getJavaClass().getName());
-                    }
-                    if (mapping.isDirectToFieldMapping()) {
-                        DatabaseField field = ((AbstractDirectMapping)mapping).getField();
-
-                        // If it's not a key field, add it to the return Vector
-                        if (!(descriptor.getPrimaryKeyFields().contains(field))) {
-                            partialAttributes.addElement(expression);
-                        }
-                    } else {
-                        partialAttributes.addElement(expression);
-                    }
-                } else {
-                    partialAttributes.addElement(expression);
-                }
-            } else {
-                partialAttributes.addElement(expression);
-            }
-        }
-        return partialAttributes;
-    }
-
-    /**
-     * INTERNAL:
      * Return the time this query actually went to the database
      */
     public long getExecutionTime() {
@@ -1340,30 +1297,75 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * INTERNAL:
      * Return the fields required in the select clause, for patial attribute reading.
      */
-    public Vector getPartialAttributeSelectionFields() {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getPartialAttributeExpressions().size());
-        fields.addAll(getDescriptor().getPrimaryKeyFields());
+    public Vector getPartialAttributeSelectionFields(boolean isCustomSQL) {
+        Vector localFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getPartialAttributeExpressions().size());
+        Vector foreignFields = null;
+        
+        //Add primary key and indicator fields.
+        localFields.addAll(getDescriptor().getPrimaryKeyFields());
         if (getDescriptor().hasInheritance() && (getDescriptor().getInheritancePolicy().getClassIndicatorField() != null)) {
-            fields.addElement(getDescriptor().getInheritancePolicy().getClassIndicatorField());
+            localFields.addElement(getDescriptor().getInheritancePolicy().getClassIndicatorField());
         }
-        // Filter out partial attributes that are primary keys.
-        // Note that the partial expressions are adding for relationships, this causing forced joining of the relationships.
-        // Currently joining is implied by the partial attributes, and joining is not supported directly, nor batch reading, nor lazy loading.
-        // At some point this should probably be fixed to be similar to fetch groups in working independently with joining.
-        // Also note that the fields will be added in the order that the partial attributes are specified,
-        // so field lookups will fail requiring linear searches, and same table joins will not work.
-        Vector withoutKeyFields = getPartialAttributeExpressionsWithoutKeyFields(getDescriptor());
-        if (withoutKeyFields != null) {
-            Helper.addAllToVector(fields, withoutKeyFields);
+
+        //Add attribute fields
+        for(Iterator it = getPartialAttributeExpressions().iterator();it.hasNext();){
+            Expression expression = (Expression)it.next();
+            if (expression.isQueryKeyExpression()) {
+                ((QueryKeyExpression)expression).getBuilder().setSession(session.getRootSession(null));
+                ((QueryKeyExpression)expression).getBuilder().setQueryClass(getDescriptor().getJavaClass());
+                DatabaseMapping mapping = ((QueryKeyExpression)expression).getMapping();
+                if (!((QueryKeyExpression)expression).getBaseExpression().isExpressionBuilder()) {
+                    if(foreignFields==null){
+                        foreignFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+                    }
+                    if(!isCustomSQL){
+                        foreignFields.add(expression);
+                    }else{
+                        foreignFields.addAll(expression.getFields());
+                    }
+                }else{
+                    if (mapping == null) {
+                        throw QueryException.specifiedPartialAttributeDoesNotExist(this, expression.getName(), descriptor.getJavaClass().getName());
+                    }
+                    if(mapping.isForeignReferenceMapping() ){
+                        if(foreignFields==null){
+                            foreignFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+                        }
+                        if(!isCustomSQL){
+                            foreignFields.add(expression);
+                        }else{
+                            foreignFields.addAll(expression.getFields());
+                        }
+                    }else{
+                        localFields.addAll(expression.getFields());
+                    }
+                }
+            } else {
+                throw QueryException.expressionDoesNotSupportPartialAttributeReading(expression);
+            }
         }
-        return fields;
+        //Build fields in same order as the fields of the descriptor to ensure field and join indexes match.
+        Vector selectionFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        for (Iterator iterator = getDescriptor().getFields().iterator(); iterator.hasNext();) {
+            DatabaseField field = (DatabaseField)iterator.next();
+            if (localFields.contains(field)) {
+                selectionFields.add(field);
+            } else {
+                selectionFields.add(null);
+            }
+        }
+        //Combine fields list for source descriptor and target descriptor.
+        if(foreignFields!=null){
+            selectionFields.addAll(foreignFields);
+        }
+        return selectionFields;
     }
     
     /**
      * INTERNAL:
      * Return the fields required in the select clause, for fetch group reading.
      */
-    public Vector getFetchGroupSelectionFields() {
+    public Vector getFetchGroupSelectionFields(boolean isCustomSQL) {
         Set fetchedFields = new HashSet(getFetchGroup().getAttributes().size() + 2);
         // Add required fields.
         fetchedFields.addAll(getDescriptor().getPrimaryKeyFields());
@@ -1399,9 +1401,14 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         
         // Add joined fields.
-        if (hasJoining()) {
-            Helper.addAllToVector(fields, getJoinedAttributeManager().getJoinedAttributeExpressions());
-            Helper.addAllToVector(fields, getJoinedAttributeManager().getJoinedMappingExpressions());
+        if(hasJoining()){
+            if(isCustomSQL){
+                addSelectionFieldsForJoinedExpressions(fields, getJoinedAttributeManager().getJoinedAttributeExpressions());
+                addSelectionFieldsForJoinedExpressions(fields, getJoinedAttributeManager().getJoinedMappingExpressions());
+            }else{
+                Helper.addAllToVector(fields, getJoinedAttributeManager().getJoinedAttributeExpressions());
+                Helper.addAllToVector(fields, getJoinedAttributeManager().getJoinedMappingExpressions());
+            }
         }
         if (hasAdditionalFields()) {
             // Add additional fields, use for batch reading m-m.
@@ -1418,9 +1425,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public Vector getSelectionFields() {
         if (hasPartialAttributeExpressions()) {
-            return getPartialAttributeSelectionFields();
+            return getPartialAttributeSelectionFields(true);
         } else if (hasFetchGroup()) {
-            return getFetchGroupSelectionFields();
+            return getFetchGroupSelectionFields(true);
         } else if (hasJoining()) {
             JoinedAttributeManager joinManager = getJoinedAttributeManager();
             Vector fields = NonSynchronizedVector.newInstance(getDescriptor().getAllFields().size() + joinManager.getJoinedAttributeExpressions().size() + joinManager.getJoinedMappingExpressions().size());
