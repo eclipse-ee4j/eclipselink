@@ -908,10 +908,10 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     public Vector getSelectionFields(SQLSelectStatement statement, boolean includeAllSubclassFields) {
         ObjectLevelReadQuery owner = (ObjectLevelReadQuery)getQuery();
         if (owner.hasPartialAttributeExpressions()) {
-            return owner.getPartialAttributeSelectionFields();
+            return owner.getPartialAttributeSelectionFields(false);
         }
         if (owner.hasFetchGroup()) {
-            return owner.getFetchGroupSelectionFields();
+            return owner.getFetchGroupSelectionFields(false);
         }
 
         ExpressionBuilder base = statement.getExpressionBuilder();
