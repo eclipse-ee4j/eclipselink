@@ -1817,6 +1817,21 @@ public class Helper implements Serializable {
     public static void toDo(String description) {
         // Use sender to find what is needy.
     }
+    
+    /**
+     * Convert dotted format class name to slashed format class name.
+     * @param dottedClassName
+     * @return String
+     */
+    public static String toSlashedClassName(String dottedClassName){
+        if(dottedClassName==null){
+            return null;
+        }else if(dottedClassName.indexOf('.')>=0){
+           return dottedClassName.replace('.', '/');
+        }else{
+          return dottedClassName;
+        }
+    }
 
     /**
      * If the size of the original string is larger than the passed in size,
