@@ -70,6 +70,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.xml.XMLMappedSuperclassAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.cache.MetadataCache;
 import org.eclipse.persistence.internal.jpa.metadata.cache.MetadataTimeOfDay;
@@ -83,6 +84,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataPrimaryKeyJ
 
 import org.eclipse.persistence.internal.jpa.metadata.listeners.MetadataEntityClassListener;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.MetadataEntityListener;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.xml.XMLEntityListener;
 
 import org.eclipse.persistence.internal.jpa.metadata.locking.MetadataOptimisticLocking;
 
@@ -101,10 +103,8 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.MetadataSQLResultSe
 import org.eclipse.persistence.internal.jpa.metadata.tables.MetadataSecondaryTable;
 import org.eclipse.persistence.internal.jpa.metadata.tables.MetadataTable;
 
-import org.eclipse.persistence.internal.jpa.xml.accessors.XMLMappedSuperclassAccessor;
-import org.eclipse.persistence.internal.jpa.xml.listeners.XMLEntityListener;
-import org.eclipse.persistence.internal.jpa.xml.XMLConstants;
-import org.eclipse.persistence.internal.jpa.xml.XMLHelper;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLConstants;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLHelper;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;

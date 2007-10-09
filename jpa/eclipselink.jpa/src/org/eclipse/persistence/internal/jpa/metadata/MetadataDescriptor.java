@@ -35,7 +35,7 @@ import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidat
 
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 
-import org.eclipse.persistence.internal.jpa.base.CMP3Policy;
+import org.eclipse.persistence.internal.jpa.CMP3Policy;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 
@@ -49,7 +49,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataJoinColumns
 
 import org.eclipse.persistence.internal.jpa.metadata.listeners.MetadataEntityListener;
 
-import org.eclipse.persistence.internal.jpa.xml.XMLConstants;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLConstants;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;

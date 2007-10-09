@@ -37,12 +37,13 @@ import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.xml.XMLClassAccessor;
+
 import org.eclipse.persistence.internal.jpa.metadata.converters.MetadataStructConverter;
 
-import org.eclipse.persistence.internal.jpa.xml.accessors.XMLClassAccessor;
-import org.eclipse.persistence.internal.jpa.xml.XMLConstants;
-import org.eclipse.persistence.internal.jpa.xml.XMLHelper;
-import org.eclipse.persistence.internal.jpa.xml.XMLValidator;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLConstants;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLHelper;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLValidator;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 

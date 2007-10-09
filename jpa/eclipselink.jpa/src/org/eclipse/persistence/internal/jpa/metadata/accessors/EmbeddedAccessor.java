@@ -16,16 +16,19 @@ import static org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedAc
 
 import javax.persistence.*;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataColumn;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
-import org.eclipse.persistence.internal.jpa.xml.XMLHelper;
-import org.eclipse.persistence.internal.jpa.xml.XMLConstants;
-import org.eclipse.persistence.internal.jpa.xml.accessors.XMLClassAccessor;
-import org.eclipse.persistence.internal.helper.DatabaseField;
+
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.xml.XMLClassAccessor;
+
+import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataColumn;
+
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLHelper;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLConstants;
 
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;

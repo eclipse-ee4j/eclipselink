@@ -36,7 +36,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.jpa.base.QueryHintsHandler;
+import org.eclipse.persistence.internal.jpa.QueryHintsHandler;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.RelationshipAccessor;
@@ -54,7 +54,7 @@ import org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataGenerate
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataTableGenerator;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataSequenceGenerator;
 
-import org.eclipse.persistence.internal.jpa.xml.XMLHelper;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLHelper;
 
 import org.eclipse.persistence.queries.StoredProcedureCall;
 

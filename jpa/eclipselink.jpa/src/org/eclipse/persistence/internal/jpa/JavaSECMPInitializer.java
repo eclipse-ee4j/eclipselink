@@ -25,7 +25,6 @@ import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.Archive;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 
 import javax.persistence.PersistenceException;
@@ -40,7 +39,7 @@ import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
  *
  * It is called internally by our Provider
  *
- * @see org.eclipse.persistence.jpa.EntityManagerFactoryProvider
+ * @see org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider
  */
 public class JavaSECMPInitializer implements PersistenceInitializationActivator {
 

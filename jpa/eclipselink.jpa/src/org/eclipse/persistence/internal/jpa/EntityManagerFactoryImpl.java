@@ -17,6 +17,8 @@ import javax.persistence.PersistenceContextType;
 
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.sessions.JNDIConnector;
+import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
@@ -28,35 +30,69 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 * The primary consumer of these EntityManager is assumed to be either the Container.    There is
 * one EntityManagerFactory per deployment.
 * @see javax.persistence.EntityManager
-* @see org.eclipse.persistence.jpa.EntityManager
+* @see org.eclipse.persistence.jpa.JpaEntityManager
 * @see org.eclipse.persistence.jpa.EntityManagerFactory
+* 
+* @author  gyorke
+* @since   TopLink 10.1.3 EJB 3.0 Preview
 */
-
-/*  @author  gyorke
- *  @since   TopLink 10.1.3 EJB 3.0 Preview
- */
-public class EntityManagerFactoryImpl 
-    extends org.eclipse.persistence.internal.jpa.base.EntityManagerFactoryImpl
-    implements EntityManagerFactory 
-{
+public class EntityManagerFactoryImpl implements EntityManagerFactory {
+	// This stores a reference to the ServerSession for this deployment.
+    protected ServerSession serverSession;
+    protected EntityManagerSetupImpl setupImpl;
+    protected boolean isOpen = true;
+    protected Map properties;
 
     /**
      * Will return an instance of the Factory.  Should only be called by TopLink.
      * @param serverSession
      */
-    public EntityManagerFactoryImpl(ServerSession serverSession) {
-        super(serverSession);
+    public EntityManagerFactoryImpl(ServerSession serverSession){
+        this.serverSession = serverSession;
     }
-
+    
+    public EntityManagerFactoryImpl(EntityManagerSetupImpl setupImpl, Map properties){
+        this.setupImpl = setupImpl;
+        this.properties = properties;
+    }
+    
     /**
-     * Will return an instance of the Factory.  Should only be called by TopLink.
-     * @param serverSession
+     * INTERNAL:
+     * Returns the ServerSession that the Factory will be using and initializes it if it is not available.
+     * This method makes use of the partially constructed session stored in our setupImpl and
+     * completes its construction
      */
-    public EntityManagerFactoryImpl(EntityManagerSetupImpl setupImpl, Map properties) {
-        super(setupImpl, properties);
+    public synchronized ServerSession getServerSession(){
+        if (serverSession == null){   
+            ClassLoader realLoader = setupImpl.getPersistenceUnitInfo().getClassLoader();
+            // the call top setupImpl.deploy() finishes the session creation
+            serverSession = setupImpl.deploy(realLoader, properties);
+        }
+        return this.serverSession;
+    }
+    
+    /**
+	 * Closes this factory, releasing any resources that might be held by this factory. After
+	 * invoking this method, all methods on the instance will throw an
+	 * {@link IllegalStateException}, except for {@link #isOpen}, which will return
+	 * <code>false</code>.
+	 */
+	public synchronized void close(){
+        verifyOpen();
+        isOpen = false;
+        setupImpl.undeploy();
     }
 
-    /**
+
+	/**
+	 * Indicates whether or not this factory is open. Returns <code>true</code> until a call
+	 * to {@link #close} is made.
+	 */
+	public boolean isOpen(){
+       return isOpen;
+    }
+
+	/**
      * PUBLIC:
      * Returns an EntityManager for this deployment
      */
@@ -71,9 +107,47 @@ public class EntityManagerFactoryImpl
     public EntityManager createEntityManager(Map properties) {
         return (EntityManager) createEntityManagerImpl(properties, false);
     }
+    
+    protected EntityManagerImpl createEntityManagerImpl(boolean extended) {
+        return createEntityManagerImpl(null, extended);
+    }
+
+    protected synchronized EntityManagerImpl createEntityManagerImpl(Map properties, boolean extended) {
+        verifyOpen();
+
+        if (!getServerSession().isConnected()) {
+            getServerSession().login();
+        }
+        return createEntityManagerImplInternal(properties, extended);
+    }
 
     //TODO change the way create works to deal with how the specification works with persistence contexts
-    protected org.eclipse.persistence.internal.jpa.base.EntityManagerImpl createEntityManagerImplInternal(Map properties, boolean extended) {
+    protected org.eclipse.persistence.internal.jpa.EntityManagerImpl createEntityManagerImplInternal(Map properties, boolean extended) {
         return new EntityManagerImpl(this, properties, false, extended);
+    }
+    
+    protected void verifyOpen(){
+        if (!isOpen){
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager_factory"));
+        }
+    }    
+
+    protected void finalize() throws Throwable {
+        if(isOpen()) {
+            close();
+        }
+    }
+    
+    /**
+     * The method return user defined property passed in from EntityManagerFactory. 
+     * @param name
+     * @return
+     */
+    public Object getProperty(String name) {
+        Object propertyValue=null;
+        if(name==null){
+            return null;
+        }
+        return this.getServerSession().getProperty(name);
     }
 }

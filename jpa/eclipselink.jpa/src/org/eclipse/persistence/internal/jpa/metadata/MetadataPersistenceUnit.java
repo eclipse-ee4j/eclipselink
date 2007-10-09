@@ -9,7 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
-import org.eclipse.persistence.internal.jpa.xml.XMLConstants;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLConstants;
 
 /**
  * Metadata object to hold persistence unit information.

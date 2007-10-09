@@ -13,7 +13,7 @@ package org.eclipse.persistence.queries;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import java.util.HashMap;
-import org.eclipse.persistence.internal.jpa.base.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.sessions.Session;
 
 
