@@ -82,10 +82,10 @@ public class StructConverterTestSuite extends JUnitTestCase {
                 // trigger deploy
                 em.find(SimpleSpatial.class, new Long(1));
             } catch (Exception e){};
-            StructConverter converter = ((org.eclipse.persistence.jpa.EntityManager)em).getActiveSession().getPlatform().getTypeConverters().get(JGeometry.class);
+            StructConverter converter = ((org.eclipse.persistence.jpa.JpaEntityManager)em).getActiveSession().getPlatform().getTypeConverters().get(JGeometry.class);
             assertNotNull("Platform does not have correct JGeometryConverter.", converter);
             assertTrue("JGeometery struct converter is wrong type.", converter.getClass().getName().indexOf("JGeometryConverter") >= 0);
-            converter = ((org.eclipse.persistence.jpa.EntityManager)em).getActiveSession().getPlatform().getTypeConverters().get(DummyStructConverterType.class);
+            converter = ((org.eclipse.persistence.jpa.JpaEntityManager)em).getActiveSession().getPlatform().getTypeConverters().get(DummyStructConverterType.class);
             assertNotNull("Platform does not have correct DummyStructConverter.", converter);
             assertTrue("JGeometery struct converter is wrong type.", converter.getClass().getName().indexOf("DummyStructConverter") >= 0);
         }
