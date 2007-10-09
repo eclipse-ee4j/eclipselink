@@ -119,7 +119,7 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
     //Test case for selecting employee from the database using parameters 
     public void multipleParameterTest()
     {          
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
       
         Employee employee = (Employee) (em.getActiveSession().readAllObjects(Employee.class).firstElement());
         Vector expectedResult = new Vector();

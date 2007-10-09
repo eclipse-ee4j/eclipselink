@@ -113,7 +113,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
     }
 
     public void testStraightReadSuperClass() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
          
         Project project = (Project)em.createQuery("SELECT p from Project p").getResultList().get(0);
         clearCache();
@@ -125,7 +125,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
     }
     
     public void testStraightReadSubClass() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
          
         SmallProject project = (SmallProject)em.createQuery("SELECT s from SmallProject s").getResultList().get(0);
         clearCache();
@@ -137,7 +137,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
     }
 
     public void testJoinSuperClass() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
          
         Employee emp = (Employee)em.createQuery("SELECT e from Employee e JOIN e.projects p where e.lastName is not null").getResultList().get(0);
         clearCache();
@@ -150,7 +150,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
     }
 
     public void testJoinSubClass() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
          
         Engineer emp = (Engineer)em.createQuery("SELECT e from Engineer e JOIN e.bestFriend b WHERE e.title is not null").getResultList().get(0);
         clearCache();
@@ -163,7 +163,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
     }
 
     public void testJoinFetchSuperClass() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
          
         Employee emp = (Employee)em.createQuery("SELECT e from Employee e JOIN FETCH e.projects").getResultList().get(0);
         clearCache();
@@ -176,7 +176,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
     }
 
     public void testJoinFetchSubClass() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
          
         Engineer emp = (Engineer)em.createQuery("SELECT e from Engineer e JOIN FETCH e.bestFriend").getResultList().get(0);
         clearCache();
@@ -194,7 +194,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
      * See issue 860.
      */
     public void testJoinedInheritance() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
 
         String ejbqlString = "SELECT OBJECT(b) FROM BBB b WHERE b.foo = ?1";
         // query throws exception, if result not unique!
@@ -202,7 +202,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
     }
     
     public void testJoinedInheritanceWithLeftOuterJoin1() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();        
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();        
         String ejbqlString = "SELECT t0.maxSpeed, t0.color, t0.description, t0.fuelCapacity, t0.fuelType, t0.id, t0.passengerCapacity, t1.name, t1.id FROM SportsCar t0 LEFT OUTER JOIN t0.owner t1";
         try {
             em.createQuery(ejbqlString).getResultList();
@@ -212,7 +212,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
     }
     
     public void testJoinedInheritanceWithLeftOuterJoin2() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         String ejbqlString = "SELECT t0.color, t0.description, t0.fuelCapacity, t0.fuelType, t0.id, t0.passengerCapacity, t1.name, t1.id FROM FueledVehicle t0 LEFT OUTER JOIN t0.owner t1";
         try {
             em.createQuery(ejbqlString).getResultList();
@@ -222,7 +222,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
     }
     
     public void testJoinedInheritanceWithLeftOuterJoin3() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         String ejbqlString = "SELECT t0.color, t0.description, t0.fuelCapacity, t0.fuelType, t0.id, t0.passengerCapacity, t1.name, t1.id FROM Bus t0 LEFT OUTER JOIN t0.busDriver t1";
         try {
             em.createQuery(ejbqlString).getResultList();

@@ -9,7 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
-import org.eclipse.persistence.jpa.EntityManager;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
@@ -77,7 +77,7 @@ public class EMCascadingModifyAndRefreshTest extends EntityContainerTestBase  {
         }
         
         //lets initialize the identity map to make sure they were persisted
-        ((EntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        ((JpaEntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         employee = getEntityManager().find(Employee.class, empIDs[0]);
         if(employee.getFirstName().equals("Tobin")) {

@@ -24,7 +24,7 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.internal.jpa.base.RepeatableWriteUnitOfWork;
+import org.eclipse.persistence.internal.jpa.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;

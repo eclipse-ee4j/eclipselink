@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import org.eclipse.persistence.jpa.EntityManager;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
@@ -92,7 +92,7 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
 
             getEntityManager().flush();
             //lets initialize the identity map to make sure they were persisted
-            ((EntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            ((JpaEntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
             persistedItems.put("after flush Employee 0", getEntityManager().find(Employee.class, empIDs[0]));
 
@@ -114,7 +114,7 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
 
             getEntityManager().flush();
             //lets initialize the identity map to make sure they were persisted
-            ((EntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            ((JpaEntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
             persistedItems.put("after flush Employee 1", getEntityManager().find(Employee.class, empIDs[1]));
 
@@ -144,7 +144,7 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
 
             getEntityManager().flush();
             //lets initialize the identity map to make sure they were persisted
-            ((EntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            ((JpaEntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
             persistedItems.put("after flush Employee 2", getEntityManager().find(Employee.class, empIDs[2]));
 
@@ -167,7 +167,7 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
 
             getEntityManager().flush();
             //lets initialize the identity map to make sure they were persisted
-            ((EntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            ((JpaEntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
             persistedItems.put("after flush Employees 0 with raise", getEntityManager().find(Employee.class, empIDs[0]));
             persistedItems.put("after flush Employees 1 with raise", getEntityManager().find(Employee.class, empIDs[1]));

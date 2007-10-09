@@ -10,7 +10,7 @@
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.util.HashMap;
-import org.eclipse.persistence.jpa.EntityManager;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
@@ -57,7 +57,7 @@ public class EMRemoveAndFlushTest extends EntityContainerTestBase  {
             
             getEntityManager().flush();
             //lets initialize the identity map to make sure they were persisted
-            ((EntityManager)getEntityManager()).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            ((JpaEntityManager)getEntityManager()).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
             getEntityManager().clear(); //lear em as well or they will continue to be managed
 
             persistedItems.put("after flush Employee", getEntityManager().find(Employee.class, empIDs[0]));

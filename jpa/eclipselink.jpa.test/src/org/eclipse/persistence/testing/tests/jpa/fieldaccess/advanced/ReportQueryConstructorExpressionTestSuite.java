@@ -88,7 +88,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("firstName");
         query.addAttribute("lastName");
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager("fieldaccess");          
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager("fieldaccess");          
 
         Vector reportResults = (Vector)em.getActiveSession().executeQuery(query);
         
@@ -124,7 +124,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("firstName");
         query.addAttribute("lastName");
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager("fieldaccess");          
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager("fieldaccess");          
 
         Vector reportResults = (Vector)em.getActiveSession().executeQuery(query);
 
@@ -154,7 +154,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         query.addItem("endDate", employees.get("period").get("endDate"));
         query.addAttribute("id");
 
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager("fieldaccess");          
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager("fieldaccess");          
 
         Vector reportResults = (Vector)em.getActiveSession().executeQuery(query);
         query = new ReportQuery(Employee.class, employees);
@@ -194,7 +194,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         query.addItem("endDate", employees.get("period").get("endDate"));
         query.addAttribute("id");
         query.endAddingToConstructorItem();
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager("fieldaccess");          
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager("fieldaccess");          
         QueryException exception = null;
         try{
             em.getActiveSession().executeQuery(query);
@@ -209,7 +209,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ExpressionBuilder employees = new ExpressionBuilder();
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("salary");
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager("fieldaccess");          
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager("fieldaccess");          
 
         Vector reportResults = (Vector)em.getActiveSession().executeQuery(query);
 
@@ -247,7 +247,7 @@ public class ReportQueryConstructorExpressionTestSuite extends JUnitTestCase {
         ReportQuery query = new ReportQuery(Employee.class, employees);
         query.addAttribute("firstName");
         query.addAttribute("lastName");
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager("fieldaccess");          
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager("fieldaccess");          
 
         Vector reportResults = (Vector)em.getActiveSession().executeQuery(query);
 

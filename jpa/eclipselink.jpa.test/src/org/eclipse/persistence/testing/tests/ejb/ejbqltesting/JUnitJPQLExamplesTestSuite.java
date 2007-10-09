@@ -18,7 +18,7 @@ import java.util.Vector;
 
 import junit.framework.Assert;
 
-import org.eclipse.persistence.jpa.EntityManager;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 
 import junit.extensions.TestSetup;
 
@@ -153,7 +153,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void findAllOrders() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         List expectedResult = em.getActiveSession().readAllObjects(Order.class);
 
         String ejbqlString = "SELECT o FROM OrderBean o";
@@ -164,7 +164,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void findEmployeesInOntario() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.get("address").get("province").equal("ONT");
 
@@ -180,7 +180,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
     public void findAllProvinceWithEmployees() {
         boolean testPass = false;
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.get("address").get("province");
 
@@ -203,7 +203,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void findAllEmployeesWithPhoneNumbers() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.isEmpty("phoneNumbers").not();
 
@@ -225,7 +225,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void findAllEmployeesWithOutPhoneNumbers() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.isEmpty("phoneNumbers");
 
@@ -243,7 +243,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void findAllEmployeesWithCellPhones() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.anyOf("phoneNumbers").get("type").equal("Cellular");
 
@@ -264,7 +264,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void findOrdersWithDifferentBilledCustomer() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.get("customer").equal(builder.get("billedCustomer")).not();
 
@@ -284,7 +284,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void findEmployeeWithWorkPhone2258812() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause1 = builder.anyOf("phoneNumbers").get("type").equal("Work");
         Expression whereClause2 = builder.anyOf("phoneNumbers").get("number").equal("2258812");
@@ -303,7 +303,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void parameterTest() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         List employeeList = em.getActiveSession().readAllObjects(Employee.class);
         Employee expectedEmployee = (Employee)employeeList.get(0);
         int i = 1;
@@ -324,7 +324,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
 
     public void getOrderLargerThan() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ExpressionBuilder builder1 = new ExpressionBuilder(Order.class);
         ExpressionBuilder builder2 = new ExpressionBuilder(Order.class);
@@ -349,7 +349,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void getOrderForCustomer() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.get("name").equal("Jane Smith");
 
@@ -371,7 +371,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void getSalesPersonForOrders() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         List expectedResult = em.getActiveSession().readAllObjects(SalesPerson.class);
 
@@ -383,7 +383,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testOuterJoin() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.anyOfAllowingNone("phoneNumbers").get("type").equal("Cellular");
         ReadAllQuery raq = new ReadAllQuery(Employee.class);
@@ -401,7 +401,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testExistsExpression() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         boolean testPass = false;
         ExpressionBuilder employeeBuilder = new ExpressionBuilder(Employee.class);
         ExpressionBuilder managerBuilder = new ExpressionBuilder(Employee.class);
@@ -431,7 +431,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testAllExpressions() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         boolean testPass = false;
         ExpressionBuilder mainQueryBuilder = new ExpressionBuilder(Employee.class);
         ExpressionBuilder subQueryBuilder = new ExpressionBuilder(Employee.class);
@@ -460,7 +460,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testCountInSubQuery() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         boolean testPass = false;
         ReportQuery mainQuery = new ReportQuery(Customer.class, new ExpressionBuilder());
         ReportQuery subQuery = new ReportQuery(Order.class, new ExpressionBuilder());
@@ -480,7 +480,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testGroupByHavingExpression() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         boolean testPass = true;
 
         ReadAllQuery raq = new ReadAllQuery(Employee.class, new ExpressionBuilder());
@@ -533,7 +533,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testGroupByHavingCount() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         boolean testPass = true;
         ReportQuery query = new ReportQuery(Employee.class, new ExpressionBuilder());
         query.returnWithoutReportQueryResult();
@@ -563,7 +563,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testConstructorQuery() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.models.jpa.relationships.CustomerDetails(c.customerId, o.quantity) FROM Customer " + "c JOIN c.orders o WHERE o.quantity > 100";
 
         List custDetails = em.createQuery(ejbqlString).getResultList();
@@ -572,7 +572,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testSumExpression() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ReportQuery query = new ReportQuery(Employee.class, new ExpressionBuilder());
         Expression whereClause = query.getExpressionBuilder().get("address").get("province").equal("QUE");
@@ -586,7 +586,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testAvgExpression() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ReportQuery query = new ReportQuery(Order.class, new ExpressionBuilder());
         query.addAverage("average quantity", query.getExpressionBuilder().get("quantity"), Double.class);
@@ -600,7 +600,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     //bug 5166658
 
     public void testCountExpression() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ReportQuery query = new ReportQuery(Employee.class, new ExpressionBuilder());
         Expression whereClause1 = query.getExpressionBuilder().get("address").get("province").equal("QUE");
@@ -624,7 +624,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testOrderByExpression() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ReadAllQuery raq = new ReadAllQuery(PhoneNumber.class, new ExpressionBuilder());
         Expression whereClause = raq.getExpressionBuilder().get("owner").get("address").get("province").equal("ONT");
@@ -640,7 +640,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testOrderByExpressionWithSelect() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         boolean testPass = true;
         ReportQuery query = new ReportQuery(PhoneNumber.class, new ExpressionBuilder());
         Expression whereClause = query.getExpressionBuilder().get("owner").get("address").get("province").equal("ONT");
@@ -673,7 +673,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testDeleteExpression() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         try {
             em.getTransaction().begin();
             String orderString = "DELETE FROM OrderBean o WHERE o.customer.name ='Karen McDonald' ";
@@ -703,7 +703,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     }
 
     public void testComplexDeleteExpression() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         try {
             em.getTransaction().begin();
             String orderString = "DELETE FROM OrderBean o WHERE o.customer.name ='Karen McDonald' ";
@@ -729,7 +729,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     //bug 5159164, 5159198   
 
     public void testUpdateExpression() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         int result = 0;
         UpdateAllQuery uaq = new UpdateAllQuery(Customer.class, new ExpressionBuilder());
         uaq.addUpdate(uaq.getExpressionBuilder().get("name"), "Test Case");
@@ -754,7 +754,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     //Bug5097278 Test case for updating the manager of ALL employees that have a certain address 
 
     public void updateAllTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         String empName = "Saunders";
         String manName = "Smitty";
@@ -782,7 +782,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
     public void updateEmbeddedFieldTest() {
 
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         Calendar startCalendar = Calendar.getInstance();
         startCalendar.set(1905, 11, 31, 0, 0, 0);
         java.sql.Date startDate = new java.sql.Date(startCalendar.getTime().getTime());
@@ -796,7 +796,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     //Bug5040609  Test if EJBQuery makes a clone of the original DatabaseQuery from the session
 
     public void namedQueryCloneTest() {
-        EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         List result1 = em.createNamedQuery("findAllCustomers").getResultList();
 
@@ -812,7 +812,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     //Bug5040609 Test case for aggregates as parameters in EJBQL
 
     public void aggregateParameterTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ExpressionBuilder builder = new ExpressionBuilder();
         ReportQuery query = new ReportQuery(org.eclipse.persistence.testing.models.jpa.advanced.Employee.class, builder);

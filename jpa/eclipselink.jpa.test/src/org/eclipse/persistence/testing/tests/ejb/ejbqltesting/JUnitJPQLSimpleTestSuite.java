@@ -229,7 +229,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     //2.  Test both scenarios of using the cache and bypassing the cache
 
     public void simpleJoinFetchTest() throws Exception {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         simpleJoinFetchTest(em);
     }
     
@@ -238,7 +238,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     // tests that Fetch join works when returning objects that may already have been loaded in the em/uow (without the joined relationships)
     // Builds on simpleJoinFetchTest
     public void simpleJoinFetchTest2() throws Exception {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         //preload employees into the cache so that phonenumbers are not prefetched
         String ejbqlString = "SELECT e FROM Employee e";
         List result = em.createQuery(ejbqlString).getResultList();
@@ -246,7 +246,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         simpleJoinFetchTest(em);
     }
 
-    public void simpleJoinFetchTest(org.eclipse.persistence.jpa.EntityManager em) throws Exception {
+    public void simpleJoinFetchTest(org.eclipse.persistence.jpa.JpaEntityManager em) throws Exception {
         String ejbqlString = "SELECT e FROM Employee e LEFT JOIN FETCH e.phoneNumbers";
 
         //use the cache
@@ -313,7 +313,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     //Test case for selecting ALL employees from the database
 
     public void baseTestCase() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         List expectedResult = em.getActiveSession().readAllObjects(Employee.class);
 
@@ -327,7 +327,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     //Test case for ABS function in EJBQL
 
     public void simpleABSTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)(em.getActiveSession().readAllObjects(Employee.class).firstElement());
 
@@ -349,7 +349,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     public void simpleBetweenAndTest() {
         BigDecimal empId = new BigDecimal(0);
 
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee employee = (Employee)(em.getActiveSession().readAllObjects(Employee.class).lastElement());
 
@@ -373,7 +373,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     public void simpleBetweenTest() {
         BigDecimal empId = new BigDecimal(0);
 
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee employee = (Employee)(em.getActiveSession().readAllObjects(Employee.class).lastElement());
 
@@ -396,7 +396,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     //Test case for concat function in EJBQL
 
     public void simpleConcatTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)(em.getActiveSession().readAllObjects(Employee.class).firstElement());
 
@@ -424,7 +424,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     //Test case for concat function in EJBQL taking parameters
 
     public void simpleConcatTestWithParameters() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)(em.getActiveSession().readAllObjects(Employee.class).firstElement());
 
@@ -453,7 +453,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     //Test case for concat function with constants in EJBQL
 
     public void simpleConcatTestWithConstants1() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee emp = (Employee)(em.getActiveSession().readAllObjects(Employee.class).firstElement());
 
@@ -486,7 +486,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     //Test case for double OR function in EJBQL
 
     public void simpleDistinctTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         String ejbqlString = "SELECT DISTINCT e FROM Employee e JOIN FETCH e.phoneNumbers ";
         List result = em.createQuery(ejbqlString).getResultList();
         Set testSet = new HashSet();
@@ -498,7 +498,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleDistinctNullTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         Employee emp = (Employee)em.createQuery("SELECT e from Employee e").getResultList().get(0);
         String oldFirstName = emp.getFirstName();
         em.getTransaction().begin();
@@ -535,7 +535,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleDistinctMultipleResultTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         String ejbqlString = "SELECT DISTINCT e, e.firstName FROM Employee e JOIN FETCH e.phoneNumbers ";
         List result = em.createQuery(ejbqlString).getResultList();
         Set testSet = new HashSet();
@@ -555,7 +555,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     public void simpleDoubleOrTest() {
         Employee emp1, emp2, emp3;
 
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         emp1 = (Employee)(em.getActiveSession().readAllObjects(Employee.class).firstElement());
         emp2 = (Employee)(em.getActiveSession().readAllObjects(Employee.class).elementAt(1));
@@ -578,7 +578,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     //Test case for equals brackets in EJBQL
 
     public void simpleEqualsBracketsTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)(em.getActiveSession().readAllObjects(Employee.class).firstElement());
 
@@ -596,7 +596,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     //Test case for equals in EJBQL
 
     public void simpleEqualsTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)(em.getActiveSession().readAllObjects(Employee.class).firstElement());
 
@@ -614,7 +614,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     //Test case for equals with join in EJBQL
 
     public void simpleEqualsTestWithJoin() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.anyOf("managedEmployees").get("address").get("city").equal("Ottawa");
@@ -631,7 +631,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleEqualsWithAs() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         Employee expectedResult = (Employee)(em.getActiveSession().readAllObjects(Employee.class).firstElement());
 
         clearCache();
@@ -646,7 +646,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void collectionMemberIdentifierEqualsTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ExpressionBuilder employees = new ExpressionBuilder();
         Expression exp = employees.get("firstName").equal("Bob");
@@ -665,7 +665,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void abstractSchemaIdentifierEqualsTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
 
@@ -679,7 +679,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void abstractSchemaIdentifierNotEqualsTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Vector expectedResult = em.getActiveSession().readAllObjects(Employee.class);
 
@@ -698,7 +698,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
     public void simpleInOneDotTest() {
         //select a specifif employee using Expr Bob Smithn
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ReadObjectQuery roq = new ReadObjectQuery(Employee.class);
 
@@ -724,7 +724,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void selectAverageQueryForByteColumnTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         String ejbqlString = "Select AVG(emp.salary)from Employee emp";
         Object result = em.createQuery(ejbqlString).getSingleResult();
@@ -733,7 +733,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleInTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
 
@@ -747,7 +747,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleLengthTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Assert.assertFalse("Warning SQL doesnot support LENGTH function", (JUnitTestCase.getServerSession()).getPlatform().isSQLServer());
 
@@ -767,7 +767,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
 
     public void simpleLikeTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
 
@@ -782,7 +782,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleLikeTestWithParameter() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
 
@@ -809,7 +809,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleLikeEscapeTestWithParameter() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Address expectedResult = new Address();
         expectedResult.setCity("TAIYUAN");
@@ -843,7 +843,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleNotBetweenTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee emp1 = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
         Employee emp2 = (Employee)em.getActiveSession().readAllObjects(Employee.class).lastElement();
@@ -873,7 +873,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleNotEqualsVariablesInteger() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Vector expectedResult = em.getActiveSession().readAllObjects(Employee.class);
 
@@ -892,7 +892,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleNotInTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
 
@@ -918,7 +918,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleNotLikeTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
 
@@ -943,7 +943,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleOrFollowedByAndTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee emp1 = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
         Employee emp2 = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(1);
@@ -960,7 +960,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleOrFollowedByAndTestWithStaticNames() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.get("firstName").equal("John").or(builder.get("firstName").equal("Bob").and(builder.get("lastName").equal("Smith")));
@@ -981,7 +981,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleOrTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee emp1 = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
         Employee emp2 = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(1);
@@ -999,7 +999,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleParameterTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
 
@@ -1029,7 +1029,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
     public void simpleParameterTestChangingParameters() {
 
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee emp1 = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
         Employee emp2 = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(1);
@@ -1071,7 +1071,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleReverseAbsTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
         clearCache();
@@ -1085,7 +1085,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleReverseConcatTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
 
@@ -1108,7 +1108,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleReverseEqualsTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
 
@@ -1124,7 +1124,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleReverseLengthTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
 
@@ -1140,7 +1140,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleReverseParameterTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
 
@@ -1170,7 +1170,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleReverseSqrtTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ExpressionBuilder expbldr = new ExpressionBuilder();
         Expression whereClause = expbldr.get("firstName").equal("SquareRoot").and(expbldr.get("lastName").equal("TestCase1"));
@@ -1196,7 +1196,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleReverseSubstringTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
 
@@ -1218,7 +1218,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
 
     public void simpleSqrtTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ExpressionBuilder expbldr = new ExpressionBuilder();
         Expression whereClause = expbldr.get("firstName").equal("SquareRoot").and(expbldr.get("lastName").equal("TestCase1"));
@@ -1243,7 +1243,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleSubstringTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(0);
 
@@ -1259,7 +1259,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleNullTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee nullEmployee = new Employee();
         nullEmployee.setFirstName(null);
@@ -1295,7 +1295,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleNotNullTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         Employee nullEmployee = new Employee();
         nullEmployee.setFirstName(null);
         nullEmployee.setLastName("Test");
@@ -1328,7 +1328,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void distinctTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         ReadAllQuery raq = new ReadAllQuery();
 
         ExpressionBuilder employee = new ExpressionBuilder();
@@ -1380,7 +1380,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void conformResultsInUnitOfWorkTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         ReadObjectQuery readObjectQuery = new ReadObjectQuery();
 
         readObjectQuery.setReferenceClass(Employee.class);
@@ -1409,7 +1409,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleModTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Assert.assertFalse("Warning SQL/Sybase doesnot support MOD function", (JUnitTestCase.getServerSession()).getPlatform().isSQLServer() || (JUnitTestCase.getServerSession()).getPlatform().isSybase());
 
@@ -1442,7 +1442,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleIsEmptyTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.isEmpty("phoneNumbers");
@@ -1463,7 +1463,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleIsNotEmptyTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression whereClause = builder.notEmpty("phoneNumbers");
@@ -1485,7 +1485,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleApostrohpeTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Vector addresses = em.getActiveSession().readAllObjects(Address.class);
 
@@ -1511,7 +1511,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void simpleEscapeUnderscoreTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Address expectedResult = new Address();
         expectedResult.setCity("Perth");
@@ -1541,7 +1541,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void smallProjectMemberOfProjectsTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ReadAllQuery query = new ReadAllQuery();
         Expression selectionCriteria = new ExpressionBuilder().anyOf("projects").equal(new ExpressionBuilder(SmallProject.class));
@@ -1564,7 +1564,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void smallProjectNOTMemberOfProjectsTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         //query for those employees with Project named "Enterprise" (which should be
         //a SmallProject)
@@ -1598,7 +1598,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     //This test demonstrates the bug 4616218, waiting for bug fix
 
     public void selectCountOneToOneTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ReportQuery query = new ReportQuery();
         query.setReferenceClass(PhoneNumber.class);
@@ -1622,7 +1622,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void selectOneToOneTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Address.class);
@@ -1645,7 +1645,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
 
     public void selectPhonenumberDeclaredInINClauseTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ReadAllQuery query = new ReadAllQuery();
         ExpressionBuilder employeeBuilder = new ExpressionBuilder(Employee.class);
@@ -1715,7 +1715,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
      * This test was added to mirror a CTS failure.
      */
     public void selectPhoneUsingALLTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         ReadAllQuery query = new ReadAllQuery();
         ExpressionBuilder employeeBuilder = new ExpressionBuilder(Employee.class);
@@ -1745,7 +1745,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void selectSimpleMemberOfWithParameterTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Employee expectedResult = (Employee)em.getActiveSession().readObject(Employee.class);
 
@@ -1781,7 +1781,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void selectSimpleNotMemberOfWithParameterTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Vector expectedResult = em.getActiveSession().readAllObjects(Employee.class);
 
@@ -1822,7 +1822,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
     public void selectUsingLockModeQueryHintTest() {
         Exception exception = null;
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Vector employees = em.getActiveSession().readAllObjects(Employee.class);
         Employee emp1 = (Employee)employees.lastElement();
@@ -1843,7 +1843,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void selectSimpleBetweenWithParameterTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Vector employees = em.getActiveSession().readAllObjects(Employee.class);
 
@@ -1870,7 +1870,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void selectSimpleInWithParameterTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         Vector employees = em.getActiveSession().readAllObjects(Employee.class);
 
@@ -1903,7 +1903,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     //Test case for ABS function in EJBQL
 
     public void simpleEnumTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         String ejbqlString;
 
@@ -1913,7 +1913,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void selectNamedNativeQueryWithPositionalParameterTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         List results_QuestionMark_Number = null;
         List results_QuestionMark = null;
@@ -1979,7 +1979,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     }
 
     public void selectNativeQueryWithPositionalParameterTest() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager)createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
 
         List results_QuestionMark_Number = null;
         List results_QuestionMark = null;

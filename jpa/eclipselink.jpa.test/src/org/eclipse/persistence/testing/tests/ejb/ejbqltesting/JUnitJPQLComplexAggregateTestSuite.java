@@ -146,7 +146,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
   
     public void complexAVGTest()
     {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
                
         ExpressionBuilder expbldr = new ExpressionBuilder();
             
@@ -180,7 +180,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
     public void complexCountDistinctWithGroupByAndHavingTest()
     {
         String havingFilterString = "Toronto";
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
         //Need to set the class in the expressionbuilder, as the Count(Distinct) will cause the 
         // query to change and be built around the Employee class instead of the Address class.
         ExpressionBuilder expbldr = new ExpressionBuilder(Address.class);
@@ -210,7 +210,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountDistinctWithGroupByTest()
     {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
         
         //need to set the class in the expressionbuilder, as the Count(Distinct) will cause the 
         // query to change and be built around the Employee class instead of the Address class.  
@@ -238,7 +238,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountDistinctWithGroupByTest2()
     {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
         
         //need to set the class in the expressionbuilder, as the Count(Distinct) will cause the 
         // query to change and be built around the Employee class instead of the Address class.  
@@ -266,7 +266,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexHavingWithAggregate()
     {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         
         // Test using the project id in COUNT, GROUP BY and HAVING
         ExpressionBuilder employeeBuilder = new ExpressionBuilder(Employee.class);
@@ -312,7 +312,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
     
     public void complexCountTest()
     {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
                
         ExpressionBuilder expbldr = new ExpressionBuilder();
             
@@ -340,7 +340,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountWithGroupByTest()
     {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
         //Need to set the class in the expressionbuilder, as the Count(Distinct) will cause the 
         // query to change and be built around the Employee class instead of the Address class.  
         ExpressionBuilder expbldr = new ExpressionBuilder(Address.class);
@@ -363,7 +363,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
     
     public void complexDistinctCountTest()
     {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
                
         ExpressionBuilder expbldr = new ExpressionBuilder();
             
@@ -388,7 +388,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
     
     public void complexMaxTest()
     {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
                
         ExpressionBuilder expbldr = new ExpressionBuilder();
             
@@ -408,7 +408,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
     
     public void complexMinTest()
     {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
                
         ExpressionBuilder expbldr = new ExpressionBuilder();
             
@@ -429,7 +429,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
     
     public void complexSumTest()
     {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();                  
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
                
         ExpressionBuilder expbldr = new ExpressionBuilder();
             
@@ -453,8 +453,8 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountDistinctOnBaseQueryClass()
     {
-        org.eclipse.persistence.jpa.EntityManager em = 
-            (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = 
+            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         
         Long expectedResult = Long.valueOf(em.getActiveSession().readAllObjects(Employee.class).size());
         
@@ -470,8 +470,8 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountOnJoinedVariableSimplePK()
     {
-        org.eclipse.persistence.jpa.EntityManager em = 
-            (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = 
+            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
 
         // Need to create the expected result manually, because using the
         // TopLink query API would run into the same issue 2497.
@@ -499,8 +499,8 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountOnJoinedVariableCompositePK()
     {
-        org.eclipse.persistence.jpa.EntityManager em = 
-            (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = 
+            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
 
         // Need to create the expected result manually, because using the
         // TopLink query API would run into the same issue 2497.
@@ -528,8 +528,8 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountOnJoinedCompositePK()
     {
-        org.eclipse.persistence.jpa.EntityManager em = 
-            (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = 
+            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         try{
             em.getTransaction().begin();
                 Scientist s = new Scientist();
@@ -569,8 +569,8 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
      */
     public void complexCountOnJoinedVariableOverManyToManySelfRefRelationship()
     {
-        org.eclipse.persistence.jpa.EntityManager em = 
-            (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = 
+            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
 
         Long zero = Long.valueOf(0);
         List expectedResult = Arrays.asList(new Long[] { zero, zero, zero, zero });

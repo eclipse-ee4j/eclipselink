@@ -9,7 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.relationships;
 
-import org.eclipse.persistence.jpa.EntityManager;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.testing.framework.*;

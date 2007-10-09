@@ -127,7 +127,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     
     public Vector getAttributeFromAll(String attributeName, Vector objects, Class referenceClass){
 	   
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         
         ClassDescriptor descriptor = em.getActiveSession().getClassDescriptor(referenceClass);
 	    DirectToFieldMapping mapping = (DirectToFieldMapping)descriptor.getMappingForAttributeName(attributeName);
@@ -148,7 +148,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
 	}
     
     public void testFirstResultOnNamedQuery(){
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         clearCache();
 
         Query query = em.createNamedQuery("findAllEmployeesByFirstName");
@@ -167,7 +167,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     }
     
     public void testOuterJoinOnOneToOne(){
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         clearCache();
         em.getTransaction().begin();
         int initialSize = em.createQuery("SELECT e from Employee e JOIN e.address a").getResultList().size(); 
@@ -182,7 +182,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     }
 
     public void testOuterJoinPolymorphic(){
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         clearCache();
         List resultList = null;
         try{
@@ -206,7 +206,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
 		rq.addAttribute("areaCode", new ExpressionBuilder().anyOf("phoneNumbers").get("areaCode"));
     	rq.setReferenceClass(Employee.class);    
         rq.dontUseDistinct(); // distinct no longer used on joins in JPQL for gf bug 1395
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         Vector expectedResult = getAttributeFromAll("areaCode", (Vector)em.getActiveSession().executeQuery(rq),Employee.class);
         
         clearCache();
@@ -220,7 +220,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
   
     public void testSelectPhoneNumberAreaCodeWithEmployee()
     {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         ExpressionBuilder employees = new ExpressionBuilder();
         Expression exp = employees.get("firstName").equal("Bob");
         exp = exp.and(employees.get("lastName").equal("Smith"));
@@ -257,7 +257,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     
     public void testSelectPhoneNumberNumberWithEmployeeWithExplicitJoin()
     {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         ExpressionBuilder employees = new ExpressionBuilder();
         Expression exp = employees.get("firstName").equal("Bob");
         exp = exp.and(employees.get("lastName").equal("Smith"));
@@ -295,7 +295,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     
     public void testSelectPhoneNumberNumberWithEmployeeWithFirstNameFirst()
     {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         ExpressionBuilder employees = new ExpressionBuilder();
         Expression exp = employees.get("firstName").equal("Bob");
         exp = exp.and(employees.get("lastName").equal("Smith"));
@@ -364,7 +364,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
      * throws an SQl exception.
      */
     public void testMaxAndFirstResultsOnDataQuery(){
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         Exception exception = null;
         List resultList = null;
         clearCache();
@@ -386,7 +386,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
      * throws an SQl exception.
      */
     public void testMaxAndFirstResultsOnDataQueryWithGroupBy() {
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         Exception exception = null;
         List resultList = null;
         clearCache();
@@ -424,7 +424,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
      * For GF3233, Distinct process fail with NPE when relationship has NULL-valued target.
      */
     public void testDistinctSelectForEmployeeWithNullAddress(){
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager();
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         try {
             em.getTransaction().begin();
             Employee emp = new Employee();

@@ -54,7 +54,6 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.tools.schemaframework.OracleSequenceDefinition;
 import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.jpa.EJBQuery;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.sessions.Session;
@@ -181,7 +180,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.getTransaction().begin();
         List result = em.createQuery("SELECT OBJECT(e) FROM Employee e").getResultList();
         em.getTransaction().commit();
-        Object obj = ((org.eclipse.persistence.jpa.EntityManager)em).getServerSession().getIdentityMapAccessor().getFromIdentityMap(result.get(0));
+        Object obj = ((org.eclipse.persistence.jpa.JpaEntityManager)em).getServerSession().getIdentityMapAccessor().getFromIdentityMap(result.get(0));
         assertTrue("Failed to load the object into the shared cache when there were no changes in the UOW", obj != null);
         try{
             em.getTransaction().begin();
@@ -2274,7 +2273,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.getTransaction().commit();
         em.clear();
 
-        EJBQuery query = (EJBQuery)em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
+        org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
         query.setHint(EclipseLinkQueryHints.BATCH, "e.phoneNumbers");
         query.setHint(EclipseLinkQueryHints.BATCH, "e.manager.phoneNumbers");
         
@@ -2360,7 +2359,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.getTransaction().commit();
         em.clear();
 
-        EJBQuery query = (EJBQuery)em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
+        org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
         query.setHint(EclipseLinkQueryHints.FETCH, "e.manager");
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
         List expressions = raq.getJoinedAttributeExpressions();
@@ -2494,7 +2493,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     // test for GlassFish bug 711 - throw a descriptive exception when an uninstantiated valueholder is serialized and then accessed
     public void testSerializedLazy(){
-        org.eclipse.persistence.jpa.EntityManager em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager("fieldaccess");      
+        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager("fieldaccess");      
        
         em.getTransaction().begin();
         
@@ -2510,7 +2509,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.getTransaction().commit();
         em.close();
         clearCache("fieldaccess");
-        em = (org.eclipse.persistence.jpa.EntityManager) createEntityManager("fieldaccess");
+        em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager("fieldaccess");
         String ejbqlString = "SELECT e FROM Employee e WHERE e.firstName = 'Owen' and e.lastName = 'Hargreaves'";
         List result = em.createQuery(ejbqlString).getResultList();
         emp = (Employee)result.get(0);
@@ -3975,7 +3974,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     // gf2074: EM.clear throws NPE (JTA case)
     public void testClearEntityManagerWithoutPersistenceContextSimulateJTA() {
         EntityManager em = createEntityManager("fieldaccess");
-        ServerSession ss = ((org.eclipse.persistence.jpa.EntityManager)em).getServerSession();
+        ServerSession ss = ((org.eclipse.persistence.jpa.JpaEntityManager)em).getServerSession();
         em.close();
         // in non-JTA case session doesn't have external transaction controller
         boolean hasExternalTransactionController = ss.hasExternalTransactionController();
@@ -4015,7 +4014,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             em.persist(emp);
             em.flush();
             
-            Query ejbQuery = ((org.eclipse.persistence.jpa.EntityManager)em).createDescriptorNamedQuery("findByFNameLName", Employee.class);
+            Query ejbQuery = ((org.eclipse.persistence.jpa.JpaEntityManager)em).createDescriptorNamedQuery("findByFNameLName", Employee.class);
             
             List results = ejbQuery.setParameter("fName", "Melvin").setParameter("lName", "Malone").getResultList();
             
@@ -4060,7 +4059,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             Vector args = new Vector(2);
             args.addElement(String.class);
             args.addElement(String.class);
-            Query ejbQuery = ((org.eclipse.persistence.jpa.EntityManager)em).createDescriptorNamedQuery("findEmployees", Employee.class, args);
+            Query ejbQuery = ((org.eclipse.persistence.jpa.JpaEntityManager)em).createDescriptorNamedQuery("findEmployees", Employee.class, args);
             
             List results = ejbQuery.setParameter("fName", "Melvin").setParameter("lName", "Malone").getResultList();
             

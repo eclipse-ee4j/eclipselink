@@ -10,7 +10,7 @@
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.util.*;
-import org.eclipse.persistence.jpa.EntityManager;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
@@ -79,7 +79,7 @@ public class EMCascadingPersistAndFlushTest extends EntityContainerTestBase  {
             
             getEntityManager().flush();
             //lets initialize the identity map to make sure they were persisted
-            ((EntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            ((JpaEntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
             persistedItems.put("after flush Employee", getEntityManager().find(Employee.class, empIDs[0]));
             persistedItems.put("after flush Project", getEntityManager().find(Project.class, projIDs[0]));
