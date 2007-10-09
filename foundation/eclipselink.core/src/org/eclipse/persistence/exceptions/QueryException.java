@@ -156,6 +156,7 @@ public class QueryException extends ValidationException {
     public final static int QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS = 6144;  
     public final static int DISTINCT_COUNT_ON_OUTER_JOINED_COMPOSITE_PK = 6145;
     public final static int QUERY_HINT_CONTAINED_INVALID_INTEGER_VALUE = 6146;
+    public final static int EXPRESSION_DOES_NOT_SUPPORT_PARTAIL_ATTRIBUTE_READING = 6147;    
 
     /**
      * INTERNAL:
@@ -1302,4 +1303,14 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(QUERY_HINT_CONTAINED_INVALID_INTEGER_VALUE);
         return queryException;
     }
+    
+    
+    public static QueryException expressionDoesNotSupportPartialAttributeReading(Expression expression) {
+        Object[] args = {expression};
+    
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, EXPRESSION_DOES_NOT_SUPPORT_PARTAIL_ATTRIBUTE_READING, args));
+        queryException.setErrorCode(EXPRESSION_DOES_NOT_SUPPORT_PARTAIL_ATTRIBUTE_READING);
+        return queryException;
+    }
+    
 }
