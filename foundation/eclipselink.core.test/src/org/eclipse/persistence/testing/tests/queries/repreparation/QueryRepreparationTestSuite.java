@@ -24,7 +24,8 @@ public class QueryRepreparationTestSuite extends TestSuite {
         addTest(new AddJoinedAttributeTest());
         addTest(new AddNonFetchedJoinedAttributeTest());
         addTest(new AddOrderingTest());
-    addTest(new AddPartialAttributeTest());
+        addTest(new AddPartialAttributeTest());
+        addTest(new AddPartialAttributeForCustomSQLTest());
         addTest(new RetrievePrimaryKeysTest());
         addTest(new UseDistinctTest());
     }
