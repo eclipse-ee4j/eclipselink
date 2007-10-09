@@ -85,8 +85,12 @@ public class NamedQueryTests extends SimpleSpatialTestCase {
             }
 
             protected void tearDown() {
-                getSession().removeQuery(SESSION_QUERY_NAME);
-                getSession().getClassDescriptor(SimpleSpatial.class).getDescriptorQueryManager().removeQuery(DESCRIPTOR_QUERY_NAME);
+                try{
+                    getSession().removeQuery(SESSION_QUERY_NAME);
+                    getSession().getClassDescriptor(SimpleSpatial.class).getDescriptorQueryManager().removeQuery(DESCRIPTOR_QUERY_NAME);
+                }catch (Exception e){
+                    throw new TestProblemException("Could not tearDown NamedQueryTests for SimpleSpatialTestCase.", e);
+                }
             }
         };
     }
