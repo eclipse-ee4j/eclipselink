@@ -18,6 +18,7 @@ import org.eclipse.persistence.internal.libraries.asm.attrs.Attributes;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.internal.helper.Helper;
 
 
 /**
@@ -62,7 +63,7 @@ public class PersistenceWeaver implements ClassTransformer {
              * org.eclipse.persistence.internal.jpa.oc4j.OC4JClassTransformer,
              * callbacks are made only for the 'interesting' classes
              */
-            ClassDetails classDetails = (ClassDetails)classDetailsMap.get(className);
+            ClassDetails classDetails = (ClassDetails)classDetailsMap.get(Helper.toSlashedClassName(className));
     
             if (classDetails != null) {
                 ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "begin_weaving_class", className);
