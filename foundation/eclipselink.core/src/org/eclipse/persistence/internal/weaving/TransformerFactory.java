@@ -35,6 +35,8 @@ import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.internal.security.PrivilegedGetField;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.helper.Helper;
+
 
 /**
  * This class creates a ClassFileTransformer that is used for dynamic bytecode
@@ -253,8 +255,8 @@ public class TransformerFactory {
     private ClassDetails createClassDetails(Class clz, boolean weaveValueHolders, boolean weaveChangeTracking, boolean weaveFetchGroups) {
         // compose className in JVM 'slash' format
         // instead of regular Java 'dotted' format
-        String className = clz.getName().replace('.','/');
-        String superClassName = clz.getSuperclass().getName().replace('.','/');
+        String className = Helper.toSlashedClassName(clz.getName());
+        String superClassName = Helper.toSlashedClassName(clz.getSuperclass().getName());
         ClassDetails classDetails = new ClassDetails();
         classDetails.setDescribedClass(clz);
         classDetails.setClassName(className);
