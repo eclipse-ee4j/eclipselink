@@ -101,7 +101,12 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "ejb30-wrong-query-hint-value", "Query {0}, query hint {1} has illegal value {2}."},
                                            { "ejb30-wrong-type-for-query-hint", "Query {0}, query hint {1} is not valid for this type of query."},
                                            { "ejb30-default-for-unknown-property", "Can't return default value for unknown property {0}."},
-                                           { "ejb30-illegal-property-value", "Property {0} has an illegal value {1}."}
+                                           { "ejb30-illegal-property-value", "Property {0} has an illegal value {1}."},
+                                           
+                                           { "jpa_helper_invalid_report_query", "The query of type {0} is not an EclipseLink report query and therefore, could not be converted."},
+                                           { "jpa_helper_invalid_read_all_query", "The query of type {0} is not an EclipseLink read all query and therefore, could not be converted."},
+                                           { "jpa_helper_invalid_query", "The query of type {0} is not an EclipseLink query and therefore, could not be converted."},
+                                           { "jpa_helper_invalid_entity_manager_factory", "The JPA entity manager factory {0} is not an EclipseLink entity manager factory and therefore, could not be converted."}
     };
 
     /**

@@ -178,8 +178,8 @@ public class DoesExistQuery extends DatabaseQuery {
                 
                 if (!invalid){
                     Object objectFromCache = cacheKey.getObject();
-                    if ((session instanceof org.eclipse.persistence.internal.jpa.base.RepeatableWriteUnitOfWork)&&
-                            (((org.eclipse.persistence.internal.jpa.base.RepeatableWriteUnitOfWork)session).getUnregisteredDeletedCloneForOriginal(objectFromCache)!=null)){
+                    if ((session instanceof org.eclipse.persistence.internal.jpa.RepeatableWriteUnitOfWork)&&
+                            (((org.eclipse.persistence.internal.jpa.RepeatableWriteUnitOfWork)session).getUnregisteredDeletedCloneForOriginal(objectFromCache)!=null)){
                   //session.isUnitOfWork() && objectFromCache!=null && ((UnitOfWorkImpl)session).isObjectDeleted(objectFromCache)){
                         if(shouldCheckCacheForDoesExist()){
                             return Boolean.FALSE;

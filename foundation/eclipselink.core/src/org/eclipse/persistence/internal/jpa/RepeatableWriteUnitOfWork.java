@@ -7,7 +7,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.base;
+package org.eclipse.persistence.internal.jpa;
 
 import java.util.Enumeration;
 import java.util.IdentityHashMap;

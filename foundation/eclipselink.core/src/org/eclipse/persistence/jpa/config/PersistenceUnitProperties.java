@@ -9,6 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jpa.config;
 
+import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -262,6 +263,33 @@ public class PersistenceUnitProperties {
     static {
         PROPERTY_LOG_OVERRIDES.put(JDBC_PASSWORD, "xxxxxx");
     }
+    
+    public static final String TOPLINK_ORM_THROW_EXCEPTIONS = "eclipselink.orm.throw.exceptions";
+    public static final String TOPLINK_VALIDATION_ONLY_PROPERTY = "eclipselink.validation-only";
+
+    public static final String DDL_GENERATION   = "eclipselink.ddl-generation";
+    
+    public static final String CREATE_ONLY      = "create-tables";
+    public static final String DROP_AND_CREATE  = "drop-and-create-tables";
+    public static final String NONE             = "none";
+    
+    public static final String APP_LOCATION     = "eclipselink.application-location";
+    
+    public static final String CREATE_JDBC_DDL_FILE = "eclipselink.create-ddl-jdbc-file-name";
+    public static final String DROP_JDBC_DDL_FILE   = "eclipselink.drop-ddl-jdbc-file-name";
+    
+    public static final String DEFAULT_APP_LOCATION = "." + File.separator;
+    public static final String DEFAULT_CREATE_JDBC_FILE_NAME = "createDDL.jdbc";
+    public static final String DEFAULT_DROP_JDBC_FILE_NAME = "dropDDL.jdbc";
+    public static final String JAVASE_DB_INTERACTION = "INTERACT_WITH_DB";    
+    
+    public static final String DDL_GENERATION_MODE = "eclipselink.ddl-generation.output-mode";
+    public static final String DDL_SQL_SCRIPT_GENERATION = "sql-script";
+    public static final String DDL_DATABASE_GENERATION = "database";
+    public static final String DDL_BOTH_GENERATION = "both";
+    // This is the default for now to ensure we still play nicely with Glassfish.
+    public static final String DEFAULT_DDL_GENERATION_MODE = DDL_SQL_SCRIPT_GENERATION;
+    
     
     /** INTERNAL: Return the overridden log string. */
     public static final String getOverriddenLogStringForProperty(String propertyName){
