@@ -145,7 +145,8 @@ public class QueryExceptionResource extends ListResourceBundle {
                                            { "6143", "The value {1} supplied to the query hint {0} navigated a non-existant relationship.  The relationship {2} does not exist."},
                                            { "6144", "The value {1} supplied to the query hint {0} did not contain enough tokens.  The join must start with the identification variable of the query.  For instance, in the query 'SELECT x from X x', to refer to a 'y' belonging to 'x', you should use the hint 'x.y'."},
                                            { "6145", "Count distinct on an outer joined class [{0}] having a composite primary key is not supported. Descriptor [{1}] "},
-                                           { "6146", "The value {1} supplied to the query hint {0} is not a valid value, valid values are Integer or Strings that can be parsed to int values."}
+                                           { "6146", "The value {1} supplied to the query hint {0} is not a valid value, valid values are Integer or Strings that can be parsed to int values."},
+                                           { "6147", "The expression {0} is not valid for patial attribute reading." }                                           
     };
 
     /**
