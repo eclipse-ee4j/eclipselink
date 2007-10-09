@@ -93,8 +93,12 @@ public class NamedQueryTests extends WrappedSpatialTestCase {
             }
 
             protected void tearDown() {
-                getSession().removeQuery(SESSION_QUERY_NAME);
-                getSession().getClassDescriptor(WrappedSpatial.class).getDescriptorQueryManager().removeQuery(DESCRIPTOR_QUERY_NAME);
+                try{            	
+                    getSession().removeQuery(SESSION_QUERY_NAME);
+                    getSession().getClassDescriptor(WrappedSpatial.class).getDescriptorQueryManager().removeQuery(DESCRIPTOR_QUERY_NAME);
+        		}catch (Exception e){
+            	    throw new TestProblemException("Could not tearDown NamedQueryTests for SimpleSpatialTestCase.", e);
+            	}
             }
         };
     }
