@@ -559,7 +559,10 @@ public abstract class AggregateMapping extends DatabaseMapping {
         if (targetAggregate == null) {
             targetAggregate = objectBuilder.buildNewInstance();
         } else {
-            if ((sourceAggregate != null) && (sourceAggregate.getClass() != targetAggregate.getClass())) {
+        	//bug 205939 - use the type from the changeset to determine if a new aggregate instance
+        	//is needed because of a class change.  The old way of using the sourceAggregate will not
+        	//work on a remote system after cache sync because the sourceAggregate will not be available
+            if (aggregateChangeSet.getClassType(mergeManager.getSession()) != targetAggregate.getClass()) {
                 targetAggregate = objectBuilder.buildNewInstance();
             }
         }

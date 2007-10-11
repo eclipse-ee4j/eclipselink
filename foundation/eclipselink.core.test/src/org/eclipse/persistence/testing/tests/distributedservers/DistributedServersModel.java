@@ -17,6 +17,7 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.models.aggregate.Agent;
 import org.eclipse.persistence.testing.models.aggregate.Client;
+import org.eclipse.persistence.testing.models.aggregate.Employee1;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
@@ -58,6 +59,9 @@ public class DistributedServersModel extends TestModel {
 
         test = new UpdateChangeObjectTest(employee);
         addTest(test);
+        
+        //bug 205939
+        addTest(new UpdateChangeObjectTestEmployee1((Employee1) manager.getObject(Employee1.class, "example1")));
 
         //cr 4143
         addTest(new UpdateCollectionWithNewValueTest(employee));
