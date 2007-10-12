@@ -212,29 +212,12 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping, XMLNillableMapping {
-    NodeNullPolicy nodeNullPolicy;
+public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping {
 	private boolean isCDATA;
     public XMLCompositeDirectCollectionMapping() {
         super();
-        // The default policy is OptionalNodeNullPolicy
-        nodeNullPolicy = OptionalNodeNullPolicy.getInstance();
     }
 
-    /**
-     * INTERNAL:
-     */
-    public void setNodeNullPolicy(NodeNullPolicy aNodeNullPolicy) {
-        nodeNullPolicy = aNodeNullPolicy;
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public NodeNullPolicy getNodeNullPolicy() {
-        return nodeNullPolicy;
-    }
-    
     /**
      * INTERNAL:
      */

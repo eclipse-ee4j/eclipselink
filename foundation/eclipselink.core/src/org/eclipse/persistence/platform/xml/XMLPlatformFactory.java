@@ -87,7 +87,7 @@ public class XMLPlatformFactory {
 
     /**
      * INTERNAL:
-     * Return the XMLPlatform based on the eclipselink.xml.platform System property.
+     * Return the XMLPlatform based on the toplink.xml.platform System property.
      * @return an instance of XMLPlatform
      * @throws XMLPlatformException
      */

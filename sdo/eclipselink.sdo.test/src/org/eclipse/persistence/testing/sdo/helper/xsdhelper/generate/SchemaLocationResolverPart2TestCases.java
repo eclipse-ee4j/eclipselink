@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import javax.xml.namespace.QName;
 import junit.textui.TestRunner;
@@ -60,7 +61,8 @@ public class SchemaLocationResolverPart2TestCases extends XSDHelperGenerateTestC
         schemaLocationMap.put(new QName("my.uri1", "CustomerType"), "customer.xsd");
         schemaLocationMap.put(new QName("my.uri2", "AddressType"), "address.xsd");
         schemaLocationMap.put(new QName("my.uri2", "PhoneType"), "phone.xsd");
-
+        schemaLocationMap.put(new QName("my.url2", "AddressType"), "customerurl2.xsd");
+        schemaLocationMap.put(new QName("my.url2", "PhoneType"), "customerurl2.xsd");
         return schemaLocationMap;
     }
 
@@ -134,7 +136,16 @@ public class SchemaLocationResolverPart2TestCases extends XSDHelperGenerateTestC
     public void testGenerateSchemaRoundTrip() throws Exception{
         org.eclipse.persistence.sdo.helper.DefaultSchemaLocationResolver resolver = new org.eclipse.persistence.sdo.helper.DefaultSchemaLocationResolver(getMap());
         resolver.setMap(getMap());
-        List types = defineTypesFromSchema();
+        List allTypes = defineTypesFromSchema();
+
+        ArrayList types = new ArrayList();
+        Iterator typesIter = allTypes.iterator();
+        while(typesIter.hasNext()) {
+            SDOType nextType = (SDOType)typesIter.next();
+            if(nextType.getURI().equals("my.uri1")) {
+                types.add(nextType);
+            }
+        }
         String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
 
         String controlSchema = getSchema(getControlFileNameSchema());
@@ -153,7 +164,7 @@ public class SchemaLocationResolverPart2TestCases extends XSDHelperGenerateTestC
         InputStream is = getSchemaInputStream("org/eclipse/persistence/testing/sdo/schemas/customerPart2.xsd");
 
         //InputStream is = getSchemaInputStream("org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/customer.xsd");        
-        return xsdHelper.define(is, null);
+        return xsdHelper.define(is, "file:./org/eclipse/persistence/testing/sdo/schemas/");
     }
 
     public List getTypesToGenerateFrom() {

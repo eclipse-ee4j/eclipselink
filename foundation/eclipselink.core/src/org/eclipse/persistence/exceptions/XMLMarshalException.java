@@ -37,6 +37,8 @@ public class XMLMarshalException extends ValidationException {
     public static final int INVALID_SWA_REF_ATTRIBUTE_TYPE = 25021;
     public static final int NO_ENCODER_FOR_MIME_TYPE = 25022;
     public static final int NO_DESCRIPTOR_FOUND = 25023;
+    public static final int ERROR_INSTANTIATING_UNMAPPED_CONTENTHANDLER = 25024;
+    public static final int UNMAPPED_CONTENTHANDLER_DOESNT_IMPLEMENT = 25025;
 
     // ==========================================================================================
     protected XMLMarshalException(String message) {
@@ -216,30 +218,48 @@ public class XMLMarshalException extends ValidationException {
         exception.setErrorCode(ILLEGAL_STATE_XML_UNMARSHALLER_HANDLER);
         return exception;
     }
-    
+
     public static XMLMarshalException invalidSwaRefAttribute(String attributeClassification) {
         Object[] args = { attributeClassification };
-        
+
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, INVALID_SWA_REF_ATTRIBUTE_TYPE, args));
         exception.setErrorCode(INVALID_SWA_REF_ATTRIBUTE_TYPE);
-        
+
         return exception;
     }
-    
+
     public static XMLMarshalException noEncoderForMimeType(String mimeType) {
         Object[] args = { mimeType };
-        
+
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, NO_ENCODER_FOR_MIME_TYPE, args));
         exception.setErrorCode(NO_ENCODER_FOR_MIME_TYPE);
-        
+
         return exception;
     }
-    
-     public static XMLMarshalException noDescriptorFound(DatabaseMapping mapping) {
-        Object[] args = { mapping.getAttributeName()};
 
-        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, NO_DESCRIPTOR_FOUND, args));        
+    public static XMLMarshalException noDescriptorFound(DatabaseMapping mapping) {
+        Object[] args = { mapping.getAttributeName() };
+
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, NO_DESCRIPTOR_FOUND, args));
         exception.setErrorCode(NO_DESCRIPTOR_FOUND);
+        return exception;
+    }
+
+    public static XMLMarshalException errorInstantiatingUnmappedContentHandler(Exception nestedException, String className) {
+        Object[] args = { className };
+
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, ERROR_INSTANTIATING_UNMAPPED_CONTENTHANDLER, args), nestedException);
+        exception.setErrorCode(ERROR_INSTANTIATING_UNMAPPED_CONTENTHANDLER);
+        exception.setInternalException(nestedException);
+        return exception;
+    }
+
+    public static XMLMarshalException unmappedContentHandlerDoesntImplement(Exception nestedException, String className) {
+        Object[] args = { className };
+
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, UNMAPPED_CONTENTHANDLER_DOESNT_IMPLEMENT, args), nestedException);
+        exception.setErrorCode(UNMAPPED_CONTENTHANDLER_DOESNT_IMPLEMENT);
+        exception.setInternalException(nestedException);
         return exception;
     }
 }

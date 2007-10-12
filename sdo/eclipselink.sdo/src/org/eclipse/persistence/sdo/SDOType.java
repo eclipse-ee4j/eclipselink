@@ -28,14 +28,15 @@ import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
@@ -71,6 +72,7 @@ public class SDOType implements Type, Serializable {
     private Class javaImplClass;
     private List nonFinalizedReferencingProps;
     private List nonFinalizedMappingURIs;
+
     /** hold a wrapper object for primitive numeric defaults */
     private Object pseudoDefault;
 
@@ -84,7 +86,6 @@ public class SDOType implements Type, Serializable {
     private static final String ANY_MAPPING_GET_METHOD_NAME = "_getOpenContentPropertiesWithXMLRoots";
     private static final String ANY_MAPPING_SET_METHOD_NAME = "_setOpenContentPropertiesWithXMLRoots";
     private static final String SDO_REF_MAPPING_ATTRIBUTE_NAME = "sdoRef";
-    private static final String UNSET_PROPS_MAPPING_ATTRIBUTE_NAME = "unsetProps";
 
     public SDOType(HelperContext aContext) {
         aHelperContext = aContext;
@@ -139,6 +140,7 @@ public class SDOType implements Type, Serializable {
             try {
                 SDOClassLoader loader = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getLoader();
                 if (!isDataType() && (javaImplClass == null)) {
+                    //Class interfaceClass = loader.loadClass(getInstanceClassName(), this);
                     javaImplClass = loader.loadClass(getImplClassName(), this);
                     getXmlDescriptor().setJavaClass(javaImplClass);
                 }
@@ -159,18 +161,19 @@ public class SDOType implements Type, Serializable {
      * @see Class#isInstance
      */
     public boolean isInstance(Object object) {
-        //this check is taken from page 77 of the spec
-        Class instanceClass = getInstanceClass();
-        if (instanceClass != null) {
-            return instanceClass.isInstance(object);
-        }
-
         if ((!isDataType) && (object instanceof DataObject)) {
             Type doType = ((DataObject)object).getType();
             if (doType != null) {
                 return doType.equals(this);
             }
         }
+
+        //this check is taken from page 77 of the spec
+        Class instanceClass = getInstanceClass();
+        if (instanceClass != null) {
+            return instanceClass.isInstance(object);
+        }
+
         return false;
     }
 
@@ -351,21 +354,40 @@ public class SDOType implements Type, Serializable {
         if (isDataType && bOpen) {
             throw SDOException.typeCannotBeOpenAndDataType(getURI(), getName());
         }
-        open = bOpen;
-        if (open) {
-            XMLAnyCollectionMapping anyMapping = new XMLAnyCollectionMapping();
-            anyMapping.setAttributeName(ANY_MAPPING_ATTRIBUTE_NAME);
-            anyMapping.setGetMethodName(ANY_MAPPING_GET_METHOD_NAME);
-            anyMapping.setSetMethodName(ANY_MAPPING_SET_METHOD_NAME);
-            anyMapping.setUseXMLRoot(true);
-            getXmlDescriptor().addMapping(anyMapping);
-            
-            XMLAnyAttributeMapping anyAttrMapping = new XMLAnyAttributeMapping();
-            anyAttrMapping.setAttributeName("openContentPropertiesAttributes");
-            anyAttrMapping.setGetMethodName("_getOpenContentPropertiesAttributesMap");
-            anyAttrMapping.setSetMethodName("_setOpenContentPropertiesAttributesMap");            
-            getXmlDescriptor().addMapping(anyAttrMapping);
+        if (open != bOpen) {
+            open = bOpen;
+            if (open) {
+                List baseTypes = getBaseTypes();
+                if ((baseTypes != null) && !baseTypes.isEmpty()) {
+                    Type baseType = (Type)baseTypes.get(0);
+                    if (!baseType.isOpen()) {
+                        addOpenMappings();
+                    }
+                } else {
+                    addOpenMappings();
+                }
+
+                for (int i = 0; i < getSubTypes().size(); i++) {
+                    SDOType nextSubType = (SDOType)getSubTypes().get(i);
+                    nextSubType.setOpen(bOpen);
+                }
+            }
         }
+    }
+
+    private void addOpenMappings() {
+        XMLAnyCollectionMapping anyMapping = new XMLAnyCollectionMapping();
+        anyMapping.setAttributeName(ANY_MAPPING_ATTRIBUTE_NAME);
+        anyMapping.setGetMethodName(ANY_MAPPING_GET_METHOD_NAME);
+        anyMapping.setSetMethodName(ANY_MAPPING_SET_METHOD_NAME);
+        anyMapping.setUseXMLRoot(true);
+        getXmlDescriptor().addMapping(anyMapping);
+
+        XMLAnyAttributeMapping anyAttrMapping = new XMLAnyAttributeMapping();
+        anyAttrMapping.setAttributeName("openContentPropertiesAttributes");
+        anyAttrMapping.setGetMethodName("_getOpenContentPropertiesAttributesMap");
+        anyAttrMapping.setSetMethodName("_setOpenContentPropertiesAttributesMap");
+        getXmlDescriptor().addMapping(anyAttrMapping);
     }
 
     /**
@@ -430,6 +452,14 @@ public class SDOType implements Type, Serializable {
             updateSubtypes(type);
 
             type.getSubTypes().add(this);
+            if (type.isOpen() && this.isOpen()) {
+                //don't want any mappings on this descriptor
+                DatabaseMapping anyCollectionMapping = getXmlDescriptor().getMappingForAttributeName(ANY_MAPPING_ATTRIBUTE_NAME);
+                getXmlDescriptor().getMappings().remove(anyCollectionMapping);
+
+                DatabaseMapping anyAttrMapping = getXmlDescriptor().getMappingForAttributeName("openContentPropertiesAttributes");
+                getXmlDescriptor().getMappings().remove(anyAttrMapping);
+            }
 
             //int increaseBy = type.getProperties().size();
             //increaseIndices(increaseBy);
@@ -505,7 +535,7 @@ public class SDOType implements Type, Serializable {
      * @param property
     */
     public void addDeclaredProperty(Property property) {
-        int end = getDeclaredProperties().size();       
+        int end = getDeclaredProperties().size();
         addDeclaredProperty(property, end);
     }
 
@@ -622,7 +652,7 @@ public class SDOType implements Type, Serializable {
 
     /**
       * INTERNAL:
-      */    
+      */
     public XMLDescriptor buildXmlDescriptor(List namespaceResolvers) {
         // do not create descriptors for SDO_TYPE or dataTypes
         if (!isDataType() && (null == xmlDescriptor) && (this != SDOConstants.SDO_TYPE)) {
@@ -631,28 +661,26 @@ public class SDOType implements Type, Serializable {
             NamespaceResolver newNR = new NamespaceResolver();
 
             // copy namespaces between resolvers for well known and SDO namespaces
-            if(namespaceResolvers != null){
-              for(int i=0;i<namespaceResolvers.size(); i++){
-              NamespaceResolver nr = (NamespaceResolver)namespaceResolvers.get(i);
-                if (nr != null) {
-                    for (int j = 0, size = nr.getNamespaces().size(); j < size; j++) {
-                        Namespace nextNamespace = (Namespace)nr.getNamespaces().get(j);
-                        if ((!nextNamespace.getPrefix().equals(XMLConstants.XMLNS)) && (!nextNamespace.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOXML_URL))) {
-                            String newPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).addNamespace(nextNamespace.getPrefix(), nextNamespace.getNamespaceURI());
-                            newNR.put(newPrefix, nextNamespace.getNamespaceURI());
+            if (namespaceResolvers != null) {
+                for (int i = 0; i < namespaceResolvers.size(); i++) {
+                    NamespaceResolver nr = (NamespaceResolver)namespaceResolvers.get(i);
+                    if (nr != null) {
+                        for (int j = 0, size = nr.getNamespaces().size(); j < size; j++) {
+                            Namespace nextNamespace = (Namespace)nr.getNamespaces().get(j);
+                            if ((!nextNamespace.getPrefix().equals(XMLConstants.XMLNS)) && (!nextNamespace.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOXML_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDO_URL))) {
+                                String newPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).addNamespace(nextNamespace.getPrefix(), nextNamespace.getNamespaceURI());
+                                newNR.put(newPrefix, nextNamespace.getNamespaceURI());
+                            }
                         }
                     }
                 }
-              }
             }
 
             if (getURI() != null) {
                 String prefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(getURI());
-                newNR.put(prefix, getURI());               
+                newNR.put(prefix, getURI());
             }
-            String sdoPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(SDOConstants.SDO_URL);
-            newNR.put(sdoPrefix, SDOConstants.SDO_URL);
-            
+
             xmlDescriptor.setNamespaceResolver(newNR);
             xmlDescriptor.getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
         }
@@ -670,16 +698,16 @@ public class SDOType implements Type, Serializable {
 
             if ((getBaseTypes() != null) && (getBaseTypes().size() > 0)) {
                 SDOType baseType = (SDOType)getBaseTypes().get(0);
-                if(!baseType.isDataType){
-                  NamespaceResolver parentNR = baseType.getXmlDescriptor().getNonNullNamespaceResolver();//.getInheritancePolicy().getRootParentDescriptor()).getNamespaceResolver();
-                  if (parentNR != null) {
-                      for (int i = 0; i < parentNR.getNamespaces().size(); i++) {
-                          Namespace nextNamespace = (Namespace)parentNR.getNamespaces().get(i);
-                          if ((!nextNamespace.getPrefix().equals(XMLConstants.XMLNS)) && (!nextNamespace.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOXML_URL))) {
-                              nr.put(nextNamespace.getPrefix(), nextNamespace.getNamespaceURI());
-                          }
-                      }
-                  }
+                if (!baseType.isDataType) {
+                    NamespaceResolver parentNR = baseType.getXmlDescriptor().getNonNullNamespaceResolver();//.getInheritancePolicy().getRootParentDescriptor()).getNamespaceResolver();
+                    if (parentNR != null) {
+                        for (int i = 0; i < parentNR.getNamespaces().size(); i++) {
+                            Namespace nextNamespace = (Namespace)parentNR.getNamespaces().get(i);
+                            if ((!nextNamespace.getPrefix().equals(XMLConstants.XMLNS)) && (!nextNamespace.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOXML_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDO_URL))) {
+                                nr.put(nextNamespace.getPrefix(), nextNamespace.getNamespaceURI());
+                            }
+                        }
+                    }
                 }
             }
 
@@ -689,10 +717,6 @@ public class SDOType implements Type, Serializable {
                 xmlDescriptor.getNamespaceResolver().put(prefix, getURI());
             }
             xmlDescriptor.getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-            xmlDescriptor.getNamespaceResolver().put(SDOConstants.SDO_PREFIX, SDOConstants.SDO_URL);
-            //TODO: add this?
-            //xmlDescriptor.getNamespaceResolver().put(XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
-            // }
         }
         return xmlDescriptor;
     }
@@ -745,7 +769,7 @@ public class SDOType implements Type, Serializable {
      * For this Type generate classes
      * @param packageName
      * @param nr
-     */    
+     */
     public void startInitializeTopLink(String packageName, List namespaceResolvers) {
         String instanceClassName = getInstanceClassName();
         if (null == instanceClassName) {
@@ -804,19 +828,17 @@ public class SDOType implements Type, Serializable {
 
         //Need to add these mappings here so that they don't get added to multiple descriptors in an inheritance hierarchy
         if ((!getXmlDescriptor().hasInheritance()) || (getXmlDescriptor().getInheritancePolicy().isRootParentDescriptor())) {
-            String sdoPrefix = getXmlDescriptor().getNamespaceResolver().resolveNamespaceURI(SDOConstants.SDO_URL);
-
+            String sdoPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(SDOConstants.SDO_URL);
             XMLDirectMapping sdoRefMapping = new XMLDirectMapping();
             sdoRefMapping.setAttributeName(SDO_REF_MAPPING_ATTRIBUTE_NAME);
-            sdoRefMapping.setXPath("@" + sdoPrefix + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT +//
-                                   SDOConstants.CHANGESUMMARY_REF);
-            xmlDescriptor.addMapping(sdoRefMapping);
+            XMLField xmlField = new XMLField("@" + sdoPrefix + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT +//
+                                             SDOConstants.CHANGESUMMARY_REF);
 
-            XMLCompositeDirectCollectionMapping unsetPropsMapping = new XMLCompositeDirectCollectionMapping();
-            unsetPropsMapping.setAttributeName(UNSET_PROPS_MAPPING_ATTRIBUTE_NAME);
-            unsetPropsMapping.setXPath("@" + sdoPrefix + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT +//
-                                       SDOConstants.CHANGESUMMARY_UNSET);
-            unsetPropsMapping.useCollectionClass(ArrayList.class);
+            xmlField.getXPathFragment().setNamespaceURI(SDOConstants.SDO_URL);
+            xmlField.getLastXPathFragment().setNamespaceURI(SDOConstants.SDO_URL);
+
+            sdoRefMapping.setField(xmlField);
+            xmlDescriptor.addMapping(sdoRefMapping);
         }
     }
 
@@ -1050,21 +1072,21 @@ public class SDOType implements Type, Serializable {
 
     /**
      * INTERNAL:
-	 * Return the wrapped initial value for the primitive numeric (when not defined)
-	 * See p.45 of Java Spec 4th edition.
-	 * See p.85 Sect 9.3 of the SDO Spec.
+     * Return the wrapped initial value for the primitive numeric (when not defined)
+     * See p.45 of Java Spec 4th edition.
+     * See p.85 Sect 9.3 of the SDO Spec.
      * @return aDefault Object (primitive numerics) or null (DataObjects, String, Lists)
      */
-    public Object getPseudoDefault() {    	
-    	return pseudoDefault;
+    public Object getPseudoDefault() {
+        return pseudoDefault;
     }
-    
+
     /**
      * INTERNAL:
      * Set an Object wrapper around primitive numeric types
      * @param anObject
      */
     public void setPseudoDefault(Object anObject) {
-    	pseudoDefault = anObject;    	
+        pseudoDefault = anObject;
     }
 }

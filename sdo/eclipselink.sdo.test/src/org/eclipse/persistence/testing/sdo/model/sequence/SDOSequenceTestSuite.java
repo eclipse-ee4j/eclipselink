@@ -25,6 +25,7 @@ public class SDOSequenceTestSuite {
         suite.addTest(new TestSuite(SDOSequenceTestCS.class));
         suite.addTest(new TestSuite(SDOSequenceTestXSD.class));
         suite.addTest(new TestSuite(SDOSequenceTest.class));
+        suite.addTest(new TestSuite(SDOSequenceListTestCases.class));
         return suite;
     }
 }

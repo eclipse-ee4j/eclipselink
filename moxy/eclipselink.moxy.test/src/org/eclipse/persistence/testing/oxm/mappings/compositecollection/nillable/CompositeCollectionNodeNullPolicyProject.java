@@ -6,22 +6,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-
-/* $Header: CompositeCollectionNodeNullPolicyProject.java 02-nov-2006.10:57:13 gyorke Exp $ */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    gyorke      11/02/06 - 
-    mfobrien    10/26/06 - Creation
- */
-
-/**
- *  @version $Header: CompositeCollectionNodeNullPolicyProject.java 02-nov-2006.10:57:13 gyorke Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.compositecollection.nillable;
 
 import org.eclipse.persistence.oxm.XMLDescriptor;

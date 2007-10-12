@@ -10,7 +10,6 @@
 package org.eclipse.persistence.sdo;
 
 import commonj.sdo.ChangeSummary;
-import commonj.sdo.ChangeSummary.Setting;
 import commonj.sdo.DataGraph;
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
@@ -18,7 +17,6 @@ import commonj.sdo.Sequence;
 import commonj.sdo.Type;
 import commonj.sdo.helper.DataHelper;
 import commonj.sdo.helper.HelperContext;
-import commonj.sdo.impl.ExternalizableDelegator;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.AccessController;
@@ -102,6 +100,7 @@ public class SDODataObject implements DataObject {
     private List instanceProperties;
     private String sdoRef;
     private Sequence sequence;
+    private DataGraph dataGraph;
 
     /** hold the current context containing all helpers so that we can preserve inter-helper relationships */
     private HelperContext aHelperContext;
@@ -1069,7 +1068,7 @@ public class SDODataObject implements DataObject {
             throw new IllegalArgumentException("Argument not Supported.");
         }
         if (property.isMany()) {
-            return getList(property, updateSequence);
+            return getList(property);
         }
 
         // TODO: handle NULL = (NULL) value and !(!found)
@@ -1563,19 +1562,6 @@ public class SDODataObject implements DataObject {
     }
 
     /**
-     * Returns the value of the specified <code>List</code> property.
-     * The List returned contains the current values.
-     * Updates through the List interface operate on the current values of the DataObject.
-     * Each access returns the same List object.
-     * @param property the property to get.
-     * @return the <code>List</code> value of the specified property.
-     * @see #get(Property)
-     */
-    public List getList(Property property) {
-        return getList(property, true);
-    }
-
-    /**
      * INTERNAL:
      * Returns the value of the specified <code>List</code> property.
      * The List returned contains the current values.
@@ -1583,17 +1569,16 @@ public class SDODataObject implements DataObject {
      * Each access returns the same List object.
      * @param property the property to get.
      * @return the <code>List</code> value of the specified property.
-     * @see #get(Property)
-     * @param updateSequence
+     * @see #get(Property)     * 
      * @return
      */
-    private List getList(Property property, boolean updateSequence) {
+    public List getList(Property property) {
         if (null == property) {
             throw SDOException.cannotPerformOperationOnNullArgument("getList");
         }
 
         if (((type != null) && !type.isOpen() && property.isOpenContent())) {
-            throw new IllegalArgumentException("Arguement not Supported.");
+            throw new IllegalArgumentException("Argument not Supported.");
         }
         if (!property.isMany()) {
             throw new ClassCastException("can not call getList for a property that has isMany false.");
@@ -1926,19 +1911,25 @@ public class SDODataObject implements DataObject {
         }
         boolean isCSRoot = (null != getChangeSummary()) && (getChangeSummary().getRootObject() == this);
 
+        // Detaching the dataObject that is the root of the CS doesn't need to do anything - truncate the recursive traversal
+        if(!fromDelete && isCSRoot){
+          return;
+        }
+
         // This is the root of the recursive loop
-        detachDeleteRecursivePrivate(fromDelete, !isCSRoot, true, isCSRoot);
+        detachDeleteRecursivePrivate(fromDelete, !isCSRoot, true);
     }
 
     /**
      * INTERNAL:
      * Recursively walk the tree and set oldSettings for a detached/deleted object.
      * @param fromDelete
-     * @param clearCS (true = clear the cs field)
+     * @param clearCS (true = clear the cs field) = !(is root of the detach/delete subtree the CS root?)
      * @param isRootOfRecursiveLoop (are we at the root of the detach/delete or inside the subtree)
-     * @param subTreeRootHasCS (is root of the detach/delete subtree the CS root?)
      */
-    private void detachDeleteRecursivePrivate(boolean fromDelete, boolean clearCS, boolean isRootOfRecursiveLoop, boolean subTreeRootHasCS) {
+    private void detachDeleteRecursivePrivate(boolean fromDelete, boolean clearCS, boolean isRootOfRecursiveLoop) {
+    	// Store flag for (is root of the detach/delete subtree the CS root?) before we modify it when this object has no container
+    	boolean subTreeRootHasCStoClear = clearCS;
         if (null == getContainer()) {
             clearCS = false;
         }
@@ -1962,10 +1953,10 @@ public class SDODataObject implements DataObject {
                         Object manyItem;
                         for (int j = 0, lsize = ((List)oldValue).size(); j < lsize; j++) {
                             manyItem = ((List)oldValue).get(j);
-                            detachDeleteRecursivePrivateHelper((SDODataObject)manyItem, fromDelete, clearCS, subTreeRootHasCS);
+                            detachDeleteRecursivePrivateHelper((SDODataObject)manyItem, fromDelete, clearCS);
                         }
                     } else {
-                        detachDeleteRecursivePrivateHelper((SDODataObject)oldValue, fromDelete, clearCS, subTreeRootHasCS);
+                        detachDeleteRecursivePrivateHelper((SDODataObject)oldValue, fromDelete, clearCS);
                     }
                 }
                 if (fromDelete && !nextProperty.isReadOnly()) {
@@ -1987,9 +1978,7 @@ public class SDODataObject implements DataObject {
          * Case 6: delete subtree root from root (without cs) = true
          * Case 7: delete subtree internal from root (without cs) = true
          */
-        if (clearCS) {// || // uncomment the following 2 lines to fix 6202793
-            //(!subTreeRootHasCS && fromDelete) || // Case 3 and 7 
-            //(isRootOfRecursiveLoop && fromDelete && !subTreeRootHasCS)) { // case 6
+        if (clearCS || subTreeRootHasCStoClear) { 
             _setChangeSummary(null);
         }
     }
@@ -2002,7 +1991,7 @@ public class SDODataObject implements DataObject {
      * @param fromDelete
      * @param subTreeRootHasCS
      */
-    private void detachDeleteRecursivePrivateHelper(SDODataObject aDataObject, boolean fromDelete, boolean clearCS, boolean subTreeRootHasCS) {
+    private void detachDeleteRecursivePrivateHelper(SDODataObject aDataObject, boolean fromDelete, boolean clearCS) {
         if (aDataObject != null) {
             // Return whether (aDataObject) is the changeSummary root.
             boolean isCSRoot = (aDataObject.getChangeSummary() != null) &&//
@@ -2021,7 +2010,7 @@ public class SDODataObject implements DataObject {
                     }
                 }
             }
-            aDataObject.detachDeleteRecursivePrivate(fromDelete, clearCS, false, subTreeRootHasCS);
+            aDataObject.detachDeleteRecursivePrivate(fromDelete, clearCS, false);
         }
     }
 
@@ -2126,7 +2115,11 @@ public class SDODataObject implements DataObject {
      * @return the containing data graph or <code>null</code>.
      */
     public DataGraph getDataGraph() {
-        throw new UnsupportedOperationException("Method Not Supported.");
+        return dataGraph;
+    }
+
+    public void setDataGraph(DataGraph dataGraph) {
+        this.dataGraph = dataGraph;
     }
 
     /**
@@ -2770,7 +2763,7 @@ public class SDODataObject implements DataObject {
         while (iter.hasNext()) {
             QName nextKey = (QName)iter.next();
 
-            if (!nextKey.getNamespaceURI().equals(XMLConstants.XMLNS_URL)) {
+            if ((!nextKey.getNamespaceURI().equals(XMLConstants.XMLNS_URL)) && (!((nextKey.getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL)) && nextKey.getLocalPart().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)))) {
                 Object value = openAttributeProperties.get(nextKey);
                 set(nextKey.getLocalPart(), value);
             }
@@ -2799,11 +2792,17 @@ public class SDODataObject implements DataObject {
             String propertyName = null;
             String propertyUri = null;
             Object value = null;
+            Type theType = null;
             if (next instanceof XMLRoot) {
                 XMLRoot nextXMLRoot = (XMLRoot)next;
                 value = nextXMLRoot.getObject();
                 propertyName = nextXMLRoot.getLocalName();
                 propertyUri = nextXMLRoot.getNamespaceURI();
+                if (value instanceof DataObject) {
+                    theType = ((DataObject)value).getType();
+                } else {
+                    theType = aHelperContext.getTypeHelper().getType(value.getClass());
+                }
             } else if (next instanceof DataObject) {
                 value = next;
                 String qualifiedName = ((SDOType)((DataObject)next).getType()).getXmlDescriptor().getDefaultRootElement();
@@ -2817,16 +2816,23 @@ public class SDODataObject implements DataObject {
                 } else {
                     propertyName = qualifiedName;
                 }
+                theType = ((DataObject)next).getType();
             }
             if (propertyName != null) {
                 SDOProperty prop = (SDOProperty)aHelperContext.getTypeHelper().getOpenContentProperty(propertyUri, propertyName);
+                if (prop == null) {
+                    DataObject propDo = aHelperContext.getDataFactory().create(SDOConstants.SDO_PROPERTY);
+                    propDo.set("name", propertyName);
+                    propDo.set("type", theType);
+                    propDo.set("many", true);
+                    prop = (SDOProperty)aHelperContext.getTypeHelper().defineOpenContentProperty(null, propDo);
+                    prop.setUri(propertyUri);
+                }
 
-                if (prop != null) {
-                    if (prop.isMany()) {
-                        ((ListWrapper)getList(prop)).add(value, false);
-                    } else {
-                        set(prop, value);
-                    }
+                if (prop.isMany()) {
+                    ((ListWrapper)getList(prop)).add(value, false);
+                } else {
+                    set(prop, value);
                 }
             }
         }
@@ -3199,7 +3205,7 @@ public class SDODataObject implements DataObject {
      */
     public Object writeReplace() {
         // JIRA129: pass the helperContext to the constructor to enable non-static contexts
-        return new ExternalizableDelegator(this, aHelperContext);
+        return new SDOExternalizableDelegator(this, aHelperContext);
     }
 
     /**
@@ -3287,315 +3293,6 @@ public class SDODataObject implements DataObject {
                                   this,// 
                                   SDOConstants.EMPTY_STRING);
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Return the XPath or SDO path from the anObject to the current internal node
-     *
-     * Prereq: We know that the targetObject will always have a parent as called
-     * from getPath()
-     *   We require a ChangeSummary object for when there are deleted
-     *   objects in the path
-     *
-     * Matching conditions:
-     *   Iterate up the tree
-     *   return a non-null string for the XPath when we reach the target node
-     *
-     * Function is partially based on SDOCopyHelper.copy(DataObject dataObject)
-     * Performance: This function is O(log n) where n=# of children in the tree
-     *
-     * @param currentPath
-     * @param targetObject
-     * @param currentObject
-     * @param aSeparator (XPath separator is written only between elements - not for the first call)
-     * @param useXPathFormat - true for XPath format, false for SDO path format
-     * @return String (representing the XPath)
-     */
-    private String getPathFromAncestorPrivate(SDOChangeSummary aChangeSummary,//
-                                              String currentPath,//
-                                              SDODataObject targetDO,//
-                                              SDODataObject currentObject,//
-                                              String aSeparator,//
-                                              String lastContainmentProperty,//
-                                              boolean useXPathFormat) {
-        SDOChangeSummary currentChangeSummary = null;
-
-        // Base Case: check we are at the target object first
-        if (currentObject == targetDO) {
-            // check for indexed property if root is a ListWrapper
-            return currentPath;
-        }
-
-        // Recursive Case: O(log(n)) recursive calls, 1 for each tree level
-        // get parent property based on parent property name in target, property will always be set
-        // check containment for cases where we are searching for a sibling
-        String parentContainmentPropertyName = null;
-        String parentContainmentPropertyString = null;
-        String parentContainmentPropertyXPath = null;
-        Object parent = null;
-
-        // for already deleted dataobjects  - isDeleted=false, changeSummary= null - use oldContainer
-        if (null == currentObject.getContainer()) {
-            // check changeSummary
-            if ((SDOChangeSummary)getChangeSummary() != null) {
-                // use this changeSummary
-                currentChangeSummary = (SDOChangeSummary)getChangeSummary();
-                // object deleted had a changeSummary
-                parent = currentChangeSummary.getOldContainer(currentObject);
-            } else {
-                // object deleted was a child of an object that had a changeSummary
-                // TODO: get oldContainer from target's changeSummary
-                if (null == aChangeSummary) {
-                    if ((SDOChangeSummary)targetDO.getChangeSummary() != null) {
-                        // use this changeSummary
-                        currentChangeSummary = (SDOChangeSummary)targetDO.getChangeSummary();
-                        parent = currentChangeSummary.getOldContainer(this);
-                        // TODO: if aChangeSummary==null object is deleted and changeSummary is off (none passed or on targetDO)
-                    }
-                } else {
-                    // TODO: Verify object is a isMany deleted object
-                    parent = aChangeSummary.getOldContainer(currentObject);
-                    // use this changeSummary
-                    currentChangeSummary = aChangeSummary;
-                }
-            }
-
-            // handle (at root) case for non-deleted objects for the cases
-            // case: ancestor not found
-            // case: ancestor is actually sibling
-            if (null == parent) {
-                return SDOConstants.SDO_XPATH_INVALID_PATH;
-            } else {
-                // The changeSummary should always be null for any deleted/detached/unset object except the root which will not enter here
-                // object deleted was a child of an object that had a changeSummary
-                // TODO: get oldContainmentProperty from target's changeSummary
-                if (null == aChangeSummary) {
-                    if ((SDOChangeSummary)targetDO.getChangeSummary() != null) {
-                        Property parentPropertyOfDeletedObject = ((SDOChangeSummary)targetDO.getChangeSummary())//
-                        .getOldContainmentProperty(this);
-                        parentContainmentPropertyName = parentPropertyOfDeletedObject.getName();
-                        // get XPath using SDO path - block
-                        parentContainmentPropertyXPath = ((SDOProperty)parentPropertyOfDeletedObject)//
-                            .getXmlMapping().getField().getName();
-                    }
-                } else {
-                    // use changeSummary parameter to get old parent and search for copy in oldSettings
-                    if (aChangeSummary.getOldContainmentProperty(currentObject) != null) {
-                        Property parentPropertyOfDeletedObject = aChangeSummary.getOldContainmentProperty(currentObject);
-                        parentContainmentPropertyName = parentPropertyOfDeletedObject.getName();
-                        // get XPath using SDO path - block
-                        parentContainmentPropertyXPath = ((SDOProperty)parentPropertyOfDeletedObject)//
-                            .getXmlMapping().getField().getName();
-                    } else {
-                        // TODO : Code coverage test case required
-                        // get using parent
-                        Property parentPropertyOfDeletedObject = aChangeSummary.getOldContainmentProperty(//
-                        (SDODataObject)parent);
-                        parentContainmentPropertyName = parentPropertyOfDeletedObject.getName();
-                        // get XPath using SDO path - block
-                        parentContainmentPropertyXPath = ((SDOProperty)parentPropertyOfDeletedObject)//
-                            .getXmlMapping().getField().getName();
-                    }
-                }
-            }
-        } else {
-            // normal non-deleted non-changeSummary case
-            parent = currentObject.getContainer();
-            // use XPath or SDO path
-            parentContainmentPropertyName = currentObject._getContainmentPropertyName();
-            // get XPath using SDO path - block
-            if (currentObject.getContainer().getInstanceProperty(parentContainmentPropertyName) != null) {
-                parentContainmentPropertyXPath = ((SDOProperty)currentObject.getContainer()//
-                    .getInstanceProperty(parentContainmentPropertyName))//
-                    .getXmlMapping().getField().getName();
-            } else {
-                // TODO: verify we are not 
-                //   parentContainmentPropertyXPath = EMPTY_STRING;
-            }
-        }
-
-        // parentContainmentPropertyName will not be null - it may be EMPTY_STRING
-        // get the current node as referenced by its parent
-        SDOProperty aChild = (SDOProperty)((SDODataObject)parent).getInstanceProperty(parentContainmentPropertyName);
-
-        // use XPath or SDO path in recursive calls
-        if (useXPathFormat) {
-            parentContainmentPropertyString = parentContainmentPropertyXPath;
-        } else {
-            parentContainmentPropertyString = parentContainmentPropertyName;
-        }
-
-        // Handle ListWrapper contained DataObjects
-        if (aChild.isMany()) {
-            int index = (((SDODataObject)parent).getList(aChild)).indexOf(currentObject);
-
-            // TODO: throw exception on index = -1 (not found)
-            if (index < 0) {
-
-                /*
-                * The current object has been deleted and was part of a ListWrapper (isMany=true)
-                * Get the parent of this indexed list item and check the oldSetting (List) for the
-                * original position of the indexed (Deleted) object
-                */
-                SDOChangeSummary aParentChangeSummary = (SDOChangeSummary)((SDODataObject)parent).getChangeSummary();
-                if (null == aParentChangeSummary) {
-                    // use the current objects changesummary if available
-                    aParentChangeSummary = (SDOChangeSummary)getChangeSummary();
-                }
-                if (aParentChangeSummary == null) {
-                    // use passed in change summary
-                    aParentChangeSummary = aChangeSummary;
-                }
-                if (aParentChangeSummary == null) {
-                    // use passed in change summary
-                    aParentChangeSummary = currentChangeSummary;
-                }
-                if (aParentChangeSummary != null) {
-                    // get the list containing the old value of the item
-                    Setting anOldSetting = aParentChangeSummary.getOldValue((DataObject)parent, aChild);
-                    if (anOldSetting != null) {
-                        // get index directly from oldSettings based on current object - where parent was not deleted
-                        List aDeletedParent = (List)anOldSetting.getValue();
-
-                        // bug# 5587042: we will assume that index is never < 0 and remove handling code for this case where we lookup anOldSetting directly instead of via the deepCopies map
-                        index = aDeletedParent.indexOf(aParentChangeSummary.getDeepCopies().get(currentObject));
-                    } else {
-                        // bug# 5587042: we will assume that oldSetting is never null and remove handling code for this case where we would hardcode to list.size()
-                    }
-                } else {
-                    // get out of infinite loop
-                }
-
-                // see: testGetXPathFromAncestorDeletedFromChildToAncestorInsideListWrapperLoggingOn
-            }
-
-            // recursive call to list wrappers
-            return getPathFromAncestorPrivate(currentChangeSummary,//
-                                              parentContainmentPropertyString +// 
-                                              SDOConstants.SDO_XPATH_LIST_INDEX_OPEN_BRACKET +// 
-                                              (1 + index) +// [indexes] start at 1
-                                              SDOConstants.SDO_XPATH_LIST_INDEX_CLOSE_BRACKET +//
-                                              aSeparator +//
-                                              currentPath,//
-                                              targetDO,//
-                                              (SDODataObject)parent,//
-                                              SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT,// we pass an empty separator so we have \a\b and not a\b\
-                                              parentContainmentPropertyString,//
-                                              useXPathFormat);
-        }
-
-        // recursive call to non ListWrappers
-        return getPathFromAncestorPrivate(currentChangeSummary,//        		
-                                          parentContainmentPropertyString +//
-                                          aSeparator +//
-                                          currentPath,//
-                                          targetDO,//
-                                          (SDODataObject)parent,//
-                                          SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT,// we pass an empty separator so we have \a\b and not a\b\
-                                          parentContainmentPropertyString,//
-                                          useXPathFormat);
-    }
-
-    /**
-     * INTERNAL:
-     * Return an SDO Path string from anObject to itself
-     * Constraints:<br>
-     *   The anObject is an ancestor of the object and not a sibling<br>
-     *   The changeSummary can be used as passed in or from the targetDO for deleted objects
-     * @param aChangeSummary - parent changeSummary (for deleted object)
-     * @param targetDO - internal or root target data object
-     * @param useXPathFormat - true or false for SDO path format
-     * @return String
-     */
-    public String getPathFromAncestor(SDOChangeSummary aChangeSummary,//
-                                      SDODataObject targetDO, boolean useXPathFormat) {
-
-        /*
-         * Algorithm:
-         *   (1) Intact (non-deleted) objects:
-         *     - recursively iterate up the container of each DataObject, recording property names as we go
-         *   (2) Deleted objects:
-         *     - use the changeSummary to get the deleted object with oldContainer state
-         *     - recursively iterate up the oldContainer as in (1)
-         *    Issues:
-         *     - a deleted indexed object inside a ListWrapper will not retain its original index
-         */
-
-        // Base Case: The internal node is actually the root
-        // Base Case: The source and target objects are equal
-        // checking if this and target are equal will handle both cases above
-        if (this == targetDO) {
-            // return "" empty string and handle at implementor
-            return SDOConstants.EMPTY_STRING;
-        } else {
-            // Recursive Case: call private recursive reverse O(logn) traversal
-            // function on current object
-            return getPathFromAncestorPrivate(aChangeSummary,//
-                                              SDOConstants.EMPTY_STRING,//
-                                              targetDO,//
-                                              this,//
-                                              SDOConstants.EMPTY_STRING,// we pass an empty separator so we have \a\b and not a\b\
-                                              SDOConstants.EMPTY_STRING,//
-                                              useXPathFormat);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Get path for non-deleted DataObjects<br>
-     * ChangeSummary is not required and is set to null.<br>
-     * Assumptions:<br>
-     *     target node is an ancestor of the source (this)
-     * @param targetDO
-     * @param useXPathFormat - true for XPath format, false for SDO path format
-     * @return
-     * String
-     */
-    public String getPathFromAncestor(SDODataObject targetDO, boolean useXPathFormat) {
-        // default to no changeSummary
-        return getPathFromAncestor(null, targetDO, useXPathFormat);
-    }
-
-    /**
-     * INTERNAL:
-     * Get path for non-deleted DataObjects<br>
-     * ChangeSummary is not required and is set to null.<br>
-     * Assumptions:<br>
-     *     target node is an ancestor of the source (this)
-     * @param targetDO
-     * useXPathFormat - true for XPath format, false for SDO path format
-     * @return
-     * String
-     */
-    public String getPathFromAncestor(SDODataObject targetDO) {
-        // Implementors: SDOMarshalListener
-        // default to no changeSummary and xpath format
-        return getPathFromAncestor(null, targetDO, true);
-    }
-
-    /**
-     * INTERNAL:
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * Use {@link #_getPathFromRoot()} instead
-     * @return
-     */
-    public String getPathFromRoot() {
-        return _getPathFromRoot();
-    }
-
-    /**
-     * INTERNAL:
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * @return
-     */
-    public String _getPathFromRoot() {
-        // check if we are already at the root - return path to self
-        StringBuffer aBuffer = new StringBuffer(SDOConstants.SDO_XPATH_TO_ROOT);
-        if (null != getContainer()) {
-            aBuffer.append(getPathFromAncestor((SDODataObject)getRootObject(), true));
-        }
-        return aBuffer.toString();
     }
 
     /**

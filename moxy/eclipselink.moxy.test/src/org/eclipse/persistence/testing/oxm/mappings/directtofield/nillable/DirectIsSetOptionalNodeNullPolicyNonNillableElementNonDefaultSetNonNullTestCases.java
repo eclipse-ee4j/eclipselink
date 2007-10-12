@@ -9,14 +9,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable;
 
-import org.eclipse.persistence.oxm.mappings.IsSetOptionalNodeNullPolicy;
-import org.eclipse.persistence.oxm.mappings.NodeNullPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetNonNullTestCases extends XMLMappingTestCases {
-	// UC 1-1
+	// UC 0-0 and UC 3
 	/*
 	<xsd:element name='employee'>
 	<xsd:complexType><xsd:sequence>
@@ -24,8 +24,8 @@ public class DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetNon
 	</xsd:sequence></xsd:complexType>
 	</xsd:element>
 
-	Use Case #1-1 - Set to Non-Null Value/.
-	Unmarshal From							fn Property						Marshal To
+	Use Case #0-0 - Set to Non-Null Value/.
+	Unmarshal From													fn Property								Marshal To
 	<employee><fn>Jane</fn></employee>		Get = 'Jane'	IsSet = true	<employee><fn>Jane</fn></employee>
 	 */
     private final static String XML_RESOURCE = //
@@ -35,12 +35,13 @@ public class DirectIsSetOptionalNodeNullPolicyNonNillableElementNonDefaultSetNon
         super(name);
         setControlDocument(XML_RESOURCE);
 
-        NodeNullPolicy aNodeNullPolicy = new IsSetOptionalNodeNullPolicy();
-        ((IsSetOptionalNodeNullPolicy)aNodeNullPolicy).setIsSetMethodName("isSetFirstName");
+        // use default policy with default flags and marshal enum
+        AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();        
+        ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");
         Project aProject = new DirectNodeNullPolicyProject(true);
         XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(Employee.class)//
         .getMappingForAttributeName("firstName");
-        aMapping.setNodeNullPolicy(aNodeNullPolicy);
+        aMapping.setNullPolicy(aNullPolicy);
         setProject(aProject);
     }
 

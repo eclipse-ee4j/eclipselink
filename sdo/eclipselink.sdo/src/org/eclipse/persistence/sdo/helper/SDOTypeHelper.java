@@ -15,6 +15,7 @@ import commonj.sdo.helper.TypeHelper;
 import java.util.HashMap;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDOType;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 
 /**
  * <p><b>Purpose</b>: Helper to provide access to declared SDO Types.
@@ -46,9 +47,10 @@ public interface SDOTypeHelper extends TypeHelper {
      *
      * @param uri
      * @param typeName
+     * @param xsdLocalName
      * @return
      */
-    public Type getOrCreateType(String uri, String typeName);
+    public Type getOrCreateType(String uri, String typeName, String xsdLocalName);
 
     /**
      * INTERNAL:
@@ -120,4 +122,10 @@ public interface SDOTypeHelper extends TypeHelper {
       * Return the prefix for the given uri, or generate a new one if necessary
       */
     public String getPrefix(String uri);
+
+    /**
+    * INTERNAL:
+    * Return the NamespaceResolver
+    */
+    public NamespaceResolver getNamespaceResolver();
 }

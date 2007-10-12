@@ -27,18 +27,18 @@ import commonj.sdo.helper.XSDHelper;
  */
 public interface SDOXSDHelper extends XSDHelper {
 
-	/**
+    /**
      * INTERNAL:
-	 * 
-	 * @param qname
-	 * @param isElement
-	 * @return
-	 */
+     *
+     * @param qname
+     * @param isElement
+     * @return
+     */
     public Property getGlobalProperty(QName qname, boolean isElement);
 
     /**
      * INTERNAL:
-     * 
+     *
      * @param xsdSource
      * @param schemaResolver
      * @return
@@ -47,7 +47,7 @@ public interface SDOXSDHelper extends XSDHelper {
 
     /**
      * INTERNAL:
-     * 
+     *
      * @param types
      * @param schemaLocationResolver
      * @return
@@ -56,35 +56,7 @@ public interface SDOXSDHelper extends XSDHelper {
 
     /**
      * INTERNAL:
-     * 
-     * @param globalAttributes
-     */
-    public void setGlobalAttributes(Map globalAttributes);
-
-    /**
-     * INTERNAL:
-     * 
-     * @return
-     */
-    public Map getGlobalAttributes();
-
-    /**
-     * INTERNAL:
-     * 
-     * @param globalElements
-     */
-    public void setGlobalElements(Map globalElements);
-
-    /**
-     * INTERNAL:
-     * 
-     * @return
-     */
-    public Map getGlobalElements();
-
-    /**
-     * INTERNAL:
-     * 
+     *
      * @param appInfoElements
      * @return
      */
@@ -93,7 +65,7 @@ public interface SDOXSDHelper extends XSDHelper {
     /**
      * INTERNAL:
      * Return the helperContext that this instance is associated with.
-     * 
+     *
      * @return
      */
     public HelperContext getHelperContext();
@@ -101,7 +73,7 @@ public interface SDOXSDHelper extends XSDHelper {
     /**
      * INTERNAL:
      * Set the helperContext that this instance is associated with.
-     * 
+     *
      * @param helperContext
      */
     public void setHelperContext(HelperContext helperContext);
@@ -111,4 +83,14 @@ public interface SDOXSDHelper extends XSDHelper {
      *
      */
     public void reset();
+
+    /**
+     * INTERNAL:
+     *
+     * @param qname
+     * @param prop
+     * @param isElement
+     * Register the given property with the given qname.
+     */
+    public void addGlobalProperty(QName qname, Property prop, boolean isElement);
 }

@@ -194,6 +194,10 @@ public class MappingsGenerator {
         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
         mapping.setReferenceClassName(referenceClass.getQualifiedName());
         mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+        }
         mapping.setXPath(getXPathForField(property, namespaceInfo, false).getXPath());
         descriptor.addMapping(mapping);
         return mapping;
@@ -202,6 +206,10 @@ public class MappingsGenerator {
     public XMLDirectMapping generateDirectMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+        }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
         descriptor.addMapping(mapping);
         return mapping;
@@ -209,6 +217,10 @@ public class MappingsGenerator {
     public XMLBinaryDataMapping generateBinaryMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
         mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+        }
         mapping.setField(getXPathForField(property, namespaceInfo, false));
         if (property.isSwaAttachmentRef()) {
             ((XMLField) mapping.getField()).setSchemaType(XMLConstants.SWA_REF_QNAME);
@@ -230,6 +242,10 @@ public class MappingsGenerator {
         JAXBEnumTypeConverter converter = new JAXBEnumTypeConverter(mapping, enumInfo.getClassName(), false);
         mapping.setConverter(converter);
         mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+        }
         mapping.setField(getXPathForField(property, namespaceInfo, true));
         HashMap<Object, String> enumValuesMap = enumInfo.getObjectValuesToFieldValues();
         for (Object o : enumValuesMap.keySet()) {
@@ -271,6 +287,10 @@ public class MappingsGenerator {
     public void generateEnumCollectionMapping(TypeProperty property, EnumTypeInfo info, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+        }
 
         JAXBEnumTypeConverter converter = new JAXBEnumTypeConverter(mapping, info.getClassName(), false);
         HashMap<Object, String> enumValuesMap = info.getObjectValuesToFieldValues();
@@ -298,6 +318,10 @@ public class MappingsGenerator {
     public void generateAnyAttributeMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLAnyAttributeMapping mapping = new XMLAnyAttributeMapping();
         mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+        }
         descriptor.addMapping(mapping);
     }
     
@@ -311,6 +335,10 @@ public class MappingsGenerator {
     public XMLCompositeCollectionMapping generateCompositeCollectionMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+        }
         mapping.setReferenceClassName(referenceClass.getQualifiedName());
         
         JavaClass collectionType = property.getType();
@@ -331,6 +359,10 @@ public class MappingsGenerator {
     public XMLCompositeDirectCollectionMapping generateDirectCollectionMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+        }
         JavaClass collectionType = property.getType();
         
         if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {

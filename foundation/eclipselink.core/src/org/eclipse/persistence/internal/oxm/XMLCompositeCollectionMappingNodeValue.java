@@ -126,25 +126,21 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-        try {
-            unmarshalRecord.getChildRecord().endDocument();
-            Object collection = unmarshalRecord.getContainerInstance(this);
+        Object collection = unmarshalRecord.getContainerInstance(this);
 
-            // convert the value - if necessary
-            Object objectValue = unmarshalRecord.getChildRecord().getCurrentObject();
-            if (xmlCompositeCollectionMapping.hasConverter()) {
-                Converter converter = xmlCompositeCollectionMapping.getConverter();
-                if (converter instanceof XMLConverter) {
-                    objectValue = ((XMLConverter)converter).convertDataValueToObjectValue(objectValue, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-                } else {
-                    objectValue = converter.convertObjectValueToDataValue(objectValue, unmarshalRecord.getSession());
-                }
+        // convert the value - if necessary
+        Object objectValue = unmarshalRecord.getChildRecord().getCurrentObject();
+        if (xmlCompositeCollectionMapping.hasConverter()) {
+            Converter converter = xmlCompositeCollectionMapping.getConverter();
+            if (converter instanceof XMLConverter) {
+                objectValue = ((XMLConverter)converter).convertDataValueToObjectValue(objectValue, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+            } else {
+                objectValue = converter.convertObjectValueToDataValue(objectValue, unmarshalRecord.getSession());
             }
-            xmlCompositeCollectionMapping.getContainerPolicy().addInto(objectValue, collection, unmarshalRecord.getSession());
-            unmarshalRecord.setChildRecord(null);
-        } catch (SAXException e) {
-            throw XMLMarshalException.unmarshalException(e);
         }
+        xmlCompositeCollectionMapping.getContainerPolicy().addInto(objectValue, collection, unmarshalRecord.getSession());
+        unmarshalRecord.setChildRecord(null);
+
     }
 
     public Object getContainerInstance() {
@@ -158,6 +154,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
     public boolean isContainerValue() {
         return true;
     }
+
     protected void addTypeAttributeIfNeeded(XMLDescriptor descriptor, DatabaseMapping mapping, MarshalRecord marshalRecord) {
         XMLSchemaReference xmlRef = descriptor.getSchemaReference();
         if (xmlCompositeCollectionMapping.shouldAddXsiType(marshalRecord, descriptor) && (xmlRef != null)) {

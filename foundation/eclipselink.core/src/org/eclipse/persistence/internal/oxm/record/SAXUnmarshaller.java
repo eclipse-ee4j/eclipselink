@@ -66,7 +66,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private XMLReader xmlReader;
     private XMLContext xmlContext;
     private XMLParser xmlParser;
-
+    private boolean isResultAlwaysXMLRoot;
+    
     public SAXUnmarshaller(XMLContext xmlContext) throws XMLMarshalException {
         super();
         try {
@@ -274,7 +275,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         if (isPrimitiveWrapper) {
             return unmarshalRecord.getCurrentObject();
         }
-        return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord);
+        return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord, this.isResultAlwaysXMLRoot);
 
     }
 
@@ -326,7 +327,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         if (isPrimitiveWrapper) {
             return unmarshalRecord.getCurrentObject();
         }
-        return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord);
+        return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord, this.isResultAlwaysXMLRoot);
     }
 
     public Object unmarshal(Node node, XMLUnmarshaller unmarshaller) {
@@ -393,7 +394,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         if (isPrimitiveWrapper) {
             return unmarshalRecord.getCurrentObject();
         }
-        return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord);    
+        return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord, this.isResultAlwaysXMLRoot);    
     }
 
     public Object unmarshal(Reader reader, XMLUnmarshaller unmarshaller) {
@@ -567,7 +568,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         if (isPrimitiveWrapper) {
             return unmarshalRecord.getCurrentObject();
         }
-        return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord);
+        return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord, this.isResultAlwaysXMLRoot);
     }
 
     private EclipseLinkException convertSAXException(SAXException saxException) {
@@ -581,4 +582,12 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         }
         return XMLMarshalException.unmarshalException(saxException);
     }
+    
+    public boolean isResultAlwaysXMLRoot() {
+        return this.isResultAlwaysXMLRoot;
+    }
+    
+    public void setResultAlwaysXMLRoot(boolean alwaysReturnRoot) {
+        this.isResultAlwaysXMLRoot = alwaysReturnRoot;
+    }    
 }

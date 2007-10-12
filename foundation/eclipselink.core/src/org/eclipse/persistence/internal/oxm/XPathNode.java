@@ -136,7 +136,7 @@ public class XPathNode {
     }
 
     public void addChild(XPathFragment anXPathFragment, NodeValue aNodeValue, NamespaceResolver namespaceResolver) {
-        if ((anXPathFragment != null) && anXPathFragment.hasNamespace() && (namespaceResolver != null)) {
+        if ((anXPathFragment != null) && anXPathFragment.hasNamespace() && anXPathFragment.getNamespaceURI() == null && (namespaceResolver != null)) {
             anXPathFragment.setNamespaceURI(namespaceResolver.resolveNamespacePrefix(anXPathFragment.getPrefix()));
         }
 

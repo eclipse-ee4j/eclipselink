@@ -13,6 +13,7 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
+import commonj.sdo.impl.HelperProvider;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 
 /**
  * <p><b>Purpose</b>: Helper to provide access to declared SDO Types.
@@ -63,8 +65,8 @@ public class SDOTypeHelperDelegator implements SDOTypeHelper {
         return getSDOTypeHelperDelegate().getTypeForSimpleJavaType(implClass);
     }
 
-    public Type getOrCreateType(String uri, String typeName) {
-        return getSDOTypeHelperDelegate().getOrCreateType(uri, typeName);
+    public Type getOrCreateType(String uri, String typeName, String xsdLocalName) {
+        return getSDOTypeHelperDelegate().getOrCreateType(uri, typeName,xsdLocalName);
     }
 
     public Type getType(Class interfaceClass) {
@@ -112,38 +114,40 @@ public class SDOTypeHelperDelegator implements SDOTypeHelper {
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * This function returns the current or parent ClassLoader.
-     * We return the parent application ClassLoader when running in a J2EE client either in a 
+     * We return the parent application ClassLoader when running in a J2EE client either in a
      * web or ejb container to match a weak reference to a particular helpercontext.
      */
     private ClassLoader getContextClassLoader() {
-    	/**
-    	 * Classloader levels: (oc4j specific  
-    	 *  0 - APP.web (servlet/jsp) or APP.wrapper (ejb) or  
-    	 *  1 - APP.root (parent for helperContext) 
-    	 *  2 - default.root 
-    	 *  3 - system.root 
-    	 *  4 - oc4j.10.1.3 (remote EJB) or org.eclipse.persistence:11.1.1.0.0
-    	 *  5 - api:1.4.0
-    	 *  6 - jre.extension:0.0.0
-    	 *  7 - jre.bootstrap:1.5.0_07 (with various J2SE versions)
-    	 *  */     	
+
+        /**
+         * Classloader levels: (oc4j specific
+         *  0 - APP.web (servlet/jsp) or APP.wrapper (ejb) or
+         *  1 - APP.root (parent for helperContext)
+         *  2 - default.root
+         *  3 - system.root
+         *  4 - oc4j.10.1.3 (remote EJB) or org.eclipse.persistence:11.1.1.0.0
+         *  5 - api:1.4.0
+         *  6 - jre.extension:0.0.0
+         *  7 - jre.bootstrap:1.5.0_07 (with various J2SE versions)
+         *  */
+
         // Kludge for running in OC4J - from WebServices group
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         if ((classLoader.getParent() != null) && (classLoader.toString().indexOf(SDOConstants.CLASSLOADER_EJB_FRAGMENT) != -1)) {
-        	// we are running in a servlet container
-            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} matched classLoader: {1} to parent cl: {2}", //
-            		new Object[] {getClass().getName(), classLoader.toString(), classLoader.getParent().toString()}, false);
+            // we are running in a servlet container
+            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} matched classLoader: {1} to parent cl: {2}",//
+                                            new Object[] { getClass().getName(), classLoader.toString(), classLoader.getParent().toString() }, false);
             classLoader = classLoader.getParent();
             // check if we are running in an ejb container
         } else if ((classLoader.getParent() != null) && (classLoader.toString().indexOf(SDOConstants.CLASSLOADER_WEB_FRAGMENT) != -1)) {
-        	// we are running in a local ejb container
-            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} matched classLoader: {1} to parent cl: {2}", //
-            		new Object[] {getClass().getName(), classLoader.toString(), classLoader.getParent().toString()}, false);
+            // we are running in a local ejb container
+            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} matched classLoader: {1} to parent cl: {2}",//
+                                            new Object[] { getClass().getName(), classLoader.toString(), classLoader.getParent().toString() }, false);
             classLoader = classLoader.getParent();
         } else {
-        	// we are running in a J2SE client (toString() contains a JVM hash) or an unmatched container level
+            // we are running in a J2SE client (toString() contains a JVM hash) or an unmatched container level
         }
         return classLoader;
     }
@@ -156,15 +160,18 @@ public class SDOTypeHelperDelegator implements SDOTypeHelper {
         ClassLoader contextClassLoader = getContextClassLoader();
         SDOTypeHelperDelegate sdoTypeHelperDelegate = (SDOTypeHelperDelegate)sdoTypeHelperDelegates.get(contextClassLoader);
         if (null == sdoTypeHelperDelegate) {
-            sdoTypeHelperDelegate = new SDOTypeHelperDelegate(aHelperContext);
+            sdoTypeHelperDelegate = new SDOTypeHelperDelegate(getHelperContext());
             sdoTypeHelperDelegates.put(contextClassLoader, sdoTypeHelperDelegate);
-            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} creating new {1} keyed on classLoader: {2}", //
-            		new Object[] {getClass().getName(), sdoTypeHelperDelegate, contextClassLoader.toString()}, false);
+            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} creating new {1} keyed on classLoader: {2}",//
+                                            new Object[] { getClass().getName(), sdoTypeHelperDelegate, contextClassLoader.toString() }, false);
         }
         return sdoTypeHelperDelegate;
     }
 
     public HelperContext getHelperContext() {
+        if(null == aHelperContext) {
+            aHelperContext = HelperProvider.getDefaultContext();
+        }
         return aHelperContext;
     }
 
@@ -186,5 +193,13 @@ public class SDOTypeHelperDelegator implements SDOTypeHelper {
       */
     public String getPrefix(String uri) {
         return getSDOTypeHelperDelegate().getPrefix(uri);
+    }
+
+    /**
+      * INTERNAL:
+      * Return the NamespaceResolver
+      */
+    public NamespaceResolver getNamespaceResolver() {
+        return getSDOTypeHelperDelegate().getNamespaceResolver();
     }
 }

@@ -35,7 +35,7 @@ public class OptionalNodeValue extends NodeValue {
     }
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
-    	// we are only supporting direct marshalling for now
+    	// We are only supporting direct marshalling for now
    		return false;
     }
     

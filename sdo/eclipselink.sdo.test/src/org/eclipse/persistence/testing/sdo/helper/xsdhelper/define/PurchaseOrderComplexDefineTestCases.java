@@ -46,6 +46,8 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         SDOType addrType = new SDOType(uri, "AddressType");
         addrType.setDataType(false);
         addrType.setInstanceClassName(javaPackage + "." + "AddressType");
+        addrType.setXsd(true);
+        addrType.setXsdLocalName("AddressType");
 
         SDOProperty addrNameProp = new SDOProperty(aHelperContext);
         addrNameProp.setName("name");
@@ -84,17 +86,17 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         countryProp.setName("country");
         countryProp.setType(stringType);
         countryProp.setXsdLocalName("country");
-        countryProp.setXsd(true);
-        //countryProp.setAttribute(true);
-        countryProp.setDefault("US");
-        countryProp.setContainment(true);
+        countryProp.setXsd(true);        
+        countryProp.setDefault("US");        
         countryProp.setContainingType(addrType);
         addrType.getDeclaredProperties().add(countryProp);
 
         /****US ADDRESS TYPE*****/
         SDOType usAddressType = new SDOType(uri, "usAddressType");
+        usAddressType.setXsd(true);
         usAddressType.setDataType(false);
         usAddressType.setInstanceClassName(javaPackage + "." + "UsAddressType");
+        usAddressType.setXsdLocalName("usAddressType");
         ArrayList baseTypes = new ArrayList();
         baseTypes.add(addrType);
         usAddressType.setBaseTypes(baseTypes);
@@ -114,16 +116,17 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         zipProp.setName("zip");
         zipProp.setXsdLocalName("zip");
         zipProp.setXsd(true);
-        //zipProp.setAttribute(true);
         zipProp.setType(intType);
-        zipProp.setContainment(true);
+        
         zipProp.setContainingType(usAddressType);
         usAddressType.getDeclaredProperties().add(zipProp);
 
         /****CDN ADDRESS TYPE*****/
         SDOType cdnAddressType = new SDOType(uri, "cdnAddressType");
+        cdnAddressType.setXsd(true);
         cdnAddressType.setDataType(false);
         cdnAddressType.setInstanceClassName(javaPackage + "." + "CdnAddressType");
+        cdnAddressType.setXsdLocalName("cdnAddressType");
         ArrayList cdnbaseTypes = new ArrayList();
         cdnbaseTypes.add(addrType);
         cdnAddressType.setBaseTypes(cdnbaseTypes);
@@ -163,8 +166,10 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
 
         /****CDN MAILING ADDRESS TYPE*****/
         SDOType cdnMailingAddressType = new SDOType(uri, "cdnAddressMailingType");
+        cdnMailingAddressType.setXsd(true);
         cdnMailingAddressType.setDataType(false);
         cdnMailingAddressType.setInstanceClassName(javaPackage + "." + "CdnAddressMailingType");
+        cdnMailingAddressType.setXsdLocalName("cdnAddressMailingType");
         ArrayList cdnMailingbaseTypes = new ArrayList();
         cdnMailingbaseTypes.add(cdnAddressType);
         cdnMailingAddressType.setBaseTypes(cdnbaseTypes);
@@ -182,41 +187,53 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
 
         /****QUANTITY TYPE*****/
         SDOType quantityType = new SDOType(uri, "quantityType");
+        quantityType.setXsd(true);
         quantityType.setDataType(true);
         quantityType.getBaseTypes().add(intType);
         //quantityType.setInstanceClassName("java.lang.Integer");
         quantityType.setInstanceClassName(ClassConstants.PINT.getName());
+        quantityType.setXsdLocalName("quantityType");
 
         /****SKU TYPE*****/
         SDOType SKUType = new SDOType(uri, "SKU");
+        SKUType.setXsd(true);
         SKUType.setDataType(true);
         SKUType.getBaseTypes().add(stringType);
         SKUType.setInstanceClassName("java.lang.String");
+        SKUType.setXsdLocalName("SKU");
 
         /****PHONE TYPE*****/
         SDOType phoneType = new SDOType(uri, "phoneNumber");
+        phoneType.setXsd(true);
         phoneType.setDataType(true);
         phoneType.getBaseTypes().add(stringType);
         phoneType.setInstanceClassName("java.lang.String");
+        phoneType.setXsdLocalName("phoneNumber");
 
         /****NAME PREFIX TYPE*****/
         SDOType namePrefixType = new SDOType(uri, "namePrefix");
+        namePrefixType.setXsd(true);
 
         //namePrefixType.setDataType(true);
         namePrefixType.setDataType(false);
         namePrefixType.getBaseTypes().add(stringType);
         namePrefixType.setInstanceClassName("java.lang.String");
+        namePrefixType.setXsdLocalName("namePrefix");
 
         /****GENDER TYPE*****/
         SDOType genderType = new SDOType(uri, "gender");
+        genderType.setXsd(true);
         genderType.setDataType(true);
         genderType.getBaseTypes().add(stringType);
         genderType.setInstanceClassName("java.lang.String");
+        genderType.setXsdLocalName("gender");
 
         /****ITEM TYPE*****/
         SDOType itemType = new SDOType(uri, "LineItemType");
+        itemType.setXsd(true);
         itemType.setDataType(false);
         itemType.setInstanceClassName(javaPackage + "." + "LineItemType");
+        itemType.setXsdLocalName("LineItemType");
 
         SDOProperty productNameProp = new SDOProperty(aHelperContext);
         productNameProp.setName("productName");
@@ -234,8 +251,7 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         partNumProp.setName("partNum");
         partNumProp.setXsdLocalName("partNum");
         partNumProp.setType(SKUType);
-        partNumProp.setXsd(true);
-        //partNumProp.setAttribute(true);
+        partNumProp.setXsd(true);        
         partNumProp.setContainingType(itemType);
         itemType.getDeclaredProperties().add(partNumProp);
 
@@ -243,9 +259,7 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         quantityProp.setName("quantity");
         quantityProp.setType(quantityType);
         quantityProp.setXsd(true);
-        quantityProp.setXsdLocalName("quantity");
-        //quantityProp.setAttribute(true);
-        quantityProp.setContainment(true);
+        quantityProp.setXsdLocalName("quantity");              
         quantityProp.setContainingType(itemType);
         itemType.getDeclaredProperties().add(quantityProp);
 
@@ -308,8 +322,10 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
 
         /****ITEMS TYPE*****/
         SDOType itemsType = new SDOType(uri, "Items");
+        itemsType.setXsd(true);
         itemsType.setDataType(false);
         itemsType.setInstanceClassName(javaPackage + "." + "Items");
+        itemsType.setXsdLocalName("Items");
         SDOProperty itemProp = new SDOProperty(aHelperContext);
         itemProp.setName("item");
         itemProp.setXsdLocalName("item");
@@ -324,8 +340,10 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
 
         /****CUSTOMER TYPE*****/
         SDOType customerType = new SDOType(uri, "CustomerType");
+        customerType.setXsd(true);
         customerType.setDataType(false);
         customerType.setInstanceClassName(javaPackage + "." + "CustomerType");
+        customerType.setXsdLocalName("CustomerType");
 
         SDOProperty nameProp = new SDOProperty(aHelperContext);
         nameProp.setName("name");
@@ -354,9 +372,7 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         //TODO or string type??
         namePrefixProp.setXsdLocalName("namePrefix");
         namePrefixProp.setType(namePrefixType);
-        namePrefixProp.setXsd(true);
-        //namePrefixProp.setAttribute(true);
-        namePrefixProp.setContainment(true);
+        namePrefixProp.setXsd(true);        
         namePrefixProp.setContainingType(customerType);
         customerType.getDeclaredProperties().add(namePrefixProp);
 
@@ -374,8 +390,10 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
 
         /****PURCHASEORDER TYPE*****/
         SDOType POtype = new SDOType(uri, "PurchaseOrderType");
+        POtype.setXsd(true);
         POtype.setInstanceClassName(javaPackage + "." + "PurchaseOrderType");
         POtype.setDataType(false);
+        POtype.setXsdLocalName("PurchaseOrderType");
 
         SDOProperty shipToProp = new SDOProperty(aHelperContext);
         shipToProp.setName("shipTo");
@@ -432,18 +450,14 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         poIdProp.setXsdLocalName("poId");
         poIdProp.setType(stringType);
         poIdProp.setXsd(true);
-        //poIdProp.setAttribute(true);
-        poIdProp.setContainingType(POtype);
-        poIdProp.setContainment(true);
+        poIdProp.setContainingType(POtype);        
 
         SDOProperty orderDateProp = new SDOProperty(aHelperContext);
         orderDateProp.setName("orderDate");
         orderDateProp.setXsdLocalName("orderDate");
         orderDateProp.setType(yearMonthDayType);
         orderDateProp.setXsd(true);
-        orderDateProp.setContainingType(POtype);
-        //orderDateProp.setAttribute(true);
-        orderDateProp.setContainment(true);
+        orderDateProp.setContainingType(POtype);        
 
         POtype.getDeclaredProperties().add(shipToProp);
         POtype.getDeclaredProperties().add(billToProp);

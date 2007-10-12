@@ -13,6 +13,7 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import commonj.sdo.helper.EqualityHelper;
 import commonj.sdo.helper.HelperContext;
+import commonj.sdo.impl.HelperProvider;
 import java.util.Iterator;
 import java.util.List;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -487,6 +488,9 @@ public class SDOEqualityHelper implements EqualityHelper {
      * @return
      */
     public HelperContext getHelperContext() {
+        if(null == aHelperContext) {
+            aHelperContext = HelperProvider.getDefaultContext();
+        }
         return aHelperContext;
     }
 

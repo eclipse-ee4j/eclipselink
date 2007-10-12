@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -342,6 +341,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
                             cp.addInto(objectValue, container, session);
                         } else {
                             if ((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
+                                XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element)next);
                                 cp.addInto(next, container, session);
                             }
                         }
@@ -370,10 +370,11 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
                         if ((referenceDescriptor != null) && (getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                             ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
                             Object objectValue = builder.buildObject(query, nestedRecord, joinManager);
-                            Object updated = ((XMLDescriptor)referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix());
+                            Object updated = ((XMLDescriptor)referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
 
                             cp.addInto(updated, container, session);
                         } else if ((referenceDescriptor == null) && (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) {
+                            XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element)next);
                             cp.addInto(next, container, session);
                         } else {
                             Object value = null;
@@ -381,11 +382,13 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
                             if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
                                 value = ((Text)textchild).getNodeValue();
                             }
-                            XMLRoot rootValue = new XMLRoot();
-                            rootValue.setLocalName(next.getLocalName());
-                            rootValue.setNamespaceURI(next.getNamespaceURI());
-                            rootValue.setObject(value);
-                            cp.addInto(rootValue, container, session);
+                            if ((value != null) && !value.equals("")) {
+                                XMLRoot rootValue = new XMLRoot();
+                                rootValue.setLocalName(next.getLocalName());
+                                rootValue.setNamespaceURI(next.getNamespaceURI());
+                                rootValue.setObject(value);
+                                cp.addInto(rootValue, container, session);
+                            }
                         }
                     }
                 }
@@ -421,7 +424,6 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
             //            row.put(this.getField(), null);
             return;
         }
-        NamespaceResolver nr = record.getNamespaceResolver();
         if (field != null) {
             root = (Element)XPathEngine.getInstance().create((XMLField)getField(), record.getDOM());
             DOMRecord rootRecord = new DOMRecord(root);

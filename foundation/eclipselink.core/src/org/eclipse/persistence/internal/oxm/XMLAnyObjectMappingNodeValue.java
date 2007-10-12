@@ -133,12 +133,12 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                     marshalRecord.setLeafElementType(descriptor.getDefaultRootElementType());
                 }
                 getXPathNode().startElement(marshalRecord, rootFragment, object, session, descriptor.getNonNullNamespaceResolver(), objectBuilder, objectValue);
-                
-                if(xmlAnyObjectMapping.shouldAddXsiType(marshaller, descriptor, originalValue, wasXMLRoot)){
+
+                if (xmlAnyObjectMapping.shouldAddXsiType(marshaller, descriptor, originalValue, wasXMLRoot)) {
                     String typeValue = descriptor.getSchemaReference().getSchemaContext();
                     addTypeAttribute(descriptor, marshalRecord, typeValue);
-                }                
-                
+                }
+
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
 
                 objectBuilder.buildRow(marshalRecord, objectValue, (org.eclipse.persistence.internal.sessions.AbstractSession)childSession, marshaller);
@@ -190,49 +190,44 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-        try {
-            unmarshalRecord.removeNullCapableValue(this);
-            if (null != unmarshalRecord.getChildRecord()) {
-                // OBJECT VALUE
-                unmarshalRecord.getChildRecord().endDocument();
-                if (!xmlAnyObjectMapping.usesXMLRoot()) {
-                    xmlAnyObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), unmarshalRecord.getChildRecord().getCurrentObject());
-                } else {
-                    Object childObject = unmarshalRecord.getChildRecord().getCurrentObject();
-
-                    if (workingDescriptor != null) {
-                        String prefix = xPathFragment.getPrefix();
-                        if ((prefix == null) && (xPathFragment.getNamespaceURI() != null)) {
-                            prefix = unmarshalRecord.resolveNamespaceUri(xPathFragment.getNamespaceURI());
-                        }
-                        childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix);
-                        xmlAnyObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), childObject);
-                        workingDescriptor = null;
-                    }
-                }
+        unmarshalRecord.removeNullCapableValue(this);
+        if (null != unmarshalRecord.getChildRecord()) {
+            // OBJECT VALUE
+            if (!xmlAnyObjectMapping.usesXMLRoot()) {
+                xmlAnyObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), unmarshalRecord.getChildRecord().getCurrentObject());
             } else {
-                // TEXT VALUE             
-                endElementProcessText(unmarshalRecord, xPathFragment);
+                Object childObject = unmarshalRecord.getChildRecord().getCurrentObject();
+
+                if (workingDescriptor != null) {
+                    String prefix = xPathFragment.getPrefix();
+                    if ((prefix == null) && (xPathFragment.getNamespaceURI() != null)) {
+                        prefix = unmarshalRecord.resolveNamespaceUri(xPathFragment.getNamespaceURI());
+                    }
+                    childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix, false);
+                    xmlAnyObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), childObject);
+                    workingDescriptor = null;
+                }
             }
-        } catch (SAXException e) {
-            throw XMLMarshalException.unmarshalException(e);
+        } else {
+            // TEXT VALUE             
+            endElementProcessText(unmarshalRecord, xPathFragment);
         }
     }
 
     private void endElementProcessText(UnmarshalRecord unmarshalRecord, XPathFragment xPathFragment) {
         Object value = unmarshalRecord.getStringBuffer().toString().trim();
         unmarshalRecord.resetStringBuffer();
-        if (!xmlAnyObjectMapping.usesXMLRoot()) {
-            if (!EMPTY_STRING.equals(value)) {
+        if (!EMPTY_STRING.equals(value)) {
+            if (!xmlAnyObjectMapping.usesXMLRoot()) {
                 xmlAnyObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), value);
-            }
-        } else {
-            XMLRoot xmlRoot = new XMLRoot();
-            xmlRoot.setNamespaceURI(xPathFragment.getNamespaceURI());
+            } else {
+                XMLRoot xmlRoot = new XMLRoot();
+                xmlRoot.setNamespaceURI(xPathFragment.getNamespaceURI());
 
-            xmlRoot.setLocalName(xPathFragment.getLocalName());
-            xmlRoot.setObject(value);
-            xmlAnyObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), xmlRoot);
+                xmlRoot.setLocalName(xPathFragment.getLocalName());
+                xmlRoot.setObject(value);
+                xmlAnyObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), xmlRoot);
+            }
         }
     }
 

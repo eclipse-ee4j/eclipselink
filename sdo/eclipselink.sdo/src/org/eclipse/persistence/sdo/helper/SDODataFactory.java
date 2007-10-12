@@ -15,6 +15,7 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import commonj.sdo.helper.DataFactory;
 import commonj.sdo.helper.HelperContext;
+import commonj.sdo.impl.HelperProvider;
 import org.eclipse.persistence.exceptions.SDOException;
 
 /**
@@ -42,7 +43,7 @@ public class SDODataFactory implements DataFactory {
      *    not correspond to a Type this factory can instantiate.
      */
     public DataObject create(String uri, String typeName) {
-        Type sdoType = aHelperContext.getTypeHelper().getType(uri, typeName);
+        Type sdoType = getHelperContext().getTypeHelper().getType(uri, typeName);
         if (sdoType != null) {
             return create(sdoType);
         }
@@ -62,7 +63,7 @@ public class SDODataFactory implements DataFactory {
         if (interfaceClass == null) {
             throw new IllegalArgumentException(SDOException.typeNotFoundForInterface(null));
         }
-        Type type = aHelperContext.getTypeHelper().getType(interfaceClass);
+        Type type = getHelperContext().getTypeHelper().getType(interfaceClass);
         if ((type != null) && (type.getInstanceClass() != null)) {
             return create(type);
         }
@@ -92,7 +93,7 @@ public class SDODataFactory implements DataFactory {
                     // testcase is in org.apache.tuscany.sdo.test
                     SDODataObject theDataObject = (SDODataObject)implClass.newInstance();
                     theDataObject._setType(type);
-                    theDataObject._setHelperContext(aHelperContext);
+                    theDataObject._setHelperContext(getHelperContext());
                     return theDataObject;
                 }
             } catch (InstantiationException e) {
@@ -103,12 +104,15 @@ public class SDODataFactory implements DataFactory {
         }
         SDODataObject dataObject = new SDODataObject();
         dataObject._setType(type);
-        dataObject._setHelperContext(aHelperContext);
+        dataObject._setHelperContext(getHelperContext());
         return dataObject;
 
     }
 
     public HelperContext getHelperContext() {
+        if(null == aHelperContext) {
+            aHelperContext = HelperProvider.getDefaultContext();
+        }
         return aHelperContext;
     }
 

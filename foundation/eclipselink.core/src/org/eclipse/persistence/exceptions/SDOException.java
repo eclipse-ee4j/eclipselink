@@ -62,7 +62,8 @@ public class SDOException extends EclipseLinkException {
     public static final int JAVA_CLASS_INVOKING_ERROR = 45030;
     public static final int CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE = 45031;
     public static final int XMLMARSHAL_EXCEPTION_OCCURRED = 45032;
-
+    public static final int TYPE_REFERENCED_BUT_NEVER_DEFINED = 45033;
+    
     protected SDOException(String message) {
         super(message);
     }
@@ -443,6 +444,14 @@ public class SDOException extends EclipseLinkException {
           SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(//
         		  SDOException.class, CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE, args));        
           exception.setErrorCode(CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE);
+          return exception;
+      }
+      
+      public static SDOException typeReferencedButNotDefined(String namespaceUri, String typeName) {
+          Object[] args = {namespaceUri, typeName};
+          SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(
+                  SDOException.class, TYPE_REFERENCED_BUT_NEVER_DEFINED, args));
+          exception.setErrorCode(TYPE_REFERENCED_BUT_NEVER_DEFINED);
           return exception;
       }
 }

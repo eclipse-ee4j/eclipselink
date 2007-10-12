@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<!--  $Header: CompositeObjectIsSetNullPolicySetNillableIsSetTrue.xml 17-sep-2007.17:31:13 mfobrien Exp $ -->
+
+<!-- 
+ Copyright (c) 2007, Oracle.  All rights reserved.  
+
+   NAME
+     CompositeObjectIsSetNullPolicySetNillableIsSetTrue.xml - <one-line expansion of the name>
+
+   DESCRIPTION
+     <short description of component this file declares/defines>
+
+   NOTES
+     <other useful comments, qualifications, etc.>
+
+   MODIFIED   (MM/DD/YY)
+   mfobrien    09/04/07 - Creation
+
+-->
+<EmptyNode/>
+

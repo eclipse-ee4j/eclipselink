@@ -242,6 +242,6 @@ public class XMLCollectionReferenceMappingNodeValue extends XMLSimpleMappingNode
                 return true;
             }
         }
-        return false;
+        return true;
     }    
 }

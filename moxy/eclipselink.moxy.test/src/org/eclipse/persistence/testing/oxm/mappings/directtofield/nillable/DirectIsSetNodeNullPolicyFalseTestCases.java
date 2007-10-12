@@ -6,26 +6,13 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-
-/* $Header: DirectIsSetNodeNullPolicyFalseTestCases.java 02-nov-2006.10:57:19 gyorke Exp $ */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    gyorke      11/02/06 - 
-    mfobrien    10/26/06 - Creation
- */
-
-/**
- *  @version $Header: DirectIsSetNodeNullPolicyFalseTestCases.java 02-nov-2006.10:57:19 gyorke Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable;
 
-import org.eclipse.persistence.oxm.mappings.NodeNullPolicy;
-import org.eclipse.persistence.oxm.mappings.IsSetNodeNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
+
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
@@ -37,12 +24,17 @@ public class DirectIsSetNodeNullPolicyFalseTestCases extends XMLMappingTestCases
         super(name);
         setControlDocument(XML_RESOURCE);
 
-        NodeNullPolicy aNodeNullPolicy = new IsSetNodeNullPolicy();
-        ((IsSetNodeNullPolicy)aNodeNullPolicy).setIsSetMethodName("isSetFirstName");
+        AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
+    	// alter unmarshal policy state
+    	aNullPolicy.setNullRepresentedByEmptyNode(false); // no effect
+    	aNullPolicy.setNullRepresentedByXsiNil(false); // no effect
+    	// alter marshal policy state
+    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");
         Project aProject = new DirectNodeNullPolicyProject(true);
         XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(Employee.class)//
         .getMappingForAttributeName("firstName");
-        aMapping.setNodeNullPolicy(aNodeNullPolicy);
+        aMapping.setNullPolicy(aNullPolicy);
         setProject(aProject);
     }
 

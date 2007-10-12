@@ -9,8 +9,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable;
 
-import org.eclipse.persistence.oxm.mappings.IsSetOptionalNodeNullPolicy;
-import org.eclipse.persistence.oxm.mappings.NodeNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
+
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
@@ -36,12 +38,17 @@ public class DirectIsSetOptionalNodeNullPolicyNonNillableElementDefaultSetDefaul
         super(name);
         setControlDocument(XML_RESOURCE);
 
-        NodeNullPolicy aNodeNullPolicy = new IsSetOptionalNodeNullPolicy();
-        ((IsSetOptionalNodeNullPolicy)aNodeNullPolicy).setIsSetMethodName("isSetFirstName");
+        AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
+    	// alter unmarshal policy state
+    	aNullPolicy.setNullRepresentedByEmptyNode(false); // no effect (defaults are only for SDO)
+    	aNullPolicy.setNullRepresentedByXsiNil(false); // no effect (defaults are only for SDO)
+    	// alter marshal policy state
+    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE); // no effect (defaults are only for SDO)
+        ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");
         Project aProject = new DirectNodeNullPolicyProject(true);
         XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(Employee.class)//
         .getMappingForAttributeName("firstName");
-        aMapping.setNodeNullPolicy(aNodeNullPolicy);
+        aMapping.setNullPolicy(aNullPolicy);
         setProject(aProject);
     }
 

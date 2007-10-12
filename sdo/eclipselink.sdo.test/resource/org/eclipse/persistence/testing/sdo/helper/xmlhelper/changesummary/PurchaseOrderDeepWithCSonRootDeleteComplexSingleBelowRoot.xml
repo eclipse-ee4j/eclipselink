@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns0:purchaseOrder orderDate="1999-10-20" xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-   <ns0:myChangeSummary delete="#/ns0:myChangeSummary/ns0:shipTo/ns0:yard">
+<ns0:purchaseOrder orderDate="1999-10-20" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:myChangeSummary delete="#/ns0:myChangeSummary/ns0:shipTo/ns0:yard" xmlns:sdo="commonj.sdo">
       <ns0:shipTo sdo:ref="#/ns0:shipTo">
-         <ns0:yard xsi:type="ns0:Yard" xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+         <ns0:yard xsi:type="ns0:Yard">
             <ns0:length>45</ns0:length>
             <ns0:width>65</ns0:width>
          </ns0:yard>

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<team>
+    <id>123</id>
+    <manager>
+        <id>10</id>
+        <first-name>first</first-name>
+    </manager>
+    <name>Eng</name>
+</team>

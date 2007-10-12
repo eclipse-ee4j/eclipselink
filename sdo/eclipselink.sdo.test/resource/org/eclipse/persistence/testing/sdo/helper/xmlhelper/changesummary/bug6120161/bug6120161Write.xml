@@ -1,4 +1,4 @@
-<tns:processCSDeptElement xmlns:sdo="commonj.sdo"  xmlns:tns="http://example.com/hr/types/" xmlns:ns2="http://xmlns.oracle.com/adf/svc/errors/" xmlns:ns1="http://example.com/hr/" xmlns:ns0="http://xmlns.oracle.com/adf/svc/types/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<tns:processCSDeptElement xmlns:tns="http://example.com/hr/types/" xmlns:ns2="http://xmlns.oracle.com/adf/svc/errors/" xmlns:ns1="http://example.com/hr/" xmlns:ns0="http://xmlns.oracle.com/adf/svc/types/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <tns:processData>
       <ns0:Value xsi:type="ns1:Dept">
          <ns1:Deptno>20</ns1:Deptno>
@@ -74,7 +74,7 @@
             <ns1:Deptno>20</ns1:Deptno>
          </ns1:Emp>
       </ns0:Value>
-      <ns0:ChangeSummary create="#/tns:processData/ns0:Value[1]/ns1:Emp[7]" delete="#/tns:processData/ns0:ChangeSummary/ns0:Value/ns1:Emp[5]">
+      <ns0:ChangeSummary create="#/tns:processData/ns0:Value[1]/ns1:Emp[7]" delete="#/tns:processData/ns0:ChangeSummary/ns0:Value/ns1:Emp[5]" xmlns:sdo="commonj.sdo">
          <ns1:Emp sdo:ref="#/tns:processData/ns0:Value[1]/ns1:Emp[2]">
             <ns1:Sal>3005</ns1:Sal>
          </ns1:Emp>
@@ -83,7 +83,7 @@
             <ns1:Emp sdo:ref="#/tns:processData/ns0:Value[1]/ns1:Emp[2]"/>
             <ns1:Emp sdo:ref="#/tns:processData/ns0:Value[1]/ns1:Emp[3]"/>
             <ns1:Emp sdo:ref="#/tns:processData/ns0:Value[1]/ns1:Emp[4]"/>
-            <ns1:Emp xsi:type="ns1:Emp" xmlns:sdo="commonj.sdo" xmlns:tns="http://example.com/hr/types/" xmlns:ns1="http://example.com/hr/" xmlns:ns2="http://xmlns.oracle.com/adf/svc/errors/" xmlns:ns0="http://xmlns.oracle.com/adf/svc/types/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <ns1:Emp xsi:type="ns1:Emp">
                <ns1:Empno>8081</ns1:Empno>
                <ns1:Ename>ADAMS</ns1:Ename>
                <ns1:Job>CLERK</ns1:Job>

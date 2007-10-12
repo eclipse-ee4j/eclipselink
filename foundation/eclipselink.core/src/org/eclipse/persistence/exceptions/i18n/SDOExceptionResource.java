@@ -49,7 +49,8 @@ public class SDOExceptionResource extends ListResourceBundle {
                                            { "45029", "Invalid index [{0}] passed to method [{1}]." },
                                            { "45030", "An error occurred invoking the constructor with a String argument on the class [{0}]." },
                                            { "45031", "Cannot set invalid target type [{0}] on property [{1}] because target type.dataType is true." },                                           
-                                           { "45032", "An XMLMarshalException occurred for uri [{1}] and local name [{2}].  Exception: [{0}]" }                                           
+                                           { "45032", "An XMLMarshalException occurred for uri [{1}] and local name [{2}].  Exception: [{0}]" },
+                                           { "45033", "An error occured generating types. The type with name [{1}] and namespace URI [{0}] is referenced but never defined." }
     };
 
     /**

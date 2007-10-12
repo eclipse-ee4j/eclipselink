@@ -54,9 +54,9 @@ public abstract class SchemaParser {
         namespaceResolvers = new ArrayList();
     }
 
-    public abstract void startNewComplexType(String targetNamespace, String defaultNamespace, String name, ComplexType complexType);
+    public abstract void startNewComplexType(String targetNamespace, String defaultNamespace, String name, String xsdLocalName, ComplexType complexType);
 
-    public abstract void startNewSimpleType(String targetNamespace, String defaultNamespace, String name, SimpleType simpleType);
+    public abstract void startNewSimpleType(String targetNamespace, String defaultNamespace, String name, String xsdLocalName,  SimpleType simpleType);
 
     public abstract void processSimpleElement(String targetNamespace, String defaultNamespace, String ownerName, TypeDefParticle typeDefParticle, Element element, boolean isQualified, boolean isGlobal, boolean isMany);
 
@@ -283,15 +283,17 @@ public abstract class SchemaParser {
     //return true if a new type was created
     public boolean startComplexType(String targetNamespace, String defaultNamespace, String name, ComplexType complexType) {
         String nameValue = (String)complexType.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
+        String originalName = name;
         if (nameValue != null) {
             itemNameToSDOName.put(name, nameValue);
+            originalName = name;
             name = nameValue;
         }
 
         //check if already processed, if yes return false because a new type was not started else start new type and return true
         boolean alreadyExists = typesExists(targetNamespace, name);
         if (!alreadyExists) {
-            startNewComplexType(targetNamespace, defaultNamespace, name, complexType);
+            startNewComplexType(targetNamespace, defaultNamespace, name,originalName, complexType);
             return true;
         }
 
@@ -307,10 +309,10 @@ public abstract class SchemaParser {
     public void finishNestedComplexType(String targetNamespace, String defaultNamespace, TypeDefParticle typeDefParticle, String name) {
     }
 
-    public boolean startSimpleType(String targetNamespace, String defaultNamespace, String name, SimpleType simpleType) {
+    public boolean startSimpleType(String targetNamespace, String defaultNamespace, String name, String xsdLocalName,  SimpleType simpleType) {
         boolean alreadyExists = typesExists(targetNamespace, name);
         if (!alreadyExists) {
-            startNewSimpleType(targetNamespace, defaultNamespace, name, simpleType);
+            startNewSimpleType(targetNamespace, defaultNamespace, name, xsdLocalName, simpleType);
             return true;
         }
         return false;
@@ -603,13 +605,14 @@ public abstract class SchemaParser {
         }
         boolean addedNR = addNextNamespaceResolver(simpleType.getAttributesMap());
         String name = sdoTypeName;
+        String originalName = name;
         String nameValue = (String)simpleType.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
         if (nameValue != null) {
             itemNameToSDOName.put(sdoTypeName, nameValue);
             name = nameValue;
         }
 
-        boolean newType = startSimpleType(targetNamespace, defaultNamespace, name, simpleType);
+        boolean newType = startSimpleType(targetNamespace, defaultNamespace, name, originalName, simpleType);
         if (newType) {
             Restriction restriction = simpleType.getRestriction();
 

@@ -148,7 +148,6 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         if (value != null) {
             primaryKeys.setElementAt(value, idx);
         }
-		//primaryKeys.setElementAt(object, idx);
     }
     
 	/**
@@ -174,7 +173,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
      * Cascade registerNew for Create through mappings that require the cascade
      */
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
-        //aggregate objects are not registered but their mappings should be.
+        // Aggregate objects are not registered but their mappings should be.
         Object objectReferenced = getRealAttributeValueFromObject(object, uow);
         if (objectReferenced == null) {
             return;
@@ -385,6 +384,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         Object targetObject = getAttributeValueFromObject(object);
         writeSingleValue(targetObject, object, (XMLRecord)row, session);
     }
+    
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
         for (Iterator fieldIt = getFields().iterator(); fieldIt.hasNext(); ) {
             XMLField xmlField = (XMLField) fieldIt.next();

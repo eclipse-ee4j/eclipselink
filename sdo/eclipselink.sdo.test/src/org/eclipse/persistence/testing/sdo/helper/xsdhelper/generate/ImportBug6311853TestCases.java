@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
+import javax.xml.transform.stream.StreamSource;
+
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaLocationResolver;
@@ -75,8 +77,10 @@ public class ImportBug6311853TestCases extends XSDHelperGenerateTestCases {
     public void testGenerateSchemaRoundTrip() throws Exception {
         DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
         FileInputStream is = new FileInputStream(getControlFileName());
-        List types = xsdHelper.define(is, null);
-        String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
+        List types = ((SDOXSDHelper)xsdHelper).define(is, "file:./org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/");
+        ArrayList firstType = new ArrayList(1);
+        firstType.add(typeHelper.getType("my.uri2", "Person"));
+        String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(firstType, resolver);
 
         String controlSchema = getSchema(getControlFileName());
 

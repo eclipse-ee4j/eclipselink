@@ -41,6 +41,7 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
+import commonj.sdo.helper.XSDHelper;
 
 /**
  * <p><b>Purpose</b>: Called from XSDHelper define methods to generate SDO Types from a Schema
@@ -52,6 +53,7 @@ public class SDOTypesGenerator extends SchemaParser {
     private String packageName;
     private List nonContainmentReferences;
     private Map globalRefs;
+    private boolean isImportProcessor;
 
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;
@@ -64,7 +66,7 @@ public class SDOTypesGenerator extends SchemaParser {
         try {
             if (theImport.getSchema() != null) {
                 SDOTypesGenerator generator = new SDOTypesGenerator(aHelperContext);
-
+                generator.setIsImportProcessor(true);
                 java.util.List importedTypes = generator.define(theImport.getSchema(), isReturnAllTypes(), isProcessImports());
                 for (int i = 0; i < importedTypes.size(); i++) {
                     Type nextType = (Type)importedTypes.get(i);
@@ -74,6 +76,7 @@ public class SDOTypesGenerator extends SchemaParser {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw SDOException.errorProcessingImport(theImport.getSchemaLocation(), theImport.getNamespace());
         }
     }
@@ -115,8 +118,13 @@ public class SDOTypesGenerator extends SchemaParser {
         Iterator iter = getGeneratedTypes().values().iterator();
 
         List descriptors = new ArrayList();
+        XSDHelper helper = XSDHelper.INSTANCE;
         while (iter.hasNext()) {
             SDOType nextSDOType = (SDOType)iter.next();
+            if(!nextSDOType.isFinalized() && !this.isImportProcessor()) {
+                //Only throw this error if we're not processing an import.
+                throw SDOException.typeReferencedButNotDefined(nextSDOType.getURI(), nextSDOType.getName());
+            }
             if (!nextSDOType.isDataType()) {
                 XMLDescriptor desc = nextSDOType.getXmlDescriptor();
                 descriptors.add(desc);
@@ -152,8 +160,8 @@ public class SDOTypesGenerator extends SchemaParser {
         return alreadyProcessed;
     }
 
-    public void startNewComplexType(String targetNamespace, String defaultNamespace, String sdoTypeName, ComplexType complexType) {
-        SDOType currentType = createSDOTypeForName(targetNamespace, sdoTypeName);
+    public void startNewComplexType(String targetNamespace, String defaultNamespace, String sdoTypeName, String xsdLocalName, ComplexType complexType) {
+        SDOType currentType = createSDOTypeForName(targetNamespace, sdoTypeName, xsdLocalName);
 
         if (complexType.isMixed()) {
             currentType.setSequenced(true);
@@ -198,8 +206,8 @@ public class SDOTypesGenerator extends SchemaParser {
     public void finishNestedComplexType(String targetNamespace, String defaultNamespace, TypeDefParticle typeDefParticle, String name) {
     }
 
-    public void startNewSimpleType(String targetNamespace, String defaultNamespace, String sdoTypeName, SimpleType simpleType) {
-        SDOType currentType = createSDOTypeForName(targetNamespace, sdoTypeName);
+    public void startNewSimpleType(String targetNamespace, String defaultNamespace, String sdoTypeName, String xsdLocalName,SimpleType simpleType) {
+        SDOType currentType = createSDOTypeForName(targetNamespace, sdoTypeName,xsdLocalName);
         currentType.setDataType(true);
 
         if (simpleType.getAnnotation() != null) {
@@ -451,8 +459,6 @@ public class SDOTypesGenerator extends SchemaParser {
                 GlobalRef globalRef = new GlobalRef();
                 globalRef.setProperty(theProp);
 
-                globalRef.setRef(ref);
-                globalRef.setDefaultNamespace(defaultNamespace);
                 globalRef.setIsElement(true);
                 globalRef.setOwningType(owningType);
                 globalRef.setUri(uri);
@@ -534,7 +540,7 @@ public class SDOTypesGenerator extends SchemaParser {
                 //p.setContainment(false);
                 //we assume the xsd type to be any simple type
                 p.setName(element.getName());
-                sdoPropertyType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getSDOTypeFromXSDType(XMLConstants.ANY_SIMPLE_TYPE_QNAME);
+                sdoPropertyType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getSDOTypeFromXSDType(SDOConstants.ANY_TYPE_QNAME);
             }
         }
         sdoPropertyType = processSimpleComponentAnnotations(owningType, element, p, targetNamespace, defaultNamespace, sdoPropertyType);
@@ -624,11 +630,7 @@ public class SDOTypesGenerator extends SchemaParser {
         p.setContainment(true);
         if (isGlobal) {
             QName qname = new QName(targetNamespace, xsdLocalName);
-            if (isElement) {
-                ((SDOXSDHelper)aHelperContext.getXSDHelper()).getGlobalElements().put(qname, p);
-            } else {
-                ((SDOXSDHelper)aHelperContext.getXSDHelper()).getGlobalAttributes().put(qname, p);
-            }
+            ((SDOXSDHelper)aHelperContext.getXSDHelper()).addGlobalProperty(qname, p, isElement);
         }
 
         if (annotation != null) {
@@ -773,8 +775,6 @@ public class SDOTypesGenerator extends SchemaParser {
                 globalRef.setProperty(theProp);
                 owningType.addDeclaredProperty(theProp);
 
-                globalRef.setRef(ref);
-                globalRef.setDefaultNamespace(defaultNamespace);
                 globalRef.setIsElement(false);
                 globalRef.setOwningType(owningType);
                 globalRef.setUri(uri);
@@ -826,7 +826,7 @@ public class SDOTypesGenerator extends SchemaParser {
                 typeName = attribute.getName();
             } else {
                 p.setName(attribute.getName());
-                sdoPropertyType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getSDOTypeFromXSDType(XMLConstants.ANY_SIMPLE_TYPE_QNAME);
+                sdoPropertyType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getSDOTypeFromXSDType(SDOConstants.ANY_TYPE_QNAME);                
             }
         }
         sdoPropertyType = processSimpleComponentAnnotations(owningType, attribute, p, targetNamespace, defaultNamespace, sdoPropertyType);
@@ -960,14 +960,11 @@ public class SDOTypesGenerator extends SchemaParser {
 
     private void addGlobalRef(GlobalRef ref) {
         List refs = (List)getGlobalRefs().get(ref.getOwningType());
-        int index = ref.getOwningType().getDeclaredProperties().size();
         if (refs == null) {
             refs = new ArrayList();
-            ref.setIndex(index);
             refs.add(ref);
             getGlobalRefs().put(ref.getOwningType(), refs);
         } else {
-            ref.setIndex(index + refs.size());
             refs.add(ref);
         }
     }
@@ -987,21 +984,21 @@ public class SDOTypesGenerator extends SchemaParser {
         }
     }
 
-    private SDOType createSDOTypeForName(String targetNamespace, String name) {
+    private SDOType createSDOTypeForName(String targetNamespace, String name, String xsdLocalName) {
         SDOType returnType = null;
         int index = name.indexOf(':');
         if (index != -1) {
             String prefix = name.substring(0, index);
             String localName = name.substring(index + 1, name.length());
             String theURI = getURIForPrefix(targetNamespace, prefix);
-            returnType = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(theURI, localName);
+            returnType = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(theURI, localName, xsdLocalName);
         } else {
-            returnType = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(targetNamespace, name);
+            returnType = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(targetNamespace, name, xsdLocalName);            
         }
         if (returnType != null) {
             QName qname = new QName(returnType.getURI(), name);
             getGeneratedTypes().put(qname, returnType);
-        }
+        }        
         return returnType;
     }
 
@@ -1024,7 +1021,11 @@ public class SDOTypesGenerator extends SchemaParser {
                 }
             }
             if (sdoType == null) {
-                return (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(theURI, localName);
+                sdoType = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(theURI, localName, localName);
+                if(!sdoType.isFinalized()) {
+                    //if it's not finalized, then it's new, so add it to the generated types map
+                    getGeneratedTypes().put(new QName(sdoType.getURI(), sdoType.getName()), sdoType);
+                }
             }
             return sdoType;
 
@@ -1043,8 +1044,8 @@ public class SDOTypesGenerator extends SchemaParser {
                 sdoType = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getType(targetNamespace, name);
                 if (sdoType == null) {
                     return findSdoType(targetNamespace, defaultNamespace, name, name, targetNamespace);
-                }
-                return (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(targetNamespace, name);
+                }                
+                return (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(targetNamespace, name, name);
             }
             return sdoType;
         }
@@ -1063,7 +1064,12 @@ public class SDOTypesGenerator extends SchemaParser {
             type = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getType(theURI, localName);
         }
         if (type == null) {
-            type = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(theURI, localName);
+            type = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(theURI, localName, localName);
+            if(!type.isFinalized()) {
+                //if it's not finalized, then it's new, so add it to the generated types map
+                getGeneratedTypes().put(new QName(type.getURI(), type.getName()), type);
+            }
+            
         }
         return type;
     }
@@ -1185,12 +1191,7 @@ public class SDOTypesGenerator extends SchemaParser {
 
     public class GlobalRef {
         private SDOType owningType;
-        private String ref;
-        private String defaultNamespace;
         private boolean isElement;
-        private boolean many;
-        private int index;
-        private Annotation annotation;
         private String uri;
         private String localName;
         private Property property;
@@ -1227,55 +1228,12 @@ public class SDOTypesGenerator extends SchemaParser {
             localName = theLocalName;
         }
 
-        public String getRef() {
-            return ref;
-        }
-
-        public String getDefaultNamespace() {
-            return defaultNamespace;
-        }
-
-        public void setDefaultNamespace(String theDefaultNamespace) {
-            defaultNamespace = theDefaultNamespace;
-        }
-
-        public void setRef(String theRef) {
-            ref = theRef;
-        }
-
         public boolean isElement() {
             return isElement;
         }
 
-        public void setMany(boolean isMany) {
-            many = isMany;
-        }
-
-        public boolean isMany() {
-            return many;
-        }
-
         public void setIsElement(boolean isElem) {
             isElement = isElem;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public void setIndex(int theIndex) {
-            index = theIndex;
-        }
-
-        public void setAnnotation(Annotation theAnnotation) {
-            annotation = theAnnotation;
-        }
-
-        public java.util.List getDocumentation() {
-            if (annotation != null) {
-                return annotation.getDocumentation();
-            }
-            return null;
         }
     }
 
@@ -1291,5 +1249,13 @@ public class SDOTypesGenerator extends SchemaParser {
             globalRefs = new HashMap();
         }
         return globalRefs;
+    }
+    
+    public boolean isImportProcessor() {
+        return isImportProcessor;
+    }
+    
+    public void setIsImportProcessor(boolean isImport) {
+        isImportProcessor = isImport;
     }
 }

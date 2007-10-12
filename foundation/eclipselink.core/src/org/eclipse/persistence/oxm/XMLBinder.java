@@ -9,8 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm;
 
-import java.util.HashMap;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -31,7 +29,7 @@ import org.eclipse.persistence.oxm.record.DOMRecord;
  * <li>Update the cached XML based on changes to the object</li>
  * <li>Update the cached objects based on changes to the XML Document</li>
  * <li>Provide API to access the cached Node for a given object</li>
- * <li>Provide API to access the cached Objet for a given XML Node</li>
+ * <li>Provide API to access the cached Object for a given XML Node</li>
  * </ul>
  * 
  * <p>The XML Binder is a runtime class that allows an association to be maintained between the 
@@ -112,7 +110,7 @@ public class XMLBinder {
     /**
      * Gets the Java Object associated with the provided XML Node.
      * @param node
-     * @return the Java Object associated with this node. If no objec is associated then returns null
+     * @return the Java Object associated with this node. If no object is associated then returns null
      */
     public Object getObject(Node node) {
         return documentPreservationPolicy.getObjectForNode(node);

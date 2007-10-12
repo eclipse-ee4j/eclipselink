@@ -50,11 +50,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
     //default values defined in the spec
     public final static String DEFAULT_XML_ENCODING = "UTF-8";
     public final static String DEFAULT_XML_VERSION = "1.0";
-    private String encoding;
-    private String xmlVersion;
     private boolean xmlDeclaration;
-    private String schemaLocation;
-    private String noNamespaceSchemaLocation;
     private NamespaceResolver namespaceResolver;
 
     public SDOXMLDocument() {

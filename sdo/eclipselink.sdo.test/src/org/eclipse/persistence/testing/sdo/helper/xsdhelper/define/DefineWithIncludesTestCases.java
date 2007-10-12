@@ -48,6 +48,8 @@ public class DefineWithIncludesTestCases extends XSDHelperDefineTestCases {
 
         //ADDRESS TYPE
         SDOType USaddrType = new SDOType(uri, "USAddress");
+        USaddrType.setXsd(true);
+        USaddrType.setXsdLocalName("USAddress");
         USaddrType.setDataType(false);
         USaddrType.setInstanceClassName(javaPackage + "." + "USAddress");
 
@@ -71,6 +73,8 @@ public class DefineWithIncludesTestCases extends XSDHelperDefineTestCases {
 
         /****QUANTITY TYPE*****/
         SDOType quantityType = new SDOType(uri, "quantityType");
+        quantityType.setXsd(true);
+        quantityType.setXsdLocalName("quantityType");
         quantityType.setDataType(true);
         quantityType.getBaseTypes().add(intType);
         //quantityType.setInstanceClassName("java.lang.Integer");
@@ -78,12 +82,16 @@ public class DefineWithIncludesTestCases extends XSDHelperDefineTestCases {
 
         /****SKU TYPE*****/
         SDOType SKUType = new SDOType(uri, "SKU");
+        SKUType.setXsd(true);
+        SKUType.setXsdLocalName("SKU");
         SKUType.setDataType(true);
         SKUType.getBaseTypes().add(stringType);
         SKUType.setInstanceClassName("java.lang.String");
 
         /****PURCHASEORDER TYPE*****/
         SDOType POtype = new SDOType(uri, "PurchaseOrder");
+        POtype.setXsd(true);
+        POtype.setXsdLocalName("PurchaseOrder");
         POtype.setInstanceClassName(javaPackage + "." + "PurchaseOrder");
         POtype.setDataType(false);
 

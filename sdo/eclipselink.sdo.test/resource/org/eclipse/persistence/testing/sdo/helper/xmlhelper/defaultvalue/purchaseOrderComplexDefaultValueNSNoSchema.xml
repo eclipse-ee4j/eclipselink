@@ -1,4 +1,4 @@
-<ns0:purchaseOrder orderDate="1999-10-20" xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ns0:purchaseOrder orderDate="1999-10-20" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <ns0:shipTo zip="90952" xsi:type="ns0:usAddressType">
       <ns0:name xsi:nil="true"/>
       <ns0:state>CA</ns0:state>

@@ -159,11 +159,9 @@ public class SchemaGenerator {
             //TODO: add namespace support
             if (typeName.equals("")) {
                 //In this case, it should be a type under
-                //A root elem. 
+                //A root elem or locally defined whenever used
                 if(rootElement != null) {
                     rootElement.setSimpleType(type);
-                } else {
-                    //should be an error
                 }
             } else {
                 type.setName(typeName);
@@ -205,6 +203,7 @@ public class SchemaGenerator {
                 if(rootElement != null) {
                     rootElement.setComplexType(type);
                 }
+                info.setComplexType(type);
             } else {
                 type.setName(typeName);
                 schema.addTopLevelComplexTypes(type);
@@ -267,6 +266,8 @@ public class SchemaGenerator {
                 if (rootElement != null) {
                    rootElement.setComplexType(type);
                 }
+                info.setComplexType(type);
+                info.setCompositor(compositor);
             } else {
                 type.setName(typeName);
                 if(rootElement != null) {
@@ -357,7 +358,10 @@ public class SchemaGenerator {
                     }
                     if (!attributeName.getNamespaceURI().equals("")) {
                         Schema attributeSchema = this.getSchemaForNamespace(attributeName.getNamespaceURI());
-                        attributeSchema.getTopLevelAttributes().put(attribute.getName(), attribute);
+                        if(attributeSchema.getTopLevelAttributes().get(attribute.getName()) == null) {
+                            //don't overwrite existing global elements and attributes.
+                            attributeSchema.getTopLevelAttributes().put(attribute.getName(), attribute);
+                        }
                         if (schema.getImports().get(attributeSchema.getName()) == null) {
                             Import schemaImport = new Import();
                             schemaImport.setNamespace(attributeSchema.getTargetNamespace());
@@ -416,6 +420,17 @@ public class SchemaGenerator {
 	                            typeName = info.getSimpleType().getName();
 	                        }
                     	}
+                        
+                        if(typeName == null) {
+                            //need to add complex-type locally, or reference global element
+                            if(!info.hasRootElement()) {
+                                if(info.isComplexType()) {
+                                    element.setComplexType(info.getComplexType());
+                                } else {
+                                    element.setSimpleType(info.getSimpleType());
+                                }
+                            }
+                        }
                         // check to see if we need to add an import
                         if (info.getSchema() != schema) {
                             if (schema.getImports().get(info.getSchema().getName()) == null) {
@@ -428,7 +443,7 @@ public class SchemaGenerator {
                                 }
                                 // qualify the type name
                                 String prefix = getPrefixForNamespace(info.getSchema().getTargetNamespace(), schema.getNamespaceResolver());
-                                if (prefix != null) {
+                                if (prefix != null && !typeName.equals("")) {
                                     typeName = prefix + ":" + typeName;
                                 }
                             }
@@ -444,7 +459,7 @@ public class SchemaGenerator {
                     }
                     
                     // may need to qualify the type
-                    if (!typeName.contains(":")) {
+                    if (typeName != null && !typeName.contains(":")) {
                         if (info.getSchema() == schema) {
                             String prefix = getPrefixForNamespace(schema.getTargetNamespace(), schema.getNamespaceResolver());
                             if (prefix != null) {
@@ -472,8 +487,11 @@ public class SchemaGenerator {
                     }
                     if (!elementName.getNamespaceURI().equals("")) {
                         Schema attributeSchema = this.getSchemaForNamespace(elementName.getNamespaceURI());
-                        attributeSchema.getTopLevelElements().put(element.getName(), element);
-                        if (schema.getImports().get(attributeSchema.getName()) == null) {
+                        if(attributeSchema.getTopLevelElements().get(element.getName()) == null) {
+                            //don't overwrite global elements. May have been defined by a type.
+                            attributeSchema.getTopLevelElements().put(element.getName(), element);
+                        }
+                        if (attributeSchema != schema && schema.getImports().get(attributeSchema.getName()) == null) {
                             Import schemaImport = new Import();
                             schemaImport.setNamespace(attributeSchema.getTargetNamespace());
                             schemaImport.setSchemaLocation(attributeSchema.getName());

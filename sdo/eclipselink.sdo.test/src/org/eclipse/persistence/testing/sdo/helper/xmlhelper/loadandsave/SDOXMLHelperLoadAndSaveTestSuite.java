@@ -11,6 +11,7 @@ package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenullpolicy.IsSetNillableOptionalWithDefaultSetNullTestCases;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenullpolicy.IsSetNillableWithDefaultSetDefaultTestCases;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenullpolicy.IsSetNillableWithDefaultSetNOPTestCases;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenullpolicy.IsSetNillableWithDefaultSetNonNullTestCases;
@@ -18,6 +19,7 @@ import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenull
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenullpolicy.IsSetNillableWithoutDefaultSetNOPTestCases;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenullpolicy.IsSetNillableWithoutDefaultSetNonNullTestCases;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenullpolicy.IsSetNillableWithoutDefaultSetNullTestCases;
+import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenullpolicy.IsSetOptionalAttributeWithoutDefaultSetNOPTestCases;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenullpolicy.IsSetOptionalWithDefaultSetDefaultTestCases;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenullpolicy.IsSetOptionalWithDefaultSetNOPTestCases;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenullpolicy.IsSetOptionalWithDefaultSetNonNullTestCases;
@@ -57,6 +59,7 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
         suite.addTest(new TestSuite(LoadAndSaveMimeTypeOnPropertyManyTestCases.class));
         suite.addTest(new TestSuite(LoadAndSavePurchaseOrderWithAnnotations.class));
         suite.addTest(new TestSuite(LoadAndSaveOrderBookingTestCases.class));
+        suite.addTest(new TestSuite(LoadAndSaveXMLEncodingAndVersionTestCases.class));
 
 
         suite.addTest(new TestSuite(LoadAndSaveValuePropTestCases.class));        
@@ -67,7 +70,9 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
         suite.addTest(new TestSuite(LoadAndSaveAttributeGroupTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveGroupTestCases.class));
 
-        // test DirectMapping
+        // test DirectMapping        
+        suite.addTest(new TestSuite(IsSetNillableOptionalWithDefaultSetNullTestCases.class));
+        suite.addTest(new TestSuite(IsSetOptionalAttributeWithoutDefaultSetNOPTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveNillableOptionalNodeNullPolicyTestCases.class));        
         // test CompositeObjectMapping
         suite.addTest(new TestSuite(LoadAndSaveNillableIsSetNodeNullPolicyTrueTestCases.class));        

@@ -4,7 +4,7 @@
 	    xmlns='http://www.example.org'
 	    targetNamespace='http://www.example.org'
 	    elementFormDefault='qualified'>
-	  <xsd:element name = 'Test' type='mayTestType' />
+	  <xsd:element name = 'Test' type='myTestType' />
 	  <xsd:complexType name='myTestType' abstract='true'>
 		<xsd:sequence>
 			<xsd:element name = 'myTest1' type = 'xsd:string' />

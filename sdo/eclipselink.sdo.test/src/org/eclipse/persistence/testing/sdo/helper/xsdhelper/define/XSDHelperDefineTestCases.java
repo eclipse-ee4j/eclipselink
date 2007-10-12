@@ -52,6 +52,9 @@ public abstract class XSDHelperDefineTestCases extends XSDHelperTestCases {
             assertEquals(control.getInstanceClassName(), generated.getInstanceClassName());
             assertEquals(control.getDeclaredProperties().size(), generated.getDeclaredProperties().size());
             assertEquals(control.getAliasNames().size(), generated.getAliasNames().size());
+            assertEquals(xsdHelper.getLocalName(control), xsdHelper.getLocalName(generated));
+            assertEquals(xsdHelper.isXSD(control), xsdHelper.isXSD(generated));
+            
             //            List generatedProps = generated.getDeclaredProperties();
             List controlProps = control.getDeclaredProperties();
             for (int j = 0; j < controlProps.size(); j++) {
@@ -70,8 +73,10 @@ public abstract class XSDHelperDefineTestCases extends XSDHelperTestCases {
                     assertEquals(((Boolean)controlXMLElementValue).booleanValue(), ((Boolean)generatedXMLElementValue).booleanValue());
                 }
 
-                assertEquals(xsdHelper.isAttribute(controlProp), xsdHelper.isAttribute(controlProp));
-                assertEquals(xsdHelper.isElement(controlProp), xsdHelper.isElement(controlProp));
+                assertEquals(xsdHelper.isAttribute(controlProp), xsdHelper.isAttribute(generatedProp));
+                assertEquals(xsdHelper.isElement(controlProp), xsdHelper.isElement(generatedProp));
+                assertEquals(xsdHelper.getLocalName(controlProp), xsdHelper.getLocalName(generatedProp));
+                assertEquals(xsdHelper.getNamespaceURI(controlProp), xsdHelper.getNamespaceURI(generatedProp));
                 assertEquals(controlProp.isXsd(), generatedProp.isXsd());
                 assertEquals(controlProp.getXsdLocalName(), generatedProp.getXsdLocalName());
 

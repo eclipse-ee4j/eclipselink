@@ -427,8 +427,11 @@ public class AnnotationsProcessor {
             property.setPropertyName(propertyName);
             property.setType((JavaClass) getMethod.getReturnType());
             property.setGenericType(helper.getGenericReturnType(getMethod));
+            property.setGetMethodName(getMethod.getName());
+            property.setMethodProperty(true);
             
             String setMethodName = "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+            property.setSetMethodName(setMethodName);
             JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
             JavaMethod setMethod = cls.getMethod(setMethodName, paramTypes);
             if (setMethod != null && !setMethod.getAnnotations().isEmpty()) {

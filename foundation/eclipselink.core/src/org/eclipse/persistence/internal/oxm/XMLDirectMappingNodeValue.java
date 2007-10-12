@@ -33,7 +33,7 @@ public class XMLDirectMappingNodeValue extends XMLSimpleMappingNodeValue impleme
 
     public void setXPathNode(XPathNode xPathNode) {
         super.setXPathNode(xPathNode);
-        xmlDirectMapping.getNodeNullPolicy().xPathNode(xPathNode, this);
+        xmlDirectMapping.getNullPolicy().xPathNode(xPathNode, this);
     }
 
     public boolean isOwningNode(XPathFragment xPathFragment) {
@@ -48,14 +48,17 @@ public class XMLDirectMappingNodeValue extends XMLSimpleMappingNodeValue impleme
         marshalRecord.setMarshaller(marshaller);
         return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
     }
+    
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlDirectMapping.isReadOnly()) {
             return false;
         }
         Object objectValue = xmlDirectMapping.getAttributeValueFromObject(object);
         Object fieldValue = xmlDirectMapping.getFieldValue(objectValue, session, marshalRecord);
+        // Check for a null value 
         if (null == fieldValue) {
-            return xmlDirectMapping.getNodeNullPolicy().directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
+        	// Perform marshal operations based on the null policy
+        	return xmlDirectMapping.getNullPolicy().directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         } else {
             QName schemaType = getSchemaType((XMLField)xmlDirectMapping.getField(), fieldValue);
             XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
@@ -75,11 +78,13 @@ public class XMLDirectMappingNodeValue extends XMLSimpleMappingNodeValue impleme
             return true;
         }
     }
+    
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         unmarshalRecord.removeNullCapableValue(this);
         XMLField xmlField = (XMLField)xmlDirectMapping.getField();
         XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
         Object realValue = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager);
+        // Perform operations on the object based on the null policy
         Object convertedValue = xmlDirectMapping.getAttributeValue(realValue, unmarshalRecord.getSession(), unmarshalRecord);
         xmlDirectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), convertedValue);
     }
@@ -109,11 +114,11 @@ public class XMLDirectMappingNodeValue extends XMLSimpleMappingNodeValue impleme
     }
 
     public void setNullValue(Object object, Session session) {
-        Object value = xmlDirectMapping.getAttributeValue(null, (org.eclipse.persistence.internal.sessions.AbstractSession)session);
+        Object value = xmlDirectMapping.getAttributeValue(null, session);
         xmlDirectMapping.setAttributeValueInObject(object, value);
     }
 
     public boolean isNullCapableValue() {
-        return xmlDirectMapping.getNodeNullPolicy().isNullCapabableValue();
+        return xmlDirectMapping.getNullPolicy().getIsSetPerformedForAbsentNode();
     }
 }

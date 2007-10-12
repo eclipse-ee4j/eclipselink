@@ -33,9 +33,10 @@ import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.SchemaLocationResolver;
 import org.eclipse.persistence.sdo.helper.SchemaResolver;
 import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.record.FormattedWriterRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.w3c.dom.Element;
 
 /**
@@ -59,6 +60,9 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
 
     public SDOXSDHelperDelegate(HelperContext aContext) {
         aHelperContext = aContext;
+        globalAttributes = new HashMap();
+        initOpenProps();
+        globalElements = new HashMap();
     }
 
     /**
@@ -85,7 +89,10 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return the namespace URI as declared in the XSD.
      */
     public String getNamespaceURI(Property property) {
-        return property.getContainingType().getURI();
+        if(property.getContainingType() != null){
+          return property.getContainingType().getURI();
+        }
+        return null;
     }
 
     /**
@@ -110,6 +117,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
         } else if (property.isMany() || property.isContainment() || property.isNullable()) {
             return false;
         }
+
         // Case: open content non-attribute property
         return true;
     }
@@ -338,11 +346,19 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
       * Return a map of properties representing global attributes keyed on QName
       * @return a map of global attributes keyed on QName
       */
-    public Map getGlobalAttributes() {
-        if (globalAttributes == null) {
-            globalAttributes = new HashMap();
-        }
+    private Map getGlobalAttributes() {
         return globalAttributes;
+    }
+
+    private void initOpenProps() {
+        getGlobalAttributes().put(SDOConstants.MIME_TYPE_QNAME, SDOConstants.MIME_TYPE_PROPERTY);
+        getGlobalAttributes().put(SDOConstants.MIME_TYPE_PROPERTY_QNAME, SDOConstants.MIME_TYPE_PROPERTY_PROPERTY);
+        getGlobalAttributes().put(SDOConstants.SCHEMA_TYPE_QNAME, SDOConstants.XML_SCHEMA_TYPE_PROPERTY);
+        getGlobalAttributes().put(SDOConstants.JAVA_CLASS_QNAME, SDOConstants.JAVA_CLASS_PROPERTY);
+        getGlobalAttributes().put(SDOConstants.XML_ELEMENT_QNAME, SDOConstants.XMLELEMENT_PROPERTY);
+        getGlobalAttributes().put(SDOConstants.XML_DATATYPE_QNAME, SDOConstants.XMLDATATYPE_PROPERTY);
+        getGlobalAttributes().put(SDOConstants.XML_ID_PROPERTY_QNAME, SDOConstants.ID_PROPERTY);
+        getGlobalAttributes().put(SDOConstants.DOCUMENTATION_PROPERTY_QNAME, SDOConstants.DOCUMENTATION_PROPERTY);
     }
 
     /**
@@ -357,13 +373,13 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
       * Return a map of properties representing global elements keyed on QName
       * @return a map of global elements keyed on QName
       */
-    public Map getGlobalElements() {
-        if (globalElements == null) {
-            globalElements = new HashMap();
-        }
+    private Map getGlobalElements() {
         return globalElements;
     }
 
+    /**
+      * INTERNAL:
+      */
     public Map buildAppInfoMap(List appInfoElements) {
         HashMap appInfoMap = new HashMap();
 
@@ -375,16 +391,14 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
                 if (nextElement.getNamespaceURI().equals(XMLConstants.SCHEMA_URL) && nextElement.getLocalName().equals("appinfo")) {
                     String key = nextElement.getAttribute(SDOConstants.APPINFO_SOURCE_ATTRIBUTE);
                     String value = (String)appInfoMap.get(key);
-                    XMLTransformer xmlTransformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
-                    xmlTransformer.setFragment(true);
                     if (value == null) {
                         StringWriter sw = new StringWriter();
-                        xmlTransformer.transform(nextElement, sw);
+                        XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer().transform(nextElement, sw);
                         appInfoMap.put(key, sw.toString());
                     } else {
                         //need to concatenate Strings
                         StringWriter sw = new StringWriter();
-                        xmlTransformer.transform(nextElement, sw);
+                        XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer().transform(nextElement, sw);
                         String concat = value + sw.toString();
                         appInfoMap.put(key, concat);
                     }
@@ -395,8 +409,9 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
     }
 
     public void reset() {
-        getGlobalAttributes().clear();
-        getGlobalElements().clear();
+        globalAttributes = new HashMap();
+        initOpenProps();
+        globalElements = new HashMap();
     }
 
     public HelperContext getHelperContext() {
@@ -405,5 +420,29 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
 
     public void setHelperContext(HelperContext helperContext) {
         aHelperContext = helperContext;
+    }
+
+    public String getStringFromAppInfoElement(Element appInfo) {
+        FormattedWriterRecord record = new FormattedWriterRecord();
+        record.setWriter(new StringWriter());
+        record.node(appInfo, new NamespaceResolver());
+        return record.getWriter().toString();
+    }
+
+    /**
+      * INTERNAL:
+      *
+      * @param qname
+      * @param prop
+      * @param isElement
+      * Register the given property with the given qname.
+      */
+    public void addGlobalProperty(QName qname, Property prop, boolean isElement) {
+        ((SDOProperty)prop).setUri(qname.getNamespaceURI());
+        if (isElement) {
+            getGlobalElements().put(qname, prop);
+        } else {
+            getGlobalAttributes().put(qname, prop);
+        }
     }
 }

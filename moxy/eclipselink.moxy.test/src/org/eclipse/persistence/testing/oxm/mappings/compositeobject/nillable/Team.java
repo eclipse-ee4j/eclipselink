@@ -6,22 +6,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-/* $Header: Team.java 15-nov-2006.13:22:16 bdoughan Exp $ */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    bdoughan    11/14/06 - 
-    mfobrien    10/26/06 - Creation
- */
-
-/**
- *  @version $Header: Team.java 15-nov-2006.13:22:16 bdoughan Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
-
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable;
 
 public class Team {

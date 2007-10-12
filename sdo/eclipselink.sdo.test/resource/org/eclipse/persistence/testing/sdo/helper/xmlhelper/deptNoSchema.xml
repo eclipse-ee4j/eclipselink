@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns1:dept xmlns:sdo="commonj.sdo" xmlns:ns1="http://sdo.sample.service.types/Dept/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ns1:dept xmlns:ns1="http://sdo.sample.service.types/Dept/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <ns1:Deptno>1</ns1:Deptno>
    <ns1:Dname>theDepartment1</ns1:Dname>
    <ns1:Emp xmlns:ns0="http://sdo.sample.service.types/Emp/">

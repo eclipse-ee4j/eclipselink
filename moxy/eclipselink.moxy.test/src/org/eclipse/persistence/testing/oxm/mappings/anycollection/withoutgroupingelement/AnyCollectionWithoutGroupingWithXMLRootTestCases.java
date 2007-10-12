@@ -23,6 +23,7 @@ public class AnyCollectionWithoutGroupingWithXMLRootTestCases extends XMLMapping
     public AnyCollectionWithoutGroupingWithXMLRootTestCases(String name) throws Exception {
         super(name);
         Project project = new AnyCollectionWithGroupingElementProject();
+        
         ((XMLAnyCollectionMapping)((XMLDescriptor)project.getDescriptor(Root.class)).getMappingForAttributeName("any")).setUseXMLRoot(true);
         
         XMLSchemaClassPathReference schemaRef = new XMLSchemaClassPathReference();
@@ -30,7 +31,9 @@ public class AnyCollectionWithoutGroupingWithXMLRootTestCases extends XMLMapping
         schemaRef.setType(XMLSchemaClassPathReference.COMPLEX_TYPE);
         ((XMLDescriptor)project.getDescriptor(Child.class)).setSchemaReference(schemaRef);
         
-        
+        NamespaceResolver nsr = new NamespaceResolver();
+        ((XMLDescriptor)project.getDescriptor(Root.class)).setNamespaceResolver(nsr);
+        ((XMLDescriptor)project.getDescriptor(Child.class)).setNamespaceResolver(nsr);
         setProject(project);
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anycollection/withoutgroupingelement/complex_children_xmlroot.xml");
     }
@@ -76,7 +79,8 @@ public class AnyCollectionWithoutGroupingWithXMLRootTestCases extends XMLMapping
         XMLRoot xmlroot5 = new XMLRoot();
         child = new Child();        
         xmlroot5.setObject(child);
-        xmlroot5.setLocalName("someChild");        
+        xmlroot5.setLocalName("someChild"); 
+        xmlroot5.setNamespaceURI("my.uri1");
         any.addElement(xmlroot5);
         
         root.setAny(any);

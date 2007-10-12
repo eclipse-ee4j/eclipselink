@@ -603,7 +603,7 @@ public class XMLDescriptor extends ClassDescriptor {
      * @param unmarshalRecord
      * @return object
      */
-    public Object wrapObjectInXMLRoot(UnmarshalRecord unmarshalRecord) {
+    public Object wrapObjectInXMLRoot(UnmarshalRecord unmarshalRecord, boolean forceWrap) {
         String elementName = unmarshalRecord.getRootElementName();
         int colonIndex = elementName.indexOf(":");
         String elementLocalName = elementName;
@@ -613,8 +613,19 @@ public class XMLDescriptor extends ClassDescriptor {
             elementPrefix = elementName.substring(0, colonIndex);
         }
         String elementNamespaceUri = unmarshalRecord.getRootElementNamespaceUri();
-
-        return wrapObjectInXMLRoot(unmarshalRecord.getCurrentObject(), elementNamespaceUri, elementLocalName, elementPrefix);
+        if(forceWrap || shouldWrapObject(unmarshalRecord.getCurrentObject(), elementNamespaceUri, elementLocalName, elementPrefix)) {
+            XMLRoot xmlRoot = new XMLRoot();
+            xmlRoot.setLocalName(elementLocalName);
+            xmlRoot.setNamespaceURI(elementNamespaceUri);
+            xmlRoot.setObject(unmarshalRecord.getCurrentObject());
+            xmlRoot.setEncoding(unmarshalRecord.getEncoding());
+            xmlRoot.setVersion(unmarshalRecord.getVersion());
+            xmlRoot.setSchemaLocation(unmarshalRecord.getSchemaLocation());
+            xmlRoot.setNoNamespaceSchemaLocation(unmarshalRecord.getNoNamespaceSchemaLocation());
+            return xmlRoot;
+        }
+        
+        return wrapObjectInXMLRoot(unmarshalRecord.getCurrentObject(), elementNamespaceUri, elementLocalName, elementPrefix, forceWrap);
     }
 
     /**
@@ -632,7 +643,36 @@ public class XMLDescriptor extends ClassDescriptor {
       * @param elementPrefix
       * @return object
       */
-    public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix) {
+    public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, boolean forceWrap) {
+
+        if(forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix)) {
+            // if the DOMRecord element != descriptor's default 
+            // root element, create an XMLRoot, populate and return it
+            XMLRoot xmlRoot = new XMLRoot();
+            xmlRoot.setLocalName(elementLocalName);
+            xmlRoot.setNamespaceURI(elementNamespaceUri);
+            xmlRoot.setObject(object);
+            return xmlRoot;
+        }
+        return object;
+    }
+
+    public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, String encoding, String version, boolean forceWrap) {
+        if(forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix)) {
+            // if the DOMRecord element != descriptor's default 
+            // root element, create an XMLRoot, populate and return it
+            XMLRoot xmlRoot = new XMLRoot();
+            xmlRoot.setLocalName(elementLocalName);
+            xmlRoot.setNamespaceURI(elementNamespaceUri);
+            xmlRoot.setObject(object);
+            xmlRoot.setEncoding(encoding);
+            xmlRoot.setVersion(version);
+            return xmlRoot;
+        }
+        return object;
+        
+    }
+    public boolean shouldWrapObject(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix) {
         String defaultRootName = getDefaultRootElement();
 
         // if the descriptor's default root element is null, we want to 
@@ -650,19 +690,12 @@ public class XMLDescriptor extends ClassDescriptor {
             // if the DOMRecord element == descriptor's default 
             // root element, return the object as per usual
             if ((((defaultRootNamespaceUri == null) && (elementNamespaceUri == null)) || ((defaultRootNamespaceUri == null) && (elementNamespaceUri.equals(""))) || ((elementNamespaceUri == null) && (defaultRootNamespaceUri.equals(""))) || (((defaultRootNamespaceUri != null) && (elementNamespaceUri != null)) && (defaultRootNamespaceUri.equals(elementNamespaceUri)))) && (defaultRootName.equals(elementLocalName))) {
-                return object;
+                return false;
             }
         }
-
-        // if the DOMRecord element != descriptor's default 
-        // root element, create an XMLRoot, populate and return it
-        XMLRoot xmlRoot = new XMLRoot();
-        xmlRoot.setLocalName(elementLocalName);
-        xmlRoot.setNamespaceURI(elementNamespaceUri);
-        xmlRoot.setObject(object);
-        return xmlRoot;
+        return true;
     }
-
+    
     public XMLField getDefaultRootElementField() {
         return defaultRootElementField;
     }

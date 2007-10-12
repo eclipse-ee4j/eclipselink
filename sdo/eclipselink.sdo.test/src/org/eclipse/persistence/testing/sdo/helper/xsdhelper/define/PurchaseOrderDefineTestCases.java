@@ -12,6 +12,7 @@ package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 import commonj.sdo.Type;
 import java.util.ArrayList;
 import java.util.List;
+import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
@@ -20,6 +21,10 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 public class PurchaseOrderDefineTestCases extends XSDHelperDefineTestCases {
     public PurchaseOrderDefineTestCases(String name) {
         super(name);
+    }
+    
+    public static void main(String[] args) {
+        TestRunner.run(PurchaseOrderDefineTestCases.class);
     }
 
     public String getSchemaToDefine() {
@@ -39,11 +44,13 @@ public class PurchaseOrderDefineTestCases extends XSDHelperDefineTestCases {
 
         //ADDRESS TYPE
         SDOType USaddrType = new SDOType(uri, "USAddress");
+        USaddrType.setXsd(true);
+        USaddrType.setXsdLocalName("USAddress");
         USaddrType.setDataType(false);
         USaddrType.setInstanceClassName(javaPackage + "." + "USAddress");
+        USaddrType.setXsdLocalName("USAddress");
         SDOProperty addrNameProp = new SDOProperty(aHelperContext);
-
-        //addrNameProp.setAttribute(true);
+        
         addrNameProp.setName("name");
         addrNameProp.setXsdLocalName("name");
         addrNameProp.setXsd(true);
@@ -98,7 +105,9 @@ public class PurchaseOrderDefineTestCases extends XSDHelperDefineTestCases {
         USaddrType.getDeclaredProperties().add(countryProp);
 
         /****QUANTITY TYPE*****/
-        SDOType quantityType = new SDOType(uri, "quantityType");
+        SDOType quantityType = new SDOType(uri, "quantityType");        
+        quantityType.setXsd(true);
+        quantityType.setXsdLocalName("quantityType");
         quantityType.setDataType(true);
         quantityType.getBaseTypes().add(intType);
         //quantityType.setInstanceClassName("java.lang.Integer");
@@ -106,12 +115,16 @@ public class PurchaseOrderDefineTestCases extends XSDHelperDefineTestCases {
 
         /****SKU TYPE*****/
         SDOType SKUType = new SDOType(uri, "SKU");
+        SKUType.setXsd(true);
+        SKUType.setXsdLocalName("SKU");
         SKUType.setDataType(true);
         SKUType.getBaseTypes().add(stringType);
         SKUType.setInstanceClassName("java.lang.String");
 
         /****ITEM TYPE*****/
         SDOType itemType = new SDOType(uri, "Item");
+        itemType.setXsd(true);
+        itemType.setXsdLocalName("Item");
         itemType.setDataType(false);
         itemType.setInstanceClassName(javaPackage + "." + "Item");
 
@@ -173,6 +186,8 @@ public class PurchaseOrderDefineTestCases extends XSDHelperDefineTestCases {
 
         /****ITEMS TYPE*****/
         SDOType itemsType = new SDOType(uri, "Items");
+        itemsType.setXsd(true);
+        itemsType.setXsdLocalName("Items");
         itemsType.setDataType(false);
         itemsType.setInstanceClassName(javaPackage + "." + "Items");
 
@@ -191,6 +206,8 @@ public class PurchaseOrderDefineTestCases extends XSDHelperDefineTestCases {
 
         /****PURCHASEORDER TYPE*****/
         SDOType POtype = new SDOType(uri, "PurchaseOrder");
+        POtype.setXsd(true);
+        POtype.setXsdLocalName("PurchaseOrder");
         POtype.setDataType(false);
         POtype.setInstanceClassName(javaPackage + "." + "PurchaseOrder");
 

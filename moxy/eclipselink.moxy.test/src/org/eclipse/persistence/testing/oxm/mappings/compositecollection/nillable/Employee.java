@@ -7,23 +7,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-
-/* $Header: Employee.java 29-oct-2006.14:35:56 mfobrien Exp $ */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    mfobrien    10/26/06 - Creation
- */
-
-/**
- *  @version $Header: Employee.java 29-oct-2006.14:35:56 mfobrien Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
 package org.eclipse.persistence.testing.oxm.mappings.compositecollection.nillable;
-
-import java.util.Vector;
 
 public class Employee {
     public static final int DEFAULT_ID = 123;

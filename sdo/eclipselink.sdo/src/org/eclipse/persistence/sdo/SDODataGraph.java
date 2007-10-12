@@ -13,6 +13,8 @@ import commonj.sdo.DataObject;
 import commonj.sdo.ChangeSummary;
 import commonj.sdo.Type;
 import commonj.sdo.DataGraph;
+import commonj.sdo.helper.HelperContext;
+import commonj.sdo.impl.HelperProvider;
 
 /**
  * <p><b>Purpose</b>:A data graph is used to package a graph of {@link DataObject data objects} along with their
@@ -21,7 +23,18 @@ import commonj.sdo.DataGraph;
  * which is used to record changes made to the objects in the graph.
  */
 public class SDODataGraph implements DataGraph {
-    public SDODataGraph() {
+    private HelperContext helperContext;
+    private SDODataObject rootObject;
+    private ChangeSummary changeSummary;
+
+    public SDODataGraph(HelperContext helperContext) {
+        super();
+        if(null == helperContext) {
+            this.helperContext = HelperProvider.getDefaultContext();
+        } else {
+            this.helperContext = helperContext;
+        }
+        this.changeSummary = new SDOChangeSummary();
     }
 
     /**
@@ -30,7 +43,7 @@ public class SDODataGraph implements DataGraph {
      * @see DataObject#getDataGraph
      */
     public DataObject getRootObject() {
-        throw new UnsupportedOperationException("Method Not Supported.");
+        return this.rootObject;
     }
 
     /**
@@ -39,7 +52,7 @@ public class SDODataGraph implements DataGraph {
      * @see ChangeSummary#getDataGraph
      */
     public ChangeSummary getChangeSummary() {
-        throw new UnsupportedOperationException("Method Not Supported.");
+        return this.changeSummary;
     }
 
     /**
@@ -51,7 +64,7 @@ public class SDODataGraph implements DataGraph {
      * @return the type with the corresponding namespace and name.
      */
     public Type getType(String uri, String typeName) {
-        throw new UnsupportedOperationException("Method Not Supported.");
+        return helperContext.getTypeHelper().getType(uri, typeName);
     }
 
     /**
@@ -65,7 +78,10 @@ public class SDODataGraph implements DataGraph {
      * @see #getType(String, String)
      */
     public DataObject createRootObject(String namespaceURI, String typeName) {
-        throw new UnsupportedOperationException("Method Not Supported.");
+        rootObject = (SDODataObject) helperContext.getDataFactory().create(namespaceURI, typeName);
+        rootObject.setDataGraph(this);
+        rootObject._setChangeSummary(changeSummary);
+        return rootObject;
     }
 
     /**
@@ -77,6 +93,9 @@ public class SDODataGraph implements DataGraph {
      * @see #createRootObject(String, String)
      */
     public DataObject createRootObject(Type type) {
-        throw new UnsupportedOperationException("Method Not Supported.");
+        rootObject = (SDODataObject) helperContext.getDataFactory().create(type);
+        rootObject.setDataGraph(this);
+        rootObject._setChangeSummary(changeSummary);
+        return rootObject;
     }
 }

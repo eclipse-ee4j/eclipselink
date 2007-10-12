@@ -754,7 +754,7 @@ public class SchemaModelProject extends Project {
 
         XMLDirectMapping schemaLocationMapping = new XMLDirectMapping();
         schemaLocationMapping.setAttributeName("schemaLocation");
-        schemaLocationMapping.setXPath("@schemaLocation");
+        schemaLocationMapping.setXPath("@"+XMLConstants.SCHEMA_LOCATION);
         descriptor.addMapping(schemaLocationMapping);
 
         XMLDirectMapping idMapping = new XMLDirectMapping();
@@ -777,7 +777,7 @@ public class SchemaModelProject extends Project {
 
         XMLDirectMapping schemaLocationMapping = new XMLDirectMapping();
         schemaLocationMapping.setAttributeName("schemaLocation");
-        schemaLocationMapping.setXPath("@schemaLocation");
+        schemaLocationMapping.setXPath("@"+XMLConstants.SCHEMA_LOCATION);        
         descriptor.addMapping(schemaLocationMapping);
 
         XMLDirectMapping idMapping = new XMLDirectMapping();
@@ -793,12 +793,12 @@ public class SchemaModelProject extends Project {
         descriptor.setJavaClass(Annotation.class);
         descriptor.setNamespaceResolver(namespaceResolver);
 
-        XMLCompositeDirectCollectionMapping schemaLocationMapping = new XMLCompositeDirectCollectionMapping();
-        schemaLocationMapping.setAttributeName("documentation");
-        schemaLocationMapping.useCollectionClass(ArrayList.class);
-        schemaLocationMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "documentation");
-        ((XMLField)schemaLocationMapping.getField()).setUsesSingleNode(false);
-        descriptor.addMapping(schemaLocationMapping);
+        XMLCompositeDirectCollectionMapping documentationMapping = new XMLCompositeDirectCollectionMapping();
+        documentationMapping.setAttributeName("documentation");
+        documentationMapping.useCollectionClass(ArrayList.class);
+        documentationMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "documentation");
+        ((XMLField)documentationMapping.getField()).setUsesSingleNode(false);
+        descriptor.addMapping(documentationMapping);
 
         XMLFragmentCollectionMapping appInfoMapping = new XMLFragmentCollectionMapping();
         appInfoMapping.setAttributeName("appInfo");

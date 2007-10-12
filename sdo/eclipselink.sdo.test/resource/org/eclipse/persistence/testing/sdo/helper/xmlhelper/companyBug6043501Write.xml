@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns0:company xsi:type="ns1:CompanyType" xmlns:ns0="http://testUri" xmlns:sdo="commonj.sdo" xmlns:ns1="http://someOtherUri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ns0:company xsi:type="ns1:CompanyType" xmlns:ns0="http://testUri" xmlns:ns1="http://someOtherUri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <ns1:companyName>theCompany</ns1:companyName>
    <ns1:ceo>
       <ns0:name>Jane</ns0:name>

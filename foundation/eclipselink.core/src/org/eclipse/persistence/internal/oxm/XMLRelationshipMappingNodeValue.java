@@ -31,7 +31,8 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
 public abstract class XMLRelationshipMappingNodeValue extends NodeValue {
-    protected void processChild(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, XMLDescriptor xmlDescriptor) throws SAXException {
+	// Protected to public
+    public void processChild(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, XMLDescriptor xmlDescriptor) throws SAXException {
         if (xmlDescriptor.hasInheritance()) {
             unmarshalRecord.setAttributes(atts);
             Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, (org.eclipse.persistence.internal.sessions.AbstractSession)unmarshalRecord.getSession());
@@ -136,7 +137,7 @@ public abstract class XMLRelationshipMappingNodeValue extends NodeValue {
     }
     
     protected void writeExtraNamespaces(List extraNamespaces, XMLRecord xmlRecord, AbstractSession session) {
-        if (((XMLLogin)session.getDatasourceLogin()).hasEqualNamespaceResolvers()) {
+        if (extraNamespaces == null) {
             return;
         }
         for (int i = 0; i < extraNamespaces.size(); i++) {

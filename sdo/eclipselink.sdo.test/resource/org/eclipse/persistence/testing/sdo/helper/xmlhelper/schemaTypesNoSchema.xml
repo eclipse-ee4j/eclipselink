@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns0:Test xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ns0:Test xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <ns0:myAnySimpleTypeTest>String</ns0:myAnySimpleTypeTest>
-   <ns0:myAnyTypeTest>Text</ns0:myAnyTypeTest>
+   <ns0:myAnyTypeTest xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Text</ns0:myAnyTypeTest>
    <ns0:myAnyURITest>http://www.altova.com</ns0:myAnyURITest>
    <ns0:myBase64BinaryTest>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</ns0:myBase64BinaryTest>
    <ns0:myBooleanTest>true</ns0:myBooleanTest>

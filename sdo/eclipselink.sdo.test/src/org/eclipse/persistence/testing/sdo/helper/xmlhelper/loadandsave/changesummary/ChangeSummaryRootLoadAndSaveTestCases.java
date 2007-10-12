@@ -48,7 +48,7 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
 
         prop = (SDOProperty)teamType.getType().getProperty("name");
         teamType.set(prop, "team");
-
+        teamType.set("open", true);
         addProperty(teamType, "name", stringType, true, false, true);
         DataObject managerProp = addProperty(teamType, "manager", employeeType, true, false, true);
         DataObject myChangeSummaryProp = addProperty(teamType, "myChangeSummary", SDOConstants.SDO_CHANGESUMMARY, true, false, true);
@@ -61,14 +61,14 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
     }
 
-    private Type registerEmployeeType() {
+    protected Type registerEmployeeType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type addressType = registerAddressType();
         Type phoneType = registerPhoneType();
 
         // create a new Type for addressType
         DataObject employeeType = dataFactory.create("commonj.sdo", "Type");
-
+        employeeType.set("open",true);
         SDOProperty prop = (SDOProperty)employeeType.getType().getProperty("uri");
         employeeType.set(prop, getControlRootURI());
 
@@ -84,7 +84,7 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
         return typeHelper.define(employeeType);
     }
 
-    private Type registerPhoneType() {
+    protected Type registerPhoneType() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
 
         // create a new Type for phoneType
@@ -101,12 +101,13 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
         return typeHelper.define(phoneType);
     }
 
-    private Type registerAddressType() {
+    protected Type registerAddressType() {
         Type yardType = registerYardType();
         Type stringType = typeHelper.getType("commonj.sdo", "String");
 
         // create a new Type for addressType
         DataObject addressType = dataFactory.create("commonj.sdo", "Type");
+        addressType.set("open",true);
 
         SDOProperty prop = (SDOProperty)addressType.getType().getProperty("uri");
         addressType.set(prop, getControlRootURI());
@@ -122,7 +123,7 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
         return typeHelper.define(addressType);
     }
 
-    private Type registerYardType() {
+    protected Type registerYardType() {
         // create a new Type for addressType
         DataObject yardType = dataFactory.create("commonj.sdo", "Type");
 

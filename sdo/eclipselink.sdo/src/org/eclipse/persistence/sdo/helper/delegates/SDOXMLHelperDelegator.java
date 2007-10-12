@@ -12,6 +12,7 @@ package org.eclipse.persistence.sdo.helper.delegates;
 import commonj.sdo.DataObject;
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.helper.XMLDocument;
+import commonj.sdo.impl.HelperProvider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -217,7 +218,7 @@ public class SDOXMLHelperDelegator implements SDOXMLHelper {
         ClassLoader contextClassLoader = getContextClassLoader();
         SDOXMLHelperDelegate sdoXMLHelperDelegate = (SDOXMLHelperDelegate)sdoXMLHelperDelegates.get(contextClassLoader);
         if (null == sdoXMLHelperDelegate) {
-            sdoXMLHelperDelegate = new SDOXMLHelperDelegate(aHelperContext);
+            sdoXMLHelperDelegate = new SDOXMLHelperDelegate(getHelperContext());
             sdoXMLHelperDelegates.put(contextClassLoader, sdoXMLHelperDelegate);
             AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} creating new {1} keyed on classLoader: {2}", //
             		new Object[] {getClass().getName(), sdoXMLHelperDelegate, contextClassLoader.toString()}, false);
@@ -226,6 +227,9 @@ public class SDOXMLHelperDelegator implements SDOXMLHelper {
     }
 
     public HelperContext getHelperContext() {
+        if(null == aHelperContext) {
+            aHelperContext = HelperProvider.getDefaultContext();
+        }
         return aHelperContext;
     }
 

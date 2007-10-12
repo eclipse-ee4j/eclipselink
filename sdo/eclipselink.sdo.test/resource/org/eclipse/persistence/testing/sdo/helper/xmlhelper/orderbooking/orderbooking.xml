@@ -1,4 +1,4 @@
-<ns1:SOAOrderBookingProcessRequest xmlns:sdo="commonj.sdo" xmlns:po="http://www.globalcompany.com/ns/order" xmlns:ns1="http://www.globalcompany.com/ns/OrderBooking" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ns1:SOAOrderBookingProcessRequest xmlns:po="http://www.globalcompany.com/ns/order" xmlns:ns1="http://www.globalcompany.com/ns/OrderBooking" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <po:PurchaseOrder>
       <po:CustID>10</po:CustID>
       <po:ID>182</po:ID>

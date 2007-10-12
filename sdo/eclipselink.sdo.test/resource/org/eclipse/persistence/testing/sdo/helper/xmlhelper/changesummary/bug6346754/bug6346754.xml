@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns1:processData xsi:type="ns0:ProcessData" xmlns:sdo="commonj.sdo" xmlns:ns1="http://xmnls.oracle.com/apps/sv/supplier/supplierService/v1/types/" xmlns:ns0="http://xmlns.oracle.com/adf/svc/types/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ns1:processData xsi:type="ns0:ProcessData" xmlns:ns1="http://xmnls.oracle.com/apps/sv/supplier/supplierService/v1/types/" xmlns:ns0="http://xmlns.oracle.com/adf/svc/types/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <ns0:Value xsi:type="ns2:Supplier" xmlns:ns2="http://xmnls.oracle.com/apps/sv/supplier/supplierService/v1/">
       <ns2:SupplierId>163002</ns2:SupplierId>
       <ns2:Name>NDSvc</ns2:Name>
@@ -29,7 +29,7 @@
          <ns2:StartDate xsi:nil="true"/>
       </ns2:SupplierSite>
    </ns0:Value>
-   <ns0:ChangeSummary create="#/ns0:Value[2] #/ns0:Value[2]/ns2:SupplierSite[1]">
+   <ns0:ChangeSummary create="#/ns0:Value[2] #/ns0:Value[2]/ns2:SupplierSite[1]" xmlns:sdo="commonj.sdo">
       <ns0:processData sdo:ref="#/">
          <ns0:Value sdo:ref="#/ns0:Value[1]" xmlns:ns2="http://xmnls.oracle.com/apps/sv/supplier/supplierService/v1/" xsi:type="ns2:Supplier"/>
       </ns0:processData>

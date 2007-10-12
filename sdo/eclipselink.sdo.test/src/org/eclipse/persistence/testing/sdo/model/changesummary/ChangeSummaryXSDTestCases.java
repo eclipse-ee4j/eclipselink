@@ -33,6 +33,7 @@ import commonj.sdo.helper.XMLDocument;
 /**
  *
  * MODIFIED    (MM/DD/YY)
+ *   dmahar      09/18/07 - 
  *   mfobrien    05/01/07 - 
  *   dmahar      04/10/07 - 
  *   mfobrien    03/16/07 - 
@@ -1042,11 +1043,11 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
 		// get generated open content property
 		openRootProperty = rootObject.getInstanceProperty(OC_PROP1SimpleSingleNAME);
 		// check SDOTypeHelperDelegate.openContentProperties Map is set with this property
-		Property openRootPropertyFromTypeHelper = typeHelper.getOpenContentProperty(//
-				OPEN_CONTENT_NS_URI, OC_PROP1SimpleSingleNAME);
-		assertNotNull(openRootPropertyFromTypeHelper);
+		Property openRootPropertyFromTypeHelper = typeHelper.getOpenContentProperty(OPEN_CONTENT_NS_URI, OC_PROP1SimpleSingleNAME);
+		//assertNotNull(openRootPropertyFromTypeHelper);
+    assertNull(openRootPropertyFromTypeHelper);
 		assertNotNull(openRootProperty);
-		assertTrue(openRootProperty == openRootPropertyFromTypeHelper);
+		//assertTrue(openRootProperty == openRootPropertyFromTypeHelper);
     }
 
     public void testDeepCopySettingForDynanicOpenContentSetAfterLoggingOn() {
@@ -1066,9 +1067,10 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
 		// check SDOTypeHelperDelegate.openContentProperties Map is set with this property
 		Property openRootPropertyFromTypeHelper = typeHelper.getOpenContentProperty(//
 				OPEN_CONTENT_NS_URI, OC_PROP1SimpleSingleNAME);
-		assertNotNull(openRootPropertyFromTypeHelper);
+		//assertNotNull(openRootPropertyFromTypeHelper);
+    assertNull(openRootPropertyFromTypeHelper);
 		assertNotNull(openRootProperty);
-		assertTrue(openRootProperty == openRootPropertyFromTypeHelper);
+		//assertTrue(openRootProperty == openRootPropertyFromTypeHelper);
 
 		// deep copy
 		DataObject dcopy = copyHelper.copy(rootObject);

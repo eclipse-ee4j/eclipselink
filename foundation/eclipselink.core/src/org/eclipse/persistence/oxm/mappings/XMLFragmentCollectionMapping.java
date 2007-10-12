@@ -11,10 +11,6 @@ package org.eclipse.persistence.oxm.mappings;
 
 import java.util.Enumeration;
 import java.util.Vector;
-
-import org.w3c.dom.Attr;
-import org.w3c.dom.Text;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -25,14 +21,17 @@ import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollec
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 /**
  *  @version $Header: XMLFragmentCollectionMapping.java 21-aug-2007.11:06:40 bdoughan Exp $
  *  @author  mmacivor
  *  @since   release specific (what release of product did this appear in)
  */
-
 public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping {
     public XMLFragmentCollectionMapping() {
         super();
@@ -69,7 +68,6 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
         return getFieldName();
     }
 
-
     /**
      * INTERNAL:
      * Build the nested collection from the database row.
@@ -80,20 +78,23 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
         Object fieldValue = ((DOMRecord)row).getValuesIndicatingNoEntry(this.getField(), true);
 
         Vector nestedRows = null;
-        if(fieldValue instanceof Vector) {
+        if (fieldValue instanceof Vector) {
             nestedRows = (Vector)fieldValue;
         }
-        if (nestedRows == null || nestedRows.isEmpty()) {
+        if ((nestedRows == null) || nestedRows.isEmpty()) {
             return cp.containerInstance();
         }
         Object result = cp.containerInstance(nestedRows.size());
         for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
             Object next = stream.nextElement();
+            if (next instanceof Element) {                
+                XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element)next);
+            }
             cp.addInto(next, result, executionSession);
         }
         return result;
     }
-    
+
     /**
      * INTERNAL:
      */
@@ -124,18 +125,18 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
         }
         row.put(this.getField(), fieldValue);
     }
-    
+
     public boolean isAbstractCompositeDirectCollectionMapping() {
         return false;
     }
 
-    public void writeSingleValue(Object attributeValue, Object parent, XMLRecord row, AbstractSession session) {     
-        if(((XMLField)this.getField()).getLastXPathFragment().isAttribute()) {
-            if(attributeValue instanceof Attr) {
+    public void writeSingleValue(Object attributeValue, Object parent, XMLRecord row, AbstractSession session) {
+        if (((XMLField)this.getField()).getLastXPathFragment().isAttribute()) {
+            if (attributeValue instanceof Attr) {
                 attributeValue = ((Attr)attributeValue).getValue();
             }
-        } else if(((XMLField)this.getField()).getLastXPathFragment().nameIsText()) {
-            if(attributeValue instanceof Text) {
+        } else if (((XMLField)this.getField()).getLastXPathFragment().nameIsText()) {
+            if (attributeValue instanceof Text) {
                 attributeValue = ((Text)attributeValue).getNodeValue();
             }
         }

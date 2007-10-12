@@ -343,5 +343,5 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         }
         
     }
-    
+   
 }

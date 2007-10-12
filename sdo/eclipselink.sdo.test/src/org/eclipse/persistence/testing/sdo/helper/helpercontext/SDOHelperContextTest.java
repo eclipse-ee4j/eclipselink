@@ -27,7 +27,7 @@ import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.impl.HelperProvider;
-import commonj.sdo.impl.SDOHelperProvider;
+import commonj.sdo.impl.HelperProviderImpl;
 
 
 public class SDOHelperContextTest extends SDOHelperContextTestCases {
@@ -36,7 +36,7 @@ public class SDOHelperContextTest extends SDOHelperContextTestCases {
         super(name);//, (HelperContext)SDOHelperContext.getInstance());
         aNonStaticHelperContext1 = new SDOHelperContext();
         aNonStaticHelperContext2 = new SDOHelperContext();
-        aStaticHelperContext = SDOHelperProvider.getDefaultContext();        
+        aStaticHelperContext = HelperProviderImpl.getDefaultContext();        
     }
 
     public static void main(String[] args) {

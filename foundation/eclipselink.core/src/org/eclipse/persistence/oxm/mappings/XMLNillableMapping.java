@@ -9,29 +9,31 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.mappings;
 
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+
 
 /**
  * INTERNAL
  * All nillable mappings which can be added to org.eclipse.persistence.oxm.XMLDescriptor must
  * implement this interface.<br>
- * The default policy is OptionalNodeNullPolicy.<br>
+ * The default policy is AbstractNullPolicy.<br>
  *
  *@see org.eclipse.persistence.oxm.mappings
  */
 public interface XMLNillableMapping {
 
     /**
-     * Set the NodeNullPolicy on the mapping<br>
-     * The default policy is OptionalNodeNullPolicy.<br>
+     * Set the AbstractNullPolicy on the mapping<br>
+     * The default policy is NullPolicy.<br>
      *
-     * @param aNodeNullPolicy
+     * @param aNullPolicy
      */
-    public void setNodeNullPolicy(NodeNullPolicy aNodeNullPolicy);
+    public void setNullPolicy(AbstractNullPolicy aNullPolicy);
 
     /**
-     * Get the NodeNullPolicy from the Mapping.<br>
-     * The default policy is OptionalNodeNullPolicy.<br>
+     * Get the AbstractNullPolicy from the Mapping.<br>
+     * The default policy is NullPolicy.<br>
      * @return
      */
-    public NodeNullPolicy getNodeNullPolicy();
+    public AbstractNullPolicy getNullPolicy();
 }

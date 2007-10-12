@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns0:purchaseOrder orderDate="1999-10-20" xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-   <myChangeSummary/>
+<ns0:purchaseOrder orderDate="1999-10-20" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <myChangeSummary xmlns:sdo="commonj.sdo"/>
    <shipTo country="US">
       <name>Alice Smith</name>
       <street>123 Maple Street</street>

@@ -30,6 +30,8 @@ public class XMLConstants {
     public static final String SCHEMA_INSTANCE_PREFIX = "xsi";
     public static final String SCHEMA_INSTANCE_URL = "http://www.w3.org/2001/XMLSchema-instance";
     public static final String TARGET_NAMESPACE_PREFIX = "toplinktn";
+    public static final String NO_NS_SCHEMA_LOCATION = "noNamespaceSchemaLocation";
+    public static final String SCHEMA_LOCATION = "schemaLocation";
     public static final String XMLNS = "xmlns";
     public static final String XMLNS_URL = "http://www.w3.org/2000/xmlns/";
     public static final String XML_NAMESPACE_PREFIX = "xml";

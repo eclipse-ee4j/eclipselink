@@ -13,7 +13,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbyname.Employee;
 
 public class DirectToXMLAttributeIdentifiedByNameEmptyTestCases extends XMLMappingTestCases {
-
+	// 20070921: round trip is not preserved because EMPTY_STRING equates to null for default NullPolicy behavior
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directtofield/identifiedbyname/xmlattribute/DirectToXMLAttributeEmpty.xml";
   private final static int CONTROL_ID = 0;
   private final static String CONTROL_FIRST_NAME = "";
@@ -28,9 +28,8 @@ public class DirectToXMLAttributeIdentifiedByNameEmptyTestCases extends XMLMappi
   protected Object getControlObject() {
     Employee employee = new Employee();
     employee.setID(CONTROL_ID);
-    employee.setFirstName(CONTROL_FIRST_NAME);
+    employee.setFirstName(null);//CONTROL_FIRST_NAME);
     employee.setLastName(CONTROL_LAST_NAME);
     return employee;
   }
-
 }

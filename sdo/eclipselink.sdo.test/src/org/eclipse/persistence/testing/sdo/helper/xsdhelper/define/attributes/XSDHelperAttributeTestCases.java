@@ -429,7 +429,7 @@ public class XSDHelperAttributeTestCases extends XSDHelperTestCases {
         assertEquals(p.getName(), "myTestAttribute");
 
         // check if Property's Type is as schema
-        assertEquals(p.getType().getName(), "SDO_TYPE");
+        assertEquals(p.getType().getName(), "String");
 
         // check alias name
         //assertNull(p.getAliasNames());

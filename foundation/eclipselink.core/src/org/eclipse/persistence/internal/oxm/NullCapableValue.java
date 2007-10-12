@@ -19,5 +19,11 @@ import org.eclipse.persistence.sessions.Session;
  */
 
 public interface NullCapableValue {
+	/**
+	 * INTERNAL:
+	 * Set the null representation of the (object).
+	 * @param object
+	 * @param session
+	 */
     public void setNullValue(Object object, Session session);
 }

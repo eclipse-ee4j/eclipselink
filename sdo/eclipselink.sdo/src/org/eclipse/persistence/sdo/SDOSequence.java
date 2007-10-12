@@ -183,7 +183,9 @@ public class SDOSequence implements Sequence {
      *            the value for the entry.
      */
     public boolean add(String propertyName, Object value) {
-        return addPrivate(dataObject.getInstanceProperty(propertyName), value, true);
+        Property prop = dataObject.getInstanceProperty(propertyName);
+
+        return addPrivate(prop, value, true);
     }
 
     /**
@@ -352,8 +354,9 @@ public class SDOSequence implements Sequence {
                     settingsList.add(index, aSetting);
                     if (updateContainment) {
                         // caller is sequence.add()
-                        // add to existing list
-                        existingList.add(settingValue, false);
+                        // add to existing list                        
+                        int newIndex = getIndexInList(aProperty, settingValue);
+                        existingList.add(newIndex, settingValue, false);
                     }
                 }
             } else {
@@ -621,7 +624,7 @@ public class SDOSequence implements Sequence {
         if (toIndex == fromIndex) {
             return;
         }
-        
+
         //call getSetting on toIndex to handle outofboundsexception
         getSetting(toIndex);
         Property aProperty = getProperty(fromIndex);
@@ -636,6 +639,29 @@ public class SDOSequence implements Sequence {
 
         // set the Setting into its new position and shift existing Settings
         settingsList.add(toIndex, aSetting);
+
+        if ((aProperty != null) && aProperty.isMany()) {
+            ListWrapper lw = (ListWrapper)dataObject.getList(aProperty);
+            Object value = aSetting.getValue();
+            int currentIndexInLw = lw.indexOf(value);
+            lw.remove(currentIndexInLw, false);
+            int newIndexInLw = getIndexInList(aProperty, value);
+            lw.add(newIndexInLw, value, false);
+        }
+    }
+
+    private int getIndexInList(Property manyProp, Object value) {
+        int returnIndex = -1;
+        for (int i = 0; i < settingsList.size(); i++) {
+            SDOSetting nextSetting = (SDOSetting)settingsList.get(i);
+            if (nextSetting.getProperty().equals(manyProp)) {
+                returnIndex++;
+                if (value.equals(nextSetting.getValue())) {
+                    return returnIndex;
+                }
+            }
+        }
+        return returnIndex;
     }
 
     /**

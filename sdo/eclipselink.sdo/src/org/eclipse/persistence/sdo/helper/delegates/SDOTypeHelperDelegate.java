@@ -41,9 +41,6 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
  */
 public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
-    /** Map containing both built-in open content and user defined open content types */
-    private HashMap openContentProperties;// keyed on QName
-
     /** Map containing user defined types */
     private HashMap typesHashMap = new HashMap();
 
@@ -81,30 +78,6 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     /**
-     * INTERNAL:
-     * Define and insert the built-in types into this user-defined open content property map.
-     */
-    private void initOpenContentProps() {
-        // this map contains both global properties (defined in SDOConstants) and user defined properties
-        //define open content mimeType property
-        getOpenContentProperties().put(SDOConstants.MIME_TYPE_QNAME, SDOConstants.MIME_TYPE_PROPERTY);
-        //define open content mimeType property  property
-        getOpenContentProperties().put(SDOConstants.MIME_TYPE_PROPERTY_QNAME, SDOConstants.MIME_TYPE_PROPERTY_PROPERTY);
-        //define open content schema type property  
-        getOpenContentProperties().put(SDOConstants.SCHEMA_TYPE_QNAME, SDOConstants.XML_SCHEMA_TYPE_PROPERTY);
-        //define open content javaClass property
-        getOpenContentProperties().put(SDOConstants.JAVA_CLASS_QNAME, SDOConstants.JAVA_CLASS_PROPERTY);
-        //define open content xmlelement property
-        getOpenContentProperties().put(SDOConstants.XML_ELEMENT_QNAME, SDOConstants.XMLELEMENT_PROPERTY);
-        //define open content xmldatatype property
-        getOpenContentProperties().put(SDOConstants.XML_DATATYPE_QNAME, SDOConstants.XMLDATATYPE_PROPERTY);
-        //define open content idProp property
-        getOpenContentProperties().put(SDOConstants.XML_ID_PROPERTY_QNAME, SDOConstants.ID_PROPERTY);
-        //define documentation property  
-        getOpenContentProperties().put(SDOConstants.DOCUMENTATION_PROPERTY_QNAME, SDOConstants.DOCUMENTATION_PROPERTY);
-    }
-
-    /**
      * initlizes built-in HashMap commonjHashMap.
      */
     private static void initCommonjHashMap() {
@@ -135,7 +108,8 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         commonjHashMap.put(SDOConstants.YEARMONTHDAY, SDOConstants.SDO_YEARMONTHDAY);
         commonjHashMap.put(SDOConstants.URI, SDOConstants.SDO_URI);
         commonjHashMap.put(SDOConstants.CHANGESUMMARY, SDOConstants.SDO_CHANGESUMMARY);
-        commonjHashMap.put("Type", SDOConstants.SDO_TYPE);
+        commonjHashMap.put(SDOConstants.TYPE, SDOConstants.SDO_TYPE);
+        commonjHashMap.put(SDOConstants.PROPERTY, SDOConstants.SDO_PROPERTY);
     }
 
     private static void initCommonjJavaHashMap() {
@@ -320,7 +294,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         }
     }
 
-    public Type getOrCreateType(String uri, String typeName) {
+    public Type getOrCreateType(String uri, String typeName, String xsdLocalName) {
         String lookupName = typeName;
         int index = lookupName.indexOf(':');
         if (index != -1) {
@@ -331,7 +305,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             SDOType newType = new SDOType(uri, lookupName, aHelperContext);
             newType.setXsd(true);
             //newType.setInstanceClass();
-            newType.setXsdLocalName(typeName);
+            newType.setXsdLocalName(xsdLocalName);
             addType(uri, lookupName, newType);
             return newType;
         }
@@ -622,7 +596,6 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     public void reset() {
         typesHashMap = new HashMap();
-        openContentProperties = null;
         namespaceResolver = new NamespaceResolver();
     }
 
@@ -638,13 +611,17 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     @return the defined open Property.
     @throws IllegalArgumentException if the Property could not be defined.
     */
-    public Property defineOpenContentProperty(String uri, DataObject property) {
-        String name = property.getString("name");
-        QName propertyQName = new QName(uri, name);
-        Object propertyToReturn = getOpenContentProperties().get(propertyQName);
-        if ((property == null) || (!(propertyToReturn instanceof Property))) {
-            propertyToReturn = buildPropertyFromDataObject(property, null);
-            defineOpenContentProperty(propertyQName, (Property)propertyToReturn);
+    public Property defineOpenContentProperty(String uri, DataObject propertyDO) {
+        String name = propertyDO.getString("name");
+
+        Object propertyToReturn = aHelperContext.getXSDHelper().getGlobalProperty(uri, name, true);
+        if (propertyToReturn == null) {
+            propertyToReturn = aHelperContext.getXSDHelper().getGlobalProperty(uri, name, false);
+        }
+
+        if ((propertyToReturn == null) || (!(propertyToReturn instanceof Property))) {
+            propertyToReturn = buildPropertyFromDataObject(propertyDO, null);
+            defineOpenContentProperty(uri, name, (Property)propertyToReturn);
         }
 
         return (Property)propertyToReturn;
@@ -655,28 +632,31 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @param propertyQName
      * @param property
      */
-    private void defineOpenContentProperty(QName propertyQName, Property property) {
-        getOpenContentProperties().put(propertyQName, property);
-        XMLDescriptor aDescriptor = ((SDOType)property.getType()).getXmlDescriptor();
+    private void defineOpenContentProperty(String propertyUri, String propertyName, Property property) {
+        if (propertyUri != null) {
+            boolean isElement = aHelperContext.getXSDHelper().isElement(property);
+            QName propertyQName = new QName(propertyUri, propertyName);
+            ((SDOXSDHelper)aHelperContext.getXSDHelper()).addGlobalProperty(propertyQName, property, isElement);
 
-        // synchronized threads that access the NonSynchronizedVector tables in XMLDescriptor 
-        if (aDescriptor != null) {
-            synchronized (aDescriptor) {
-                String rootName = propertyQName.getLocalPart();
-                if (((propertyQName.getNamespaceURI() != null) && !propertyQName.getNamespaceURI().equals(SDOConstants.EMPTY_STRING))) {
-                    String prefix = aDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(propertyQName.getNamespaceURI());
+            ((SDOProperty)property).setUri(propertyUri);
+            XMLDescriptor aDescriptor = ((SDOType)property.getType()).getXmlDescriptor();
+
+            // synchronized threads that access the NonSynchronizedVector tables in XMLDescriptor 
+            if (aDescriptor != null) {
+                synchronized (aDescriptor) {
+                    String rootName = propertyName;
+                    String prefix = aDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(propertyUri);
                     if ((prefix == null) || prefix.equals(SDOConstants.EMPTY_STRING)) {
-                        prefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(propertyQName.getNamespaceURI());
-                        aDescriptor.getNonNullNamespaceResolver().put(prefix, propertyQName.getNamespaceURI());
+                        prefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(propertyUri);
+                        aDescriptor.getNonNullNamespaceResolver().put(prefix, propertyUri);
                     }
                     if ((prefix != null) && !prefix.equals(SDOConstants.EMPTY_STRING)) {
                         rootName = prefix + ":" + rootName;
                     }
+                    aDescriptor.setDefaultRootElement(rootName);
+                    QName elementType = new QName(propertyUri, rootName);
+                    aDescriptor.setDefaultRootElementType(elementType);
                 }
-
-                aDescriptor.setDefaultRootElement(rootName);
-                QName elementType = new QName(propertyQName.getNamespaceURI(), rootName);
-                aDescriptor.setDefaultRootElementType(elementType);
             }
         }
     }
@@ -693,30 +673,14 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         QName qname = new QName(uri, propertyName);
         Property property = null;
 
-        //first look in xsdHelper elements        
-        property = ((SDOXSDHelper)aHelperContext.getXSDHelper()).getGlobalProperty(qname, true);
+        //first look in xsdHelper elements                        
+        property = (Property)((SDOXSDHelper)aHelperContext.getXSDHelper()).getGlobalProperty(qname, true);
         //next try xsdHelper attributes
         if (property == null) {
-            property = ((SDOXSDHelper)aHelperContext.getXSDHelper()).getGlobalProperty(qname, false);
-            //next try typehelper open contentProperties
-            if (property == null) {
-                property = (Property)getOpenContentProperties().get(qname);
-            }
+            property = (Property)((SDOXSDHelper)aHelperContext.getXSDHelper()).getGlobalProperty(qname, false);
         }
 
         return property;
-    }
-
-    /**
-     * INTERNAL:
-     * @return
-     */
-    private HashMap getOpenContentProperties() {
-        if (openContentProperties == null) {
-            openContentProperties = new HashMap();
-            initOpenContentProps();
-        }
-        return openContentProperties;
     }
 
     /**
@@ -804,9 +768,10 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     /**
-      *INTERNAL:
-      */
-    private NamespaceResolver getNamespaceResolver() {
+    * INTERNAL:
+    * Return the NamespaceResolver
+    */
+    public NamespaceResolver getNamespaceResolver() {
         if (namespaceResolver == null) {
             namespaceResolver = new NamespaceResolver();
         }

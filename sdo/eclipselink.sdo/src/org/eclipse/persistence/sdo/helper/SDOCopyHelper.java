@@ -30,6 +30,7 @@ import commonj.sdo.ChangeSummary;
 import commonj.sdo.DataObject;
 import commonj.sdo.helper.CopyHelper;
 import commonj.sdo.helper.HelperContext;
+import commonj.sdo.impl.HelperProvider;
 
 /**
  * <b>Purpose:</b>
@@ -121,7 +122,7 @@ public class SDOCopyHelper implements CopyHelper {
         if (null == dataObject) {
             return null;
         }
-        SDODataObject copy = (SDODataObject)aHelperContext.getDataFactory().create(dataObject.getType().getURI(), dataObject.getType().getName());
+        SDODataObject copy = (SDODataObject)getHelperContext().getDataFactory().create(dataObject.getType().getURI(), dataObject.getType().getName());
 
         List ocListOriginal = ((SDODataObject)dataObject)._getOpenContentProperties();
         for (Iterator anOCIterator = ocListOriginal.iterator(); anOCIterator.hasNext();) {
@@ -860,7 +861,7 @@ public class SDOCopyHelper implements CopyHelper {
         }
 
         // TODO: Throw IllegalArgument exception as above
-        SDODataObject copy = (SDODataObject)aHelperContext// 
+        SDODataObject copy = (SDODataObject)getHelperContext()// 
         .getDataFactory().create(dataObject.getType().getURI(), dataObject.getType().getName());
 
         // store current object for reference by the non-containment map
@@ -990,6 +991,9 @@ public class SDOCopyHelper implements CopyHelper {
      * @return
      */
     public HelperContext getHelperContext() {
+        if(null == aHelperContext) {
+            aHelperContext = HelperProvider.getDefaultContext();
+        }
         return aHelperContext;
     }
 

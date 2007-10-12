@@ -24,6 +24,7 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
+import commonj.sdo.impl.HelperProvider;
 
 /**
  * <p><b>Purpose</b>: Provides access to additional information when the Type or Property is defined by an XML Schema (XSD)..
@@ -124,26 +125,25 @@ public class SDOXSDHelperDelegator implements SDOXSDHelper {
         return getSDOXSDHelperDelegate().generate(types, schemaLocationResolver);
     }
 
-    public void setGlobalAttributes(Map globalAttributes) {
-        getSDOXSDHelperDelegate().setGlobalAttributes(globalAttributes);
-    }
-
-    public Map getGlobalAttributes() {
-        return getSDOXSDHelperDelegate().getGlobalAttributes();
-    }
-
-    public void setGlobalElements(Map globalElements) {
-        getSDOXSDHelperDelegate().setGlobalElements(globalElements);
-    }
-
-    public Map getGlobalElements() {
-        return getSDOXSDHelperDelegate().getGlobalElements();
-    }
-
+    /**
+     * INTERNAL:
+     */	  
     public Map buildAppInfoMap(List appInfoElements) {
         return getSDOXSDHelperDelegate().buildAppInfoMap(appInfoElements);
     }
-
+    
+    /**
+     * INTERNAL:
+     * 
+     * @param qname
+     * @param prop
+     * @param isElement
+     * Register the given property with the given qname.
+     */
+    public void addGlobalProperty(QName qname, Property prop, boolean isElement) {
+        getSDOXSDHelperDelegate().addGlobalProperty(qname, prop, isElement);
+    }
+    
     /**
      * INTERNAL: 
      * This function returns the current or parent ClassLoader.
@@ -189,7 +189,7 @@ public class SDOXSDHelperDelegator implements SDOXSDHelper {
         ClassLoader contextClassLoader = getContextClassLoader();
         SDOXSDHelperDelegate sdoXSDHelperDelegate = (SDOXSDHelperDelegate)sdoXSDHelperDelegates.get(contextClassLoader);
         if (null == sdoXSDHelperDelegate) {
-            sdoXSDHelperDelegate = new SDOXSDHelperDelegate(aHelperContext);
+            sdoXSDHelperDelegate = new SDOXSDHelperDelegate(getHelperContext());
             sdoXSDHelperDelegates.put(contextClassLoader, sdoXSDHelperDelegate);
             AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, "{0} creating new {1} keyed on classLoader: {2}", //
             		new Object[] {getClass().getName(), sdoXSDHelperDelegate, contextClassLoader.toString()}, false);
@@ -198,6 +198,9 @@ public class SDOXSDHelperDelegator implements SDOXSDHelper {
     }
 
     public HelperContext getHelperContext() {
+        if(null == aHelperContext) {
+            aHelperContext = HelperProvider.getDefaultContext();
+        }
         return aHelperContext;
     }
 
@@ -208,4 +211,5 @@ public class SDOXSDHelperDelegator implements SDOXSDHelper {
     public void reset() {
         getSDOXSDHelperDelegate().reset();
     }
+   
 }

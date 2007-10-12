@@ -9,8 +9,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLLogin;
@@ -35,6 +37,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.ext.Locator2;
 
 /**
  *  INTERNAL:
@@ -102,12 +105,13 @@ public class DOMReader extends XMLReader {
             return;
         }
         Element rootNode = null;
-        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+        if(node.getNodeType() == Node.DOCUMENT_NODE) {
             rootNode = ((Document)node).getDocumentElement();
-        } else {
+        }  else {
             rootNode = (Element)node;
         }
         startDocument();
+        setupLocator(rootNode.getOwnerDocument());
         reportElementEvents(rootNode);
         endDocument();
     }
@@ -202,7 +206,7 @@ public class DOMReader extends XMLReader {
             } else if(next.getNodeType() == Node.COMMENT_NODE) {
                 char[] value = ((Comment)next).getNodeValue().toCharArray();
                 if (lexicalHandler != null) {
-                	lexicalHandler.comment(value, 0, value.length);
+	        	lexicalHandler.comment(value, 0, value.length);
                 }
             } else if(next.getNodeType() == Node.ELEMENT_NODE) {
                 Element childElement = (Element)next;
@@ -262,6 +266,23 @@ public class DOMReader extends XMLReader {
         docPresPolicy = policy;
     }
     
+    protected void setupLocator(Document doc) {
+        LocatorImpl locator = new LocatorImpl();
+        try {
+            Method getEncoding = PrivilegedAccessHelper.getMethod(doc.getClass(), "getXmlEncoding", new Class[]{}, true);
+            Method getVersion = PrivilegedAccessHelper.getMethod(doc.getClass(), "getXmlVersion", new Class[]{}, true);
+            
+            String encoding = (String)PrivilegedAccessHelper.invokeMethod(getEncoding, doc, new Object[]{});
+            String version = (String)PrivilegedAccessHelper.invokeMethod(getVersion, doc, new Object[]{});
+            
+            locator.setEncoding(encoding);
+            locator.setXMLVersion(version);
+        } catch(Exception ex) {
+            //if unable to invoke these methods, just return and don't invoke
+            return;
+        }
+        this.contentHandler.setDocumentLocator(locator);
+    }
     /**
      * Implementation of Attributes - used to pass along a given node's attributes
      * to the startElement method of the reader's content handler.
@@ -374,6 +395,49 @@ public class DOMReader extends XMLReader {
                 }
             }
             return null;
+        }
+    }
+    
+    protected class LocatorImpl implements Locator2 {
+        private String encoding;
+        private String version;
+        
+        public LocatorImpl() {
+            encoding = "UTF-8";
+            version = "1.0";
+        }
+        public String getEncoding() {
+            return encoding;
+        }
+        
+        public int getColumnNumber() {
+            //not supported here
+            return 0;
+        }
+        
+        public String getSystemId() {
+            return "";
+        }
+        
+        public String getPublicId() {
+            return "";
+        }
+        
+        public String getXMLVersion() {
+            return version;
+        }
+        
+        public int getLineNumber() {
+            //not supported
+            return 0;
+        }
+        
+        protected void setEncoding(String enc) {
+            this.encoding = enc;
+        }
+        
+        protected void setXMLVersion(String xmlVersion) {
+            this.version = xmlVersion;
         }
     }
 }

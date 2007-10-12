@@ -11,6 +11,7 @@ package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
+import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                 String nextXPath = null;
                 SDODataObject nextCreatedDO = null;
                 for (int j = 0; j < xpaths.size(); j++) {
-                    nextXPath = (String)xpaths.get(j);
+                    nextXPath = (String)xpaths.get(j);                
                     nextCreatedDO = (SDODataObject)targetDataObject.getDataObject(convertXPathToSDOPath(nextXPath));
                     if (nextCreatedDO != null) {
                         nextCreatedDO._setCreated(true);
@@ -120,23 +121,26 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                         } else if (unmarshalledNode instanceof DataObject) {
                             unmarshalledDO = (DataObject)unmarshalledNode;
                         }
-
-                        //List props = unmarshalledDO.getInstanceProperties();
-                        List propNames = new ArrayList();
+                        
+                        List modifiedProps = new ArrayList();
                         NodeList children = nextNode.getChildNodes();
                         for (int p = 0; p < children.getLength(); p++) {
                             Node n = children.item(p);
                             if (n.getNodeType() == Node.ELEMENT_NODE) {
                                 String propName = n.getLocalName();
-                                if (!propNames.contains(propName)) {
-                                    propNames.add(propName);
+                                Property nextProp = unmarshalledDO.getInstanceProperty(propName);
+                                if (nextProp == null) {
+                                    nextProp = aHelperContext.getTypeHelper().getOpenContentProperty(n.getNamespaceURI(), propName);
+                                }
+                                if (!modifiedProps.contains(nextProp)) {
+                                    modifiedProps.add(nextProp);
                                 }
                             }
                         }
-                        
+
                         //instead of iterating over all props can we just check elements in cs and get appropriate properties fronm DO
-                        for (int k = 0; k < propNames.size(); k++) {
-                            Property nextProp = unmarshalledDO.getInstanceProperty((String)propNames.get(k));
+                        for (int k = 0; k < modifiedProps.size(); k++) {
+                            Property nextProp = (Property)modifiedProps.get(k);
 
                             if (!nextProp.getType().isDataType()) {
                                 if (nextProp.isMany()) {
@@ -194,6 +198,8 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                             value._setChangeSummary(nextCS);
                                             nextModifiedDO._setModified(true);
                                             nextCS.pauseLogging();
+                                            boolean wasSet = nextModifiedDO.isSet(nextProp);
+
                                             Object existingValue = nextModifiedDO.get(nextProp);
 
                                             value._setContainmentPropertyName(null);
@@ -206,8 +212,11 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
 
                                             value.resetChanges();
                                             value.delete();
-
-                                            nextModifiedDO.set(nextProp, existingValue);
+                                            if (wasSet) {
+                                                nextModifiedDO.set(nextProp, existingValue);
+                                            } else {
+                                                nextModifiedDO.unset(nextProp);
+                                            }
                                         }
                                     } else {
                                         nextModifiedDO._setModified(true);
@@ -222,14 +231,21 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                         }
                         for (int k = 0; k < unsetValueList.size(); k++) {
                             Property nextProp = unmarshalledDO.getInstanceProperty((String)unsetValueList.get(k));
-                            Object oldValue = null;
-                            if (nextProp.getType().isDataType() || nextProp.isMany()) {
-                                //to get default
-                                oldValue = unmarshalledDO.get(nextProp);
+                            if (nextProp != null) {
+                                Object oldValue = null;
+                                if (nextProp.getType().isDataType() || nextProp.isMany()) {
+                                    //to get default
+                                    oldValue = unmarshalledDO.get(nextProp);
+                                }
+                                nextModifiedDO._setModified(true);
+                                nextCS.setPropertyInternal(nextModifiedDO, nextProp, oldValue);
+                                nextCS.unsetPropertyInternal(nextModifiedDO, nextProp);
+                            } else {
+                                nextProp = nextModifiedDO.getInstanceProperty((String)unsetValueList.get(k));
+                                nextModifiedDO._setModified(true);
+                                nextCS.setPropertyInternal(nextModifiedDO, nextProp, null);
+                                nextCS.unsetPropertyInternal(nextModifiedDO, nextProp);
                             }
-                            nextModifiedDO._setModified(true);
-                            nextCS.setPropertyInternal(nextModifiedDO, nextProp, oldValue);
-                            nextCS.unsetPropertyInternal(nextModifiedDO, nextProp);
                         }
                     } else {
                         throw SDOException.errorProcessingXPath(refValue);

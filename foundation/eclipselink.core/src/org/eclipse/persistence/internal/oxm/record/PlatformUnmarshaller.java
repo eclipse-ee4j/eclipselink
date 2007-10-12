@@ -64,4 +64,8 @@ public interface PlatformUnmarshaller {
     public abstract Object unmarshal(URL url, XMLUnmarshaller unmarshaller);
 
     public abstract Object unmarshal(URL url, Class clazz, XMLUnmarshaller unmarshaller);
+    
+    public abstract void setResultAlwaysXMLRoot(boolean alwaysReturnRoot);
+    
+    public abstract boolean isResultAlwaysXMLRoot();
 }

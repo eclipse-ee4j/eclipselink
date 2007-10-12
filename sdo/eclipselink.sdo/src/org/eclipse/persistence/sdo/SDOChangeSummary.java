@@ -380,6 +380,18 @@ public class SDOChangeSummary implements ChangeSummary {
                     oldSettingsList.add(setting);
                 }
             }
+            
+            List openProps = (List)getUnsetOCPropertiesMap().get(dataObject);
+            if(openProps != null){
+              for(int i=0; i< openProps.size(); i++){
+                Property nextProp = (Property)openProps.get(i);
+                Setting setting = getOldValueForChangedDataObject(dataObject, nextProp);
+                  if (setting != null) {
+                      oldSettingsList.add(setting);
+                  }
+              }
+            }
+            
             return oldSettingsList;
         }
 
@@ -981,13 +993,13 @@ public class SDOChangeSummary implements ChangeSummary {
             originalElements.put(currentValue, new ArrayList());
             if (property.isOpenContent()) {
                 //TODO:
+                vs.unsetOpenContentProperty(property.getName());                
             } else {
                 vs.unsetDeclaredProperty(((SDOProperty)property).getIndexInType());
             }
         } else {
             if (property.isOpenContent()) {
-                vs.unsetOpenContentProperty(property.getName());
-                ((SDODataObject)dataObject).removeOpenContentProperty(property);
+                vs.unsetOpenContentProperty(property.getName());                
             } else {
                 vs.unsetDeclaredProperty(((SDOProperty)property).getIndexInType());
             }

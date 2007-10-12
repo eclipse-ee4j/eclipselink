@@ -49,6 +49,8 @@ public class TypeProperty {
     private JavaClass genericType;
     private boolean isAttribute = false;
     private Helper helper;
+    private String getMethodName;
+    private String setMethodName;
     
     public TypeProperty() {
     }
@@ -181,5 +183,21 @@ public class TypeProperty {
     
     public void setIsAttribute(boolean attribute) {
         isAttribute = attribute;
+    }
+    
+    public String getGetMethodName() {
+        return getMethodName;
+    }
+    
+    public void setGetMethodName(String methodName) {
+        getMethodName = methodName;
+    }
+    
+    public String getSetMethodName() {
+        return setMethodName;
+    }
+    
+    public void setSetMethodName(String methodName) {
+        setMethodName = methodName;
     }
 }

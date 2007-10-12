@@ -33,7 +33,7 @@ public class DefineAndGenerateAppInfoTestCases extends XSDHelperDefineAndGenerat
     }
 
     public String getControlGeneratedFileName() {
-        return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderAppInfo.xsd";
+        return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderAppInfoGenerated.xsd";
     }
 
     public String getSchemaToDefine() {
@@ -316,8 +316,8 @@ public class DefineAndGenerateAppInfoTestCases extends XSDHelperDefineAndGenerat
         return types;
     }
 
-    protected String getTestControlString() {
-        String controlString = "<xsd:appinfo source=\"itemTest\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + "\n" + "   <someTag>blah blah itemTest</someTag>" + "\n" + "</xsd:appinfo>" + "\n" + "<xsd:appinfo source=\"itemTest\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + "\n" + "   <anotherTag>blah blah itemTest</anotherTag>" + "\n" + "</xsd:appinfo>";
+    protected String getTestControlString() {        
+        String controlString = "<xsd:appinfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" source=\"itemTest\">" + "\n" + "   <someTag>blah blah itemTest</someTag>" + "\n" + "</xsd:appinfo>" + "\n" + "<xsd:appinfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" source=\"itemTest\">" + "\n" + "   <anotherTag>blah blah itemTest</anotherTag>" + "\n" + "</xsd:appinfo>";        
         return controlString;
     }
 }

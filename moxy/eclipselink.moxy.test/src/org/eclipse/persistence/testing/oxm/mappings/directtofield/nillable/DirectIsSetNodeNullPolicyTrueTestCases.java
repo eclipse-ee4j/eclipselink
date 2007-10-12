@@ -6,32 +6,17 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-
-/* $Header: DirectIsSetNodeNullPolicyTrueTestCases.java 12-jul-2007.14:13:03 mmacivor Exp $ */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    mmacivor    07/12/07 - 
-    gyorke      11/02/06 - 
-    bdoughan    11/13/06 - 
-    mfobrien    10/26/06 - Creation
- */
-
-/**
- *  @version $Header: DirectIsSetNodeNullPolicyTrueTestCases.java 12-jul-2007.14:13:03 mmacivor Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable;
 
 import junit.textui.TestRunner;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.NodeNullPolicy;
-import org.eclipse.persistence.oxm.mappings.IsSetNodeNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
+
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
@@ -43,15 +28,20 @@ public class DirectIsSetNodeNullPolicyTrueTestCases extends XMLMappingTestCases 
         super(name);
         setControlDocument(XML_RESOURCE);
 
-        NodeNullPolicy aNodeNullPolicy = new IsSetNodeNullPolicy();
-        ((IsSetNodeNullPolicy)aNodeNullPolicy).setIsSetMethodName("isSetFirstName");
+        AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
+    	// alter unmarshal policy state
+    	aNullPolicy.setNullRepresentedByEmptyNode(false); // no effect
+    	aNullPolicy.setNullRepresentedByXsiNil(false); // no effect
+    	// alter marshal policy state
+    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);//.EMPTY_NODE);
+        ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");
         Project aProject = new DirectNodeNullPolicyProject(true);
         XMLDescriptor employeeDescriptor = (XMLDescriptor) aProject.getDescriptor(Employee.class);
         NamespaceResolver namespaceResolver = new NamespaceResolver();
         namespaceResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
         employeeDescriptor.setNamespaceResolver(namespaceResolver);        
         XMLDirectMapping aMapping = (XMLDirectMapping) employeeDescriptor.getMappingForAttributeName("firstName");
-        aMapping.setNodeNullPolicy(aNodeNullPolicy);
+        aMapping.setNullPolicy(aNullPolicy);
         setProject(aProject);
     }
 

@@ -56,7 +56,7 @@
 	<xsd:complexType name="Level2Type">
 		<xsd:sequence>
 			<xsd:sequence>
-				<xsd:element name="Comment2" type="xsd:string" minOccurs="0"/>
+				<xsd:element name="comment2" type="xsd:string" minOccurs="0"/>
 			</xsd:sequence>
 		</xsd:sequence>
 	</xsd:complexType>

@@ -6,22 +6,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-/* $Header: DirectCollectionNodeNullPolicyProject.java 02-nov-2006.10:57:16 gyorke Exp $ */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    gyorke      11/02/06 - 
-    mfobrien    10/26/06 - Creation
- */
-
-/**
- *  @version $Header: DirectCollectionNodeNullPolicyProject.java 02-nov-2006.10:57:16 gyorke Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
-
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable;
 
 import org.eclipse.persistence.oxm.XMLDescriptor;

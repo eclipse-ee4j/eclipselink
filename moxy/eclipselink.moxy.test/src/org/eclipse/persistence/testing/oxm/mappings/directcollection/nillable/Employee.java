@@ -6,21 +6,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-/* $Header: Employee.java 27-oct-2006.15:41:16 mfobrien Exp $ */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    mfobrien    10/26/06 - Creation
- */
-
-/**
- *  @version $Header: Employee.java 27-oct-2006.15:41:16 mfobrien Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
-
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable;
 
 import java.util.Vector;

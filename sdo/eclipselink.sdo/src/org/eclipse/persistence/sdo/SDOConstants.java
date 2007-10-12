@@ -216,6 +216,7 @@ public class SDOConstants {
     public static final String SDOXML_DATATYPE = "dataType";
     public static final String SDOXML_STRING_NAME = "string";
     public static final String SDOXML_MANY = "many";
+    public static final String XMLELEMENT_PROPERTY_NAME = "xmlElement";
     public static final QName SDOXML_MANY_QNAME = new QName(SDOXML_URL, SDOXML_MANY);
     public static final QName SDOXML_ALIASNAME_QNAME = new QName(SDOXML_URL, SDOXML_ALIASNAME);
     public static final QName SDOXML_NAME_QNAME = new QName(SDOXML_URL, SDOXML_NAME);
@@ -224,8 +225,10 @@ public class SDOConstants {
     public static final QName SDOXML_DATATYPE_QNAME = new QName(SDOXML_URL, SDOXML_DATATYPE);
     public static final QName SDOXML_STRING_QNAME = new QName(SDOXML_URL, SDOXML_STRING_NAME);
     public static final QName SDOXML_PROPERTYTYPE_QNAME = new QName(SDOXML_URL, SDOXML_PROPERTYTYPE);
-    public static final QName SDOXML_OPPOSITEPROPERTY_QNAME = new QName(SDOXML_URL, SDOXML_OPPOSITEPROPERTY);
-
+    public static final QName SDOXML_OPPOSITEPROPERTY_QNAME = new QName(SDOXML_URL, SDOXML_OPPOSITEPROPERTY);    
+    public static final QName XML_ELEMENT_QNAME = new QName(SDOXML_URL, SDOConstants.XMLELEMENT_PROPERTY_NAME);
+    public static final SDOProperty XMLELEMENT_PROPERTY = new SDOProperty(globalHelperContext, XMLELEMENT_PROPERTY_NAME);
+    
     /** Strings and QNames for annotations defined in the commonj.sdo/XML namespace*/
     public static final String SDOJAVA_PACKAGE = "package";
     public static final String SDOJAVA_INSTANCECLASS = "instanceClass";
@@ -242,11 +245,11 @@ public class SDOConstants {
     public static final SDOProperty XML_SCHEMA_TYPE_PROPERTY = new SDOProperty(globalHelperContext, XML_SCHEMA_TYPE_NAME);
     public static final SDOProperty DOCUMENTATION_PROPERTY = new SDOProperty(globalHelperContext, DOCUMENTATION);
     public static final String JAVACLASS_PROPERTY_NAME = "javaClass";
-    public static final String XMLELEMENT_PROPERTY_NAME = "xmlElement";
-    public static final SDOProperty JAVA_CLASS_PROPERTY = new SDOProperty(globalHelperContext, JAVACLASS_PROPERTY_NAME);
-    public static final SDOProperty XMLELEMENT_PROPERTY = new SDOProperty(globalHelperContext, XMLELEMENT_PROPERTY_NAME);
+   
+    public static final SDOProperty JAVA_CLASS_PROPERTY = new SDOProperty(globalHelperContext, JAVACLASS_PROPERTY_NAME);    
     public static final SDOProperty XMLDATATYPE_PROPERTY = new SDOProperty(globalHelperContext, SDOXML_DATATYPE);
-
+    
+    
     /** open content property to be set when defining a Type via a DataObject for reference relationships */
     public static final SDOProperty ID_PROPERTY = new SDOProperty(globalHelperContext, ID_PROPERTY_NAME);
 
@@ -254,8 +257,7 @@ public class SDOConstants {
     public static final QName MIME_TYPE_QNAME = new QName(ORACLE_SDO_URL, SDOConstants.MIME_TYPE_PROPERTY.getName());
     public static final QName MIME_TYPE_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, SDOConstants.MIME_TYPE_PROPERTY_PROPERTY.getName());
     public static final QName SCHEMA_TYPE_QNAME = new QName(ORACLE_SDO_URL, SDOConstants.XML_SCHEMA_TYPE_PROPERTY.getName());
-    public static final QName JAVA_CLASS_QNAME = new QName(ORACLE_SDO_URL, SDOConstants.JAVA_CLASS_PROPERTY.getName());
-    public static final QName XML_ELEMENT_QNAME = new QName(ORACLE_SDO_URL, SDOConstants.XMLELEMENT_PROPERTY.getName());
+    public static final QName JAVA_CLASS_QNAME = new QName(ORACLE_SDO_URL, SDOConstants.JAVA_CLASS_PROPERTY.getName());   
     public static final QName XML_DATATYPE_QNAME = new QName(ORACLE_SDO_URL, SDOConstants.XMLDATATYPE_PROPERTY.getName());
     public static final QName XML_ID_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, SDOConstants.ID_PROPERTY.getName());
     public static final QName DOCUMENTATION_PROPERTY_QNAME = new QName(ORACLE_SDO_URL, DOCUMENTATION);
@@ -350,18 +352,26 @@ public class SDOConstants {
 
     // perform initialization of constants in use by HelperDelegates
     static {
+         /** JIRA-253 set pseudoDefaults on numeric primitives
+         * see http://java.sun.com/docs/books/tutorial/java/nutsandbolts/datatypes.html (primary ref)
+         * see p.45 of the Java Spec 4th edition (secondary ref)
+         **/
+        
         // in use by initCommonjHashMap()
         SDO_BOOLEAN.setDataType(true);
         SDO_BOOLEAN.setInstanceClass(ClassConstants.PBOOLEAN);
+        SDO_BOOLEAN.setPseudoDefault(BOOLEAN_DEFAULT);
 
         SDO_BYTE.setDataType(true);
         SDO_BYTE.setInstanceClass(ClassConstants.PBYTE);
-
+        SDO_BYTE.setPseudoDefault(BYTE_DEFAULT);
+        
         SDO_BYTES.setDataType(true);
         SDO_BYTES.setInstanceClass(ClassConstants.APBYTE);
 
         SDO_CHARACTER.setDataType(true);
         SDO_CHARACTER.setInstanceClass(ClassConstants.PCHAR);
+        SDO_CHARACTER.setPseudoDefault(CHARACTER_DEFAULT);
 
         SDO_DATAOBJECT.setDataType(false);
         SDO_DATAOBJECT.setInstanceClass(DataObject.class);
@@ -381,21 +391,25 @@ public class SDOConstants {
 
         SDO_DOUBLE.setDataType(true);
         SDO_DOUBLE.setInstanceClass(ClassConstants.PDOUBLE);
+        SDO_DOUBLE.setPseudoDefault(DOUBLE_DEFAULT);
 
         SDO_DURATION.setDataType(true);
         SDO_DURATION.setInstanceClass(ClassConstants.STRING);
 
         SDO_FLOAT.setDataType(true);
         SDO_FLOAT.setInstanceClass(ClassConstants.PFLOAT);
+        SDO_FLOAT.setPseudoDefault(FLOAT_DEFAULT);
 
         SDO_INT.setDataType(true);
         SDO_INT.setInstanceClass(ClassConstants.PINT);
+        SDO_INT.setPseudoDefault(INTEGER_DEFAULT);
 
         SDO_INTEGER.setDataType(true);
         SDO_INTEGER.setInstanceClass(ClassConstants.BIGINTEGER);
 
         SDO_LONG.setDataType(true);
         SDO_LONG.setInstanceClass(ClassConstants.PLONG);
+        SDO_LONG.setPseudoDefault(LONG_DEFAULT);
 
         SDO_MONTH.setDataType(true);
         SDO_MONTH.setInstanceClass(ClassConstants.STRING);
@@ -409,6 +423,7 @@ public class SDOConstants {
 
         SDO_SHORT.setDataType(true);
         SDO_SHORT.setInstanceClass(ClassConstants.PSHORT);
+        SDO_SHORT.setPseudoDefault(SHORT_DEFAULT);
 
         SDO_STRING.setDataType(true);
         SDO_STRING.setInstanceClass(ClassConstants.STRING);
@@ -601,35 +616,26 @@ public class SDOConstants {
         // the SDOTypeHelperDelegate.openContentProperties Map contains both global properties (here) and user defined properties
         Type stringType = SDO_STRING;
 
-        //define open content mimeType property  
-        MIME_TYPE_PROPERTY.setType(stringType);
-        // define open content mimeType property  property
-        MIME_TYPE_PROPERTY_PROPERTY.setType(stringType);
-        // define open content schema type property  
-        XML_SCHEMA_TYPE_PROPERTY.setType(SDO_TYPE);
-        // define open content javaClass property
-        JAVA_CLASS_PROPERTY.setType(stringType);
         // define open content xmlelement property
-        XMLELEMENT_PROPERTY.setType(stringType);
+        XMLELEMENT_PROPERTY.setType(SDO_BOOLEAN);
+        //define open content mimeType property  
+        MIME_TYPE_PROPERTY.setType(stringType);        
+        // define open content mimeType property  property
+        MIME_TYPE_PROPERTY_PROPERTY.setType(stringType);        
+        // define open content schema type property  
+        XML_SCHEMA_TYPE_PROPERTY.setType(SDO_TYPE);        
+        // define open content javaClass property
+        JAVA_CLASS_PROPERTY.setType(stringType);      
         //define open content xmldatatype property
-        XMLDATATYPE_PROPERTY.setType(SDO_TYPE);
+        XMLDATATYPE_PROPERTY.setType(SDO_TYPE);        
         //define open content idProp property
-        ID_PROPERTY.setType(SDO_TYPE);
+        ID_PROPERTY.setType(SDO_TYPE);        
+        
         //define documentation property  
-        DOCUMENTATION_PROPERTY.setType(stringType);
+        DOCUMENTATION_PROPERTY.setType(stringType);        
         DOCUMENTATION_PROPERTY.setMany(true);
 
-        /** JIRA-253 set pseudoDefaults on numeric primitives
-         * see http://java.sun.com/docs/books/tutorial/java/nutsandbolts/datatypes.html (primary ref)
-         * see p.45 of the Java Spec 4th edition (secondary ref)
-         **/
-        SDO_BOOLEAN.setPseudoDefault(BOOLEAN_DEFAULT);
-        SDO_BYTE.setPseudoDefault(BYTE_DEFAULT);
-        SDO_CHARACTER.setPseudoDefault(CHARACTER_DEFAULT);
-        SDO_DOUBLE.setPseudoDefault(DOUBLE_DEFAULT);
-        SDO_FLOAT.setPseudoDefault(FLOAT_DEFAULT);
-        SDO_INT.setPseudoDefault(INTEGER_DEFAULT);
-        SDO_LONG.setPseudoDefault(LONG_DEFAULT);
-        SDO_SHORT.setPseudoDefault(SHORT_DEFAULT);
+   
+      
     }
 }

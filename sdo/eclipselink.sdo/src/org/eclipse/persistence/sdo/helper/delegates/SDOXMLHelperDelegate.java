@@ -29,11 +29,13 @@ import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.SDOXMLDocument;
 import org.eclipse.persistence.sdo.helper.SDOClassLoader;
 import org.eclipse.persistence.sdo.helper.SDOMarshalListener;
+import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOUnmarshalListener;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLLogin;
@@ -173,8 +175,18 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         XMLUnmarshaller anXMLUnmarshaller = getXmlUnmarshaller();
         Object unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource);
 
-        if (unmarshalledObject instanceof XMLRoot) {           
-            return createDocument((DataObject)((XMLRoot)unmarshalledObject).getObject(), ((XMLRoot)unmarshalledObject).getNamespaceURI(), ((XMLRoot)unmarshalledObject).getLocalName());            
+        if (unmarshalledObject instanceof XMLRoot) {
+            XMLRoot xmlRoot = (XMLRoot)unmarshalledObject;
+            XMLDocument xmlDocument = createDocument((DataObject)((XMLRoot)unmarshalledObject).getObject(), ((XMLRoot)unmarshalledObject).getNamespaceURI(), ((XMLRoot)unmarshalledObject).getLocalName());
+            if(xmlRoot.getEncoding() != null) {
+                xmlDocument.setEncoding(xmlRoot.getEncoding());
+            }
+            if(xmlRoot.getXMLVersion() != null) {
+                xmlDocument.setXMLVersion(xmlRoot.getXMLVersion());
+            }
+            xmlDocument.setSchemaLocation(xmlRoot.getSchemaLocation());
+            xmlDocument.setNoNamespaceSchemaLocation(xmlRoot.getNoNamespaceSchemaLocation());
+            return xmlDocument;             
         } else if (unmarshalledObject instanceof DataObject) {
             String localName = ((SDOType)((DataObject)unmarshalledObject).getType()).getXmlDescriptor().getDefaultRootElement();
             if (localName == null) {
@@ -210,8 +222,17 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         XMLUnmarshaller anXMLUnmarshaller = getXmlUnmarshaller();
         Object unmarshalledObject = anXMLUnmarshaller.unmarshal(source);
         if (unmarshalledObject instanceof XMLRoot) {
-            XMLRoot xmlRootObject = ((XMLRoot)unmarshalledObject);
-            return createDocument((DataObject)xmlRootObject.getObject(), xmlRootObject.getNamespaceURI(), xmlRootObject.getLocalName());
+            XMLRoot xmlRoot = (XMLRoot)unmarshalledObject;
+            XMLDocument xmlDocument = createDocument((DataObject)((XMLRoot)unmarshalledObject).getObject(), ((XMLRoot)unmarshalledObject).getNamespaceURI(), ((XMLRoot)unmarshalledObject).getLocalName());
+            if(xmlRoot.getEncoding() != null) {
+                xmlDocument.setEncoding(xmlRoot.getEncoding());
+            }
+            if(xmlRoot.getXMLVersion() != null) {
+                xmlDocument.setXMLVersion(xmlRoot.getXMLVersion());
+            }
+            xmlDocument.setSchemaLocation(xmlRoot.getSchemaLocation());
+            xmlDocument.setNoNamespaceSchemaLocation(xmlRoot.getNoNamespaceSchemaLocation());
+            return xmlDocument;             
         } else if (unmarshalledObject instanceof DataObject) {
             DataObject unmarshalledDataObject = (DataObject)unmarshalledObject;
             String localName = ((SDOType)((DataObject)unmarshalledObject).getType()).getXmlDescriptor().getDefaultRootElement();
@@ -439,6 +460,10 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
             xmlLogin.setEqualNamespaceResolvers(false);
             topLinkProject.setDatasourceLogin(xmlLogin);
             // 200606_changeSummary
+            NamespaceResolver nr = new NamespaceResolver();
+            String sdoPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(SDOConstants.SDO_URL);
+            nr.put(sdoPrefix, SDOConstants.SDO_URL);
+            SDOConstants.SDO_CHANGESUMMARY.getXmlDescriptor().setNamespaceResolver(nr);
             topLinkProject.addDescriptor(SDOConstants.SDO_CHANGESUMMARY.getXmlDescriptor());
         }
         return topLinkProject;
@@ -454,7 +479,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
             attachmentMarshaller = xmlMarshaller.getAttachmentMarshaller();
         }
         XMLMarshaller newMarshaller = getXmlContext().createMarshaller();
-        newMarshaller.setMarshalListener(new SDOMarshalListener(newMarshaller));
+        newMarshaller.setMarshalListener(new SDOMarshalListener(newMarshaller, aHelperContext.getTypeHelper()));
         newMarshaller.setAttachmentMarshaller(attachmentMarshaller);
         xmlMarshaller = newMarshaller;
         return newMarshaller;
@@ -472,6 +497,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         XMLUnmarshaller newUnmarshaller = getXmlContext().createUnmarshaller();
         newUnmarshaller.setUnmarshalListener(new SDOUnmarshalListener(aHelperContext));
         newUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
+        newUnmarshaller.setResultAlwaysXMLRoot(true);
         xmlUnmarshaller = newUnmarshaller;
         return newUnmarshaller;
     }

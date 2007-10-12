@@ -18,6 +18,9 @@ public class XMLFragmentCollectionMappingTestSuite extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("XMLFragment Collection Mapping Test Suite");
         suite.addTestSuite(XMLFragmentCollectionNSTestCases.class);
+        suite.addTestSuite(XMLFragmentCollectionNamespacesTestCases.class);
+        suite.addTestSuite(XMLFragmentCollectionNamespaces2TestCases.class);
+        suite.addTestSuite(XMLFragmentCollectionNamespaces3TestCases.class);
         return suite;
     }
 

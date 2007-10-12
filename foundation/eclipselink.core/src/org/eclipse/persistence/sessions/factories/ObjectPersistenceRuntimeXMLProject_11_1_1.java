@@ -10,6 +10,7 @@
 package org.eclipse.persistence.sessions.factories;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionPair;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.mappings.AggregateMapping;
@@ -34,7 +36,6 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -51,7 +52,12 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentMapping;
+import org.eclipse.persistence.oxm.mappings.XMLNillableMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.queries.Call;
@@ -90,8 +96,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         
         //5963607 -- add Sorted Collection mapping support
         addDescriptor(buildSortedCollectionContainerPolicyDescriptor());
-        
-        
+                
         //TopLink OXM
         addDescriptor(buildXMLAnyAttributeMappingDescriptor());
         addDescriptor(buildXMLCollectionReferenceMappingDescriptor());
@@ -99,6 +104,13 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         addDescriptor(this.buildXMLFragmentMappingDescriptor());
         addDescriptor(this.buildXMLFragmentCollectionMappingDescriptor());
 
+        // Add Null Policy Mappings
+        addDescriptor(buildAbstractNullPolicyDescriptor());
+        addDescriptor(buildNullPolicyDescriptor());
+        addDescriptor(buildIsSetNullPolicyDescriptor());
+        
+        // Do not add any descriptors beyond this point or an namespaceResolver exception may occur
+        
         // Set the namespaces on all descriptors.
         // Need to duplicate in subclass to ensure all NEW descriptors also get
         // NamespaceResolvers set. 
@@ -108,11 +120,10 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         namespaceResolver.put("opm", "http://xmlns.oracle.com/ias/xsds/opm");
         namespaceResolver.put("toplink", "http://xmlns.oracle.com/ias/xsds/toplink");
 
-        for (Iterator descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
-            XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
+        for (Iterator descriptorIter = getDescriptors().values().iterator(); descriptorIter.hasNext();) {
+            XMLDescriptor descriptor = (XMLDescriptor)descriptorIter.next();
             descriptor.setNamespaceResolver(namespaceResolver);
         }
-        
     }
     
     @Override
@@ -302,6 +313,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         
         return descriptor;
     }
+    
     protected ClassDescriptor buildOXXMLDescriptorDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
 
@@ -1154,12 +1166,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         return descriptor;
     }
     
+    @Override
     protected ClassDescriptor buildXMLDirectMappingDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-
-        descriptor.setJavaClass(XMLDirectMapping.class);
-        descriptor.descriptorIsAggregate();
-        descriptor.getInheritancePolicy().setParentClass(AbstractDirectMapping.class);
+        ClassDescriptor descriptor = super.buildXMLDirectMappingDescriptor();
 
         XMLDirectMapping isCDATAMapping = new XMLDirectMapping();
         isCDATAMapping.setAttributeName("isCDATA");
@@ -1168,6 +1177,14 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         isCDATAMapping.setXPath("toplink:is-cdata/text()");
         isCDATAMapping.setNullValue(Boolean.FALSE);
         descriptor.addMapping(isCDATAMapping);
+        
+        // Add Null Policy
+        XMLCompositeObjectMapping aMapping = new XMLCompositeObjectMapping();
+        aMapping.setReferenceClass(AbstractNullPolicy.class);
+        aMapping.setAttributeName("nullPolicy");
+        aMapping.setXPath("toplink:null-policy");
+        ((DatabaseMapping)aMapping).setAttributeAccessor(new NullPolicyAttributeAccessor());
+        descriptor.addMapping(aMapping);       
         
         return descriptor;
     }
@@ -1187,9 +1204,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         descriptor.addMapping(isCDATAMapping);
         
         return descriptor;
-    }
-    
-    
+    }    
     
      protected ClassDescriptor buildXMLLoginDescriptor(){
         ClassDescriptor descriptor = super.buildXMLLoginDescriptor();
@@ -1204,5 +1219,214 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         
         return descriptor;
     }
-    
+
+    protected ClassDescriptor buildAbstractNullPolicyDescriptor() {
+         XMLDescriptor aDescriptor = new XMLDescriptor();
+         aDescriptor.setJavaClass(AbstractNullPolicy.class);
+         aDescriptor.setDefaultRootElement("abstract-null-policy");
+
+         XMLDirectMapping xnrnMapping = new XMLDirectMapping();
+         xnrnMapping.setAttributeName("isNullRepresentedByXsiNil");
+         xnrnMapping.setXPath("toplink:xsi-nil-represents-null/text()");
+         xnrnMapping.setNullValue(Boolean.FALSE);         
+         aDescriptor.addMapping(xnrnMapping);
+
+         XMLDirectMapping enrnMapping = new XMLDirectMapping();
+         enrnMapping.setAttributeName("isNullRepresentedByEmptyNode");
+         enrnMapping.setXPath("toplink:empty-node-represents-null/text()");
+         enrnMapping.setNullValue(Boolean.FALSE);         
+         aDescriptor.addMapping(enrnMapping);
+
+         XMLDirectMapping nrfxMapping = new XMLDirectMapping();
+         nrfxMapping.setAttributeName("marshalNullRepresentation");
+         nrfxMapping.setXPath("toplink:null-representation-for-xml/text()");
+         // Restricted to XSI_NIL,ABSENT_NODE,EMPTY_NODE	
+         EnumTypeConverter aConverter = new EnumTypeConverter(nrfxMapping, XMLNullRepresentationType.class, false);
+         nrfxMapping.setConverter(aConverter);
+         aDescriptor.addMapping(nrfxMapping);
+         
+         // Subclasses
+         aDescriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
+         aDescriptor.getInheritancePolicy().addClassIndicator(IsSetNullPolicy.class, "toplink:is-set-null-policy");
+         aDescriptor.getInheritancePolicy().addClassIndicator(NullPolicy.class, "toplink:null-policy");
+
+         return aDescriptor;
+     }
+
+     protected ClassDescriptor buildNullPolicyDescriptor() {
+         XMLDescriptor aDescriptor = new XMLDescriptor();
+         aDescriptor.setJavaClass(NullPolicy.class);
+         aDescriptor.getInheritancePolicy().setParentClass(AbstractNullPolicy.class);
+
+         // This boolean can only be set on the NullPolicy implementation even though the field is on the abstract class
+         XMLDirectMapping xnranMapping = new XMLDirectMapping();
+         xnranMapping.setAttributeName("isSetPerformedForAbsentNode");
+         xnranMapping.setXPath("toplink:is-set-performed-for-absent-node/text()");
+         xnranMapping.setNullValue(Boolean.TRUE);         
+         aDescriptor.addMapping(xnranMapping);
+
+         return aDescriptor;
+     }
+     
+     protected ClassDescriptor buildIsSetNullPolicyDescriptor() {
+         // The IsSetPerformedForAbsentNode flag is always false on this IsSet mapping
+    	 XMLDescriptor aDescriptor = new XMLDescriptor();
+         aDescriptor.setJavaClass(IsSetNullPolicy.class);
+         aDescriptor.getInheritancePolicy().setParentClass(AbstractNullPolicy.class);
+
+         XMLDirectMapping isSetMethodNameMapping = new XMLDirectMapping();
+         isSetMethodNameMapping.setAttributeName("isSetMethodName");
+         isSetMethodNameMapping.setXPath("toplink:is-set-method-name/text()");
+         aDescriptor.addMapping(isSetMethodNameMapping);
+
+         // 20070922: Bug#6039730 - add IsSet capability for 1+ parameters for SDO
+         XMLCompositeDirectCollectionMapping isSetParameterTypesMapping = new XMLCompositeDirectCollectionMapping();
+         isSetParameterTypesMapping.setAttributeName("isSetParameterTypes");
+         isSetParameterTypesMapping.setXPath("toplink:is-set-parameter-type");
+         ((DatabaseMapping)isSetParameterTypesMapping).setAttributeAccessor(new IsSetNullPolicyIsSetParameterTypesAttributeAccessor());         
+         aDescriptor.addMapping(isSetParameterTypesMapping);
+
+         XMLCompositeDirectCollectionMapping isSetParametersMapping = new XMLCompositeDirectCollectionMapping();
+         isSetParametersMapping.setAttributeName("isSetParameters");
+         isSetParametersMapping.setXPath("toplink:is-set-parameter");         
+         ((DatabaseMapping)isSetParametersMapping).setAttributeAccessor(new IsSetNullPolicyIsSetParametersAttributeAccessor());         
+         aDescriptor.addMapping(isSetParametersMapping);
+
+         return aDescriptor;
+     }
+
+     /**
+      * INTERNAL:
+      * Wrap the isset parameter object array as a Collection.
+      * Prerequisite: parameterTypes must be set.
+      */
+     public class IsSetNullPolicyIsSetParametersAttributeAccessor extends AttributeAccessor {
+         public IsSetNullPolicyIsSetParametersAttributeAccessor() {
+        	 super();
+         }
+         
+         @Override   
+         public Object getAttributeValueFromObject(Object object) throws DescriptorException {
+        	 IsSetNullPolicy aPolicy = (IsSetNullPolicy)object;
+       		 NonSynchronizedVector aCollection = new NonSynchronizedVector();
+       		 for(int i = 0, size = aPolicy.getIsSetParameters().length; i<size;i++) {
+       			 aCollection.add(aPolicy.getIsSetParameters()[i]);
+       		 }
+       		 return aCollection;
+         }
+         
+         @Override
+         public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+        	 // Convert the collection of Strings to an array of Object values (round-trip)
+        	 if(value instanceof Collection) {
+    			 int i = 0;    			 
+    			 Object[] parameters = new Object[((Collection)value).size()];
+    			 for(Iterator anIterator = ((Collection)value).iterator(); anIterator.hasNext();) {
+   					 // Lookup the object type via the predefined parameterTypes array and convert based on that type
+   					 parameters[i] = XMLConversionManager.getDefaultXMLManager().convertObject(//
+   							 anIterator.next(), ((IsSetNullPolicy)object).getIsSetParameterTypes()[i++]);
+    			 }
+    			 ((IsSetNullPolicy)object).setIsSetParameters(parameters);
+        	 } else {
+        		 // Cast to object array
+        		 ((IsSetNullPolicy)object).setIsSetParameters((Object[])value);
+        	 }
+         }
+     }
+
+     /**
+      * INTERNAL:
+      * Wrap the isset parameterType class array as a Collection
+      */
+     public class IsSetNullPolicyIsSetParameterTypesAttributeAccessor extends AttributeAccessor {
+         public IsSetNullPolicyIsSetParameterTypesAttributeAccessor() {
+             super();
+         }
+         
+         @Override   
+         public Object getAttributeValueFromObject(Object object) throws DescriptorException {
+        	 IsSetNullPolicy aPolicy = (IsSetNullPolicy)object;
+       		 NonSynchronizedVector aCollection = new NonSynchronizedVector();
+       		 for(int i = 0, size = aPolicy.getIsSetParameterTypes().length; i<size;i++) {
+       			 aCollection.add(aPolicy.getIsSetParameterTypes()[i]);
+       		 }
+       		 return aCollection;
+         }
+         
+         @Override
+         public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+        	 try {
+        		 // Get the Class of each entry in the collection
+        		 if(value instanceof Collection) {
+        			 Class[] parameterTypes = new Class[((Collection)value).size()];
+        			 int i = 0;
+        			 for(Iterator anIterator = ((Collection)value).iterator(); anIterator.hasNext();) {
+        				 parameterTypes[i++] = Class.forName((String)anIterator.next());
+        			 }
+        			 ((IsSetNullPolicy)object).setIsSetParameterTypes(parameterTypes);
+        		 } else {
+        			 // cast to class array
+        			 ((IsSetNullPolicy)object).setIsSetParameterTypes((Class[])value);
+        		 }
+        	 } catch (ClassNotFoundException e) {
+        		 throw new RuntimeException(e);
+        	 }
+         }
+     }     
+
+     @Override
+     protected ClassDescriptor buildXMLCompositeObjectMappingDescriptor() {
+         ClassDescriptor descriptor = super.buildXMLCompositeObjectMappingDescriptor();
+         
+         // Add Null Policy
+         XMLCompositeObjectMapping nullPolicyClassMapping = new XMLCompositeObjectMapping();
+         nullPolicyClassMapping.setReferenceClass(AbstractNullPolicy.class);
+         nullPolicyClassMapping.setAttributeName("nullPolicy");
+         nullPolicyClassMapping.setXPath("toplink:null-policy");
+
+         // Handle translation of (default) Null Policy states.
+         ((DatabaseMapping)nullPolicyClassMapping).setAttributeAccessor(new NullPolicyAttributeAccessor());         
+         descriptor.addMapping(nullPolicyClassMapping);
+
+         return descriptor;
+     }
+
+     /**
+      * INTERNAL:
+      * If the policy is the default NullPolicy with defaults set - then represent this default policy by null.
+      */
+     public class NullPolicyAttributeAccessor extends AttributeAccessor {
+         
+         public NullPolicyAttributeAccessor() {
+             super();
+         }
+         
+         @Override   
+         public Object getAttributeValueFromObject(Object object) throws DescriptorException {
+          	// If the policy is default (NullPolicy(ispfan=true, inrben=false, inrbxnn=false, XMLNullRep=ABSENT_NODE) return null
+          	AbstractNullPolicy value = ((XMLNillableMapping)object).getNullPolicy();
+          	if(value instanceof NullPolicy) {
+              	NullPolicy aPolicy = (NullPolicy)value;
+              	if(aPolicy.getIsSetPerformedForAbsentNode() && !aPolicy.isNullRepresentedByEmptyNode() //
+              			&& !aPolicy.isNullRepresentedByXsiNil() // 
+              			&& aPolicy.getMarshalNullRepresentation().equals(XMLNullRepresentationType.ABSENT_NODE)) {
+              		// The default policy is represented by null
+              		return null;
+              	}
+          	}                	
+          	return ((XMLNillableMapping)object).getNullPolicy();
+         }
+         
+         @Override
+         public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
+         	// If value is a default policy represented by null - return (NullPolicy(ispfan=true, inrben=false, inrbxn=false, XMLNullRep=ABSENT_NODE)
+          	if(null == value) {
+          		// Create and set a default policy
+          		((XMLNillableMapping)object).setNullPolicy(new NullPolicy());                    	
+          	} else {
+          		// Set the value as policy
+              	((XMLNillableMapping)object).setNullPolicy((AbstractNullPolicy)value);
+          	}
+         }
+     }
 }

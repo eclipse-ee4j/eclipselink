@@ -14,7 +14,10 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
 public class XMLRoot {
     protected Object rootObject;
     protected XPathFragment rootFragment;
-    
+    protected String encoding;
+    protected String xmlVersion;
+    protected String schemaLocation;
+    protected String noNamespaceSchemaLocation;
 
     public XMLRoot() {
         rootFragment = new XPathFragment();
@@ -57,4 +60,37 @@ public class XMLRoot {
     public XPathFragment getRootFragment() {
         return rootFragment;
     }
+    
+    public String getEncoding() {
+        return encoding;
+    }
+    
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+    
+    public String getXMLVersion() {
+        return xmlVersion;
+    }
+    
+    public void setVersion(String version) {
+        this.xmlVersion = version;
+    }
+    
+    public String getSchemaLocation() {
+        return schemaLocation;
+    }
+    
+    public void setSchemaLocation(String schemaLocation) {
+        this.schemaLocation = schemaLocation;
+    }
+    
+    public String getNoNamespaceSchemaLocation() {
+        return noNamespaceSchemaLocation;
+    }
+    
+    public void setNoNamespaceSchemaLocation(String noNamespaceSchemaLocation) {
+        this.noNamespaceSchemaLocation = noNamespaceSchemaLocation;
+    }
+    
 }

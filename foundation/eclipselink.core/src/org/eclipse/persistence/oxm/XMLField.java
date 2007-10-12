@@ -724,7 +724,7 @@ public class XMLField extends DatabaseField {
         if (hasLastXPathFragment()) {
             return getLastXPathFragment().getLeafElementType();
         }
-        return null; 
+        return leafElementType; 
     }
 
 	/**

@@ -30,6 +30,8 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
@@ -182,12 +184,16 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
 public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping implements XMLMapping, XMLNillableMapping {
-    NodeNullPolicy nodeNullPolicy;
+    private static final String EMPTY_STRING = "";
+
+    AbstractNullPolicy nullPolicy;
+    
     public XMLCompositeObjectMapping() {
         super();
-        // The default policy is OptionalNodeNullPolicy
-        nodeNullPolicy = OptionalNodeNullPolicy.getInstance();
+        // The default policy is NullPolicy
+        nullPolicy = new NullPolicy();
     }
+
     /**
      * INTERNAL:
      * The mapping is initialized with the given session. This mapping is fully initialized
@@ -216,18 +222,25 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     }
 
     /**
-     * INTERNAL:
+     * Set the AbstractNullPolicy on the mapping<br>
+     * The default policy is NullPolicy.<br>
+     *
+     * @param aNullPolicy
      */
-    public void setNodeNullPolicy(NodeNullPolicy aNodeNullPolicy) {
-        nodeNullPolicy = aNodeNullPolicy;
+    public void setNullPolicy(AbstractNullPolicy aNullPolicy) {
+        nullPolicy = aNullPolicy;
     }
 
     /**
      * INTERNAL:
+     * Get the AbstractNullPolicy from the Mapping.<br>
+     * The default policy is NullPolicy.<br>
+     * @return
      */
-    public NodeNullPolicy getNodeNullPolicy() {
-        return nodeNullPolicy;
+    public AbstractNullPolicy getNullPolicy() {
+        return nullPolicy;
     }
+
     /**
      * INTERNAL:
      */
@@ -237,7 +250,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
 
     /**
      * Get the XPath String
-     * @return String the XPath String associated with this Mapping     *
+     * @return String the XPath String associated with this Mapping
      */
     public String getXPath() {
         return getField().getName();
@@ -273,17 +286,28 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     }
 
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
-        Object fieldValue = databaseRow.get(this.getField());
-
-        if ((fieldValue == null) || fieldValue instanceof String) {
-            if (this.getNodeNullPolicy().isNullCapabableValue()) {
-                setAttributeValueInObject(targetObject, null);
-            }
-            return null;
-        }
+        Object fieldValue = databaseRow.getIndicatingNoEntry(getField());
+        // 20071002: noEntry ineffective as a check for an absent node, empty nodes are DOMRecords, absent nodes are null)
+//        if(fieldValue == AbstractRecord.noEntry && !getNullPolicy().getIsSetPerformedForAbsentNode()) {         	
+        	// Do not perform a set for an absent node
+//        	return null;
+//        } else {
+        	// Check for absent nodes based on policy flag
+        	if ((null == fieldValue) || fieldValue instanceof String) {
+        		if(getNullPolicy().getIsSetPerformedForAbsentNode()) {  
+        			setAttributeValueInObject(targetObject, null);
+        		} else {
+        			return null;
+        		}
+        		return null;
+        	}
+//        }
+        
+        // Empty or xsi:nil nodes (non-absent) will arrive here along with populated nodes 
         XMLRecord nestedRow = (XMLRecord)this.getDescriptor().buildNestedRowFromFieldValue(fieldValue);
-        if (this.getNodeNullPolicy().valueIsNull((Element)nestedRow.getDOM())) {
-            setAttributeValueInObject(targetObject, null);
+        // Check the policy to see if this DOM empty/xsi:nil or filled record represents null
+        if (getNullPolicy().valueIsNull((Element)nestedRow.getDOM())) {
+        	setAttributeValueInObject(targetObject, null);
             return null;
         }
         Object attributeValue = valueFromRow(fieldValue, nestedRow, joinManager, sourceQuery, executionSession);
@@ -294,33 +318,34 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     public Object valueFromRow(Object fieldValue, XMLRecord nestedRow, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         // pretty sure we can ignore inheritance here:                
         Object toReturn;
-        ClassDescriptor descriptor = getReferenceDescriptor((DOMRecord)nestedRow);
-        if (descriptor.hasInheritance()) {
-            Class classValue = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+        // Use local descriptor - not the instance variable on DatabaseMapping
+        ClassDescriptor aDescriptor = getReferenceDescriptor((DOMRecord)nestedRow);
+        if (aDescriptor.hasInheritance()) {
+            Class classValue = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
             if (classValue == null) {
                 // no xsi:type attribute - look for type indicator on the field
                 QName leafElementType = ((XMLField)getField()).getLeafElementType();
                 if (leafElementType != null) {
-                    Object indicator = descriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
+                    Object indicator = aDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
                     // if the inheritance policy does not contain the user-set type, throw an exception
                     if (indicator == null) {
-                        throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, descriptor.getInheritancePolicy().getDescriptor());
+                        throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, aDescriptor.getInheritancePolicy().getDescriptor());
                     }
                     classValue = (Class)indicator;
                 }
             }
             if (classValue != null) {
-                descriptor = this.getReferenceDescriptor(classValue, executionSession);
+                aDescriptor = this.getReferenceDescriptor(classValue, executionSession);
             } else {
                 // since there is no xsi:type attribute or leaf element type set, 
                 // use the reference descriptor -  make sure it is non-abstract
-                if (Modifier.isAbstract(descriptor.getJavaClass().getModifiers())) {
+                if (Modifier.isAbstract(aDescriptor.getJavaClass().getModifiers())) {
                     // throw an exception
-                    throw DescriptorException.missingClassIndicatorField(nestedRow, descriptor.getInheritancePolicy().getDescriptor());
+                    throw DescriptorException.missingClassIndicatorField(nestedRow, aDescriptor.getInheritancePolicy().getDescriptor());
                 }
             }
         }
-        ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
+        ObjectBuilder objectBuilder = aDescriptor.getObjectBuilder();
         toReturn = buildCompositeObject(objectBuilder, nestedRow, sourceQuery, joinManager);
 
         if (getConverter() != null) {
@@ -341,7 +366,8 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
 
         XMLRecord nestedRow = (XMLRecord)this.getDescriptor().buildNestedRowFromFieldValue(fieldValue);
-        if (this.getNodeNullPolicy().valueIsNull((Element)nestedRow.getDOM())) {
+        // Check the policy to see if this DOM record represents null
+        if (getNullPolicy().valueIsNull((Element)nestedRow.getDOM())) {
             return null;
         }
         return valueFromRow(fieldValue, nestedRow, joinManager, sourceQuery, executionSession);
@@ -375,7 +401,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             Object fieldValue = null;
             if (attributeValue != null) {
                 fieldValue = buildCompositeRow(attributeValue, session, record);
-            } else if (getNodeNullPolicy().compositeObjectMarshal(record, parent, (XMLField)getField())) {
+            } else if (getNullPolicy().compositeObjectMarshal(record, parent, (XMLField)getField())) {
                 // If the null policy marshal method returns true (i.e. marshalled something)
                 // don't add/put null in the record
                 return;
@@ -399,7 +425,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             // Try to find a descriptor based on the schema type
             String type = ((Element)xmlRecord.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
 
-            if ((null != type) && !type.equals("")) {
+            if ((null != type) && !type.equals(EMPTY_STRING)) {
                 XPathFragment typeFragment = new XPathFragment(type);
                 String namespaceURI = xmlRecord.resolveNamespacePrefix(typeFragment.getPrefix());
                 typeFragment.setNamespaceURI(namespaceURI);
@@ -413,10 +439,10 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     XPathFragment frag = new XPathFragment();
                     String xpath = leafType.getLocalPart();
                     String uri = leafType.getNamespaceURI();
-                    if ((uri != null) && !uri.equals("")) {
+                    if ((uri != null) && !uri.equals(EMPTY_STRING)) {
                         frag.setNamespaceURI(uri);
                         String prefix = ((XMLDescriptor)getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
-                        if ((prefix != null) && !prefix.equals("")) {
+                        if ((prefix != null) && !prefix.equals(EMPTY_STRING)) {
                             xpath = prefix + ":" + xpath;
                         }
                     }
@@ -450,12 +476,14 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     /**
      * INTERNAL:
      */
-    public boolean shouldAddXsiType(XMLRecord record, ClassDescriptor descriptor) {
-        XMLDescriptor xmlDescriptor = (XMLDescriptor)descriptor;
+    public boolean shouldAddXsiType(XMLRecord record, ClassDescriptor aDescriptor) {
+        XMLDescriptor xmlDescriptor = (XMLDescriptor)aDescriptor;
         if ((getReferenceDescriptor() == null) && (xmlDescriptor.getSchemaReference() != null)) {
-            if (descriptor.hasInheritance()) {
-                XMLField indicatorField = (XMLField)descriptor.getInheritancePolicy().getClassIndicatorField();
-                if ((indicatorField.getLastXPathFragment().getNamespaceURI() != null) && indicatorField.getLastXPathFragment().getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL) && indicatorField.getLastXPathFragment().getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)) {
+            if (aDescriptor.hasInheritance()) {
+                XMLField indicatorField = (XMLField)aDescriptor.getInheritancePolicy().getClassIndicatorField();
+                if ((indicatorField.getLastXPathFragment().getNamespaceURI() != null) //
+                		&& indicatorField.getLastXPathFragment().getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL) //
+                		&& indicatorField.getLastXPathFragment().getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)) {
                     return false;
                 }
             }

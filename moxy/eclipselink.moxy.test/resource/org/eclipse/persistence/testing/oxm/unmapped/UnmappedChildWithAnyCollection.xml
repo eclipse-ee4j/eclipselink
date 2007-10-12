@@ -1,0 +1,13 @@
+<employee>
+	<first-name>Jane</first-name>
+	<last-name>Doe</last-name>
+	<UNMAPPED-1/>
+	<UNMAPPED-3>
+		<NESTED3/>
+	</UNMAPPED-3>
+	<employee/>
+	<UNMAPPED-2/>
+	<UNMAPPED-4>
+		<NESTED4/>
+	</UNMAPPED-4>
+</employee>

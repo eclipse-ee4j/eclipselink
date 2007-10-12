@@ -13,6 +13,7 @@ import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.DataHelper;
 import commonj.sdo.helper.HelperContext;
+import commonj.sdo.impl.HelperProvider;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -34,40 +35,39 @@ import org.eclipse.persistence.oxm.XMLConstants;
 public class SDODataHelper implements DataHelper {
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;
-    
     private XMLConversionManager xmlConversionManager;
 
     public SDODataHelper() {
         // TODO: JIRA129 - default to static global context - Do Not use this convenience constructor outside of JUnit testing
         //aHelperContext = HelperProvider.getDefaultContext();
-    	xmlConversionManager = (XMLConversionManager) XMLConversionManager.getDefaultXMLManager().clone();
+        xmlConversionManager = (XMLConversionManager)XMLConversionManager.getDefaultXMLManager().clone();
     }
 
     public SDODataHelper(HelperContext aContext) {
         aHelperContext = aContext;
-    	xmlConversionManager = (XMLConversionManager) XMLConversionManager.getDefaultXMLManager().clone();
+        xmlConversionManager = (XMLConversionManager)XMLConversionManager.getDefaultXMLManager().clone();
     }
 
     /**
      * The specified TimeZone will be used for all String to date object
      * conversions.  By default the TimeZone from the JVM is used.
-     */   
+     */
     public void setTimeZone(TimeZone timeZone) {
-    	if(null == timeZone) {
-    		xmlConversionManager.setTimeZone(TimeZone.getDefault());
-    	} else {
-    		xmlConversionManager.setTimeZone(timeZone);		
-    	}
+        if (null == timeZone) {
+            xmlConversionManager.setTimeZone(TimeZone.getDefault());
+        } else {
+            xmlConversionManager.setTimeZone(timeZone);
+        }
     }
-    
+
     /**
-     * By setting this flag to true the marshalled date objects marshalled to 
-     * the XML schema types time and dateTime will be qualified by a time zone.  
+     * By setting this flag to true the marshalled date objects marshalled to
+     * the XML schema types time and dateTime will be qualified by a time zone.
      * By default time information is not time zone qualified.
      */
     public void setTimeZoneQualified(boolean timeZoneQualified) {
-    	xmlConversionManager.setTimeZoneQualified(timeZoneQualified);
-    }    
+        xmlConversionManager.setTimeZoneQualified(timeZoneQualified);
+    }
 
     /**
      * Convert from a String representation of an SDO date type to a Date.
@@ -203,7 +203,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromDate(date, XMLConstants.DATE_TIME_QNAME);
+        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.DATE_TIME_QNAME);
     }
 
     /**
@@ -229,7 +229,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromDate(date, XMLConstants.TIME_QNAME);
+        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.TIME_QNAME);
     }
 
     /**
@@ -241,7 +241,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromDate(date, XMLConstants.G_DAY_QNAME);
+        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.G_DAY_QNAME);
     }
 
     /**
@@ -253,7 +253,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromDate(date, XMLConstants.G_MONTH_QNAME);
+        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.G_MONTH_QNAME);
     }
 
     /**
@@ -265,7 +265,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromDate(date, XMLConstants.G_MONTH_DAY_QNAME);
+        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.G_MONTH_DAY_QNAME);
     }
 
     /**
@@ -277,7 +277,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromDate(date, XMLConstants.G_YEAR_QNAME);
+        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.G_YEAR_QNAME);
     }
 
     /**
@@ -289,7 +289,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromDate(date, XMLConstants.G_YEAR_MONTH_QNAME);
+        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.G_YEAR_MONTH_QNAME);
     }
 
     /**
@@ -301,7 +301,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromDate(date, XMLConstants.DATE_QNAME);
+        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.DATE_QNAME);
     }
 
     /**
@@ -313,7 +313,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromCalendar(calendar, XMLConstants.DATE_TIME_QNAME);
+        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.DATE_TIME_QNAME);
     }
 
     /**
@@ -352,7 +352,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromCalendar(calendar, XMLConstants.TIME_QNAME);
+        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.TIME_QNAME);
     }
 
     /**
@@ -364,7 +364,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_DAY_QNAME);
+        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_DAY_QNAME);
     }
 
     /**
@@ -376,7 +376,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_MONTH_QNAME);
+        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_MONTH_QNAME);
     }
 
     /**
@@ -388,7 +388,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_MONTH_DAY_QNAME);
+        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_MONTH_DAY_QNAME);
     }
 
     /**
@@ -400,7 +400,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_YEAR_QNAME);
+        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_YEAR_QNAME);
     }
 
     /**
@@ -412,8 +412,8 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_YEAR_MONTH_QNAME);
-}
+        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_YEAR_MONTH_QNAME);
+    }
 
     /**
      * Convert from a Calendar to a String representation of the YearMonthDay type.
@@ -424,7 +424,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String) xmlConversionManager.stringFromCalendar(calendar, XMLConstants.DATE_QNAME);
+        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.DATE_QNAME);
     }
 
     /**
@@ -549,12 +549,12 @@ public class SDODataHelper implements DataHelper {
          * @return the original value converted based on the convertClass parameter.
          */
     public Object convertFromStringValue(String value, Type sdoType, QName schemaType) {
-        Class convertClass = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getJavaWrapperTypeForSDOType(sdoType);
+        Class convertClass = ((SDOTypeHelper)getHelperContext().getTypeHelper()).getJavaWrapperTypeForSDOType(sdoType);
         if (convertClass != null) {
             if (schemaType == null) {
-                return ((SDODataHelper)aHelperContext.getDataHelper()).convertFromStringValue(value, convertClass);
+                return ((SDODataHelper)getHelperContext().getDataHelper()).convertFromStringValue(value, convertClass);
             } else {
-                return ((SDODataHelper)aHelperContext.getDataHelper()).convertFromStringValue(value, convertClass, schemaType);
+                return ((SDODataHelper)getHelperContext().getDataHelper()).convertFromStringValue(value, convertClass, schemaType);
             }
         }
         return value;
@@ -639,7 +639,12 @@ public class SDODataHelper implements DataHelper {
     * @see #convert(Property, Object)
     */
     public Object convert(Type type, Object value) {
-        Class convertClass = type.getInstanceClass();
+        Class convertClass;
+        if (type.isDataType()) {
+            convertClass = type.getInstanceClass();
+        } else {
+            convertClass = ((org.eclipse.persistence.sdo.SDOType)type).getImplClass();
+        }
 
         if (value.getClass() == ClassConstants.STRING) {
             return convertFromStringValue((String)value, type);
@@ -711,6 +716,9 @@ public class SDODataHelper implements DataHelper {
      * INTERNAL:
      */
     public HelperContext getHelperContext() {
+        if (null == aHelperContext) {
+            aHelperContext = HelperProvider.getDefaultContext();
+        }
         return aHelperContext;
     }
 

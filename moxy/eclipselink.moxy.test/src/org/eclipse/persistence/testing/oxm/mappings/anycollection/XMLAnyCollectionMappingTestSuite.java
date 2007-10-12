@@ -10,10 +10,13 @@
 package org.eclipse.persistence.testing.oxm.mappings.anycollection;
 
 import org.eclipse.persistence.testing.oxm.mappings.anycollection.withoutgroupingelement.AnyCollectionKeepAllAsElementTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.anycollection.withoutgroupingelement.AnyCollectionKeepUnknownAsElementNS2TestCases;
+import org.eclipse.persistence.testing.oxm.mappings.anycollection.withoutgroupingelement.AnyCollectionKeepUnknownAsElementNSTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.anycollection.withoutgroupingelement.AnyCollectionKeepUnknownAsElementTestCases;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.eclipse.persistence.testing.oxm.mappings.anycollection.withoutgroupingelement.AnyCollectionSkipUnknownTestCases;
 
 public class XMLAnyCollectionMappingTestSuite extends TestCase {
     public static Test suite() {
@@ -49,6 +52,10 @@ public class XMLAnyCollectionMappingTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anycollection.withgroupingelement.AnyCollectionWithGroupingWithXMLRootTestCases.class);
         suite.addTestSuite(AnyCollectionKeepAllAsElementTestCases.class);
         suite.addTestSuite(AnyCollectionKeepUnknownAsElementTestCases.class);
+        suite.addTestSuite(AnyCollectionSkipUnknownTestCases.class);
+        
+        suite.addTestSuite(AnyCollectionKeepUnknownAsElementNSTestCases.class);
+        suite.addTestSuite(AnyCollectionKeepUnknownAsElementNS2TestCases.class);
         return suite;
     }
 

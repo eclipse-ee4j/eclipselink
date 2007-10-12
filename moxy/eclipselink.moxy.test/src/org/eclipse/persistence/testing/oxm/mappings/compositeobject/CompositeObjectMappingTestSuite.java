@@ -21,7 +21,23 @@ import org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedby
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nested.CompositeObjectNestedTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNodeNullPolicyFalseTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNodeNullPolicyTrueTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicyAbsentIsSetAbsentFalseIsSetFalseTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicyAbsentIsSetAbsentFalseIsSetTrueTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicyAbsentIsSetAbsentTrueTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicySetEmptyFalseIsSetFalseTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicySetEmptyFalseIsSetTrueTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalseTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicySetEmptyTrueIsSetTrueTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicySetNonNullTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicySetNonNullTextNodeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNillableNodeNullPolicyTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNullPolicyAbsentIsSetAbsentFalseTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNullPolicyAbsentIsSetAbsentTrueTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNullPolicySetEmptyFalseIsSetFalseTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNullPolicySetEmptyFalseIsSetTrueTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNullPolicySetEmptyTrueIsSetFalseTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNullPolicySetEmptyTrueIsSetTrueTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNullPolicySetNonNullTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectOptionalNodeNullPolicyElementTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nulltests.CompositeObjectNullTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.AttributeListOnTargetTestCases;
@@ -48,21 +64,33 @@ public class CompositeObjectMappingTestSuite extends TestCase {
         suite.addTestSuite(AttributesOnTargetTestCases.class);
         suite.addTestSuite(AttributeListOnTargetTestCases.class);
 
-        // NodeNullPolicy test cases see: TopLinkOXM-Nillable4_blaise.doc
-        // see: TopLink_OX_Nillable_TestDesignSpec_v20061026.doc
-        // UC2a
-                               
-        if(!Boolean.getBoolean("useDeploymentXML")) {
-          suite.addTestSuite(CompositeObjectOptionalNodeNullPolicyElementTestCases.class);// 6 of 6 pass by default
-          // UC2b - not applicable
-          //suite.addTestSuite(CompositeObjectOptionalNodeNullPolicyAttributeTestCases.class);// 6 of 6 pass by default
-          // UC3
-          suite.addTestSuite(CompositeObjectNillableNodeNullPolicyTestCases.class);// 3 of 6 pass until implementation set
-          // UC4-true
-          suite.addTestSuite(CompositeObjectIsSetNodeNullPolicyTrueTestCases.class);// 0 of 6 pass until implementation set
-          // UC4-false
-          suite.addTestSuite(CompositeObjectIsSetNodeNullPolicyFalseTestCases.class);// 6 of 6 pass by default
-        }
+        // Null Policy refactor 3
+       	suite.addTestSuite(CompositeObjectNullPolicySetEmptyFalseIsSetFalseTestCases.class); 
+       	suite.addTestSuite(CompositeObjectNullPolicySetEmptyFalseIsSetTrueTestCases.class); 
+       	// UC 9-1 to 9-2 and 11.2
+       	suite.addTestSuite(CompositeObjectIsSetNullPolicySetEmptyFalseIsSetFalseTestCases.class); 
+       	// UC 9-1 to 9-2 and 11.5
+       	suite.addTestSuite(CompositeObjectIsSetNullPolicySetEmptyFalseIsSetTrueTestCases.class);
+       	// UC 9-3 to 9-4 and 11.2 - no round trip for unmarshal isset=false
+       	suite.addTestSuite(CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalseTestCases.class);
+       	// UC 9-3 to 9-4 and 11.5
+       	suite.addTestSuite(CompositeObjectIsSetNullPolicySetEmptyTrueIsSetTrueTestCases.class); 
+       	suite.addTestSuite(CompositeObjectNullPolicySetEmptyTrueIsSetFalseTestCases.class); 
+       	suite.addTestSuite(CompositeObjectNullPolicySetEmptyTrueIsSetTrueTestCases.class);
+       	suite.addTestSuite(CompositeObjectNullPolicySetNonNullTestCases.class);
+       	suite.addTestSuite(CompositeObjectNullPolicyAbsentIsSetAbsentFalseTestCases.class);
+       	suite.addTestSuite(CompositeObjectNullPolicyAbsentIsSetAbsentTrueTestCases.class);
+       	suite.addTestSuite(CompositeObjectIsSetNullPolicySetNonNullTestCases.class);
+        suite.addTestSuite(CompositeObjectIsSetNullPolicySetNonNullTextNodeTestCases.class);       	
+       	suite.addTestSuite(CompositeObjectIsSetNullPolicyAbsentIsSetAbsentFalseIsSetFalseTestCases.class);
+       	suite.addTestSuite(CompositeObjectIsSetNullPolicyAbsentIsSetAbsentFalseIsSetTrueTestCases.class); // check rountrip
+       	//suite.addTestSuite(CompositeObjectIsSetNullPolicyAbsentIsSetAbsentTrueTestCases.class); // invalid use case ISPFAN is always false
+
+       	// pre-nillable refactor 3
+        suite.addTestSuite(CompositeObjectOptionalNodeNullPolicyElementTestCases.class);
+        suite.addTestSuite(CompositeObjectNillableNodeNullPolicyTestCases.class);
+        suite.addTestSuite(CompositeObjectIsSetNodeNullPolicyTrueTestCases.class);
+        suite.addTestSuite(CompositeObjectIsSetNodeNullPolicyFalseTestCases.class);
 
         return suite;
     }

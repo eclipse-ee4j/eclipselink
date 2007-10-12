@@ -50,8 +50,9 @@ public abstract class NodeValue {
     public boolean isMarshalOnlyNodeValue() {
     	return false;
     }
+    
     /**
-     * 
+     * INTERNAL:
      * @param xPathFragment
      * @return
      */
@@ -59,28 +60,73 @@ public abstract class NodeValue {
         return null == xPathFragment.getNextFragment();
     }
 
+    /**
+     * INTERNAL:
+     * @param xPathFragment
+     * @param marshalRecord
+     * @param object
+     * @param session
+     * @param namespaceResolver
+     * @return
+     */
     public abstract boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver);
 
+    /**
+     * INTERNAL:
+     * @param xPathFragment
+     * @param marshalRecord
+     * @param object
+     * @param session
+     * @param namespaceResolver
+     * @param marshaller
+     * @return
+     */
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, org.eclipse.persistence.oxm.XMLMarshaller marshaller) {
         return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
     }
 
+    /**
+     * INTERNAL:
+     * @param xPathFragment
+     * @param unmarshalRecord
+     * @param atts
+     * @return
+     */
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
     	return true;
     }
 
+    /**
+     * INTERNAL:
+     * @param unmarshalRecord
+     * @param URI
+     * @param localName
+     * @param value
+     */
     public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
-        //no op for parent
+        // No operation for parent
     }
 
+    /**
+     * INTERNAL:
+     * @param xPathFragment
+     * @param unmarshalRecord
+     */
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
     }
 
+    /**
+     * INTERNAL:
+     * @param unmarshalRecord
+     * @param atts
+     * @return
+     */
     public UnmarshalRecord buildSelfRecord(UnmarshalRecord unmarshalRecord, Attributes atts) {
         return null;
     }
 
     /**
+     * INTERNAL:
       * @return Returns true if the NodeValue implements ContainerValue.
       * @see org.eclipse.persistence.internal.oxm.ContainerValue
       */
@@ -89,6 +135,7 @@ public abstract class NodeValue {
     }
 
     /**
+     * INTERNAL:
       * @return Returns true if the NodeValue implements NullCapableValue.
       * @see org.eclipse.persistence.internal.oxm.NullCapableValue
       */

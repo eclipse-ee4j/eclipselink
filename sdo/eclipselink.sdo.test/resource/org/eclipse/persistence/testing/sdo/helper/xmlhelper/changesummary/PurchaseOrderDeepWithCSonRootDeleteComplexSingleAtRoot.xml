@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns0:purchaseOrder orderDate="1999-10-20" xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-   <ns0:myChangeSummary delete="#/ns0:myChangeSummary/ns0:purchaseOrder/ns0:shipTo">
+<ns0:purchaseOrder orderDate="1999-10-20" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:myChangeSummary delete="#/ns0:myChangeSummary/ns0:purchaseOrder/ns0:shipTo" xmlns:sdo="commonj.sdo">
       <ns0:purchaseOrder sdo:ref="#/">
-         <ns0:shipTo xsi:type="ns0:AddressType" country="US" xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+         <ns0:shipTo xsi:type="ns0:AddressType" country="US">
             <ns0:street>123 Maple Street</ns0:street>
             <ns0:city>Mill Valley</ns0:city>
             <ns0:state>CA</ns0:state>

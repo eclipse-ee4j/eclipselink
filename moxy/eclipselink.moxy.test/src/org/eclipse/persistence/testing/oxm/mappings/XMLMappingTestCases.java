@@ -31,6 +31,7 @@ import org.xml.sax.XMLReader;
 
 public abstract class XMLMappingTestCases extends OXTestCase {
     protected Document controlDocument;
+    protected Document writeControlDocument;
     protected XMLMarshaller xmlMarshaller;
     protected XMLUnmarshaller xmlUnmarshaller;
     protected XMLContext xmlContext;
@@ -72,6 +73,11 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         return controlDocument;
     }
 
+    /**
+     * Override this function to implement different read/write control documents.
+     * @return
+     * @throws Exception
+     */
     protected Document getWriteControlDocument() throws Exception {
         return getControlDocument();
     }
@@ -84,6 +90,20 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         inputStream.close();
     }
 
+    /**
+     * Provide an alternative write version of the control document when rountrip is not enabled.
+     * If this function is not called and getWriteControlDocument() is not overridden then the write and read control documents are the same.
+     * @param xmlResource
+     * @throws Exception
+     */
+    protected void setWriteControlDocument(String xmlResource) throws Exception {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(xmlResource);
+        resourceName = xmlResource;
+        writeControlDocument = parser.parse(inputStream);
+        removeEmptyTextNodes(writeControlDocument);
+        inputStream.close();
+    }
+    
     abstract protected Object getControlObject();
 
     /*
@@ -95,7 +115,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     }
 
     /*
-     * Returns to object to be written to XML which will be compared
+     * Returns the object to be written to XML which will be compared
      * to the control document.
      */
     public Object getWriteControlObject() {
@@ -148,6 +168,9 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         objectToXMLDocumentTest(testDocument);
     }
 
+    
+    
+    
     public void testObjectToXMLStringWriter() throws Exception {
         StringWriter writer = new StringWriter();
         xmlMarshaller.marshal(getWriteControlObject(), writer);

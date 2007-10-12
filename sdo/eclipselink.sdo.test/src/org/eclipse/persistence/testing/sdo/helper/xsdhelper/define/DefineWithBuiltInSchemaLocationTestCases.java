@@ -46,6 +46,8 @@ public class DefineWithBuiltInSchemaLocationTestCases extends XSDHelperDefineTes
 
         //ADDRESS TYPE
         SDOType USaddrType = new SDOType(uri, "USAddress");
+        USaddrType.setXsd(true);
+        USaddrType.setXsdLocalName("USAddress");
         USaddrType.setDataType(false);
         USaddrType.setInstanceClassName("com.example.myPackage.USAddress");
 
@@ -95,6 +97,8 @@ public class DefineWithBuiltInSchemaLocationTestCases extends XSDHelperDefineTes
 
         /****ITEM TYPE*****/
         SDOType itemType = new SDOType(uri, "ItemSDO");
+        itemType.setXsd(true);
+        itemType.setXsdLocalName("ItemSDO");
         itemType.setInstanceClassName("com.example.myPackage.ItemSDO");
         itemType.setDataType(false);
 
@@ -134,6 +138,8 @@ public class DefineWithBuiltInSchemaLocationTestCases extends XSDHelperDefineTes
 
         /****ITEMS TYPE*****/
         SDOType itemsType = new SDOType(uri, "Items");
+        itemsType.setXsd(true);
+        itemsType.setXsdLocalName("Items");
         itemsType.setDataType(false);
         itemsType.setInstanceClassName("com.example.myPackage.Items");
 
@@ -187,6 +193,8 @@ public class DefineWithBuiltInSchemaLocationTestCases extends XSDHelperDefineTes
         orderDateProp.setContainment(false);
 
         SDOType POtype = new SDOType(uri, "PurchaseOrder");
+        POtype.setXsd(true);
+        POtype.setXsdLocalName("PurchaseOrder");
         POtype.setSequenced(true);
         POtype.setInstanceClassName("com.example.myPackage.PurchaseOrder");
         POtype.setDataType(false);

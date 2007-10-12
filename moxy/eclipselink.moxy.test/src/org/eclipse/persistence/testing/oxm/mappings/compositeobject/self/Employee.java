@@ -20,6 +20,14 @@ public class Employee {
         _StartDateAndEndDate = new Period();
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public Period getStartDateAndEndDate() {
         return _StartDateAndEndDate;
     }
@@ -34,6 +42,9 @@ public class Employee {
             if (this == employee) {
                 return true;
             }
+            if (id != employee.getId()) {
+                return false;
+			}
             if (null == _StartDateAndEndDate) {
                 if (null != employee.getStartDateAndEndDate()) {
                     return false;

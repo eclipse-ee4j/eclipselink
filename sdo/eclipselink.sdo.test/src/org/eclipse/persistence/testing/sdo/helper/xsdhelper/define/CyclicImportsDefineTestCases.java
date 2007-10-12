@@ -89,18 +89,24 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
 
         /****QUANTITY TYPE*****/
         SDOType quantityType = new SDOType(uri, "quantityType");
+        quantityType.setXsd(true);
+        quantityType.setXsdLocalName("quantityType");
         quantityType.setDataType(true);
         quantityType.setInstanceClassName("java.lang.String");
         quantityType.addBaseType((SDOType)intType);
 
         /****SKU TYPE*****/
         SDOType SKUType = new SDOType(uri, "SKU");
+        SKUType.setXsd(true);
+        SKUType.setXsdLocalName("SKU");
         SKUType.setInstanceClassName("java.lang.String");
         SKUType.setDataType(true);
         SKUType.addBaseType((SDOType)stringType);
 
         /****PHONE TYPE*****/
         SDOType phoneType = new SDOType(uri, "PhoneType");
+        phoneType.setXsd(true);
+        phoneType.setXsdLocalName("PhoneType");
         phoneType.setDataType(false);
         phoneType.setInstanceClassName("defaultPackage.PhoneType");
 
@@ -115,6 +121,8 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
 
         //ADDRESS TYPE
         SDOType USaddrType = new SDOType(uri2, "USAddress");
+        USaddrType.setXsd(true);
+        USaddrType.setXsdLocalName("USAddress");
         USaddrType.setDataType(false);
         USaddrType.setInstanceClassName("defaultPackage.USAddress");
 
@@ -171,6 +179,8 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
         billToProp.setXsd(true);
 
         SDOType POtype = new SDOType(uri, "PurchaseOrder");
+        POtype.setXsd(true);
+        POtype.setXsdLocalName("PurchaseOrder");
         POtype.setInstanceClassName("defaultPackage.PurchaseOrder");
         POtype.setDataType(false);
         POtype.addDeclaredProperty(shipToProp);
@@ -178,8 +188,8 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
         //POtype.addDeclaredProperty(quantityProp);
         //POtype.addDeclaredProperty(partNumProp);
         types.add(POtype);
-        types.add(phoneType);
         types.add(USaddrType);
+        types.add(phoneType);
         //types.add(quantityType);
         types.add(SKUType);
         return types;

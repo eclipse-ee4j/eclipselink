@@ -16,7 +16,6 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
-
 import javax.xml.transform.Source;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
@@ -69,7 +68,8 @@ public class XMLUnmarshaller {
     private XMLUnmarshalListener unmarshalListener;
     private XMLAttachmentUnmarshaller attachmentUnmarshaller;
     private Properties unmarshalProperties;
-    
+    private Class unmappedContentHandlerClass;
+
     protected XMLUnmarshaller(XMLContext xmlContext) {
         this.xmlContext = xmlContext;
         initialize();
@@ -81,7 +81,7 @@ public class XMLUnmarshaller {
         platformUnmarshaller = xmlPlatform.newPlatformUnmarshaller(xmlContext);
         platformUnmarshaller.setWhitespacePreserving(false);
         unmarshalProperties = new Properties();
-        
+
         // Waiting on XDK to fix bug #3697940 to enable this code
         //initializeSchemas();        
         setValidationMode(NONVALIDATING);
@@ -92,9 +92,9 @@ public class XMLUnmarshaller {
             HashSet schemas = new HashSet();
             Iterator xmlDescriptors;
             XMLDescriptor xmlDescriptor;
-            XMLSchemaReference xmlSchemaReference;            
+            XMLSchemaReference xmlSchemaReference;
             int numberOfSessions = xmlContext.getSessions().size();
-            for (int x = 0; x < numberOfSessions; x++) {                
+            for (int x = 0; x < numberOfSessions; x++) {
                 xmlDescriptors = ((DatabaseSession)xmlContext.getSessions().get(x)).getDescriptors().values().iterator();
                 URL schemaURL;
                 while (xmlDescriptors.hasNext()) {
@@ -121,6 +121,7 @@ public class XMLUnmarshaller {
     public XMLContext getXMLContext() {
         return xmlContext;
     }
+
     /**
     * Get the validation mode set on this XMLUnmarshaller
     * By default, the unmarshaller is set to be NONVALIDATING
@@ -129,18 +130,18 @@ public class XMLUnmarshaller {
     public int getValidationMode() {
         return platformUnmarshaller.getValidationMode();
     }
-    
+
     /**
      * INTERNAL
      * @param unitOfWork
      */
     public void resolveReferences(AbstractSession unitOfWork) {
-    	ReferenceResolver resolver = ReferenceResolver.getInstance(unitOfWork);
-    	if (resolver != null) {
-    		resolver.resolveReferences(unitOfWork);
-    	}
+        ReferenceResolver resolver = ReferenceResolver.getInstance(unitOfWork);
+        if (resolver != null) {
+            resolver.resolveReferences(unitOfWork);
+        }
     }
-    
+
     /**
     * Set the validation mode.
     * This method sets the validation mode of the parser to one of the 3 types:
@@ -193,6 +194,23 @@ public class XMLUnmarshaller {
 
     public void setUnmarshalListener(XMLUnmarshalListener listener) {
         this.unmarshalListener = listener;
+    }
+
+    /**
+      * Get the class that will be instantiated to handled unmapped content
+      * Class must implement the org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler interface
+      */
+    public Class getUnmappedContentHandlerClass() {
+        return this.unmappedContentHandlerClass;
+    }
+
+    /**
+     * Set the class that will be instantiated to handled unmapped content
+     * Class must implement the org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler interface
+     * @param aClass
+     */
+    public void setUnmappedContentHandlerClass(Class aClass) {
+        this.unmappedContentHandlerClass = aClass;
     }
 
     /**
@@ -419,27 +437,26 @@ public class XMLUnmarshaller {
         return platformUnmarshaller.unmarshal(source, this);
     }
 
-
     /**
-     * Return a properties object for a given instance of the 
+     * Return a properties object for a given instance of the
      * XMLUnmarshaller.
-     * 
+     *
      * @return
      */
     public Properties getProperties() {
         return unmarshalProperties;
     }
-    
+
     /**
      * Return the property for a given key, if one exists.
-     * 
+     *
      * @parm key
      * @return
      */
     public Object getProperty(Object key) {
         return unmarshalProperties.get(key);
     }
-    
+
     /**
     * PUBLIC:
     * Read and parse the XML document from the source and map the XML data into an object.
@@ -463,12 +480,20 @@ public class XMLUnmarshaller {
         }
         return xmlUnmarshallerHandler;
     }
-    
+
     public XMLAttachmentUnmarshaller getAttachmentUnmarshaller() {
         return attachmentUnmarshaller;
     }
-    
+
     public void setAttachmentUnmarshaller(XMLAttachmentUnmarshaller atu) {
         attachmentUnmarshaller = atu;
+    }
+
+    public void setResultAlwaysXMLRoot(boolean alwaysReturnRoot) {
+        platformUnmarshaller.setResultAlwaysXMLRoot(alwaysReturnRoot);
+    }
+
+    public boolean isResultAlwaysXMLRoot() {
+        return platformUnmarshaller.isResultAlwaysXMLRoot();
     }
 }

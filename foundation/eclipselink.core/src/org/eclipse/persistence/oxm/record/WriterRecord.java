@@ -324,7 +324,10 @@ public class WriterRecord extends MarshalRecord {
         }
 
         public void startPrefixMapping(String prefix, String uri) throws SAXException {
-            prefixMappings.put(prefix, uri);
+            String namespaceUri = getNamespaceResolver().resolveNamespacePrefix(prefix);
+            if(namespaceUri == null || !namespaceUri.equals(uri)) {
+                prefixMappings.put(prefix, uri);
+            }
         }
 
         public void characters(char[] ch, int start, int length) throws SAXException {

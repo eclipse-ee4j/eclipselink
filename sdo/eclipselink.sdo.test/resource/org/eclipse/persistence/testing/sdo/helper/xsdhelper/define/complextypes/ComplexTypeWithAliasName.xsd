@@ -5,7 +5,7 @@
 	    xmlns:sdoXML='commonj.sdo/xml'
 	    targetNamespace='http://www.example.org'
 	    elementFormDefault='qualified'>
-	  <xsd:element name = 'Test' type='mayTestType' />
+	  <xsd:element name = 'Test' type='myTestType' />
 	  <xsd:complexType name='myTestType' sdoXML:aliasName='ALAS_NAME'>
 		<xsd:sequence>
 			<xsd:element name = 'myTest1' type = 'xsd:string' />

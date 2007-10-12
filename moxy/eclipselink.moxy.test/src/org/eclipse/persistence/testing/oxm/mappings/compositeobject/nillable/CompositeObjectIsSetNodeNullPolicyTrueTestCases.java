@@ -6,34 +6,23 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-/* $Header: CompositeObjectIsSetNodeNullPolicyTrueTestCases.java 02-nov-2006.10:57:14 gyorke Exp $ */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    gyorke      11/02/06 - 
-    bdoughan    11/14/06 - 
-    mfobrien    10/26/06 - Creation
- */
-
-/**
- *  @version $Header: CompositeObjectIsSetNodeNullPolicyTrueTestCases.java 02-nov-2006.10:57:14 gyorke Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
-
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.IsSetNodeNullPolicy;
-import org.eclipse.persistence.oxm.mappings.NodeNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
+
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
+/**
+ * UC 8-9 and 11.3
+ */
 public class CompositeObjectIsSetNodeNullPolicyTrueTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = //
     	"org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectIsSetNodeNullPolicyTrue.xml";
@@ -42,15 +31,21 @@ public class CompositeObjectIsSetNodeNullPolicyTrueTestCases extends XMLMappingT
         super(name);
         setControlDocument(XML_RESOURCE);
 
-        NodeNullPolicy aNodeNullPolicy = new IsSetNodeNullPolicy();
-        ((IsSetNodeNullPolicy)aNodeNullPolicy).setIsSetMethodName("isSetManager");
+        AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
+    	// alter unmarshal policy state
+    	aNullPolicy.setNullRepresentedByEmptyNode(false); // No effect
+    	aNullPolicy.setNullRepresentedByXsiNil(true);
+    	// alter marshal policy state
+    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);//.EMPTY_NODE);//.ABSENT_NODE);
+
+    	((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetManager");
         Project aProject = new CompositeObjectNodeNullPolicyProject(true);
         XMLDescriptor teamDescriptor = (XMLDescriptor) aProject.getDescriptor(Team.class);
         NamespaceResolver namespaceResolver = new NamespaceResolver();
         namespaceResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
         teamDescriptor.setNamespaceResolver(namespaceResolver);
         XMLCompositeObjectMapping aMapping = (XMLCompositeObjectMapping) teamDescriptor.getMappingForAttributeName("manager");
-        aMapping.setNodeNullPolicy(aNodeNullPolicy);
+        aMapping.setNullPolicy(aNullPolicy);
         setProject(aProject);
     }
 

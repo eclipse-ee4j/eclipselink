@@ -1,4 +1,5 @@
 <project name="Compile SDO Testing" default="run.sdo.tests">
+    <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
     <propertyset id="parser.properties">
 	    <propertyref prefix="javax.xml"/>

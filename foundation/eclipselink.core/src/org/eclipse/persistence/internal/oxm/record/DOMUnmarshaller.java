@@ -12,6 +12,7 @@ package org.eclipse.persistence.internal.oxm.record;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Method;
 import java.net.URL;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
@@ -19,6 +20,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -53,6 +55,7 @@ import org.xml.sax.InputSource;
 public class DOMUnmarshaller implements PlatformUnmarshaller {
     private XMLParser parser;
     private XMLContext xmlContext;
+    private boolean isResultAlwaysXMLRoot;
 
     public DOMUnmarshaller(XMLContext xmlContext) {
         super();
@@ -294,6 +297,22 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
      * INTERNAL: Convert the Oracle XMLDocument to the reference-class.
      */
     public Object xmlToObject(DOMRecord xmlRow, Class referenceClass, XMLUnmarshaller unmarshaller) throws XMLMarshalException {
+        //Try to get the Encoding and Version from DOM3 APIs if available
+        String xmlEncoding = "UTF-8";
+        String xmlVersion = "1.0";
+        
+        try {
+            Method getEncoding = PrivilegedAccessHelper.getMethod(xmlRow.getDocument().getClass(), "getXmlEncoding", new Class[]{}, true);
+            Method getVersion = PrivilegedAccessHelper.getMethod(xmlRow.getDocument().getClass(), "getXmlVersion", new Class[]{}, true);
+            
+            xmlEncoding = (String)PrivilegedAccessHelper.invokeMethod(getEncoding, xmlRow.getDocument(), new Object[]{});
+            xmlVersion = (String)PrivilegedAccessHelper.invokeMethod(getVersion, xmlRow.getDocument(), new Object[]{});
+            
+        } catch(Exception ex) {
+            //if the methods aren't available, then just use the default values
+        }
+        
+        
         // handle case where the reference class is a primitive wrapper - in
         // this case, we need to use the conversion manager to convert the 
         // node's value to the primitive wrapper class, then create, 
@@ -323,6 +342,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 			}
             xmlRoot.setLocalName(lName);
             xmlRoot.setNamespaceURI(xmlRow.getDOM().getNamespaceURI());
+            xmlRoot.setEncoding(xmlEncoding);
+            xmlRoot.setVersion(xmlVersion);
             return xmlRoot;
         }
 
@@ -353,6 +374,14 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             elementLocalName = xmlRow.getDOM().getNodeName();
         }
         String elementPrefix = xmlRow.getDOM().getPrefix();
-        return descriptor.wrapObjectInXMLRoot(object, elementNamespaceUri, elementLocalName, elementPrefix);
+        return descriptor.wrapObjectInXMLRoot(object, elementNamespaceUri, elementLocalName, elementPrefix, xmlEncoding, xmlVersion, this.isResultAlwaysXMLRoot);
+    }
+    
+    public boolean isResultAlwaysXMLRoot() {
+        return this.isResultAlwaysXMLRoot;
+    }
+    
+    public void setResultAlwaysXMLRoot(boolean alwaysReturnRoot) {
+        this.isResultAlwaysXMLRoot = alwaysReturnRoot;
     }
 }

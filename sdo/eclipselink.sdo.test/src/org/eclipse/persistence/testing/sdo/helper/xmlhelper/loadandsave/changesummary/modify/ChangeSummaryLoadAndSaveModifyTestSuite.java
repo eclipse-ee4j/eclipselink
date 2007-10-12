@@ -42,6 +42,7 @@ public class ChangeSummaryLoadAndSaveModifyTestSuite {
         suite.addTest(new TestSuite(ChangeSummaryRootLoggingOnModifyComplexAtCSLoadAndSaveTestCases.class));
         suite.addTest(new TestSuite(ChangeSummaryChildLoggingOnModifyComplexAtCSLoadAndSaveTestCases.class));        
         suite.addTest(new TestSuite(SDOChangeSummaryUnsetTestCases.class));        
+        suite.addTest(new TestSuite(ChangeSummaryModifyBug6346754TestCases.class));        
         
         return suite;
     }

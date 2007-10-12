@@ -1,4 +1,4 @@
-<tns:AAA xmlns:sdo="commonj.sdo" xmlns:tns="theURI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<tns:AAA xmlns:tns="theURI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <tns:BBB>111</tns:BBB>
    <tns:CCC>xxx</tns:CCC>
    <tns:testElement>testElementValue</tns:testElement>

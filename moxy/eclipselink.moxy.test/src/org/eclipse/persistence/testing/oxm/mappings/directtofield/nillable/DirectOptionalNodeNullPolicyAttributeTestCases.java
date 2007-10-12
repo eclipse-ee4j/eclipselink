@@ -6,28 +6,13 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-
-/* $Header: DirectOptionalNodeNullPolicyAttributeTestCases.java 20-jul-2007.13:11:41 bdoughan Exp $ */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    bdoughan    07/20/07 - 
-    gyorke      11/02/06 - 
-    mfobrien    10/26/06 - Creation
- */
-
-/**
- *  @version $Header: DirectOptionalNodeNullPolicyAttributeTestCases.java 20-jul-2007.13:11:41 bdoughan Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable;
 
-import org.eclipse.persistence.oxm.mappings.NodeNullPolicy;
-import org.eclipse.persistence.oxm.mappings.OptionalNodeNullPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
@@ -38,11 +23,17 @@ public class DirectOptionalNodeNullPolicyAttributeTestCases extends XMLMappingTe
         super(name);
         setControlDocument(XML_RESOURCE);
 
-        NodeNullPolicy aNodeNullPolicy = OptionalNodeNullPolicy.getInstance();
+        AbstractNullPolicy aNullPolicy = new NullPolicy();
+    	// alter unmarshal policy state
+    	aNullPolicy.setNullRepresentedByEmptyNode(false);
+    	aNullPolicy.setNullRepresentedByXsiNil(false);
+    	// alter marshal policy state
+    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.ABSENT_NODE);
+        
         Project aProject = new DirectNodeNullPolicyProject(false);
         XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(Employee.class)//
         .getMappingForAttributeName("firstName");
-        aMapping.setNodeNullPolicy(aNodeNullPolicy);
+        aMapping.setNullPolicy(aNullPolicy);
         setProject(aProject);
     }
 

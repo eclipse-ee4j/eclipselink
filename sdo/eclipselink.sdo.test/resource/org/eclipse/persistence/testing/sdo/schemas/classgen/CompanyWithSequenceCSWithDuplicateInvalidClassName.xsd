@@ -76,6 +76,5 @@
    <xsd:element name="item" type="Item"/>
    <xsd:element name="uSAddress" type="USAddress"/>
    <xsd:element name="purchaseOrder" type="PurchaseOrder"/>
-   <xsd:element name="type-type" type="type"/>
    <xsd:element name="company" type="Company"/>
 </xsd:schema>

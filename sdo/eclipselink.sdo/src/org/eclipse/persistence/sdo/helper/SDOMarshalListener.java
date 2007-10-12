@@ -9,10 +9,13 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.sdo.helper;
 
+import commonj.sdo.ChangeSummary;
 import commonj.sdo.DataObject;
+import commonj.sdo.helper.TypeHelper;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -20,7 +23,9 @@ import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSetting;
 import org.eclipse.persistence.sdo.SDOType;
+import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshalListener;
@@ -40,13 +45,15 @@ import org.w3c.dom.Element;
 public class SDOMarshalListener implements XMLMarshalListener {
     // marshalledObject may or may not be the root object
     private Object marshalledObject;
+    private TypeHelper typeHelper;
 
     /** maintain narrowed context from the larger HelperContext (inside the xmlMarshaller)<br>
      * Visibility reduced from [public] in 2.1.0. May 15 2007 */
     private XMLMarshaller xmlMarshaller;
 
-    public SDOMarshalListener(XMLMarshaller aMarshaller) {
+    public SDOMarshalListener(XMLMarshaller aMarshaller, TypeHelper aTypeHelper) {
         xmlMarshaller = aMarshaller;
+        typeHelper = aTypeHelper;
     }
 
     public void afterMarshal(Object obj) {
@@ -69,15 +76,15 @@ public class SDOMarshalListener implements XMLMarshalListener {
                     // get path to the changeSummaryRoot (may not be the root marshalled object - may be internal)
                     nextCreatedDO = ((SDODataObject)anIterator.next());
                     xpaths.add(SDOConstants.SDO_CHANGESUMMARY_REF_PATH_PREFIX + SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT//
-                                +nextCreatedDO.getPathFromAncestor((SDODataObject)marshalledObject));
+                                +getPathFromAncestor(nextCreatedDO, (SDODataObject)marshalledObject, (SDOChangeSummary)changeSummary));
                 }
             }
             changeSummary.setCreatedXPaths(xpaths);
 
-            //Build xpathToCS
-            String xpathMarshalledObjToCS = ((SDODataObject)changeSummary.getRootObject()).getPathFromAncestor((SDODataObject)marshalledObject);
-            String xpathChangeSumProp = ((SDOProperty)((SDOType)changeSummary.getRootObject()//
-            .getType()).getChangeSummaryProperty()).getXmlMapping().getField().getName();
+            //Build xpathToCS            
+            String xpathMarshalledObjToCS = getPathFromAncestor(((SDODataObject)changeSummary.getRootObject()), (SDODataObject)marshalledObject, changeSummary);
+            String xpathChangeSumProp = getXPathForProperty((SDOProperty)((SDOType)changeSummary.getRootObject().getType()).getChangeSummaryProperty());
+
             String xpathToCS = SDOConstants.SDO_CHANGESUMMARY_REF_PATH_PREFIX;
 
             // check if the CS is at the local-cs-root or is in a child property
@@ -99,10 +106,8 @@ public class SDOMarshalListener implements XMLMarshalListener {
 
             //Iterate through CS modified items
             for (int i = 0; i < modifiedSize; i++) {
-                nextModifiedDO = (SDODataObject)modifiedItems.get(i);
-                String sdoPrefix = ((SDOType)nextModifiedDO.getType()).getXmlDescriptor()//
-                .getNonNullNamespaceResolver().resolveNamespaceURI(SDOConstants.SDO_URL);
-
+                nextModifiedDO = (SDODataObject)modifiedItems.get(i);                
+                String sdoPrefix = ((SDOTypeHelper)typeHelper).getPrefix(SDOConstants.SDO_URL);
                 //List unsetPropNames = new ArrayList();
                 String uri = getURI(nextModifiedDO);// TODO: see #5837243 for production fix after spec consultation for handling root property
                 String qualifiedName = getQualifiedName(nextModifiedDO);// TODO: see #5837243 for production fix after spec consultation for handling root property
@@ -117,8 +122,17 @@ public class SDOMarshalListener implements XMLMarshalListener {
                 //Add sdoRef attribute...all modified objects written should have this                
                 csNode.setAttributeNS(SDOConstants.SDO_URL, sdoPrefix +//
                                       SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT +//
-                                      SDOConstants.CHANGESUMMARY_REF,//
-                                      sdoRefPrefix + nextModifiedDO.getPathFromAncestor((SDODataObject)marshalledObject));
+                                      SDOConstants.CHANGESUMMARY_REF,//                                      
+                                      sdoRefPrefix + getPathFromAncestor(nextModifiedDO, (SDODataObject)marshalledObject, (SDOChangeSummary)changeSummary));
+
+                //Bug6346754 Add all namespaces if they are not yet declared above.                
+                Vector namespaces = ((SDOType)nextModifiedDO.getType()).getXmlDescriptor().getNonNullNamespaceResolver().getNamespaces();
+                for (int j = 0; j < namespaces.size(); j++) {
+                    Namespace next = (Namespace)namespaces.get(j);
+                    if (declareNamespace(next.getNamespaceURI(), next.getPrefix(), changeSummary.getRootObject())) {
+                        csNode.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + next.getPrefix(), next.getNamespaceURI());
+                    }
+                }
 
                 List nextDOSettings = changeSummary.getOldValues(nextModifiedDO);
                 DOMRecord row = new DOMRecord(csNode);
@@ -140,7 +154,9 @@ public class SDOMarshalListener implements XMLMarshalListener {
                                           changeSummary, csNode, nextModifiedDO, deletedXPaths, xpathToCS, sdoPrefix);
                             }
                         } else {
-                            XMLField field = (XMLField)((SDOProperty)nextSetting.getProperty()).getXmlMapping().getField();
+                            String xPath = getXPathForProperty((SDOProperty)nextSetting.getProperty());
+                            XMLField field = new XMLField(xPath);
+                            field.setNamespaceResolver(((SDOTypeHelper)typeHelper).getNamespaceResolver());
                             row.put(field, nextSetting.getValue());
                         }
                     }
@@ -177,12 +193,13 @@ public class SDOMarshalListener implements XMLMarshalListener {
             isDeleted = true;
         }
 
-        XMLField xmlField = ((XMLField)prop.getXmlMapping().getField());
+        String qualifiedName = getXPathForProperty(prop);
+        XMLField xmlField = new XMLField(qualifiedName);
+        xmlField.setNamespaceResolver(((SDOTypeHelper)typeHelper).getNamespaceResolver());
         String uri = xmlField.getXPathFragment().getNamespaceURI();
-        String qualifiedName = xmlField.getName();
 
         if (isDeleted) {
-            String pathToNode = ((SDODataObject)original).getPathFromAncestor(modifiedObject);
+            String pathToNode = getPathFromAncestor(((SDODataObject)original), modifiedObject, cs);
             String containerPath = null;
             containerPath = getQualifiedName(modifiedObject);
             deletedXPaths.add(xpathToCS + containerPath + SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT + pathToNode);
@@ -196,20 +213,19 @@ public class SDOMarshalListener implements XMLMarshalListener {
             //xmlroot.setSupressTypeAttribute(true);
             xmlMarshaller.marshal(xmlroot, csNode);
         } else {
-            //need sdoref            
+            //need sdoref
             Element modifiedElement = null;
             if (uri == null) {
                 modifiedElement = csNode.getOwnerDocument().createElement(qualifiedName);
             } else {
                 modifiedElement = csNode.getOwnerDocument().createElementNS(uri, qualifiedName);
             }
-            
             csNode.appendChild(modifiedElement);
             modifiedElement.setAttributeNS(SDOConstants.SDO_URL, sdoPrefix +//
                                            SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT +//
                                            SDOConstants.CHANGESUMMARY_REF,//
                                            SDOConstants.SDO_CHANGESUMMARY_REF_PATH_PREFIX + SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT +//
-                                           ((SDODataObject)original).getPathFromAncestor((SDODataObject)marshalledObject));
+                                           getPathFromAncestor(((SDODataObject)original), (SDODataObject)marshalledObject, cs));
 
             //Added for bug 6346754            
             if ((((SDODataObject)original).getContainmentProperty() != null) && ((SDODataObject)original).getContainmentProperty().getType().equals(SDOConstants.SDO_DATAOBJECT)) {
@@ -245,8 +261,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
             // get uri from the type of the root object
             uri = currentObject.getType().getURI();
         } else {
-            uri = ((XMLField)((SDOProperty)currentObject.getContainmentProperty())//
-                .getXmlMapping().getField()).getXPathFragment().getNamespaceURI();
+            uri = getUriForProperty(currentObject);
         }
         return uri;
     }
@@ -262,11 +277,10 @@ public class SDOMarshalListener implements XMLMarshalListener {
             // property id's do not match - don't use
             //qualifiedName += ((SDOXSDHelper)currentObject.getHelperContext().getXSDHelper()).getGlobalProperty(uri, currentObject.getType().getName() , true);
             // hack: get 2nd table name
-            // get ns:name from the ns=nsr(value==uri) name=, or 2nd entry in xmlDescriptor->table[]
-            //TODO: Don't use lastElements
-            qualifiedName = ((SDOType)currentObject.getType()).getXmlDescriptor().getTables().lastElement().getQualifiedName();
+            // get ns:name from the ns=nsr(value==uri) name=, or 2nd entry in xmlDescriptor->table[]                  
+            qualifiedName = ((SDOType)currentObject.getType()).getXmlDescriptor().getDefaultRootElement();
         } else {
-            qualifiedName = ((SDOProperty)currentObject.getContainmentProperty()).getXmlMapping().getField().getName();
+            qualifiedName = getXPathForProperty((SDOProperty)currentObject.getContainmentProperty());
         }
         return qualifiedName;
     }
@@ -277,5 +291,197 @@ public class SDOMarshalListener implements XMLMarshalListener {
 
     public Object getMarshalledObject() {
         return marshalledObject;
+    }
+
+    private boolean declareNamespace(String uri, String prefix, DataObject theDataObject) {
+        while (theDataObject != null) {
+            NamespaceResolver nr = ((SDOType)theDataObject.getType()).getXmlDescriptor().getNonNullNamespaceResolver();
+            String resolvedPrefix = nr.resolveNamespaceURI(uri);
+            if ((resolvedPrefix != null) && !resolvedPrefix.equals("") && resolvedPrefix.equals(prefix)) {
+                return false;
+            }
+            theDataObject = theDataObject.getContainer();
+        }
+        return true;
+    }
+
+    private String getUriForProperty(SDODataObject currentObject) {
+        SDOProperty prop = (SDOProperty)currentObject.getContainmentProperty();
+        if (prop.getXmlMapping() != null) {
+            return ((XMLField)prop.getXmlMapping().getField()).getXPathFragment().getNamespaceURI();
+        } else {
+            return prop.getUri();
+        }
+    }
+
+    private String getXPathForProperty(SDOProperty prop) {
+        if ((prop).getXmlMapping() != null) {
+            return prop.getXmlMapping().getField().getName();
+        } else {
+            String name = prop.getName();
+            if (prop.isOpenContent()) {
+                String uri = prop.getUri();
+                if (uri != null) {
+                    String prefix = ((SDOTypeHelper)typeHelper).getNamespaceResolver().resolveNamespaceURI(uri);
+
+                    if ((prefix != null) && !prefix.equals(SDOConstants.EMPTY_STRING)) {
+                        return prefix + ":" + name;
+                    }
+                }
+            }
+            return name;
+        }
+    }
+
+    /**
+    * INTERNAL:
+    * Return the XPath or SDO path from the anObject to the current internal node
+    *
+    * Prereq: We know that the targetObject will always have a parent as called
+    * from getPath()
+    *   We require a ChangeSummary object for when there are deleted
+    *   objects in the path
+    *
+    * Matching conditions:
+    *   Iterate up the tree
+    *   return a non-null string for the XPath when we reach the target node
+    *
+    * Function is partially based on SDOCopyHelper.copy(DataObject dataObject)
+    * Performance: This function is O(log n) where n=# of children in the tree
+    *
+    * @param currentPath
+    * @param targetObject
+    * @param currentObject
+    * @param aSeparator (XPath separator is written only between elements - not for the first call)
+    * @return String (representing the XPath)
+    */
+    private String getPathFromAncestorPrivate(SDOChangeSummary aChangeSummary,//
+                                              String currentPath,//
+                                              SDODataObject targetDO,//
+                                              SDODataObject currentObject,//
+                                              String aSeparator) {
+        if ((currentObject == null) || (targetDO == null) || (aChangeSummary == null)) {
+            return currentPath;
+        }
+
+        // Base Case: check we are at the target object first
+        if (currentObject == targetDO) {
+            // check for indexed property if root is a ListWrapper
+            return currentPath;
+        }
+
+        // Recursive Case: O(log(n)) recursive calls, 1 for each tree level
+        // get parent property based on parent property name in target, property will always be set
+        // check containment for cases where we are searching for a sibling
+        SDOProperty parentContainmentProperty;
+        Object parent = null;
+
+        // for already deleted dataobjects  - isDeleted=false, changeSummary= null - use oldContainer        
+        if (null == currentObject.getContainer()) {
+            parent = aChangeSummary.getOldContainer(currentObject);
+            parentContainmentProperty = (SDOProperty)aChangeSummary.getOldContainmentProperty(currentObject);
+            // handle (at root) case for non-deleted objects for the cases
+            // case: ancestor not found
+            // case: ancestor is actually sibling
+            if ((null == parent) || (null == parentContainmentProperty)) {
+                return SDOConstants.SDO_XPATH_INVALID_PATH;
+            }
+        } else {
+            // normal non-deleted non-changeSummary case
+            parent = currentObject.getContainer();
+            parentContainmentProperty = (SDOProperty)currentObject.getContainmentProperty();
+        }
+
+        // get XPath using SDO path - block                                                
+        String parentContainmentPropertyXPath = getXPathForProperty(parentContainmentProperty);
+
+        // Handle ListWrapper contained DataObjects
+        if (parentContainmentProperty.isMany()) {
+            int index = (((SDODataObject)parent).getList(parentContainmentProperty)).indexOf(currentObject);
+
+            // TODO: throw exception on index = -1 (not found)
+            if (index < 0) {
+
+                /*
+                * The current object has been deleted and was part of a ListWrapper (isMany=true)
+                * Get the parent of this indexed list item and check the oldSetting (List) for the
+                * original position of the indexed (Deleted) object
+                */
+
+                // get the list containing the old value of the item                
+                ChangeSummary.Setting anOldSetting = aChangeSummary.getOldValue((DataObject)parent, parentContainmentProperty);
+                if (anOldSetting != null) {
+                    // get index directly from oldSettings based on current object - where parent was not deleted
+                    List aDeletedParent = (List)anOldSetting.getValue();
+
+                    // bug# 5587042: we will assume that index is never < 0 and remove handling code for this case where we lookup anOldSetting directly instead of via the deepCopies map                    
+                    index = aDeletedParent.indexOf(aChangeSummary.getDeepCopies().get(currentObject));
+                } else {
+                    // bug# 5587042: we will assume that oldSetting is never null and remove handling code for this case where we would hardcode to list.size()
+                }
+
+                // see: testGetXPathFromAncestorDeletedFromChildToAncestorInsideListWrapperLoggingOn
+            }
+            currentPath = parentContainmentPropertyXPath +// 
+                          SDOConstants.SDO_XPATH_LIST_INDEX_OPEN_BRACKET +// 
+                          (1 + index) +// [indexes] start at 1
+                          SDOConstants.SDO_XPATH_LIST_INDEX_CLOSE_BRACKET +//
+                          aSeparator +//
+                          currentPath;
+        } else {
+            currentPath = parentContainmentPropertyXPath +//
+                          aSeparator +//
+                          currentPath;
+        }
+
+        // recursive call
+        return getPathFromAncestorPrivate(aChangeSummary,//
+                                          currentPath,//
+                                          targetDO,//
+                                          (SDODataObject)parent,//
+                                          SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT);// we pass an empty separator so we have \a\b and not a\b\                                          
+    }
+
+    /**
+     * INTERNAL:
+     * Get path for non-deleted DataObjects<br>
+     * ChangeSummary is not required and is set to null.<br>
+     * Assumptions:<br>
+     *     target node is an ancestor of the source (this)
+     * @param sourceDO
+     * @param targetDO
+     * @return String xpath
+     */
+    public String getPathFromAncestor(SDODataObject sourceDO, SDODataObject targetDO, SDOChangeSummary cs) {
+        // Implementors: SDOMarshalListener
+        // default to no changeSummary and xpath format
+
+        /*
+        * Algorithm:
+        *   (1) Intact (non-deleted) objects:
+        *     - recursively iterate up the container of each DataObject, recording property names as we go
+        *   (2) Deleted objects:
+        *     - use the changeSummary to get the deleted object with oldContainer state
+        *     - recursively iterate up the oldContainer as in (1)
+        *    Issues:
+        *     - a deleted indexed object inside a ListWrapper will not retain its original index
+        */
+
+        // Base Case: The internal node is actually the root
+        // Base Case: The source and target objects are equal
+        // checking if this and target are equal will handle both cases above        
+        if (sourceDO == targetDO) {
+            // return "" empty string and handle at implementor
+            return SDOConstants.EMPTY_STRING;
+        } else {
+            // Recursive Case: call private recursive reverse O(logn) traversal
+            // function on current object            
+            return getPathFromAncestorPrivate(cs,//
+                                              SDOConstants.EMPTY_STRING,//
+                                              targetDO,//
+                                              sourceDO,//
+                                              SDOConstants.EMPTY_STRING// we pass an empty separator so we have \a\b and not a\b\
+            );
+        }
     }
 }

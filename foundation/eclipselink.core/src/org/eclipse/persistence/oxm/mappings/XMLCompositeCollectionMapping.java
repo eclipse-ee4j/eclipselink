@@ -134,27 +134,10 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements XMLMapping, XMLNillableMapping {
-    NodeNullPolicy nodeNullPolicy;
+public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements XMLMapping {
 
     public XMLCompositeCollectionMapping() {
         super();
-        // The default policy is OptionalNodeNullPolicy
-        nodeNullPolicy = OptionalNodeNullPolicy.getInstance();
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public void setNodeNullPolicy(NodeNullPolicy aNodeNullPolicy) {
-        nodeNullPolicy = aNodeNullPolicy;
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public NodeNullPolicy getNodeNullPolicy() {
-        return nodeNullPolicy;
     }
 
     /**
@@ -293,34 +276,34 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
             AbstractRecord nestedRow = (AbstractRecord)stream.nextElement();
 
-            ClassDescriptor descriptor = getReferenceDescriptor((DOMRecord)nestedRow);
-            if (descriptor.hasInheritance()) {
-                Class newElementClass = descriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
+            ClassDescriptor aDescriptor = getReferenceDescriptor((DOMRecord)nestedRow);
+            if (aDescriptor.hasInheritance()) {
+                Class newElementClass = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
                 if (newElementClass == null) {
                     // no xsi:type attribute - look for type indicator on the field
                     QName leafElementType = ((XMLField)getField()).getLeafElementType();
                     if (leafElementType != null) {
-                        Object indicator = descriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
+                        Object indicator = aDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
                         // if the inheritance policy does not contain the user-set type, throw an exception
                         if (indicator == null) {
-                            throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, descriptor.getInheritancePolicy().getDescriptor());
+                            throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, aDescriptor.getInheritancePolicy().getDescriptor());
                         }
                         newElementClass = (Class)indicator;
                     }
                 }
                 if (newElementClass != null) {
-                    descriptor = this.getReferenceDescriptor(newElementClass, executionSession);
+                    aDescriptor = this.getReferenceDescriptor(newElementClass, executionSession);
                 } else {
                     // since there is no xsi:type attribute or leaf element type set, 
                     // use the reference descriptor -  make sure it is non-abstract
-                    if (Modifier.isAbstract(descriptor.getJavaClass().getModifiers())) {
+                    if (Modifier.isAbstract(aDescriptor.getJavaClass().getModifiers())) {
                         // throw an exception
-                        throw DescriptorException.missingClassIndicatorField(nestedRow, descriptor.getInheritancePolicy().getDescriptor());
+                        throw DescriptorException.missingClassIndicatorField(nestedRow, aDescriptor.getInheritancePolicy().getDescriptor());
                     }
                 }
             }
 
-            Object element = buildCompositeObject(descriptor, nestedRow, sourceQuery, joinManager);
+            Object element = buildCompositeObject(aDescriptor, nestedRow, sourceQuery, joinManager);
             if (hasConverter()) {
                 if (getConverter() instanceof XMLConverter) {
                     element = ((XMLConverter)getConverter()).convertDataValueToObjectValue(element, executionSession, ((XMLRecord)nestedRow).getUnmarshaller());

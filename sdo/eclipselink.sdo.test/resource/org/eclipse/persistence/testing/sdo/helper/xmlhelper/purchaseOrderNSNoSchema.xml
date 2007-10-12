@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns0:purchaseOrder orderDate="1999-10-20" comment="Hurry, my lawn is going wild!" xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ns0:purchaseOrder orderDate="1999-10-20" comment="Hurry, my lawn is going wild!" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <ns0:shipTo country="US" name="Alice Smith" street="123 Maple Street" city="Mill Valley" state="CA" zip="90952"/>
    <ns0:billTo country="US" name="Robert Smith" street="8 Oak Avenue" city="Mill Valley" state="PA" zip="95819"/>
    <ns0:items>

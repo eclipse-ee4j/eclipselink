@@ -81,8 +81,8 @@ public class SDOTestCase extends junit.framework.TestCase {
         ignoreCRLF = Boolean.getBoolean("ignoreCRLF");
         customContext = Boolean.getBoolean("customContext");
         loggingLevelFinest = Boolean.getBoolean("loggingLevelFinest");
-        classgenCompilePath = System.getProperty("sdo.classgen.compile.path");
-        tempFileDir = System.getProperty("tempFileDir");
+		classgenCompilePath = System.getProperty("sdo.classgen.compile.path");
+		tempFileDir = System.getProperty("tempFileDir");
         if(null == tempFileDir || tempFileDir.length() < 1) {
 			tempFileDir = ".";
 		}
@@ -299,8 +299,7 @@ public class SDOTestCase extends junit.framework.TestCase {
         ((SDOXMLHelper) aHelperContext.getXMLHelper()).setLoader(new SDOClassLoader(getClass().getClassLoader(), aHelperContext));
         ((SDOXMLHelper) aHelperContext.getXMLHelper()).setXmlUnmarshaller(null);
         ((SDOXMLHelper) aHelperContext.getXMLHelper()).setTopLinkProject(null);
-        ((SDOXSDHelper) aHelperContext.getXSDHelper()).getGlobalAttributes().clear();
-        ((SDOXSDHelper) aHelperContext.getXSDHelper()).getGlobalElements().clear();
+        ((SDOXSDHelper) aHelperContext.getXSDHelper()).reset();       
     }
 
     protected void assertCreated(DataObject dataObject, ChangeSummary changeSummary) {

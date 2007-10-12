@@ -30,6 +30,6 @@ public class DirectCollectionTypeAttributeTestCases extends TestCase {
 
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.mappings.directcollection.typeattribute.DirectCollectionTypeAttributeTestCases" };
-        junit.textui.TestRunner.main(arguments);
+        junit.swingui.TestRunner.main(arguments);
     }
 }

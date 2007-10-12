@@ -18,6 +18,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
@@ -175,29 +177,39 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
 public class XMLDirectMapping extends AbstractDirectMapping implements XMLMapping, XMLNillableMapping {
-    NodeNullPolicy nodeNullPolicy;
+
+    /** Empty String identifier */
+    protected static final String EMPTY_STRING = "";
+    AbstractNullPolicy nullPolicy;
     public boolean isCDATA;
     
     public XMLDirectMapping() {
         super();
-        // The default policy is OptionalNodeNullPolicy
-        nodeNullPolicy = OptionalNodeNullPolicy.getInstance();
+        // The default policy is NullPolicy
+        nullPolicy = new NullPolicy();
         isCDATA = false;
     }
 
     /**
-     * INTERNAL:
+     * Set the AbstractNullPolicy on the mapping<br>
+     * The default policy is NullPolicy.<br>
+     *
+     * @param aNullPolicy
      */
-    public void setNodeNullPolicy(NodeNullPolicy aNodeNullPolicy) {
-        nodeNullPolicy = aNodeNullPolicy;
+    public void setNullPolicy(AbstractNullPolicy aNullPolicy) {
+        nullPolicy = aNullPolicy;
     }
 
     /**
      * INTERNAL:
+     * Get the AbstractNullPolicy from the Mapping.<br>
+     * The default policy is NullPolicy.<br>
+     * @return
      */
-    public NodeNullPolicy getNodeNullPolicy() {
-        return nodeNullPolicy;
+    public AbstractNullPolicy getNullPolicy() {
+        return nullPolicy;
     }
+
 
     /**
      * INTERNAL:
@@ -228,14 +240,22 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     public Object getAttributeValue(Object fieldValue, AbstractSession session, XMLRecord record) {
         // PERF: Direct variable access.
         Object attributeValue = fieldValue;
+        // If attribute is absent check the policy
         if(attributeValue == XMLRecord.noEntry) {
-            if(!this.getNodeNullPolicy().isNullCapabableValue()) {
+            if(!getNullPolicy().getIsSetPerformedForAbsentNode()) { // TODO: valid for absent subset of use cases
                 return attributeValue;
             } else {
                 fieldValue = null;
                 attributeValue = null;
             }
         }
+        
+        // Attributes that are an empty string always represent (null) - do not check the policy for isNullRepresentedByEmptyNode()=true
+        if (null != fieldValue && EMPTY_STRING.equals(fieldValue)) {// && getNullPolicy().isNullRepresentedByEmptyNode()) {
+        	// No conversion necessary, return immediately
+            return nullValue;
+        }
+        
         if ((fieldValue == null) && (this.nullValue != null)) {// Translate default null value
             return this.nullValue;
         }
@@ -263,6 +283,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
 
         return attributeValue;
     }
+    
     /**
      * INTERNAL:
      * Convert the attribute value to a field value.
@@ -274,6 +295,12 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         Object fieldValue = attributeValue;
         if ((this.nullValue != null) && (this.nullValue.equals(fieldValue))) {
             return null;
+        }
+
+        // If attribute is empty string representing (null) then check the policy for null handling
+        if (null != fieldValue && EMPTY_STRING.equals(fieldValue)) {// && getNullPolicy().isNullRepresentedByEmptyNode()) {
+        	// No conversion necessary, return immediately
+            return nullValue;
         }
 
         // Allow for user defined conversion to the object value.       
@@ -295,9 +322,10 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         }
         return fieldValue;
     }
+    
     /**
      * Get the XPath String
-     * @return String the XPath String associated with this Mapping     *
+     * @return String the XPath String associated with this Mapping
      */
     public String getXPath() {
         return getFieldName();
@@ -326,12 +354,12 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         writeSingleValue(getAttributeValueFromObject(object), object, (XMLRecord)row, session);
     }
     
-    protected void writeValueIntoRow(AbstractRecord row, DatabaseField field, Object fieldValue) {
+    protected void writeValueIntoRow(AbstractRecord row, DatabaseField aField, Object fieldValue) {
             row.put(getField(), fieldValue);
     }
     
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
-        Object fieldValue = getFieldValue(value, session, (XMLRecord)row);
+        Object fieldValue = getFieldValue(value, session, row);
         writeValueIntoRow(row, getField(), fieldValue);
     }
     
@@ -347,6 +375,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
             throw exception;
         }
     }
+    
     public void setIsCDATA(boolean CDATA) {
         isCDATA = CDATA;
     }

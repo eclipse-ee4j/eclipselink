@@ -54,7 +54,9 @@ public class DefineWithImportsTestCases extends XSDHelperDefineTestCases {
         /****ADDRESS TYPE*****/
 
         //ADDRESS TYPE
-        SDOType USaddrType = new SDOType(uri2, "USAddress");
+        SDOType USaddrType = new SDOType(uri2, "USAddress");        
+        USaddrType.setXsd(true);
+        USaddrType.setXsdLocalName("USAddress");
         USaddrType.setDataType(false);
         USaddrType.setInstanceClassName(javaPackage + "." + "USAddress");
 
@@ -78,6 +80,8 @@ public class DefineWithImportsTestCases extends XSDHelperDefineTestCases {
 
         /****QUANTITY TYPE*****/
         SDOType quantityType = new SDOType(uri3, "quantityType");
+        quantityType.setXsd(true);
+        quantityType.setXsdLocalName("quantityType");
         quantityType.setDataType(true);
         quantityType.getBaseTypes().add(intType);
         //quantityType.setInstanceClassName("java.lang.Integer");
@@ -85,12 +89,16 @@ public class DefineWithImportsTestCases extends XSDHelperDefineTestCases {
 
         /****SKU TYPE*****/
         SDOType SKUType = new SDOType(uri4, "SKU");
+        SKUType.setXsd(true);
+        SKUType.setXsdLocalName("SKU");
         SKUType.setDataType(true);
         SKUType.getBaseTypes().add(stringType);
         SKUType.setInstanceClassName("java.lang.String");
 
         /****PURCHASEORDER TYPE*****/
         SDOType POtype = new SDOType(uri, "PurchaseOrder");
+        POtype.setXsd(true);
+        POtype.setXsdLocalName("PurchaseOrder");
         POtype.setInstanceClassName(javaPackage + "." + "PurchaseOrder");
         POtype.setDataType(false);
 
@@ -145,9 +153,12 @@ public class DefineWithImportsTestCases extends XSDHelperDefineTestCases {
     }
     
     public void testExceptionCase() {
-        String invalidURLFile = "org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/ImportsWithNamespacesError.xsd";
-        InputStream is = getSchemaInputStream(invalidURLFile);
-        List types = xsdHelper.define(is, getSchemaLocation());
-        //dont do anything ... just for code coverage to hit this warning
+        try {
+            String invalidURLFile = "org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/ImportsWithNamespacesError.xsd";
+            InputStream is = getSchemaInputStream(invalidURLFile);
+            List types = xsdHelper.define(is, getSchemaLocation());
+        } catch(org.eclipse.persistence.exceptions.SDOException ex) {
+            //dont do anything ... just for code coverage to hit this warning
+        }
     }
 }

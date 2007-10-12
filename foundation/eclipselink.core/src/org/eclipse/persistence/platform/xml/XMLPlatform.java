@@ -120,4 +120,10 @@ public interface XMLPlatform {
      * @return true if the document fragment is valid, false otherwise
      */
     public boolean validate(Element elem, org.eclipse.persistence.oxm.XMLDescriptor xmlDescriptor, ErrorHandler handler) throws XMLPlatformException;
+
+    /**
+    *
+    * @param next Element to qualify
+    */
+    public void namespaceQualifyFragment(Element next);
 }

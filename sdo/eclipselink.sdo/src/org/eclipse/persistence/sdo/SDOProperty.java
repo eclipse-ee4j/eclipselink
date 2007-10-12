@@ -23,16 +23,14 @@ import org.eclipse.persistence.sdo.helper.InstanceClassConverter;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDOMethodAttributeAccessor;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
+import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.FixedMimeTypePolicy;
-import org.eclipse.persistence.oxm.mappings.IsSetNodeNullPolicy;
-import org.eclipse.persistence.oxm.mappings.IsSetOptionalNodeNullPolicy;
 import org.eclipse.persistence.oxm.mappings.MimeTypePolicy;
-import org.eclipse.persistence.oxm.mappings.NodeNullPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
@@ -40,10 +38,16 @@ import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLFragmentMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.XMLNillableMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
+import org.eclipse.persistence.sdo.helper.SDOFragmentMappingAttributeAccessor;
 
 /**
  * <p><b>Purpose</b>:A representation of a Property in the {@link Type type} of a {@link DataObject data object}.
@@ -76,6 +80,7 @@ public class SDOProperty implements Property, Serializable {
     private List appInfoElements;
     private Map appInfoMap;
     private boolean nameCollision;
+    private String uri;
 
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;
@@ -354,22 +359,54 @@ public class SDOProperty implements Property, Serializable {
 
     /**
       * INTERNAL:
-      * set the NodeNullPolicy on NillableMappings
+      * Alter the default state of the policy to act as a nillable null policy
+     * @param aMapping
+     * @param propertyName
       */
-    private void setNillablePolicyOnMapping(XMLNillableMapping aMapping, Object propertyName) {
-        // Handle nillable element support via the nullable property, all
-        // "nillable" mappings default to OptionalNodeNullPolicy
-        // get boolean nillable property
-        NodeNullPolicy aNodeNullPolicy = new IsSetNodeNullPolicy();
-
-        // set the isSet method signature on policy
-        ((IsSetNodeNullPolicy)aNodeNullPolicy).setIsSetMethodName(SDOConstants.SDO_ISSET_METHOD_NAME);
-        // parameter type is always String
-        ((IsSetNodeNullPolicy)aNodeNullPolicy).setParameterTypes(new Class[] { ClassConstants.STRING });
-        ((IsSetNodeNullPolicy)aNodeNullPolicy).setParameters(new Object[] { propertyName });
-        aMapping.setNodeNullPolicy(aNodeNullPolicy);
+    private void setIsSetNillablePolicyOnMapping(XMLNillableMapping aMapping, Object propertyName) {
+    	AbstractNullPolicy aNullPolicy = setIsSetPolicyOnMapping(aMapping, propertyName);
+    	// Alter unmarshal policy state
+    	aNullPolicy.setNullRepresentedByEmptyNode(false);
+    	aNullPolicy.setNullRepresentedByXsiNil(true);
+    	// Alter marshal policy state
+    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
     }
 
+    /**
+     * INTERNAL
+     * Alter the default state of the policy to act as an optional non-nillable null policy
+     * @param aMapping
+     * @param propertyName
+     */
+    private void setIsSetOptionalPolicyOnMapping(XMLNillableMapping aMapping, Object propertyName) {
+    	AbstractNullPolicy aNullPolicy = setIsSetPolicyOnMapping(aMapping, propertyName);
+    	// Alter unmarshal policy state
+    	aNullPolicy.setNullRepresentedByEmptyNode(false);
+    	aNullPolicy.setNullRepresentedByXsiNil(false);
+    	// Alter marshal policy state
+    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);//.ABSENT_NODE);
+    }
+
+    /**
+     * INTERNAL:
+     * Create and set an IsSetNodePolicy on the mapping - leaving the policy in default state
+     * @param aMapping
+     * @param propertyName
+     * @return
+     */
+    private AbstractNullPolicy setIsSetPolicyOnMapping(XMLNillableMapping aMapping, Object propertyName) {
+        AbstractNullPolicy aNullPolicy = new IsSetNullPolicy();
+        // Set the isSet method signature on policy
+        ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName(SDOConstants.SDO_ISSET_METHOD_NAME);
+        // Set fields even though defaults are set
+        //aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        // Parameter type is always String
+        ((IsSetNullPolicy)aNullPolicy).setIsSetParameterTypes(new Class[] { ClassConstants.STRING });
+        ((IsSetNullPolicy)aNullPolicy).setIsSetParameters(new Object[] { propertyName });
+        aMapping.setNullPolicy(aNullPolicy);
+        return aNullPolicy;
+    }
+    
     /**
       * INTERNAL:
       */
@@ -385,7 +422,6 @@ public class SDOProperty implements Property, Serializable {
             return;
         }
 
-        // 200606_cs: add change summary mapping
         if (getType().equals(SDOConstants.SDO_CHANGESUMMARY)) {
             buildChangeSummaryMapping();
             addMappingToOwner(false, indexToAdd);
@@ -394,13 +430,15 @@ public class SDOProperty implements Property, Serializable {
             xmlMapping.setAttributeName(getName());
             addMappingToOwner(true, indexToAdd);
         } else {
+            boolean sdoMethodAccessor = true;
             if (!getType().isDataType()) {
                 if (getType().equals(SDOConstants.SDO_DATAOBJECT)) {
                     ((SDOType)getType()).setImplClassName(SDOConstants.SDO_DATA_OBJECT_IMPL_CLASS_NAME);
+                    sdoMethodAccessor = false;
                     if (isMany()) {
-                        xmlMapping = buildXMLCompositeCollectionMapping(mappingUri);
+                        xmlMapping = buildXMLFragmentCollectionMapping(mappingUri);
                     } else {
-                        xmlMapping = buildXMLCompositeObjectMapping(mappingUri);
+                        xmlMapping = buildXMLFragmentMapping(mappingUri);
                     }
                 } else {
                     if (!((SDOType)getType()).isFinalized()) {
@@ -443,7 +481,7 @@ public class SDOProperty implements Property, Serializable {
                     }
                 }
             }
-            addMappingToOwner(true, indexToAdd);
+            addMappingToOwner(sdoMethodAccessor, indexToAdd);
         }
     }
 
@@ -569,20 +607,13 @@ public class SDOProperty implements Property, Serializable {
             }
         }
 
-        // Use Optional or IsSetOptional policy (elements only for now) 
-        if (nullable) {
-            setNillablePolicyOnMapping(mapping, propertyName);
+        // Set the null policy on the mapping
+        // Use NullPolicy or IsSetNullPolicy 
+        if (nullable) { // elements only
+            setIsSetNillablePolicyOnMapping(mapping, propertyName);
         } else {
-            if (!aHelperContext.getXSDHelper().isAttribute(this)) {
-                NodeNullPolicy aNodeNullPolicy = new IsSetOptionalNodeNullPolicy();
-
-                // set the isSet method signature on policy
-                ((IsSetOptionalNodeNullPolicy)aNodeNullPolicy).setIsSetMethodName(SDOConstants.SDO_ISSET_METHOD_NAME);
-                // parameter type is always String
-                ((IsSetOptionalNodeNullPolicy)aNodeNullPolicy).setParameterTypes(new Class[] { ClassConstants.STRING });
-                ((IsSetOptionalNodeNullPolicy)aNodeNullPolicy).setParameters(new Object[] { propertyName });
-                mapping.setNodeNullPolicy(aNodeNullPolicy);
-            }
+      		// elements or attributes
+            setIsSetOptionalPolicyOnMapping(mapping, propertyName);
         }
         return mapping;
     }
@@ -612,7 +643,6 @@ public class SDOProperty implements Property, Serializable {
             }
         }
 
-        // 20070212: Use the default OptionalNodeNullPolicy for composite mappings - as support for the other policies is currently not implemented 
         return mapping;
     }
 
@@ -650,9 +680,12 @@ public class SDOProperty implements Property, Serializable {
             mapping.setReferenceClass(((SDOType)getType()).getImplClass());
         }
 
-        // Handle nillable element support via the nullable property, all "nillable" mappings default to OptionalNodeNullPolicy
+        // Handle nillable element support via the nullable property
         if (nullable) {
-            setNillablePolicyOnMapping(mapping, propertyName);
+            setIsSetNillablePolicyOnMapping(mapping, propertyName);
+        } else {
+      		// elements or attributes
+            setIsSetOptionalPolicyOnMapping(mapping, propertyName);
         }
         return mapping;
     }
@@ -700,6 +733,7 @@ public class SDOProperty implements Property, Serializable {
         }
         mapping.setReferenceClassName(((SDOType)getType()).getImplClassName());
         mapping.setReferenceClass(((SDOType)getType()).getImplClass());
+        mapping.setUsesSingleNode(true);
 
         mapping.useCollectionClass(ArrayList.class);
         String sourcexpath = getQualifiedXPath(getContainingType().getURI(), true);
@@ -961,5 +995,31 @@ public class SDOProperty implements Property, Serializable {
      */
     public boolean isDefaultSet() {
         return isDefaultSet;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+    
+    public XMLFragmentMapping buildXMLFragmentMapping(String uri) {
+        XMLFragmentMapping mapping = new XMLFragmentMapping();
+        mapping.setAttributeName(getName());
+        mapping.setXPath(getQualifiedXPath(uri, false));
+        mapping.setAttributeAccessor(new SDOFragmentMappingAttributeAccessor(this, aHelperContext));
+        
+        return mapping;
+    }
+    
+    public XMLFragmentCollectionMapping buildXMLFragmentCollectionMapping(String mappingUri) {
+        XMLFragmentCollectionMapping mapping = new XMLFragmentCollectionMapping();
+        mapping.setAttributeName(getName());
+        mapping.setXPath(getQualifiedXPath(mappingUri, false));
+        mapping.setAttributeAccessor(new SDOFragmentMappingAttributeAccessor(this, aHelperContext));
+        
+        return mapping;
     }
 }

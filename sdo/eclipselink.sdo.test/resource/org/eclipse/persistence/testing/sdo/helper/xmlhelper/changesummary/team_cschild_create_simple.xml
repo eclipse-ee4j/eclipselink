@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns0:team xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ns0:team xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <ns0:manager>
       <ns0:name>Jane Doe</ns0:name>
       <ns0:address>
@@ -17,6 +17,6 @@
       <ns0:phone>
          <ns0:number>4567890</ns0:number>
       </ns0:phone>
-      <ns0:myChangeSummary create="#/ns0:manager/ns0:address #/ns0:manager/ns0:phone[3]"/>
+      <ns0:myChangeSummary create="#/ns0:manager/ns0:address #/ns0:manager/ns0:phone[3]" xmlns:sdo="commonj.sdo"/>
    </ns0:manager>
 </ns0:team>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns0:SOAOrderBookingProcessRequest xmlns:po="http://www.globalcompany.com/ns/order" xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.globalcompany.com/ns/OrderBooking" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:nsTest3="blah">
+<ns0:SOAOrderBookingProcessRequest xmlns:po="http://www.globalcompany.com/ns/order" xmlns:ns0="http://www.globalcompany.com/ns/OrderBooking" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:nsTest3="blah">
    <po:PurchaseOrder>
       <po:CustID>theCustID</po:CustID>
       <po:ID>theID</po:ID>

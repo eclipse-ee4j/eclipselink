@@ -2689,7 +2689,12 @@
             </xsd:documentation>
         </xsd:annotation>
         <xsd:complexContent>
-            <xsd:extension base="direct-mapping" />
+            <xsd:extension base="direct-mapping">
+		<xsd:sequence>
+                    <xsd:element name="is-cdata" type="xsd:boolean" minOccurs="0"/>
+                    <xsd:element name="null-policy" type="toplink:abstract-null-policy" minOccurs="0"/>			
+                </xsd:sequence>
+            </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
     <xsd:complexType name="eis-direct-mapping">
@@ -5539,7 +5544,11 @@
             </xsd:documentation>
         </xsd:annotation>
         <xsd:complexContent>
-            <xsd:extension base="abstract-composite-object-mapping" />
+            <xsd:extension base="abstract-composite-object-mapping">
+	        <xsd:sequence>
+		    <xsd:element name="null-policy" type="toplink:abstract-null-policy" minOccurs="0"/>
+		</xsd:sequence>
+	    </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
     <xsd:complexType name="eis-composite-object-mapping">
@@ -6160,4 +6169,48 @@
             <xsd:extension base="change-policy" />
         </xsd:complexContent>
     </xsd:complexType>
+
+    <xsd:complexType name="abstract-null-policy">
+        <xsd:annotation>
+            <xsd:documentation>Defines the Null Policy in use for this relationship currently a choice of [NullPolicy and IsSetNullPolicy].</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="xsi-nil-represents-null" type="xsd:boolean" default="false" minOccurs="0" />
+            <xsd:element name="empty-node-represents-null" type="xsd:boolean" default="false" minOccurs="0" />
+            <xsd:element name="null-representation-for-xml" type="toplink:marshal-null-representation" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="null-policy">
+        <xsd:complexContent>
+            <xsd:extension base="toplink:abstract-null-policy">
+                <xsd:sequence>
+                    <xsd:element name="is-set-performed-for-absent-node" type="xsd:boolean" default="true" minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="is-set-null-policy">
+        <xsd:complexContent>
+            <xsd:extension base="toplink:abstract-null-policy">
+                <xsd:sequence>
+                    <xsd:element name="is-set-method-name" type="xsd:string" minOccurs="0" />
+                    <xsd:element name="is-set-parameter-type" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+                    <xsd:element name="is-set-parameter" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:simpleType name="marshal-null-representation">
+        <xsd:annotation>
+            <xsd:documentation>Write null, no tag(default) or an empty tag.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="XSI_NIL" />
+            <xsd:enumeration value="ABSENT_NODE" />
+            <xsd:enumeration value="EMPTY_NODE" />
+        </xsd:restriction>
+    </xsd:simpleType>
 </xsd:schema>

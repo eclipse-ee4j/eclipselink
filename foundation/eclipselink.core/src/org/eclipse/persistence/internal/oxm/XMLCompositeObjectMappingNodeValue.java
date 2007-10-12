@@ -14,6 +14,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.record.deferred.CompositeObjectMappingContentHandler;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -66,7 +67,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             }
         }
         if (null == objectValue) {
-            return xmlCompositeObjectMapping.getNodeNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
+            return xmlCompositeObjectMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
 
         if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
@@ -105,18 +106,46 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             unmarshalRecord.removeNullCapableValue(this);
 
             XMLDescriptor xmlDescriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();
-            if (xmlDescriptor == null) {
+            if (null == xmlDescriptor) {
                 xmlDescriptor = findReferenceDescriptor(unmarshalRecord, atts, xmlCompositeObjectMapping);
             }
-            boolean isNull = xmlCompositeObjectMapping.getNodeNullPolicy().valueIsNull(atts);
-            if (isNull) {
-                xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), null);
+
+            /**
+             * Null Composite Objects are marshalled in 2 ways when the input XML node is empty.
+             * (1) as null
+             *     - isNullRepresentedByEmptyNode = true
+             * (2) as empty object  
+             *     - isNullRepresentedByEmptyNode = false 
+             *  A deferred contentHandler is used to queue events until we are able to determine
+             *  whether we are in one of empty/simple/complex state.
+             *  Control is returned to the UnmarshalHandler after creation of (1) or (2) above is started.
+             *  Object creation was deferred to the DeferredContentHandler
+             */
+            // Check if we need to create the DeferredContentHandler based on policy state
+            if(xmlCompositeObjectMapping.getNullPolicy().isNullRepresentedByEmptyNode() || xmlCompositeObjectMapping.getNullPolicy().isNullRepresentedByXsiNil()) {
+            	if(null != xmlDescriptor) { // TODO: handle a null descriptor
+            		// Process null capable value
+            		String qnameString = xPathFragment.getLocalName();
+            		if(xPathFragment.getPrefix() != null) {
+            			qnameString = xPathFragment.getPrefix()  +":" + qnameString;
+            		}
+            		CompositeObjectMappingContentHandler aHandler = new CompositeObjectMappingContentHandler(//
+                		unmarshalRecord, this, xmlCompositeObjectMapping, atts, xPathFragment, xmlDescriptor);
+            		// Send control to the handler
+            		aHandler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);                          
+            		unmarshalRecord.getXMLReader().setContentHandler(aHandler);
+            	}
             } else {
-                XMLField xmlFld = (XMLField)this.xmlCompositeObjectMapping.getField();
-                if (xmlFld.hasLastXPathFragment()) {
-                    unmarshalRecord.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
+                boolean isNull = xmlCompositeObjectMapping.getNullPolicy().valueIsNull(atts);
+                if (isNull) {
+                    xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), null);
+                } else {
+                    XMLField xmlFld = (XMLField)this.xmlCompositeObjectMapping.getField();
+                    if (xmlFld.hasLastXPathFragment()) {
+                        unmarshalRecord.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
+                    }
+                    processChild(xPathFragment, unmarshalRecord, atts, xmlDescriptor);
                 }
-                processChild(xPathFragment, unmarshalRecord, atts, xmlDescriptor);
             }
         } catch (SAXException e) {
             throw XMLMarshalException.unmarshalException(e);
@@ -125,25 +154,21 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-        try {
-            if (null == unmarshalRecord.getChildRecord()) {
-                return;
-            }
-            unmarshalRecord.getChildRecord().endDocument();
-            Object object = unmarshalRecord.getChildRecord().getCurrentObject();
-            if (xmlCompositeObjectMapping.getConverter() != null) {
-                Converter converter = xmlCompositeObjectMapping.getConverter();
-                if (converter instanceof XMLConverter) {
-                    object = ((XMLConverter)converter).convertDataValueToObjectValue(object, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-                } else {
-                    object = converter.convertDataValueToObjectValue(object, unmarshalRecord.getSession());
-                }
-            }
-            xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), object);
-            unmarshalRecord.setChildRecord(null);
-        } catch (SAXException e) {
-            throw XMLMarshalException.unmarshalException(e);
+        if (null == unmarshalRecord.getChildRecord()) {
+            return;
         }
+        Object object = unmarshalRecord.getChildRecord().getCurrentObject();
+        if (xmlCompositeObjectMapping.getConverter() != null) {
+            Converter converter = xmlCompositeObjectMapping.getConverter();
+            if (converter instanceof XMLConverter) {
+                object = ((XMLConverter)converter).convertDataValueToObjectValue(object, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+            } else {
+                object = converter.convertDataValueToObjectValue(object, unmarshalRecord.getSession());
+            }
+        }
+        // Set the child object on the parent
+        xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), object);
+        unmarshalRecord.setChildRecord(null);
     }
 
     public UnmarshalRecord buildSelfRecord(UnmarshalRecord unmarshalRecord, Attributes atts) {
@@ -192,7 +217,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     }
 
     public void setNullValue(Object object, Session session) {
-        xmlCompositeObjectMapping.setAttributeValueInObject(object, null);
+       	xmlCompositeObjectMapping.setAttributeValueInObject(object, null);
     }
 
     public boolean isNullCapableValue() {
@@ -200,7 +225,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         if (xmlField.getLastXPathFragment().isSelfFragment) {
             return false;
         }
-        return xmlCompositeObjectMapping.getNodeNullPolicy().isNullCapabableValue();
+        return xmlCompositeObjectMapping.getNullPolicy().getIsSetPerformedForAbsentNode();
     }
 
     protected void addTypeAttributeIfNeeded(XMLDescriptor descriptor, DatabaseMapping mapping, MarshalRecord marshalRecord) {

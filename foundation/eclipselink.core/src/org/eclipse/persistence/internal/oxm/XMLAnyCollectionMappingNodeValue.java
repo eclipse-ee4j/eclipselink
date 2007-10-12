@@ -14,7 +14,10 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.oxm.record.UnmappedContentHandlerWrapper;
+import org.eclipse.persistence.internal.oxm.record.deferred.DeferredContentHandler;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -27,8 +30,7 @@ import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -112,6 +114,9 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 if (wasXMLRoot) {
                     Namespace generatedNamespace = setupFragment(((XMLRoot)originalValue), xmlRootFragment, marshalRecord);
                     if (generatedNamespace != null) {
+                        if(extraNamespaces == null) {
+                            extraNamespaces = new java.util.ArrayList();
+                        }
                         extraNamespaces.add(generatedNamespace);
                     }
                 }
@@ -149,8 +154,8 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
                     getXPathNode().startElement(marshalRecord, rootFragment, object, childSession, marshalRecord.getNamespaceResolver(), objectBuilder, objectValue);
 
-                    writeExtraNamespaces(extraNamespaces, marshalRecord, session);                    
-                    if(xmlAnyCollectionMapping.shouldAddXsiType(marshaller, descriptor, originalValue,wasXMLRoot)){
+                    writeExtraNamespaces(extraNamespaces, marshalRecord, session);
+                    if (xmlAnyCollectionMapping.shouldAddXsiType(marshaller, descriptor, originalValue, wasXMLRoot)) {
                         String typeValue = descriptor.getSchemaReference().getSchemaContext();
                         addTypeAttribute(descriptor, marshalRecord, typeValue);
                     }
@@ -169,7 +174,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
         return true;
     }
-    
+
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
             // Mixed Content
@@ -213,7 +218,6 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                         qName = xPathFragment.getPrefix() + ":" + qName;
                     }
 
-                    //builder.startDocument();
                     builder.startElement(namespaceURI, xPathFragment.getLocalName(), qName, atts);
                     unmarshalRecord.getXMLReader().setContentHandler(builder);
                 } catch (SAXException ex) {
@@ -221,7 +225,15 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             } else if (xmlDescriptor != null) {
                 processChild(xPathFragment, unmarshalRecord, atts, xmlDescriptor);
             } else {
-            	return false;
+                //need to give to special handler, let it find out what to do depending on if this is simple or complex content
+                AnyCollectionMappingContentHandler handler = new AnyCollectionMappingContentHandler(unmarshalRecord);
+                String qnameString = xPathFragment.getLocalName();
+                if (xPathFragment.getPrefix() != null) {
+                    qnameString = xPathFragment.getPrefix() + ":" + qnameString;
+                }
+                handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
+                unmarshalRecord.getXMLReader().setContentHandler(handler);
+                return true;
             }
         } catch (SAXException e) {
             throw XMLMarshalException.unmarshalException(e);
@@ -230,40 +242,35 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-        try {
-            Object collection = unmarshalRecord.getContainerInstance(this);
-            if (null != unmarshalRecord.getChildRecord()) {
-                // OBJECT VALUE
-                if (!xmlAnyCollectionMapping.usesXMLRoot()) {
-                    xmlAnyCollectionMapping.getContainerPolicy().addInto(unmarshalRecord.getChildRecord().getCurrentObject(), collection, unmarshalRecord.getSession());
-                }
-                unmarshalRecord.getChildRecord().endDocument();
-                if (xmlAnyCollectionMapping.usesXMLRoot()) {
-                    Object childObject = unmarshalRecord.getChildRecord().getCurrentObject();
+        Object collection = unmarshalRecord.getContainerInstance(this);
+        if (null != unmarshalRecord.getChildRecord()) {
+            // OBJECT VALUE
+            if (!xmlAnyCollectionMapping.usesXMLRoot()) {
+                xmlAnyCollectionMapping.getContainerPolicy().addInto(unmarshalRecord.getChildRecord().getCurrentObject(), collection, unmarshalRecord.getSession());
+            }
+            if (xmlAnyCollectionMapping.usesXMLRoot()) {
+                Object childObject = unmarshalRecord.getChildRecord().getCurrentObject();
 
-                    if (workingDescriptor != null) {
-                        String prefix = xPathFragment.getPrefix();
-                        if ((prefix == null) && (xPathFragment.getNamespaceURI() != null)) {
-                            prefix = unmarshalRecord.resolveNamespaceUri(xPathFragment.getNamespaceURI());
-                        }
-                        childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix);
-                        xmlAnyCollectionMapping.getContainerPolicy().addInto(childObject, collection, unmarshalRecord.getSession());
+                if (workingDescriptor != null) {
+                    String prefix = xPathFragment.getPrefix();
+                    if ((prefix == null) && (xPathFragment.getNamespaceURI() != null)) {
+                        prefix = unmarshalRecord.resolveNamespaceUri(xPathFragment.getNamespaceURI());
                     }
-                }
-                unmarshalRecord.setChildRecord(null);
-                workingDescriptor = null;
-            } else {
-                SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
-                if (builder.getNodes().size() != 0) {
-                    //Grab the fragment and put it into the collection
-                    xmlAnyCollectionMapping.getContainerPolicy().addInto(builder.getNodes().pop(), collection, unmarshalRecord.getSession());
-                } else {
-                    //TEXT VALUE
-                    endElementProcessText(unmarshalRecord, collection, xPathFragment);
+                    childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix, false);
+                    xmlAnyCollectionMapping.getContainerPolicy().addInto(childObject, collection, unmarshalRecord.getSession());
                 }
             }
-        } catch (SAXException e) {
-            throw XMLMarshalException.unmarshalException(e);
+            unmarshalRecord.setChildRecord(null);
+            workingDescriptor = null;
+        } else {
+            SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
+            if (builder.getNodes().size() != 0) {
+                //Grab the fragment and put it into the collection
+                xmlAnyCollectionMapping.getContainerPolicy().addInto(builder.getNodes().pop(), collection, unmarshalRecord.getSession());
+            } else {
+                //TEXT VALUE
+                endElementProcessText(unmarshalRecord, collection, xPathFragment);
+            }
         }
     }
 
@@ -278,16 +285,16 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     private void endElementProcessText(UnmarshalRecord unmarshalRecord, Object collection, XPathFragment xPathFragment) {
         Object value = unmarshalRecord.getStringBuffer().toString().trim();
         unmarshalRecord.resetStringBuffer();
-        if (!xmlAnyCollectionMapping.usesXMLRoot()) {
-            if (!EMPTY_STRING.equals(value) && xmlAnyCollectionMapping.isMixedContent()) {
+        if (!EMPTY_STRING.equals(value) && xmlAnyCollectionMapping.isMixedContent()) {
+            if (!xmlAnyCollectionMapping.usesXMLRoot()) {
                 xmlAnyCollectionMapping.getContainerPolicy().addInto(value, collection, unmarshalRecord.getSession());
+            } else {
+                XMLRoot xmlRoot = new XMLRoot();
+                xmlRoot.setNamespaceURI(xPathFragment.getNamespaceURI());
+                xmlRoot.setLocalName(xPathFragment.getLocalName());
+                xmlRoot.setObject(value);
+                xmlAnyCollectionMapping.getContainerPolicy().addInto(xmlRoot, collection, unmarshalRecord.getSession());
             }
-        } else {
-            XMLRoot xmlRoot = new XMLRoot();
-            xmlRoot.setNamespaceURI(xPathFragment.getNamespaceURI());
-            xmlRoot.setLocalName(xPathFragment.getLocalName());
-            xmlRoot.setObject(value);
-            xmlAnyCollectionMapping.getContainerPolicy().addInto(xmlRoot, collection, unmarshalRecord.getSession());
         }
     }
 
@@ -317,5 +324,53 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         }
         xmlRootFragment.setXPath(xpath);
         return generatedNamespace;
+    }
+
+    /**
+    * <p><b>Purpose</b>: Implementation of DeferredContentHandler for XMLAnyCollectionMappings.
+    * <p><b>Responsibilities</b>:<ul>
+    * <li> If the element is empty then execute stored events and return control to the original parentRecord
+    * <li> If the element has simple content execute stored events and return control to the original parentRecord
+    * <li> If the element has complex content execute stored events and return control to a new unmappedhandler
+    * </ul>
+    */
+    private static class AnyCollectionMappingContentHandler extends DeferredContentHandler {
+        public AnyCollectionMappingContentHandler(UnmarshalRecord parentRecord) {
+            super(parentRecord);
+        }
+
+        protected void processEmptyElement() throws SAXException {
+            //Remove the first event as the start element for this element was already process by parentRecord
+            getEvents().remove(0);
+            executeEvents(getParent());
+        }
+
+        protected void processSimpleElement() throws SAXException {
+            //Remove the first event as the start element for this element was already process by parentRecord
+            getEvents().remove(0);
+            executeEvents(getParent());
+        }
+
+        protected void processComplexElement() throws SAXException {
+            Class unmappedContentHandlerClass = getParent().getUnmarshaller().getUnmappedContentHandlerClass();
+            UnmappedContentHandler unmappedContentHandler;
+            if (null == unmappedContentHandlerClass) {
+                unmappedContentHandler = getParent().DEFAULT_UNMAPPED_CONTENT_HANDLER;
+            } else {
+                try {
+                    PrivilegedNewInstanceFromClass privilegedNewInstanceFromClass = new PrivilegedNewInstanceFromClass(unmappedContentHandlerClass);
+                    unmappedContentHandler = (UnmappedContentHandler)privilegedNewInstanceFromClass.run();
+                } catch (ClassCastException e) {
+                    throw XMLMarshalException.unmappedContentHandlerDoesntImplement(e, unmappedContentHandlerClass.getName());
+                } catch (IllegalAccessException e) {
+                    throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
+                } catch (InstantiationException e) {
+                    throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
+                }
+            }
+            UnmappedContentHandlerWrapper unmappedContentHandlerWrapper = new UnmappedContentHandlerWrapper(getParent(), unmappedContentHandler);
+
+            executeEvents(unmappedContentHandlerWrapper);
+        }
     }
 }

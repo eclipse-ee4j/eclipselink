@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns0:customer xmlns:sdo="commonj.sdo" xmlns:ns0="urn:customer-example" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ns0:customer xmlns:ns0="urn:customer-example" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <ns0:personal-info>
       <ns0:first-name>Jane</ns0:first-name>
       <ns0:last-name>Doe</ns0:last-name>

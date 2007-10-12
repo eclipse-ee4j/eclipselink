@@ -82,7 +82,7 @@ public class LoadAndSaveNillableIsSetNodeNullPolicyFalseTestCases extends
 		value = doc.getRootObject().get("address");
 		isSet = doc.getRootObject().isSet("address");
 		assertNull(value);
-		assertTrue(isSet);
+		assertFalse(isSet); // 20071002
 	}
 
 	public void registerTypes() {

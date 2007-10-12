@@ -128,9 +128,6 @@ public class XPathEngine {
         return created.item(0);
     }
 
-    private NodeList createCollection(XMLField xmlField, Node element, Object object) {
-        return createCollection(xmlField, element, object, null, noDocPresPolicy);
-    }
     /**
     * Create the node path specified by <code>xpathString</code> under <code>element</code>
     * and initialize the leaf node with <code>value</code>.
@@ -769,7 +766,6 @@ public class XPathEngine {
 
         int nodesLength = nodes.getLength();
         Vector newNodes = new Vector();
-        Node nextSibling = null;
         // Iterate over both collections until one runs out, creating a collection of correct nodes
         // while removing the old ones.
         boolean performedReplace = true;
@@ -782,7 +778,6 @@ public class XPathEngine {
                 value = collectionValues.next();
             }
             Node parentNode = oldChild.getParentNode();
-            nextSibling = oldChild.getNextSibling();
             // Handle Attributes and Text
             if (oldChild.getNodeType() != Node.ELEMENT_NODE) {
                 if (((oldChild.getNodeType() == Node.TEXT_NODE) || (oldChild.getNodeType() == Node.CDATA_SECTION_NODE)) && (value == null)) {
@@ -815,7 +810,6 @@ public class XPathEngine {
         while (i < nodesLength) {
             Node toRemove = nodes.item(i);
             Node removedParent = toRemove.getParentNode();
-            nextSibling = toRemove.getNextSibling();
             if (removedParent != null && !newNodes.contains(toRemove)) {
                 //only remove it, if it's not already been added back in
                 removedParent.removeChild(toRemove);

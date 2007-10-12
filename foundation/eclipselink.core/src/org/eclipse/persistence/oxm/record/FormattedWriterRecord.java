@@ -204,7 +204,7 @@ public class FormattedWriterRecord extends WriterRecord {
                 FormattedWriterRecordContentHandler wrcHandler = new FormattedWriterRecordContentHandler();
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(wrcHandler);
-	            xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", wrcHandler);
+                xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", wrcHandler);
                 xfragReader.parse(node);
             } catch (SAXException sex) {
                 throw XMLMarshalException.marshalException(sex);
@@ -282,7 +282,7 @@ public class FormattedWriterRecord extends WriterRecord {
         }
         
         // --------------------- LEXICALHANDLER METHODS --------------------- //
-		public void comment(char[] ch, int start, int length) throws SAXException {
+	public void comment(char[] ch, int start, int length) throws SAXException {
             try {
             	if (isStartElementOpen) {
 	                getWriter().write('>');
@@ -294,6 +294,6 @@ public class FormattedWriterRecord extends WriterRecord {
             } catch (IOException e) {
             	throw XMLMarshalException.marshalException(e);
             }
-		}
+	}
     }
 }

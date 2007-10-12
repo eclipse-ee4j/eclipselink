@@ -6,25 +6,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-
-/* $Header: Employee.java 14-nov-2006.10:03:43 bdoughan Exp $ */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    bdoughan    11/14/06 - 
-    mfobrien    10/26/06 - Creation
- */
-
-/**
- *  @version $Header: Employee.java 14-nov-2006.10:03:43 bdoughan Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable;
-
-import java.util.Vector;
 
 public class Employee {
     public static final int DEFAULT_ID = 123;
@@ -53,12 +36,12 @@ public class Employee {
         this.id = id;
     }
 
-    public Employee(int id, String firstName, String lastName) {
+    public Employee(int id, String aFirstName, String aLastName) {
         super();
         this.id = id;
         //setTasks(aVector);
-        this.firstName = firstName;
-        this.lastName = lastName;
+        setFirstName(aFirstName);
+        setLastName(aLastName);
     }
 
     // override default equals

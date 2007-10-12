@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns0:corporation xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ns0:corporation xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <ns0:name>aCorporation</ns0:name>
    <ns0:stock>
-      <ns0:myChangeSummary/>
+      <ns0:myChangeSummary xmlns:sdo="commonj.sdo"/>
       <ns0:symbol>COR.N</ns0:symbol>
       <ns0:exchange>Nasdaq</ns0:exchange>
       <ns0:results>
@@ -15,7 +15,7 @@
       </ns0:results>
    </ns0:stock>
    <ns0:stock>
-      <ns0:myChangeSummary/>
+      <ns0:myChangeSummary xmlns:sdo="commonj.sdo"/>
       <ns0:symbol>COR.T</ns0:symbol>
       <ns0:exchange>TSE</ns0:exchange>
       <ns0:results>
@@ -28,7 +28,7 @@
       </ns0:results>
    </ns0:stock>
    <ns0:stock>
-      <ns0:myChangeSummary/>
+      <ns0:myChangeSummary xmlns:sdo="commonj.sdo"/>
       <ns0:symbol>COR.N</ns0:symbol>
       <ns0:exchange>NYSE</ns0:exchange>
       <ns0:results>
@@ -43,7 +43,7 @@
    <ns0:development>
       <ns0:name>Development</ns0:name>
       <ns0:purchaseOrder orderDate="2007-12-12">
-         <ns0:myChangeSummary/>
+         <ns0:myChangeSummary xmlns:sdo="commonj.sdo"/>
          <ns0:shipTo country="US">
             <ns0:name>Bryan Somebody</ns0:name>
             <ns0:street>234 This Street</ns0:street>
@@ -112,9 +112,9 @@
    <ns0:sales>
       <ns0:name>Sales</ns0:name>
       <ns0:purchaseOrder orderDate="2007-10-10">
-         <ns0:myChangeSummary delete="#/ns0:sales/ns0:purchaseOrder[1]/ns0:myChangeSummary/ns0:purchaseOrder/ns0:items">
+         <ns0:myChangeSummary delete="#/ns0:sales/ns0:purchaseOrder[1]/ns0:myChangeSummary/ns0:purchaseOrder/ns0:items" xmlns:sdo="commonj.sdo">
             <ns0:purchaseOrder sdo:ref="#/ns0:sales/ns0:purchaseOrder[1]">
-               <ns0:items xsi:type="ns0:Items" xmlns:sdo="commonj.sdo" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+               <ns0:items xsi:type="ns0:Items">
                   <ns0:item partNum="901-AA">
                      <ns0:product>
                         <ns0:productName>Lawnmower</ns0:productName>
@@ -181,7 +181,7 @@
          </ns0:buyer>
       </ns0:purchaseOrder>
       <ns0:purchaseOrder orderDate="1999-10-20">
-         <ns0:myChangeSummary/>
+         <ns0:myChangeSummary xmlns:sdo="commonj.sdo"/>
          <ns0:shipTo country="US">
             <ns0:name>Alice Smith</ns0:name>
             <ns0:street>123 Maple Street</ns0:street>

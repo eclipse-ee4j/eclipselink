@@ -6,30 +6,16 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-
-/* $Header: DirectNillableNodeNullPolicyTestCases.java 02-nov-2006.10:57:19 gyorke Exp $ */
-/*
-   DESCRIPTION
-
-   MODIFIED    (MM/DD/YY)
-    gyorke      11/02/06 - 
-    bdoughan    11/13/06 - 
-    mfobrien    10/26/06 - Creation
- */
-
-/**
- *  @version $Header: DirectNillableNodeNullPolicyTestCases.java 02-nov-2006.10:57:19 gyorke Exp $
- *  @author  mfobrien
- *  @since   11.1
- */
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.NodeNullPolicy;
-import org.eclipse.persistence.oxm.mappings.NillableNodeNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
+
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
@@ -41,14 +27,23 @@ public class DirectNillableNodeNullPolicyTestCases extends XMLMappingTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
 
-        NodeNullPolicy aNodeNullPolicy = new NillableNodeNullPolicy();
+        AbstractNullPolicy aNullPolicy = new NullPolicy();
+    	// alter unmarshal policy state
+    	aNullPolicy.setNullRepresentedByEmptyNode(false);
+    	aNullPolicy.setNullRepresentedByXsiNil(false);
+    	// alter marshal policy state
+    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);//.ABSENT_NODE);
+        
         Project aProject = new DirectNodeNullPolicyProject(true);
+        
+        // Add xsi namespace map entry to the resolver (we don't pick up the one on the xml instance doc)
         XMLDescriptor employeeDescriptor = (XMLDescriptor) aProject.getDescriptor(Employee.class);
         NamespaceResolver namespaceResolver = new NamespaceResolver();
         namespaceResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
         employeeDescriptor.setNamespaceResolver(namespaceResolver);
+        
         XMLDirectMapping aMapping = (XMLDirectMapping) employeeDescriptor.getMappingForAttributeName("firstName");
-        aMapping.setNodeNullPolicy(aNodeNullPolicy);
+        aMapping.setNullPolicy(aNullPolicy);
         setProject(aProject);
     }
 

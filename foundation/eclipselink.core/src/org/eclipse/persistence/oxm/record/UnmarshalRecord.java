@@ -30,7 +30,8 @@ import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
-import org.eclipse.persistence.internal.oxm.record.UnmappedContentHandler;
+import org.eclipse.persistence.internal.oxm.record.UnmappedContentHandlerWrapper;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -39,6 +40,8 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
+import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
+import org.eclipse.persistence.oxm.unmapped.DefaultUnmappedContentHandler;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -49,6 +52,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.ext.Locator2;
 
 /**
  * <p><b>Purpose:</b>Provide an implementation of ContentHandler that is used by TopLink OXM to
@@ -67,6 +71,7 @@ import org.xml.sax.ext.LexicalHandler;
  */
 public class UnmarshalRecord extends XMLRecord implements ContentHandler, LexicalHandler {
     protected static final String EMPTY_STRING = "";
+    public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = new DefaultUnmappedContentHandler();
     private AbstractSession session;
     private XMLReader xmlReader;
     private TreeObjectBuilder treeObjectBuilder;
@@ -90,6 +95,10 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     private String rootElementNamespaceUri;
     private XMLUnmarshaller unmarshaller;
     private SAXFragmentBuilder fragmentBuilder;
+    private String encoding;
+    private String version;
+    private String schemaLocation;
+    private String noNamespaceSchemaLocation;
 
     public UnmarshalRecord(TreeObjectBuilder treeObjectBuilder) {
         super();
@@ -231,6 +240,54 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     /**
+     * PUBLIC:
+     * Gets the encoding for this document. Only set on the root-level UnmarshalRecord
+     * @return a String represting the encoding for this doc
+     */
+    public String getEncoding() {
+        return encoding;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void setEncoding(String enc) {
+        this.encoding = enc;
+    }
+
+    /**
+     * PUBLIC:
+     * Gets the XML Version for this document. Only set on the root-level
+     * UnmarshalRecord, if supported by the parser.
+     */
+    public String getVersion() {
+        return version;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getSchemaLocation() {
+        return schemaLocation;
+    }
+
+    public void setSchemaLocation(String schemaLocation) {
+        this.schemaLocation = schemaLocation;
+    }
+
+    public String getNoNamespaceSchemaLocation() {
+        return noNamespaceSchemaLocation;
+    }
+
+    public void setNoNamespaceSchemaLocation(String location) {
+        this.noNamespaceSchemaLocation = location;
+    }
+
+    /**
      * @deprecated Replaced by getCurrentObject().
      */
     public Object getObject() {
@@ -254,6 +311,11 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public void setDocumentLocator(Locator locator) {
+        if ((this.getParentRecord() == null) && locator instanceof Locator2) {
+            Locator2 loc = (Locator2)locator;
+            this.setEncoding(loc.getEncoding());
+            this.setVersion(loc.getXMLVersion());
+        }
     }
 
     public Object get(DatabaseField key) {
@@ -328,9 +390,9 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public void endDocument() throws SAXException {
-    	Object object = this.getCurrentObject();
+        Object object = this.getCurrentObject();
 
-    	try {	
+        try {
             // PROCESS COLLECTION MAPPINGS
             if (null != containersMap) {
                 Iterator containersMapKeys = containersMap.keySet().iterator();
@@ -419,28 +481,26 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        // set the root element's local name and namespace prefix
+        // set the root element's local name and namespace prefix and look for
+        // schema locations etc.
         if (rootElementName == null) {
             rootElementName = qName;
             rootElementNamespaceUri = namespaceURI;
+            schemaLocation = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_LOCATION);
+            noNamespaceSchemaLocation = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION);
         }
 
         try {
-        	XPathNode selfXPathNode = null;
-        	
             if (null != selfRecords) {
+                XPathNode selfXPathNode = null;
                 int selfRecordsSize = selfRecords.size();
                 for (int x = 0; x < selfRecordsSize; x++) {
-                	UnmarshalRecord selfRecord = (UnmarshalRecord)selfRecords.get(x);
-                	selfXPathNode = selfRecord.getNonAttributeXPathNode(namespaceURI, localName, qName);
-                	if(null != selfXPathNode) {
-                		selfRecord.startElement(namespaceURI, localName, qName, atts);
-                	}
+                    UnmarshalRecord selfRecord = (UnmarshalRecord)selfRecords.get(x);
+                    selfXPathNode = selfRecord.getNonAttributeXPathNode(namespaceURI, localName, qName);
+                    if (null != selfXPathNode) {
+                        selfRecord.startElement(namespaceURI, localName, qName, atts);
+                    }
                 }
-            }
-            
-            if(selfXPathNode != null) {
-            	return;
             }
 
             XPathNode node = getNonAttributeXPathNode(namespaceURI, localName, qName);
@@ -455,27 +515,30 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                         parentFragment.setLocalName(localName);
                         parentFragment.setNamespaceURI(namespaceURI);
                     }
-                    if(parentNodeValue.startElement(parentFragment, this, atts)) {
-                        levelIndex++;                        	
+                    if (parentNodeValue.startElement(parentFragment, this, atts)) {
+                        levelIndex++;
                     } else {
-                   	    // UNMAPPED CONTENT
-                        UnmappedContentHandler unmappedContentHandler = new UnmappedContentHandler(xmlReader, this);
-                        unmappedContentHandler.startElement(namespaceURI, localName, qName, atts);
-                        xmlReader.setContentHandler(unmappedContentHandler);
+                        // UNMAPPED CONTENT
+                        startUnmappedElement(namespaceURI, localName, qName, atts);
+                        return;
                     }
                 } else {
-               	    // UNMAPPED CONTENT
-                    UnmappedContentHandler unmappedContentHandler = new UnmappedContentHandler(xmlReader, this);
-                    unmappedContentHandler.startElement(namespaceURI, localName, qName, atts);
-                    xmlReader.setContentHandler(unmappedContentHandler);                	
+                    // UNMAPPED CONTENT
+                    levelIndex++;
+                    startUnmappedElement(namespaceURI, localName, qName, atts);
+                    return;
                 }
             } else {
                 levelIndex++;
                 xPathNode = node;
-                
+
                 NodeValue nodeValue = node.getNodeValue();
                 if (null != nodeValue) {
-                    nodeValue.startElement(xPathFragment, this, atts);
+                    if (!nodeValue.startElement(xPathFragment, this, atts)) {
+                        // UNMAPPED CONTENT
+                        startUnmappedElement(namespaceURI, localName, qName, atts);
+                        return;
+                    }
                 }
 
                 //Handle Attributes
@@ -487,19 +550,19 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
                     // Some parsers don't set the URI/local name for namespace
                     // attributes
-                    if (attLocalName == null || attLocalName.length() == 0) {
+                    if ((attLocalName == null) || (attLocalName.length() == 0)) {
                         String qname = atts.getQName(i);
-                        if (qname != null && qname.length() > 0) {
+                        if ((qname != null) && (qname.length() > 0)) {
                             int idx = qname.indexOf(":");
-                            attLocalName = qname.substring(idx <= 0 ? 0 : idx + 1, qname.length());
-                           
-                            String attPrefix = idx == -1 ? null : qname.substring(0, idx);
-                            if(attPrefix != null && attPrefix.equalsIgnoreCase("xmlns") || attPrefix ==  null && attLocalName.equalsIgnoreCase("xmlns")) {
+                            attLocalName = qname.substring((idx <= 0) ? 0 : (idx + 1), qname.length());
+
+                            String attPrefix = (idx == -1) ? null : qname.substring(0, idx);
+                            if (((attPrefix != null) && attPrefix.equalsIgnoreCase("xmlns")) || ((attPrefix == null) && attLocalName.equalsIgnoreCase("xmlns"))) {
                                 attNamespace = XMLConstants.XMLNS_URL;
                             }
                         }
                     }
-                    
+
                     //Look for any Self-Mapping nodes that may want this attribute.
                     if (this.selfRecords != null) {
                         for (int j = 0; j < selfRecords.size(); j++) {
@@ -530,6 +593,31 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 xmlReader.getErrorHandler().error(saxParseException);
             }
         }
+    }
+
+    public void startUnmappedElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
+        if ((null != selfRecords) || (null == xmlReader)) {
+            return;
+        }
+        Class unmappedContentHandlerClass = unmarshaller.getUnmappedContentHandlerClass();
+        UnmappedContentHandler unmappedContentHandler;
+        if (null == unmappedContentHandlerClass) {
+            unmappedContentHandler = DEFAULT_UNMAPPED_CONTENT_HANDLER;
+        } else {
+            try {
+                PrivilegedNewInstanceFromClass privilegedNewInstanceFromClass = new PrivilegedNewInstanceFromClass(unmappedContentHandlerClass);
+                unmappedContentHandler = (UnmappedContentHandler)privilegedNewInstanceFromClass.run();
+            } catch (ClassCastException e) {
+                throw XMLMarshalException.unmappedContentHandlerDoesntImplement(e, unmappedContentHandlerClass.getName());
+            } catch (IllegalAccessException e) {
+                throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
+            } catch (InstantiationException e) {
+                throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
+            }
+        }
+        UnmappedContentHandlerWrapper unmappedContentHandlerWrapper = new UnmappedContentHandlerWrapper(this, unmappedContentHandler);
+        unmappedContentHandlerWrapper.startElement(namespaceURI, localName, qName, atts);
+        xmlReader.setContentHandler(unmappedContentHandlerWrapper);
     }
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
@@ -566,6 +654,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             typeQName = null;
             levelIndex--;
             if ((0 == levelIndex) && (null != getParentRecord())) {
+                endDocument();
                 getParentRecord().endElement(namespaceURI, localName, qName);
                 xmlReader.setContentHandler(getParentRecord());
             }

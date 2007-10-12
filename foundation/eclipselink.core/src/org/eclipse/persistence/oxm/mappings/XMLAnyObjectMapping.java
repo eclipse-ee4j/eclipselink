@@ -340,7 +340,7 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
                     if (referenceDescriptor != null) {
                         ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
                         Object objectValue = builder.buildObject(query, nestedRecord, joinManager);
-                        Object updated = ((XMLDescriptor)referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix());
+                        Object updated = ((XMLDescriptor)referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
 
                         return updated;
                     } else {
@@ -349,11 +349,13 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
                         if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
                             value = ((Text)textchild).getNodeValue();
                         }
-                        XMLRoot rootValue = new XMLRoot();
-                        rootValue.setLocalName(next.getLocalName());
-                        rootValue.setNamespaceURI(next.getNamespaceURI());
-                        rootValue.setObject(value);
-                        return rootValue;
+                        if(value != null && ! value.equals("")){
+                          XMLRoot rootValue = new XMLRoot();
+                          rootValue.setLocalName(next.getLocalName());
+                          rootValue.setNamespaceURI(next.getNamespaceURI());
+                          rootValue.setObject(value);
+                          return rootValue;
+                        }
                     }
                 }
             }
@@ -425,9 +427,7 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
                 }
             }
 
-            if (xmlRootField != null) {
-                Node node = XPathEngine.getInstance().create(xmlRootField, root, (String)value);
-            } else {
+            if (null == xmlRootField) {
                 Text textNode = doc.createTextNode((String)value);
                 if(toReplace != null) {
                     root.replaceChild(textNode, toReplace);

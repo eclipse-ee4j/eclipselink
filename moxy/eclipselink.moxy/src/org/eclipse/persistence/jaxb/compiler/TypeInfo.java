@@ -49,6 +49,7 @@ public class TypeInfo {
     private static final String TXT = "/text()";
     private XMLDescriptor descriptor;
     private ComplexType complexType;
+    private boolean hasRootElement;
     private Schema schema;
     private SimpleType simpleType;
     private ArrayList<String> propOrder; //store as a collection so it can be added to if needed
@@ -268,6 +269,14 @@ public class TypeInfo {
 
     public void addAdapterClass(JavaClass adapterClass, String boundTypeName) {
         adaptersByClass.put(boundTypeName, adapterClass);
+    }
+    
+    public boolean hasRootElement() {
+        return hasRootElement;
+    }
+    
+    public void setHasRootElement(boolean hasRoot) {
+        hasRootElement = hasRoot;
     }
 }
         

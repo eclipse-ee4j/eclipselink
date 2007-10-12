@@ -44,6 +44,8 @@ public class PurchaseOrderWithAnnotationsDefineTestCases extends PurchaseOrderDe
         String javaPackage = "com.example.myPackage";
 
         SDOType gregorianDateType = new SDOType(uri, "MyGregorianDate");
+        gregorianDateType.setXsd(true);
+        gregorianDateType.setXsdLocalName("MyGregorianDate");
         gregorianDateType.setDataType(true);
         List aliasNames = new ArrayList();
         aliasNames.add("TheGregorianDate");
@@ -55,6 +57,8 @@ public class PurchaseOrderWithAnnotationsDefineTestCases extends PurchaseOrderDe
 
         //ADDRESS TYPE
         SDOType USaddrType = new SDOType(uri, "USAddress");
+        USaddrType.setXsd(true);
+        USaddrType.setXsdLocalName("USAddress");
         USaddrType.setDataType(false);
         USaddrType.setInstanceClassName(javaPackage + "." + "USAddress");
         SDOProperty addrNameProp = new SDOProperty(aHelperContext);
@@ -114,6 +118,8 @@ public class PurchaseOrderWithAnnotationsDefineTestCases extends PurchaseOrderDe
 
         /****QUANTITY TYPE*****/
         SDOType quantityType = new SDOType(uri, "quantityType");
+        quantityType.setXsd(true);
+        quantityType.setXsdLocalName("quantityType");
         quantityType.setDataType(true);
         quantityType.getBaseTypes().add(integerType);
         //quantityType.setInstanceClassName(ClassConstants.BIGINTEGER.getName());
@@ -121,7 +127,7 @@ public class PurchaseOrderWithAnnotationsDefineTestCases extends PurchaseOrderDe
         quantityType.setInstanceClassName(ClassConstants.PINT.getName());
 
         /****SKU TYPE*****/
-        SDOType SKUType = new SDOType(uri, "SKUSDO");
+        SDOType SKUType = new SDOType(uri, "SKUSDO");                
         SKUType.setDataType(true);
         SKUType.setXsd(true);
         SKUType.setXsdLocalName("SKU");
@@ -130,7 +136,8 @@ public class PurchaseOrderWithAnnotationsDefineTestCases extends PurchaseOrderDe
         SKUType.setInstanceClassName("com.example.myPackage.SKU");
 
         /****ITEM TYPE*****/
-        SDOType itemType = new SDOType(uri, "ItemSDO");
+        SDOType itemType = new SDOType(uri, "ItemSDO");        
+        itemType.setXsd(true);
         itemType.setDataType(false);
         itemType.setInstanceClassName(javaPackage + "." + "ItemSDO");
         itemType.setXsdLocalName("Item");
@@ -212,6 +219,8 @@ public class PurchaseOrderWithAnnotationsDefineTestCases extends PurchaseOrderDe
 
         /****ITEMS TYPE*****/
         SDOType itemsType = new SDOType(uri, "Items");
+        itemsType.setXsd(true);
+        itemsType.setXsdLocalName("Items");
         itemsType.setDataType(false);
         itemsType.setInstanceClassName(javaPackage + "." + "Items");
 
@@ -230,6 +239,8 @@ public class PurchaseOrderWithAnnotationsDefineTestCases extends PurchaseOrderDe
 
         /****PURCHASEORDER TYPE*****/
         SDOType POtype = new SDOType(uri, "PurchaseOrder");
+        POtype.setXsd(true);
+        POtype.setXsdLocalName("PurchaseOrder");
         POtype.setDataType(false);
         names = new ArrayList();
         names.add("Purchase");
