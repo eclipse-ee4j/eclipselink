@@ -211,14 +211,14 @@ public class SchemaGenerator {
                     rootElement.setType(pfx+type.getName());
                 }
             }
-            QName restrictionType = getSchemaTypeFor(valueField.getType());
+            QName extensionType = getSchemaTypeFor(valueField.getType());
             if (helper.isAnnotationPresent(valueField.getElement(), XmlSchemaType.class)) {
                 XmlSchemaType schemaType = (XmlSchemaType) helper.getAnnotation(valueField.getElement(), XmlSchemaType.class);
-                restrictionType = new QName(XMLConstants.SCHEMA_INSTANCE_URL, schemaType.name());
+                extensionType = new QName(XMLConstants.SCHEMA_INSTANCE_URL, schemaType.name());
             }
-            Restriction restriction = new Restriction();
-            restriction.setBaseType(XMLConstants.SCHEMA_PREFIX + ":" + restrictionType.getLocalPart());
-            content.setRestriction(restriction);
+            Extension extension = new Extension();
+            extension.setBaseType(XMLConstants.SCHEMA_PREFIX + ":" + extensionType.getLocalPart());
+            content.setExtension(extension);
             type.setSimpleContent(content);
             info.setComplexType(type);
             info.setPropOrder(propOrder);
@@ -377,9 +377,17 @@ public class SchemaGenerator {
                         } else {
                             reference.setRef(prefix + ":" + attribute.getName());
                         }
-                        parentType.getOrderedAttributes().add(reference);
+                        if(parentType.getSimpleContent() != null) {
+                            parentType.getSimpleContent().getExtension().getOrderedAttributes().add(reference);
+                        } else {
+                            parentType.getOrderedAttributes().add(reference);
+                        }
                     } else {
-                        parentType.getOrderedAttributes().add(attribute);
+                        if(parentType.getSimpleContent() != null) {
+                            parentType.getSimpleContent().getExtension().getOrderedAttributes().add(attribute);
+                        } else {
+                            parentType.getOrderedAttributes().add(attribute);
+                        }
                     }
                 } else if (helper.isAnnotationPresent(next.getElement(), XmlAnyAttribute.class)) {
                     AnyAttribute anyAttribute = new AnyAttribute();
