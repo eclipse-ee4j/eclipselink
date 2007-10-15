@@ -68,7 +68,8 @@ public class SDOMarshalListener implements XMLMarshalListener {
             //so it can't be calculated until we know what object is being marshalled
             List createdSet = changeSummary.getCreated();
             List xpaths = new ArrayList(createdSet.size());
-            if (changeSummary.isLoggingMapping() && (createdSet != null) && (createdSet.size() > 0)) {
+         
+            if ((createdSet != null) && (createdSet.size() > 0)) {
                 Iterator anIterator = createdSet.iterator();
                 SDODataObject nextCreatedDO = null;
                 while (anIterator.hasNext()) {
@@ -76,7 +77,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
                     // get path to the changeSummaryRoot (may not be the root marshalled object - may be internal)
                     nextCreatedDO = ((SDODataObject)anIterator.next());
                     xpaths.add(SDOConstants.SDO_CHANGESUMMARY_REF_PATH_PREFIX + SDOConstants.SDO_XPATH_SEPARATOR_FRAGMENT//
-                                +getPathFromAncestor(nextCreatedDO, (SDODataObject)marshalledObject, (SDOChangeSummary)changeSummary));
+                                +getPathFromAncestor(nextCreatedDO, (SDODataObject)marshalledObject, changeSummary));
                 }
             }
             changeSummary.setCreatedXPaths(xpaths);
@@ -123,7 +124,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
                 csNode.setAttributeNS(SDOConstants.SDO_URL, sdoPrefix +//
                                       SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT +//
                                       SDOConstants.CHANGESUMMARY_REF,//                                      
-                                      sdoRefPrefix + getPathFromAncestor(nextModifiedDO, (SDODataObject)marshalledObject, (SDOChangeSummary)changeSummary));
+                                      sdoRefPrefix + getPathFromAncestor(nextModifiedDO, (SDODataObject)marshalledObject, changeSummary));
 
                 //Bug6346754 Add all namespaces if they are not yet declared above.                
                 Vector namespaces = ((SDOType)nextModifiedDO.getType()).getXmlDescriptor().getNonNullNamespaceResolver().getNamespaces();

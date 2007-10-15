@@ -202,8 +202,8 @@ public class SDODataHelper implements DataHelper {
     public String toDateTime(Date date) {
         if (date == null) {
             return null;
-        }
-        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.DATE_TIME_QNAME);
+        }        
+        return xmlConversionManager.stringFromDate(date, XMLConstants.DATE_TIME_QNAME);
     }
 
     /**
@@ -229,7 +229,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.TIME_QNAME);
+        return xmlConversionManager.stringFromDate(date, XMLConstants.TIME_QNAME);
     }
 
     /**
@@ -241,7 +241,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.G_DAY_QNAME);
+        return xmlConversionManager.stringFromDate(date, XMLConstants.G_DAY_QNAME);
     }
 
     /**
@@ -253,7 +253,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.G_MONTH_QNAME);
+        return xmlConversionManager.stringFromDate(date, XMLConstants.G_MONTH_QNAME);
     }
 
     /**
@@ -265,7 +265,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.G_MONTH_DAY_QNAME);
+        return xmlConversionManager.stringFromDate(date, XMLConstants.G_MONTH_DAY_QNAME);
     }
 
     /**
@@ -277,7 +277,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.G_YEAR_QNAME);
+        return xmlConversionManager.stringFromDate(date, XMLConstants.G_YEAR_QNAME);
     }
 
     /**
@@ -289,7 +289,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.G_YEAR_MONTH_QNAME);
+        return xmlConversionManager.stringFromDate(date, XMLConstants.G_YEAR_MONTH_QNAME);
     }
 
     /**
@@ -301,7 +301,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromDate(date, XMLConstants.DATE_QNAME);
+        return xmlConversionManager.stringFromDate(date, XMLConstants.DATE_QNAME);
     }
 
     /**
@@ -313,7 +313,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.DATE_TIME_QNAME);
+        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.DATE_TIME_QNAME);
     }
 
     /**
@@ -352,7 +352,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.TIME_QNAME);
+        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.TIME_QNAME);
     }
 
     /**
@@ -364,7 +364,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_DAY_QNAME);
+        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_DAY_QNAME);
     }
 
     /**
@@ -376,7 +376,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_MONTH_QNAME);
+        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_MONTH_QNAME);
     }
 
     /**
@@ -388,7 +388,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_MONTH_DAY_QNAME);
+        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_MONTH_DAY_QNAME);
     }
 
     /**
@@ -400,7 +400,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_YEAR_QNAME);
+        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_YEAR_QNAME);
     }
 
     /**
@@ -412,7 +412,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_YEAR_MONTH_QNAME);
+        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_YEAR_MONTH_QNAME);
     }
 
     /**
@@ -424,7 +424,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return (String)xmlConversionManager.stringFromCalendar(calendar, XMLConstants.DATE_QNAME);
+        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.DATE_QNAME);
     }
 
     /**

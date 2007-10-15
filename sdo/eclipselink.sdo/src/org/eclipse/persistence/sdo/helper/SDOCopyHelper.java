@@ -872,7 +872,7 @@ public class SDOCopyHelper implements CopyHelper {
             copy.addOpenContentProperty((Property)anOCIterator.next());
         }
         
-        List ocAttrsListOriginal = ((SDODataObject)dataObject)._getOpenContentPropertiesAttributes();
+        List ocAttrsListOriginal = dataObject._getOpenContentPropertiesAttributes();
         for (Iterator anOCAttrIterator = ocAttrsListOriginal.iterator(); anOCAttrIterator.hasNext();) {
             copy.addOpenContentProperty((Property)anOCAttrIterator.next());
         }

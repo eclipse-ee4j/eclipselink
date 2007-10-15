@@ -11,7 +11,6 @@ package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
-import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 import java.util.ArrayList;
 import java.util.List;

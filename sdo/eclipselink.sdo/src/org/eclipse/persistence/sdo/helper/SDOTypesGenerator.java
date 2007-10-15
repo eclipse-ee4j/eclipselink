@@ -118,7 +118,7 @@ public class SDOTypesGenerator extends SchemaParser {
         Iterator iter = getGeneratedTypes().values().iterator();
 
         List descriptors = new ArrayList();
-        XSDHelper helper = XSDHelper.INSTANCE;
+        
         while (iter.hasNext()) {
             SDOType nextSDOType = (SDOType)iter.next();
             if(!nextSDOType.isFinalized() && !this.isImportProcessor()) {
@@ -448,7 +448,7 @@ public class SDOTypesGenerator extends SchemaParser {
                 theProp.setMany(isMany);
                 theProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
                 if (element.getAnnotation() != null) {
-                    java.util.List doc = (java.util.List)element.getAnnotation().getDocumentation();
+                    List doc =element.getAnnotation().getDocumentation();
                     if (doc != null) {
                         theProp.setInstanceProperty(SDOConstants.DOCUMENTATION_PROPERTY, doc);
                     }
@@ -766,7 +766,7 @@ public class SDOTypesGenerator extends SchemaParser {
                 theProp.setXsd(true);
                 theProp.setMany(false);
                 if (attribute.getAnnotation() != null) {
-                    java.util.List doc = (java.util.List)attribute.getAnnotation().getDocumentation();
+                    List doc = attribute.getAnnotation().getDocumentation();
                     if (doc != null) {
                         theProp.setInstanceProperty(SDOConstants.DOCUMENTATION_PROPERTY, doc);
                     }
