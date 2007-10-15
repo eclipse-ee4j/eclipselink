@@ -223,7 +223,7 @@
     <macrodef name="run-oxm-tests">
         <sequential>
 			<mkdir dir="${oxm.default.report.dir}"/>
-			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes">
+			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
 				<sysproperty key="useDeploymentXML" value="false"/>
 				<sysproperty key="useSAXParsing" value="false"/>
 				<sysproperty key="useDocPres" value="false"/>
@@ -253,7 +253,7 @@
     <macrodef name="run-oxm-sax-tests">
         <sequential>
 			<mkdir dir="${oxm.sax.report.dir}"/>
-			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes">
+			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
 				<sysproperty key="useDeploymentXML" value="false"/>
 				<sysproperty key="useSAXParsing" value="true"/>
 				<sysproperty key="useDocPres" value="false"/>
@@ -288,7 +288,7 @@
     <macrodef name="run-oxm-deploymentxml-tests">
         <sequential>
 			<mkdir dir="${oxm.deploymentxml.report.dir}"/>
-			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes">
+			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
 				<sysproperty key="useDeploymentXML" value="true"/>
 				<sysproperty key="useSAXParsing" value="false"/>
 				<sysproperty key="useDocPres" value="false"/>
@@ -328,7 +328,7 @@
     <macrodef name="run-oxm-docpres-tests">
         <sequential>
 			<mkdir dir="${oxm.docpres.report.dir}"/>
-			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes">
+			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
 				<sysproperty key="useDeploymentXML" value="false"/>
 				<sysproperty key="useSAXParsing" value="false"/>
 				<sysproperty key="useDocPres" value="true"/>
