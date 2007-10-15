@@ -635,12 +635,11 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         assertSame(openRootPropertyToBeDeleted.getName(), oc2cValue_ocUnsetMap);
 
         // turn off logging
-        cs.endLogging();
+        cs.endLogging();        
+        //restart logging to clear cs (to reproduce that we used to clear CS on endLogging)
         assertFalse(cs.isLogging());
-        //cs2.endLogging();
-        //assertFalse(cs2.isLogging());
-
-        
+        cs.beginLogging();
+                
         // perform an undo on the copy and compare to the undone original (not the undone copy)
         cs2.undoChanges();
         // verify that original was unaffected by undo on copy

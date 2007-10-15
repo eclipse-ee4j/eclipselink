@@ -148,23 +148,22 @@ public class ChangeSummaryBeginLoggingEndLoggingCombiningTests extends ChangeSum
         changeSummaryB.endLogging();
         changeSummaryC.endLogging();
         
-        //April 23, 2007 - Denise after end logging everything should be cleared
-        assertEquals(0, changeSummaryB.getChangedDataObjects().size());
-        assertEquals(0, changeSummaryC.getChangedDataObjects().size());
+             assertEquals(2, changeSummaryB.getChangedDataObjects().size());
+        assertEquals(2, changeSummaryC.getChangedDataObjects().size());
 
         assertUnchanged(root, changeSummaryB);
-        assertUnchanged(dataObjectB, changeSummaryB);
+        assertModified(dataObjectB, changeSummaryB);
         assertUnchanged(dataObjectC, changeSummaryB);
-        assertUnchanged(dataObjectD, changeSummaryB); // set after a detach will result in a non-null container
+        assertDetached(dataObjectD, changeSummaryB, false); // set after a detach will result in a non-null container
 
         assertUnchanged(root, changeSummaryC);
         assertUnchanged(dataObjectB, changeSummaryC);
-        assertUnchanged(dataObjectC, changeSummaryC);
-        assertUnchanged(dataObjectD, changeSummaryC);// set propagates recursively
+        assertModified(dataObjectC, changeSummaryC);
+        assertCreated(dataObjectD, changeSummaryC);// set propagates recursively
 
         // oldSettings
-        checkOldSettingsSizeTree("0000", changeSummaryB, root, dataObjectB, dataObjectC, dataObjectD);//0100
-        checkOldSettingsSizeTree("0000", changeSummaryC, root, dataObjectB, dataObjectC, dataObjectD);
+        checkOldSettingsSizeTree("0101", changeSummaryB, root, dataObjectB, dataObjectC, dataObjectD);//0100
+        checkOldSettingsSizeTree("0010", changeSummaryC, root, dataObjectB, dataObjectC, dataObjectD);
 
         // root
         //   -> B
@@ -175,13 +174,13 @@ public class ChangeSummaryBeginLoggingEndLoggingCombiningTests extends ChangeSum
         // check oldContainer all should be set after beginLogging()
         checkOldContainer(changeSummaryB,//
                           root, null,// root is above csB and csC
-                          dataObjectB, null,// B is a child of root at the level of csB 
+                          dataObjectB, root,// B is a child of root at the level of csB 
                           dataObjectC, null,// C is not in csB scope
-                          dataObjectD, null);// D is a child of B inside csB scope
+                          dataObjectD, dataObjectB);// D is a child of B inside csB scope
         checkOldContainer(changeSummaryC,//
                           root, null,// root is above csB and csC
                           dataObjectB, null,// B is not in csC scope
-                          dataObjectC, null,// C is in csC scope
-                          dataObjectD, null);// D is inside csB scope
+                          dataObjectC, root,// C is in csC scope
+                          dataObjectD, null);// D is inside csB scope      
     }
 }
