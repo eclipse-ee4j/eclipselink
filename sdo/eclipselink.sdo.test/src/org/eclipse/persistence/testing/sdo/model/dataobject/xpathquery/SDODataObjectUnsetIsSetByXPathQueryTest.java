@@ -197,4 +197,10 @@ public class SDODataObjectUnsetIsSetByXPathQueryTest extends SDODataObjectGetByX
         assertEquals(3, dataObjectList.size() );
               
     }
+
+    public void testPathDoesNotExistJira8() {
+        SDODataObject dataObjectC1 = (SDODataObject)dataFactory.create(type_c);
+        boolean isSet = dataObjectC1.isSet("something/somethingelse");
+        assertFalse(isSet);
+    }
 }
