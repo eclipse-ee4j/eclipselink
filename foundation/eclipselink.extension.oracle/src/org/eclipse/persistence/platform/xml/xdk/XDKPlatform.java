@@ -11,14 +11,18 @@ package org.eclipse.persistence.platform.xml.xdk;
 
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLSchemaReference;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import oracle.xml.parser.schema.XMLSchema;
@@ -37,6 +41,7 @@ import oracle.xml.parser.v2.XSLException;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
@@ -165,7 +170,7 @@ public class XDKPlatform implements XMLPlatform {
         }
 
         Node parentNode = contextNode.getParentNode();
-        if (parentNode.getNodeType() == Node.ELEMENT_NODE) {
+        if (parentNode != null && parentNode.getNodeType() == Node.ELEMENT_NODE) {        
             return resolveNamespacePrefix((Element)parentNode, namespacePrefix);
         }
 
@@ -392,5 +397,68 @@ public class XDKPlatform implements XMLPlatform {
             return node;
         }
         return null;
+    }
+    
+     public void namespaceQualifyFragment(Element next) {
+        namespaceQualifyFragment(next, new ArrayList<String>());
+    }
+
+    //pass list of prefixes declared and encountered
+    private void namespaceQualifyFragment(Element next, List<String> declaredPrefixes) {
+        String elementUri = next.getNamespaceURI();
+        String elementPrefix = next.getPrefix();
+        if (elementPrefix != null) {
+            //see if this prefix is already declared if yes - do nothing, if no declare
+            Attr namespaceDeclaration = next.getAttributeNode(XMLConstants.XMLNS +":" + elementPrefix);
+            if ((null == namespaceDeclaration) && !declaredPrefixes.contains(elementPrefix)) {
+                ((Element)next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + elementPrefix, elementUri);
+                declaredPrefixes.add(elementPrefix);
+            }
+        }
+
+        //check all attributes prefixes and if any of them arent declared add them also.            
+        NamedNodeMap attributes = next.getAttributes();
+        int attributesSize = attributes.getLength();
+        for (int i = 0; i < attributesSize; i++) {
+            Attr nextAttribute = (Attr)attributes.item(i);
+            String attributePrefix = nextAttribute.getPrefix();
+            if (attributePrefix != null) {
+                //if attribute is a namespace declaration add to declared list 
+                if (XMLConstants.XMLNS_URL.equals(nextAttribute.getNamespaceURI())) {
+                    declaredPrefixes.add(nextAttribute.getLocalName());
+                } else {
+                    Attr namespaceDeclaration = next.getAttributeNode(XMLConstants.XMLNS +":" + attributePrefix);
+                    if ((null == namespaceDeclaration) && !declaredPrefixes.contains(attributePrefix)) {
+                        String attributeUri = nextAttribute.getNamespaceURI();
+                        ((Element)next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + attributePrefix, attributeUri);
+                        declaredPrefixes.add(attributePrefix);
+                    }
+
+                    //if xsi:type declaration deal with that value
+                    if (XMLConstants.SCHEMA_INSTANCE_URL.equals(nextAttribute.getNamespaceURI()) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(nextAttribute.getLocalName())) {                        
+                        String value = nextAttribute.getValue();
+                        int colonIndex = value.indexOf(':');
+                        if (colonIndex > -1) {
+                            String prefix = value.substring(0, colonIndex);
+                            namespaceDeclaration = next.getAttributeNode(XMLConstants.XMLNS +":" + prefix);
+                            if ((null == namespaceDeclaration) && !declaredPrefixes.contains(prefix)) {                                
+                                String uri = XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(next, prefix);
+                                ((Element)next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, uri);
+                                declaredPrefixes.add(prefix);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        NodeList children = next.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node nextNode = (Node)children.item(i);
+            if (nextNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element child = (Element)nextNode;
+                namespaceQualifyFragment(child, declaredPrefixes);
+            }
+        }
     }
 }
