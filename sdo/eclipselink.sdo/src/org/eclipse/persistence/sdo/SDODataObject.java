@@ -1038,28 +1038,6 @@ public class SDODataObject implements DataObject {
      * @see #isSet(Property)
      */
     public Object get(Property property) throws IllegalArgumentException {
-        return get(property, true);
-    }
-
-    /**
-     * INTERNAL:
-     * Returns the value of the given property of this object.
-     * <p>
-     * If the property is {@link Property#isMany many-valued},
-     * the result will be a {@link java.util.List}
-     * and each object in the List will be {@link Type#isInstance an instance of}
-     * the property's {@link Property#getType type}.
-     * Otherwise the result will directly be an instance of the property's type.
-     * @param property the property of the value to fetch.
-     * @return the value of the given property of the object.
-     * @see #set(Property, Object)
-     * @see #unset(Property)
-     * @see #isSet(Property)
-     * @param updateSequence
-     * @return
-     * @throws IllegalArgumentException
-     */
-    public Object get(Property property, boolean updateSequence) throws IllegalArgumentException {
         if (null == property) {// check null property before null type
             throw new IllegalArgumentException("Argument not Supported.");
         }
@@ -1193,7 +1171,7 @@ public class SDODataObject implements DataObject {
         }
 
         // Note: get() will call setPropertyInternal() if the list is null = not set yet - we need to propagate the updateSequence flag
-        Object oldValue = get(property, updateSequence);
+        Object oldValue = get(property);
         boolean wasSet = isSet(property);
         if (wasSet && (oldValue == value)) {
             return;
@@ -2460,18 +2438,12 @@ public class SDODataObject implements DataObject {
         }
 
         // restore any open content properties to the 3 data structures on SDODataObject, and remove from cs.unsetOCPropsMap
-        // see openContentPropertiesMap<String,Property>, openContentProperties(List<Property>). instanceProperties (List<Property>)
-        Map oldUnsetOCPropertyMap = ((SDOChangeSummary)cs).getUnsetOCPropertiesMap();
-
-        // Iterate the list of properties by container key DataObject key (will not be null) 
-        for (Iterator iterContainers = oldUnsetOCPropertyMap.keySet().iterator();
-                 iterContainers.hasNext();) {
-            List oldUnsetOCList = ((List)oldUnsetOCPropertyMap.get(iterContainers.next()));
-            for (int i = 0, size = oldUnsetOCList.size(); i < size; i++) {
-                // it is essential that the oc property is removed from the cs or we will get an unsupported op during resetChanges()
-                // the property will be added only when logging=true, we reference the first item in the list as it reduces in size 
-                addOpenContentProperty((Property)oldUnsetOCList.get(0));
-            }
+        // see openContentPropertiesMap<String,Property>, openContentProperties(List<Property>). instanceProperties (List<Property>)      
+        List oldUnsetOCList =  ((SDOChangeSummary)cs).getUnsetOCProperties(this);
+        for (int i = 0, size = oldUnsetOCList.size(); i < size; i++) {
+             // it is essential that the oc property is removed from the cs or we will get an unsupported op during resetChanges()
+             // the property will be added only when logging=true, we reference the first item in the list as it reduces in size 
+             addOpenContentProperty((Property)oldUnsetOCList.get(0));
         }
 
         // recursive step: swap valueStores on every contained subtree
@@ -2861,24 +2833,13 @@ public class SDODataObject implements DataObject {
 
             XMLRoot root = new XMLRoot();
             String localName = ((SDOProperty)next).getXPath();
-            String prefix = null;
             if (next.getType() != null) {
                 if (!next.getType().isDataType()) {
                     String uri = next.getType().getURI();
-
-                    root.setNamespaceURI(uri);
-                    NamespaceResolver nr = ((SDOType)next.getType()).getXmlDescriptor().getNamespaceResolver();
-                    if ((nr != null) && (uri != null)) {
-                        prefix = nr.resolveNamespaceURI(uri);
-                    }
+                    root.setNamespaceURI(uri);                    
                 } else {
                     String uri = getType().getURI();
-
-                    root.setNamespaceURI(uri);
-                    NamespaceResolver nr = ((SDOType)getType()).getXmlDescriptor().getNamespaceResolver();
-                    if ((nr != null) && (uri != null)) {
-                        prefix = nr.resolveNamespaceURI(uri);
-                    }
+                    root.setNamespaceURI(uri);                    
                 }
             }
 

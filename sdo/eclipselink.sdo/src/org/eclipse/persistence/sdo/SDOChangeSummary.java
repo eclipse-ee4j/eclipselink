@@ -489,6 +489,7 @@ public class SDOChangeSummary implements ChangeSummary {
         if (!logging) {
             logging = true;
             loggingMapping = true;
+            resetChanges();
             rootDataObject.resetChanges();
         }
     }
@@ -513,7 +514,7 @@ public class SDOChangeSummary implements ChangeSummary {
     public void endLogging() {
         logging = false;
         loggingMapping = false;
-        resetChanges();
+        //October 12, 1007 - as per the spec do not clear anything on Changesummary on endLogging
     }
 
     /**
@@ -617,8 +618,8 @@ public class SDOChangeSummary implements ChangeSummary {
                 } else {
                     oldValue = currentValue;
                 }
-            }
-            if (isDeleted || (isLogging() && ((wasSet != isSet) || (oldValue != currentValue)))) {
+            }            
+            if (isDeleted || ((wasSet != isSet) || (oldValue != currentValue))) {
                 if ((oldValue != null) && !property.getType().isDataType()) {
                     if (oldValue instanceof DataObject) {
                         oldValue = getOrCreateDeepCopy((DataObject)oldValue);

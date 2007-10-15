@@ -28,7 +28,6 @@ import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;

@@ -23,7 +23,6 @@ import org.eclipse.persistence.sdo.helper.InstanceClassConverter;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDOMethodAttributeAccessor;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
-import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
