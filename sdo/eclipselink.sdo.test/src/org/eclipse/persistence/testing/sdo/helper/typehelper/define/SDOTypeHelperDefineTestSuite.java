@@ -32,6 +32,7 @@ public class SDOTypeHelperDefineTestSuite {
         suite.addTest(new TestSuite(SDOTypeHelperDefineMixedTestCases.class));
         suite.addTest(new TestSuite(SDOTypeHelperDefineTwiceTestCases.class));
         suite.addTest(new TestSuite(BaseTypeAsDataObjectTestCases.class));
+        suite.addTest(new TestSuite(PolymorphicPropertiesJira32TestCases.class));
         return suite;
     }
 }
