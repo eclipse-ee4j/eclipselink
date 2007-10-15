@@ -674,10 +674,10 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         Property property = null;
 
         //first look in xsdHelper elements                        
-        property = (Property)((SDOXSDHelper)aHelperContext.getXSDHelper()).getGlobalProperty(qname, true);
+        property = ((SDOXSDHelper)aHelperContext.getXSDHelper()).getGlobalProperty(qname, true);
         //next try xsdHelper attributes
         if (property == null) {
-            property = (Property)((SDOXSDHelper)aHelperContext.getXSDHelper()).getGlobalProperty(qname, false);
+            property = ((SDOXSDHelper)aHelperContext.getXSDHelper()).getGlobalProperty(qname, false);
         }
 
         return property;
