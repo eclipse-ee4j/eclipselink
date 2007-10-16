@@ -4,5 +4,14 @@
 	<classpathentry exported="true" kind="lib" path="eclipselink-antlr.jar"/>
 	<classpathentry exported="true" kind="lib" path="eclipselink-asm.jar"/>
 	<classpathentry exported="true" kind="lib" path="ant.jar"/>
+	<classpathentry exported="true" kind="lib" path="activation.jar"/>
+	<classpathentry exported="true" kind="lib" path="connector.jar"/>
+	<classpathentry exported="true" kind="lib" path="ejb.jar"/>
+	<classpathentry exported="true" kind="lib" path="jms.jar"/>
+	<classpathentry exported="true" kind="lib" path="jsr173_1.0_api.jar"/>
+	<classpathentry exported="true" kind="lib" path="jta.jar"/>
+	<classpathentry exported="true" kind="lib" path="mail.jar"/>
+	<classpathentry exported="true" kind="lib" path="persistence.jar"/>
+	<classpathentry kind="var" path="ANT_LIB"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
