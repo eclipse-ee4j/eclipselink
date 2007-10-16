@@ -1,21 +1,11 @@
-<xsd:schema targetNamespace="http://example.com/hr/" xmlns="http://example.com/hr/" elementFormDefault="qualified"
-     sdoJava:package="hr" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java"
-     xmlns:ns0="http://xmlns.oracle.com/adf/svc/types/">
-    <xsd:import schemaLocation="BC4JService.xsd" namespace="http://xmlns.oracle.com/adf/svc/types/"/>
+<xsd:schema targetNamespace="http://example.com/dept/" xmlns="http://example.com/dept/" elementFormDefault="qualified"
+     sdoJava:package="dept" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
     <xsd:complexType name="Emp">
-        <xsd:annotation>
-            <xsd:appinfo source="http://xmlns.oracle.com/adf/svc/metadata/">
-                <key xmlns="http://xmlns.oracle.com/adf/svc/metadata/">
-                    <attribute>Empno</attribute>
-                </key>
-            </xsd:appinfo>
-        </xsd:annotation>
         <xsd:sequence>
             <xsd:element name="Empno" type="xsd:integer" minOccurs="0"/>
             <xsd:element name="Ename" type="xsd:string" minOccurs="0" nillable="true"/>
             <xsd:element name="Job" type="xsd:string" minOccurs="0" nillable="true"/>
             <xsd:element name="Mgr" type="xsd:decimal" minOccurs="0" nillable="true"/>
-            <xsd:element name="Hiredate" type="ns0:dateTime-Timestamp" minOccurs="0" nillable="true"/>
             <xsd:element name="Sal" type="xsd:decimal" minOccurs="0" nillable="true"/>
             <xsd:element name="Comm" type="xsd:decimal" minOccurs="0" nillable="true"/>
             <xsd:element name="Deptno" type="xsd:decimal" minOccurs="0" nillable="true"/>

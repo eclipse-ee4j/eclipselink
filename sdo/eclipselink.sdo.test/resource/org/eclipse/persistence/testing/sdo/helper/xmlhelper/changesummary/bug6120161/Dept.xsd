@@ -1,14 +1,7 @@
-<xsd:schema targetNamespace="http://example.com/hr/" xmlns="http://example.com/hr/" elementFormDefault="qualified"
-     sdoJava:package="hr" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
+<xsd:schema targetNamespace="http://example.com/dept/" xmlns="http://example.com/dept/" elementFormDefault="qualified"
+     sdoJava:package="dept" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
     <xsd:include schemaLocation="Emp.xsd"/>
     <xsd:complexType name="Dept">
-        <xsd:annotation>
-            <xsd:appinfo source="http://xmlns.oracle.com/adf/svc/metadata/">
-                <key xmlns="http://xmlns.oracle.com/adf/svc/metadata/">
-                    <attribute>Deptno</attribute>
-                </key>
-            </xsd:appinfo>
-        </xsd:annotation>
         <xsd:sequence>
             <xsd:element name="Deptno" type="xsd:integer" minOccurs="0"/>
             <xsd:element name="Dname" type="xsd:string" minOccurs="0" nillable="true"/>
