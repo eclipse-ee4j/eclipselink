@@ -48,7 +48,7 @@ public class ChangeSummaryCreateBug6346754TestCases extends LoadAndSaveTestCases
     }
 
     protected String getControlRootURI() {
-        return "http://xmnls.oracle.com/apps/sv/supplier/supplierService/v1/types/";
+        return "http://example.com/supplier/service/";
     }
 
     protected String getRootInterfaceName() {
@@ -57,12 +57,11 @@ public class ChangeSummaryCreateBug6346754TestCases extends LoadAndSaveTestCases
 
     protected List getPackages() {
         List packages = new ArrayList();
-        packages.add("oracle/jbo/common/service/types");
+        packages.add("mypackage/process");
         packages.add("defaultPackage");
-        packages.add("oracle/apps/sv/address/addressService/v1");
-        packages.add("oracle/apps/sv/supplier/supplierService/v1");        
-        packages.add("oracle/jbo/service/errors");
-
+        packages.add("mypackage/address");
+        packages.add("mypackage/supplier");        
+        
         return packages;
     }
 

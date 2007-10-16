@@ -42,6 +42,9 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6120161/bug6120161.xml");
     }
+    protected String getControlWriteFileName() {
+        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6120161/bug6120161Write.xml");
+    }
 
     protected String getSchemaLocation() {
         return ("file:./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6120161/");
@@ -52,7 +55,7 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
     }
 
     protected String getControlRootURI() {
-        return "http://example.com/hr/types/";
+        return "http://example.com/app/";
     }
 
     protected String getRootInterfaceName() {
@@ -62,9 +65,8 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
     protected List getPackages() {
         List packages = new ArrayList();
         packages.add("defaultPackage");
-        packages.add("hr");
-        packages.add("oracle/jbo/common/service/types/");
-        packages.add("oracle/jbo/service/errors/");
+        packages.add("dept");
+        packages.add("com/mypackage");      
 
         return packages;
     }
