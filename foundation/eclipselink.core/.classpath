@@ -4,6 +4,5 @@
 	<classpathentry excluding="**/.svn/**" kind="src" path="resource"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/eclipselink.core.lib"/>
-	<classpathentry exported="true" kind="var" path="JAVAEE_LIB"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
