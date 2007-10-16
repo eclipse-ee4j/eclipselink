@@ -4,7 +4,9 @@
     <property file="./build.properties"/>
 
     <path id="compile.path">
-        <pathelement path="${javaee.lib}"/>
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
         <fileset
             dir="${oracle.extensions.depend.dir}"
             includes="${oracle.extensions.depend.jars}"/>
