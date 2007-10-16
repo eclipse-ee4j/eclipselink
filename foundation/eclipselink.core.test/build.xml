@@ -6,7 +6,9 @@
     <path id="compile.path">
         <pathelement path="${antlr}/${classes.dir}"/>
         <pathelement path="${asm}/${classes.dir}"/>
-        <pathelement path="${javaee.lib}"/>
+        <fileset
+            dir="${core.depend.dir}"
+            includes="${core.depend.libs}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
         <pathelement path="${junit.lib}"/>
     </path>
