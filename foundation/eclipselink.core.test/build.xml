@@ -7,8 +7,8 @@
         <pathelement path="${antlr}/${classes.dir}"/>
         <pathelement path="${asm}/${classes.dir}"/>
         <fileset
-            dir="${core.depend.dir}"
-            includes="${core.depend.libs}"/>
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
         <pathelement path="${junit.lib}"/>
     </path>
