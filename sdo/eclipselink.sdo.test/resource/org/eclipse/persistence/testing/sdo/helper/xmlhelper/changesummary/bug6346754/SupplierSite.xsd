@@ -1,19 +1,12 @@
-<xsd:schema targetNamespace="http://xmnls.oracle.com/apps/sv/supplier/supplierService/v1/" xmlns="http://xmnls.oracle.com/apps/sv/supplier/supplierService/v1/"
-     elementFormDefault="qualified" sdoJava:package="oracle.apps.sv.supplier.supplierService.v1"
+<xsd:schema targetNamespace="http://example.com/supplier/" xmlns="http://example.com/supplier/"
+     elementFormDefault="qualified" sdoJava:package="mypackage.supplier"
      xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java"
-     xmlns:ns1="http://xmnls.oracle.com/apps/sv/address/addressService/v1/" xmlns:ns0="http://xmlns.oracle.com/adf/svc/types/">
-    <xsd:import schemaLocation="Address.xsd" namespace="http://xmnls.oracle.com/apps/sv/address/addressService/v1/"/>
-    <xsd:import schemaLocation="BC4JService.xsd" namespace="http://xmlns.oracle.com/adf/svc/types/"/>
+     xmlns:ns1="http://example.com/address/" xmlns:ns0="http://example.com/process/">
+    <xsd:import schemaLocation="Address.xsd" namespace="http://example.com/address/"/>
+    <xsd:import schemaLocation="Process.xsd" namespace="http://example.com/process/"/>
     <xsd:import namespace="commonj.sdo/java"/>
     <xsd:import namespace="commonj.sdo/xml"/>
     <xsd:complexType name="SupplierSite">
-        <xsd:annotation>
-            <xsd:appinfo source="http://xmlns.oracle.com/adf/svc/metadata/">
-                <key xmlns="http://xmlns.oracle.com/adf/svc/metadata/">
-                    <attribute>SupplierSiteId</attribute>
-                </key>
-            </xsd:appinfo>
-        </xsd:annotation>
         <xsd:sequence>
             <xsd:element name="SupplierId" type="xsd:long" minOccurs="0" sdoXML:dataType="sdoJava:LongObject"/>
             <xsd:element name="SupplierSiteId" type="xsd:long" minOccurs="0" sdoXML:dataType="sdoJava:LongObject"/>
@@ -22,8 +15,6 @@
             <xsd:element name="CarrierCode" type="xsd:string" minOccurs="0" nillable="true"/>
             <xsd:element name="PurchasingSiteFlag" type="xsd:string" minOccurs="0" nillable="true"/>
             <xsd:element name="AddressId" type="xsd:long" minOccurs="0" nillable="true" sdoXML:dataType="sdoJava:LongObject"/>
-            <xsd:element name="StartDate" type="ns0:date-Date" minOccurs="0" nillable="true"/>
-            <xsd:element name="EndDate" type="ns0:date-Date" minOccurs="0" nillable="true"/>
             <xsd:element name="Address" type="ns1:Address" minOccurs="0"/>
         </xsd:sequence>
     </xsd:complexType>
