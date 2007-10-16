@@ -4,10 +4,12 @@
     <property file="./build.properties"/>
 
     <path id="compile.path">
-        <pathelement path="${antlr}/${classes.dir}"/>
-        <pathelement path="${asm}/${classes.dir}"/>
+        <pathelement path="${eclipselink.core.lib}/${antlr}/${classes.dir}"/>
+        <pathelement path="${eclipselink.core.lib}/${asm}/${classes.dir}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
-        <pathelement path="${javaee.lib}"/>
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
     </path>
 
     <!-- all -->
