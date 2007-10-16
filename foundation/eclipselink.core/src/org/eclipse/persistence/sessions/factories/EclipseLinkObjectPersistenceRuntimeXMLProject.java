@@ -5443,7 +5443,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
                 .setJavaClass(org.eclipse.persistence.mappings.structures.StructureMapping.class);
 
         descriptor.getInheritancePolicy().setParentClass(
-                XMLCompositeObjectMapping.class);
+        		AbstractCompositeObjectMapping.class);
 
         return descriptor;
     }
