@@ -17,7 +17,9 @@
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
         <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
         <pathelement path="${eclipselink.core.test}/${classes.dir}"/>
-        <pathelement path="${javaee.lib}"/>
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
         <pathelement path="${eclipselink.jar}"/>
         <pathelement path="${junit.lib}"/>
     </path>
