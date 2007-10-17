@@ -5,12 +5,10 @@
 	    <propertyref prefix="javax.xml"/>
 	</propertyset>
     <path id="jaxb.compile.path">
-        <fileset
-            dir="${eclipselink.moxy.lib}"
-            includes="${eclipselink.moxy.lib.jars}"/>
+        <pathelement path="${jaxb-api.lib}"/>
         <fileset
             dir="${eclipselink.core.lib}"
-            includes="${eclipselink.core.lib.jars}"/>
+            includes="${eclipselink.core.depend}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${eclipselink.moxy}/${classes.dir}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
@@ -22,13 +20,6 @@
         <path refid="jaxb.compile.path"/>
     </path>
     <path id="oxm.compile.path">
-        <fileset
-            dir="${eclipselink.moxy.lib}"
-            includes="${eclipselink.moxy.lib.jars}"/>
-        <fileset
-            dir="${eclipselink.core.lib}"
-            includes="${eclipselink.core.lib.jars}"/>
-        <pathelement path="${junit.lib}"/>
 		<path refid="jaxb.compile.path"/>
     </path>
     <path id="oxm.run.path">

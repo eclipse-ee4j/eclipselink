@@ -7,8 +7,10 @@
     <path id="sdo.compile.path">
         <pathelement path="${eclipselink.sdo}/${classes.dir}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
-        <pathelement path="${javaee.lib}"/>
-        <pathelement path="${junit.lib}"/>
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
+		<pathelement path="${junit.lib}"/>
         <pathelement path="${commonj.sdo.lib}"/>
     </path>
     <path id="sdo.run.path">
@@ -16,7 +18,7 @@
         <pathelement path="${tools.lib}"/>
         <pathelement path="${eclipselink.sdo.test}/${resource.dir}"/>
         <pathelement path="${eclipselink.sdo.test}/${classes.dir}"/>
-        <pathelement path="${asm}/${classes.dir}"/>
+        <pathelement path="${eclipselink.core.lib}/${asm}/${classes.dir}"/>
     </path>
 
 	<!-- Clean targets -->
