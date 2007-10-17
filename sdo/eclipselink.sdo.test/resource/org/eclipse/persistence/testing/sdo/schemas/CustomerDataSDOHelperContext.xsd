@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="http://globalcompany.com/oracle/fodemo/services/view/" xmlns="http://globalcompany.com/oracle/fodemo/services/view/" elementFormDefault="qualified" sdoJava:package="oracle.fodemo.services.view.common" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="commonj.sdo/XML">
+<xsd:schema targetNamespace="http://www.example.com/" xmlns="http://www.example.com/" elementFormDefault="qualified" sdoJava:package="myPackage" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="commonj.sdo/XML">
    <xsd:complexType name="CustomerDataSDO">
       <xsd:sequence>
          <xsd:element name="PersonId" type="xsd:decimal" minOccurs="0" sdo:propertyType="sdo:Decimal"/>

@@ -59,7 +59,7 @@ public class SDOHelperContextMultiThreadedTest extends SDOHelperContextTestCases
  	
     static int count = 0;
 
-    static String testDoc = "<customerDataSDO xmlns=\"http://globalcompany.com/oracle/fodemo/services/view/\">\n" +
+    static String testDoc = "<customerDataSDO xmlns=\"http://www.example.com/\">\n" +
     "    <FirstName>John</FirstName>\n" +
     "    <LastName>Smith</LastName>\n" +
     "    <Email>jsmith@yahoo.com</Email>\n" +

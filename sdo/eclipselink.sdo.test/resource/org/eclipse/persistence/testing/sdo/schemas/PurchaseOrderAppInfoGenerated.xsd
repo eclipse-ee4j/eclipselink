@@ -20,7 +20,7 @@
    </xsd:complexType>
    <xsd:complexType name="USAddress">
       <xsd:annotation>
-         <xsd:appinfo source="test" xmlns="http://xmlns.oracle.com/bc4j/service/metadata/">
+         <xsd:appinfo source="test" xmlns="http://www.example.com/">
             <key>
                <attribute>blah</attribute>
             </key>
