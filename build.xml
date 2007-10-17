@@ -13,6 +13,8 @@
         <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
         <ant antfile="${eclipselink.extension.oracle.test}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa.test}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.sdo}/build.xml" target="all"/>
 
         <jar jarfile="${eclipselink.jar}"
             manifest="${eclipselink.core}/${resource.dir}/META-INF/manifest.mf">
@@ -37,6 +39,12 @@
               <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
               <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
           </fileset>
+          <fileset dir="${eclipselink.moxy}/${classes.dir}">
+              <include name="org/eclipse/persistence/**/*.class"/>
+          </fileset>
+          <fileset dir="${eclipselink.sdo}/${classes.dir}">
+              <include name="org/eclipse/persistence/**/*.class"/>
+          </fileset>
       </jar>
     </target>
 
@@ -52,6 +60,12 @@
            <fileset dir="${eclipselink.core.lib}/${antlr}/${src.dir}">
               <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.java"/>
           </fileset>
+          <fileset dir="${eclipselink.moxy}/${src.dir}">
+              <include name="org/eclipse/persistence/**/*.java"/>
+          </fileset>
+          <fileset dir="${eclipselink.sdo}/${src.dir}">
+              <include name="org/eclipse/persistence/**/*.java"/>
+          </fileset>
       </zip>
     </target>
 
@@ -65,6 +79,8 @@
         <ant antfile="build.xml" dir="${eclipselink.core}" target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
         <ant antfile="build.xml" dir="${eclipselink.jpa}" target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.moxy}" target="clean"/>
+        <ant antfile="build.xml" dir="${eclipselink.sdo}" target="clean"/>
     </target>
 
 </project>

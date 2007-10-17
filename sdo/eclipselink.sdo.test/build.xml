@@ -1,4 +1,4 @@
-<project name="Compile SDO Testing" default="run.sdo.tests">
+<project name="Compile SDO Testing" default="test" basedir=".">
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
     <propertyset id="parser.properties">
@@ -38,11 +38,11 @@
 		</javac>
 	</target>
 	<target name="compile.sdo" description="build sdo classes">
-		<ant antfile="${eclipselink.sdo}/build.xml" target="compile.sdo" inheritAll="false"/>
+		<ant antfile="${eclipselink.sdo}/build.xml" target="all" inheritAll="false"/>
 	</target>
 
 	<!-- Run targets -->
-	<target name="run.sdo.tests" depends="compile.sdo.tests" description="run sdo tests">
+	<target name="test" depends="compile.sdo.tests" description="run sdo tests">
 	    <mkdir dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
 		<run-sdo-tests custom-context="true"/>
 		<!--run-sdo-tests custom-context="false"/-->

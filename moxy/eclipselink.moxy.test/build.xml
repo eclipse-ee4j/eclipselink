@@ -1,11 +1,16 @@
-<project name="EclipseLink MOXy Testing" default="run.tests">
+<project name="EclipseLink MOXy Testing" default="test">
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
     <propertyset id="parser.properties">
 	    <propertyref prefix="javax.xml"/>
 	</propertyset>
     <path id="jaxb.compile.path">
-        <pathelement path="${javaee.lib}"/>
+        <fileset
+            dir="${eclipselink.moxy.lib}"
+            includes="${eclipselink.moxy.lib.jars}"/>
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.lib.jars}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${eclipselink.moxy}/${classes.dir}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
@@ -17,7 +22,12 @@
         <path refid="jaxb.compile.path"/>
     </path>
     <path id="oxm.compile.path">
-        <pathelement path="${javaee.lib}"/>
+        <fileset
+            dir="${eclipselink.moxy.lib}"
+            includes="${eclipselink.moxy.lib.jars}"/>
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.lib.jars}"/>
         <pathelement path="${junit.lib}"/>
 		<path refid="jaxb.compile.path"/>
     </path>
@@ -61,7 +71,7 @@
 		<run-oxm-deploymentxml-tests/>
 		<run-oxm-docpres-tests/>
 	</target>
-	<target name="run.tests" depends="clean.reports, compile.and.run.tests, update.package.names, oxm.junit.report" description="run moxy tests and generate junit report"/>
+	<target name="test" depends="clean.reports, compile.and.run.tests, update.package.names, oxm.junit.report" description="run moxy tests and generate junit report"/>
 	<target name="run.jaxb.tests" description="run moxy (jaxb) tests">
 		<run-jaxb-tests/>
 		<junitreport todir="${jaxb.report.dir}">

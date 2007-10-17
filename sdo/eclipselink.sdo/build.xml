@@ -1,12 +1,12 @@
-<project name="EclipseLink SDO Build" default="compile.sdo">
+<project name="EclipseLink SDO Build" default="all">
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
     <path id="sdo.compile.path">
         <pathelement path="${commonj.sdo.lib}"/>
-        <pathelement path="${asm}/${classes.dir}"/>
+        <pathelement path="${eclipselink.core.lib}/${asm}/${classes.dir}"/>
 		<pathelement path="${eclipselink.core}/${classes.dir}"/>
     </path>
-	<target name="compile.sdo" depends="clean, compile.core" description="build sdo classes">
+	<target name="all" depends="clean, compile.core" description="build sdo classes">
         <javac srcdir="${eclipselink.sdo}/${src.dir}" 
                destdir="${eclipselink.sdo}/${classes.dir}"
                includes="**/*.java"
@@ -18,7 +18,7 @@
 		</javac>
     </target>
 	<target name="compile.core" description="build core classes">
-		<ant antfile="${eclipselink.core}/build.xml" target="all" inheritAll="false"/>
+		<ant antfile="${eclipselink.core}/build.xml" target="compile" inheritAll="false"/>
 	</target>
     <target name="clean" description="clean the build">
         <delete includeEmptyDirs="true" failonerror="false">

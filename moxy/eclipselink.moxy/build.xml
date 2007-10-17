@@ -1,15 +1,19 @@
-<project name="EclipseLink MOXy Build" default="compile.moxy">
+<project name="EclipseLink MOXy Build" default="all">
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
     <propertyset id="parser.properties">
 	    <propertyref prefix="javax.xml"/>
 	</propertyset>
     <path id="moxy.compile.path">
-        <pathelement path="${javaee.lib}"/>
-        <pathelement path="${junit.lib}"/>
+        <fileset
+            dir="${eclipselink.moxy.lib}"
+            includes="${eclipselink.moxy.lib.jars}"/>
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.lib.jars}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
     </path>
-	<target name="compile.moxy" depends="clean, compile.core" description="build moxy classes">
+	<target name="all" depends="clean, compile.core" description="build moxy classes">
 		<javac srcdir="${eclipselink.moxy}/${src.dir}"
 			destdir="${eclipselink.moxy}/${classes.dir}"
 			includes="org/eclipse/persistence/**/*.java">
@@ -19,7 +23,7 @@
 		</javac>
 	</target>
 	<target name="compile.core" description="build core classes">
-		<ant antfile="${eclipselink.core}/build.xml" target="all" inheritAll="false"/>
+		<ant antfile="${eclipselink.core}/build.xml" target="compile" inheritAll="false"/>
 	</target>
     <target name="clean" description="clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
