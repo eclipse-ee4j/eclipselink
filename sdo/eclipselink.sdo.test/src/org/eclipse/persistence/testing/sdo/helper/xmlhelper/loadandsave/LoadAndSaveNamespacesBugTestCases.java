@@ -58,7 +58,7 @@ public class LoadAndSaveNamespacesBugTestCases extends LoadAndSaveTestCases {
     }
  
     protected String getControlRootURI() {
-        return "http://oracle.j2ee.ws.jaxws.test/";
+        return "http://www.example.org/";
     }
 
     protected String getControlRootName() {
@@ -77,9 +77,8 @@ public class LoadAndSaveNamespacesBugTestCases extends LoadAndSaveTestCases {
     }
 
     protected List getPackages() {
-        List packages = new ArrayList();
-        packages.add("oracle/j2ee/ws/jaxws/test");
-        packages.add("oracle/databinding/sdo");
+        List packages = new ArrayList();        
+        packages.add("myPackage");
         return packages;
     }
 
@@ -91,13 +90,13 @@ public class LoadAndSaveNamespacesBugTestCases extends LoadAndSaveTestCases {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
 
         DataObject mySDOTypeDO = defineType(getControlRootURI(), "MySDO");
-        mySDOTypeDO.set(SDOConstants.JAVA_CLASS_PROPERTY, "oracle.j2ee.ws.jaxws.test.MySDO");
+        mySDOTypeDO.set(SDOConstants.JAVA_CLASS_PROPERTY, "myPackage.MySDO");
         addProperty(mySDOTypeDO, "stringPart", stringType, false, false, true);
         addProperty(mySDOTypeDO, "intPart", SDOConstants.SDO_INT, false, false, true);
         Type mySDOType = typeHelper.define(mySDOTypeDO);
 
         DataObject bindingInfoTypeTypeDO = defineType(getControlRootURI(), "bindingInfoType");
-        bindingInfoTypeTypeDO.set(SDOConstants.JAVA_CLASS_PROPERTY, "oracle.databinding.sdo.BindingInfoType");
+        bindingInfoTypeTypeDO.set(SDOConstants.JAVA_CLASS_PROPERTY, "myPackage.BindingInfoType");
         addProperty(bindingInfoTypeTypeDO, "testString", stringType, false, false, true);
         Type bindingInfoTypeType = typeHelper.define(bindingInfoTypeTypeDO);
     }

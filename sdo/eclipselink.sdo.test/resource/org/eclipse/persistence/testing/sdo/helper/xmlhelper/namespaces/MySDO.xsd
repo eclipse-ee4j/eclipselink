@@ -1,8 +1,8 @@
 <?xml version="1.0" standalone="yes"?>
 <schema elementFormDefault="qualified"
-	 targetNamespace="http://oracle.j2ee.ws.jaxws.test/" xmlns="http://www.w3.org/2001/XMLSchema"
-	 xmlns:tns="http://oracle.j2ee.ws.jaxws.test/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	 xmlns:sdoJava="commonj.sdo/java" sdoJava:package="oracle.j2ee.ws.jaxws.test">
+	 targetNamespace="http://www.example.org/" xmlns="http://www.w3.org/2001/XMLSchema"
+	 xmlns:tns="http://www.example.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	 xmlns:sdoJava="commonj.sdo/java" sdoJava:package="myPackage">
 	<complexType name="MySDO">
 		<sequence>
 			<element name="stringPart" type="xsd:string"/>
