@@ -25,11 +25,13 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.ExtendedPersistenceCon
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryConstructorExpressionTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.OptimisticConcurrencyJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCompositePKJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryAdvancedJUnitTest;
 
 import org.eclipse.persistence.testing.tests.jpa.inheritance.LifecycleCallbackJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.inheritance.DeleteAllQueryInheritanceJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.inheritance.EntityManagerJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.inheritance.MixedInheritanceJUnitTestCase;
+import org.eclipse.persistence.testing.tests.jpa.inheritance.JoinedAttributeInheritanceJunitTest;
 
 import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.inherited.InheritedModelJunitTest;
@@ -76,6 +78,7 @@ public class FullRegressionTestSuite extends TestSuite{
         suite.addTest(SQLResultSetMappingTestSuite.suite());
         suite.addTest(JoinedAttributeAdvancedJunitTest.suite());
         suite.addTest(ReportQueryMultipleReturnTestSuite.suite());
+        suite.addTest(ReportQueryAdvancedJUnitTest.suite());
         suite.addTest(ExtendedPersistenceContextJUnitTestSuite.suite());
         suite.addTest(ReportQueryConstructorExpressionTestSuite.suite());
         suite.addTest(OptimisticConcurrencyJUnitTestSuite.suite());
@@ -110,6 +113,7 @@ public class FullRegressionTestSuite extends TestSuite{
         suite.addTest(DeleteAllQueryInheritanceJunitTest.suite());
         suite.addTest(EntityManagerJUnitTestCase.suite());
         suite.addTest(MixedInheritanceJUnitTestCase.suite());
+        suite.addTest(JoinedAttributeInheritanceJunitTest.suite());
         fullSuite.addTest(suite);
         
         // Inherited model.
