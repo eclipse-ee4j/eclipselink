@@ -4,8 +4,8 @@
     <property file="./build.properties"/>
 
     <path id="compile.path">
-        <pathelement path="${eclipselink.core.lib}/${antlr}/${classes.dir}"/>
-        <pathelement path="${eclipselink.core.lib}/${asm}/${classes.dir}"/>
+        <pathelement path="${eclipselink.core.lib}/eclipselink-antlr.jar"/>
+        <pathelement path="${eclipselink.core.lib}/eclipselink-asm.jar"/>
         <fileset
             dir="${eclipselink.core.lib}"
             includes="${eclipselink.core.depend}"/>

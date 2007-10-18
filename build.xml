@@ -74,13 +74,11 @@
     </target>
 
     <target name="clean" description="Clean the build">
-        <ant antfile="build.xml" dir="${eclipselink.core.lib}/${asm}" target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.core.lib}/${antlr}" target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.core}" target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.jpa}" target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.moxy}" target="clean"/>
-        <ant antfile="build.xml" dir="${eclipselink.sdo}" target="clean"/>
+        <ant antfile="${eclipselink.core}/build.xml" target="clean"/>
+        <ant antfile="${eclipselink.extension.oracle}/build.xml" target="clean"/>
+        <ant antfile="${eclipselink.jpa}/build.xml" target="clean"/>
+        <ant antfile="${eclipselink.moxy}/build.xml" target="clean"/>
+        <ant antfile="${eclipselink.sdo}/build.xml" target="clean"/>
     </target>
 
 </project>

@@ -5,7 +5,6 @@
     <path id="compile.path">
         <pathelement path="${string-template-lib}"/>
         <pathelement path="${antlr-v3-lib}"/>
-        
     </path>
 
 
@@ -13,13 +12,13 @@
     <target name="all" depends="compile, package.compile.jar" description="build antlr classes"/>
 
     <target name="init">
-        <mkdir dir="${antlr}/${classes.dir}"/>
+        <mkdir dir="${eclipselink.core.lib}/${antlr}/${classes.dir}"/>
     </target>
 
     <!-- compile --> 
     <target name="compile" depends="init" description="compile antlr">  
-        <javac srcdir="${antlr}/${src.dir}" 
-               destdir="${antlr}/${classes.dir}"
+        <javac srcdir="${eclipselink.core.lib}/${antlr}/${src.dir}" 
+               destdir="${eclipselink.core.lib}/${antlr}/${classes.dir}"
                includes="org/eclipse/persistence/internal/libraries/antlr/**"
                debug="${javac.debug}" 
                optimize="${javac.optimize}"
@@ -33,15 +32,15 @@
     </target>
 
     <target name="package.compile.jar" depends="compile">
-        <jar jarfile="${antlr}/../eclipselink-antlr.jar">
-            <fileset dir="${antlr}/${classes.dir}">
+        <jar jarfile="${eclipselink.core.lib}/${antlr}/../eclipselink-antlr.jar">
+            <fileset dir="${eclipselink.core.lib}/${antlr}/${classes.dir}">
             </fileset>
         </jar>
     </target>
 
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${classes.dir}"/>
+            <fileset dir="${eclipselink.core.lib}/${antlr}/${classes.dir}"/>
         </delete>
     </target>
 
