@@ -1,84 +1,152 @@
 <project name="Eclipse Persistence Services" default="all" basedir=".">
 
-    <property file="${user.home}/build.properties"/>
-    <property file="./build.properties"/>
+  <property file="${user.home}/build.properties"/>
+  <property file="./build.properties"/>
 
-    <!-- all -->
-    <target name="all" depends="package, package.src" description="build EclipseLink jar"/>
+  <!-- all -->
+  <target name="all" depends="package, package.src" description="build EclipseLink jar"/>
 
-    <target name="package" description="build EclipseLink jar">
-        <ant antfile="${eclipselink.core}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.extension.oracle}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.jpa}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.extension.oracle.test}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.jpa.test}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.sdo}/build.xml" target="all"/>
+	<!-- package -->
+  <target name="package" description="build EclipseLink jar">
+    <ant antfile="${eclipselink.core}/build.xml" target="all"/>
+    <ant antfile="${eclipselink.extension.oracle}/build.xml" target="all"/>
+    <ant antfile="${eclipselink.jpa}/build.xml" target="all"/>
+    <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
+    <ant antfile="${eclipselink.extension.oracle.test}/build.xml" target="all"/>
+    <ant antfile="${eclipselink.jpa.test}/build.xml" target="all"/>
+    <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
+    <ant antfile="${eclipselink.sdo}/build.xml" target="all"/>
 
-        <jar jarfile="${eclipselink.jar}"
-            manifest="${eclipselink.core}/${resource.dir}/META-INF/manifest.mf">
-           <fileset dir="${eclipselink.core}/${classes.dir}">
-              <include name="org/eclipse/persistence/**/*.class"/>
-              <include name="deprecated/**/*.class"/>
-          </fileset>
-          <fileset dir="${eclipselink.core.lib}/${asm}/${classes.dir}">
-              <include name="org/eclipse/persistence/internal/libraries/asm/**/*.class"/>
-          </fileset>
-           <fileset dir="${eclipselink.core.lib}/${antlr}/${classes.dir}">
-              <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.class"/>
-          </fileset>
-          <fileset dir="${eclipselink.extension.oracle}/${classes.dir}">
-              <include name="org/eclipse/persistence/**/*.class"/>
-          </fileset>
-          <fileset dir="${eclipselink.jpa}/${classes.dir}">
-              <include name="org/eclipse/persistence/**/*.class"/>
-          </fileset>
-          <fileset dir="${eclipselink.core}/${resource.dir}">
-              <include name="xsd/*.xsd"/>
-              <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
-              <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-          </fileset>
-          <fileset dir="${eclipselink.moxy}/${classes.dir}">
-              <include name="org/eclipse/persistence/**/*.class"/>
-          </fileset>
-          <fileset dir="${eclipselink.sdo}/${classes.dir}">
-              <include name="org/eclipse/persistence/**/*.class"/>
-          </fileset>
-      </jar>
-    </target>
+    <jar jarfile="${eclipselink.jar}"
+      manifest="${eclipselink.core}/${resource.dir}/META-INF/manifest.mf">
+      <fileset dir="${eclipselink.core}/${classes.dir}">
+        <include name="org/eclipse/persistence/**/*.class"/>
+        <include name="deprecated/**/*.class"/>
+      </fileset>
+      <fileset dir="${eclipselink.core.lib}/${asm}/${classes.dir}">
+        <include name="org/eclipse/persistence/internal/libraries/asm/**/*.class"/>
+      </fileset>
+      <fileset dir="${eclipselink.core.lib}/${antlr}/${classes.dir}">
+        <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.class"/>
+      </fileset>
+      <fileset dir="${eclipselink.extension.oracle}/${classes.dir}">
+        <include name="org/eclipse/persistence/**/*.class"/>
+      </fileset>
+      <fileset dir="${eclipselink.jpa}/${classes.dir}">
+        <include name="org/eclipse/persistence/**/*.class"/>
+      </fileset>
+      <fileset dir="${eclipselink.core}/${resource.dir}">
+        <include name="xsd/*.xsd"/>
+        <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
+        <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+      </fileset>
+      <fileset dir="${eclipselink.moxy}/${classes.dir}">
+        <include name="org/eclipse/persistence/**/*.class"/>
+      </fileset>
+      <fileset dir="${eclipselink.sdo}/${classes.dir}">
+        <include name="org/eclipse/persistence/**/*.class"/>
+      </fileset>
+    </jar>
+  </target>
 
-    <target name="package.src" description="build EclipseLink source jar">
-        <zip zipfile="${eclipselink-src.zip}">
-           <fileset dir="${eclipselink.core}/${src.dir}">
-              <include name="org/eclipse/persistence/**/*.java"/>
-              <include name="deprecated/**/*.java"/>
-          </fileset>
-          <fileset dir="${eclipselink.core.lib}/${asm}/${src.dir}">
-              <include name="org/eclipse/persistence/internal/libraries/asm/**/*.java"/>
-          </fileset>
-           <fileset dir="${eclipselink.core.lib}/${antlr}/${src.dir}">
-              <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.java"/>
-          </fileset>
-          <fileset dir="${eclipselink.moxy}/${src.dir}">
-              <include name="org/eclipse/persistence/**/*.java"/>
-          </fileset>
-          <fileset dir="${eclipselink.sdo}/${src.dir}">
-              <include name="org/eclipse/persistence/**/*.java"/>
-          </fileset>
-      </zip>
-    </target>
+  <!-- package.src -->
+  <target name="package.src" description="build EclipseLink source jar">
+    <zip zipfile="${eclipselink-src.zip}">
+      <fileset dir="${eclipselink.core}/${src.dir}">
+        <include name="org/eclipse/persistence/**/*.java"/>
+        <include name="deprecated/**/*.java"/>
+      </fileset>
+      <fileset dir="${eclipselink.core.lib}/${asm}/${src.dir}">
+        <include name="org/eclipse/persistence/internal/libraries/asm/**/*.java"/>
+      </fileset>
+      <fileset dir="${eclipselink.core.lib}/${antlr}/${src.dir}">
+        <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.java"/>
+      </fileset>
+      <fileset dir="${eclipselink.moxy}/${src.dir}">
+        <include name="org/eclipse/persistence/**/*.java"/>
+      </fileset>
+      <fileset dir="${eclipselink.sdo}/${src.dir}">
+        <include name="org/eclipse/persistence/**/*.java"/>
+      </fileset>
+    </zip>
+  </target>
 
-    <target name="test.jpa" description="run the jpa tests">
-            <ant antfile="${eclipselink.jpa.test}/build.xml" target="test"/>
-    </target>
+	<!-- test.jpa -->
+  <target name="test.jpa" description="run the jpa tests">
+    <ant antfile="${eclipselink.jpa.test}/build.xml" target="test"/>
+  </target>
 
-    <target name="clean" description="Clean the build">
-        <ant antfile="${eclipselink.core}/build.xml" target="clean"/>
-        <ant antfile="${eclipselink.extension.oracle}/build.xml" target="clean"/>
-        <ant antfile="${eclipselink.jpa}/build.xml" target="clean"/>
-        <ant antfile="${eclipselink.moxy}/build.xml" target="clean"/>
-        <ant antfile="${eclipselink.sdo}/build.xml" target="clean"/>
-    </target>
+	<!-- clean -->
+  <target name="clean" description="Clean the build">
+    <ant antfile="${eclipselink.core}/build.xml" target="clean"/>
+    <ant antfile="${eclipselink.extension.oracle}/build.xml" target="clean"/>
+    <ant antfile="${eclipselink.jpa}/build.xml" target="clean"/>
+    <ant antfile="${eclipselink.util.rename.utility}/build.xml" target="clean"/>
+    <ant antfile="${eclipselink.moxy}/build.xml" target="clean"/>
+    <ant antfile="${eclipselink.sdo}/build.xml" target="clean"/>
+  </target>
+	
+	<!-- installer.zip -->
+  <target name="installer.zip" description="build EclipseLink installer zip">
+    <zip destfile="${eclipselink-installer.zip}">
+      <!-- miscellaneous files -->
+      <zipfileset dir=".">
+        <include name="${about-file}"/>
+        <include name="${readme-file}"/>
+        <include name="${license-files}"/>
+      </zipfileset>
+          
+      <!-- setenv and package-rename scripts -->
+      <zipfileset dir="${eclipselink.core.bin}" prefix="bin">
+        <include name="${setenv-scripts}"/>
+        <include name="${package-rename-scripts}"/>
+      </zipfileset>
+      
+      <!-- jaxb-compiler scripts -->
+      <zipfileset dir="${eclipselink.moxy.bin}" includes="${jaxb-compiler-scripts}" prefix="bin"/>
+      
+      <!-- package-rename.properties -->
+      <zipfileset dir="${eclipselink.util.rename.utility.resource}" includes="${package-rename.properties}" fullpath="config/package-rename.properties"/>
+        
+      <!-- core jar's and zips -->  
+      <zipfileset dir="." prefix="jlib">
+        <include name="${eclipselink.jar}"/>
+        <include name="${eclipselink-src.zip}"/>
+        <include name="${eclipselink.util}/${package-rename.jar}"/>
+      </zipfileset>
+      
+      <!-- jpa persistence jar -->  
+      <zipfileset dir="${eclipselink.core.lib}/" includes="${persistence.jar}" prefix="jlib/jpa"/>
+      
+    	<!-- moxy jar's and zips -->  
+    	<zipfileset dir="${eclipselink.core.lib}/" prefix="jlib/moxy">
+    	  <include name="${activiation.jar}"/>
+    	  <include name="${mail.jar}"/>
+    	</zipfileset>
+    	
+      <!-- moxy jar's and zips -->  
+      <zipfileset dir="${eclipselink.moxy.lib}/" prefix="jlib/moxy">
+        <include name="${jaxb-api.jar}"/>
+        <include name="${jaxb-xjc.jar}"/>
+        <include name="${jaxb-impl.jar}"/>
+        <include name="${jsr173_1.0_api.jar}"/>
+       </zipfileset>
+    	
+      <!-- grab the jdo persistence jar -->  
+      <zipfileset dir="${eclipselink.sdo.lib}/" includes="${commonj-sdo.jar}" prefix="jlib/sdo"/>
+      
+    </zip>
+  </target>
 
+	<!-- package-renamer -->
+  <target name="package-renamer" description="build Package rename jar">
+    <ant antfile="${eclipselink.util.rename.utility}/build.xml" target="all"/>
+  	
+    <jar jarfile="${eclipselink.util.rename.utility}/${package-rename.jar}">
+      <fileset dir="${eclipselink.util.rename.utility}/${classes.dir}">
+        <include name="utilities/*.class"/>
+      </fileset>
+    </jar>
+  </target>
+	
 </project>
