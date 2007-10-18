@@ -30,8 +30,8 @@ public class StoredProcedureGeneratorModel extends TestModel {
     }
 
     public void addRequiredSystems() {
-        if (!(getSession().getPlatform().isOracle() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLServer())) {
-            throw new TestWarningException("Store procedure generation is only supported on Oracle, Sybase and SQL Server.");
+        if (!(getSession().getPlatform().isOracle() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSQLServer() || getSession().getPlatform().isMySQL())) {
+            throw new TestWarningException("Store procedure generation is only supported on Oracle, Sybase, MySQL and SQL Server.");
         }
 
         // Need a System with no optimistic locking
