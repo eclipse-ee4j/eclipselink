@@ -34,7 +34,7 @@
 	<target name="compile.tests" depends="clean, compile.jaxb, compile.oxm.tests, compile.jaxb.tests" description="build moxy test classes"/>
 	<target name="compile.jaxb" description="build moxy (jaxb) classes">
 		<!-- The following build target will also compile eclipselink.core -->
-		<ant antfile="${eclipselink.moxy}/build.xml" target="compile.moxy" inheritAll="false"/>
+		<ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
 	</target>
 	<target name="compile.oxm.tests" description="build moxy (oxm) test classes">
 	    <javac srcdir="${eclipselink.moxy.test}/${src.dir}"
@@ -65,15 +65,15 @@
 	<target name="test" depends="clean.reports, compile.and.run.tests, update.package.names, oxm.junit.report" description="run moxy tests and generate junit report"/>
 	<target name="run.jaxb.tests" description="run moxy (jaxb) tests">
 		<run-jaxb-tests/>
-		<junitreport todir="${jaxb.report.dir}">
-			<fileset dir="${jaxb.report.dir}">
+		<junitreport todir="${eclipselink.moxy.test}/${report.dir}/jaxb">
+			<fileset dir="${eclipselink.moxy.test}/${report.dir}/jaxb">
 				<include name="**/*.xml"/>
 			</fileset>
-			<report format="noframes" todir="${jaxb.report.dir}"/>
+			<report format="noframes" todir="${eclipselink.moxy.test}/${report.dir}/jaxb"/>
 		</junitreport>		
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${eclipselink.moxy.test}/${resource.dir}/${tmp.dir}"/>
-			<fileset dir="${jaxb.report.dir}">
+			<fileset dir="${eclipselink.moxy.test}/${report.dir}/jaxb">
 				<include name="**/*.xml"/>
 			</fileset>
             <fileset dir="${eclipselink.moxy.test}/${resource.dir}">
@@ -83,100 +83,100 @@
 	</target>
 	<target name="run.oxm.tests" depends="clean.reports, compile.tests" description="run moxy (oxm) tests">
 		<run-oxm-tests/>
-		<junitreport todir="${oxm.report.dir}">
-			<fileset dir="${oxm.report.dir}">
+		<junitreport todir="${eclipselink.moxy.test}/${report.dir}/oxm">
+			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
 				<include name="**/*.xml"/>
 			</fileset>
-			<report format="noframes" todir="${oxm.report.dir}"/>
+			<report format="noframes" todir="${eclipselink.moxy.test}/${report.dir}/oxm"/>
 		</junitreport>		
         <delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${oxm.report.dir}">
+			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
 				<include name="**/*.xml"/>
 			</fileset>
         </delete>
-        <delete dir="${oxm.default.report.dir}" failonerror="false"/>
+        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/default" failonerror="false"/>
 	</target>
     <target name="run.oxm.sax.tests" depends="clean.reports, compile.tests" description="run moxy (oxm) tests with sax parsing enabled">
 		<run-oxm-sax-tests/>
-		<junitreport todir="${oxm.report.dir}">
-			<fileset dir="${oxm.report.dir}">
+		<junitreport todir="${eclipselink.moxy.test}/${report.dir}/oxm">
+			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
 				<include name="**/*.xml"/>
 			</fileset>
-			<report format="noframes" todir="${oxm.report.dir}"/>
+			<report format="noframes" todir="${eclipselink.moxy.test}/${report.dir}/oxm"/>
 		</junitreport>		
         <delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${oxm.report.dir}">
+			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
 				<include name="**/*.xml"/>
 			</fileset>
         </delete>
-        <delete dir="${oxm.sax.report.dir}" failonerror="false"/>
+        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/sax" failonerror="false"/>
 	</target>
 	<target name="run.oxm.deploymentxml.tests" depends="clean.reports, compile.tests" description="run moxy (oxm) tests with deployment xml enabled">
 		<run-oxm-deploymentxml-tests/>
-		<junitreport todir="${oxm.report.dir}">
-			<fileset dir="${oxm.report.dir}">
+		<junitreport todir="${eclipselink.moxy.test}/${report.dir}/oxm">
+			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
 				<include name="**/*.xml"/>
 			</fileset>
-			<report format="noframes" todir="${oxm.report.dir}"/>
+			<report format="noframes" todir="${eclipselink.moxy.test}/${report.dir}/oxm"/>
 		</junitreport>		
         <delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${oxm.report.dir}">
+			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
 				<include name="**/*.xml"/>
 			</fileset>
         </delete>
-        <delete dir="${oxm.deploymentxml.report.dir}" failonerror="false"/>
+        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/deploymentxml" failonerror="false"/>
 	</target>
 	<target name="run.oxm.docpres.tests" depends="clean.reports, compile.tests" description="run moxy (oxm) tests with document preservation enabled">
 		<run-oxm-docpres-tests/>
-		<junitreport todir="${oxm.report.dir}">
-			<fileset dir="${oxm.report.dir}">
+		<junitreport todir="${eclipselink.moxy.test}/${report.dir}/oxm">
+			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
 				<include name="**/*.xml"/>
 			</fileset>
-			<report format="noframes" todir="${oxm.report.dir}"/>
+			<report format="noframes" todir="${eclipselink.moxy.test}/${report.dir}/oxm"/>
 		</junitreport>		
         <delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${oxm.report.dir}">
+			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
 				<include name="**/*.xml"/>
 			</fileset>
         </delete>
-        <delete dir="${oxm.docpres.report.dir}" failonerror="false"/>
+        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/docpres" failonerror="false"/>
 	</target>
 
 	<!-- Package rename targets -->
 	<target name="update.package.names" depends="update.sax.package, update.deploymentxml.package, update.docpres.package" description="modify package names to avoid duplicates"/>
 	<target name="update.sax.package">
-		<replace dir="${oxm.sax.report.dir}" value='"org.eclipse.persistence.testing.oxm.sax'
+		<replace dir="${eclipselink.moxy.test}/${report.dir}/oxm/sax" value='"org.eclipse.persistence.testing.oxm.sax'
 			token='"org.eclipse.persistence.testing.oxm'>
 			  <include name="**/*.xml"/>
 		</replace>
 	</target>
 	<target name="update.deploymentxml.package">
-		<replace dir="${oxm.deploymentxml.report.dir}" value='"org.eclipse.persistence.testing.oxm.deploymentxml'
+		<replace dir="${eclipselink.moxy.test}/${report.dir}/oxm/deploymentxml" value='"org.eclipse.persistence.testing.oxm.deploymentxml'
 			token='"org.eclipse.persistence.testing.oxm'>
 			  <include name="**/*.xml"/>
 		</replace>
 	</target>
 	<target name="update.docpres.package">
-		<replace dir="${oxm.docpres.report.dir}" value='"org.eclipse.persistence.testing.oxm.docpres'
+		<replace dir="${eclipselink.moxy.test}/${report.dir}/oxm/docpres" value='"org.eclipse.persistence.testing.oxm.docpres'
 			token='"org.eclipse.persistence.testing.oxm'>
 			  <include name="**/*.xml"/>
 		</replace>
 	</target>
 
-	<!-- Junit report targets -->
+	<!-- JUnit report targets -->
 	<target name="oxm.junit.report" description="create junit report">
-		<junitreport todir="${oxm.report.dir}">
-			<fileset dir="${oxm.report.dir}">
+		<junitreport todir="${eclipselink.moxy.test}/${report.dir}/oxm">
+			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
 				<include name="**/*.xml"/>
 			</fileset>
-			<report format="noframes" todir="${oxm.report.dir}"/>
+			<report format="noframes" todir="${eclipselink.moxy.test}/${report.dir}/oxm"/>
 		</junitreport>		
-        <delete dir="${oxm.default.report.dir}" failonerror="false"/>
-        <delete dir="${oxm.sax.report.dir}" failonerror="false"/>
-        <delete dir="${oxm.deploymentxml.report.dir}" failonerror="false"/>
-        <delete dir="${oxm.docpres.report.dir}" failonerror="false"/>
+        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/default" failonerror="false"/>
+        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/sax" failonerror="false"/>
+        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/deploymentxml" failonerror="false"/>
+        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/docpres" failonerror="false"/>
         <delete failonerror="false">
-			<fileset dir="${oxm.report.dir}">
+			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
 				<include name="**/*.xml"/>
 			</fileset>
         </delete>
@@ -184,10 +184,10 @@
 
 	<!-- Clean targets -->
 	<target name="clean.reports" description="clean junit report directory">
-        <delete dir="${jaxb.report.dir}" includeEmptyDirs="true" failonerror="false"/>
-        <delete dir="${oxm.report.dir}" includeEmptyDirs="true" failonerror="false"/>
-		<mkdir dir="${jaxb.report.dir}"/>
-		<mkdir dir="${oxm.report.dir}"/>
+        <delete dir="${eclipselink.moxy.test}/${report.dir}/jaxb" includeEmptyDirs="true" failonerror="false"/>
+        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm" includeEmptyDirs="true" failonerror="false"/>
+		<mkdir dir="${eclipselink.moxy.test}/${report.dir}/jaxb"/>
+		<mkdir dir="${eclipselink.moxy.test}/${report.dir}/oxm"/>
 	</target>
     <target name="clean" description="clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
@@ -199,7 +199,7 @@
 	<!-- Test run macros -->
     <macrodef name="run-jaxb-tests">
         <sequential>
-			<mkdir dir="${jaxb.report.dir}"/>
+			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/jaxb"/>
 			<mkdir dir="${eclipselink.moxy.test}/${resource.dir}/${tmp.dir}"/>
 			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes">
 				<env key="T_WORK" value="${tmp.dir}"/>
@@ -209,7 +209,7 @@
 				<sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
 				<sysproperty key="parser" value="${parser}"/>
 				<syspropertyset refid="parser.properties"/>
-				<batchtest todir="${jaxb.report.dir}">
+				<batchtest todir="${eclipselink.moxy.test}/${report.dir}/jaxb">
 					<fileset dir="${eclipselink.moxy.test}/${src.dir}">
 						<include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite.java"/>
 					</fileset>
@@ -223,7 +223,7 @@
 	</macrodef>
     <macrodef name="run-oxm-tests">
         <sequential>
-			<mkdir dir="${oxm.default.report.dir}"/>
+			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/oxm/default"/>
 			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
 				<sysproperty key="useDeploymentXML" value="false"/>
 				<sysproperty key="useSAXParsing" value="false"/>
@@ -232,7 +232,7 @@
 				<sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
 				<sysproperty key="parser" value="${parser}"/>
 				<syspropertyset refid="parser.properties"/>
-				<batchtest todir="${oxm.default.report.dir}">
+				<batchtest todir="${eclipselink.moxy.test}/${report.dir}/oxm/default">
 					<fileset dir="${eclipselink.moxy.test}/${src.dir}">
 						<include name="**/*TestSuite.java"/>
 						<include name="**/ClassLoaderTestCases.java"/>
@@ -247,13 +247,15 @@
 					</fileset>
 					<formatter type="xml"/>
 				</batchtest>
-				<classpath refid="oxm.run.path"/>
+				<classpath>
+					<path refid="oxm.run.path"/>
+				</classpath>
 			</junit>
         </sequential>
 	</macrodef>
     <macrodef name="run-oxm-sax-tests">
         <sequential>
-			<mkdir dir="${oxm.sax.report.dir}"/>
+			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/oxm/sax"/>
 			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
 				<sysproperty key="useDeploymentXML" value="false"/>
 				<sysproperty key="useSAXParsing" value="true"/>
@@ -262,7 +264,7 @@
 				<sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
 				<sysproperty key="parser" value="${parser}"/>
 				<syspropertyset refid="parser.properties"/>
-				<batchtest todir="${oxm.sax.report.dir}">
+				<batchtest todir="${eclipselink.moxy.test}/${report.dir}/oxm/sax">
 					<fileset dir="${eclipselink.moxy.test}/${src.dir}">
 						<include name="**/*MappingTestSuite.java"/>
 						<include name="**/InheritanceTestSuite.java"/>
@@ -282,13 +284,15 @@
 					</fileset>
 					<formatter type="xml"/>
 				</batchtest>
-				<classpath refid="oxm.run.path"/>
+				<classpath>
+					<path refid="oxm.run.path"/>
+				</classpath>
 			</junit>
         </sequential>
 	</macrodef>
     <macrodef name="run-oxm-deploymentxml-tests">
         <sequential>
-			<mkdir dir="${oxm.deploymentxml.report.dir}"/>
+			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/oxm/deploymentxml"/>
 			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
 				<sysproperty key="useDeploymentXML" value="true"/>
 				<sysproperty key="useSAXParsing" value="false"/>
@@ -297,7 +301,7 @@
 				<sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
 				<sysproperty key="parser" value="${parser}"/>
 				<syspropertyset refid="parser.properties"/>
-				<batchtest todir="${oxm.deploymentxml.report.dir}">
+				<batchtest todir="${eclipselink.moxy.test}/${report.dir}/oxm/deploymentxml">
 					<fileset dir="${eclipselink.moxy.test}/${src.dir}">
 						<include name="**/DocumentPreservationTestSuite.java"/>
 						<include name="**/RootElementTestSuite.java"/>
@@ -322,13 +326,15 @@
 					</fileset>
 					<formatter type="xml"/>
 				</batchtest>
-				<classpath refid="oxm.run.path"/>
+				<classpath>
+					<path refid="oxm.run.path"/>
+				</classpath>
 			</junit>
         </sequential>
 	</macrodef>
     <macrodef name="run-oxm-docpres-tests">
         <sequential>
-			<mkdir dir="${oxm.docpres.report.dir}"/>
+			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/oxm/docpres"/>
 			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
 				<sysproperty key="useDeploymentXML" value="false"/>
 				<sysproperty key="useSAXParsing" value="false"/>
@@ -337,7 +343,7 @@
 				<sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
 				<sysproperty key="parser" value="${parser}"/>
 				<syspropertyset refid="parser.properties"/>
-				<batchtest todir="${oxm.docpres.report.dir}">
+				<batchtest todir="${eclipselink.moxy.test}/${report.dir}/oxm/docpres">
 					<fileset dir="${eclipselink.moxy.test}/${src.dir}">
 						<include name="**/*TestSuite.java"/>
 						<include name="**/ClassLoaderTestCases.java"/>
@@ -355,7 +361,9 @@
 					</fileset>
 					<formatter type="xml"/>
 				</batchtest>
-				<classpath refid="oxm.run.path"/>
+				<classpath>
+					<path refid="oxm.run.path"/>
+				</classpath>
 			</junit>
         </sequential>
 	</macrodef>

@@ -16,8 +16,7 @@
         <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
         <ant antfile="${eclipselink.sdo}/build.xml" target="all"/>
 
-    <jar jarfile="${eclipselink.jar}"
-      manifest="${eclipselink.core}/${resource.dir}/META-INF/manifest.mf">
+	  <jar jarfile="${eclipselink.jar}" manifest="${eclipselink.core}/${resource.dir}/META-INF/manifest.mf">
       <fileset dir="${eclipselink.core}/${classes.dir}">
         <include name="org/eclipse/persistence/**/*.class"/>
         <include name="deprecated/**/*.class"/>
@@ -44,36 +43,43 @@
       </fileset>
       <fileset dir="${eclipselink.sdo}/${classes.dir}">
         <include name="org/eclipse/persistence/**/*.class"/>
+		<include name="commonj/sdo/impl/*.class"/>
       </fileset>
     </jar>
   </target>
 
-  <!-- package.src -->
-  <target name="package.src" description="build EclipseLink source jar">
-    <zip zipfile="${eclipselink-src.zip}">
-      <fileset dir="${eclipselink.core}/${src.dir}">
-        <include name="org/eclipse/persistence/**/*.java"/>
-        <include name="deprecated/**/*.java"/>
-      </fileset>
-      <fileset dir="${eclipselink.core.lib}/${asm}/${src.dir}">
-        <include name="org/eclipse/persistence/internal/libraries/asm/**/*.java"/>
-      </fileset>
-      <fileset dir="${eclipselink.core.lib}/${antlr}/${src.dir}">
-        <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.java"/>
-      </fileset>
-      <fileset dir="${eclipselink.moxy}/${src.dir}">
-        <include name="org/eclipse/persistence/**/*.java"/>
-      </fileset>
-      <fileset dir="${eclipselink.sdo}/${src.dir}">
-        <include name="org/eclipse/persistence/**/*.java"/>
-      </fileset>
-    </zip>
-  </target>
+    <target name="package.src" description="build EclipseLink source jar">
+        <zip zipfile="${eclipselink-src.zip}">
+           <fileset dir="${eclipselink.core}/${src.dir}">
+              <include name="org/eclipse/persistence/**/*.java"/>
+              <include name="deprecated/**/*.java"/>
+          </fileset>
+          <fileset dir="${eclipselink.core.lib}/${asm}/${src.dir}">
+              <include name="org/eclipse/persistence/internal/libraries/asm/**/*.java"/>
+          </fileset>
+           <fileset dir="${eclipselink.core.lib}/${antlr}/${src.dir}">
+              <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.java"/>
+          </fileset>
+          <fileset dir="${eclipselink.moxy}/${src.dir}">
+              <include name="org/eclipse/persistence/**/*.java"/>
+          </fileset>
+          <fileset dir="${eclipselink.sdo}/${src.dir}">
+              <include name="org/eclipse/persistence/**/*.java"/>
+              <include name="commonj/sdo/impl/*.java"/>
+          </fileset>
+      </zip>
+    </target>
 
 	<!-- test.jpa -->
   <target name="test.jpa" description="run the jpa tests">
     <ant antfile="${eclipselink.jpa.test}/build.xml" target="test"/>
   </target>
+    <target name="test.sdo" description="run the sdo tests">
+            <ant antfile="${eclipselink.sdo.test}/build.xml" target="test"/>
+    </target>
+    <target name="test.moxy" description="run the moxy tests">
+            <ant antfile="${eclipselink.moxy.test}/build.xml" target="test"/>
+    </target>
 
 	<!-- clean -->
   <target name="clean" description="Clean the build">

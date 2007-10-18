@@ -21,7 +21,7 @@
 		</javac>
 	</target>
 	<target name="compile.core" description="build core classes">
-		<ant antfile="${eclipselink.core}/build.xml" target="compile" inheritAll="false"/>
+		<ant antfile="${eclipselink.core}/build.xml" target="compile"/>
 	</target>
     <target name="clean" description="clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
