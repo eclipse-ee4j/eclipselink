@@ -38,7 +38,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
 
@@ -1190,7 +1189,7 @@ public class SDODataObject implements DataObject {
 
             // get existing list or empty "default" ListWrapper - values will be cleared and added below
             List listValue = (List)value;
-            if (property.isContainment()) {
+            if (property.isContainment() || isContainedByDataGraph(property)) {
                 //TODO: need to check for circular reference in Many case
                 for (int i = 0, size = listValue.size(); i < size; i++) {
                     Object next = listValue.get(i);
@@ -1208,7 +1207,7 @@ public class SDODataObject implements DataObject {
             // handle updateContainment and sequences inside addAll() 
             ((ListWrapper)listValue).addAll((Collection)value, updateSequence);// for non-default Pluggable impl this function is not required
         } else {
-            if (property.isContainment()) {
+            if (property.isContainment() || isContainedByDataGraph(property)) {
                 if (value instanceof SDODataObject) {
                     if (parentContains(value)) {
                         throw new IllegalArgumentException("Circular reference.");
@@ -1332,7 +1331,7 @@ public class SDODataObject implements DataObject {
             return;
         }
 
-        if (property.isContainment()) {
+        if (property.isContainment() || isContainedByDataGraph(property)) {
             Object oldValue = get(property);
             if (oldValue != null) {
                 if (property.isMany()) {
@@ -1920,13 +1919,19 @@ public class SDODataObject implements DataObject {
         }
         _setDeleted(true);
 
+        /** Order here is important - the dataGraph pointer should be cleared preorder before we enter the recursive loop to clear child DO's */
+        DataGraph previousDataGraph = getDataGraph();
+        // Remove back pointer to containing DataGraph
+        setDataGraph(null);        
+
         List instancePropertiesList = getInstanceProperties();
         for (int i = 0, psize = instancePropertiesList.size(); i < psize; i++) {
             Property nextProperty = (Property)instancePropertiesList.get(i);
             Object oldValue = get(nextProperty);
 
             if (nextProperty.getType() != SDOConstants.SDO_CHANGESUMMARY) {
-                if (nextProperty.isContainment()) {
+            	// Non-containment nodes have changeSummary and dataGraph pointers if they were in a dataGraph
+                if (nextProperty.isContainment() || isContainedByDataGraph(previousDataGraph, nextProperty)) {
                     if (nextProperty.isMany()) {
                         Object manyItem;
                         for (int j = 0, lsize = ((List)oldValue).size(); j < lsize; j++) {
@@ -2290,41 +2295,103 @@ public class SDODataObject implements DataObject {
 
     /**
      * INTERNAL:
-     * Set this DataObject's ChangeSummary as passed in value.
+      * Recursively Set this DataObject's ChangeSummary as passed in value.
      * @param aChangeSummary   the ChangeSummary taking this DataObject as root.
      */
     public void _setChangeSummary(ChangeSummary aChangeSummary) {
-        Iterator iterProperties = getInstanceProperties().iterator();
-        Property p;
-        Object o;
-        Object listContainedObject;
+    	updateChangeSummaryAndDataGraph(aChangeSummary, getDataGraph());
+    }
 
-        // recurse currentValueStore
+    /**
+     * INTERNAL:
+     * Recursively set this DataObject's changeSummary and dataGraph.
+     * The parent changeSummary and dataGraph may be null.
+     * Preconditions: No changeSummary must exist on the child tree.
+     * Callers: Typically updateContainment (during a set) or delete/detach 
+     *   of an object without its own changeSummary property.
+     * @param aDataGraph
+     */
+    private void updateChangeSummaryAndDataGraph(ChangeSummary aChangeSummary, DataGraph aDataGraph) {    	
+        Iterator iterProperties = getInstanceProperties().iterator();
+        Property property;
+        Object object;
+        Object listContainedObject;
+        
+        // Add back pointer to containing DataGraph - in preOrder sequence before recursing
+       	setDataGraph(aDataGraph);
+
+        // Recurse currentValueStore
         while (iterProperties.hasNext()) {
-            p = (Property)iterProperties.next();
+            property = (Property)iterProperties.next();
 
             // Note: Both opposite currentValueStore cannot be isContainment=true
             // special handling for bidirectional currentValueStore, do a shallow set
             // do not recurse bidirectional currentValueStore that are non-containment
-            if (p.isContainment()) {
-                o = get(p);
-                if (o instanceof SDODataObject) {// child of this DataObject
-                    ((SDODataObject)o)._setChangeSummary(aChangeSummary);
+            if (property.isContainment() || isContainedByDataGraph(property)) {
+            	object = get(property);
+                if (object instanceof SDODataObject) {// DataObject child of this DataObject
+                    ((SDODataObject)object).updateChangeSummaryAndDataGraph(aChangeSummary, aDataGraph);
                 }
 
-                if (o instanceof ListWrapper) {// child of this DataObject
-                    Iterator anIterator = ((ListWrapper)o).iterator();
+                if (object instanceof ListWrapper) {// ListWrapper child of this DataObject
+                    Iterator anIterator = ((ListWrapper)object).iterator();
                     while (anIterator.hasNext()) {
                         listContainedObject = anIterator.next();
                         if (listContainedObject instanceof SDODataObject) {
-                            ((SDODataObject)listContainedObject)._setChangeSummary(aChangeSummary);
+                            ((SDODataObject)listContainedObject).updateChangeSummaryAndDataGraph(aChangeSummary, aDataGraph);
                         }
                     }
                 }
             }
         }
-
+        // Set/Clear changeSummary in postOrder sequence
         setChangeSummaryNonRecursive(aChangeSummary);
+    }
+    
+    
+    /**
+     * INTERNAL:
+     * Recursively set this DataObject's DataGraph
+     * This function serves as a copy of updateChangeSummaryAndDataGraph() to recursively walk and set the dataGraph. 
+     * that will be run when no recursion occurs in the case that an object (with a changeSummary) 
+     * is set internally to a tree (without a changeSummary).
+     * Callers: Typically updateContainment (during a set) or delete/detach 
+     *   when the current object is internal with its own changeSummary property.
+     * @param aDataGraph
+     */
+    private void updateDataGraph(DataGraph aDataGraph) {
+        Iterator iterProperties = getInstanceProperties().iterator();
+        Property property;
+        Object object;
+        Object listContainedObject;
+
+        // Add back pointer to containing DataGraph - in preOrder sequence before recursing
+       	setDataGraph(aDataGraph);
+
+        // Recurse currentValueStore
+        while (iterProperties.hasNext()) {
+        	property = (Property)iterProperties.next();
+
+            // Note: Both opposite currentValueStore cannot be isContainment=true
+            // special handling for bidirectional currentValueStore, do a shallow set
+            // do not recurse bidirectional currentValueStore that are non-containment
+            if (property.isContainment() || isContainedByDataGraph(property)) {
+            	object = get(property);
+                if (object instanceof SDODataObject) {// DataObject child of this DataObject
+                    ((SDODataObject)object).updateDataGraph(aDataGraph);
+                }
+
+                if (object instanceof ListWrapper) {// ListWrapper child of this DataObject
+                    Iterator anIterator = ((ListWrapper)object).iterator();
+                    while (anIterator.hasNext()) {
+                        listContainedObject = anIterator.next();
+                        if (listContainedObject instanceof SDODataObject) {
+                            ((SDODataObject)listContainedObject).updateDataGraph(aDataGraph);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -2543,8 +2610,10 @@ public class SDODataObject implements DataObject {
             SDOProperty property = (SDOProperty)iterProperties.next();
             Object value = get(property);
 
-            // #5878436 12-FEB-07 do not recurse into a non-containment relationship
-            if (property.isContainment() && !property.isMany() && (value != null) && (property.getType() != SDOConstants.SDO_CHANGESUMMARY)) {
+            // #5878436 12-FEB-07 do not recurse into a non-containment relationship unless inside a dataGraph
+            if ((property.isContainment() || isContainedByDataGraph(property)) && //
+            		!property.isMany() && (value != null) && (property.getType() != SDOConstants.SDO_CHANGESUMMARY)) {
+            	
                 // TODO: Do not shallowcopy child nodes
                 ((SDODataObject)value).resetChanges();
             } else {
@@ -2555,8 +2624,9 @@ public class SDODataObject implements DataObject {
                                  iterMany.hasNext();) {
                             Object valueMany = iterMany.next();
 
-                            // do not recurse into a non-containment relationship
-                            if (property.isContainment() && (valueMany != null) && (property.getType() != SDOConstants.SDO_CHANGESUMMARY)) {
+                            // do not recurse into a non-containment relationship unless inside a dataGraph                            
+                            if ((property.isContainment() || isContainedByDataGraph(property)) && // 
+                            		(valueMany != null) && (property.getType() != SDOConstants.SDO_CHANGESUMMARY)) {
                                 // TODO: Do not shallowcopy child nodes
                                 ((SDODataObject)valueMany).resetChanges();
                             }
@@ -3062,13 +3132,39 @@ public class SDODataObject implements DataObject {
 
     /**
      * INTERNAL:
+     * Return whether the current dataObject(this) is part of a dataGraph.
+     * Typically this is used to determine whether to treat !isContainment dataObjects as containment while inside a dataGraph.
+     * @param aProperty
+     * @return
+     */
+    private boolean isContainedByDataGraph(Property aProperty) {
+    	// The property is of type DataObject that points to a DataGraph
+    	return isContainedByDataGraph(getDataGraph(),  aProperty);
+    }
+
+    /**
+     * INTERNAL:
+     * Return whether the current dataObject(this) is was part of the passed in dataGraph.
+     * Typically this is used to determine whether to treat !isContainment dataObjects as containment while inside a dataGraph.
+     * The dataGraph input is used when the current DataGraph pointer has already been cleared
+	 * @param aDataGraph
+     * @param aProperty
+     * @return
+     */
+    private boolean isContainedByDataGraph(DataGraph aDataGraph, Property aProperty) {
+    	// The property is of type DataObject that points to a DataGraph
+    	return (null != aDataGraph) && (null != aProperty.getType()) && !aProperty.getType().isDataType();
+    }
+    
+    /**
+     * INTERNAL:
      * Update containment with flagged update sequence state
      * @param property
      * @param values
      * @param updateSequence
      */
     public void updateContainment(Property property, Collection values, boolean updateSequence) {
-        if (property.isContainment()) {
+        if (property.isContainment() || isContainedByDataGraph(property)) { //
             Iterator valuesIter = values.iterator();
             while (valuesIter.hasNext()) {
                 Object next = valuesIter.next();
@@ -3096,32 +3192,58 @@ public class SDODataObject implements DataObject {
      * @param value
      */
     public void updateContainment(Property property, DataObject value, boolean updateSequence) {
-        if (property.isContainment()) {
-            boolean wasInNewCS = (getChangeSummary() != null) && (((SDODataObject)value).getChangeSummary() != null)//
-             &&getChangeSummary().equals(((SDODataObject)value).getChangeSummary());
+    	if (property.isContainment() || isContainedByDataGraph(property)) {
+        	// Perform casting in one place
+        	SDODataObject aDataObject = (SDODataObject)value;
+        	boolean wasInNewCS = (getChangeSummary() != null) && //
+            	(aDataObject.getChangeSummary() != null) && getChangeSummary().equals(aDataObject.getChangeSummary());
 
-            // remove property or old changeSummary
-            ((SDODataObject)value).detach(false, updateSequence);
-            // set current changeSummary
-            if ((getChangeSummary() != null) && (((SDODataObject)value).getType() != null)//
-                     &&(((SDOType)((SDODataObject)value).getType()).getChangeSummaryProperty() == null) && (getChangeSummary() != null)) {
-                ((SDODataObject)value)._setChangeSummary(getChangeSummary());
+            // Remove property or old changeSummary
+            aDataObject.detach(false, updateSequence);
+            
+            // Check that the target object is not a changeSummary root - an internal set of an internal changeSummary
+            /**
+             * The following 2 update functions are kept separate for performance reasons in #6473342..
+             * Alternate implementations could have used a Command pattern object or boolean states to enable a
+             * single function to perform multiple operations.
+             * 
+             * The DataGraph pointer on all subtrees are always updated regardless of the dataGraph value.
+             * However, the ChangeSummary pointer is only updated if the dataObject(value) being updated is not
+             * itself an internal changeSummary root.
+             * For example: the following would not update the CS to null when we get to dataObject B - as it has its own changeSummary-B
+             *  root
+             *     -> B
+             *             -> CS-B
+             *             -> D (String)
+             * But, the following would update the CS to CS-root when we get to dataObject B because the changeSummary root is above it
+             *  root
+             *     -> B
+             *             -> D (String)
+             *     -> CS-root             
+             */
+            if ((getChangeSummary() != null) && (aDataObject.getType() != null) && //
+            		(((SDOType)aDataObject.getType()).getChangeSummaryProperty() == null)) {
+                // Recursively set the current changeSummary and dataGraph - the CS root is above or absent 
+            	aDataObject.updateChangeSummaryAndDataGraph(getChangeSummary(), getDataGraph());
+            } else {
+                // Recursively set the dataGraph when this level (value) is the CS root n the subtree
+            	aDataObject.updateDataGraph(getDataGraph());
             }
-
+            	
             // add value as a property of (this)
-            ((SDODataObject)value)._setContainer(this);
-            ((SDODataObject)value)._setContainmentPropertyName(property.getName());
+            aDataObject._setContainer(this);
+            aDataObject._setContainmentPropertyName(property.getName());
 
             // We don't setCreated for objects that were previously deleted
             if (!wasInNewCS && (getChangeSummary() != null) && !getChangeSummary().isDeleted(value)) {
-                ((SDODataObject)value)._setCreated(true);
+            	aDataObject._setCreated(true);
             }
 
             // If we are adding a previously deleted object, we must cancel out the isDeleted with an isCreated
             // so we end up with all isDeleted, isModified == false
             if ((getChangeSummary() != null) && getChangeSummary().isDeleted(value)) {
                 // explicitly clear the oldSetting and clear the key:value pair in the deleted map
-                ((SDODataObject)value)._setDeleted(false);
+            	aDataObject._setDeleted(false);
 
                 // remove oldSetting from map only when we return to original position
                 // by comparing an undo() with the projected model after set() - for now keep oldSettings                
