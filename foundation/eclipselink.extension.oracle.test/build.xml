@@ -19,7 +19,7 @@
     </path>
 	
     <!-- all -->
-    <target name="all" depends="clean, compile, package.structconverter" description="package the struct converter model"/>
+    <target name="all" depends="clean, compile, package.structconverter, package.structconverter.tests" description="package the struct converter model"/>
 	
     <!-- compile --> 
     <target name="compile" depends="" description="compile EclipseLink core tests">  
@@ -51,6 +51,14 @@
         <jar jarfile="${eclipselink.extension.oracle.test}/eclipselink-struct-converter-model.jar">
             <fileset dir="${eclipselink.extension.oracle.test}/${build.dir}/${struct_converter.classes.dir}">
             </fileset>
+        </jar>
+    </target>
+
+    <target name="package.structconverter.tests">
+        <jar jarfile="${eclipselink.extension.oracle.test}/eclipselink-struct-converter-model-tests.jar">
+            <fileset dir="${eclipselink.extension.oracle.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/tests/spatial/jgeometry/**/*.class,
+                               org/eclipse/persistence/testing/tests/jpa/structconverter/**/*.class"/>
         </jar>
     </target>
 
