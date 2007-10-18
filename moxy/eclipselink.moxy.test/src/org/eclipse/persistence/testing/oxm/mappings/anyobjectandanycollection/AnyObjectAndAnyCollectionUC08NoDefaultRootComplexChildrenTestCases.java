@@ -65,7 +65,7 @@ public class AnyObjectAndAnyCollectionUC08NoDefaultRootComplexChildrenTestCases 
         contactMethods.addElement(anAddress1);
         contactMethods.addElement(anAddress2);
         contactMethods.addElement(aPhoneNumber);
-        contactMethods.addElement("joe@oracle.com");
+        contactMethods.addElement("joe@example.com");
         customer.setContactMethods(contactMethods);
         customer.setAnyObject(anAddress1);
         return customer;

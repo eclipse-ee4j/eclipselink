@@ -72,7 +72,7 @@ public class XMLFragmentCollectionNamespaces2TestCases extends XMLMappingTestCas
 
         nsDecl = childNode.getAttributeNode("xmlns:" + "ns1");
         assertNotNull(nsDecl);
-        assertEquals("http://www.oracle.com/test-uri", nsDecl.getValue());
+        assertEquals("http://www.example.com/test-uri", nsDecl.getValue());
     }
 
     public Document getWriteControlDocument() throws Exception {

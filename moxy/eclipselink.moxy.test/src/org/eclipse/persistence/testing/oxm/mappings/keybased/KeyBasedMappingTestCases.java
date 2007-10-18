@@ -22,7 +22,7 @@ import org.xml.sax.XMLReader;
 
 public abstract class KeyBasedMappingTestCases extends XMLMappingTestCases {
     protected static final String CONTROL_ID = "222";
-    protected static final String CONTROL_NAME = "Joe Oracle";
+    protected static final String CONTROL_NAME = "Joe Smith";
     protected static final String CONTROL_ADD_ID_1 = "199";
     protected static final String CONTROL_ADD_STREET_1 = "Some Other St.";
     protected static final String CONTROL_ADD_CITY_1 = "Anyothertown";

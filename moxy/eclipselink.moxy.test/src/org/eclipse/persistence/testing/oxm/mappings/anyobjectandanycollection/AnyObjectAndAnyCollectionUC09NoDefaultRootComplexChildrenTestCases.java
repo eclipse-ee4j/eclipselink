@@ -65,7 +65,7 @@ public class AnyObjectAndAnyCollectionUC09NoDefaultRootComplexChildrenTestCases 
         contactMethods.addElement(anAddress1);
         contactMethods.addElement(anAddress2);
         contactMethods.addElement(aPhoneNumber);
-        contactMethods.addElement("joe@oracle.com");
+        contactMethods.addElement("joe@example.com");
         customer.setAnyObject(contactMethods);
         customer.setContactMethods(anAddress1);
         return customer;
@@ -88,7 +88,7 @@ public class AnyObjectAndAnyCollectionUC09NoDefaultRootComplexChildrenTestCases 
         contactMethods.addElement(anAddress1);
         contactMethods.addElement(anAddress2);
         contactMethods.addElement(aPhoneNumber);
-        contactMethods.addElement("joe@oracle.com");
+        contactMethods.addElement("joe@example.com");
         contactMethods.addElement(anAddress1);
 
         customer.setContactMethods(contactMethods);

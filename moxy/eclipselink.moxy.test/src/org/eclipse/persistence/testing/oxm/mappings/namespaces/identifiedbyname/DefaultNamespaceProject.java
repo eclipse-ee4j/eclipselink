@@ -29,7 +29,7 @@ public class DefaultNamespaceProject extends Project  {
 		xmlDescriptor.setDefaultRootElement("DEFAULT:employee");
 
 		NamespaceResolver nsResolver = new NamespaceResolver();
-		nsResolver.put("DEFAULT", "http://www.oracle.com/EMPLOYEE");
+		nsResolver.put("DEFAULT", "http://www.example.com/EMPLOYEE");
 		xmlDescriptor.setNamespaceResolver(nsResolver);
 
 		// Unqualified attributes are in the null namespace

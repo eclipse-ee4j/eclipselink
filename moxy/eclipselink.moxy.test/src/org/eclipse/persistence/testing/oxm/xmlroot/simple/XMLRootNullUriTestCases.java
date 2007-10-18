@@ -15,7 +15,7 @@ import org.w3c.dom.Document;
 
 public class XMLRootNullUriTestCases extends XMLRootSimpleTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlroot/simple/employee-null-uri.xml";
-    private final static String CONTROL_OBJECT = "Joe Oracle";
+    private final static String CONTROL_OBJECT = "Joe Smith";
     private final static String CONTROL_ELEMENT_NAME = "employee-name";
     private final static String CONTROL_NAMESPACE_URI = null;
 

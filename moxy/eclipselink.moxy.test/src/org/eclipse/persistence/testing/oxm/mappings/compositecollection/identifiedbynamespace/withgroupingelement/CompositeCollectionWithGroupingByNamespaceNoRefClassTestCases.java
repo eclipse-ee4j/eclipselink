@@ -25,9 +25,9 @@ import org.eclipse.persistence.testing.oxm.mappings.compositecollection.MailingA
 public class CompositeCollectionWithGroupingByNamespaceNoRefClassTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/identifiedbynamespace/withgroupingelement/CompositeCollectionWithGroupingElementNoRefClass.xml";
     private final static String CONTROL_EMAIL_ADDRESS_1_USER_ID = "jane.doe";
-    private final static String CONTROL_EMAIL_ADDRESS_1_DOMAIN = "oracle.com";
+    private final static String CONTROL_EMAIL_ADDRESS_1_DOMAIN = "example.com";
     private final static String CONTROL_EMAIL_ADDRESS_2_USER_ID = "jdoe";
-    private final static String CONTROL_EMAIL_ADDRESS_2_DOMAIN = "us.oraclecorp.com";
+    private final static String CONTROL_EMAIL_ADDRESS_2_DOMAIN = "test.com";
     private final static String CONTROL_MAILING_ADDRESS_1_STREET = "1 Any Street";
     private final static String CONTROL_MAILING_ADDRESS_1_CITY = "Ottawa";
     private final static String CONTROL_MAILING_ADDRESS_1_PROVINCE = "Ontario";
@@ -50,7 +50,7 @@ public class CompositeCollectionWithGroupingByNamespaceNoRefClassTestCases exten
 
         ((XMLDescriptor)p.getDescriptor(EmailAddress.class)).setDefaultRootElement("email:addressType");
 
-        QName qname = new QName("www.oracle.com/some-dir/mailing.xsd", "addressType");
+        QName qname = new QName("www.example.com/some-dir/mailing.xsd", "addressType");
 
         ((XMLField)((XMLCompositeCollectionMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("mailingAddresses")).getField()).setLeafElementType(qname);
         ((XMLDescriptor)p.getDescriptor(Employee.class)).getNonNullNamespaceResolver().put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);

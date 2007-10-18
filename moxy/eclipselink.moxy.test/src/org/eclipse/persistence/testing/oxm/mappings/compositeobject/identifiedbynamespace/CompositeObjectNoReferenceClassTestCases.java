@@ -26,7 +26,7 @@ public class CompositeObjectNoReferenceClassTestCases extends XMLMappingTestCase
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositeobject/identifiedbynamespace/CompositeObjectNoRefClass.xml";
     private final static int CONTROL_EMPLOYEE_ID = 123;
     private final static String CONTROL_EMAIL_ADDRESS_USER_ID = "jane.doe";
-    private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "oracle.com";
+    private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "example.com";
     private final static String CONTROL_MAILING_ADDRESS_STREET = "1 Any Street";
     private final static String CONTROL_MAILING_ADDRESS_CITY = "Ottawa";
     private final static String CONTROL_MAILING_ADDRESS_PROVINCE = "Ontario";
@@ -42,7 +42,7 @@ public class CompositeObjectNoReferenceClassTestCases extends XMLMappingTestCase
         ((XMLCompositeObjectMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("mailingAddress")).setReferenceClassName(null);
         ((XMLDescriptor)p.getDescriptor(EmailAddress.class)).setDefaultRootElement("email:addressType");
 
-        QName qname = new QName("www.oracle.com/some-dir/mailing.xsd", "addressType");
+        QName qname = new QName("www.example.com/some-dir/mailing.xsd", "addressType");
 
         ((XMLField)((XMLCompositeObjectMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("mailingAddress")).getField()).setLeafElementType(qname);
         setProject(p);

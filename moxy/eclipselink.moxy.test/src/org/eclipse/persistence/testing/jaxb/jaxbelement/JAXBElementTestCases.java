@@ -30,7 +30,7 @@ import org.eclipse.persistence.testing.oxm.xmlroot.Person;
  * be setup and used for testing.
  */
 public class JAXBElementTestCases extends JAXBTestCases {
-	protected final static String CONTROL_PERSON_NAME = "Joe Oracle";
+	protected final static String CONTROL_PERSON_NAME = "Joe Smith";
 	protected final static String CONTROL_NAMESPACE_URI = "test";	
 	protected String resourceName;
 	protected Class target;

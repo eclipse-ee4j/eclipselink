@@ -1,8 +1,8 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
-<employee xmlns:ns1="http://www.oracle.com/test-uri">
+<employee xmlns:ns1="http://www.example.com/test-uri">
    <first-name>Jane</first-name>
    <last-name>Doe</last-name>
    <xml-node id="10">
-      <nsx:child xmlns:nsx="http://www.oracle.com/test-uri">childtext</nsx:child>
+      <nsx:child xmlns:nsx="http://www.example.com/test-uri">childtext</nsx:child>
    </xml-node>
 </employee>

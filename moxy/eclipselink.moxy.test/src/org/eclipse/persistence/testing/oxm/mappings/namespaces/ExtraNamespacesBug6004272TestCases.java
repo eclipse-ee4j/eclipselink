@@ -87,7 +87,7 @@ public class ExtraNamespacesBug6004272TestCases extends XMLMappingTestCases {
         team4.setTeamName("team4");
         xmlRoot1.setObject(team4);
         xmlRoot1.setLocalName("xmlroot1");
-        xmlRoot1.setNamespaceURI("http://www.oracle.com/ns3"); //uri from parent desc
+        xmlRoot1.setNamespaceURI("http://www.example.com/ns3"); //uri from parent desc
         
         XMLRoot xmlRoot2 = new XMLRoot();
         Team team5 = new Team();
@@ -101,7 +101,7 @@ public class ExtraNamespacesBug6004272TestCases extends XMLMappingTestCases {
         team6.setTeamName("team6");
         xmlRoot3.setObject(team6);
         xmlRoot3.setLocalName("xmlroot3");//uri from target
-        xmlRoot3.setNamespaceURI("http://www.oracle.com/ns6");
+        xmlRoot3.setNamespaceURI("http://www.example.com/ns6");
         
         XMLRoot xmlRoot4 = new XMLRoot();
         Project project = new Project();
@@ -109,12 +109,12 @@ public class ExtraNamespacesBug6004272TestCases extends XMLMappingTestCases {
         project.setDescription("theDescription");
         xmlRoot4.setObject(project);
         xmlRoot4.setLocalName("xmlroot4");
-        xmlRoot4.setNamespaceURI("http://www.oracle.com/ns6"); //uri from parent desc
+        xmlRoot4.setNamespaceURI("http://www.example.com/ns6"); //uri from parent desc
         
         XMLRoot xmlRoot1Simple = new XMLRoot();        
         xmlRoot1Simple.setObject("xmlroot1simple");
         xmlRoot1Simple.setLocalName("xmlroot1simple");
-        xmlRoot1Simple.setNamespaceURI("http://www.oracle.com/ns3"); //uri from parent desc
+        xmlRoot1Simple.setNamespaceURI("http://www.example.com/ns3"); //uri from parent desc
         
         XMLRoot xmlRoot2Simple = new XMLRoot();        
         xmlRoot2Simple.setObject("xmlroot2simple");

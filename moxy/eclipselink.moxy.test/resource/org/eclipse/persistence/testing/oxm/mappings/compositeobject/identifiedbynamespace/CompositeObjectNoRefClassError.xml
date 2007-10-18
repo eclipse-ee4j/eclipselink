@@ -1,4 +1,4 @@
-<employee xmlns:email="www.oracle.com/some-dir/email.xsd" xmlns:mailing="www.oracle.com/some-dir/mailing.xsd">
+<employee xmlns:email="www.example.com/some-dir/email.xsd" xmlns:mailing="www.example.com/some-dir/mailing.xsd">
     <id>123</id>
     <mailing:address xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="email:blah">
       <mailing:street>1 Any Street</mailing:street>

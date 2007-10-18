@@ -38,7 +38,7 @@ public class NestedOwnedToExternalRootTestCases extends EISMappingTestCases {
         ArrayList objects = new ArrayList();
 
         Company company = new Company();
-        company.setName("Oracle");
+        company.setName("SomeCompany");
 
         Department dept = new Department();
         dept.setDeptName("TheDepartment");

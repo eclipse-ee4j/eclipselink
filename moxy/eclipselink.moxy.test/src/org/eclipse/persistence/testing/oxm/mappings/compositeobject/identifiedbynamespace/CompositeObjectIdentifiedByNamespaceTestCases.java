@@ -19,7 +19,7 @@ public class CompositeObjectIdentifiedByNamespaceTestCases extends XMLMappingTes
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositeobject/identifiedbynamespace/CompositeObjectIdentifiedByNamespace.xml";
   private final static int CONTROL_EMPLOYEE_ID = 123;
   private final static String CONTROL_EMAIL_ADDRESS_USER_ID = "jane.doe";
-  private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "oracle.com";
+  private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "example.com";
   private final static String CONTROL_MAILING_ADDRESS_STREET = "1 Any Street";
   private final static String CONTROL_MAILING_ADDRESS_CITY = "Ottawa";
   private final static String CONTROL_MAILING_ADDRESS_PROVINCE = "Ontario";

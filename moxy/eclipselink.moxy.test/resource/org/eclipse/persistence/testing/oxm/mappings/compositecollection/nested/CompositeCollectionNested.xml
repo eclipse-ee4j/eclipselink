@@ -5,11 +5,11 @@
       <email-addresses>
         <email-address>
           <user-id>jane.doe</user-id>
-          <domain>oracle.com</domain>
+          <domain>example.com</domain>
         </email-address>
         <email-address>
           <user-id>jdoe</user-id>
-          <domain>us.oraclecorp.com</domain>
+          <domain>test.com</domain>
         </email-address>
       </email-addresses>
       <mailing-addresses>
@@ -31,11 +31,11 @@
       <email-addresses>
         <email-address>
           <user-id>jon.doe</user-id>
-          <domain>oracle.com</domain>
+          <domain>example.com</domain>
         </email-address>
         <email-address>
           <user-id>jondoe</user-id>
-          <domain>us.oraclecorp.com</domain>
+          <domain>test.com</domain>
         </email-address>
       </email-addresses>
       <mailing-addresses>

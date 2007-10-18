@@ -1,4 +1,4 @@
-<addressbook  xmlns:testns="www.oracle.com/some-dir/someschema.xsd">
+<addressbook  xmlns:testns="www.example.com/some-dir/someschema.xsd">
 	<address id="10" type="A">
 		<addressee initial="T">John Smith</addressee>
 		<street-address>250 18th Ave SE</street-address>

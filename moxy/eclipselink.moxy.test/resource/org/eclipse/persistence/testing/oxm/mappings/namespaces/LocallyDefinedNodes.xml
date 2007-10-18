@@ -1,4 +1,4 @@
-<ns:employee xmlns:ns="http://www.oracle.com/EMPLOYEE">
+<ns:employee xmlns:ns="http://www.example.com/EMPLOYEE">
 	<ns:personal-info id="123">
 		<name>Jane Doe</name>
 	</ns:personal-info>

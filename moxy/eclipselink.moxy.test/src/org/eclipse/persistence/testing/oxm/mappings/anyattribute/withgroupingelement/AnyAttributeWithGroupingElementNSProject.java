@@ -38,8 +38,8 @@ public class AnyAttributeWithGroupingElementNSProject extends Project {
         descriptor.addMapping(mapping);
 
         NamespaceResolver nr = new NamespaceResolver();
-        nr.put("myns", "www.oracle.com/some-dir/some.xsd");
-        //nr.put("", "www.oracle.com/some-other-dir/some.xsd");
+        nr.put("myns", "www.example.com/some-dir/some.xsd");
+        //nr.put("", "www.example.com/some-other-dir/some.xsd");
         descriptor.setNamespaceResolver(nr);
 
         return descriptor;

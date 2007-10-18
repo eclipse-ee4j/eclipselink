@@ -1,12 +1,12 @@
-<aaa:root xmlns:aaa="http://www.oracle.com/aaa">
+<aaa:root xmlns:aaa="http://www.example.com/aaa">
    <aaa:companies>
-      <ns0:companyXMLRoot xmlns:ns0="http://www.oracle.com/companyNS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="aaa:company">
+      <ns0:companyXMLRoot xmlns:ns0="http://www.example.com/companyNS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="aaa:company">
 	     <aaa:companyname>theCompany1</aaa:companyname>		
 		 <aaa:departments>
-    	    <ns1:deptXMLRoot xmlns:ns1="http://www.oracle.com/deptNS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="aaa:dept">
+    	    <ns1:deptXMLRoot xmlns:ns1="http://www.example.com/deptNS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="aaa:dept">
 			   <aaa:deptName>dept1</aaa:deptName>
 			   <aaa:teams>
-   			      <aaa:team xmlns:ns1="http://www.oracle.com/teamNS1" xmlns:ns0="http://www.oracle.com/teamNS0">
+   			      <aaa:team xmlns:ns1="http://www.example.com/teamNS1" xmlns:ns0="http://www.example.com/teamNS0">
 	  			     <ns0:teamName>team1</ns0:teamName>
    			      </aaa:team>
    			   </aaa:teams>

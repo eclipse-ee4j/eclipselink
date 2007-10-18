@@ -1,12 +1,12 @@
-<employee xmlns:email="www.oracle.com/some-dir/email.xsd" xmlns:mailing="www.oracle.com/some-dir/mailing.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+<employee xmlns:email="www.example.com/some-dir/email.xsd" xmlns:mailing="www.example.com/some-dir/mailing.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
 	<email:addresses>
 		<email:address xsi:type="email:addressType">
 			<email:user-id>jane.doe</email:user-id>
-			<email:domain>oracle.com</email:domain>
+			<email:domain>example.com</email:domain>
 		</email:address>
 		<email:address xsi:type="email:addressType">
 			<email:user-id>jdoe</email:user-id>
-			<email:domain>us.oraclecorp.com</email:domain>
+			<email:domain>test.com</email:domain>
 		</email:address>
 	</email:addresses>
 	<mailing:addresses>

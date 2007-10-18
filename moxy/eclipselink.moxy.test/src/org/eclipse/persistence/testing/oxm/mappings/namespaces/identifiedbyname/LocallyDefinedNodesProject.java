@@ -29,7 +29,7 @@ public class LocallyDefinedNodesProject extends Project  {
 		xmlDescriptor.setDefaultRootElement("ns:employee");
 		
 		NamespaceResolver nsResolver = new NamespaceResolver();
-		nsResolver.put("ns", "http://www.oracle.com/EMPLOYEE");
+		nsResolver.put("ns", "http://www.example.com/EMPLOYEE");
 		xmlDescriptor.setNamespaceResolver(nsResolver);
 		
 		XMLDirectMapping idMapping = new XMLDirectMapping();

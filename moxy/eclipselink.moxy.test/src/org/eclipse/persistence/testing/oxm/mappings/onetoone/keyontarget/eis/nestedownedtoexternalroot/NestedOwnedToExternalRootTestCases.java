@@ -36,7 +36,7 @@ public class NestedOwnedToExternalRootTestCases extends EISMappingTestCases {
 
     protected Object getControlObject() {
         Company company = new Company();
-        company.setName("Oracle");
+        company.setName("SomeCompany");
 
         Department dept = new Department();
         dept.setDeptName("TheDepartment");

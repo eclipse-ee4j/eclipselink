@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<myns:root  xmlns:myns="www.oracle.com/some-dir/some.xsd">
+<myns:root  xmlns:myns="www.example.com/some-dir/some.xsd">
   <myns:nested>
     <myns:someChild>child's text</myns:someChild>
   </myns:nested>

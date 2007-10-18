@@ -30,7 +30,7 @@ public class COMCollectionTypeProject extends Project {
         super();
         namespaceResolver = new NamespaceResolver();
         namespaceResolver.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        namespaceResolver.put("oxm", "http://www.oracle.com/toplink-oxm");
+        namespaceResolver.put("oxm", "http://www.example.com/toplink-oxm");
         addDescriptor(getAddressDescriptor());
         addDescriptor(getCdnAddressDescriptor());
         addDescriptor(getContactMethodDescriptor());
@@ -157,7 +157,7 @@ public class COMCollectionTypeProject extends Project {
         addressMapping.setReferenceClass(Address.class);
         
         XMLField xmlFld = (XMLField) addressMapping.getField();
-        xmlFld.setLeafElementType(new QName("http://www.oracle.com/toplink-oxm", "canadian-address-type"));
+        xmlFld.setLeafElementType(new QName("http://www.example.com/toplink-oxm", "canadian-address-type"));
 
         descriptor.addMapping(addressMapping);
 

@@ -25,7 +25,7 @@ import org.w3c.dom.Document;
 public class XMLMarshalFragmentTestCases extends OXTestCase {
     private final static int CONTROL_EMPLOYEE_ID = 123;
     private final static String CONTROL_EMAIL_ADDRESS_USER_ID = "jane.doe";
-    private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "oracle.com";
+    private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "example.com";
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlmarshaller/Employee.xml";
     private Object controlObject;
     private Document controlDocument;

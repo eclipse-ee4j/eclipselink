@@ -47,7 +47,7 @@ public class ChildAndGeneratedPrefixClashTestCases extends XMLMappingTestCases {
         //XMLRoot teamXMLRoot = new XMLRoot();
        // teamXMLRoot.setObject(team1);
         //teamXMLRoot.setLocalName("teamXMLRoot");
-        //teamXMLRoot.setNamespaceURI("http://www.oracle.com/teamNS0");
+        //teamXMLRoot.setNamespaceURI("http://www.example.com/teamNS0");
         //teams.add(teamXMLRoot);
         teams.add(team1);
         dept1.setTeams(teams);
@@ -55,7 +55,7 @@ public class ChildAndGeneratedPrefixClashTestCases extends XMLMappingTestCases {
         XMLRoot deptXMLRoot = new XMLRoot();
         deptXMLRoot.setObject(dept1);
         deptXMLRoot.setLocalName("deptXMLRoot");
-        deptXMLRoot.setNamespaceURI("http://www.oracle.com/deptNS");
+        deptXMLRoot.setNamespaceURI("http://www.example.com/deptNS");
         
         depts.add(deptXMLRoot);
         company.setDepartments(depts);
@@ -64,7 +64,7 @@ public class ChildAndGeneratedPrefixClashTestCases extends XMLMappingTestCases {
         XMLRoot companyXMLRoot = new XMLRoot();
         companyXMLRoot.setObject(company);
         companyXMLRoot.setLocalName("companyXMLRoot");
-        companyXMLRoot.setNamespaceURI("http://www.oracle.com/companyNS");
+        companyXMLRoot.setNamespaceURI("http://www.example.com/companyNS");
         companies.add(companyXMLRoot);
         
         theRoot.setCompanies(companies);

@@ -33,7 +33,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class XMLUnmarshalTestCases extends OXTestCase {
     private final static int CONTROL_EMPLOYEE_ID = 123;
     private final static String CONTROL_EMAIL_ADDRESS_USER_ID = "jane.doe";
-    private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "oracle.com";
+    private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "example.com";
     private final static String SESSION_NAME = "XMLMarshallerTestSession";
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlmarshaller/Employee.xml";
     private final static String INVALID_XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlmarshaller/Car.xml";

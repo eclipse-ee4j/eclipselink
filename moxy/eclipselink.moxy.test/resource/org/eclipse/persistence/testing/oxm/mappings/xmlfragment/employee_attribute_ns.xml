@@ -1,4 +1,4 @@
-<employee xmlns:ns1="http://www.oracle.com/test-uri">
+<employee xmlns:ns1="http://www.example.com/test-uri">
    <first-name>Jane</first-name>
    <last-name>Doe</last-name>
    <xml-node ns1:attribute="attributevalue"/>

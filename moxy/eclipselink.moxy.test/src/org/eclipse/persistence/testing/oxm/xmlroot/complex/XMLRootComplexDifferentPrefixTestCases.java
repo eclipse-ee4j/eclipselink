@@ -19,7 +19,7 @@ import org.w3c.dom.Document;
 
 public class XMLRootComplexDifferentPrefixTestCases extends XMLRootComplexTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlroot/complex/employee-diff-prefix.xml";
-    protected final static String CONTROL_PERSON_NAME = "Joe Oracle";
+    protected final static String CONTROL_PERSON_NAME = "Joe Smith";
     protected final static String CONTROL_ELEMENT_NAME = "myns:employee";
     protected final static String CONTROL_NAMESPACE_URI = "test";
 

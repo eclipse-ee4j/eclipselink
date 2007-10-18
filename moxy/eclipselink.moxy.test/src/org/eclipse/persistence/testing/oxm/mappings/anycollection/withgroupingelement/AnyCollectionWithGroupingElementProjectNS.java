@@ -39,8 +39,8 @@ public class AnyCollectionWithGroupingElementProjectNS extends Project {
         descriptor.addMapping(mapping);
 
         NamespaceResolver namespaceResolver = new NamespaceResolver();
-        namespaceResolver.put("myns", "www.oracle.com/some-dir/some.xsd");
-        //namespaceResolver.put("", "www.oracle.com/some-other-dir/some.xsd");
+        namespaceResolver.put("myns", "www.example.com/some-dir/some.xsd");
+        //namespaceResolver.put("", "www.example.com/some-other-dir/some.xsd");
         descriptor.setNamespaceResolver(namespaceResolver);
 
         return descriptor;
@@ -60,8 +60,8 @@ public class AnyCollectionWithGroupingElementProjectNS extends Project {
         descriptor.addMapping(mapping);
 
         NamespaceResolver namespaceResolver = new NamespaceResolver();
-        namespaceResolver.put("myns", "www.oracle.com/some-dir/some.xsd");
-        //namespaceResolver.put("", "www.oracle.com/some-other-dir/some.xsd");
+        namespaceResolver.put("myns", "www.example.com/some-dir/some.xsd");
+        //namespaceResolver.put("", "www.example.com/some-other-dir/some.xsd");
         descriptor.setNamespaceResolver(namespaceResolver);
 
         return descriptor;

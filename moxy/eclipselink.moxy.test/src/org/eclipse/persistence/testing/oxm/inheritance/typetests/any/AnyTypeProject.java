@@ -30,7 +30,7 @@ public class AnyTypeProject extends Project {
         super();
         namespaceResolver = new NamespaceResolver();
         namespaceResolver.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        namespaceResolver.put("oxm", "http://www.oracle.com/toplink-oxm");
+        namespaceResolver.put("oxm", "http://www.example.com/toplink-oxm");
         addDescriptor(getAddressDescriptor());
         addDescriptor(getCdnAddressDescriptor());
         addDescriptor(getContactMethodDescriptor());
@@ -41,7 +41,7 @@ public class AnyTypeProject extends Project {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(ContactMethod.class);
         descriptor.setDefaultRootElement("contact-method");
-        descriptor.setDefaultRootElementType(new QName("http://www.oracle.com/toplink-oxm", "contact-method-type"));
+        descriptor.setDefaultRootElementType(new QName("http://www.example.com/toplink-oxm", "contact-method-type"));
         descriptor.setNamespaceResolver(namespaceResolver);
         
         XMLSchemaClassPathReference ref = new XMLSchemaClassPathReference();
@@ -68,7 +68,7 @@ public class AnyTypeProject extends Project {
 		XMLDescriptor descriptor = new XMLDescriptor();
 		descriptor.setJavaClass(Address.class);
         descriptor.setDefaultRootElement("contact-method");
-        descriptor.setDefaultRootElementType(new QName("http://www.oracle.com/toplink-oxm", "contact-method-type"));
+        descriptor.setDefaultRootElementType(new QName("http://www.example.com/toplink-oxm", "contact-method-type"));
 		descriptor.setNamespaceResolver(namespaceResolver);
         descriptor.getInheritancePolicy().setParentClass(ContactMethod.class);
 
@@ -88,7 +88,7 @@ public class AnyTypeProject extends Project {
 		XMLDescriptor descriptor = new XMLDescriptor();
 		descriptor.setJavaClass(CanadianAddress.class);
         descriptor.setDefaultRootElement("contact-method");
-        descriptor.setDefaultRootElementType(new QName("http://www.oracle.com/toplink-oxm", "contact-method-type"));
+        descriptor.setDefaultRootElementType(new QName("http://www.example.com/toplink-oxm", "contact-method-type"));
 		descriptor.setNamespaceResolver(namespaceResolver);
 		descriptor.getInheritancePolicy().setParentClass(Address.class);
 

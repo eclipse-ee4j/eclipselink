@@ -9,7 +9,7 @@
     <info>
       <email-address xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="emailAddressType">
         <user-id>jane.doe</user-id>
-        <domain>oracle.com</domain>
+        <domain>example.com</domain>
       </email-address>    
     </info>
 </employee>

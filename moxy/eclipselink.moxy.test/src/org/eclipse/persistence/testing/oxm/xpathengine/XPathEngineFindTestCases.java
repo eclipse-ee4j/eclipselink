@@ -184,7 +184,7 @@ public class XPathEngineFindTestCases extends TestCase {
 
         XMLField field = new XMLField("address/addressee/@testns:test");
         NamespaceResolver resolver = new NamespaceResolver();
-        resolver.put("testns", "www.oracle.com/some-dir/someschema.xsd");
+        resolver.put("testns", "www.example.com/some-dir/someschema.xsd");
         field.setNamespaceResolver(resolver);
 
         Object xpathNode = UnmarshalXPathEngine.getInstance().selectSingleNode(searchNodeNS, field, resolver);

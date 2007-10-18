@@ -122,7 +122,7 @@ public class XMLBinderKeyBasedMappingTests extends OXTestCase {
     public Employee getControlEmployee() {
         Employee emp = new Employee();
         emp.id = "222";
-        emp.name = "Joe Oracle";
+        emp.name = "Joe Smith";
         emp.address = getControlAddress();
         return emp;
     }

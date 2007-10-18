@@ -18,9 +18,9 @@ public class CompositeCollectionWithoutGroupingElementIdentifiedByNamespaceTestC
 
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/identifiedbynamespace/withoutgroupingelement/CompositeCollectionWithoutGroupingElementIdentifiedByNamespace.xml";
   private final static String CONTROL_EMAIL_ADDRESS_1_USER_ID = "jane.doe";
-  private final static String CONTROL_EMAIL_ADDRESS_1_DOMAIN = "oracle.com";
+  private final static String CONTROL_EMAIL_ADDRESS_1_DOMAIN = "example.com";
   private final static String CONTROL_EMAIL_ADDRESS_2_USER_ID = "jdoe";
-  private final static String CONTROL_EMAIL_ADDRESS_2_DOMAIN = "us.oraclecorp.com";
+  private final static String CONTROL_EMAIL_ADDRESS_2_DOMAIN = "test.com";
   private final static String CONTROL_MAILING_ADDRESS_1_STREET = "1 Any Street";
   private final static String CONTROL_MAILING_ADDRESS_1_CITY = "Ottawa";
   private final static String CONTROL_MAILING_ADDRESS_1_PROVINCE = "Ontario";

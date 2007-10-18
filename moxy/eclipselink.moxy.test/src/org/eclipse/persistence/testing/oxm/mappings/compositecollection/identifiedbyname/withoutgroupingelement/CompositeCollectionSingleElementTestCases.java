@@ -19,9 +19,9 @@ public class CompositeCollectionSingleElementTestCases extends XMLMappingTestCas
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/identifiedbyname/withoutgroupingelement/CompositeCollectionSingleElement.xml";
   private final static int CONTROL_EMPLOYEE_ID = 123;
   private final static String CONTROL_EMAIL_ADDRESS_1_USER_ID = "jane.doe";
-  private final static String CONTROL_EMAIL_ADDRESS_1_DOMAIN = "oracle.com";
+  private final static String CONTROL_EMAIL_ADDRESS_1_DOMAIN = "example.com";
   private final static String CONTROL_EMAIL_ADDRESS_2_USER_ID = "jdoe";
-  private final static String CONTROL_EMAIL_ADDRESS_2_DOMAIN = "us.oraclecorp.com";
+  private final static String CONTROL_EMAIL_ADDRESS_2_DOMAIN = "test.com";
   private final static String CONTROL_MAILING_ADDRESS_1_STREET = "1 Any Street";
   private final static String CONTROL_MAILING_ADDRESS_1_CITY = "Ottawa";
   private final static String CONTROL_MAILING_ADDRESS_1_PROVINCE = "Ontario";

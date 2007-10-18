@@ -2,11 +2,11 @@
 	<addresses>
 		<address>
 			<user-id>jane.doe</user-id>
-			<domain>oracle.com</domain>
+			<domain>example.com</domain>
 		</address>
 		<address>
 			<user-id>jdoe</user-id>
-			<domain>us.oraclecorp.com</domain>
+			<domain>test.com</domain>
 		</address>
 	</addresses>
 	<addresses>

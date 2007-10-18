@@ -24,7 +24,7 @@ public class AnyAttributeNoAttributesNSTestCases extends XMLMappingTestCases {
         Root root = new Root();
         HashMap any = new HashMap();
         QName name = new QName("http://www.w3.org/2000/xmlns/", "myns");
-        any.put(name, "www.oracle.com/some-dir/some.xsd");
+        any.put(name, "www.example.com/some-dir/some.xsd");
         root.setAny(any);
         //        System.out.println(root);
         return root;

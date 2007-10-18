@@ -18,9 +18,9 @@ import org.eclipse.persistence.testing.oxm.mappings.directtofield.Employee;
 public class DirectToXMLAttributeIdentifiedByNamespaceProject extends Project {
 
 	private final static String FIRST_PREFIX = "first";
-	private final static String FIRST_NAMESPACE = "www.oracle.com/some-dir/first.xsd";
+	private final static String FIRST_NAMESPACE = "www.example.com/some-dir/first.xsd";
 	private final static String LAST_PREFIX = "last";
-	private final static String LAST_NAMESPACE = "www.oracle.com/some-dir/last.xsd";
+	private final static String LAST_NAMESPACE = "www.example.com/some-dir/last.xsd";
 
   public DirectToXMLAttributeIdentifiedByNamespaceProject() {
     addDescriptor(getEmployeeDescriptor());

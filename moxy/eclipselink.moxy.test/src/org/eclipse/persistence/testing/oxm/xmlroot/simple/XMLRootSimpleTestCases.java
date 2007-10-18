@@ -17,7 +17,7 @@ import org.w3c.dom.Document;
 
 public class XMLRootSimpleTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlroot/simple/employee.xml";
-    protected final static String CONTROL_OBJECT = "Joe Oracle";
+    protected final static String CONTROL_OBJECT = "Joe Smith";
     protected final static String CONTROL_ELEMENT_NAME = "employee-name";
     protected final static String CONTROL_PREFIX = "oxm";
     protected final static String CONTROL_NAMESPACE_URI = "test";

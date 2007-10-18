@@ -139,7 +139,7 @@ public class XMLFragmentCollectionNSTestCases extends OXTestCase {
      */
     public void testObjectToXMLDocumentSamePrefixAndURI() throws Exception {
         NamespaceResolver nsresolver = new NamespaceResolver();
-        nsresolver.put("ns1", "http://www.oracle.com/test-uri");
+        nsresolver.put("ns1", "http://www.example.com/test-uri");
         setProject(new XMLFragmentCollectionNSProject(nsresolver));
         Document testDocument = xmlMarshaller.objectToXML(getWriteControlObject(XML_SUB_ELEMENT));
         objectToXMLDocumentTest(testDocument, XML_RESOURCE, "testObjectToXMLDocumentSamePrefixAndURI");
@@ -150,7 +150,7 @@ public class XMLFragmentCollectionNSTestCases extends OXTestCase {
      */
     public void testObjectToXMLDocumentDifferentPrefix() throws Exception {
         NamespaceResolver nsresolver = new NamespaceResolver();
-        nsresolver.put("ns1", "http://www.oracle.com/test-uri");
+        nsresolver.put("ns1", "http://www.example.com/test-uri");
         setProject(new XMLFragmentCollectionNSProject(nsresolver));
         Document testDocument = xmlMarshaller.objectToXML(getWriteControlObject(XML_SUB_ELEMENT_DIFF_PFX));
         objectToXMLDocumentTest(testDocument, XML_RESOURCE_DIFF_PFX, "testObjectToXMLDocumentDifferentPrefix");
@@ -161,7 +161,7 @@ public class XMLFragmentCollectionNSTestCases extends OXTestCase {
      */
     public void testObjectToXMLDocumentDifferentURI() throws Exception {
         NamespaceResolver nsresolver = new NamespaceResolver();
-        nsresolver.put("ns1", "http://www.oracle.com/some-other-uri");
+        nsresolver.put("ns1", "http://www.example.com/some-other-uri");
         setProject(new XMLFragmentCollectionNSProject(nsresolver));
         Document testDocument = xmlMarshaller.objectToXML(getWriteControlObject(XML_SUB_ELEMENT));
         objectToXMLDocumentTest(testDocument, XML_RESOURCE_DIFF_URI, "testObjectToXMLDocumentDifferentURI");
@@ -173,7 +173,7 @@ public class XMLFragmentCollectionNSTestCases extends OXTestCase {
     public void testObjectToContentHandlerSamePrefixAndURI() throws Exception {
         setControlDocument(XML_RESOURCE);
         NamespaceResolver nsresolver = new NamespaceResolver();
-        nsresolver.put("ns1", "http://www.oracle.com/test-uri");
+        nsresolver.put("ns1", "http://www.example.com/test-uri");
         setProject(new XMLFragmentCollectionNSProject(nsresolver));
 
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
@@ -198,7 +198,7 @@ public class XMLFragmentCollectionNSTestCases extends OXTestCase {
     public void testObjectToContentHandlerDifferentPrefix() throws Exception {
         setControlDocument(XML_RESOURCE_DIFF_PFX);
         NamespaceResolver nsresolver = new NamespaceResolver();
-        nsresolver.put("ns1", "http://www.oracle.com/test-uri");
+        nsresolver.put("ns1", "http://www.example.com/test-uri");
         setProject(new XMLFragmentCollectionNSProject(nsresolver));
 
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
@@ -223,7 +223,7 @@ public class XMLFragmentCollectionNSTestCases extends OXTestCase {
     public void testObjectToContentHandlerDifferentURI() throws Exception {
         setControlDocument(XML_RESOURCE_DIFF_URI);
         NamespaceResolver nsresolver = new NamespaceResolver();
-        nsresolver.put("ns1", "http://www.oracle.com/some-other-uri");
+        nsresolver.put("ns1", "http://www.example.com/some-other-uri");
         setProject(new XMLFragmentCollectionNSProject(nsresolver));
 
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
@@ -247,7 +247,7 @@ public class XMLFragmentCollectionNSTestCases extends OXTestCase {
      */
     public void testObjectToXMLStringWriter() throws Exception {
         NamespaceResolver nsresolver = new NamespaceResolver();
-        nsresolver.put("ns1", "http://www.oracle.com/test-uri");
+        nsresolver.put("ns1", "http://www.example.com/test-uri");
         setProject(new XMLFragmentCollectionNSProject(nsresolver));
 
         StringWriter writer = new StringWriter();
@@ -266,7 +266,7 @@ public class XMLFragmentCollectionNSTestCases extends OXTestCase {
      */
     public void testObjectToXMLStringWriterDifferentPrefix() throws Exception {
         NamespaceResolver nsresolver = new NamespaceResolver();
-        nsresolver.put("ns1", "http://www.oracle.com/test-uri");
+        nsresolver.put("ns1", "http://www.example.com/test-uri");
         setProject(new XMLFragmentCollectionNSProject(nsresolver));
 
         StringWriter writer = new StringWriter();
@@ -285,7 +285,7 @@ public class XMLFragmentCollectionNSTestCases extends OXTestCase {
      */
     public void testObjectToXMLStringWriterDifferentURI() throws Exception {
         NamespaceResolver nsresolver = new NamespaceResolver();
-        nsresolver.put("ns1", "http://www.oracle.com/some-other-uri");
+        nsresolver.put("ns1", "http://www.example.com/some-other-uri");
         setProject(new XMLFragmentCollectionNSProject(nsresolver));
 
         StringWriter writer = new StringWriter();
@@ -304,7 +304,7 @@ public class XMLFragmentCollectionNSTestCases extends OXTestCase {
      */
     public void testObjectToFormattedXMLStringWriter() throws Exception {
         NamespaceResolver nsresolver = new NamespaceResolver();
-        nsresolver.put("ns1", "http://www.oracle.com/test-uri");
+        nsresolver.put("ns1", "http://www.example.com/test-uri");
         setProject(new XMLFragmentCollectionNSProject(nsresolver));
 
         StringWriter writer = new StringWriter();
@@ -336,7 +336,7 @@ public class XMLFragmentCollectionNSTestCases extends OXTestCase {
      */
     public void testObjectToFormattedXMLStringWriterDifferentPrefix() throws Exception {
         NamespaceResolver nsresolver = new NamespaceResolver();
-        nsresolver.put("ns1", "http://www.oracle.com/test-uri");
+        nsresolver.put("ns1", "http://www.example.com/test-uri");
         setProject(new XMLFragmentCollectionNSProject(nsresolver));
 
         StringWriter writer = new StringWriter();
@@ -368,7 +368,7 @@ public class XMLFragmentCollectionNSTestCases extends OXTestCase {
      */
     public void testObjectToFormattedXMLStringWriterDifferentURI() throws Exception {
         NamespaceResolver nsresolver = new NamespaceResolver();
-        nsresolver.put("ns1", "http://www.oracle.com/some-other-uri");
+        nsresolver.put("ns1", "http://www.example.com/some-other-uri");
         setProject(new XMLFragmentCollectionNSProject(nsresolver));
 
         StringWriter writer = new StringWriter();

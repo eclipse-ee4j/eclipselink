@@ -26,10 +26,10 @@ public class NonNullDefaultRootPersonTestCases extends XMLMappingTestCases {
     /**
       <?xml version="1.0" encoding="UTF-8"?>
       <oxm:pRoot xsi:type="oxm:person" xmlns:oxm="test" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <name>Joe Oracle</name>
+        <name>Joe Smith</name>
       </oxm:pRoot>
      */
-    protected final static String CONTROL_PERSON_NAME = "Joe Oracle";
+    protected final static String CONTROL_PERSON_NAME = "Joe Smith";
     protected final static int CONTROL_ID = 15;
     protected final static String CONTROL_ELEMENT_NAME = "oxm:blah";
     protected final static String CONTROL_NAMESPACE_URI = "test";

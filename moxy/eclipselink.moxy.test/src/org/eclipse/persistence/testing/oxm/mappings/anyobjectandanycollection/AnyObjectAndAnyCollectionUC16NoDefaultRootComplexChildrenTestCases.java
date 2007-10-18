@@ -54,7 +54,7 @@ public class AnyObjectAndAnyCollectionUC16NoDefaultRootComplexChildrenTestCases 
     }
 
     public Object getControlObject() {
-        //<customer><contact-method><address>Ottawa</address><address>Montreal</address><phone>5551111</phone>joe@oracle.com<address>Ottawa</address><address>Montreal</address><phone>5551111</phone>joe@oracle.com</contact-method></customer>F    	
+        //<customer><contact-method><address>Ottawa</address><address>Montreal</address><phone>5551111</phone>joe@example.com<address>Ottawa</address><address>Montreal</address><phone>5551111</phone>joe@example.com</contact-method></customer>F    	
         Customer customer = new Customer();
         Address anAddress1 = new Address();
         Address anAddress2 = new Address();
@@ -67,12 +67,12 @@ public class AnyObjectAndAnyCollectionUC16NoDefaultRootComplexChildrenTestCases 
         contactMethods.addElement(anAddress1);
         contactMethods.addElement(anAddress2);
         contactMethods.addElement(aPhoneNumber);
-        contactMethods.addElement("joe@oracle.com");
+        contactMethods.addElement("joe@example.com");
 
         //contactMethods.addElement(anAddress1);
         //contactMethods.addElement(anAddress2);
         //contactMethods.addElement(aPhoneNumber);
-        //contactMethods.addElement("joe@oracle.com");
+        //contactMethods.addElement("joe@example.com");
         customer.setContactMethods(contactMethods);
         customer.setAnyObject(contactMethods);
 
@@ -96,12 +96,12 @@ public class AnyObjectAndAnyCollectionUC16NoDefaultRootComplexChildrenTestCases 
         contactMethods.addElement(anAddress1);
         contactMethods.addElement(anAddress2);
         contactMethods.addElement(aPhoneNumber);
-        contactMethods.addElement("joe@oracle.com");
+        contactMethods.addElement("joe@example.com");
 
         contactMethods.addElement(anAddress1);
         contactMethods.addElement(anAddress2);
         contactMethods.addElement(aPhoneNumber);
-        contactMethods.addElement("joe@oracle.com");
+        contactMethods.addElement("joe@example.com");
 
         customer.setContactMethods(contactMethods);
         //customer.setAnyObject(contactMethods);

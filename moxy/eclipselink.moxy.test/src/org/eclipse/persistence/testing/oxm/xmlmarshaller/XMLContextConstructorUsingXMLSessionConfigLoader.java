@@ -26,7 +26,7 @@ public class XMLContextConstructorUsingXMLSessionConfigLoader extends OXTestCase
     public static String sessionpath = "org/eclipse/persistence/testing/oxm/xmlmarshaller";
     private final static int CONTROL_EMPLOYEE_ID = 123;
     private final static String CONTROL_EMAIL_ADDRESS_USER_ID = "jane.doe";
-    private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "oracle.com";
+    private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "example.com";
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlmarshaller/mySessions.xml";
     private final static String XML_RESOURCE_INVALID = "invalid/path/mySessions.xml";
     private Object controlObject;

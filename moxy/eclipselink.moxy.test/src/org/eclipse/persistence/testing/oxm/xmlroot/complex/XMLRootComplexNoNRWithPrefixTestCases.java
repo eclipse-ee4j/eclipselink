@@ -18,7 +18,7 @@ import org.w3c.dom.Document;
 
 public class XMLRootComplexNoNRWithPrefixTestCases extends XMLRootComplexTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlroot/complex/employee-no-nr-withprefix.xml";
-    private final static String CONTROL_PERSON_NAME = "Joe Oracle";
+    private final static String CONTROL_PERSON_NAME = "Joe Smith";
     private final static String CONTROL_ELEMENT_NAME = "oxm:employee";
     private final static String CONTROL_NAMESPACE_URI = "test";
 

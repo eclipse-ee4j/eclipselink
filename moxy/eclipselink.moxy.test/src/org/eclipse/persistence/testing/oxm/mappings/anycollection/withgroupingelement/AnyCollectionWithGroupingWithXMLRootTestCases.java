@@ -49,13 +49,13 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLMappingTes
         xmlroot0.setObject("");
         xmlroot0.setObject("  ");
         xmlroot0.setRootElementName("myns:emptyValueElement");
-        xmlroot0.setRootElementURI("www.oracle.com/some-dir/some.xsd");
+        xmlroot0.setRootElementURI("www.example.com/some-dir/some.xsd");
         any.addElement(xmlroot0);*/
 
         XMLRoot xmlroot1 = new XMLRoot();
         xmlroot1.setObject("theStringValue");
         xmlroot1.setLocalName("myns:theString");
-        xmlroot1.setNamespaceURI("www.oracle.com/some-dir/some.xsd");
+        xmlroot1.setNamespaceURI("www.example.com/some-dir/some.xsd");
         any.addElement(xmlroot1);
 
         XMLRoot xmlroot2 = new XMLRoot();
@@ -63,7 +63,7 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLMappingTes
         //xmlroot2.setObject(new Integer(15));
         xmlroot2.setObject("15");
         xmlroot2.setLocalName("myns:theInteger");
-        xmlroot2.setNamespaceURI("www.oracle.com/some-dir/some.xsd");
+        xmlroot2.setNamespaceURI("www.example.com/some-dir/some.xsd");
         any.addElement(xmlroot2);
 
         XMLRoot xmlroot3 = new XMLRoot();
@@ -71,7 +71,7 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLMappingTes
         child.setContent("Child3");
         xmlroot3.setObject(child);
         xmlroot3.setLocalName("myns:someChild");
-        xmlroot3.setNamespaceURI("www.oracle.com/some-dir/some.xsd");
+        xmlroot3.setNamespaceURI("www.example.com/some-dir/some.xsd");
         any.addElement(xmlroot3);
         
         XMLRoot xmlroot4 = new XMLRoot();
@@ -79,14 +79,14 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLMappingTes
         child.setContent("Child4");
         xmlroot4.setObject(child);
         xmlroot4.setLocalName("myns:blah");
-        xmlroot4.setNamespaceURI("www.oracle.com/some-dir/some.xsd");
+        xmlroot4.setNamespaceURI("www.example.com/some-dir/some.xsd");
         any.addElement(xmlroot4);
 
         XMLRoot xmlroot5 = new XMLRoot();
         child = new Child();        
         xmlroot5.setObject(child);
         xmlroot5.setLocalName("myns:someChild");
-        xmlroot5.setNamespaceURI("www.oracle.com/some-dir/some.xsd");
+        xmlroot5.setNamespaceURI("www.example.com/some-dir/some.xsd");
         any.addElement(xmlroot5);
 
         root.setAny(any);

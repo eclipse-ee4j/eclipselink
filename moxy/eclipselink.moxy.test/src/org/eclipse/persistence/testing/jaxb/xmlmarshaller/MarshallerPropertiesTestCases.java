@@ -21,7 +21,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
 import org.w3c.dom.Document;
-//import org.custommonkey.xmlunit.*;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class MarshallerPropertiesTestCases extends OXTestCase {
@@ -60,7 +59,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
     public void testNoNamespaceSchemaLocation() throws Exception {
         Document control = parse(CONTROL_NO_NAMESPACE_XML);
         Document marshalled = parser.newDocument();
-        marshaller.setProperty("jaxb.noNamespaceSchemaLocation", "http://www.oracle.com/Employee.xsd");
+        marshaller.setProperty("jaxb.noNamespaceSchemaLocation", "http://www.example.com/Employee.xsd");
         Employee emp = new Employee();
         emp.setID(456);
         marshaller.marshal(emp, marshalled);
@@ -70,7 +69,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
     public void testNamespaceSchemaLocation() throws Exception {
         Document control = parse(CONTROL_NAMESPACE_XML);
         Document marshalled = parser.newDocument();
-        marshaller.setProperty("jaxb.schemaLocation", "http://www.oracle.com/Employee.xsd");
+        marshaller.setProperty("jaxb.schemaLocation", "http://www.example.com/Employee.xsd");
         Employee emp = new Employee();
         emp.setID(456);
         marshaller.marshal(emp, marshalled);
@@ -80,7 +79,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
     public void testBothSchemaLocations() throws Exception {
         Document control = parse(CONTROL_BOTH);
         Document marshalled = parser.newDocument();
-        marshaller.setProperty("jaxb.schemaLocation", "http://www.oracle.com/Employee.xsd");
+        marshaller.setProperty("jaxb.schemaLocation", "http://www.example.com/Employee.xsd");
         marshaller.setProperty("jaxb.noNamespaceSchemaLocation", "file:////ade/mmacivor_toplink10i/tltest/resource/ox/Employee.xsd");
         Employee emp = new Employee();
         emp.setID(456);

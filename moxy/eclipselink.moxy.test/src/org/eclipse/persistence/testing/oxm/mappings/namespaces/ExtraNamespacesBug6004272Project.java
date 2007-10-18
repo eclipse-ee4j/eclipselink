@@ -41,8 +41,8 @@ public class ExtraNamespacesBug6004272Project extends Project {
         xmlDescriptor.addMapping(companiesMapping);
 
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("ns1", "http://www.oracle.com/rootns");
-        nsResolver.put("ns2", "http://www.oracle.com/ns2");
+        nsResolver.put("ns1", "http://www.example.com/rootns");
+        nsResolver.put("ns2", "http://www.example.com/ns2");
         
         xmlDescriptor.setNamespaceResolver(nsResolver);
 
@@ -63,7 +63,7 @@ public class ExtraNamespacesBug6004272Project extends Project {
         managerMapping.setXPath("ns2:manager");
         managerMapping.setReferenceClass(Manager.class);
         //XMLField xmlFld = (XMLField) managerMapping.getField();      
-        //xmlFld.setLeafElementType(new QName("http://www.oracle.com/ns2","manager-type"));
+        //xmlFld.setLeafElementType(new QName("http://www.example.com/ns2","manager-type"));
         xmlDescriptor.addMapping(managerMapping);
 
         XMLCompositeCollectionMapping departmentsMapping = new XMLCompositeCollectionMapping();
@@ -73,9 +73,9 @@ public class ExtraNamespacesBug6004272Project extends Project {
         xmlDescriptor.addMapping(departmentsMapping);
 
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("ns1", "http://www.oracle.com/rootns");//keep in resolver 
-        nsResolver.put("ns2", "http://www.oracle.com/ns2");
-        nsResolver.put("aaa", "http://www.oracle.com/aaa");        
+        nsResolver.put("ns1", "http://www.example.com/rootns");//keep in resolver 
+        nsResolver.put("ns2", "http://www.example.com/ns2");
+        nsResolver.put("aaa", "http://www.example.com/aaa");        
         xmlDescriptor.setNamespaceResolver(nsResolver);
 
         return xmlDescriptor;
@@ -104,8 +104,8 @@ public class ExtraNamespacesBug6004272Project extends Project {
         xmlDescriptor.addMapping(nameMapping);
 
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("ns4", "http://www.oracle.com/ns4");
-        nsResolver.put("ns2", "http://www.oracle.com/ns2");
+        nsResolver.put("ns4", "http://www.example.com/ns4");
+        nsResolver.put("ns2", "http://www.example.com/ns2");
         nsResolver.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         xmlDescriptor.setNamespaceResolver(nsResolver);
 
@@ -136,10 +136,10 @@ public class ExtraNamespacesBug6004272Project extends Project {
         xmlDescriptor.setSchemaReference(ref);
 
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("ns3", "http://www.oracle.com/ns3"); 
-        nsResolver.put("ns2", "http://www.oracle.com/ns2");
-        nsResolver.put("ns4", "http://www.oracle.com/ns4");
-        nsResolver.put("ns7", "http://www.oracle.com/ns7");
+        nsResolver.put("ns3", "http://www.example.com/ns3"); 
+        nsResolver.put("ns2", "http://www.example.com/ns2");
+        nsResolver.put("ns4", "http://www.example.com/ns4");
+        nsResolver.put("ns7", "http://www.example.com/ns7");
         nsResolver.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         xmlDescriptor.setNamespaceResolver(nsResolver);
         return xmlDescriptor;
@@ -162,7 +162,7 @@ public class ExtraNamespacesBug6004272Project extends Project {
         xmlDescriptor.addMapping(teamsMapping);
       
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("ns3", "http://www.oracle.com/ns3");
+        nsResolver.put("ns3", "http://www.example.com/ns3");
         xmlDescriptor.setNamespaceResolver(nsResolver);
         return xmlDescriptor;
     }
@@ -196,10 +196,10 @@ public class ExtraNamespacesBug6004272Project extends Project {
         xmlDescriptor.setSchemaReference(ref);
       
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("ns4", "http://www.oracle.com/ns4");
-        nsResolver.put("ns5", "http://www.oracle.com/ns5");
-        nsResolver.put("ns6", "http://www.oracle.com/ns6");
-        //nsResolver.put("ns2", "http://www.oracle.com/ns2");
+        nsResolver.put("ns4", "http://www.example.com/ns4");
+        nsResolver.put("ns5", "http://www.example.com/ns5");
+        nsResolver.put("ns6", "http://www.example.com/ns6");
+        //nsResolver.put("ns2", "http://www.example.com/ns2");
         xmlDescriptor.setNamespaceResolver(nsResolver);
         return xmlDescriptor;
     }
@@ -220,7 +220,7 @@ public class ExtraNamespacesBug6004272Project extends Project {
         xmlDescriptor.addMapping(descMapping);
         
         NamespaceResolver nsResolver = new NamespaceResolver();        
-        nsResolver.put("ns6Other", "http://www.oracle.com/ns6");
+        nsResolver.put("ns6Other", "http://www.example.com/ns6");
         
         XMLSchemaClassPathReference ref = new XMLSchemaClassPathReference();
         ref.setSchemaContext("/ns6Other:project-type");

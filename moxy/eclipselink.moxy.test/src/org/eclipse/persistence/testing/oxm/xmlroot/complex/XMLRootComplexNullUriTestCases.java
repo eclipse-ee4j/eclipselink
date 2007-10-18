@@ -15,7 +15,7 @@ import org.eclipse.persistence.testing.oxm.xmlroot.Person;
 
 public class XMLRootComplexNullUriTestCases extends XMLRootComplexTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlroot/complex/employee-null-uri.xml";
-    private final static String CONTROL_PERSON_NAME = "Joe Oracle";
+    private final static String CONTROL_PERSON_NAME = "Joe Smith";
     private final static String CONTROL_ELEMENT_NAME = "employee";
     private final static String CONTROL_NAMESPACE_URI = null;
 

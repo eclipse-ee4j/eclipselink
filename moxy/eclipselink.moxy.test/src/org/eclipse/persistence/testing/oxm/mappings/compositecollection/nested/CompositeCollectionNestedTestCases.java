@@ -22,13 +22,13 @@ public class CompositeCollectionNestedTestCases extends XMLMappingTestCases {
   private final static int CONTROL_EMPLOYEE2_ID = 789;
   private final static String CONTROL_PROJECT_NAME = "secret project";
   private final static String CONTROL_EMAIL_ADDRESS_1_USER_ID = "jane.doe";
-  private final static String CONTROL_EMAIL_ADDRESS_1_DOMAIN = "oracle.com";
+  private final static String CONTROL_EMAIL_ADDRESS_1_DOMAIN = "example.com";
   private final static String CONTROL_EMAIL_ADDRESS_2_USER_ID = "jdoe";
-  private final static String CONTROL_EMAIL_ADDRESS_2_DOMAIN = "us.oraclecorp.com";
+  private final static String CONTROL_EMAIL_ADDRESS_2_DOMAIN = "test.com";
   private final static String CONTROL_EMAIL_ADDRESS_3_USER_ID = "jon.doe";
-  private final static String CONTROL_EMAIL_ADDRESS_3_DOMAIN = "oracle.com";
+  private final static String CONTROL_EMAIL_ADDRESS_3_DOMAIN = "example.com";
   private final static String CONTROL_EMAIL_ADDRESS_4_USER_ID = "jondoe";
-  private final static String CONTROL_EMAIL_ADDRESS_4_DOMAIN = "us.oraclecorp.com";
+  private final static String CONTROL_EMAIL_ADDRESS_4_DOMAIN = "test.com";
   private final static String CONTROL_MAILING_ADDRESS_1_STREET = "1 Any Street";
   private final static String CONTROL_MAILING_ADDRESS_1_CITY = "Ottawa";
   private final static String CONTROL_MAILING_ADDRESS_1_PROVINCE = "Ontario";

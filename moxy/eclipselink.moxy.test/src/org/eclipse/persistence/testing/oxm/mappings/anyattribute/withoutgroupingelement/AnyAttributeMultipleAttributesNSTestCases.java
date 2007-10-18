@@ -31,11 +31,11 @@ public class AnyAttributeMultipleAttributesNSTestCases extends XMLMappingTestCas
     public Object getControlObject() {
         Root root = new Root();
         HashMap any = new HashMap();
-        QName name = new QName("www.oracle.com/some-dir/some.xsd", "first-name");
+        QName name = new QName("www.example.com/some-dir/some.xsd", "first-name");
         any.put(name, "Matt");
         name = new QName("http://www.w3.org/2000/xmlns/", "myns");
-        any.put(name, "www.oracle.com/some-dir/some.xsd");
-        name = new QName("www.oracle.com/some-dir/some.xsd", "last-name");
+        any.put(name, "www.example.com/some-dir/some.xsd");
+        name = new QName("www.example.com/some-dir/some.xsd", "last-name");
         any.put(name, "MacIvor");
         root.setAny(any);
         return root;
@@ -44,11 +44,11 @@ public class AnyAttributeMultipleAttributesNSTestCases extends XMLMappingTestCas
     public Object getWriteControlObject() {
         Root root = new Root();
         HashMap any = new HashMap();
-        QName name = new QName("www.oracle.com/some-dir/some.xsd", "first-name");
+        QName name = new QName("www.example.com/some-dir/some.xsd", "first-name");
         any.put(name, "Matt");
         //   name = new QName("http://www.w3.org/2000/xmlns/", "myns");
-        // any.put(name, "www.oracle.com/some-dir/some.xsd");
-        name = new QName("www.oracle.com/some-dir/some.xsd", "last-name");
+        // any.put(name, "www.example.com/some-dir/some.xsd");
+        name = new QName("www.example.com/some-dir/some.xsd", "last-name");
         any.put(name, "MacIvor");
         root.setAny(any);
         return root;

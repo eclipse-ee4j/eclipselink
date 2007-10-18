@@ -24,9 +24,9 @@ public class AnyAttributeMultipleAttributesNSTestCases extends XMLMappingTestCas
     public Object getControlObject() {
         Root root = new Root();
         HashMap any = new HashMap();
-        QName name = new QName("www.oracle.com/some-dir/some.xsd", "first-name");
+        QName name = new QName("www.example.com/some-dir/some.xsd", "first-name");
         any.put(name, "Matt");        
-        name = new QName("www.oracle.com/some-dir/some.xsd", "last-name");
+        name = new QName("www.example.com/some-dir/some.xsd", "last-name");
         any.put(name, "MacIvor");
         root.setAny(any);
         return root;

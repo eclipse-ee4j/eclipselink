@@ -48,7 +48,7 @@ public class NonStringKeyTypeTestCases extends KeyBasedMappingTestCases {
         addresses.add(address);
         Employee employee = new Employee();
         employee.id = "222";
-        employee.name = "Joe Oracle";
+        employee.name = "Joe Smith";
         employee.addresses = addresses;
         Root root = new Root();
         root.employee = employee;
@@ -91,7 +91,7 @@ public class NonStringKeyTypeTestCases extends KeyBasedMappingTestCases {
         rootAddresses.add(address);
         Employee employee = new Employee();
         employee.id = "222";
-        employee.name = "Joe Oracle";
+        employee.name = "Joe Smith";
         employee.addresses = empAddresses;
         Root root = new Root();
         root.employee = employee;

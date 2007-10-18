@@ -41,7 +41,7 @@ public class AnyObjectWithGroupingWithXMLRootXSITypeTestCases extends XMLMapping
         child.setContent("child's text");
         xmlroot.setObject(child);
         xmlroot.setLocalName("myns:blah");
-        xmlroot.setNamespaceURI("www.oracle.com/some-dir/some.xsd");
+        xmlroot.setNamespaceURI("www.example.com/some-dir/some.xsd");
 
         root.setAny(xmlroot);
         return root;

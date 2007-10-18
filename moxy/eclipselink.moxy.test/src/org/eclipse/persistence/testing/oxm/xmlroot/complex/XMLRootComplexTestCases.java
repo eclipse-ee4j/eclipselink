@@ -17,7 +17,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class XMLRootComplexTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlroot/complex/employee.xml";
-    protected final static String CONTROL_PERSON_NAME = "Joe Oracle";
+    protected final static String CONTROL_PERSON_NAME = "Joe Smith";
     protected final static String CONTROL_ELEMENT_NAME = "oxm:employee";
     protected final static String CONTROL_NAMESPACE_URI = "test";
 

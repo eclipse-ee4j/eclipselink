@@ -19,7 +19,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 public class XmlIdRefTestCases extends JAXBTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/instance.xml";
     private static final String CONTROL_ID = "222";
-    private static final String CONTROL_NAME = "Joe Oracle";
+    private static final String CONTROL_NAME = "Joe Smith";
     private static final String CONTROL_ADD_ID_1 = "199";
     private static final String CONTROL_ADD_STREET_1 = "Some Other St.";
     private static final String CONTROL_ADD_CITY_1 = "Anyothertown";

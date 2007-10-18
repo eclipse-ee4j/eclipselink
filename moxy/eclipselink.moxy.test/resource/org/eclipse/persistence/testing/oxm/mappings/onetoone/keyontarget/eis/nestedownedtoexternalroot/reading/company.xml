@@ -1,7 +1,7 @@
 <?xml version = '1.0' encoding = 'utf-8'?>
 <root>
    <company>
-      <name>Oracle</name>
+      <name>SomeCompany</name>
       <department>
          <name>TheDepartment</name>
          <employee>

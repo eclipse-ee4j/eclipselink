@@ -25,7 +25,7 @@ public class SingleAttributeNullKeyTestCases extends KeyBasedMappingTestCases {
     protected Object getControlObject() {
         Employee employee = new Employee();
         employee.id = "222";
-        employee.name = "Joe Oracle";
+        employee.name = "Joe Smith";
         Root root = new Root();
         root.employee = employee;
         return root;

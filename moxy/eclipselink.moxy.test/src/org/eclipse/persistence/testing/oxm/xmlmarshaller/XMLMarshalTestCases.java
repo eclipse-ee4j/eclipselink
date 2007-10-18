@@ -45,7 +45,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class XMLMarshalTestCases extends OXTestCase {
     private final static int CONTROL_EMPLOYEE_ID = 123;
     private final static String CONTROL_EMAIL_ADDRESS_USER_ID = "jane.doe";
-    private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "oracle.com";
+    private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "example.com";
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlmarshaller/Employee.xml";
     private final static String MARSHAL_TO_NODE_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlmarshaller/MarshalToNode.xml";
     private final static String MARSHAL_TO_NODE_NS_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlmarshaller/MarshalToNodeNS.xml";
@@ -154,7 +154,7 @@ public class XMLMarshalTestCases extends OXTestCase {
             String rootElement = descriptor.getDefaultRootElement();
             descriptor.setDefaultRootElement("thens:" + rootElement);
             NamespaceResolver resolver = new NamespaceResolver();
-            resolver.put("thens", "www.oracle.com/some-dir/employee.xsd");
+            resolver.put("thens", "www.example.com/some-dir/employee.xsd");
             descriptor.setNamespaceResolver(resolver);
 
             Document marshalToNodeControl = setupControlDocument(MARSHAL_TO_NODE_NS_RESOURCE);
@@ -207,7 +207,7 @@ public class XMLMarshalTestCases extends OXTestCase {
             String originalRootElement = descriptor.getDefaultRootElement();
             descriptor.setDefaultRootElement("thens:" + originalRootElement);
             NamespaceResolver resolver = new NamespaceResolver();
-            resolver.put("thens", "www.oracle.com/some-dir/employee.xsd");
+            resolver.put("thens", "www.example.com/some-dir/employee.xsd");
             descriptor.setNamespaceResolver(resolver);
 
             Document marshalToNodeControl = setupControlDocument(MARSHAL_TO_NODE_NS_RESOURCE);
@@ -572,7 +572,7 @@ public class XMLMarshalTestCases extends OXTestCase {
             String rootElement = descriptor.getDefaultRootElement();
             descriptor.setDefaultRootElement("thens:" + rootElement);
             NamespaceResolver resolver = new NamespaceResolver();
-            resolver.put("thenstest", "www.oracle.com/some-dir/employee.xsd");
+            resolver.put("thenstest", "www.example.com/some-dir/employee.xsd");
             descriptor.setNamespaceResolver(resolver);
 
             DefaultHandler output = new DefaultHandler();
@@ -610,7 +610,7 @@ public class XMLMarshalTestCases extends OXTestCase {
             String rootElement = descriptor.getDefaultRootElement();
             descriptor.setDefaultRootElement("thens:" + rootElement);
             NamespaceResolver resolver = new NamespaceResolver();
-            resolver.put("thenstest", "www.oracle.com/some-dir/employee.xsd");
+            resolver.put("thenstest", "www.example.com/some-dir/employee.xsd");
             descriptor.setNamespaceResolver(resolver);
 
             try {

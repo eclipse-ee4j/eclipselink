@@ -19,9 +19,9 @@ import org.eclipse.persistence.testing.oxm.descriptor.rootelement.MailingAddress
 public class RootElementIdentifiedByNamespaceProject extends Project {
 
   private final static String EMAIL_PREFIX = "email";
-  private final static String EMAIL_NAMESPACE = "www.oracle.com/some-dir/email.xsd";
+  private final static String EMAIL_NAMESPACE = "www.example.com/some-dir/email.xsd";
   private final static String MAILING_PREFIX = "mailing";
-  private final static String MAILING_NAMESPACE = "www.oracle.com/some-dir/mailing.xsd";
+  private final static String MAILING_NAMESPACE = "www.example.com/some-dir/mailing.xsd";
 
   public RootElementIdentifiedByNamespaceProject() {
     super();

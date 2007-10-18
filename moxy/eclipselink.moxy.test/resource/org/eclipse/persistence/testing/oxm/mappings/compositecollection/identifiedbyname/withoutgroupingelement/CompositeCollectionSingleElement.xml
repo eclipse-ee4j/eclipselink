@@ -1,11 +1,11 @@
 <employee id="123">
 	<email-address>
 		<user-id>jane.doe</user-id>
-		<domain>oracle.com</domain>
+		<domain>example.com</domain>
 	</email-address>
 	<email-address>
 		<user-id>jdoe</user-id>
-		<domain>us.oraclecorp.com</domain>
+		<domain>test.com</domain>
 	</email-address>
 	<mailing-address>
 		<street>1 Any Street</street>

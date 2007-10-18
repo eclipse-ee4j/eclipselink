@@ -17,7 +17,7 @@ public class CompositeObjectNullObjectTests extends XMLMappingTestCases
 {
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositeobject/nulltests/CompositeObjectNullObjectTests.xml";
   private final static int CONTROL_EMPLOYEE_ID = 123;
-	private final static String CONTROL_DOMAIN = "oracle.com";
+	private final static String CONTROL_DOMAIN = "example.com";
   private final static String CONTROL_USER_ID = "jane.doe";
 
 	public CompositeObjectNullObjectTests(String name) throws Exception {

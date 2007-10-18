@@ -42,7 +42,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class XMLMarshallerNoDefaultRootTestCases extends OXTestCase {
     private final static int CONTROL_EMPLOYEE_ID = 123;
     private final static String CONTROL_EMAIL_ADDRESS_USER_ID = "jane.doe";
-    private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "oracle.com";
+    private final static String CONTROL_EMAIL_ADDRESS_DOMAIN = "example.com";
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlmarshaller/Employee.xml";
     private final static String MARSHAL_TO_NODE_RESOURCE = "org/eclipse/persistence/testing/oxm/xmlmarshaller/MarshalToNode.xml";
     private final static String MARSHAL_TO_NODE_RESOURCE_NODEFAULT = "org/eclipse/persistence/testing/oxm/xmlmarshaller/MarshalToNodeNoDefaultRoot.xml";

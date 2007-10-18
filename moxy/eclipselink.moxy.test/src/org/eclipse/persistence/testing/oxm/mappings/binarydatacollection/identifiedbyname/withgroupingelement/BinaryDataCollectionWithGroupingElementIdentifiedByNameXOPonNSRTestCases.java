@@ -36,9 +36,9 @@ import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttac
 public class BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/identifiedbyname/withgroupingelement/BinaryDataCollectionWithGroupElemIdentifiedByNameXOPinNSR.xml";
 
-    //private final static String PHOTO_PATH1 = "http://www.oracle.com/admin/images/ocom/oralogo_small.gif";
-    //private final static String PHOTO_PATH2 = "http://www.oracle.com/admin/images/ocom/oralogo_small.gif";
-    //private final static String PHOTO_PATH3 = "http://www.oracle.com/admin/images/ocom/oralogo_small.gif";
+    //private final static String PHOTO_PATH1 = "http://www.example.com/admin/images/ocom/oralogo_small.gif";
+    //private final static String PHOTO_PATH2 = "http://www.example.com/admin/images/ocom/oralogo_small.gif";
+    //private final static String PHOTO_PATH3 = "http://www.example.com/admin/images/ocom/oralogo_small.gif";
     public BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);

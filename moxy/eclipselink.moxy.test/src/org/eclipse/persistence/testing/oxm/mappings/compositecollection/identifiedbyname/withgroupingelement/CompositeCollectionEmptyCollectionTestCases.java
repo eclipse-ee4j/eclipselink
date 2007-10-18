@@ -21,9 +21,9 @@ public class CompositeCollectionEmptyCollectionTestCases extends XMLMappingTestC
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/identifiedbyname/withgroupingelement/CompositeCollectionEmptyCollection.xml";
   private final static int CONTROL_EMPLOYEE_ID = 123;
   private final static String CONTROL_EMAIL_ADDRESS_1_USER_ID = "jane.doe";
-  private final static String CONTROL_EMAIL_ADDRESS_1_DOMAIN = "oracle.com";
+  private final static String CONTROL_EMAIL_ADDRESS_1_DOMAIN = "example.com";
   private final static String CONTROL_EMAIL_ADDRESS_2_USER_ID = "jdoe";
-  private final static String CONTROL_EMAIL_ADDRESS_2_DOMAIN = "us.oraclecorp.com";
+  private final static String CONTROL_EMAIL_ADDRESS_2_DOMAIN = "test.com";
 
   public CompositeCollectionEmptyCollectionTestCases(String name) throws Exception {
     super(name);

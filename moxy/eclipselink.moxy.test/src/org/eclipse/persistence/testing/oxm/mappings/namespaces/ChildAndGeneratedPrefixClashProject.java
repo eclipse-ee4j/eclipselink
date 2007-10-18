@@ -42,7 +42,7 @@ public class ChildAndGeneratedPrefixClashProject extends org.eclipse.persistence
         xmlDescriptor.addMapping(companiesMapping);
 
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("aaa", "http://www.oracle.com/aaa");        
+        nsResolver.put("aaa", "http://www.example.com/aaa");        
         
         xmlDescriptor.setNamespaceResolver(nsResolver);
 
@@ -67,7 +67,7 @@ public class ChildAndGeneratedPrefixClashProject extends org.eclipse.persistence
         xmlDescriptor.addMapping(departmentsMapping);
 
         NamespaceResolver nsResolver = new NamespaceResolver();        
-        nsResolver.put("aaa", "http://www.oracle.com/aaa");          
+        nsResolver.put("aaa", "http://www.example.com/aaa");          
         xmlDescriptor.setNamespaceResolver(nsResolver);
 
        XMLSchemaClassPathReference ref = new XMLSchemaClassPathReference();
@@ -97,7 +97,7 @@ public class ChildAndGeneratedPrefixClashProject extends org.eclipse.persistence
         xmlDescriptor.addMapping(teamsMapping);
       
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("aaa", "http://www.oracle.com/aaa");        
+        nsResolver.put("aaa", "http://www.example.com/aaa");        
         xmlDescriptor.setNamespaceResolver(nsResolver);
         
          XMLSchemaClassPathReference ref = new XMLSchemaClassPathReference();
@@ -124,9 +124,9 @@ public class ChildAndGeneratedPrefixClashProject extends org.eclipse.persistence
         xmlDescriptor.setSchemaReference(ref);
       
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("aaa", "http://www.oracle.com/aaa");        
-        nsResolver.put("ns0", "http://www.oracle.com/teamNS0");        
-        nsResolver.put("ns1", "http://www.oracle.com/teamNS1");        
+        nsResolver.put("aaa", "http://www.example.com/aaa");        
+        nsResolver.put("ns0", "http://www.example.com/teamNS0");        
+        nsResolver.put("ns1", "http://www.example.com/teamNS1");        
         xmlDescriptor.setNamespaceResolver(nsResolver);
         return xmlDescriptor;
     }
