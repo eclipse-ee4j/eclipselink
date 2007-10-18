@@ -10,6 +10,8 @@
 package org.eclipse.persistence.testing.sdo.model;
 
 import junit.framework.*;
+
+import org.eclipse.persistence.testing.sdo.model.datagraph.SDODataGraphTestSuite;
 import org.eclipse.persistence.testing.sdo.model.dataobject.SDODataObjectTestSuite;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.testing.sdo.helper.typehelper.SDOTypeHelperTestSuite;
@@ -35,6 +37,7 @@ public class SDOModelTestSuite extends TestCase {
         TestSuite suite = new TestSuite("All Helper Tests");
         suite.addTest(new SDODataObjectTestSuite().suite());
         suite.addTest(new SDOTypeTestSuite().suite());
+        suite.addTest(new SDODataGraphTestSuite().suite());
         return suite;
     }
 }
