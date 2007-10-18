@@ -6,16 +6,15 @@
   <!-- all -->
   <target name="all" depends="package, package.src" description="build EclipseLink jar"/>
 
-	<!-- package -->
-  <target name="package" description="build EclipseLink jar">
-    <ant antfile="${eclipselink.core}/build.xml" target="all"/>
-    <ant antfile="${eclipselink.extension.oracle}/build.xml" target="all"/>
-    <ant antfile="${eclipselink.jpa}/build.xml" target="all"/>
-    <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
-    <ant antfile="${eclipselink.extension.oracle.test}/build.xml" target="all"/>
-    <ant antfile="${eclipselink.jpa.test}/build.xml" target="all"/>
-    <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
-    <ant antfile="${eclipselink.sdo}/build.xml" target="all"/>
+    <target name="package" description="build EclipseLink jar">
+        <ant antfile="${eclipselink.core}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.extension.oracle}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.jpa}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.jpa.test}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.extension.oracle.test}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.sdo}/build.xml" target="all"/>
 
     <jar jarfile="${eclipselink.jar}"
       manifest="${eclipselink.core}/${resource.dir}/META-INF/manifest.mf">
