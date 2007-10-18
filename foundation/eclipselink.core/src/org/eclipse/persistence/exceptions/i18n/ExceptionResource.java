@@ -20,7 +20,7 @@ package org.eclipse.persistence.exceptions.i18n;
 public class ExceptionResource extends java.util.ListResourceBundle {
     static final Object[][] contents = {
                                            { "NoExceptionTranslationForThisLocale", "(There is no English translation for this exception.) {0}" },
-                                           { "ExceptionHeader", "Exception [TOPLINK-" },
+                                           { "ExceptionHeader", "Exception [EclipseLink-" },
                                            { "DescriptionHeader", "Exception Description: " },
                                            { "InternalExceptionHeader", "Internal Exception: " },
                                            { "TargetInvocationExceptionHeader", "Target Invocation Exception: " },
