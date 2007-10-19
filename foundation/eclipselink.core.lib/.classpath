@@ -12,6 +12,5 @@
 	<classpathentry exported="true" kind="lib" path="jta.jar" sourcepath="jta-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="mail.jar"/>
 	<classpathentry exported="true" kind="lib" path="persistence.jar" sourcepath="persistence-src.zip"/>
-	<classpathentry kind="var" path="ANT_LIB"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
