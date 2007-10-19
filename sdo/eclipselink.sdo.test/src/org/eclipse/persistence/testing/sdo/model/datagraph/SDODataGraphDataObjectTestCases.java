@@ -13,7 +13,6 @@ package org.eclipse.persistence.testing.sdo.model.datagraph;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataGraph;
 import org.eclipse.persistence.sdo.SDOProperty;
