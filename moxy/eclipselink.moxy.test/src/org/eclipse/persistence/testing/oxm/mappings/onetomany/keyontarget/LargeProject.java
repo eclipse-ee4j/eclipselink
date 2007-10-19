@@ -21,7 +21,7 @@ public class LargeProject extends Project{
     }
 
 	public void setBudget(float newBudget){
-	    budget = budget;
+	    budget = newBudget;
     }
     
     public String toString()
