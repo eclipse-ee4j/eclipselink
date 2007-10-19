@@ -45,9 +45,9 @@ public class SDODataGraphDataObjectBackPointerTest extends SDODataGraphDataObjec
     	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(new HashMap<QName, String>());
     	registerTypes();
     	List<Type> types = getTypesToGenerateFrom();
-        String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
+        ((SDOXSDHelper)xsdHelper).generate(types, resolver);
         //log(generatedSchema);
-    	dataGraph.createRootObject(URINAME, COMPANY_TYPENAME);//aDataObject.getType());
+    	dataGraph.createRootObject(URINAME, COMPANY_TYPENAME);
     	DataObject aWrappedDO = dataGraph.getRootObject();
     	assertNotNull(aWrappedDO);
     	// TODO
@@ -64,7 +64,6 @@ public class SDODataGraphDataObjectBackPointerTest extends SDODataGraphDataObjec
     	DataObject ncItem1DO = (DataObject)(porder1DO).get("item[1]");
     	DataObject detachedDO = ncItem1DO;
     	ncItem1DO.detach();
-
     	
     	ListWrapper pOrdersDGList = (ListWrapper)dgDO.getList(PO_PATH); 
     	int poSizeDG =  pOrdersDGList.size();
@@ -82,14 +81,13 @@ public class SDODataGraphDataObjectBackPointerTest extends SDODataGraphDataObjec
 
     	// Check that the CS is not set on all nodes including non-containment ones
     	assertNull(ncItem1DO.getChangeSummary());
-    	
     }
     
     public void testAddDOwithMixedContainmentNonContainmentWithoutCStoDGwithCS() {
     	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(new HashMap<QName, String>());
     	registerTypes();
     	List<Type> types = getTypesToGenerateFrom();
-        String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
+        ((SDOXSDHelper)xsdHelper).generate(types, resolver);
         //log(generatedSchema);
     	DataObject aDataObject = createRootObject(types);
     	dataGraph.createRootObject(aDataObject.getType());
@@ -131,10 +129,6 @@ public class SDODataGraphDataObjectBackPointerTest extends SDODataGraphDataObjec
     	copyPreOrderList.contains(copyPOitem1);
     	copyPreOrderList.contains(copyPOitem2);
 
-//    	for(DataObject aDO : copyPreOrderList) {
-//    		assertEquals(dataGraph, aDO.getDataGraph()); // Check containment=true|false nodes
-//    	}
-    	
     	assertNotNull(copyPOshipTo.getDataGraph());
     	assertNotNull(copyPObillTo.getDataGraph());
     	// item property is unidirectional or containment=false - still in the dataGraph in this case
@@ -143,16 +137,15 @@ public class SDODataGraphDataObjectBackPointerTest extends SDODataGraphDataObjec
     	
     	// Check that the CS is set on all nodes including non-containment ones
     	assertNotNull(copyPOitem1.getChangeSummary());
-    	
     }
 
     public void testDetachDOwithMixedContainmentNonContainmentWithoutCStoDGwithCS() {
     	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(new HashMap<QName, String>());
     	registerTypes();
     	List<Type> types = getTypesToGenerateFrom();
-        String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
+        ((SDOXSDHelper)xsdHelper).generate(types, resolver);
         //log(generatedSchema);
-    	dataGraph.createRootObject(URINAME, COMPANY_TYPENAME);//aDataObject.getType());
+    	dataGraph.createRootObject(URINAME, COMPANY_TYPENAME);
     	DataObject aWrappedDO = dataGraph.getRootObject();
     	assertNotNull(aWrappedDO);
     	// TODO
@@ -166,7 +159,6 @@ public class SDODataGraphDataObjectBackPointerTest extends SDODataGraphDataObjec
     	// Detach DO    	
     	DataObject detachedDO = (DataObject)pOrders.get(0);
     	detachedDO.detach();
-
     	
     	ListWrapper pOrdersDGList = (ListWrapper)dgDO.getList(PO_PATH); 
     	int poSizeDG =  pOrdersDGList.size();
@@ -177,16 +169,6 @@ public class SDODataGraphDataObjectBackPointerTest extends SDODataGraphDataObjec
     	DataObject copyPObillTo = (DataObject)detachedDO.get("billTo");
     	DataObject copyPOitem1 = (DataObject)detachedDO.get("item[1]");
     	DataObject copyPOitem2 = (DataObject)detachedDO.get("item[2]");
-/*    	
-    	// Check dataGraph back pointers recursively (containment only)
-    	List<DataObject> copyPreOrderList = preOrderTraversalDataObjectList(detachedDO);
-    	assertNotNull(copyPreOrderList);
-    	assertEquals(5, copyPreOrderList.size());
-    	copyPreOrderList.contains(copyPOshipTo);
-    	copyPreOrderList.contains(copyPObillTo);
-    	copyPreOrderList.contains(copyPOitem1);
-    	copyPreOrderList.contains(copyPOitem2);
-*/
     	assertNull(copyPOshipTo.getDataGraph());
     	assertNull(copyPObillTo.getDataGraph());
     	/**
@@ -198,16 +180,15 @@ public class SDODataGraphDataObjectBackPointerTest extends SDODataGraphDataObjec
 
     	// Check that the CS is not set on all nodes including non-containment ones
     	assertNull(copyPOitem1.getChangeSummary());
-    	
     }
 
     public void testDeleteDOwithMixedContainmentNonContainmentWithoutCStoDGwithCS() {
     	DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(new HashMap<QName, String>());
     	registerTypes();
     	List<Type> types = getTypesToGenerateFrom();
-        String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
+        ((SDOXSDHelper)xsdHelper).generate(types, resolver);
         //log(generatedSchema);
-    	dataGraph.createRootObject(URINAME, COMPANY_TYPENAME);//aDataObject.getType());
+    	dataGraph.createRootObject(URINAME, COMPANY_TYPENAME);
     	DataObject aWrappedDO = dataGraph.getRootObject();
     	assertNotNull(aWrappedDO);
     	// TODO
@@ -227,23 +208,12 @@ public class SDODataGraphDataObjectBackPointerTest extends SDODataGraphDataObjec
 
     	// Delete DO    	
     	detachedDO.delete();
-
     	
     	ListWrapper pOrdersDGList = (ListWrapper)dgDO.getList(PO_PATH); 
     	int poSizeDG =  pOrdersDGList.size();
     	assertEquals(poSize - 1, poSizeDG);
     	
     	assertEquals(null, detachedDO.getDataGraph());
-/*    	
-    	// Check dataGraph back pointers recursively (containment only)
-    	List<DataObject> copyPreOrderList = preOrderTraversalDataObjectList(detachedDO);
-    	assertNotNull(copyPreOrderList);
-    	assertEquals(5, copyPreOrderList.size());
-    	copyPreOrderList.contains(copyPOshipTo);
-    	copyPreOrderList.contains(copyPObillTo);
-    	copyPreOrderList.contains(copyPOitem1);
-    	copyPreOrderList.contains(copyPOitem2);
-*/
     	assertNull(copyPOshipTo.getDataGraph());
     	assertNull(copyPObillTo.getDataGraph());
     	/**
@@ -255,7 +225,6 @@ public class SDODataGraphDataObjectBackPointerTest extends SDODataGraphDataObjec
 
     	// Check that the CS is not set on all nodes including non-containment ones
     	assertNull(copyPOitem1.getChangeSummary());
-    	
     }
 
     public void testUnsetDOwithMixedContainmentNonContainmentWithoutCStoDGwithCS() {
@@ -288,16 +257,7 @@ public class SDODataGraphDataObjectBackPointerTest extends SDODataGraphDataObjec
     	DataObject copyPObillTo = (DataObject)detachedDO.get("billTo");
     	DataObject copyPOitem1 = (DataObject)detachedDO.get("item[1]");
     	DataObject copyPOitem2 = (DataObject)detachedDO.get("item[2]");
-/*    	
-    	// Check dataGraph back pointers recursively (containment only)
-    	List<DataObject> copyPreOrderList = preOrderTraversalDataObjectList(detachedDO);
-    	assertNotNull(copyPreOrderList);
-    	assertEquals(5, copyPreOrderList.size());
-    	copyPreOrderList.contains(copyPOshipTo);
-    	copyPreOrderList.contains(copyPObillTo);
-    	copyPreOrderList.contains(copyPOitem1);
-    	copyPreOrderList.contains(copyPOitem2);
-*/
+
     	assertNull(copyPOshipTo.getDataGraph());
     	assertNull(copyPObillTo.getDataGraph());
     	/**
@@ -309,24 +269,12 @@ public class SDODataGraphDataObjectBackPointerTest extends SDODataGraphDataObjec
 
     	// Check that the CS is not set on all nodes including non-containment ones
     	assertNull(copyPOitem1.getChangeSummary());
-    	
     }
     
-    public void testDeleteFromDataGraph() {
-    	
-    }
-
-    public void testDetachFromDataGraph() {
-    	
-    }
-
-    public void testUnsetFromDataGraph() {
-    	
-    }
-
-    public void testMoveBetweenDataGraphsUsingSet() {
-    	
-    }
+    //public void testDeleteFromDataGraph() {    }
+    //public void testDetachFromDataGraph() {    }
+    //public void testUnsetFromDataGraph() {    }
+    //public void testMoveBetweenDataGraphsUsingSet() {    }
     
     
     /**
@@ -365,30 +313,12 @@ public class SDODataGraphDataObjectBackPointerTest extends SDODataGraphDataObjec
      * cs=1						cs=n (multiple)	: add DO (with multi-cs) child to DG (with cs)	: cs(s) not merged with DG cs - exception
      * 
      */
-    public void testAddChildDOwithoutCStoDGwithoutCS() {
-    	// Add a new PO to the company
-    	
-    }
-
-    public void testAddChildDOwith1CStoDGwithoutCS() {
-    	
-    }
-
-    public void testAddChildDOwithMulitpleCStoDGwithoutCS() {
-    	
-    }
-    
-    public void testAddChildDOwithoutCStoDGwithCS() {
-    	
-    }
-    
-    public void testAddChildDOwith1CStoDGwithCS() {
-    	
-    }
-    
-    public void testAddChildDOwithMulipleCStoDGwithCS() {
-    	
-    }
+    //public void testAddChildDOwithoutCStoDGwithoutCS() {   }   	
+    //public void testAddChildDOwith1CStoDGwithoutCS() {    }
+    //public void testAddChildDOwithMulitpleCStoDGwithoutCS() {    }
+    //public void testAddChildDOwithoutCStoDGwithCS() {    }
+    //public void testAddChildDOwith1CStoDGwithCS() {    }
+    //public void testAddChildDOwithMulipleCStoDGwithCS() {    }
 
     /**
      * Perform all operations where isContainment() check is performed in SDODataObject - but with the DO inside a DG 
@@ -396,10 +326,8 @@ public class SDODataGraphDataObjectBackPointerTest extends SDODataGraphDataObjec
      */
     
     public static void main(String[] args) {
-        String[] arguments = { "-c", "oracle.sdo.testing.model.datagraph.SDODataGraphDataObjectBackPointerTest" };
+        String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.datagraph.SDODataGraphDataObjectBackPointerTest" };
         TestRunner.main(arguments);
     }
-
-
     
 }
