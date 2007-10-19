@@ -17,8 +17,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.activation.DataHandler;
-import javax.mail.internet.MimeMultipart;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
@@ -55,6 +53,9 @@ import org.eclipse.persistence.oxm.XMLConstants;
  * @since Oracle TopLink 11.1.1.0.0
  */
 public class AnnotationsProcessor {
+    private static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
+    private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
+
     private ArrayList<JavaClass> typeInfoClasses; 
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
     private HashMap<String, MarshalCallback> marshalCallbacks;
@@ -354,10 +355,10 @@ public class AnnotationsProcessor {
                     property.setGenericType(helper.getGenericType(nextField));
                     property.setPropertyName(nextField.getName());
 
-                    if (helper.isAnnotationPresent(property.getElement(), XmlAttachmentRef.class) && areEquals(ptype, DataHandler.class)) {
+                    if (helper.isAnnotationPresent(property.getElement(), XmlAttachmentRef.class) && areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER)) {
                         property.setIsSwaAttachmentRef(true);
                         property.setSchemaType(XMLConstants.SWA_REF_QNAME);
-                    } else if (areEquals(ptype, DataHandler.class) || areEquals(ptype, byte[].class) || areEquals(ptype, Byte[].class) || areEquals(ptype, Image.class) || areEquals(ptype, Source.class) || areEquals(ptype, MimeMultipart.class)) {
+                    } else if (areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(ptype, byte[].class) || areEquals(ptype, Byte[].class) || areEquals(ptype, Image.class) || areEquals(ptype, Source.class) || areEquals(ptype, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
                         property.setIsMtomAttachment(true);
                         property.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
                     }
@@ -397,6 +398,20 @@ public class AnnotationsProcessor {
         return src.getRawName().equals(tgt.getCanonicalName());
     }
 
+    /**
+     * Compares a JavaModel JavaClass to a Class.  Equality is based on
+     * the raw name of the JavaClass compared to the canonical
+     * name of the Class.
+     * 
+     * @param src
+     * @param tgt
+     * @return
+     */
+    protected boolean areEquals(JavaClass src, String tgtCanonicalName) {
+        if (src == null || tgtCanonicalName == null) { return false; }
+        return src.getRawName().equals(tgtCanonicalName);
+    }
+    
     public ArrayList<TypeProperty> getPropertyPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
         ArrayList properties = new ArrayList();
         if (cls == null) { return properties; }
@@ -465,10 +480,10 @@ public class AnnotationsProcessor {
                 QName schemaTypeQname = new QName(XMLConstants.SCHEMA_INSTANCE_URL, schemaType.name());
                 property.setSchemaType(schemaTypeQname);
             }            
-            if (helper.isAnnotationPresent(property.getElement(), XmlAttachmentRef.class) && areEquals(ptype, DataHandler.class)) {
+            if (helper.isAnnotationPresent(property.getElement(), XmlAttachmentRef.class) && areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER)) {
                 property.setIsSwaAttachmentRef(true);
                 property.setSchemaType(XMLConstants.SWA_REF_QNAME);
-            } else if (areEquals(ptype, DataHandler.class) || areEquals(ptype, byte[].class) || areEquals(ptype, Byte[].class) || areEquals(ptype, Image.class) || areEquals(ptype, Source.class) || areEquals(ptype, MimeMultipart.class)) {
+            } else if (areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(ptype, byte[].class) || areEquals(ptype, Byte[].class) || areEquals(ptype, Image.class) || areEquals(ptype, Source.class) || areEquals(ptype, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
                 property.setIsMtomAttachment(true);
                 property.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
             }
