@@ -41,7 +41,6 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
-import commonj.sdo.helper.XSDHelper;
 
 /**
  * <p><b>Purpose</b>: Called from XSDHelper define methods to generate SDO Types from a Schema
