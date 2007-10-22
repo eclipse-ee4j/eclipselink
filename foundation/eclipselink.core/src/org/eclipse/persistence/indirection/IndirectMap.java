@@ -35,7 +35,7 @@ import org.eclipse.persistence.descriptors.changetracking.*;
 public class IndirectMap extends Hashtable implements CollectionChangeTracker, IndirectCollection {
 
     /** Reduce type casting */
-    protected Hashtable delegate;
+    protected volatile Hashtable delegate;
 
     /** Delegate indirection behavior to a value holder */
     protected ValueHolderInterface valueHolder;

@@ -37,7 +37,7 @@ import org.eclipse.persistence.descriptors.changetracking.*;
 public class IndirectList extends Vector implements CollectionChangeTracker, IndirectCollection {
 
     /** Reduce type casting. */
-    protected Vector delegate;
+    protected volatile Vector delegate;
 
     /** Delegate indirection behavior to a value holder. */
     protected ValueHolderInterface valueHolder;

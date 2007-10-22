@@ -74,7 +74,7 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollection, Cloneable, Serializable {
 
     /** Reduce type casting */
-    private Set delegate;
+    private volatile Set delegate;
 
     /** Delegate indirection behavior to a value holder */
     private ValueHolderInterface valueHolder;
