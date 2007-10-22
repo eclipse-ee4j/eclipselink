@@ -13,7 +13,7 @@ set JVM_ARGS=-Xmx256m
 set _FIXPATH=
 call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
-set CLASSPATH=%THIS%..\jlib\moxy\jsr173_api.jar
+set CLASSPATH=%THIS%..\jlib\moxy\jsr173_1.0_api.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-api.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\activation.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-impl.jar

@@ -116,7 +116,10 @@
       
       <!-- jaxb-compiler scripts -->
       <zipfileset dir="${eclipselink.moxy.bin}" includes="${jaxb-compiler-scripts}" prefix="bin"/>
-      
+
+      <!-- sdo-compiler scripts -->
+      <zipfileset dir="${eclipselink.sdo.bin}" includes="${sdo-compiler-scripts}" prefix="bin"/>
+	  
       <!-- package-rename.properties -->
       <zipfileset dir="${eclipselink.util.rename.utility.resource}" includes="${package-rename.properties}" fullpath="config/package-rename.properties"/>
         
@@ -132,8 +135,9 @@
       
     	<!-- moxy jar's and zips -->  
     	<zipfileset dir="${eclipselink.core.lib}/" prefix="jlib/moxy">
-    	  <include name="${activiation.jar}"/>
+    	  <include name="${activation.jar}"/>
     	  <include name="${mail.jar}"/>
+		  <include name="${jsr173_1.0_api.jar}"/>
     	</zipfileset>
     	
       <!-- moxy jar's and zips -->  
@@ -141,10 +145,9 @@
         <include name="${jaxb-api.jar}"/>
         <include name="${jaxb-xjc.jar}"/>
         <include name="${jaxb-impl.jar}"/>
-        <include name="${jsr173_1.0_api.jar}"/>
        </zipfileset>
     	
-      <!-- grab the jdo persistence jar -->  
+      <!-- grab the sdo jar -->  
       <zipfileset dir="${eclipselink.sdo.lib}/" includes="${commonj-sdo.jar}" prefix="jlib/sdo"/>
       
     </zip>
