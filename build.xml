@@ -43,7 +43,7 @@
       </fileset>
       <fileset dir="${eclipselink.sdo}/${classes.dir}">
         <include name="org/eclipse/persistence/**/*.class"/>
-		<include name="commonj/sdo/impl/*.class"/>
+		<include name="commonj/sdo/impl/HelperProviderImpl.class"/>
       </fileset>
     </jar>
   </target>
@@ -65,7 +65,7 @@
           </fileset>
           <fileset dir="${eclipselink.sdo}/${src.dir}">
               <include name="org/eclipse/persistence/**/*.java"/>
-              <include name="commonj/sdo/impl/*.java"/>
+              <include name="commonj/sdo/impl/HelperProviderImpl.java"/>
           </fileset>
       </zip>
     </target>
