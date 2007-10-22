@@ -110,15 +110,15 @@ public class InstantiationPolicy implements Cloneable, Serializable {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor(this.getDefaultConstructor(), (Object[])null));
+                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor(getDefaultConstructor(), (Object[])null));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof InvocationTargetException){
-                        throw DescriptorException.targetInvocationWhileConstructorInstantiationOfFactory(this.getDescriptor(), throwableException);
+                        throw DescriptorException.targetInvocationWhileConstructorInstantiation(getDescriptor(), throwableException);
                     } else if (throwableException instanceof IllegalAccessException){
-                        throw DescriptorException.illegalAccessWhileConstructorInstantiationOfFactory(this.getDescriptor(), throwableException);                    
+                        throw DescriptorException.illegalAccessWhileConstructorInstantiation(getDescriptor(), throwableException);                    
                     } else {
-                        throw DescriptorException.instantiationWhileConstructorInstantiationOfFactory(this.getDescriptor(), throwableException);                       
+                        throw DescriptorException.instantiationWhileConstructorInstantiation(getDescriptor(), throwableException);                       
                     }
                  }
             } else {
@@ -129,17 +129,17 @@ public class InstantiationPolicy implements Cloneable, Serializable {
                 return this.defaultConstructor.newInstance((Object[])null);
             }
         } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileConstructorInstantiation(this.getDescriptor(), exception);
+            throw DescriptorException.targetInvocationWhileConstructorInstantiation(getDescriptor(), exception);
         } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileConstructorInstantiation(this.getDescriptor(), exception);
+            throw DescriptorException.illegalAccessWhileConstructorInstantiation(getDescriptor(), exception);
         } catch (InstantiationException exception) {
-            throw DescriptorException.instantiationWhileConstructorInstantiation(this.getDescriptor(), exception);
+            throw DescriptorException.instantiationWhileConstructorInstantiation(getDescriptor(), exception);
         } catch (NoSuchMethodError exception) {
             // This exception is not documented but gets thrown.
-            throw DescriptorException.noSuchMethodWhileConstructorInstantiation(this.getDescriptor(), exception);
+            throw DescriptorException.noSuchMethodWhileConstructorInstantiation(getDescriptor(), exception);
         } catch (NullPointerException exception) {
             // Some JVMs will throw a NULL pointer exception here
-            throw DescriptorException.nullPointerWhileConstructorInstantiation(this.getDescriptor(), exception);
+            throw DescriptorException.nullPointerWhileConstructorInstantiation(getDescriptor(), exception);
         }
     }
 
@@ -152,22 +152,22 @@ public class InstantiationPolicy implements Cloneable, Serializable {
             // If the method is static, the first argument is ignored and can be null
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(this.getMethod(), this.getFactory(), new Object[0]));
+                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod(), getFactory(), new Object[0]));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof IllegalAccessException) {
-                        throw DescriptorException.illegalAccessWhileMethodInstantiation(this.getMethod().toString(), this.getDescriptor(), throwableException);
+                        throw DescriptorException.illegalAccessWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), throwableException);
                     } else {
-                        throw DescriptorException.targetInvocationWhileMethodInstantiation(this.getMethod().toString(), this.getDescriptor(), throwableException);
+                        throw DescriptorException.targetInvocationWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), throwableException);
                     }
                 }
             } else {
-                return PrivilegedAccessHelper.invokeMethod(this.getMethod(), this.getFactory(), new Object[0]);
+                return PrivilegedAccessHelper.invokeMethod(getMethod(), getFactory(), new Object[0]);
             }
         } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileMethodInstantiation(this.getMethod().toString(), this.getDescriptor(), exception);
+            throw DescriptorException.illegalAccessWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), exception);
         } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileMethodInstantiation(this.getMethod().toString(), this.getDescriptor(), exception);
+            throw DescriptorException.targetInvocationWhileMethodInstantiation(getMethod().toString(), this.getDescriptor(), exception);
         } catch (NullPointerException exception) {
             // Some JVMs will throw a NULL pointer exception here
             throw DescriptorException.nullPointerWhileMethodInstantiation(this.getMethod().toString(), this.getDescriptor(), exception);
@@ -300,32 +300,32 @@ public class InstantiationPolicy implements Cloneable, Serializable {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor(this.buildFactoryDefaultConstructor(), (Object[])null));
+                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor(buildFactoryDefaultConstructor(), (Object[])null));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof InvocationTargetException){
-                        throw DescriptorException.targetInvocationWhileConstructorInstantiationOfFactory(this.getDescriptor(), throwableException);
+                        throw DescriptorException.targetInvocationWhileConstructorInstantiationOfFactory(getDescriptor(), throwableException);
                     } else if (throwableException instanceof IllegalAccessException){
-                        throw DescriptorException.illegalAccessWhileConstructorInstantiationOfFactory(this.getDescriptor(), throwableException);                    
+                        throw DescriptorException.illegalAccessWhileConstructorInstantiationOfFactory(getDescriptor(), throwableException);
                     } else {
-                        throw DescriptorException.instantiationWhileConstructorInstantiationOfFactory(this.getDescriptor(), throwableException);                       
+                        throw DescriptorException.instantiationWhileConstructorInstantiationOfFactory(getDescriptor(), throwableException);
                     }
                  }
             } else {
-                return PrivilegedAccessHelper.invokeConstructor(this.buildFactoryDefaultConstructor(), (Object[])null);
+                return PrivilegedAccessHelper.invokeConstructor(buildFactoryDefaultConstructor(), (Object[])null);
             }
         } catch (InvocationTargetException exception) {
-            throw DescriptorException.targetInvocationWhileConstructorInstantiationOfFactory(this.getDescriptor(), exception);
+            throw DescriptorException.targetInvocationWhileConstructorInstantiationOfFactory(getDescriptor(), exception);
         } catch (IllegalAccessException exception) {
-            throw DescriptorException.illegalAccessWhileConstructorInstantiationOfFactory(this.getDescriptor(), exception);
+            throw DescriptorException.illegalAccessWhileConstructorInstantiationOfFactory(getDescriptor(), exception);
         } catch (InstantiationException exception) {
-            throw DescriptorException.instantiationWhileConstructorInstantiationOfFactory(this.getDescriptor(), exception);
+            throw DescriptorException.instantiationWhileConstructorInstantiationOfFactory(getDescriptor(), exception);
         } catch (NoSuchMethodError exception) {
             // This exception is not documented but gets thrown.
-            throw DescriptorException.noSuchMethodWhileConstructorInstantiationOfFactory(this.getDescriptor(), exception);
+            throw DescriptorException.noSuchMethodWhileConstructorInstantiationOfFactory(getDescriptor(), exception);
         } catch (NullPointerException exception) {
             // Some JVMs will throw a NULL pointer exception here
-            throw DescriptorException.nullPointerWhileConstructorInstantiationOfFactory(this.getDescriptor(), exception);
+            throw DescriptorException.nullPointerWhileConstructorInstantiationOfFactory(getDescriptor(), exception);
         }
     }
 
