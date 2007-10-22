@@ -302,10 +302,15 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * INTERNAL:
      * Check whether the contents have been read from the database.
      * If they have not, read them and set the delegate.
+     * This method used to be synchronized, which caused deadlock.
      */
-    protected synchronized Hashtable getDelegate() {
+    protected Hashtable getDelegate() {
         if (delegate == null) {
-            delegate = this.buildDelegate();
+            synchronized(this){
+                if (delegate == null) {
+                    delegate = this.buildDelegate();
+                }
+            }
         }
         return delegate;
     }
@@ -334,17 +339,22 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
          return changeListener;
      }
     
-    /**
-     * PUBLIC:
-     * Return the valueHolder.
-     */
-    public synchronized ValueHolderInterface getValueHolder() {
-        // PERF: lazy initialize value holder and vector as are normally set after creation.
-        if (valueHolder == null) {
-            valueHolder = new ValueHolder(new Hashtable(initialCapacity, loadFactor));
-        }
-        return valueHolder;
-    }
+     /**
+      * PUBLIC:
+      * Return the valueHolder.
+      * This method used to be synchronized, which caused deadlock.
+      */
+     public ValueHolderInterface getValueHolder() {
+         // PERF: lazy initialize value holder and vector as are normally set after creation.
+         if (valueHolder == null) {
+             synchronized(this){
+                 if (valueHolder == null) {
+                     valueHolder = new ValueHolder(new Hashtable(initialCapacity, loadFactor));
+                 }
+             }
+         }
+         return valueHolder;
+     }
 
     /**
      * @see java.util.Hashtable#hashCode()

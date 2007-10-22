@@ -336,7 +336,11 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
      */
     protected Set getDelegate() {
         if (delegate == null) {
-            delegate = this.buildDelegate();
+            synchronized(this){
+                if (delegate == null) {
+                    delegate = this.buildDelegate();
+                }
+            }
         }
         return delegate;
     }
@@ -357,7 +361,11 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
     public ValueHolderInterface getValueHolder() {
         // PERF: lazy initialize value holder and vector as are normally set after creation.
         if (valueHolder == null) {
-            valueHolder = new ValueHolder(new HashSet(initialCapacity, loadFactor));
+            synchronized(this){
+                if (valueHolder == null) {
+                    valueHolder = new ValueHolder(new HashSet(initialCapacity, loadFactor));
+                }
+            }
         }
         return valueHolder;
     }
