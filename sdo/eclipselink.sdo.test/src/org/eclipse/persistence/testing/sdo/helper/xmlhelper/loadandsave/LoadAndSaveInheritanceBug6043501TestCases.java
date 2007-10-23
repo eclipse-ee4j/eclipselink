@@ -84,7 +84,7 @@ public class LoadAndSaveInheritanceBug6043501TestCases extends LoadAndSaveTestCa
     }
 
     protected String getSchemaLocation() {
-        return "file:./org/eclipse/persistence/testing/sdo/schemas/";
+        return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/schemas/";
     }
 
     public void registerTypes() {

@@ -123,7 +123,7 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
     }
 
     protected String getSchemaLocation() {
-        return "file:./org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderbooking/";
+        return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderbooking/";
     }
 
     public void registerTypes() {

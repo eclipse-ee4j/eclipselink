@@ -636,7 +636,37 @@ public abstract class SchemaParser {
         }
     }
 
+    /**
+     * Return a Schema for the given Source object.
+     * 
+     * A SchemaResolverWrapper is created to wrap the given SchemaResolver.  The wrapper
+     * will prevent schemas from being processed multiple times (such as in the case of 
+     * circular includes/imports)
+     * 
+     * This method should not be called recursively if a given schema could potentially
+     * and undesirably be processed multiple times (again, such as in the case of 
+     * circular includes/imports) 
+     * 
+     * @param xsdSource
+     * @param schemaResolver the schema resolver to be used to resolve imports/includes
+     * @return
+     */
     public Schema getSchema(Source xsdSource, SchemaResolver schemaResolver) {
+    	// Create a resolver wrapper that will prevent schemas from being processed
+    	// multiple times (such as in the case of circular includes/imports)
+    	return getSchema(xsdSource, new SchemaResolverWrapper(schemaResolver));
+    }
+    /**
+     * Return a Schema for the given Source object.
+     * 
+     * Since this method is called recursively, and the SchemaResolverWrapper is stateful,
+     * the resolver wrapper must be created outside of this method.
+     *  
+     * @param xsdSource
+     * @param schemaResolverWrapper wraps the schema resolver to be used to resolve imports/includes
+     * @return
+     */
+    public Schema getSchema(Source xsdSource, SchemaResolverWrapper schemaResolverWrapper) {
         try {
             XMLContext context = new XMLContext(getSchemaProject());
             XMLUnmarshaller unmarshaller = context.createUnmarshaller();
@@ -650,9 +680,9 @@ public abstract class SchemaParser {
                 String key = (String)keysIter.next();
                 Import nextImport = (Import)imports.get(key);
 
-                Source referencedSchema = getReferencedSchema(xsdSource, nextImport.getNamespace(), nextImport.getSchemaLocation(), schemaResolver);
+                Source referencedSchema = getReferencedSchema(xsdSource, nextImport.getNamespace(), nextImport.getSchemaLocation(), schemaResolverWrapper);
                 if (referencedSchema != null) {
-                    Schema importedSchema = getSchema(referencedSchema, schemaResolver);
+                    Schema importedSchema = getSchema(referencedSchema, schemaResolverWrapper);
                     nextImport.setSchema(importedSchema);
                 }
             }
@@ -665,9 +695,9 @@ public abstract class SchemaParser {
                 String key = (String)includesIter.next();
                 Include nextInclude = (Include)includes.get(key);
 
-                Source referencedSchema = getReferencedSchema(xsdSource, schema.getTargetNamespace(), nextInclude.getSchemaLocation(), schemaResolver);
+                Source referencedSchema = getReferencedSchema(xsdSource, schema.getTargetNamespace(), nextInclude.getSchemaLocation(), schemaResolverWrapper);
                 if (referencedSchema != null) {
-                    Schema includedSchema = getSchema(referencedSchema, schemaResolver);
+                    Schema includedSchema = getSchema(referencedSchema, schemaResolverWrapper);
                     nextInclude.setSchema(includedSchema);
                 }
             }
@@ -679,11 +709,11 @@ public abstract class SchemaParser {
         }
     }
 
-    private Source getReferencedSchema(Source xsdSource, String namespace, String schemaLocation, SchemaResolver schemaResolver) {
+    private Source getReferencedSchema(Source xsdSource, String namespace, String schemaLocation, SchemaResolverWrapper schemaResolverWrapper) {
         if (namespace.equals(SDOConstants.SDOJAVA_URL) || namespace.equals(SDOConstants.SDO_URL) || namespace.equals(SDOConstants.SDOXML_URL)) {
             return null;
         }
-        return schemaResolver.resolveSchema(xsdSource, namespace, schemaLocation);
+        return schemaResolverWrapper.resolveSchema(xsdSource, namespace, schemaLocation);
     }
 
     public void setSchemaProject(Project schemaProject) {

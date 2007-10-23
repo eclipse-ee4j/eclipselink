@@ -30,7 +30,7 @@ public class DefineWithBuiltInSchemaLocationTestCases extends XSDHelperDefineTes
     }
 
     protected String getSchemaLocation() {
-        return "file:./org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
+        return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
     }
 
     public List getControlTypes() {

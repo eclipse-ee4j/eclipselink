@@ -91,7 +91,7 @@ public class LoadAndSaveAttributeGroupTestCases extends LoadAndSaveTestCases {
     }
 
     protected String getSchemaLocation() {
-        return "file:./org/eclipse/persistence/testing/sdo/helper/xmlhelper/attributegroup/";
+        return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/attributegroup/";
     }
 
     protected String getControlFileName() {

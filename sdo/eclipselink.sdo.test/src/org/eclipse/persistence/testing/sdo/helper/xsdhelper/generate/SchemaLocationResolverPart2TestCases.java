@@ -164,7 +164,7 @@ public class SchemaLocationResolverPart2TestCases extends XSDHelperGenerateTestC
         InputStream is = getSchemaInputStream("org/eclipse/persistence/testing/sdo/schemas/customerPart2.xsd");
 
         //InputStream is = getSchemaInputStream("org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/customer.xsd");        
-        return xsdHelper.define(is, "file:./org/eclipse/persistence/testing/sdo/schemas/");
+        return xsdHelper.define(is, FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/schemas/");
     }
 
     public List getTypesToGenerateFrom() {

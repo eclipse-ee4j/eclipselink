@@ -39,7 +39,7 @@ public class ChangeSummaryModifyBug6346754TestCases extends LoadAndSaveTestCases
     }
 
     protected String getSchemaLocation() {
-        return ("file:./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6346754/");
+        return (FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6346754/");
     }
 
     protected String getControlRootName() {

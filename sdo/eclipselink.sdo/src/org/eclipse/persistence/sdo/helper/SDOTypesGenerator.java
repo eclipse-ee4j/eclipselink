@@ -84,7 +84,7 @@ public class SDOTypesGenerator extends SchemaParser {
         try {
             if (theInclude.getSchema() != null) {
                 SDOTypesGenerator generator = new SDOTypesGenerator(aHelperContext);
-
+                generator.setIsImportProcessor(true);
                 java.util.List includedTypes = generator.define(theInclude.getSchema(), isReturnAllTypes(), isProcessImports());
                 for (int i = 0; i < includedTypes.size(); i++) {
                     Type nextType = (Type)includedTypes.get(i);

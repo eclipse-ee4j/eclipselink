@@ -32,7 +32,7 @@ public class ClassGenWithImportsDontProcessTestCases extends SDOClassGenTestCase
             // File rootDir = new File("./org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/");
             //URL rootURL = rootDir.toURL();
             //TODO: do we need to define types before generating classes???                
-            String schemaLocation = "file:./org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
+            String schemaLocation = FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
             java.util.List types = xsdHelper.define(new StringReader(xsdString), schemaLocation);        
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,7 +53,7 @@ public class ClassGenWithImportsDontProcessTestCases extends SDOClassGenTestCase
         StringReader reader = new StringReader(xsdString);
         org.eclipse.persistence.sdo.helper.DefaultSchemaResolver schemaResolver = new org.eclipse.persistence.sdo.helper.DefaultSchemaResolver();
 
-        String schemaLocation = "file:./org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
+        String schemaLocation = FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
         schemaResolver.setBaseSchemaLocation(schemaLocation);
         //classGenerator.generate(reader, getSourceFolder(), schemaResolver);
         FileCodeWriter fileCodeWriter = new FileCodeWriter();

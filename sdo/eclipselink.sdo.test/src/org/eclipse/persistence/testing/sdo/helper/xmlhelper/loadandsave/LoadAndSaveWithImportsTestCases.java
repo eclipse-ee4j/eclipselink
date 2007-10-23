@@ -47,7 +47,7 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
     }
 
     protected String getSchemaLocation() {
-        return "file:./org/eclipse/persistence/testing/sdo/schemas/";
+        return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/schemas/";
     }
 
     protected String getSchemaName() {

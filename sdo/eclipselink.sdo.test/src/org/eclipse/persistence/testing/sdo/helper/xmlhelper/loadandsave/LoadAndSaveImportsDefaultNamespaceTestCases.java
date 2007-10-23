@@ -74,7 +74,7 @@ public class LoadAndSaveImportsDefaultNamespaceTestCases extends LoadAndSaveTest
     }
 
     protected String getSchemaLocation() {
-        return "file:./org/eclipse/persistence/testing/sdo/helper/xmlhelper/";
+        return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/";
     }
      
     protected List getPackages() {

@@ -55,7 +55,7 @@ public class SDOChangeSummary implements ChangeSummary {
     private List createdXPaths;//for ox mapping
 
     /** The deletedXPaths field is picked up reflectively during marshal/unmarshal operations. */
-    private List deletedXPaths;//for ox mapping     
+    @SuppressWarnings("unused") private List deletedXPaths; //for ox mapping     
     private List modifiedDoms;
     private Map unsetPropsMap;
 

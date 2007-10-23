@@ -74,6 +74,10 @@ public class SDOTestCase extends junit.framework.TestCase {
     public String tempFileDir;
     private XMLComparer xmlComparer;
 
+    protected static final String USER_DIR = System.getProperty("user.dir").replace('\\', '/');
+    protected static final String FILE_PROTOCOL = USER_DIR.startsWith("/")? "file:" : "file:/";
+    protected static final String HTTP_PROTOCOL = "http://";
+    
     public SDOTestCase(String name) {
         super(name);
         xmlComparer = new SDOXMLComparer();

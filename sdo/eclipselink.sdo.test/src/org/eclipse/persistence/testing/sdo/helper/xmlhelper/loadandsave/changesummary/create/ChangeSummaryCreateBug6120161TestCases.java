@@ -42,12 +42,14 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6120161/bug6120161.xml");
     }
+    
     protected String getControlWriteFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6120161/bug6120161Write.xml");
     }
 
+
     protected String getSchemaLocation() {
-        return ("file:./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6120161/");
+        return (FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/bug6120161/");
     }
 
     protected String getControlRootName() {

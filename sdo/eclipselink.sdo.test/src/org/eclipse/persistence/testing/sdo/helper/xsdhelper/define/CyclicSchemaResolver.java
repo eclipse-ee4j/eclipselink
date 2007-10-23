@@ -9,37 +9,35 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.net.URI;
+import java.net.URL;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaResolver;
-import org.eclipse.persistence.sdo.helper.SchemaResolver;
 
 public class CyclicSchemaResolver extends DefaultSchemaResolver {
-    Map processedSchemas;
-
-    public CyclicSchemaResolver() {
-        processedSchemas = new HashMap();
-    }
-
-    public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
-        Object value = processedSchemas.get(namespace);
+	public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
+		if (schemaLocation != null && !schemaLocation.equals("")) {
+			return super.resolveSchema(sourceXSD, namespace, schemaLocation);
+		}
+    	schemaLocation = namespace.equals("uri") ? "Cyclic1.xsd" : "Cyclic2.xsd"; 
+        URL schemaUrl = null;
         try {
-            if (value == null) {
-                //process
-                Source processedSource = super.resolveSchema(sourceXSD, namespace, schemaLocation);
-                processedSchemas.put(namespace, processedSource);
-                return processedSource;
-            } else {
-                //already been processed
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+	        if (getBaseSchemaLocation() != null) {
+            	// Attempt to resolve the schema location against the base location
+                URI baseUri = new URI(getBaseSchemaLocation());
+                URI resolvedUri = baseUri.resolve(schemaLocation);
+                schemaUrl = resolvedUri.toURL();
+	        } else {
+            	schemaUrl = new URL(schemaLocation);
+	        }
+        } catch (Exception e) {        
+            AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "sdo_error_processing_referenced_schema", new Object[] {e.getClass().getName(), namespace, schemaLocation });
+            AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.FINEST, e);
+            return null;
         }
-        return null;
-
+        return new StreamSource(schemaUrl.toExternalForm());
     }
 }

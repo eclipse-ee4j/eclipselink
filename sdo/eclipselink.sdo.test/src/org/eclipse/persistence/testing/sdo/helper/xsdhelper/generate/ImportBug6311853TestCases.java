@@ -77,7 +77,8 @@ public class ImportBug6311853TestCases extends XSDHelperGenerateTestCases {
     public void testGenerateSchemaRoundTrip() throws Exception {
         DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
         FileInputStream is = new FileInputStream(getControlFileName());
-        List types = ((SDOXSDHelper)xsdHelper).define(is, "file:./org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/");
+
+        List types = ((SDOXSDHelper)xsdHelper).define(is, FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/");
         ArrayList firstType = new ArrayList(1);
         firstType.add(typeHelper.getType("my.uri2", "Person"));
         String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(firstType, resolver);
