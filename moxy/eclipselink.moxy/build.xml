@@ -14,6 +14,11 @@
 	<target name="all" depends="clean, compile.core" description="build moxy classes">
 		<javac srcdir="${eclipselink.moxy}/${src.dir}"
 			destdir="${eclipselink.moxy}/${classes.dir}"
+            debug="${javac.debug}" 
+            optimize="${javac.optimize}"
+            source="1.5" 
+            deprecation="${javac.deprecation}"
+            failonerror="true"
 			includes="org/eclipse/persistence/**/*.java">
 			<classpath>
 				<path refid="moxy.compile.path"/>
