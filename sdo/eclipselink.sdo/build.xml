@@ -9,6 +9,11 @@
 	<target name="all" depends="clean, compile.core" description="build sdo classes">
         <javac srcdir="${eclipselink.sdo}/${src.dir}" 
                destdir="${eclipselink.sdo}/${classes.dir}"
+               debug="${javac.debug}" 
+               optimize="${javac.optimize}"
+               source="1.5" 
+               deprecation="${javac.deprecation}"
+               failonerror="true"
                includes="**/*.java"
 			   memoryMaximumSize="512m"
 			   fork="true">
