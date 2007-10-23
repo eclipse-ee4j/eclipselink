@@ -39,6 +39,11 @@
 	<target name="compile.oxm.tests" description="build moxy (oxm) test classes">
 	    <javac srcdir="${eclipselink.moxy.test}/${src.dir}"
 			destdir="${eclipselink.moxy.test}/${classes.dir}"
+            debug="${javac.debug}" 
+            optimize="${javac.optimize}"
+            source="1.5" 
+            deprecation="${javac.deprecation}"
+            failonerror="true"
 			includes="org/eclipse/persistence/testing/oxm/**/*.java">
 			<classpath>
 				<path refid="oxm.compile.path"/>
@@ -48,6 +53,11 @@
 	<target name="compile.jaxb.tests" description="build moxy (jaxb) test classes">
 	     <javac srcdir="${eclipselink.moxy.test}/${src.dir}"
             destdir="${eclipselink.moxy.test}/${classes.dir}"
+            debug="${javac.debug}" 
+            optimize="${javac.optimize}"
+            source="1.5" 
+            deprecation="${javac.deprecation}"
+            failonerror="true"
             includes="org/eclipse/persistence/testing/jaxb/**/*.java">
             <classpath>
                 <path refid="jaxb.compile.path"/>
