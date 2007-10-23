@@ -33,6 +33,11 @@
 	<target name="compile.sdo.tests" depends="clean, compile.sdo" description="build sdo test classes">
 	   <javac srcdir="${eclipselink.sdo.test}/${src.dir}"
               destdir="${eclipselink.sdo.test}/${classes.dir}"
+              debug="${javac.debug}" 
+              optimize="${javac.optimize}"
+              source="1.5" 
+              deprecation="${javac.deprecation}"
+              failonerror="true"
               includes="org/eclipse/persistence/testing/sdo/**/*.java">
 			  <classpath>
                   <path refid="sdo.compile.path"/>
