@@ -23,43 +23,23 @@ import java.util.*;
  * 
  */
 public class MigrateTopLinkToEclipseLink {
-	private static String PROPERTIES_FILE = "migrate-toplink.properties";
-
-	private static List<String> doNotDeleteFiles = new ArrayList<String>();
-	
-	/**
-	 * These filese were modified in creating a sample EclipseLink version. In many cases the full
-	 * functionality is stubbed out with TOD comments and RuntimeException("TODO: ...").
-	 */
-	static {
-		doNotDeleteFiles.add("..\\eclipselink\\src\\org\\eclipse\\persistence\\Version.java");
-		doNotDeleteFiles.add("..\\eclipselink\\src\\org\\eclipse\\persistence\\jpa\\PersistenceProvider.java");
-		doNotDeleteFiles.add("..\\eclipselink\\src\\org\\eclipse\\persistence\\queries\\JPQLCall.java");
-		doNotDeleteFiles.add("..\\eclipselink\\src\\deprecated\\sdk\\SDKDescriptor.java");
-		doNotDeleteFiles.add("..\\eclipselink\\src\\org\\eclipse\\persistence\\tools\\sessionconfiguration\\EclipseLinkSessionsFactory.java");
-		doNotDeleteFiles.add("..\\eclipselink\\src\\org\\eclipse\\persistence\\platform\\server\\wls\\WebLogicPlatform.java");
-		doNotDeleteFiles.add("..\\eclipselink\\src\\org\\eclipse\\persistence\\platform\\server\\wls\\WebLogic_8_1_Platform.java");
-		doNotDeleteFiles.add("..\\eclipselink\\src\\org\\eclipse\\persistence\\platform\\server\\was\\WebSpherePlatform.java");
-		doNotDeleteFiles.add("..\\eclipselink\\src\\org\\eclipse\\persistence\\jaxb\\compiler\\SchemaGenMain.java");
-		
-		doNotDeleteFiles.add("..\\eclipselink\\src\\org\\eclipse\\persistence\\descriptors\\structures\\ObjectRelationalDescriptor");
-
-		// Spring JPA Adapater for EclipseLink
-		doNotDeleteFiles.add("..\\eclipselink\\src\\org\\springframework\\orm\\jpa\\vendor\\EclipseLinkJpaDialect.java");
-		doNotDeleteFiles.add("..\\eclipselink\\src\\org\\springframework\\orm\\jpa\\vendor\\EclipseLinkJpaVendorAdapter.java");
-}
+	private static final String PROPERTIES_FILE = "migrate-toplink.properties";
 
 	public static void main(String[] args) {
-		if (args.length != 2){
-			System.out.println("Usage: MigrateTopLinkToEclipseLink sourceDir targetDir");
+		if (args.length < 2 || args.length > 3){
+			System.out.println("Usage: MigrateTopLinkToEclipseLink sourceDir targetDir (propertiesFile)");
 		}
 		String source = args[0];
 		String target = args[1];
-		new MigrateTopLinkToEclipseLink().migrate(source, target);
+		String propertiesFile = PROPERTIES_FILE;
+		if (args.length == 3){
+			propertiesFile = args[2];
+		}
+		new MigrateTopLinkToEclipseLink().migrate(source, target, propertiesFile);
 	}
 
-	public void migrate(String source, String target) {
-		Properties props = readProperties(PROPERTIES_FILE);
+	public void migrate(String source, String target, String propertiesFile) {
+		Properties props = readProperties(propertiesFile);
 
 		clearTargetFolder(target);
 
@@ -85,8 +65,7 @@ public class MigrateTopLinkToEclipseLink {
 			if (file.isDirectory()) {
 				removeAllJavaFiles(file);
 			} else {
-				if (file.getName().endsWith(".java")
-						&& !doNotDeleteFiles.contains(file.toString())) {
+				if (file.getName().endsWith(".java")) {
 					file.delete();
 				}
 			}
