@@ -3227,7 +3227,9 @@ public class SDODataObject implements DataObject {
             	aDataObject.updateChangeSummaryAndDataGraph(getChangeSummary(), getDataGraph());
             } else {
                 // Recursively set the dataGraph when this level (value) is the CS root n the subtree
-            	aDataObject.updateDataGraph(getDataGraph());
+                if(aDataObject.getDataGraph() != getDataGraph()) {
+                    aDataObject.updateDataGraph(getDataGraph());
+                }
             }
             	
             // add value as a property of (this)
@@ -3406,10 +3408,11 @@ public class SDODataObject implements DataObject {
      * @return
      */
     public Object getPropertyInternal(Property property) {
-        if (property.isOpenContent()) {
+        int index = ((SDOProperty)property).getIndexInType();
+        if (index == -1) {
             return _getCurrentValueStore().getOpenContentProperty(property.getName());
         } else {
-            return _getCurrentValueStore().getDeclaredProperty(((SDOProperty)property).getIndexInType());
+            return _getCurrentValueStore().getDeclaredProperty(index);
         }
     }
 
@@ -3421,10 +3424,11 @@ public class SDODataObject implements DataObject {
      * @param updateSequence (truncate call back from sequence when this function was called from sequence)
      */
     public void setPropertyInternal(Property property, Object value, boolean updateSequence) {
-        if (property.isOpenContent()) {
+        int index = ((SDOProperty)property).getIndexInType();
+        if (index == -1) {
             _getCurrentValueStore().setOpenContentProperty(property.getName(), value);
         } else {
-            _getCurrentValueStore().setDeclaredProperty(((SDOProperty)property).getIndexInType(), value);
+            _getCurrentValueStore().setDeclaredProperty(index, value);
         }
 
         /*
@@ -3507,10 +3511,11 @@ public class SDODataObject implements DataObject {
      * @return true if set, false otherwise
      */
     public boolean isSetInternal(Property property) {
-        if (property.isOpenContent()) {
+        int index = ((SDOProperty)property).getIndexInType();
+        if (index == -1) {
             return _getCurrentValueStore().isSetOpenContentProperty(property.getName());
         } else {
-            return _getCurrentValueStore().isSetDeclaredProperty(((SDOProperty)property).getIndexInType());
+            return _getCurrentValueStore().isSetDeclaredProperty(index);
         }
     }
 

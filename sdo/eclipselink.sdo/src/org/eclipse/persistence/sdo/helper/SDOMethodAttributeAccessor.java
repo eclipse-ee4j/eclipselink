@@ -10,6 +10,7 @@
 package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.DataObject;
+import commonj.sdo.Property;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.mappings.AttributeAccessor;
@@ -21,15 +22,15 @@ import org.eclipse.persistence.mappings.AttributeAccessor;
  * the DataObject and that must be set on this accessor.
  */
 public class SDOMethodAttributeAccessor extends AttributeAccessor {
-    protected String propertyName;
     protected Class attributeClass;
+    protected Property property;
 
-    public SDOMethodAttributeAccessor(String name) {
-        setPropertyName(name);
+    public SDOMethodAttributeAccessor(Property property) {
+        setProperty(property);
     }
 
-    public SDOMethodAttributeAccessor(String name, Class attributeClass) {
-        setPropertyName(name);
+    public SDOMethodAttributeAccessor(Property property, Class attributeClass) {
+        setProperty(property);
         this.attributeClass = attributeClass;
     }
 
@@ -48,12 +49,12 @@ public class SDOMethodAttributeAccessor extends AttributeAccessor {
      */
     public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
         
-        boolean isSet = ((DataObject)anObject).isSet(getPropertyName());
+        boolean isSet = ((DataObject)anObject).isSet(getProperty());
         if (!isSet) {
             return null;
         }
 
-        return ((DataObject)anObject).get(getPropertyName());
+        return ((DataObject)anObject).get(getProperty());
     }
 
     /**
@@ -77,21 +78,21 @@ public class SDOMethodAttributeAccessor extends AttributeAccessor {
      * Sets the value of the instance variable in the object to the value.
      */
     public void setAttributeValueInObject(Object domainObject, Object attributeValue) throws DescriptorException {
-        ((DataObject)domainObject).set(getPropertyName(), attributeValue);
+        ((DataObject)domainObject).set(property, attributeValue);
 
     }
 
    /**
      * INTERNAL:   
      */
-    public void setPropertyName(String propertyName) {
-        this.propertyName = propertyName;
+    public void setProperty(Property property) {
+        this.property = property;
     }
 
     /**
      * INTERNAL:   
      */
-    public String getPropertyName() {
-        return propertyName;
+    public Property getProperty() {
+        return property;
     }
 }

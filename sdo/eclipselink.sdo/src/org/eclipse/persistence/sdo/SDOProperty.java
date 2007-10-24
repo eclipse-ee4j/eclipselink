@@ -510,9 +510,9 @@ public class SDOProperty implements Property, Serializable {
                 SDOMethodAttributeAccessor accessor = null;
                 if (this.getType().isDataType()) {
                     Class theClass = getType().getInstanceClass();
-                    accessor = new SDOMethodAttributeAccessor(getName(), theClass);
+                    accessor = new SDOMethodAttributeAccessor(this, theClass);
                 } else {
-                    accessor = new SDOMethodAttributeAccessor(getName());
+                    accessor = new SDOMethodAttributeAccessor(this);
                 }
                 xmlMapping.setAttributeAccessor(accessor);
             }
