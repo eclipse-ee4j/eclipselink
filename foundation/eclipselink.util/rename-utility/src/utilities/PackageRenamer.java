@@ -248,8 +248,8 @@ public class PackageRenamer {
 
 		System.out.print(" -> ");
 		// Starting to rename.
-		boolean changeMade = false;
-		
+
+		RenameFileData fileData = new RenameFileData(stringContainAllFile, false);
 		// Make sure package is correct
 
 		String sourcePackageName = null;
@@ -261,13 +261,13 @@ public class PackageRenamer {
 		}
 		sourcePackageName = sourceFileNameWithoutRoot.replace('\\', '.');
 		destPackageName = destinationFileNameWithoutRoot.replace('\\', '.');
-		stringContainAllFile = new RenameValue("package " + sourcePackageName +";", "package " + destPackageName + ";").replace(stringContainAllFile, changeMade);
+		fileData = new RenameValue("package " + sourcePackageName +";", "package " + destPackageName + ";").replace(fileData);
 		
 		for (RenameValue rv : getRenameValues()) {
-			stringContainAllFile = rv.replace(stringContainAllFile, changeMade);
+			fileData = rv.replace(fileData);
 		}
 		
-		if (changeMade) {
+		if (fileData.isChanged()) {
 			this.numberOfChangedFile++;
 		}
 
@@ -279,7 +279,7 @@ public class PackageRenamer {
 
 			FileWriter writer = new FileWriter(destFile);
 			java.io.PrintWriter out = new java.io.PrintWriter(writer);
-			out.print(stringContainAllFile);
+			out.print(fileData.getFileContentsString());
 			out.close();
 
 		} catch (FileNotFoundException fileNotFoundException) {
@@ -301,17 +301,18 @@ public class PackageRenamer {
 		String packageName = resourceName.replace('\\', '.');
 		String targetPackageName = packageName;
 
+		RenameFileData fileData = new RenameFileData(targetPackageName, true);
 		for (RenameValue rv : getRenameValues()) {
-			targetPackageName = rv.replace(targetPackageName, true);
+			fileData = rv.replace(fileData);
 		}
 
-		targetPackageName = targetPackageName.replace('.', '\\');
+		fileData.setFileContentsString(fileData.getFileContentsString().replace('.', '\\'));
 
 		if (extension != null && extension.length() > 0) {
-			targetPackageName = targetPackageName + "." + extension;
+			fileData.setFileContentsString(fileData.getFileContentsString() + "." + extension);
 		}
 
-		return targetPackageName;
+		return fileData.getFileContentsString();
 	}
 
 	/**

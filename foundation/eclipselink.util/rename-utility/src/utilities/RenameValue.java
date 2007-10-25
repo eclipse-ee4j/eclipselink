@@ -29,10 +29,10 @@ public class RenameValue {
 		return this.replaceValue;
 	}
 
-	public String replace(String str, boolean changeMade) {
+	public RenameFileData replace(RenameFileData data) {
 		int srcLen = getSourceValue().length();
 		int replaceLen = getReplaceValue().length();
-		String newStr = str;
+		String newStr = data.getFileContentsString();
 
 		int pos  = newStr.indexOf(getSourceValue());
 		int lastPos = pos;
@@ -46,10 +46,10 @@ public class RenameValue {
 			newStr = firstPart + getReplaceValue() + lastPart;
 			lastPos = pos + replaceLen;
 			pos = newStr.indexOf(getSourceValue(), lastPos);
-			changeMade = true;
+			data.setChanged(true);
 		}
-
-		return newStr;
+		data.setFileContentsString(newStr);
+		return data;
 	}
 	
 	public String toString() {
