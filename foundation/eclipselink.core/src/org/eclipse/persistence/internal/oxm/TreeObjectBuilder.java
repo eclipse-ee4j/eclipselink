@@ -225,14 +225,16 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         // INHERITANCE
         if (xmlDescriptor.hasInheritance()) {
             InheritancePolicy inheritancePolicy = (InheritancePolicy)xmlDescriptor.getInheritancePolicy();
-
-            XMLField classIndicatorField = new XMLField(inheritancePolicy.getClassIndicatorFieldName());
-            classIndicatorField.setNamespaceResolver(xmlDescriptor.getNamespaceResolver());
-
-            InheritanceNodeValue inheritanceNodeValue = new InheritanceNodeValue();
-            inheritanceNodeValue.setInheritancePolicy(inheritancePolicy);
-
-            addChild(classIndicatorField.getXPathFragment(), inheritanceNodeValue, xmlDescriptor.getNamespaceResolver());
+            
+            if (!inheritancePolicy.hasClassExtractor()) {
+                XMLField classIndicatorField = new XMLField(inheritancePolicy.getClassIndicatorFieldName());
+                classIndicatorField.setNamespaceResolver(xmlDescriptor.getNamespaceResolver());
+                    
+                InheritanceNodeValue inheritanceNodeValue = new InheritanceNodeValue();
+                inheritanceNodeValue.setInheritancePolicy(inheritancePolicy);
+    
+                addChild(classIndicatorField.getXPathFragment(), inheritanceNodeValue, xmlDescriptor.getNamespaceResolver());
+            }
         }
     }
 

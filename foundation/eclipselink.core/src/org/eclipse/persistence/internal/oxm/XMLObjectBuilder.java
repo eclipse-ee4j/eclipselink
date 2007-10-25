@@ -442,11 +442,13 @@ public class XMLObjectBuilder extends ObjectBuilder {
                     // the work to the inheritance policy
                 } else {
                     // no user-set element type, so proceed via inheritance policy
-                    XMLField xmlField = (XMLField)xmlDescriptor.getInheritancePolicy().getClassIndicatorField();
-                    if (xmlField.getLastXPathFragment().isAttribute()) {
-                        getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(row);
-                    } else {
-                        getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(row);
+                    if (!xmlDescriptor.getInheritancePolicy().hasClassExtractor()) {
+                      XMLField xmlField = (XMLField)xmlDescriptor.getInheritancePolicy().getClassIndicatorField();
+                      if (xmlField.getLastXPathFragment().isAttribute()) {
+                          getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(row);
+                      } else {
+                          getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(row);
+                      }
                     }
                 }
             }
