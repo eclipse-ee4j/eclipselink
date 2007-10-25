@@ -8,6 +8,7 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.inheritance;
+import org.eclipse.persistence.sessions.Record;
 
 
 /**
@@ -31,5 +32,9 @@ public class Vehicle {
             }
         }
         return false;
+    }
+    
+    public static Class getClassForRow(Record databaseRow) {
+        return Car.class;
     }
 }

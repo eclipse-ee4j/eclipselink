@@ -13,6 +13,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.testing.oxm.inheritance.classextractor.CarClassExtractorTestCases;
 import org.eclipse.persistence.testing.oxm.inheritance.typetests.TypeTestSuite;
 
 public class InheritanceTestSuite extends TestCase {
@@ -39,6 +40,7 @@ public class InheritanceTestSuite extends TestCase {
         suite.addTestSuite(InheritanceVehicleDiffPrefixTestCases.class);
         suite.addTestSuite(InheritanceDiffPrefixNonRootTestCases.class);
         suite.addTest(TypeTestSuite.suite());
+        suite.addTestSuite(CarClassExtractorTestCases.class);
         return suite;
     }
 }

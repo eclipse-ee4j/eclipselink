@@ -34,6 +34,10 @@ public class ParkingLot {
                 for (int i = 0; i < size; i++) {
                     Object nextVehicle = getVehicles().get(i);
                     Object nextOtherVehicle = ((ParkingLot)theObject).getVehicles().get(i);
+                    if (nextVehicle.getClass() != nextOtherVehicle.getClass()) {
+                        return false;
+                    }
+
                     if (!(nextVehicle.equals(nextOtherVehicle))) {
                         return false;
                     }
