@@ -23,7 +23,7 @@ import java.util.*;
  * 
  */
 public class MigrateTopLinkToEclipseLink {
-	private static final String PROPERTIES_FILE = "migrate-toplink.properties";
+	private static final String PROPERTIES_FILE = "package-rename.properties";
 
 	public static void main(String[] args) {
 		if (args.length < 2 || args.length > 3){
