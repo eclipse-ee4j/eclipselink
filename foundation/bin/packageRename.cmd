@@ -19,11 +19,11 @@ set _FIXPATH=
 call :fixpath "%3"
 set LOG_DIR=%_FIXPATH:~1%
 
-set CLASSPATH=%THIS%..\lib\java\internal\packageRename.jar
-set JAVA_ARGS=%THIS%..\config\packageRename.properties %SRC_DIR% %DEST_DIR% %LOG_DIR%
+set CLASSPATH=%THIS%..\jlib\package-rename.jar
+set JAVA_ARGS=%SRC_DIR% %DEST_DIR% %THIS%..\config\package-rename.properties
 
 @echo on
-%JAVA_HOME%\bin\java %JVM_ARGS% -classpath %CLASSPATH% org.eclipse.persistence.tools.PackageRenamer %JAVA_ARGS%
+%JAVA_HOME%\bin\java %JVM_ARGS% -classpath %CLASSPATH% utilities.MigrateTopLinkToEclipseLink %JAVA_ARGS%
 pause
 @echo off
 @endlocal
