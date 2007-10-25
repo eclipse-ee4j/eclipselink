@@ -226,38 +226,41 @@ public class XMLSessionConfigLoader {
      */
     public boolean load(SessionManager sessionManager, ClassLoader loader) {
         Document document = loadDocument(loader);
-
-        if (document.getDocumentElement().getTagName().equals("sessions")) {
-            String version = document.getDocumentElement().getAttribute("version");
-            Project project = getProject();
-            if ((version != null) && (version.indexOf("1.0") != -1)) {
-                project = new XMLSessionConfigProject_11_1_1();
+        
+        if(getExceptionStore().isEmpty()){
+            if (document.getDocumentElement().getTagName().equals("sessions")) {
+                return buildSessionConfigs(sessionManager,loader,document,getProject());
             }
-            if (getExceptionStore().isEmpty()) {
-                // No errors occured, unmarshal the document which will return a 
-                // SessionConfigs containing 0 or more SessionConfigs and send
-                // them through the factory to create actual Sessions
-                XMLContext context = new XMLContext(project);
-                XMLUnmarshaller unmarshaller = context.createUnmarshaller();
-                SessionConfigs configs = (SessionConfigs)unmarshaller.unmarshal(document);
-                SessionsFactory factory = new SessionsFactory();
-                Map sessions = factory.buildSessionConfigs(configs, loader);
-                for (Iterator iterator = sessions.entrySet().iterator(); iterator.hasNext(); ) {
-                    Map.Entry entry = (Map.Entry)iterator.next();
-                    // Only add the session if missing.
-                    if (!sessionManager.getSessions().containsKey(entry.getKey())) {
-                        sessionManager.addSession((String)entry.getKey(), (Session)entry.getValue());
-                    }
-                }
-                return true;
-            } else {
+        }else{
+        	//upon this time, we knew this could be either toplink sessions.xml or invalid eclipse session.xml.
+        	if(document.getDocumentElement().getTagName().equals("toplink-sessions")){
+	            return buildSessionConfigs(sessionManager,loader,document,new XMLSessionConfigToplinkProject());
+        	}else{
                 // Throw the exceptions we encountered
                 throw SessionLoaderException.finalException(getExceptionStore());
-            }
-        } else {
-            // 9.0.4 session.xml, return false to indicate we should load with the XMLLoader
-            return false;
+        	}
         }
+        // 9.0.4 session.xml, return false to indicate we should load with the XMLLoader
+        return false;
+    }
+    
+    private boolean buildSessionConfigs(SessionManager sessionManager, ClassLoader loader,Document document, Project project){
+        // No errors occured, unmasrshal the document which will return a 
+        // SessionConfigs containing 0 or more SessionConfigs and send
+        // them through the factory to create actual Sessions
+        XMLContext context = new XMLContext(project);
+        XMLUnmarshaller unmarshaller = context.createUnmarshaller();
+        SessionConfigs configs = (SessionConfigs)unmarshaller.unmarshal(document);
+        SessionsFactory factory = new SessionsFactory();
+        Map sessions = factory.buildSessionConfigs(configs, loader);
+        for (Iterator iterator = sessions.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry entry = (Map.Entry)iterator.next();
+            // Only add the session if missing.
+            if (!sessionManager.getSessions().containsKey(entry.getKey())) {
+                sessionManager.addSession((String)entry.getKey(), (Session)entry.getValue());
+            }
+        }
+        return true;
     }
 
     /**
@@ -277,21 +280,28 @@ public class XMLSessionConfigLoader {
     public SessionConfigs loadConfigsForMappingWorkbench(ClassLoader loader, boolean validate) {
         Document document = loadDocument(loader, validate);
 
-        if (document.getDocumentElement().getTagName().equals("sessions")) {
-            if (getExceptionStore().isEmpty()) {
+        if (getExceptionStore().isEmpty()) {
+            if (document.getDocumentElement().getTagName().equals("sessions")) {
                 // No errors occured, unmarshal the document which will return a 
                 // SessionConfigs containing 0 or more SessionConfigs
                 XMLContext context = new XMLContext(getProject());
                 XMLUnmarshaller unmarshaller = context.createUnmarshaller();
                 return (SessionConfigs)unmarshaller.unmarshal(document);
-            } else {
+            }
+        } else {
+            if (document.getDocumentElement().getTagName().equals("toplink-sessions")) {
+                // No errors occured, unmarshal the document which will return a 
+                // SessionConfigs containing 0 or more SessionConfigs
+                XMLContext context = new XMLContext(new XMLSessionConfigToplinkProject());
+                XMLUnmarshaller unmarshaller = context.createUnmarshaller();
+                return (SessionConfigs)unmarshaller.unmarshal(document);
+            }else{
                 // Throw the exceptions we encountered
                 throw SessionLoaderException.finalException(getExceptionStore());
             }
-        } else {
-            // 9.0.4 session.xml, send it through the DTD2SessionConfigLoader
-            return new DTD2SessionConfigLoader().load(document);
         }
+        // 9.0.4 session.xml, send it through the DTD2SessionConfigLoader
+        return new DTD2SessionConfigLoader().load(document);
     }
 
     /**
