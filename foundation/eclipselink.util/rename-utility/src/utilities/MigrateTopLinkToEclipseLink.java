@@ -65,7 +65,7 @@ public class MigrateTopLinkToEclipseLink {
 			if (file.isDirectory()) {
 				removeAllJavaFiles(file);
 			} else {
-				if (file.getName().endsWith(".java")) {
+				if (file.getName().endsWith(".java") || file.getName().endsWith(".xml")) {
 					file.delete();
 				}
 			}
