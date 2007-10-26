@@ -36,6 +36,14 @@
       <xsd:attribute name="partNum" type="SKU"/>
       <xsd:attribute name="quantity" type="quantityType"/>
    </xsd:complexType>
+   <xsd:complexType name="CustomerType">
+      <xsd:sequence>
+         <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="gender" type="gender" minOccurs="0"/>
+         <xsd:element name="phoneNumber" type="phoneNumber" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="namePrefix" type="namePrefix"/>
+   </xsd:complexType>
    <xsd:complexType name="PurchaseOrderType">
       <xsd:sequence>
          <xsd:element name="shipTo" type="AddressType" minOccurs="0"/>
@@ -46,14 +54,6 @@
       </xsd:sequence>
       <xsd:attribute name="poId" type="xsd:string"/>
       <xsd:attribute name="orderDate" type="xsd:date"/>
-   </xsd:complexType>
-   <xsd:complexType name="CustomerType">
-      <xsd:sequence>
-         <xsd:element name="name" type="xsd:string" minOccurs="0"/>
-         <xsd:element name="gender" type="gender" minOccurs="0"/>
-         <xsd:element name="phoneNumber" type="phoneNumber" minOccurs="0"/>
-      </xsd:sequence>
-      <xsd:attribute name="namePrefix" type="namePrefix"/>
    </xsd:complexType>
    <xsd:complexType name="cdnAddressMailingType">
       <xsd:complexContent>

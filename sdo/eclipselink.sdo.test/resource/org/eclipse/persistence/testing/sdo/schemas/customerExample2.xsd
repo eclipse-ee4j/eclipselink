@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="my.uri" xmlns="my.uri" elementFormDefault="qualified" package="defaultPackage" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:schema targetNamespace="my.uri" xmlns="my.uri" elementFormDefault="qualified" sdoJava:package="defaultPackage" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
    <xsd:complexType name="AddressType">
       <xsd:attribute name="street" type="xsd:string"/>
    </xsd:complexType>

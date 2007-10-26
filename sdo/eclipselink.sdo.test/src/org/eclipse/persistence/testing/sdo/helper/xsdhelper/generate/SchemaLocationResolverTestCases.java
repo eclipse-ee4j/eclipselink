@@ -140,10 +140,9 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         assertEquals(2, sizeAfter);
         String controlSchema = getSchema(getControlFileNameSchemaExample2());
 
-        //String controlSchema = getSchema(getControlFileNameSchema());        
         log("EXPECTED: \n" + controlSchema);
         log("ACTUAL: \n" + generatedSchema);
-        // TODO: failing
+        
         StringReader reader = new StringReader(generatedSchema);
         InputSource inputSource = new InputSource(reader);
         Document generatedSchemaDoc = parser.parse(inputSource);        

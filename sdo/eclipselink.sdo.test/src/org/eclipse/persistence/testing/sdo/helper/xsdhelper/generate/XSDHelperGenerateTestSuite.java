@@ -41,7 +41,7 @@ public class XSDHelperGenerateTestSuite {
         suite.addTest(new TestSuite(SchemaLocationResolverPart2TestCases.class));
         suite.addTest(new TestSuite(SchemaLocationResolverPart3TestCases.class));
         suite.addTest(new TestSuite(SchemaLocationResolverPart4TestCases.class));        
-        suite.addTest(new TestSuite(DontModifyListJIRA254TestCases.class));        
+        //suite.addTest(new TestSuite(DontModifyListJIRA254TestCases.class));        
         return suite;
     }
 }

@@ -11,6 +11,7 @@ package org.eclipse.persistence.testing.sdo.helper.xsdhelper.generate;
 
 import commonj.sdo.Type;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
@@ -19,6 +20,8 @@ import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaLocationResolver;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTestCases {
     public PurchaseOrderComplexGenerateTestCases(String name) {
@@ -33,16 +36,24 @@ public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTest
     public String getControlFileName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderComplexGenerated.xsd";
     }
+    public String getControlFileNameDifferentOrder() {
+        return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderComplexGeneratedDiffOrder.xsd";
+    }
 
-    public void testGenerateSchemaRoundTrip() {
+    public void testGenerateSchemaRoundTrip() throws Exception{
         DefaultSchemaLocationResolver resolver = new DefaultSchemaLocationResolver(getMap());
         List types = defineTypesFromSchema();
         String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
-        String controlSchema = getSchema(getControlFileName());
+        String controlSchema = getSchema(getControlFileNameDifferentOrder());
         log("EXPECTED: \n" + controlSchema);
         log("ACTUAL: \n" + generatedSchema);
-
-        this.assertEquals(controlSchema, generatedSchema);
+                
+        StringReader reader = new StringReader(generatedSchema);
+        InputSource inputSource = new InputSource(reader);
+        Document generatedSchemaDoc = parser.parse(inputSource);        
+        reader.close();
+        
+        assertXMLIdentical(getDocument(getControlFileNameDifferentOrder()), generatedSchemaDoc);       
     }
 
     public java.util.List defineTypesFromSchema() {
@@ -62,6 +73,7 @@ public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTest
 
         //ADDRESS TYPE
         SDOType addrType = new SDOType(uri, "AddressType");
+        addrType.setInstanceClassName("defaultPackage.AddressType");
         addrType.setDataType(false);
 
         SDOProperty addrNameProp = new SDOProperty(aHelperContext);
@@ -164,7 +176,7 @@ public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTest
         cdnMailingAddressType.setDataType(false);
         ArrayList cdnMailingbaseTypes = new ArrayList();
         cdnMailingbaseTypes.add(cdnAddressType);
-        cdnMailingAddressType.setBaseTypes(cdnbaseTypes);
+        cdnMailingAddressType.setBaseTypes(cdnMailingbaseTypes);
         
            SDOProperty deliveryProp = new SDOProperty(aHelperContext);
         deliveryProp.setName("deliveryInfo");
@@ -189,8 +201,8 @@ public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTest
         /****PHONE TYPE*****/
         SDOType phoneType = new SDOType(uri, "phoneNumber");
         phoneType.setDataType(true);
-        phoneType.getBaseTypes().add(intType);
-        phoneType.setInstanceClassName("java.lang.Integer");
+        phoneType.getBaseTypes().add(stringType);
+        phoneType.setInstanceClassName("java.lang.String");
 
         /****NAME PREFIX TYPE*****/
         SDOType namePrefixType = new SDOType(uri, "namePrefix");
@@ -261,7 +273,8 @@ public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTest
 
         SDOProperty shipDateProp = new SDOProperty(aHelperContext);
         shipDateProp.setName("shipDate");
-        shipDateProp.setType(dateType);
+        //shipDateProp.setType(dateType);
+        shipDateProp.setType(SDOConstants.SDO_YEARMONTHDAY);
         shipDateProp.setContainment(true);
         //shipDateProp.setElement(true);
         shipDateProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
@@ -365,8 +378,8 @@ public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTest
         //poIdProp.setContainment(true);
 
         SDOProperty orderDateProp = new SDOProperty(aHelperContext);
-        orderDateProp.setName("orderDate");
-        orderDateProp.setType(dateType);
+        orderDateProp.setName("orderDate");        
+        orderDateProp.setType(SDOConstants.SDO_YEARMONTHDAY);
         orderDateProp.setXsd(true);
         //orderDateProp.setAttribute(true);
         //orderDateProp.setContainment(true);
@@ -381,17 +394,18 @@ public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTest
         POtype.getDeclaredProperties().add(orderDateProp);
         POtype.getDeclaredProperties().add(customerProp);
 
+types.add(customerType);
         types.add(quantityType);
         types.add(SKUType);
         types.add(genderType);
         types.add(namePrefixType);
         types.add(phoneType);
         types.add(addrType);
+        
         types.add(usAddressType);
         types.add(cdnAddressType);
-        types.add(cdnMailingAddressType);        
-        types.add(itemType);
-        types.add(customerType);
+        types.add(cdnMailingAddressType);                
+        types.add(itemType);        
         types.add(POtype);
         types.add(itemsType);
 
