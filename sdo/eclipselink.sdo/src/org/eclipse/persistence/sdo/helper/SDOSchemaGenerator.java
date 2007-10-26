@@ -719,6 +719,14 @@ public class SDOSchemaGenerator {
                         }
                     }
                 }
+            }else{
+                    if (!alreadyGenerated) {
+                        //we can #1 add to list of allTypes or #2 make an appropriate include
+                        if (targetType.getURI().equals(generatedSchema.getTargetNamespace())) {
+                            allTypes.add(targetType);
+                        }
+                    }
+              
             }
         }
     }

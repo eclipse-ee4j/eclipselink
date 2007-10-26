@@ -703,11 +703,7 @@ public class SDOTypesGenerator extends SchemaParser {
         } else if (sc.getDefaultValue() != null) {
             Object convertedValue = convertDefaultValue(p.getType(), sc.getDefaultValue());
             p.setDefault(convertedValue);
-        } else {
-            // JIRA-253: We are not wrapping primitive numerics with a wrapper Object.
-            // see SDODataObject.get() for a wrapped return of a null unset default
-            p.setDefault(null);
-        }
+        } 
     }
 
     private Object convertDefaultValue(Type type, String stringValue) {
