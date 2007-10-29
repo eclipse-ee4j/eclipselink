@@ -140,6 +140,7 @@ public class PropertiesHandler {
             addProp(new CacheSharedProp());
             addProp(new DescriptorCustomizerProp());
             addProp(new BatchWritingProp());
+            addProp(new ProfilerProp());
         }
         
         Prop(String name) {
@@ -500,4 +501,16 @@ public class PropertiesHandler {
             };
         }
     }
+    
+    protected static class ProfilerProp extends Prop {
+        ProfilerProp() {
+            super(PersistenceUnitProperties.PROFILER, PersistenceUnitProperties.DEFAULT);
+            this.shouldReturnOriginalValueIfValueToApplyNotFound = true;
+            String pcg = "org.eclipse.persistence.tools.profiler.";
+            valueArray = new Object[][] { 
+                {ProfilerType.PerformanceProfiler, pcg+ "PerformanceProfiler"}
+            };
+        }
+    }
+
 }
