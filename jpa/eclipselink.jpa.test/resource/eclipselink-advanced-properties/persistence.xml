@@ -14,6 +14,21 @@
              <property name="eclipselink.logging.logger" value="JavaLogger"/>
              <property name="eclipselink.logging.file" value="JPAAdvancedProperties.log"/>
              <property name="eclipselink.session.include.descriptor.queries" value="true"/>
+             <property name="eclipselink.profiler" value="PerformanceProfiler"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="JPAADVProperties2" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+             <property name="eclipselink.profiler" value="QueryMonitor"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="JPAADVProperties3" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+             <property name="eclipselink.profiler" value="NoProfiler"/>
         </properties>
     </persistence-unit>
 </persistence>
