@@ -55,6 +55,10 @@ import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.queries.EJBQLPlaceHolderQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
+import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.jpa.config.ProfilerType;
+import org.eclipse.persistence.tools.profiler.QueryMonitor;
+
 
 import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.*;
 
@@ -451,6 +455,51 @@ public class EntityManagerSetupImpl {
         }
     }
     
+    protected void updateProfiler(Map persistenceProperties,ClassLoader loader){
+        String newProfilerClassName = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.PROFILER, persistenceProperties, session);
+
+        if(newProfilerClassName == null){
+               ((ServerPlatformBase)session.getServerPlatform()).configureProfiler(session);
+        }else{
+
+            if(newProfilerClassName.equals(ProfilerType.NoProfiler)){
+                session.setProfiler(null);
+                return;
+            }
+            if(newProfilerClassName.equals(ProfilerType.QueryMonitor)){
+                session.setProfiler(null);
+                QueryMonitor.shouldMonitor=true;
+                return;
+            }
+            
+            String originalProfilerClassNamer = null;
+            if(session.getProfiler()!=null){
+                originalProfilerClassNamer = session.getProfiler().getClass().getName();
+                if(originalProfilerClassNamer.equals(newProfilerClassName)){
+                    return;
+                }
+            }
+            
+            // New profiler - create the new instance and set it.
+            try {
+                Class newProfilerClass = findClassForProperty(newProfilerClassName,PersistenceUnitProperties.PROFILER, loader);
+                SessionProfiler sessionProfiler = (SessionProfiler)buildObjectForClass(newProfilerClass, SessionProfiler.class);
+                if(sessionProfiler!=null){
+                    session.setProfiler(sessionProfiler);
+                } else {
+                    session.handleException(ValidationException.invalidProfilerClass(newProfilerClassName));
+                }
+            } catch (IllegalAccessException e) {
+                session.handleException(ValidationException.cannotInstantiateSessionEventListenerClass(newProfilerClassName,e));
+            } catch (PrivilegedActionException e) {
+                session.handleException(ValidationException.cannotInstantiateSessionEventListenerClass(newProfilerClassName,e));
+            } catch (InstantiationException e) {
+                session.handleException(ValidationException.cannotInstantiateSessionEventListenerClass(newProfilerClassName,e));
+            }
+        }
+    }
+    
+    
     protected static Class findClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             return (Class)AccessController.doPrivileged(new PrivilegedClassForName(className, true, loader));
@@ -626,6 +675,9 @@ public class EntityManagerSetupImpl {
             updateServerPlatform(predeployProperties, realClassLoader);
             // Update loggers and settings for the singleton logger and the session logger.
             updateLoggers(predeployProperties, true, false, realClassLoader);
+            
+            //Update performance profiler
+            updateProfiler(predeployProperties,realClassLoader);
             
             // Cannot start logging until session and log and initialized, so log start of predeploy here.
             session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
@@ -1042,6 +1094,8 @@ public class EntityManagerSetupImpl {
         boolean sessionNameChanged = updateSessionName(m);
 
         updateLoggers(m, serverPlatformChanged, sessionNameChanged, loader);
+        
+        updateProfiler(m,loader);
 
         String shouldBindString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_BIND_PARAMETERS, m, session);
         if (shouldBindString != null) {
