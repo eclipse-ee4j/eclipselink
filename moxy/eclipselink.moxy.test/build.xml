@@ -4,160 +4,127 @@
     <propertyset id="parser.properties">
 	    <propertyref prefix="javax.xml"/>
 	</propertyset>
-    <path id="jaxb.compile.path">
+
+	<!-- Compile/run paths -->
+	<path id="jaxb.compile.path">
         <pathelement path="${jaxb-api.lib}"/>
         <fileset
             dir="${eclipselink.core.lib}"
             includes="${eclipselink.core.depend}"/>
-        <pathelement path="${junit.lib}"/>
         <pathelement path="${eclipselink.moxy}/${classes.dir}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
     </path>
     <path id="jaxb.run.path">
-        <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
+        <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${eclipselink.moxy}/${classes.dir}"/>
         <pathelement path="${eclipselink.moxy.test}/${classes.dir}"/>
+        <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
+        <pathelement path="${eclipselink.core}/${classes.dir}"/>
         <pathelement path="${eclipselink.core}/${resource.dir}"/>
-        <path refid="jaxb.compile.path"/>
     </path>
     <path id="oxm.compile.path">
-		<path refid="jaxb.compile.path"/>
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${eclipselink.moxy}/${classes.dir}"/>
+        <pathelement path="${eclipselink.core}/${classes.dir}"/>
     </path>
     <path id="oxm.run.path">
-        <path refid="oxm.compile.path"/>
-        <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
-        <pathelement path="${eclipselink.moxy.test}/${classes.dir}"/>
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
         <pathelement path="${eclipselink.moxy}/${classes.dir}"/>
+        <pathelement path="${eclipselink.moxy.test}/${classes.dir}"/>
+        <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
+        <pathelement path="${eclipselink.core}/${classes.dir}"/>
         <pathelement path="${eclipselink.core}/${resource.dir}"/>
     </path>
 
+	<!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
+    <path id="jaxb.compile.path.against.jar">
+        <pathelement path="${jaxb-api.lib}"/>
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${eclipselink.jar}"/>
+    </path>
+    <path id="jaxb.run.path.against.jar">
+        <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${eclipselink.moxy.test}/${classes.dir}"/>
+        <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
+        <pathelement path="${eclipselink.jar}"/>
+    </path>
+    <path id="oxm.compile.path.against.jar">
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${eclipselink.jar}"/>
+    </path>
+    <path id="oxm.run.path.against.jar">
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${eclipselink.moxy.test}/${classes.dir}"/>
+        <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
+        <pathelement path="${eclipselink.jar}"/>
+    </path>
+
+	<!-- Test targets -->
+	<target name="test" depends="clean.reports, compile.and.run.tests, update.package.names, moxy.junit.report" description="run moxy tests and generate junit report"/>
+	<target name="test.jaxb" depends="clean.jaxb.reports, compile.and.run.jaxb.tests, jaxb.junit.report" description="build and run moxy (jaxb) tests and generate junit report"/>
+	<target name="test.oxm" depends="clean.oxm.reports, compile.and.run.oxm.tests, update.package.names, oxm.junit.report" description="build and run moxy (oxm) tests and generate junit report"/>
+	<!-- The following tests build and run against eclipselink.jar -->
+	<target name="test.against.jar" depends="clean.reports, compile.and.run.tests.against.jar, update.package.names, moxy.junit.report" description="run moxy tests against eclipselink.jar and generate junit report"/>
+	<target name="test.jaxb.against.jar" depends="clean.jaxb.reports, compile.and.run.jaxb.tests.against.jar, jaxb.junit.report" description="build and run moxy (jaxb) tests against eclipselink.jar and generate junit report"/>
+	<target name="test.oxm.against.jar" depends="clean.oxm.reports, compile.and.run.oxm.tests.against.jar, update.package.names, oxm.junit.report" description="build and run moxy (oxm) tests against eclipselink.jar and generate junit report"/>
+
 	<!-- Build targets -->
-	<target name="compile.tests" depends="clean, compile.jaxb, compile.oxm.tests, compile.jaxb.tests" description="build moxy test classes"/>
+	<target name="compile.tests" depends="clean, compile.jaxb" description="build moxy test classes">
+		<compile-oxm-tests compile-path="oxm.compile.path"/>
+		<compile-jaxb-tests compile-path="jaxb.compile.path"/>
+	</target>
+	<target name="compile.tests.against.jar" depends="clean" description="build moxy test classes against eclipselink.jar">
+		<compile-oxm-tests compile-path="oxm.compile.path.against.jar"/>
+		<compile-jaxb-tests compile-path="jaxb.compile.path.against.jar"/>
+	</target>
 	<target name="compile.jaxb" description="build moxy (jaxb) classes">
 		<!-- The following build target will also compile eclipselink.core -->
 		<ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
 	</target>
-	<target name="compile.oxm.tests" description="build moxy (oxm) test classes">
-	    <javac srcdir="${eclipselink.moxy.test}/${src.dir}"
-			destdir="${eclipselink.moxy.test}/${classes.dir}"
-            debug="${javac.debug}" 
-            optimize="${javac.optimize}"
-            source="1.5" 
-            deprecation="${javac.deprecation}"
-            failonerror="true"
-			includes="org/eclipse/persistence/testing/oxm/**/*.java">
-			<classpath>
-				<path refid="oxm.compile.path"/>
-			</classpath>
-		</javac>
-	</target>
-	<target name="compile.jaxb.tests" description="build moxy (jaxb) test classes">
-	     <javac srcdir="${eclipselink.moxy.test}/${src.dir}"
-            destdir="${eclipselink.moxy.test}/${classes.dir}"
-            debug="${javac.debug}" 
-            optimize="${javac.optimize}"
-            source="1.5" 
-            deprecation="${javac.deprecation}"
-            failonerror="true"
-            includes="org/eclipse/persistence/testing/jaxb/**/*.java">
-            <classpath>
-                <path refid="jaxb.compile.path"/>
-            </classpath>
-		</javac>
-	</target>
 
-	<!-- Run targets -->
-	<target name="compile.and.run.tests" depends="compile.tests, run.jaxb.tests" description="build and run moxy tests">
-		<run-oxm-tests/>
-		<run-oxm-sax-tests/>
-		<run-oxm-deploymentxml-tests/>
-		<run-oxm-docpres-tests/>
+	<!-- Build & Run targets -->
+	<target name="compile.and.run.tests" depends="compile.tests" description="build and run moxy tests">
+		<run-jaxb-tests run-path="jaxb.run.path"/>
+		<run-oxm-tests run-path="oxm.run.path"/>
+		<run-oxm-sax-tests run-path="oxm.run.path"/>
+		<run-oxm-deploymentxml-tests run-path="oxm.run.path"/>
+		<run-oxm-docpres-tests run-path="oxm.run.path"/>
+	</target>
+	<target name="compile.and.run.jaxb.tests" depends="compile.tests" description="build and run moxy (oxm) tests">
+		<run-jaxb-tests run-path="jaxb.run.path"/>
 	</target>
 	<target name="compile.and.run.oxm.tests" depends="compile.tests" description="build and run moxy (oxm) tests">
-		<run-oxm-tests/>
-		<run-oxm-sax-tests/>
-		<run-oxm-deploymentxml-tests/>
-		<run-oxm-docpres-tests/>
+		<run-oxm-tests run-path="oxm.run.path"/>
+		<run-oxm-sax-tests run-path="oxm.run.path"/>
+		<run-oxm-deploymentxml-tests run-path="oxm.run.path"/>
+		<run-oxm-docpres-tests run-path="oxm.run.path"/>
 	</target>
-	<target name="test" depends="clean.reports, compile.and.run.tests, update.package.names, oxm.junit.report" description="run moxy tests and generate junit report"/>
-	<target name="test.jaxb" depends="clean.jaxb.reports, compile.tests, run.jaxb.tests" description="build and run moxy (jaxb) tests and generate junit report"/>
-	<target name="test.oxm" depends="clean.oxm.reports, compile.and.run.oxm.tests, update.package.names, oxm.junit.report" description="build and run moxy (oxm) tests and generate junit report"/>
-	<target name="run.jaxb.tests" description="run moxy (jaxb) tests">
-		<run-jaxb-tests/>
-		<junitreport todir="${eclipselink.moxy.test}/${report.dir}/jaxb">
-			<fileset dir="${eclipselink.moxy.test}/${report.dir}/jaxb">
-				<include name="**/*.xml"/>
-			</fileset>
-			<report format="noframes" todir="${eclipselink.moxy.test}/${report.dir}/jaxb"/>
-		</junitreport>		
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${eclipselink.moxy.test}/${resource.dir}/${tmp.dir}"/>
-			<fileset dir="${eclipselink.moxy.test}/${report.dir}/jaxb">
-				<include name="**/*.xml"/>
-			</fileset>
-            <fileset dir="${eclipselink.moxy.test}/${resource.dir}">
-				<include name="File*.xml"/>
-			</fileset>
-        </delete>
+	<!-- The following targets build and run against eclipselink.jar -->
+	<target name="compile.and.run.tests.against.jar" depends="compile.tests.against.jar" description="build and run moxy tests against eclipselink.jar">
+		<run-jaxb-tests run-path="jaxb.run.path.against.jar"/>
+		<run-oxm-tests run-path="oxm.run.path.against.jar"/>
+		<run-oxm-sax-tests run-path="oxm.run.path.against.jar"/>
+		<run-oxm-deploymentxml-tests run-path="oxm.run.path.against.jar"/>
+		<run-oxm-docpres-tests run-path="oxm.run.path.against.jar"/>
 	</target>
-	<target name="run.oxm.tests" depends="clean.reports, compile.tests" description="run moxy (oxm) tests">
-		<run-oxm-tests/>
-		<junitreport todir="${eclipselink.moxy.test}/${report.dir}/oxm">
-			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
-				<include name="**/*.xml"/>
-			</fileset>
-			<report format="noframes" todir="${eclipselink.moxy.test}/${report.dir}/oxm"/>
-		</junitreport>		
-        <delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
-				<include name="**/*.xml"/>
-			</fileset>
-        </delete>
-        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/default" failonerror="false"/>
+	<target name="compile.and.run.jaxb.tests.against.jar" depends="compile.tests.against.jar" description="build and run moxy (oxm) tests against eclipselink.jar">
+		<run-jaxb-tests run-path="jaxb.run.path.against.jar"/>
 	</target>
-    <target name="run.oxm.sax.tests" depends="clean.reports, compile.tests" description="run moxy (oxm) tests with sax parsing enabled">
-		<run-oxm-sax-tests/>
-		<junitreport todir="${eclipselink.moxy.test}/${report.dir}/oxm">
-			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
-				<include name="**/*.xml"/>
-			</fileset>
-			<report format="noframes" todir="${eclipselink.moxy.test}/${report.dir}/oxm"/>
-		</junitreport>		
-        <delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
-				<include name="**/*.xml"/>
-			</fileset>
-        </delete>
-        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/sax" failonerror="false"/>
-	</target>
-	<target name="run.oxm.deploymentxml.tests" depends="clean.reports, compile.tests" description="run moxy (oxm) tests with deployment xml enabled">
-		<run-oxm-deploymentxml-tests/>
-		<junitreport todir="${eclipselink.moxy.test}/${report.dir}/oxm">
-			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
-				<include name="**/*.xml"/>
-			</fileset>
-			<report format="noframes" todir="${eclipselink.moxy.test}/${report.dir}/oxm"/>
-		</junitreport>		
-        <delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
-				<include name="**/*.xml"/>
-			</fileset>
-        </delete>
-        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/deploymentxml" failonerror="false"/>
-	</target>
-	<target name="run.oxm.docpres.tests" depends="clean.reports, compile.tests" description="run moxy (oxm) tests with document preservation enabled">
-		<run-oxm-docpres-tests/>
-		<junitreport todir="${eclipselink.moxy.test}/${report.dir}/oxm">
-			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
-				<include name="**/*.xml"/>
-			</fileset>
-			<report format="noframes" todir="${eclipselink.moxy.test}/${report.dir}/oxm"/>
-		</junitreport>		
-        <delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
-				<include name="**/*.xml"/>
-			</fileset>
-        </delete>
-        <delete dir="${eclipselink.moxy.test}/${report.dir}/oxm/docpres" failonerror="false"/>
+	<target name="compile.and.run.oxm.tests.against.jar" depends="compile.tests.against.jar" description="build and run moxy (oxm) tests against eclipselink.jar">
+		<run-oxm-tests run-path="oxm.run.path.against.jar"/>
+		<run-oxm-sax-tests run-path="oxm.run.path.against.jar"/>
+		<run-oxm-deploymentxml-tests run-path="oxm.run.path.against.jar"/>
+		<run-oxm-docpres-tests run-path="oxm.run.path.against.jar"/>
 	</target>
 
 	<!-- Package rename targets -->
@@ -182,7 +149,25 @@
 	</target>
 
 	<!-- JUnit report targets -->
-	<target name="oxm.junit.report" description="create junit report">
+	<target name="moxy.junit.report" depends="jaxb.junit.report, oxm.junit.report" description="create moxy junit report"/>
+	<target name="jaxb.junit.report" description="create jaxb junit report">
+		<junitreport todir="${eclipselink.moxy.test}/${report.dir}/jaxb">
+			<fileset dir="${eclipselink.moxy.test}/${report.dir}/jaxb">
+				<include name="**/*.xml"/>
+			</fileset>
+			<report format="noframes" todir="${eclipselink.moxy.test}/${report.dir}/jaxb"/>
+		</junitreport>		
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${eclipselink.moxy.test}/${resource.dir}/${tmp.dir}"/>
+			<fileset dir="${eclipselink.moxy.test}/${report.dir}/jaxb">
+				<include name="**/*.xml"/>
+			</fileset>
+			<fileset dir="${eclipselink.moxy.test}/${resource.dir}">
+				<include name="File*.xml"/>
+			</fileset>
+		</delete>
+	</target>
+	<target name="oxm.junit.report" description="create oxm junit report">
 		<junitreport todir="${eclipselink.moxy.test}/${report.dir}/oxm">
 			<fileset dir="${eclipselink.moxy.test}/${report.dir}/oxm">
 				<include name="**/*.xml"/>
@@ -224,6 +209,7 @@
 
 	<!-- Test run macros -->
     <macrodef name="run-jaxb-tests">
+        <attribute name="run-path"/>
         <sequential>
 			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/jaxb"/>
 			<mkdir dir="${eclipselink.moxy.test}/${resource.dir}/${tmp.dir}"/>
@@ -242,12 +228,13 @@
 					<formatter type="xml"/>
 				</batchtest>
 				<classpath>
-					<path refid="jaxb.run.path"/>
+					<path refid="@{run-path}"/>
 				</classpath>
 			</junit>
         </sequential>
 	</macrodef>
     <macrodef name="run-oxm-tests">
+        <attribute name="run-path"/>
         <sequential>
 			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/oxm/default"/>
 			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
@@ -274,12 +261,13 @@
 					<formatter type="xml"/>
 				</batchtest>
 				<classpath>
-					<path refid="oxm.run.path"/>
+					<path refid="@{run-path}"/>
 				</classpath>
 			</junit>
         </sequential>
 	</macrodef>
     <macrodef name="run-oxm-sax-tests">
+        <attribute name="run-path"/>
         <sequential>
 			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/oxm/sax"/>
 			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
@@ -311,12 +299,13 @@
 					<formatter type="xml"/>
 				</batchtest>
 				<classpath>
-					<path refid="oxm.run.path"/>
+					<path refid="@{run-path}"/>
 				</classpath>
 			</junit>
         </sequential>
 	</macrodef>
     <macrodef name="run-oxm-deploymentxml-tests">
+        <attribute name="run-path"/>
         <sequential>
 			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/oxm/deploymentxml"/>
 			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
@@ -353,12 +342,13 @@
 					<formatter type="xml"/>
 				</batchtest>
 				<classpath>
-					<path refid="oxm.run.path"/>
+					<path refid="@{run-path}"/>
 				</classpath>
 			</junit>
         </sequential>
 	</macrodef>
     <macrodef name="run-oxm-docpres-tests">
+        <attribute name="run-path"/>
         <sequential>
 			<mkdir dir="${eclipselink.moxy.test}/${report.dir}/oxm/docpres"/>
 			<junit printsummary="yes" fork="true" dir="${eclipselink.moxy.test}/${resource.dir}" showoutput="yes" maxmemory="512m">
@@ -388,9 +378,45 @@
 					<formatter type="xml"/>
 				</batchtest>
 				<classpath>
-					<path refid="oxm.run.path"/>
+					<path refid="@{run-path}"/>
 				</classpath>
 			</junit>
+        </sequential>
+	</macrodef>
+
+	<!-- Compile macros -->
+    <macrodef name="compile-jaxb-tests">
+        <attribute name="compile-path"/>
+        <sequential>
+			 <javac srcdir="${eclipselink.moxy.test}/${src.dir}"
+				destdir="${eclipselink.moxy.test}/${classes.dir}"
+				debug="${javac.debug}" 
+				optimize="${javac.optimize}"
+				source="1.5" 
+				deprecation="${javac.deprecation}"
+				failonerror="true"
+				includes="org/eclipse/persistence/testing/jaxb/**/*.java">
+				<classpath>
+					<path refid="@{compile-path}"/>
+				</classpath>
+			</javac>
+        </sequential>
+	</macrodef>
+    <macrodef name="compile-oxm-tests">
+        <attribute name="compile-path"/>
+        <sequential>
+			<javac srcdir="${eclipselink.moxy.test}/${src.dir}"
+				destdir="${eclipselink.moxy.test}/${classes.dir}"
+				debug="${javac.debug}" 
+				optimize="${javac.optimize}"
+				source="1.5" 
+				deprecation="${javac.deprecation}"
+				failonerror="true"
+				includes="org/eclipse/persistence/testing/oxm/**/*.java">
+				<classpath>
+					<path refid="@{compile-path}"/>
+				</classpath>
+			</javac>
         </sequential>
 	</macrodef>
 </project>	

@@ -1,9 +1,11 @@
-<project name="Compile SDO Testing" default="test" basedir=".">
+<project name="SDO Testing" default="test" basedir=".">
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
     <propertyset id="parser.properties">
 	    <propertyref prefix="javax.xml"/>
 	</propertyset>
+
+	<!-- Compile/run paths -->
     <path id="sdo.compile.path">
         <pathelement path="${eclipselink.sdo}/${classes.dir}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
@@ -14,11 +16,36 @@
         <pathelement path="${commonj.sdo.lib}"/>
     </path>
     <path id="sdo.run.path">
-		<path refid="sdo.compile.path"/>
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
         <pathelement path="${tools.lib}"/>
         <pathelement path="${eclipselink.sdo.test}/${resource.dir}"/>
         <pathelement path="${eclipselink.sdo.test}/${classes.dir}"/>
-        <pathelement path="${eclipselink.core.lib}/${asm}/${classes.dir}"/>
+        <pathelement path="${commonj.sdo.lib}"/>
+        <pathelement path="${eclipselink.core.lib}/eclipselink-asm.jar"/>
+        <pathelement path="${eclipselink.sdo}/${classes.dir}"/>
+        <pathelement path="${eclipselink.core}/${classes.dir}"/>
+    </path>
+
+	<!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
+    <path id="sdo.compile.path.against.jar">
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
+		<pathelement path="${junit.lib}"/>
+        <pathelement path="${commonj.sdo.lib}"/>
+        <pathelement path="${eclipselink.jar}"/>
+    </path>
+    <path id="sdo.run.path.against.jar">
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${tools.lib}"/>
+        <pathelement path="${eclipselink.sdo.test}/${resource.dir}"/>
+        <pathelement path="${eclipselink.sdo.test}/${classes.dir}"/>
+        <pathelement path="${commonj.sdo.lib}"/>
+        <pathelement path="${eclipselink.jar}"/>
     </path>
 
 	<!-- Clean targets -->
@@ -30,19 +57,11 @@
     </target>
 
 	<!-- Build targets -->
+	<target name="compile.sdo.tests.against.jar" depends="clean" description="build sdo test classes against eclipselink.jar">
+		<compile-sdo-tests compile-path="sdo.compile.path.against.jar"/>
+	</target>
 	<target name="compile.sdo.tests" depends="clean, compile.sdo" description="build sdo test classes">
-	   <javac srcdir="${eclipselink.sdo.test}/${src.dir}"
-              destdir="${eclipselink.sdo.test}/${classes.dir}"
-              debug="${javac.debug}" 
-              optimize="${javac.optimize}"
-              source="1.5" 
-              deprecation="${javac.deprecation}"
-              failonerror="true"
-              includes="org/eclipse/persistence/testing/sdo/**/*.java">
-			  <classpath>
-                  <path refid="sdo.compile.path"/>
-              </classpath>
-		</javac>
+		<compile-sdo-tests compile-path="sdo.compile.path"/>
 	</target>
 	<target name="compile.sdo" description="build sdo classes">
 		<ant antfile="${eclipselink.sdo}/build.xml" target="all"/>
@@ -51,29 +70,21 @@
 	<!-- Run targets -->
 	<target name="test" depends="compile.sdo.tests" description="run sdo tests">
 	    <mkdir dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
-		<run-sdo-tests custom-context="true"/>
-		<!--run-sdo-tests custom-context="false"/-->
-		<!-- Clean up generated files -->
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/baseTypes"/>
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/complextypes"/>
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/elements"/>
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/invalidtypename"/>
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/list"/>
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/nestedBaseTypes"/>
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/poJavaDocs"/>
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/poJavaDocsListener"/>
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/schemaTypes"/>
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcImports"/>
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcImportsDontProcess"/>
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcPO"/>
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/srcPOAnnotations"/>
-        <delete dir="${eclipselink.sdo.test}/${resource.dir}/union"/>
+		<run-sdo-tests custom-context="true" run-path="sdo.run.path"/>
+		<!--run-sdo-tests custom-context="false run-path="${sdo.run.path}"/-->
+		<delete dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
+	</target>
+	<target name="test.against.jar" depends="compile.sdo.tests.against.jar" description="run sdo tests against eclipselink.jar">
+	    <mkdir dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
+		<run-sdo-tests custom-context="true" run-path="sdo.run.path.against.jar"/>
+		<!--run-sdo-tests custom-context="false" run-path="${sdo.run.path.against.jar}"/-->
+		<delete dir="${eclipselink.sdo.test}/${resource.dir}/${tmp.dir}"/>
 	</target>
 
 	<!-- Test run macros -->
     <macrodef name="run-sdo-tests">
         <attribute name="custom-context"/>
+        <attribute name="run-path"/>
         <sequential>
 			<delete dir="${eclipselink.sdo.test}/${report.dir}/@{custom-context}"/>
 			<mkdir dir="${eclipselink.sdo.test}/${report.dir}/@{custom-context}"/>
@@ -102,8 +113,9 @@
 					</fileset>
 					<formatter type="xml"/>
 				</batchtest>
-				<classpath refid="sdo.run.path"/>
+				<classpath refid="@{run-path}"/>
 			</junit>
+			<!-- Create JUnit report -->
 			<mkdir dir="${eclipselink.sdo.test}/${report.dir}/@{custom-context}"/>
 			<junitreport todir="${eclipselink.sdo.test}/${report.dir}/@{custom-context}">
 				<fileset dir="${eclipselink.sdo.test}/${report.dir}/@{custom-context}">
@@ -116,6 +128,40 @@
 					<include name="**/*.xml"/>
 				</fileset>
 			</delete>
+			<!-- Clean up generated files -->
+			<delete dir="${eclipselink.sdo.test}/${resource.dir}/baseTypes"/>
+			<delete dir="${eclipselink.sdo.test}/${resource.dir}/complextypes"/>
+			<delete dir="${eclipselink.sdo.test}/${resource.dir}/elements"/>
+			<delete dir="${eclipselink.sdo.test}/${resource.dir}/invalidtypename"/>
+			<delete dir="${eclipselink.sdo.test}/${resource.dir}/list"/>
+			<delete dir="${eclipselink.sdo.test}/${resource.dir}/nestedBaseTypes"/>
+			<delete dir="${eclipselink.sdo.test}/${resource.dir}/poJavaDocs"/>
+			<delete dir="${eclipselink.sdo.test}/${resource.dir}/poJavaDocsListener"/>
+			<delete dir="${eclipselink.sdo.test}/${resource.dir}/schemaTypes"/>
+			<delete dir="${eclipselink.sdo.test}/${resource.dir}/srcImports"/>
+			<delete dir="${eclipselink.sdo.test}/${resource.dir}/srcImportsDontProcess"/>
+			<delete dir="${eclipselink.sdo.test}/${resource.dir}/srcPO"/>
+			<delete dir="${eclipselink.sdo.test}/${resource.dir}/srcPOAnnotations"/>
+			<delete dir="${eclipselink.sdo.test}/${resource.dir}/union"/>
 		</sequential>
+	</macrodef>
+
+	<!-- Compile macros -->
+    <macrodef name="compile-sdo-tests">
+        <attribute name="compile-path"/>
+        <sequential>
+	   <javac srcdir="${eclipselink.sdo.test}/${src.dir}"
+              destdir="${eclipselink.sdo.test}/${classes.dir}"
+              debug="${javac.debug}" 
+              optimize="${javac.optimize}"
+              source="1.5" 
+              deprecation="${javac.deprecation}"
+              failonerror="true"
+              includes="org/eclipse/persistence/testing/sdo/**/*.java">
+			  <classpath>
+                  <path refid="@{compile-path}"/>
+              </classpath>
+		</javac>
+        </sequential>
 	</macrodef>
 </project>
