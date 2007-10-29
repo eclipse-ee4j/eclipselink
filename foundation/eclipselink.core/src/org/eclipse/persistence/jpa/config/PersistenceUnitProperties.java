@@ -295,4 +295,12 @@ public class PersistenceUnitProperties {
     public static final String getOverriddenLogStringForProperty(String propertyName){
         return PROPERTY_LOG_OVERRIDES.get(propertyName);
     }
+    
+    /**
+     * The type of performance profiler. Valid values are names of profiler defined in ProfilerType,
+     * default value is NoProfiler.
+     */
+    public static final String PROFILER = "eclipselink.profiler";
+    
+
 }
