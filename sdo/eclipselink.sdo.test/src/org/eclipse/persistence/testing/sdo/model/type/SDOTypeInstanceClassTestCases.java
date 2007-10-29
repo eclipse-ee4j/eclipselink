@@ -37,7 +37,7 @@ public class SDOTypeInstanceClassTestCases extends SDOTestCase {
         type.setInstanceClassName("org.eclipse.persistence.testing.sdo.myInvalidClass");
 
         Class theClass = type.getInstanceClass();
-        assertNull(theClass);
+        assertNotNull(theClass);
     }
 
     public void testIsInstance() {
