@@ -337,6 +337,10 @@ public class ValidationException extends EclipseLinkException {
     public static final int TWO_STRUCT_CONVERTERS_ADDED_FOR_SAME_CLASS = 7283;
     
     public static final int INVALID_COMPARATOR_CLASS = 7284;
+
+    public static final int INVALID_PROFILER_CLASS=7285;
+    public static final int CANNOT_INSTANTIATE_PROFILER_CLASS=7286;
+    
     
     /**
      * INTERNAL:
@@ -2354,7 +2358,14 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
     
-
+    public static ValidationException cannotInstantiateProfilerClass(String className,Exception e) {
+        Object[] args = { className };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CANNOT_INSTANTIATE_PROFILER_CLASS, args),e);
+        validationException.setErrorCode(CANNOT_INSTANTIATE_PROFILER_CLASS);
+        return validationException;
+    }
+    
+    
     public static ValidationException cannotInstantiateSessionEventListenerClass(String className,Exception e) {
         Object[] args = { className };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_EXCEPTIONHANDLER_CLASS, args),e);
@@ -2473,4 +2484,14 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(INVALID_COMPARATOR_CLASS);
         return validationException;
     }
+    
+    
+    public static ValidationException invalidProfilerClass(String className) {
+        Object[] args = { className };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_PROFILER_CLASS, args));
+        validationException.setErrorCode(INVALID_PROFILER_CLASS);
+        return validationException;
+    }
+
+    
 }
