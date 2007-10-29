@@ -106,7 +106,14 @@ public abstract class ServerPlatformBase implements ServerPlatform {
         this.databaseSession = newDatabaseSession;
         this.setIsCMP(false);
     }
-
+    
+    /**
+     * INTERNAL: configureProfiler(): set default performance profiler used in this server.
+     */
+    public void configureProfiler(org.eclipse.persistence.sessions.Session session) {
+        return;
+    }
+    
     /**
      * INTERNAL: getDatabaseSession(): Answer the instance of DatabaseSession the receiver is helping.
      *
