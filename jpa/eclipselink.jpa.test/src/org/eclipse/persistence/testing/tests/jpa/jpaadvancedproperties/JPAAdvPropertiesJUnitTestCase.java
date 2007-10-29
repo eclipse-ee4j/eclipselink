@@ -38,6 +38,7 @@ import org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.JPAPrope
  */
 public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
     private static String persistenceUnitName = "JPAADVProperties";
+    
 
     public JPAAdvPropertiesJUnitTestCase() {
         super();
@@ -57,6 +58,8 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         suite.addTest(new JPAAdvPropertiesJUnitTestCase("testBatchwritingProperty"));
         suite.addTest(new JPAAdvPropertiesJUnitTestCase("testCopyDescriptorNamedQueryToSessionProperty"));
         suite.addTest(new JPAAdvPropertiesJUnitTestCase("testLoggingTyperProperty"));
+        suite.addTest(new JPAAdvPropertiesJUnitTestCase("testProfilerTyperProperty"));
+        
         return new TestSetup(suite) {
             
             protected void setUp(){               
@@ -196,6 +199,30 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         }
         em.close();
     }
+    
+    public void testProfilerTyperProperty(){
+        EntityManager em = createEntityManager(persistenceUnitName);
+        org.eclipse.persistence.sessions.server.ServerSession session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
+        if(!(session.getSessionLog() instanceof org.eclipse.persistence.tools.profiler.PerformanceProfiler)){
+            assertTrue("Profiler type set to PerformanceProfiler, it however has been detected as different type Profiler.", true);
+        }
+        em.close();
+        
+        em = createEntityManager("JPAADVProperties2");
+        session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
+        if(!(session.getProfiler() instanceof org.eclipse.persistence.tools.profiler.QueryMonitor)){
+            assertTrue("Profiler type set to QueryMonitor, it however has been detected as different type profiler.", true);
+        }
+        em.close();
+        
+        em = createEntityManager("JPAADVProperties3");
+        session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
+        if((session.getSessionLog() !=null)){
+            assertTrue("no profiler has been set,it however has been detected.", true);
+        }
+        em.close();
+    }
+    
     
     public void testSessionXMLProperty() {
         Integer customerId;
