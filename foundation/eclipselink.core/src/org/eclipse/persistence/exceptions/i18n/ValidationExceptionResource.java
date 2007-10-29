@@ -274,7 +274,9 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7281", "Two StructConverters called {0} were added to the project.  Only one StructConverter of a given name may be added." },
                                            { "7282", "The StructConverter: {0} may not be defined on mapping {1}.  StructConverters may only be used on direct mappings." },
                                            { "7283", "Two StructConverters were added for class {0}.  Only one StructConverter may be added per class." },
-                                           { "7284", "The class [{0}] is not a valid comparator. The class must implement the Comparator interface."}
+                                           { "7284", "The class [{0}] is not a valid comparator. The class must implement the Comparator interface."},
+                                           { "7285", "The specified profiler class [{0}] is invalid, the class must exist in the classpath and implement the interface SessionProfiler."},
+                                           { "7286", "Unable instantiate the profiler class [{0}] specified in the property eclipselink.profiler [{1}]."},
     };
 
     /**
