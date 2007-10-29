@@ -73,23 +73,23 @@
       </zip>
     </target>
 
-    <!-- test.jpa -->
-    <target name="test.jpa" description="run the jpa tests">
-        <ant antfile="${eclipselink.jpa.test}/build.xml" target="test"/>
-    </target>
-    <!-- test.sdo & moxy-->
-    <target name="test.sdo" description="run the sdo tests">
-        <ant antfile="${eclipselink.sdo.test}/build.xml" target="test"/>
-    </target>
-    <target name="test.moxy" description="run the moxy tests">
-        <ant antfile="${eclipselink.moxy.test}/build.xml" target="test"/>
-    </target>
-    <target name="test.oxm" description="run the moxy (oxm) tests">
-        <ant antfile="${eclipselink.moxy.test}/build.xml" target="test.oxm"/>
-    </target>
-    <target name="test.jaxb" description="run the moxy (jaxb) tests">
-        <ant antfile="${eclipselink.moxy.test}/build.xml" target="test.jaxb"/>
-    </target>
+	<!-- test.jpa -->
+	<target name="test.jpa" description="run the jpa tests">
+	    <ant antfile="${eclipselink.jpa.test}/build.xml" target="test"/>
+	</target>
+	<!-- test.sdo & moxy-->
+	<target name="test.sdo" description="run the sdo tests">
+	    <ant antfile="${eclipselink.sdo.test}/build.xml" target="test.against.jar"/>
+	</target>
+	<target name="test.moxy" description="run the moxy tests">
+	    <ant antfile="${eclipselink.moxy.test}/build.xml" target="test.against.jar"/>
+	</target>
+	<target name="test.oxm" description="run the moxy (oxm) tests">
+	    <ant antfile="${eclipselink.moxy.test}/build.xml" target="test.oxm.against.jar"/>
+	</target>
+	<target name="test.jaxb" description="run the moxy (jaxb) tests">
+	    <ant antfile="${eclipselink.moxy.test}/build.xml" target="test.jaxb.against.jar"/>
+	</target>
 
     <!-- clean -->
   <target name="clean" description="Clean the build">
