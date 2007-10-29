@@ -62,6 +62,14 @@
         </jar>
     </target>
 
+    <target name="build.jar" depends="compile" description="build a jar file other projects can use for dependancies if they cannot compile with oracle dependancies">
+      <jar jarfile="${eclipselink.oracle.depend.test.jar}">
+          <fileset dir="${eclipselink.extension.oracle.test}/${classes.dir}">
+            <include name="org/eclipse/persistence/**/*.class"/>
+          </fileset>
+      </jar>
+    </target>
+
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${eclipselink.extension.oracle.test}/${classes.dir}"/>
