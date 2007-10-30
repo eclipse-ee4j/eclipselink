@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.sdo.helper.classgen;
 
-import com.sun.tools.javac.Main;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -21,6 +20,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.helper.ClassBuffer;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.SDOXMLHelperTestCases;
+import org.eclipse.persistence.testing.sdo.util.CompileUtil;
 
 public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
     protected SDOClassGenerator classGenerator;
@@ -110,19 +110,15 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
     }
     
     public void compileFiles(){
-       String[] args = new String[getFileNamesToCompile().size() + 2];
-
-        args[0] = "-cp";
-        args[1] = classgenCompilePath;
-        
+    	Object[] javaFiles = new Object[getFileNamesToCompile().size()];
 
         for (int i = 0; i < getFileNamesToCompile().size(); i++) {
-            String nextFileName = (String)getFileNamesToCompile().get(i);
+            String nextFileName = (String) getFileNamesToCompile().get(i);
             String fullName = getControlSourceFolder() + "/" + getPackageDir() + nextFileName;
-            args[i + 2] = fullName;
+            javaFiles[i] = fullName;
         }
 
-        int returnVal = Main.compile(args);
+        int returnVal = CompileUtil.instance().compile("\"" + classgenCompilePath + "\"", javaFiles);
         assertEquals(0, returnVal);
     }
 
