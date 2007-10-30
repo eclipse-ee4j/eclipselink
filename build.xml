@@ -6,46 +6,53 @@
   <!-- all -->
   <target name="all" depends="package, package.src, package.package-renamer" description="build EclipseLink jar"/>
 
-    <target name="package" description="build EclipseLink jar">
-        <ant antfile="${eclipselink.core}/build.xml" target="all"/>
+    <target name="build.all" depends="build">
         <ant antfile="${eclipselink.extension.oracle}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.extension.oracle.test}/build.xml" target="all"/>
+    </target>
+
+    <target name="build">
+        <ant antfile="${eclipselink.core}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa}/build.xml" target="all"/>
         <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa.test}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.extension.oracle.test}/build.xml" target="all"/>
         <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
         <ant antfile="${eclipselink.sdo}/build.xml" target="all"/>
+    </target>
 
+    <target name="package" depends="build" description="build EclipseLink jar">
+      <unjar src="${eclipselink.extension.oracle}/${eclipselink.oracle.depend.jar}" dest="${build.dir}"/>
       <jar jarfile="${eclipselink.jar}" manifest="${eclipselink.core}/${resource.dir}/META-INF/manifest.mf">
-      <fileset dir="${eclipselink.core}/${classes.dir}">
-        <include name="org/eclipse/persistence/**/*.class"/>
-        <include name="deprecated/**/*.class"/>
-      </fileset>
-      <fileset dir="${eclipselink.core.lib}/${asm}/${classes.dir}">
-        <include name="org/eclipse/persistence/internal/libraries/asm/**/*.class"/>
-      </fileset>
-      <fileset dir="${eclipselink.core.lib}/${antlr}/${classes.dir}">
-        <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.class"/>
-      </fileset>
-      <fileset dir="${eclipselink.extension.oracle}/${classes.dir}">
-        <include name="org/eclipse/persistence/**/*.class"/>
-      </fileset>
-      <fileset dir="${eclipselink.jpa}/${classes.dir}">
-        <include name="org/eclipse/persistence/**/*.class"/>
-      </fileset>
-      <fileset dir="${eclipselink.core}/${resource.dir}">
-        <include name="xsd/*.xsd"/>
-        <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
-        <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
-      </fileset>
-      <fileset dir="${eclipselink.moxy}/${classes.dir}">
-        <include name="org/eclipse/persistence/**/*.class"/>
-      </fileset>
-      <fileset dir="${eclipselink.sdo}/${classes.dir}">
-        <include name="org/eclipse/persistence/**/*.class"/>
-        <include name="commonj/sdo/impl/HelperProviderImpl.class"/>
-      </fileset>
+          <fileset dir="${eclipselink.core}/${classes.dir}">
+            <include name="org/eclipse/persistence/**/*.class"/>
+            <include name="deprecated/**/*.class"/>
+          </fileset>
+          <fileset dir="${eclipselink.core.lib}/${asm}/${classes.dir}">
+            <include name="org/eclipse/persistence/internal/libraries/asm/**/*.class"/>
+          </fileset>
+          <fileset dir="${eclipselink.core.lib}/${antlr}/${classes.dir}">
+            <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.class"/>
+          </fileset>
+          <fileset dir="${build.dir}">
+            <include name="org/eclipse/persistence/**/*.class"/>
+          </fileset>
+          <fileset dir="${eclipselink.jpa}/${classes.dir}">
+            <include name="org/eclipse/persistence/**/*.class"/>
+          </fileset>
+          <fileset dir="${eclipselink.core}/${resource.dir}">
+            <include name="xsd/*.xsd"/>
+            <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
+            <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+          </fileset>
+          <fileset dir="${eclipselink.moxy}/${classes.dir}">
+            <include name="org/eclipse/persistence/**/*.class"/>
+          </fileset>
+          <fileset dir="${eclipselink.sdo}/${classes.dir}">
+            <include name="org/eclipse/persistence/**/*.class"/>
+            <include name="commonj/sdo/impl/HelperProviderImpl.class"/>
+          </fileset>
     </jar>
+    <delete dir="${build.dir}"/>
   </target>
 
     <target name="package.src" description="build EclipseLink source jar">
@@ -99,6 +106,7 @@
     <ant antfile="${eclipselink.util.rename.utility}/build.xml" target="clean"/>
     <ant antfile="${eclipselink.moxy}/build.xml" target="clean"/>
     <ant antfile="${eclipselink.sdo}/build.xml" target="clean"/>
+    <delete dir="${build.dir}"/>
   </target>
     
     <!-- installer.zip -->

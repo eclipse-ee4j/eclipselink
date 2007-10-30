@@ -19,7 +19,7 @@
     </path>
 	
     <!-- all -->
-    <target name="all" depends="clean, compile, package.structconverter, package.structconverter.tests" description="package the struct converter model"/>
+    <target name="all" depends="clean, compile, package.structconverter, package.structconverter.tests, build.jar" description="package the struct converter model"/>
 	
     <!-- compile --> 
     <target name="compile" depends="" description="compile EclipseLink core tests">  

@@ -14,7 +14,7 @@
     </path>
 
     <!-- all -->
-    <target name="all" depends="clean, compile" description="build oracle specific classes"/>
+    <target name="all" depends="clean, compile, build.jar" description="build oracle specific classes"/>
 
     <!-- compile --> 
     <target name="compile" depends="" description="Compile EclipseLink's Oracle extensions"> 
