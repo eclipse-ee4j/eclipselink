@@ -247,12 +247,25 @@ public class SDOSchemaGenerator {
 
     private SimpleType generateSimpleType(Type type) {
         SimpleType simpleType = new SimpleType();
-        simpleType.setName(type.getName());
+
+        String xsdLocalName = ((SDOType)type).getXsdLocalName();
+        if (xsdLocalName != null) {
+            simpleType.setName(xsdLocalName);
+        } else {
+            simpleType.setName(type.getName());
+        }
+
         if ((((SDOType)type).getAppInfoElements() != null) && (((SDOType)type).getAppInfoElements().size() > 0)) {
             Annotation annotation = new Annotation();
 
             annotation.setAppInfo(((SDOType)type).getAppInfoElements());
             simpleType.setAnnotation(annotation);
+        }
+        
+        if ((xsdLocalName != null) && !(xsdLocalName.equals(type.getName()))) {
+            String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
+            QName qname = new QName(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_NAME, sdoXmlPrefix);
+            simpleType.getAttributesMap().put(qname, type.getName());
         }
 
         //TODO:  simpleType.setAbstractValue(type.isAbstract());
@@ -306,7 +319,19 @@ public class SDOSchemaGenerator {
 
     private ComplexType generateComplexType(Type type) {
         ComplexType complexType = new ComplexType();
-        complexType.setName(type.getName());
+        String xsdLocalName = ((SDOType)type).getXsdLocalName();
+        if (xsdLocalName != null) {
+            complexType.setName(xsdLocalName);
+        } else {
+            complexType.setName(type.getName());
+        }
+
+        if ((xsdLocalName != null) && !(xsdLocalName.equals(type.getName()))) {
+            String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
+            QName qname = new QName(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_NAME, sdoXmlPrefix);
+            complexType.getAttributesMap().put(qname, type.getName());
+        }
+
         complexType.setAbstractValue(type.isAbstract());
         if ((((SDOType)type).getAppInfoElements() != null) && (((SDOType)type).getAppInfoElements().size() > 0)) {
             Annotation annotation = new Annotation();
@@ -440,6 +465,15 @@ public class SDOSchemaGenerator {
             QName qname = new QName(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_ALIASNAME, sdoXmlPrefix);
             sc.getAttributesMap().put(qname, aliasNamesString);
         }
+
+        String xsdLocalName = ((SDOProperty)property).getXsdLocalName();
+
+        if ((xsdLocalName != null) && !(xsdLocalName.equals(property.getName()))) {
+            String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
+            QName qname = new QName(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_NAME, sdoXmlPrefix);
+            sc.getAttributesMap().put(qname, property.getName());
+        }
+
         if ((element && !property.isContainment() && !property.getType().isDataType()) || (!element && !property.getType().isDataType())) {
             String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
             String uri = property.getType().getURI();
@@ -510,7 +544,12 @@ public class SDOSchemaGenerator {
 
     private Element buildElement(Property property, NestedParticle nestedParticle) {
         Element elem = new Element();
-        elem.setName(property.getName());
+        String xsdLocalName = ((SDOProperty)property).getXsdLocalName();
+        if (xsdLocalName != null) {
+            elem.setName(xsdLocalName);
+        } else {
+            elem.setName(property.getName());
+        }
         elem.setMinOccurs(Occurs.ZERO);
         elem.setNillable(property.isNullable());
         if ((((SDOProperty)property).getAppInfoElements() != null) && (((SDOProperty)property).getAppInfoElements().size() > 0)) {
@@ -558,6 +597,12 @@ public class SDOSchemaGenerator {
         QName schemaType = ((SDOProperty)property).getXsdType();
         if (schemaType != null) {
             schemaSDOType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getType(schemaType.getNamespaceURI(), schemaType.getLocalPart());
+
+            if ((property.getType() == SDOConstants.SDO_STRING) && (schemaSDOType != SDOConstants.SDO_STRING)) {
+                String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
+                QName qname = new QName(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_STRING_NAME, sdoXmlPrefix);
+                elem.getAttributesMap().put(qname, "true");
+            }
         }
         if (!property.isContainment() && !property.getType().isDataType()) {
             schemaType = SDOConstants.ANY_URI_QNAME;
@@ -586,10 +631,23 @@ public class SDOSchemaGenerator {
                     addTypeToListIfNeeded(property.getContainingType(), schemaSDOType);
                 }
             } else if ((propertyType.getURI() == null) || (propertyType.getURI().equalsIgnoreCase(generatedSchema.getTargetNamespace()))) {
-                elem.setType(propertyType.getName());
+                String xsdTypeLocalName = ((SDOType)propertyType).getXsdLocalName();
+                if (xsdTypeLocalName != null) {
+                    elem.setType(xsdTypeLocalName);
+                } else {
+                    elem.setType(propertyType.getName());
+                }
             } else {
-                //TODO: not the sdo type name but the complex/simple type name corresponding to this sdo type
-                elem.setType(getPrefixStringForURI(propertyType.getURI()) + propertyType.getName());
+                String nameString = null;
+                String xsdTypeLocalName = ((SDOType)propertyType).getXsdLocalName();
+                if (xsdTypeLocalName != null) {
+                    nameString = xsdTypeLocalName;
+                } else {
+                    nameString = propertyType.getName();
+                }
+
+                //TODO: not the sdo type name but the complex/simple type name corresponding to this sdo type                
+                elem.setType(getPrefixStringForURI(propertyType.getURI()) + nameString);
             }
         } else {
             elem.setType("anyURI");
@@ -608,7 +666,13 @@ public class SDOSchemaGenerator {
 
     private Attribute buildAttribute(Property property) {
         Attribute attr = new Attribute();
-        attr.setName(property.getName());
+        String xsdLocalName = ((SDOProperty)property).getXsdLocalName();
+        if (xsdLocalName != null) {
+            attr.setName(xsdLocalName);
+        } else {
+            attr.setName(property.getName());
+        }
+
         if ((((SDOProperty)property).getAppInfoElements() != null) && (((SDOProperty)property).getAppInfoElements().size() > 0)) {
             Annotation annotation = new Annotation();
             annotation.setAppInfo(((SDOProperty)property).getAppInfoElements());
@@ -636,6 +700,17 @@ public class SDOSchemaGenerator {
         */
         Type propertyType = property.getType();
         QName schemaType = ((SDOProperty)property).getXsdType();
+
+        if (schemaType != null) {
+            Type schemaSDOType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getType(schemaType.getNamespaceURI(), schemaType.getLocalPart());
+
+            if ((property.getType() == SDOConstants.SDO_STRING) && (schemaSDOType != SDOConstants.SDO_STRING)) {
+                String sdoXmlPrefix = getPrefixForURI(SDOConstants.SDOXML_URL);
+                QName qname = new QName(SDOConstants.SDOXML_URL, SDOConstants.SDOXML_STRING_NAME, sdoXmlPrefix);
+                attr.getAttributesMap().put(qname, "true");
+            }
+        }
+
         if (!propertyType.isDataType()) {
             schemaType = SDOConstants.ANY_URI_QNAME;
         }
@@ -650,10 +725,24 @@ public class SDOSchemaGenerator {
             if (schemaType != null) {
                 attr.setType(getPrefixStringForURI(schemaType.getNamespaceURI()) + schemaType.getLocalPart());
             } else if ((propertyType.getURI() == null) || (propertyType.getURI().equalsIgnoreCase(generatedSchema.getTargetNamespace()))) {
-                attr.setType(propertyType.getName());
+                String xsdTypeLocalName = ((SDOType)propertyType).getXsdLocalName();
+                if (xsdTypeLocalName != null) {
+                    attr.setType(xsdTypeLocalName);
+                } else {
+                    attr.setType(propertyType.getName());
+                }
             } else {
-                //TODO: not the sdo type name but the complex/simple type name corresponding to this sdo type
-                attr.setType(getPrefixStringForURI(propertyType.getURI()) + propertyType.getName());
+                String nameString = null;
+                String xsdTypeLocalName = ((SDOType)propertyType).getXsdLocalName();
+
+                if (xsdTypeLocalName != null) {
+                    nameString = xsdTypeLocalName;
+                } else {
+                    nameString = propertyType.getName();
+                }
+
+                //TODO: not the sdo type name but the complex/simple type name corresponding to this sdo type                
+                attr.setType(getPrefixStringForURI(propertyType.getURI()) + nameString);
             }
 
             //get url for prefix in namespace resolver and map sure it is added to the schema if necessary
@@ -719,14 +808,13 @@ public class SDOSchemaGenerator {
                         }
                     }
                 }
-            }else{
-                    if (!alreadyGenerated) {
-                        //we can #1 add to list of allTypes or #2 make an appropriate include
-                        if (targetType.getURI().equals(generatedSchema.getTargetNamespace())) {
-                            allTypes.add(targetType);
-                        }
+            } else {
+                if (!alreadyGenerated) {
+                    //we can #1 add to list of allTypes or #2 make an appropriate include
+                    if (targetType.getURI().equals(generatedSchema.getTargetNamespace())) {
+                        allTypes.add(targetType);
                     }
-              
+                }
             }
         }
     }

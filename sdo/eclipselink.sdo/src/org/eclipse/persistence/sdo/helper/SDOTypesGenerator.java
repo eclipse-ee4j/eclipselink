@@ -869,7 +869,9 @@ public class SDOTypesGenerator extends SchemaParser {
 
         //string annotation
         String stringValue = (String)simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_STRING_QNAME);
-        if (stringValue != null) {
+        if (stringValue != null) {            
+            QName xsdTypeQName = getQNameForString(targetNamespace, simpleComponent.getType());
+            p.setXsdType(xsdTypeQName);
             sdoPropertyType = SDOConstants.SDO_STRING;
         }
 
