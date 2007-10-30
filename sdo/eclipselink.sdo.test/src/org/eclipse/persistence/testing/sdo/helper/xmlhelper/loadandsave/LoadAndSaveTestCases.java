@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
-import com.sun.tools.javac.Main;
 import commonj.sdo.helper.XMLDocument;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -31,6 +30,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.SDOXMLHelperTestCases;
+import org.eclipse.persistence.testing.sdo.util.CompileUtil;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -360,7 +360,6 @@ public abstract class LoadAndSaveTestCases extends SDOXMLHelperTestCases {
                 File nextFile = filesInDir[j];
                 String fullName = nextFile.getAbsolutePath();
                 nextFile.deleteOnExit();
-                allFilesInAllPackages.add(fullName);
 
                 String fullClassName = fullName.replace(".java", ".class");
                 File nextClassFile = new File(fullClassName);
@@ -369,14 +368,8 @@ public abstract class LoadAndSaveTestCases extends SDOXMLHelperTestCases {
         }
         Object[] fileArray = allFilesInAllPackages.toArray();
 
-        String[] args = new String[allFilesInAllPackages.size() + 2];
-        args[0] = "-cp";
-        args[1] = getClassPathForCompile();
-        System.arraycopy(fileArray, 0, args, 2, allFilesInAllPackages.size());
-
-        int returnVal = Main.compile(args);
+        int returnVal = CompileUtil.instance().compile("\"" + getClassPathForCompile() + "\"", fileArray);
         assertEquals(0, returnVal);
-        //deleteDirsOnExit(new File(dirName));
     }
 
     public void tearDown() throws Exception {
