@@ -11,6 +11,7 @@ package org.eclipse.persistence.testing.sdo.helper.xsdhelper.generate;
 
 import commonj.sdo.Type;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
@@ -18,6 +19,8 @@ import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGenerateTestCases {
     public PurchaseOrderGenerateWithAnnotationsTestCases(String name) {
@@ -31,6 +34,10 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
     public String getControlFileName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsGenerated.xsd";
     }
+    
+    public String getControlFileNameDifferentOrder() {
+        return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsGeneratedRoundTrip.xsd";
+    }
 
     public List getTypesToGenerateFrom() {
         List types = new ArrayList();
@@ -43,6 +50,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
 
         SDOType gregorianDateType = new SDOType(uri, "MyGregorianDate");
         gregorianDateType.setDataType(true);
+        gregorianDateType.setInstanceProperty(SDOConstants.JAVA_CLASS_PROPERTY, "java.sql.Time");
         List aliasNames = new ArrayList();
         aliasNames.add("TheGregorianDate");
         gregorianDateType.setAliasNames(aliasNames);
@@ -111,6 +119,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         /****QUANTITY TYPE*****/
         SDOType quantityType = new SDOType(uri, "quantityType");
         quantityType.setDataType(true);
+        quantityType.setXsdType(SDOConstants.ANY_TYPE_QNAME);
         quantityType.getBaseTypes().add(intType);
         quantityType.setInstanceClassName("java.lang.Integer");
 
@@ -119,8 +128,8 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         SKUType.setDataType(true);
         SKUType.setXsd(true);
         SKUType.setXsdLocalName("SKU");
-        SKUType.getBaseTypes().add(stringType);
         SKUType.setInstanceClassName("com.example.myPackage.SKU");
+        SKUType.setInstanceProperty(SDOConstants.JAVA_CLASS_PROPERTY, "com.example.myPackage.SKU");
 
         /****ITEM TYPE*****/
         SDOType itemType = new SDOType(uri, "ItemSDO");
@@ -143,7 +152,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         pOrderProp.setName("porder");
         pOrderProp.setXsdLocalName("porder");
         pOrderProp.setType(stringType);
-        //pOrderProp.setElement(true);
+        //pOrderProp.setElement(true);        
         pOrderProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         pOrderProp.setMany(false);
         pOrderProp.setContainment(true);
@@ -153,12 +162,10 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         SDOProperty quantityProp = new SDOProperty(aHelperContext);
         quantityProp.setXsd(true);
         quantityProp.setName("quantity");
-        quantityProp.setXsdLocalName("quantity");
-        //quantityProp.setType(quantityType);
-        quantityProp.setType(SDOConstants.SDO_INT);
-        //quantityProp.setAttribute(true);
-        quantityProp.setContainingType(itemType);
-        quantityProp.setInstanceProperty(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_INT);
+        quantityProp.setXsdLocalName("quantity");        
+        quantityProp.setContainingType(itemType);          
+        quantityProp.setInstanceProperty(SDOConstants.XMLDATATYPE_PROPERTY, SDOConstants.SDO_INTEGER);
+        quantityProp.setType(SDOConstants.SDO_INTEGER);
         itemType.getDeclaredProperties().add(quantityProp);
 
         SDOProperty partNumProp = new SDOProperty(aHelperContext);
@@ -199,7 +206,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         shipDateProp.setName("shipDate");
         shipDateProp.setXsdLocalName("shipDate");
         //        shipDateProp.setType(yearMonthDayType);
-        shipDateProp.setType(SDOConstants.SDO_STRING);
+        shipDateProp.setType(SDOConstants.SDO_YEARMONTHDAY);
         shipDateProp.setContainment(false);
         //shipDateProp.setAttribute(true);
         shipDateProp.setContainingType(itemType);
@@ -226,6 +233,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         /****PURCHASEORDER TYPE*****/
         SDOType POtype = new SDOType(uri, "PurchaseOrder");
         POtype.setDataType(false);
+        POtype.setSequenced(true);
         names = new ArrayList();
         names.add("Purchase");
         POtype.setAliasNames(names);
@@ -234,6 +242,7 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         SDOProperty shipToProp = new SDOProperty(aHelperContext);
         shipToProp.setXsd(true);
         shipToProp.setName("shipTo");
+        shipToProp.setMany(true);
         shipToProp.setXsdLocalName("shipTo");
         shipToProp.setContainment(true);
         names = new ArrayList();
@@ -263,8 +272,9 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         itemsProp.setContainment(true);
         //temsProp.setElement(true);
         itemsProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
+        itemsProp.setInstanceProperty(SDOConstants.XMLDATATYPE_PROPERTY, itemsType);
+        itemsProp.setType(SDOConstants.SDO_DATAOBJECT);
         itemsProp.setContainingType(POtype);
-        itemsProp.setType(itemsType);
 
         SDOProperty commentProp = new SDOProperty(aHelperContext);
         commentProp.setXsd(true);
@@ -281,7 +291,8 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         orderDateProp.setXsdLocalName("orderDate");
         //orderDateProp.setType(yearMonthDayType);
         //orderDateProp.setAttribute(true);
-        orderDateProp.setType(gregorianDateType);
+        orderDateProp.setType(SDOConstants.SDO_YEARMONTHDAY);
+        orderDateProp.setInstanceProperty(SDOConstants.XMLDATATYPE_PROPERTY, gregorianDateType);
         orderDateProp.setContainingType(POtype);
         orderDateProp.setContainment(false);
 
@@ -291,10 +302,8 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         topPriorityItemProp.setXsdLocalName("topPriorityItems");
         topPriorityItemProp.setType(itemType);
         topPriorityItemProp.setMany(true);
-        //topPriorityItemProp.setElement(true);
         topPriorityItemProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
-        // TODO: 20060906
-        topPriorityItemProp.setOpposite(pOrderProp);
+        
         topPriorityItemProp.setContainment(true);
         topPriorityItemProp.setContainingType(POtype);
 
@@ -316,17 +325,23 @@ public class PurchaseOrderGenerateWithAnnotationsTestCases extends XSDHelperGene
         return types;
     }
 
-    public void testGenerateSchemaRoundTrip() {
+    public void testGenerateSchemaRoundTrip() throws Exception {
         org.eclipse.persistence.sdo.helper.DefaultSchemaLocationResolver resolver = new org.eclipse.persistence.sdo.helper.DefaultSchemaLocationResolver(getMap());
         resolver.setMap(getMap());
         List types = defineTypesFromSchema();
         String generatedSchema = ((SDOXSDHelper)xsdHelper).generate(types, resolver);
 
-        String controlSchema = getSchema(getControlFileName());
+        String controlSchema = getSchema(getControlFileNameDifferentOrder());
         log("EXPECTED: \n" + controlSchema);
         log("ACTUAL: \n" + generatedSchema);
 
-        this.assertEquals(controlSchema, generatedSchema);
+
+        StringReader reader = new StringReader(generatedSchema);
+        InputSource inputSource = new InputSource(reader);
+        Document generatedSchemaDoc = parser.parse(inputSource);        
+        reader.close();
+        
+        assertXMLIdentical(getDocument(getControlFileNameDifferentOrder()), generatedSchemaDoc);
     }
 
     public java.util.List defineTypesFromSchema() {

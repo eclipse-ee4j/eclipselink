@@ -25,6 +25,10 @@ public class PurchaseOrderGenerateWithAnnotationsTNSTestCases extends PurchaseOr
     public String getControlFileName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsGeneratedTNS.xsd";
     }
+    
+    public String getControlFileNameDifferentOrder() {
+        return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsGeneratedTNSRoundTrip.xsd";
+    }
 
     public java.util.List defineTypesFromSchema() {
         InputStream is = getSchemaInputStream("org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotationsTNS.xsd");
