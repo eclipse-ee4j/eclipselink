@@ -23,7 +23,7 @@ import org.eclipse.persistence.sessions.factories.SessionFactory;
  * This sample illustrates the JPA helper methods that may be of use 
  * to EclipseLink customers attempting to leverage EclipseLink specific functionality. 
  * 
- * @author Doug Clarke 
+ * @author dclarke, gpelletie 
  */ 
 public class JpaHelper { 
     /** 
@@ -31,14 +31,8 @@ public class JpaHelper {
      * and not in a transaction this method may incorrectly return false. 
      * It is always more reliable to check isEclipseLink on the EMF or Query. 
      */ 
-    public static boolean isEclipseLink(javax.persistence.EntityManager em) { 
-        try { 
-            JpaEntityManager emImpl = getEntityManager(em); 
-        } catch (IllegalArgumentException iae) { 
-            return false; 
-        } 
-
-        return em != null; 
+    public static boolean isEclipseLink(javax.persistence.EntityManager em) {
+    	return getEntityManager(em) != null; 
     } 
 
     /** 

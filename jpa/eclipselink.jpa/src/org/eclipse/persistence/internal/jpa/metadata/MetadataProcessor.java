@@ -102,7 +102,7 @@ public class MetadataProcessor {
             m_project.addDescriptor(new MetadataDescriptor(entity));
             entityNames.add(entity.getName());
         }
-        m_project.setEntityNames(entityNames);
+        m_project.setWeavableClassNames(entityNames);
         m_logger = new MetadataLogger(session);
     }
     
@@ -138,29 +138,6 @@ public class MetadataProcessor {
     }
     
     /**
-     * Return a set of class names for each entity found in the xml
-     * descriptor instance document.
-     */
-    private static Set<String> buildEntityClassSetFromXMLDocument(Document document, String fileName, ClassLoader loader, boolean includeMappedSuperclasses, boolean includeEmbedables) {
-        XMLHelper helper = new XMLHelper(document, fileName, loader);
-        
-        // Process the package node.
-        String defaultPkg = helper.getNodeValue(new String[] {XMLConstants.ENTITY_MAPPINGS, XMLConstants.PACKAGE, XMLConstants.TEXT});
-
-        // Handle entities only. Mapped superclasses and embeddables are
-        // discovered and processed separately.
-        HashSet<String> classSet = new HashSet<String>();
-        classSet.addAll(buildEntityClassSetForNodeList(helper, XMLConstants.ENTITY, defaultPkg));
-        if (includeEmbedables) {
-            classSet.addAll(buildEntityClassSetForNodeList(helper, XMLConstants.EMBEDDABLE, defaultPkg));
-        }
-        if (includeMappedSuperclasses){
-            classSet.addAll(buildEntityClassSetForNodeList(helper, XMLConstants.MAPPED_SUPERCLASS, defaultPkg));
-        }
-        return classSet;
-    }
-    
-    /**
      * INTERNAL:
      * The class name of each node in the node list will be added to the 
      * provided collection.
@@ -178,6 +155,40 @@ public class MetadataProcessor {
         return classNames;
     }
     
+    /**
+     * INTERNAL:
+     * Return a set of class names for each entity, embeddable and mapped 
+     * superclass found in the list of xml descriptor instance documents to be 
+     * processed by the MetadataProcessor.
+     */
+    public Set<String> buildPersistenceUnitClassSetFromXMLDocuments() {
+        HashSet<String> classSet = new HashSet<String>();
+        
+        for (Map.Entry<URL, Document> urlToDoc : m_project.getMappingFiles().entrySet()) {
+            XMLHelper helper = new XMLHelper(urlToDoc.getValue(), urlToDoc.getKey().getFile(), m_loader);
+        
+            // Process the package node.
+            String defaultPkg = helper.getNodeValue(new String[] {XMLConstants.ENTITY_MAPPINGS, XMLConstants.PACKAGE, XMLConstants.TEXT});
+
+            // Handle entities only unless otherwise specified to.
+            classSet.addAll(buildEntityClassSetForNodeList(helper, XMLConstants.ENTITY, defaultPkg));
+            classSet.addAll(buildEntityClassSetForNodeList(helper, XMLConstants.EMBEDDABLE, defaultPkg));
+            classSet.addAll(buildEntityClassSetForNodeList(helper, XMLConstants.MAPPED_SUPERCLASS, defaultPkg));
+        }
+        
+        return classSet;
+    }
+    
+    /**
+     * This method frees up resources acquired by this object.
+     */
+    public void cleanup() {
+        m_project.cleanup();
+        m_loader = null;
+        m_project = null;
+        m_session = null;
+    }
+    
     /** 
      * INTERNAL:
 	 * Return the logger used by the processor.
@@ -189,16 +200,69 @@ public class MetadataProcessor {
     /**
      * INTERNAL:
      */
-     public MetadataProject getProject() {
-         return m_project;
-     }
-    
+    public MetadataProject getProject() {
+    	return m_project;
+    }
+
+    /**
+     * INTERNAL:
+     * 
+     * Return a list of instantiated StructConverter objects that were defined in the
+     * metadata of this project.
+     * 
+     * These StructConverters can be added to the Session
+     * 
+     * @param loader
+     * @return List<StructConverter> 
+     */
+    public List<StructConverter> getStructConverters(ClassLoader loader) {
+        List<StructConverter> structConverters = new ArrayList<StructConverter>();
+        for (MetadataStructConverter converter: m_project.getStructConverters().values()) {
+            StructConverter structConverter = (StructConverter) MetadataHelper.getClassInstance(converter.getConverterClassName(), loader);
+            structConverters.add(structConverter);
+        }
+        return structConverters;
+    }
+     
     /** 
      * INTERNAL:
 	 * Return the validator used by the processor.
 	 */
-	public MetadataValidator getValidator() {
-        return m_validator;
+    public MetadataValidator getValidator() {
+    	return m_validator;
+    }
+     
+    /**
+     *  Handle an exception that occured while processing ORM xml
+     */
+    private void handleORMException(RuntimeException e, String mf, boolean throwException){
+        if (m_session == null) {
+    	    // Metadata processor is mainly used with a session.
+    		// Java SE bootstraping uses some functions such as ORM processing without
+    		// a session.  In these cases, it is impossible to get the
+    		// session to properly handle the exception.  As a result we
+    		// log an error.  The same code will be called later in the bootstrapping
+    		// code and the error will be handled then.
+    		AbstractSessionLog.getLog().log(SessionLog.CONFIG, EntityManagerSetupImpl.ERROR_LOADING_XML_FILE, new Object[] {mf, e});
+    	} else if (!throwException) {
+    		// fail quietly
+    		m_session.log(SessionLog.CONFIG, SessionLog.EJB_OR_METADATA, EntityManagerSetupImpl.ERROR_LOADING_XML_FILE, new Object[] {mf, e});
+    	} else {
+    		// fail loudly
+    		m_session.handleException(e);
+    	}
+    }
+    
+    /**
+     * Log an untranslated message to the TopLink log at FINER level.
+     * @param msg message to be logged
+     */
+    private void logMessage(String msg) {
+        if (m_session == null) {
+    	    AbstractSessionLog.getLog().log(SessionLog.FINER, msg);
+        } else {
+        	m_session.logMessage(msg);
+    	}
     }
 	
     /**
@@ -245,29 +309,136 @@ public class MetadataProcessor {
             try {
                 customizer.customize(descriptor.getClassDescriptor());
             } catch (Exception e) {
-                // WIP 
+                // fail silently ...
+            }
+        }
+    }
+
+    /**
+     * Process the xml and fill in the project. Process the entity-mappings
+     * information then process the entities.
+     */
+    private void processMappingFile(Document document, String fileName) {
+        if (m_project.hasDescriptors()) {
+            XMLHelper helper = new XMLHelper(document, fileName, m_loader);
+
+            // Process the entity mappings ... this is a crude way of doing
+            // things ... but hey ... the clock is ticking ...
+            MetadataDescriptor desc = m_project.getDescriptors().iterator().next();
+            XMLClassAccessor dummyAccessor = new XMLClassAccessor(new MetadataClass(desc.getJavaClass()), null, helper, this, desc);
+            dummyAccessor.processEntityMappings();
+
+            // Process the entity nodes for this xml document.
+            NodeList entityNodes = helper.getNodes(XMLConstants.ENTITY_MAPPINGS, XMLConstants.ENTITY);
+
+            if (entityNodes != null) {
+                for (int i = 0; i < entityNodes.getLength(); i++) {
+                    Node entityNode = entityNodes.item(i);
+                    Class entityClass = helper.getClassForNode(entityNode);
+                    MetadataDescriptor descriptor = m_project.getDescriptor(entityClass);
+
+                    // Process all descriptors that are in our project.
+                    ClassAccessor accessor = descriptor.getClassAccessor();
+
+                    // If there is no accessor on this descriptor then it has not
+                    // been processed yet. Create one and process it.
+                    if (accessor == null) {
+                        accessor = new XMLClassAccessor(new MetadataClass(descriptor.getJavaClass()), entityNode, helper, this, descriptor);
+                        descriptor.setClassAccessor(accessor);
+                        accessor.process();
+                    }
+                }
+            }
+        } else {
+            // There are no classes to process ...
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process metadata found in all the mapping files for this PU.
+     * @see #processMappingFile(org.w3c.dom.Document, String)
+     */
+    public void processMappingFiles() {
+        for (Map.Entry<URL, Document> urlToDocPair : m_project.getMappingFiles().entrySet()) {
+            processMappingFile(urlToDocPair.getValue(), urlToDocPair.getKey().getFile());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * This method is responsible for discovering all the entity classes for 
+     * this PU and adding corresponding MetadataDescriptor in the 
+     * MetadataProject.
+     * 
+     * This method will also gather all the weavable classes for this PU. 
+     * Currently, entity and embeddable classes are weavable.
+     * 
+     * DO NOT CALL THIS METHOD MORE THAN ONCE PER PERSISTENCE UNIT.
+     */
+    public void processPersistenceUnitClasses() {
+        Set<String> entityClassNames = new HashSet<String>();
+        Set<String> weavableClassNames = new HashSet<String>();
+        
+        // Iterate through the classes are defined with annotations.
+        PersistenceUnitInfo puInfo = m_project.getPUInfo();
+
+        processPersistenceUnitClasses(puInfo.getManagedClassNames(), entityClassNames, weavableClassNames);
+
+        for (URL url : puInfo.getJarFileUrls()) {
+            processPersistenceUnitClasses(PersistenceUnitProcessor.getClassNamesFromURL(url), entityClassNames, weavableClassNames);
+        }
+
+        if (! puInfo.excludeUnlistedClasses()) {
+            processPersistenceUnitClasses(PersistenceUnitProcessor.getClassNamesFromURL(puInfo.getPersistenceUnitRootUrl()), entityClassNames, weavableClassNames);
+        }
+
+        // Iterate though the classes that are defined in XML.
+        for (Map.Entry<URL, Document> urlToDoc : m_project.getMappingFiles().entrySet()) {
+            //classSet.addAll(buildEntityClassSetFromXMLDocument(urlToDoc.getValue(), urlToDoc.getKey().getFile(), m_loader, includeMappedSuperclasses, includeEmbeddables));
+            XMLHelper helper = new XMLHelper(urlToDoc.getValue(), urlToDoc.getKey().getFile(), m_loader);
+        
+            // Process the package node.
+            String defaultPkg = helper.getNodeValue(new String[] {XMLConstants.ENTITY_MAPPINGS, XMLConstants.PACKAGE, XMLConstants.TEXT});
+
+            // Add the entities to the entity and weavable class list.
+            Set<String> xmlEntityClassNames = buildEntityClassSetForNodeList(helper, XMLConstants.ENTITY, defaultPkg);
+            entityClassNames.addAll(xmlEntityClassNames);
+            weavableClassNames.addAll(xmlEntityClassNames);
+            
+            // Add the embeddables to the weavable class list.
+            weavableClassNames.addAll(buildEntityClassSetForNodeList(helper, XMLConstants.EMBEDDABLE, defaultPkg));        
+        }
+
+        // Set the weavable classes on the project.
+        m_project.setWeavableClassNames(weavableClassNames);
+
+        // Add a metadata descriptor to the project for every entity class.
+        // Any persistence unit metadata/defaults will be applied
+        for (String className : entityClassNames) {
+            try {
+                m_project.addDescriptor(new MetadataDescriptor(m_loader.loadClass(className)));
+            } catch (ClassNotFoundException e) {
+                AbstractSessionLog.getLog().log(SessionLog.WARNING, "exception_loading_entity_class", className, e);
             }
         }
     }
     
     /**
      * INTERNAL:
-     * 
-     * Return a list of instantiated StructConverter objects that were defined in the
-     * metadata of this project.
-     * 
-     * These StructConverters can be added to the Session
-     * 
-     * @param loader
-     * @return List<StructConverter> 
+     * Process the given persistence unit class name.
      */
-    public List<StructConverter> getStructConverters(ClassLoader loader) {
-        List<StructConverter> structConverters = new ArrayList<StructConverter>();
-        for (MetadataStructConverter converter: m_project.getStructConverters().values()) {
-            StructConverter structConverter = (StructConverter) MetadataHelper.getClassInstance(converter.getConverterClassName(), loader);
-            structConverters.add(structConverter);
+    private void processPersistenceUnitClasses(Collection<String> classNames, Set<String> entityClassNames, Set<String> weavableClassNames) {
+        for (String className: classNames) {
+            Class candidateClass = PersistenceUnitProcessor.loadClass(className, m_loader, true);
+            
+            if (PersistenceUnitProcessor.isEntity(candidateClass)) {
+                entityClassNames.add(className);
+                weavableClassNames.add(className);
+            } else if (PersistenceUnitProcessor.isEmbeddable(candidateClass)) {
+                weavableClassNames.add(className);
+            }
         }
-        return structConverters;
     }
     
     /**
@@ -281,7 +452,7 @@ public class MetadataProcessor {
      * found will be added to a list in the order that they are read from the 
      * instance document(s). 
      */
-     public void processPersistenceUnitMetadata() {
+    public void processPersistenceUnitMetadata() {
         // For each orm xml instance document, process persistence unit
         // metadata/defaults and mapped superclasses.
         for (Map.Entry<URL, Document> mfDocPair : m_project.getMappingFiles().entrySet()) {
@@ -355,13 +526,33 @@ public class MetadataProcessor {
         }
     }
     
-    /**
-     * INTERNAL:
-	 * Use this method to set the correct class loader that should be used
-     * during processing.
-	 */
-	public void setClassLoader(ClassLoader loader) {
-        m_loader = loader;
+    private Map<URL, Document> readExplicitlySpecifiedMappingFiles(boolean throwExceptionOnFail) {
+        Map<URL, Document> list = new HashMap<URL, Document>();
+        final PersistenceUnitInfo puInfo = m_project.getPUInfo();
+        for (String mf : puInfo.getMappingFileNames()) {
+            try {
+                Enumeration<URL> mfURLs = m_loader.getResources(mf);
+                if (mfURLs.hasMoreElements()) {
+                    URL nextURL = mfURLs.nextElement();
+                    if (mfURLs.hasMoreElements()) {
+                        handleORMException(ValidationException.nonUniqueMappingFileName(puInfo.getPersistenceUnitName(), mf), mf, throwExceptionOnFail);
+                    }
+                    InputStream stream = null;
+                    stream = nextURL.openStream();
+                    Document document = XMLHelper.parseDocument(stream, nextURL.getFile(), m_loader);
+                    list.put(nextURL, document);
+                    try {
+                        stream.close();
+                    } catch (IOException e) {}
+                } else {
+                    handleORMException(ValidationException.mappingFileNotFound(puInfo.getPersistenceUnitName(), mf), mf, throwExceptionOnFail);
+                }
+            } catch (IOException e) {
+                handleORMException(PersistenceUnitLoadingException.exceptionLoadingORMXML(mf, e), mf, throwExceptionOnFail);
+            }
+        }
+
+        return list;
     }
 
     /**
@@ -417,200 +608,12 @@ public class MetadataProcessor {
         return list;
     }
 
-    private Map<URL, Document> readExplicitlySpecifiedMappingFiles(
-            boolean throwExceptionOnFail) {
-        Map<URL, Document> list = new HashMap<URL, Document>();
-        final PersistenceUnitInfo puInfo = m_project.getPUInfo();
-        for (String mf : puInfo.getMappingFileNames()) {
-            try {
-                Enumeration<URL> mfURLs = m_loader.getResources(mf);
-                if (mfURLs.hasMoreElements()) {
-                    URL nextURL = mfURLs.nextElement();
-                    if(mfURLs.hasMoreElements()) {
-                        handleORMException(ValidationException.nonUniqueMappingFileName(puInfo.getPersistenceUnitName(), mf), mf, throwExceptionOnFail);
-                    }
-                    InputStream stream = null;
-                    stream = nextURL.openStream();
-                    Document document = XMLHelper.parseDocument(stream, nextURL.getFile(), m_loader);
-                    list.put(nextURL, document);
-                    try{
-                        stream.close();
-                    } catch (IOException e) {}
-                } else {
-                    handleORMException(ValidationException.mappingFileNotFound(puInfo.getPersistenceUnitName(), mf), mf, throwExceptionOnFail);
-                }
-            } catch (IOException e) {
-                handleORMException(
-                        PersistenceUnitLoadingException.exceptionLoadingORMXML(mf, e),
-                        mf, throwExceptionOnFail);
-            }
-        }
-        return list;
-    }
-
     /**
-     *  Handle an exception that occured while processing ORM xml
-     */
-    private void handleORMException(
-            RuntimeException e,
-            String mf,
-            boolean throwException){
-        if (m_session == null){
-            // Metadata processor is mainly used with a session.
-            // Java SE bootstraping uses some functions such as ORM processing without
-            // a session.  In these cases, it is impossible to get the
-            // session to properly handle the exception.  As a result we
-            // log an error.  The same code will be called later in the bootstrapping
-            // code and the error will be handled then.
-            AbstractSessionLog.getLog().log(SessionLog.CONFIG,
-                    EntityManagerSetupImpl.ERROR_LOADING_XML_FILE,
-                    new Object[] {mf, e});
-        } else if (!throwException) {
-            // fail quietly
-            m_session.log(SessionLog.CONFIG,
-                    SessionLog.EJB_OR_METADATA,
-                    EntityManagerSetupImpl.ERROR_LOADING_XML_FILE,
-                    new Object[] {mf, e});
-        } else {
-            // fail loudly
-            m_session.handleException(e);
-        }
-    }
-
-    /**
-     * This method is responsible for discovering all the entity and embedable classes
-     * for this PU and adding corresponding MetadataDescriptor in the
-     * MetadataProject. Don't call this method more than once.
-     */
-    public void buildEntityList() {
-        Set<String> entityAndEmbedableClassNames = buildEntityClassSetFromAnnotations(true);
-        Set<String> entityClassNames = buildEntityClassSetFromAnnotations(false);
-
-        // Append the list of entity classes that are defined in XML.
-        entityAndEmbedableClassNames.addAll(buildEntityClassSetFromXMLDocuments(false, true));
-        entityClassNames.addAll(buildEntityClassSetFromXMLDocuments(false, false));
-
-        m_project.setEntityNames(entityAndEmbedableClassNames);
-
-        // Add a metadata descriptor to the project for every entity class.
-        // Any persistence unit metadata/defaults will be applied.
-        // Must not process embedables as the are processed differently.
-        for (String className : entityClassNames) {
-            try {
-                m_project.addDescriptor(new MetadataDescriptor(m_loader.loadClass(className)));
-            } catch (ClassNotFoundException exception) {
-                AbstractSessionLog.getLog().log(SessionLog.WARNING, "exception_loading_entity_class", className, exception);
-            }
-        }
-    }
-
-    /**
-     * Return a set of class names that are annotated as either @Entity
-     * from the base URL of this PersistenceUnit
-     */
-    private Set<String> buildEntityClassSetFromAnnotations(boolean includeEmbedables) {
-        Set<String> set = new HashSet<String>();
-        PersistenceUnitInfo puInfo = m_project.getPUInfo();
-
-        for (String className : puInfo.getManagedClassNames()) {
-            if (PersistenceUnitProcessor.isEntity(className, m_loader, true, includeEmbedables)) {
-                set.add(className);
-            }
-        }
-
-        for (URL url : puInfo.getJarFileUrls()) {
-            set.addAll(PersistenceUnitProcessor.getEntityClassNamesFromURL(url, m_loader, includeEmbedables));
-        }
-
-        if (!puInfo.excludeUnlistedClasses()){
-            set.addAll(PersistenceUnitProcessor.getEntityClassNamesFromURL(puInfo.getPersistenceUnitRootUrl(), m_loader, includeEmbedables));
-        }
-        return set;
-    }
-
-    /**
-     * Return a set of class names for each entity found in the
-     * list of xml descriptor instance documents to be processed by the
-     * MetadataProcessor.
-     */
-    public Set<String> buildEntityClassSetFromXMLDocuments(boolean includeMappedSuperClasses, boolean includeEmbedables) {
-        HashSet<String> classSet = new HashSet<String>();
-        for (Map.Entry<URL, Document> urlToDoc :  m_project.getMappingFiles().entrySet()) {
-            classSet.addAll(buildEntityClassSetFromXMLDocument(
-                    urlToDoc.getValue(), urlToDoc.getKey().getFile(), m_loader, includeMappedSuperClasses, includeEmbedables));
-        }
-        return classSet;
-    }
-
-    /**
-     * Process metadata found in all the mapping files for this PU.
-     * @see #processMappingFile(org.w3c.dom.Document, String)
-     */
-    public void processMappingFiles() {
-        for (Map.Entry<URL, Document> urlToDocPair : m_project.getMappingFiles().entrySet()) {
-            processMappingFile(urlToDocPair.getValue(), urlToDocPair.getKey().getFile());
-        }
-    }
-
-    /**
-     * Process the xml and fill in the project. Process the entity-mappings
-     * information then process the entities.
-     */
-    private void processMappingFile(Document document, String fileName) {
-        if (m_project.hasDescriptors()) {
-            XMLHelper helper = new XMLHelper(document, fileName, m_loader);
-
-            // Process the entity mappings ... this is a crude way of doing
-            // things ... but hey ... the clock is ticking ...
-            MetadataDescriptor desc = m_project.getDescriptors().iterator().next();
-            XMLClassAccessor dummyAccessor = new XMLClassAccessor(new MetadataClass(desc.getJavaClass()), null, helper, this, desc);
-            dummyAccessor.processEntityMappings();
-
-            // Process the entity nodes for this xml document.
-            NodeList entityNodes = helper.getNodes(XMLConstants.ENTITY_MAPPINGS, XMLConstants.ENTITY);
-
-            if (entityNodes != null) {
-                for (int i = 0; i < entityNodes.getLength(); i++) {
-                    Node entityNode = entityNodes.item(i);
-                    Class entityClass = helper.getClassForNode(entityNode);
-                    MetadataDescriptor descriptor = m_project.getDescriptor(entityClass);
-
-                    // Process all descriptors that are in our project.
-                    ClassAccessor accessor = descriptor.getClassAccessor();
-
-                    // If there is no accessor on this descriptor then it has not
-                    // been processed yet. Create one and process it.
-                    if (accessor == null) {
-                        accessor = new XMLClassAccessor(new MetadataClass(descriptor.getJavaClass()), entityNode, helper, this, descriptor);
-                        descriptor.setClassAccessor(accessor);
-                        accessor.process();
-                    }
-                }
-            }
-        } else {
-            // WIP - log a warning that we have no entities to process ...
-        }
-    }
-
-    /**
-     * This method frees up resources acquired by this object.
-     */
-    public void cleanup() {
-        m_project.cleanup();
-        m_loader = null;
-        m_project = null;
-        m_session = null;
-    }
-
-    /**
-     * Log an untranslated message to the TopLink log at FINER level.
-     * @param msg message to be logged
-     */
-    private void logMessage(String msg) {
-        if (m_session == null){
-            AbstractSessionLog.getLog().log(SessionLog.FINER, msg);
-        } else {
-            m_session.logMessage(msg);
-        }
+     * INTERNAL:
+	 * Use this method to set the correct class loader that should be used
+     * during processing.
+	 */
+	public void setClassLoader(ClassLoader loader) {
+        m_loader = loader;
     }
 }

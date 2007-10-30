@@ -10,16 +10,23 @@
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import javax.persistence.Embeddable;
+import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
+
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.FetchType.LAZY;
 
 @Embeddable
 public class TireRating {
-    protected String comments;
     protected String rating;
+    protected TireRatingComment comment;
     
     public TireRating() {}
-    
-    public String getComments() {
-        return comments;
+
+    @OneToOne(cascade=PERSIST, fetch=LAZY)
+    @JoinColumn(name="COMMENT_ID")
+    public TireRatingComment getComment() {
+        return comment;
     }
     
     public String getRating() {
@@ -30,7 +37,7 @@ public class TireRating {
         this.rating =rating;
     }
     
-    public void setComments(String comments) {
-        this.comments = comments;
+    public void setComment(TireRatingComment comment) {
+        this.comment = comment;
     }
 }

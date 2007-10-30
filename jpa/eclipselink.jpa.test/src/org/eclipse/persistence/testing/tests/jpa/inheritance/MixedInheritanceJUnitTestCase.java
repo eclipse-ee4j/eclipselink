@@ -15,6 +15,7 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCr
 import org.eclipse.persistence.testing.models.jpa.inheritance.MudTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.RockTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.TireRating;
+import org.eclipse.persistence.testing.models.jpa.inheritance.TireRatingComment;
 
 import org.eclipse.persistence.testing.models.jpa.inheritance.listeners.TireInfoListener;
 
@@ -77,7 +78,7 @@ public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
         
         TireRating tireRating = new TireRating();
         tireRating.setRating("Excellent");
-        tireRating.setComments("Tire outperformed all others in adverse conditions");
+        tireRating.setComment(new TireRatingComment("Tire outperformed all others in adverse conditions"));
         
         mudTire.setTireRating(tireRating);
         

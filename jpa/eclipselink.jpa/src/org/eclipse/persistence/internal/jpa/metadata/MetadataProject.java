@@ -70,8 +70,8 @@ public class MetadataProject {
     // persistence unit that is represented by this project
     protected PersistenceUnitInfo m_PUInfo;
 
-    // names of all the entity in this PU
-    protected Collection<String> m_entityNames = new HashSet<String>();
+    // Names of all the 'weavable' classes for this project.
+    protected Collection<String> m_weavableClassNames = new HashSet<String>();
 
     // URL to Document object map of all the mapping files for this PU.
     // The reason for using URL instead of name is that name is not unique.
@@ -394,13 +394,6 @@ public class MetadataProject {
     public Node getEmbeddableNode(Class cls) {
         return m_embeddableNodes.get(cls.getName());
     }
-    
-    /**
-     * INTERNAL:
-     */
-    public Collection<String> getEntityNames() {
-        return Collections.unmodifiableCollection(m_entityNames);
-    }
 
     /**
      * INTERNAL:
@@ -492,6 +485,15 @@ public class MetadataProject {
      */
     public Collection<MetadataTableGenerator> getTableGenerators() {
         return m_tableGenerators.values();
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns all those classes in this project that are available for 
+     * weaving. This list currently includes entity and embeddables classes.
+     */
+    public Collection<String> getWeavableClassNames() {
+        return Collections.unmodifiableCollection(m_weavableClassNames);
     }
     
     /**
@@ -944,14 +946,6 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public void setEntityNames(Collection<String> entityNames) {
-        m_entityNames.clear();
-        m_entityNames.addAll(entityNames);
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public void setMappingFiles(Map<URL, Document> mappingFiles) {
         m_mappingFiles.clear();
         m_mappingFiles.putAll(mappingFiles);
@@ -963,6 +957,14 @@ public class MetadataProject {
      */
     public void setPersistenceUnit(MetadataPersistenceUnit persistenceUnit) {
         m_persistenceUnit = persistenceUnit;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setWeavableClassNames(Collection<String> weavableClassNames) {
+        m_weavableClassNames.clear();
+        m_weavableClassNames.addAll(weavableClassNames);
     }
 }
 

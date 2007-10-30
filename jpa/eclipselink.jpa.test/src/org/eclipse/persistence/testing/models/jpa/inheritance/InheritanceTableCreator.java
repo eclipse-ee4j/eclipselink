@@ -33,8 +33,8 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         addTableDefinition(buildTIREINFOTable());
         addTableDefinition(buildOFFROADTIREINFOTable());
         addTableDefinition(buildMUDTIREINFOTable());
+        addTableDefinition(buildTIRERATINGCOMMENTTable());
         addTableDefinition(buildROCKTIREINFOTable());
-//        addTableDefinition(buildVEH_SEQTable());
         addTableDefinition(buildAAATable());
         addTableDefinition(buildBBBTable());
         addTableDefinition(buildCCCTable());
@@ -332,16 +332,46 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldRATING.setShouldAllowNull(true);
         table.addField(fieldRATING);
         
-        FieldDefinition fieldCOMMENTS = new FieldDefinition();
-        fieldCOMMENTS.setName("COMMENTS");
-        fieldCOMMENTS.setTypeName("VARCHAR2");
-        fieldCOMMENTS.setSize(100);
-        fieldCOMMENTS.setSubSize(0);
-        fieldCOMMENTS.setIsPrimaryKey(false);
-        fieldCOMMENTS.setIsIdentity(false);
-        fieldCOMMENTS.setUnique(false);
-        fieldCOMMENTS.setShouldAllowNull(true);
-        table.addField(fieldCOMMENTS);
+        FieldDefinition fieldCOMMENT = new FieldDefinition();
+        fieldCOMMENT.setName("COMMENT_ID");
+        fieldCOMMENT.setTypeName("NUMBER");
+        fieldCOMMENT.setSize(15);
+        fieldCOMMENT.setSubSize(0);
+        fieldCOMMENT.setShouldAllowNull(true);
+        fieldCOMMENT.setIsPrimaryKey(false);
+        fieldCOMMENT.setIsIdentity(false);
+        fieldCOMMENT.setUnique(false);
+        fieldCOMMENT.setForeignKeyFieldName("CMP3_TIRE_RATING_COMMENT.ID");
+        table.addField(fieldCOMMENT);
+
+        return table;
+    }
+    
+    public TableDefinition buildTIRERATINGCOMMENTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_TIRE_RATING_COMMENT");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldDESCRIP = new FieldDefinition();
+        fieldDESCRIP.setName("DESCRIP");
+        fieldDESCRIP.setTypeName("VARCHAR2");
+        fieldDESCRIP.setSize(100);
+        fieldDESCRIP.setSubSize(0);
+        fieldDESCRIP.setIsPrimaryKey(false);
+        fieldDESCRIP.setIsIdentity(false);
+        fieldDESCRIP.setUnique(false);
+        fieldDESCRIP.setShouldAllowNull(true);
+        table.addField(fieldDESCRIP);
 
         return table;
     }
@@ -669,35 +699,6 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         fieldTYPE.setUnique(false);
         fieldTYPE.setShouldAllowNull(true);
         table.addField(fieldTYPE);
-
-        return table;
-    }
-
-    public TableDefinition buildVEH_SEQTable() {
-        TableDefinition table = new TableDefinition();
-        table.setName("CMP3_INHERITANCE_SEQ");
-
-        FieldDefinition fieldSEQ_COUNT = new FieldDefinition();
-        fieldSEQ_COUNT.setName("SEQ_COUNT");
-        fieldSEQ_COUNT.setTypeName("NUMBER");
-        fieldSEQ_COUNT.setSize(15);
-        fieldSEQ_COUNT.setSubSize(0);
-        fieldSEQ_COUNT.setIsPrimaryKey(false);
-        fieldSEQ_COUNT.setIsIdentity(false);
-        fieldSEQ_COUNT.setUnique(false);
-        fieldSEQ_COUNT.setShouldAllowNull(false);
-        table.addField(fieldSEQ_COUNT);
-
-        FieldDefinition fieldSEQ_NAME = new FieldDefinition();
-        fieldSEQ_NAME.setName("SEQ_NAME");
-        fieldSEQ_NAME.setTypeName("VARCHAR2");
-        fieldSEQ_NAME.setSize(80);
-        fieldSEQ_NAME.setSubSize(0);
-        fieldSEQ_NAME.setIsPrimaryKey(true);
-        fieldSEQ_NAME.setIsIdentity(false);
-        fieldSEQ_NAME.setUnique(false);
-        fieldSEQ_NAME.setShouldAllowNull(false);
-        table.addField(fieldSEQ_NAME);
 
         return table;
     }
