@@ -4,23 +4,30 @@
   <property file="./build.properties"/>
 
   <!-- all -->
-  <target name="all" depends="package, package.src, package.package-renamer" description="build EclipseLink jar"/>
+  <target name="all" depends="package.eclipselink.jar, build.test, package.src.jar, package.package-renamer.jar, package.installer.zip" description="build EclipseLink distribution files"/>
 
-    <target name="build.all" depends="build">
-        <ant antfile="${eclipselink.extension.oracle}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.extension.oracle.test}/build.xml" target="all"/>
-    </target>
+    <target name="build.all" depends="build.core, build.test, build.extension"/>
 
-    <target name="build">
+    <target name="build.distribution" depends="package.eclipselink.jar,package.src.jar, package.package-renamer.jar, package.installer.zip"/>
+
+    <target name="build.core">
         <ant antfile="${eclipselink.core}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
-        <ant antfile="${eclipselink.jpa.test}/build.xml" target="all"/>
         <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
         <ant antfile="${eclipselink.sdo}/build.xml" target="all"/>
     </target>
 
-    <target name="package" depends="build" description="build EclipseLink jar">
+    <target name="build.extension" depends="build.core, build.test">
+        <ant antfile="${eclipselink.extension.oracle}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.extension.oracle.test}/build.xml" target="all"/>
+    </target>
+
+    <target name="build.test">
+        <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
+        <ant antfile="${eclipselink.jpa.test}/build.xml" target="all"/>
+    </target>
+
+    <target name="package.eclipselink.jar" depends="build.core" description="build EclipseLink jar">
       <unjar src="${eclipselink.extension.oracle}/${eclipselink.oracle.depend.jar}" dest="${build.dir}"/>
       <jar jarfile="${eclipselink.jar}" manifest="${eclipselink.core}/${resource.dir}/META-INF/manifest.mf">
           <fileset dir="${eclipselink.core}/${classes.dir}">
@@ -55,7 +62,7 @@
     <delete dir="${build.dir}"/>
   </target>
 
-    <target name="package.src" description="build EclipseLink source jar">
+    <target name="package.src.jar" description="build EclipseLink source jar">
         <zip zipfile="${eclipselink-src.zip}">
            <fileset dir="${eclipselink.core}/${src.dir}">
               <include name="org/eclipse/persistence/**/*.java"/>
@@ -110,7 +117,7 @@
   </target>
     
     <!-- installer.zip -->
-  <target name="installer.zip" description="build EclipseLink installer zip">
+  <target name="package.installer.zip" description="build EclipseLink installer zip">
     <zip destfile="${eclipselink-installer.zip}">
       <!-- miscellaneous files -->
       <zipfileset dir=".">
@@ -168,7 +175,7 @@
   </target>
 
     <!-- package-renamer -->
-  <target name="package.package-renamer" description="build Package rename jar">
+  <target name="package.package-renamer.jar" description="build Package rename jar">
     <ant antfile="${eclipselink.util.rename.utility}/build.xml" target="all"/>
   
     <jar jarfile="${eclipselink.util.rename.utility}/${package-rename.jar}">
