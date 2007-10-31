@@ -49,16 +49,15 @@ public class SDOFragmentMappingAttributeAccessor extends AttributeAccessor {
      */
     public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
         Object attributeValue = ((SDODataObject)anObject).get(property);
-        if(attributeValue != null) {
-        
-            if(property.isMany()) {
+        if (attributeValue != null) {
+            if (property.isMany()) {
+                //  handle collection case
                 ArrayList<Object> fragments = new ArrayList<Object>();
-                Iterator<Object> objects = ((Collection)attributeValue).iterator();
-                while(objects.hasNext()) {
+                Iterator<Object> objects = ((Collection)attributeValue).iterator();                
+                while (objects.hasNext()) {
                     fragments.add(buildFragment(property, (SDODataObject)anObject, ((SDODataObject)objects.next())));
                 }
-                attributeValue = fragments;
-                //  handle collection case
+                attributeValue = fragments;                
             } else {
                 attributeValue = buildFragment(property, (SDODataObject)anObject, (SDODataObject)attributeValue);
             }
@@ -78,7 +77,7 @@ public class SDOFragmentMappingAttributeAccessor extends AttributeAccessor {
     }
 
     /**
-     * INTERNAL:   
+     * INTERNAL:
      */
     public boolean isMethodAttributeAccessor() {
         return true;
@@ -90,12 +89,14 @@ public class SDOFragmentMappingAttributeAccessor extends AttributeAccessor {
     public void setAttributeValueInObject(Object domainObject, Object attributeValue) throws DescriptorException {
         XMLUnmarshaller unmarshaller = ((SDOXMLHelper)helperContext.getXMLHelper()).getXmlContext().createUnmarshaller();
         unmarshaller.setUnmarshalListener(new org.eclipse.persistence.sdo.helper.SDOCSUnmarshalListener(helperContext));
-        if(attributeValue instanceof Collection) {
+
+        if (attributeValue instanceof Collection) {
             //handle collection case
             ArrayList result = new ArrayList();
             Iterator fragments = ((Collection)attributeValue).iterator();
-            while(fragments.hasNext()) {
+            while (fragments.hasNext()) {
                 Node next = (Node)fragments.next();
+
                 //Handle Simple Case here
                 Object dataObject = unmarshaller.unmarshal(next);
                 if(dataObject instanceof org.eclipse.persistence.oxm.XMLRoot) {
@@ -105,30 +106,32 @@ public class SDOFragmentMappingAttributeAccessor extends AttributeAccessor {
             }
             ((SDODataObject)domainObject).set(property, result);
         } else {
-            Node value = (Node)attributeValue;
-            Object result = unmarshaller.unmarshal(value);
+            Object result = null;
+            if (!(attributeValue == null)) {
+                Node value = (Node)attributeValue;
+                result = unmarshaller.unmarshal(value);
             if(result instanceof org.eclipse.persistence.oxm.XMLRoot) {
-                result = ((XMLRoot)result).getObject();
+                    result = ((XMLRoot)result).getObject();
+                }
             }
             ((SDODataObject)domainObject).set(property, result);
         }
-
     }
 
-   /**
-     * INTERNAL:   
-     */
+    /**
+      * INTERNAL:
+      */
     public void setProperty(SDOProperty property) {
         this.property = property;
     }
 
     /**
-     * INTERNAL:   
+     * INTERNAL:
      */
     public SDOProperty getPropertyName() {
         return property;
     }
-    
+
     private Object buildFragment(Property property, SDODataObject parentObject, SDODataObject value) {
         //build an XML Fragment from this SDO
         XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
@@ -137,7 +140,9 @@ public class SDOFragmentMappingAttributeAccessor extends AttributeAccessor {
         XMLRoot root = new XMLRoot();
         root.setObject(value);
         root.setLocalName(property.getName());
-        root.setNamespaceURI(parentObject.getType().getURI());
+        if(((SDOProperty)property).isNamespaceQualified()){
+          root.setNamespaceURI(parentObject.getType().getURI());
+        }
         xmlMarshaller.marshal(root, doc);
         return doc.getDocumentElement();
     }
