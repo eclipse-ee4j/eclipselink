@@ -18,9 +18,13 @@ public interface MyTestType {
 
    public void setMyAnyTypeTest2(commonj.sdo.DataObject value);
 
-   public commonj.sdo.DataObject getMyAnyTypeTest3();
+   public java.util.List getMyAnyTypeTest3();
 
-   public void setMyAnyTypeTest3(commonj.sdo.DataObject value);
+   public void setMyAnyTypeTest3(java.util.List value);
+
+   public java.util.List getMyAnyTypeTest4();
+
+   public void setMyAnyTypeTest4(java.util.List value);
 
    public java.lang.String getMyAnyURITest();
 

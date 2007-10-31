@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ns0:Test xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <ns0:myAnySimpleTypeTest>String</ns0:myAnySimpleTypeTest>
-   <ns0:myAnyTypeTest xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Text</ns0:myAnyTypeTest>
+   <ns0:myAnyTypeTest2 xsi:type="ns0:PersonType">
+      <ns0:firstName>Joe</ns0:firstName>
+      <ns0:lastName>Smith</ns0:lastName>
+   </ns0:myAnyTypeTest2>
+   <ns0:myAnyTypeTest4 xsi:type="ns0:PersonType">
+      <ns0:firstName>Jane</ns0:firstName>
+      <ns0:lastName>Smith</ns0:lastName>
+   </ns0:myAnyTypeTest4>
+   <ns0:myAnyTypeTest4 xsi:type="ns0:PersonType">
+      <ns0:firstName>Jill</ns0:firstName>
+      <ns0:lastName>Smith</ns0:lastName>
+   </ns0:myAnyTypeTest4>
    <ns0:myAnyURITest>http://www.altova.com</ns0:myAnyURITest>
    <ns0:myBase64BinaryTest>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</ns0:myBase64BinaryTest>
    <ns0:myBooleanTest>true</ns0:myBooleanTest>

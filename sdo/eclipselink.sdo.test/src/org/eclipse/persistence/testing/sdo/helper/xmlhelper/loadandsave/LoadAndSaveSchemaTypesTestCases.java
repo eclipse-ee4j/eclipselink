@@ -44,7 +44,7 @@ public class LoadAndSaveSchemaTypesTestCases extends LoadAndSaveTestCases {
     }
     
      protected String getRootInterfaceName() {
-        return "Test";
+        return "MyTestType";
     }
 
     public static void main(String[] args) {
@@ -64,6 +64,9 @@ public class LoadAndSaveSchemaTypesTestCases extends LoadAndSaveTestCases {
 
         addProperty(schemaTypesType, "myAnySimpleTypeTest", SDOConstants.SDO_OBJECT, true, false, true);
         addProperty(schemaTypesType, "myAnyTypeTest", SDOConstants.SDO_DATAOBJECT, true, false, true);
+        addProperty(schemaTypesType, "myAnyTypeTest2", SDOConstants.SDO_DATAOBJECT, true, false, true);
+        addProperty(schemaTypesType, "myAnyTypeTest3", SDOConstants.SDO_DATAOBJECT, true, true, true);
+        addProperty(schemaTypesType, "myAnyTypeTest4", SDOConstants.SDO_DATAOBJECT, true, true, true);
         addProperty(schemaTypesType, "myAnyURITest", SDOConstants.SDO_URI, true, false, true);
         addProperty(schemaTypesType, "myBase64BinaryTest", SDOConstants.SDO_BYTES, true, false, true);
         addProperty(schemaTypesType, "myBooleanTest", SDOConstants.SDO_BOOLEAN, true, false, true);
@@ -118,5 +121,12 @@ public class LoadAndSaveSchemaTypesTestCases extends LoadAndSaveTestCases {
         propDO.set("name", getControlRootName());
         propDO.set("type", schemaTypes);
         typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
+                
+        DataObject personTypeDO = dataFactory.create("commonj.sdo", "Type");
+        personTypeDO.set("uri", getControlRootURI());
+        personTypeDO.set("name", "PersonType");
+        addProperty(personTypeDO, "firstName", SDOConstants.SDO_STRING, false, false, true);
+        addProperty(personTypeDO, "lastName", SDOConstants.SDO_STRING, false, false, true);
+        Type personType = typeHelper.define(personTypeDO);            
     }
 }

@@ -9,9 +9,10 @@
 		<xsd:sequence>
 			<xsd:element name = 'myAnySimpleTypeTest' type = 'xsd:anySimpleType'/>
 			<xsd:element name = 'myAnySimpleTypeTest2' type = 'xsd:anySimpleType'/>
-			<xsd:element name = 'myAnyTypeTest' type = 'xsd:anyType'/>
+                        <xsd:element name = 'myAnyTypeTest' type = 'xsd:anyType'/>
 			<xsd:element name = 'myAnyTypeTest2' type = 'xsd:anyType'/>
-			<xsd:element name = 'myAnyTypeTest3' type = 'xsd:anyType'/>
+			<xsd:element name = 'myAnyTypeTest3' type = 'xsd:anyType' maxOccurs='unbounded'/>
+			<xsd:element name = 'myAnyTypeTest4' type = 'xsd:anyType' maxOccurs='unbounded'/>
 			<xsd:element name = 'myAnyURITest' type = 'xsd:anyURI'/>
 			<xsd:element name = 'myBase64BinaryTest' type = 'xsd:base64Binary'/>
 			<xsd:element name = 'myBooleanTest' type = 'xsd:boolean'/>
