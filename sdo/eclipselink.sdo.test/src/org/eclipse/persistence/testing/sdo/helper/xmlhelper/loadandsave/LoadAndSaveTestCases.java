@@ -360,6 +360,7 @@ public abstract class LoadAndSaveTestCases extends SDOXMLHelperTestCases {
                 File nextFile = filesInDir[j];
                 String fullName = nextFile.getAbsolutePath();
                 nextFile.deleteOnExit();
+                allFilesInAllPackages.add(fullName);
 
                 String fullClassName = fullName.replace(".java", ".class");
                 File nextClassFile = new File(fullClassName);
@@ -368,7 +369,7 @@ public abstract class LoadAndSaveTestCases extends SDOXMLHelperTestCases {
         }
         Object[] fileArray = allFilesInAllPackages.toArray();
 
-        int returnVal = CompileUtil.instance().compile("\"" + getClassPathForCompile() + "\"", fileArray);
+        int returnVal = CompileUtil.instance().compile(getClassPathForCompile(), fileArray);
         assertEquals(0, returnVal);
     }
 
