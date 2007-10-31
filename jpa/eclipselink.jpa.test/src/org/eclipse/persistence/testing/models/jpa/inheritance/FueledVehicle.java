@@ -12,18 +12,25 @@
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import javax.persistence.*;
-import static javax.persistence.InheritanceType.*;
 
 @Entity
 @EntityListeners(org.eclipse.persistence.testing.models.jpa.inheritance.listeners.FueledVehicleListener.class)
 @Table(name="CMP3_FUEL_VEH")
 @DiscriminatorValue("F")
-public class FueledVehicle extends Vehicle {
+public class FueledVehicle extends Vehicle implements Cloneable {
     private Integer fuelCapacity;
     private String description;
     private String fuelType;
     private String colour;
-
+    
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException exception) {
+            throw new InternalError(exception.toString());
+        }
+    }
+    
     public void change() {
         this.setPassengerCapacity(new Integer(100));
         this.setFuelType("HOT AIR");

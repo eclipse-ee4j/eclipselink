@@ -7,8 +7,6 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-
-
 package org.eclipse.persistence.testing.framework.junit;
 
 import java.util.Map;
@@ -19,13 +17,20 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.File;
 
-import junit.framework.*;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NameNotFoundException;
+import javax.rmi.PortableRemoteObject;
+
 import javax.persistence.*;
+import junit.framework.*;
 
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
-import org.eclipse.persistence.testing.framework.ServerPlatform;
+import org.eclipse.persistence.testing.framework.server.JEEPlatform;
+import org.eclipse.persistence.testing.framework.server.ServerPlatform;
+import org.eclipse.persistence.testing.framework.server.TestRunner;
 
 /**
  * This is the superclass for all TopLink JUnit tests
@@ -56,6 +61,16 @@ public abstract class JUnitTestCase extends TestCase {
     /** Allow a JEE server platform to be set. */
     protected static ServerPlatform serverPlatform;
     
+    /** Environment location for TestRunner session bean. */
+    public static String testRunnerName = "java:comp/env/ejb/TestRunner";
+    public static String shortTestRunnerName = "ejb/TestRunner";
+    
+    /** Sets if the test should be run on the client or server. */
+    public Boolean shouldRunTestOnServer;
+    
+    /** System variable to set the tests to run on the server. */
+    public static final String RUN_ON_SERVER = "run-on-server";
+    
     static {
         emfNamedPersistenceUnits = new Hashtable();
     }
@@ -66,6 +81,29 @@ public abstract class JUnitTestCase extends TestCase {
 
     public JUnitTestCase(String name) {
         super(name);
+    }
+    
+    /**
+     * Return the name of the persistence context this test uses.
+     * This allow a subclass test to set this only in one place.
+     */
+    public String getPersistenceUnitName() {
+        return "default";
+    }
+    
+    /**
+     * Return if the test should run on the server.
+     */
+    public boolean shouldRunTestOnServer() {
+        if (shouldRunTestOnServer == null) {
+            String property = System.getProperty(RUN_ON_SERVER);
+            if (property != null) {
+                shouldRunTestOnServer = property.toUpperCase().equals("TRUE");
+            } else {
+                shouldRunTestOnServer = false;
+            }
+        }
+        return shouldRunTestOnServer;
     }
     
     /**
@@ -86,6 +124,9 @@ public abstract class JUnitTestCase extends TestCase {
      * Return the server platform if running in JEE.
      */
     public static ServerPlatform getServerPlatform() {
+        if (serverPlatform == null) {
+            serverPlatform = new JEEPlatform();
+        }
         return serverPlatform;
     }
     
@@ -117,29 +158,41 @@ public abstract class JUnitTestCase extends TestCase {
      * Close the entity manager.
      * This allows the same code to be used on the server where managed entity managers are not closed.
      */
-    public static void closeEntityManager(EntityManager entityManager) {
+    public void closeEntityManager(EntityManager entityManager) {
         if (!isOnServer()) {
             entityManager.close();
         }
     }
-        
+    
+    /**
+     * Return if the transaction is active.
+     * This allows the same code to be used on the server where JTA is used.
+     */
+    public boolean isTransactionActive(EntityManager entityManager) {
+        if (isOnServer()) {
+            return getServerPlatform().isTransactionActive();
+        } else {
+            return entityManager.getTransaction().isActive();
+        }
+    }
+    
     /**
      * Begin a transaction on the entity manager.
      * This allows the same code to be used on the server where JTA is used.
      */
-    public static void beginTransaction(EntityManager entityManager) {
+    public void beginTransaction(EntityManager entityManager) {
         if (isOnServer()) {
             getServerPlatform().beginTransaction();
         } else {
             entityManager.getTransaction().begin();
         }
     }
-        
+
     /**
      * Commit a transaction on the entity manager.
      * This allows the same code to be used on the server where JTA is used.
      */
-    public static void commitTransaction(EntityManager entityManager) {
+    public void commitTransaction(EntityManager entityManager) {
         if (isOnServer()) {
             getServerPlatform().commitTransaction();
         } else {
@@ -151,7 +204,7 @@ public abstract class JUnitTestCase extends TestCase {
      * Rollback a transaction on the entity manager.
      * This allows the same code to be used on the server where JTA is used.
      */
-    public static void rollbackTransaction(EntityManager entityManager) {
+    public void rollbackTransaction(EntityManager entityManager) {
         if (isOnServer()) {
             getServerPlatform().rollbackTransaction();
         } else {
@@ -197,31 +250,39 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     public static ServerSession getServerSession(){
-        return ((org.eclipse.persistence.internal.jpa.EntityManagerImpl)createEntityManager()).getServerSession();               
+        return ((org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();               
     }
     
     public static ServerSession getServerSession(String persistenceUnitName){
-        return ((org.eclipse.persistence.internal.jpa.EntityManagerImpl)createEntityManager(persistenceUnitName)).getServerSession();               
+        return ((org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl)getEntityManagerFactory(persistenceUnitName)).getServerSession();               
     }
     
     public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName){
         return getEntityManagerFactory(persistenceUnitName,  JUnitTestCaseHelper.getDatabaseProperties());
     }
     
-    public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, Map properties){
-        EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory)emfNamedPersistenceUnits.get(persistenceUnitName);
-        if (emfNamedPersistenceUnit == null){
-            emfNamedPersistenceUnit = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
-            emfNamedPersistenceUnits.put(persistenceUnitName, emfNamedPersistenceUnit);
+    public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, Map properties) {
+        if (isOnServer()) {
+            return getServerPlatform().getEntityManagerFactory(persistenceUnitName);
+        } else {
+            EntityManagerFactory emfNamedPersistenceUnit = (EntityManagerFactory)emfNamedPersistenceUnits.get(persistenceUnitName);
+            if (emfNamedPersistenceUnit == null){
+                emfNamedPersistenceUnit = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
+                emfNamedPersistenceUnits.put(persistenceUnitName, emfNamedPersistenceUnit);
+            }
+            return emfNamedPersistenceUnit;
         }
-        return emfNamedPersistenceUnit;
     }
     
-    public static EntityManagerFactory getEntityManagerFactory(){
-        if (emf == null){
-            emf = Persistence.createEntityManagerFactory("default", JUnitTestCaseHelper.getDatabaseProperties());
+    public static EntityManagerFactory getEntityManagerFactory() {
+        if (isOnServer()) {
+            return getServerPlatform().getEntityManagerFactory("default");
+        } else {
+            if (emf == null) {
+                emf = Persistence.createEntityManagerFactory("default", JUnitTestCaseHelper.getDatabaseProperties());
+            }
+            return emf;
         }
-        return emf;
     }
     
     public static boolean doesEntityManagerFactoryExist() {
@@ -257,4 +318,67 @@ public abstract class JUnitTestCase extends TestCase {
     public void tearDown() {
     }
     
+    /**
+     * Used to output a warning.  This does not fail the test, but provides output for someone to review.
+     */
+    public void warning(String warning) {
+        System.out.println("WARNING: " + warning);
+    }
+
+    /**
+     * Intercept test case invocation and delegate it to a remote server.
+     */
+    public void runBare() throws Throwable {
+        if (shouldRunTestOnServer()) {
+            runBareClient();
+        } else {
+            super.runBare();
+        }
+    }
+
+    /**
+     * Runs a test by delegating method invocation to the application server.
+     */
+    public void runBareClient() throws Throwable {
+        Properties properties = new Properties();
+        // TODO: make url platform independent.
+        String url = System.getProperty("oc4j-url");
+        if (url == null) {
+            fail("System property 'oc4j-url' must be set.");
+        }
+        properties.put("java.naming.provider.url", url);
+        Context context = new InitialContext(properties);
+        TestRunner runner;
+        Throwable exception = null;
+
+        try {
+            runner = (TestRunner) PortableRemoteObject.narrow(context.lookup(testRunnerName), TestRunner.class);
+            exception = runner.runTest(getClass().getName(), getName(), getServerProperties());
+        } catch (NameNotFoundException notFoundException) {
+            try {
+                runner = (TestRunner) PortableRemoteObject.narrow(context.lookup(shortTestRunnerName), TestRunner.class);
+                exception = runner.runTest(getClass().getName(), getName(), getServerProperties());
+            } catch (NameNotFoundException notFoundException2) {
+                exception = new Error("Both lookups failed: " + testRunnerName, notFoundException);
+            }
+        }
+        if (exception != null) {
+            throw exception;
+        }
+    }
+    
+    public void runBareServer() throws Throwable {
+        setIsOnServer(true);
+        super.runBare();
+    }
+    
+    /**
+     * Used by subclasses to pass any properties into the
+     * server's vm.  Should be used with caution!
+     */
+    protected Properties getServerProperties() {
+        return null;
+    }
+    
+
 }

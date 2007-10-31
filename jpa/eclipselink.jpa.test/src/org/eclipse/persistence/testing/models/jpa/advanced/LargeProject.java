@@ -12,10 +12,9 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 import javax.persistence.*;
 
 /**
- * Local interface for the large project bean.
- * This is the bean's public/local interface for the clients usage.
- * All locals must extend the javax.ejb.EJBLocalObject.
- * The bean itself does not have to implement the local interface, but must implement all of the methods.
+ * LargeProject subclass of Project.
+ * This class in used to test inheritance.
+ * The field names intentionally do not match the property names to test method weaving.
  */
 @Entity
 @Table(name="CMP3_LPROJECT")
@@ -31,20 +30,29 @@ import javax.persistence.*;
 }
 )
 public class LargeProject extends Project {
-	private double budget;
-    public LargeProject () {
+    private double m_budget;
+    
+    public LargeProject() {
         super();
     }
-    public LargeProject (String name) {
+    
+    public LargeProject(String name) {
         this();
         this.setName(name);
     }
 
-	public double getBudget() { 
-        return budget; 
+    public double getBudget() { 
+        return m_budget; 
     }
     
-	public void setBudget(double budget) { 
-		this.budget = budget; 
-	}
+    public void setBudget(double budget) { 
+        this.m_budget = budget; 
+    }
+    
+    /**
+     * This tests over-writing a get method.
+     */
+    public Employee getTeamLeader() {
+        return m_teamLeader; 
+    }
 }

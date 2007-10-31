@@ -100,7 +100,7 @@ public class RelationshipWeaverTestSuite extends TestCase {
 
         eap.processAnnotations();
         PersistenceWeaver tw = (PersistenceWeaver)
-            TransformerFactory.createTransformerAndModifyProject(session, entities, Thread.currentThread().getContextClassLoader(), true, false, true);
+            TransformerFactory.createTransformerAndModifyProject(session, entities, Thread.currentThread().getContextClassLoader(), true, false, true, true);
         byte[] newOrderBytes = tw.transform(simpleClassLoader, Order.class.getName().replace('.','/'), null, null, originalOrderBytes);
         newOrderClass = simpleClassLoader.define_class(Order.class.getName(), newOrderBytes, 0, newOrderBytes.length);
 		assertNotNull("could not build weaved Order class", newOrderClass);

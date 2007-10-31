@@ -744,6 +744,17 @@ public class EntityManagerSetupImpl {
                     EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TOPLINK_ORM_THROW_EXCEPTIONS, predeployProperties, "true", session));                
     
             ClassTransformer transformer = null;
+            
+            boolean weaveChangeTracking = false;
+            boolean weaveLazy = false;
+            boolean weaveFetchGroups = false;
+            boolean weaveInternal = false;
+            if (enableWeaving) {
+                weaveChangeTracking = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_CHANGE_TRACKING, predeployProperties, "true", session));
+                weaveLazy = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_LAZY, predeployProperties, "true", session));
+                weaveFetchGroups = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_FETCHGROUPS, predeployProperties, "true", session));
+                weaveInternal = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_INTERNAL, predeployProperties, "true", session));
+            }
             if (!isSessionLoadedFromSessionsXML ) {
                 // Create an instance of MetadataProcessor for specified persistence unit info
                 processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, enableWeaving);
@@ -761,24 +772,18 @@ public class EntityManagerSetupImpl {
                 // The transformer is capable of altering domain classes to handle a LAZY hint for OneToOne mappings.  It will only
                 // be returned if we we are mean to process these mappings
                 if (enableWeaving) {                
-                    boolean weaveChangeTracking = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_CHANGE_TRACKING, predeployProperties, "true", session));
-                    boolean weaveLazy = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_LAZY, predeployProperties, "true", session));
-                    boolean weaveFetchGroups = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_FETCHGROUPS, predeployProperties, "true", session));
                     // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
                     Collection entities = PersistenceUnitProcessor.buildEntityList(processor, privateClassLoader);
-                    transformer = TransformerFactory.createTransformerAndModifyProject(session, entities, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups);
+                    transformer = TransformerFactory.createTransformerAndModifyProject(session, entities, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
                 }
             } else {
                 // The transformer is capable of altering domain classes to handle a LAZY hint for OneToOne mappings.  It will only
                 // be returned if we we are meant to process these mappings.
                 if (enableWeaving) {
                     // If deploying from a sessions-xml it is still desirable to allow the classes to be weaved.                
-                    boolean weaveChangeTracking = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_CHANGE_TRACKING, predeployProperties, "true", session));
-                    boolean weaveLazy = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_LAZY, predeployProperties, "true", session));
-                    boolean weaveFetchGroups = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_FETCHGROUPS, predeployProperties, "true", session));
                     // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
                     Collection persistenceClasses = new ArrayList(session.getProject().getDescriptors().keySet());
-                    transformer = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups);
+                    transformer = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
                 }
             }
             // factoryCount is not incremented only in case of a first call to preDeploy

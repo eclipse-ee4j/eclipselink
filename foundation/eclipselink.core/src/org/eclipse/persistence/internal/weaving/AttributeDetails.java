@@ -21,21 +21,30 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 
 public class AttributeDetails {
 	
-    // the name of this attribute (obviously!)
-    protected String attributeName = null;
+    /** The name of this attribute. */
+    protected String attributeName;
 
-    protected String referenceClassName = null;
-    protected Type referenceClassType = null;
+    protected String referenceClassName;
+    protected Type referenceClassType;
 
     protected boolean weaveValueHolders = false;
     
-    protected DatabaseMapping mapping = null;
+    protected DatabaseMapping mapping;
     
-    protected String getterMethodName = null;
-    protected String setterMethodName = null;
+    protected String getterMethodName;
+    protected String setterMethodName;
     
     protected boolean attributeOnSuperClass = false;
+    
+    /** Determines if the attribute has a real field. */
+    protected boolean hasField = false;
+    
+    /** Determines if the attribute has a real field. */
+    protected Type declaringType;
 
+    /** Caches the set method signature. */
+    protected String setMethodSignature;
+    
     public AttributeDetails(String attributeName, DatabaseMapping mapping) {
         this.attributeName = attributeName;
         this.mapping = mapping;
@@ -45,15 +54,22 @@ public class AttributeDetails {
         return this.attributeName;
     }
     
-    public DatabaseMapping getMapping(){
+    public DatabaseMapping getMapping() {
         return mapping;
     }
 
-    public String getGetterMethodName(){
+    public String getGetterMethodName() {
         return getterMethodName;
     }
     
-    public String getSetterMethodName(){
+    public String getSetterMethodSignature() {
+        if (setMethodSignature == null) {
+            setMethodSignature = "(" + getReferenceClassType().getDescriptor() + ")V";
+        }
+        return setMethodSignature;
+    }
+    
+    public String getSetterMethodName() {
         return setterMethodName;
     }
 
@@ -61,8 +77,16 @@ public class AttributeDetails {
         return referenceClassName;
     }
     
-    public void setReferenceClassName(String className){
+    public void setReferenceClassName(String className) {
         referenceClassName = className;
+    }
+
+    public Type getDeclaringType() {
+        return declaringType;
+    }
+    
+    public void setDeclaringType(Type declaringType) {
+        this.declaringType = declaringType;
     }
 
     public Type getReferenceClassType() {
@@ -73,17 +97,18 @@ public class AttributeDetails {
         referenceClassType = classType;
     }
     
-    public void setAttributeOnSuperClass(boolean onSuperClass){
+    public void setAttributeOnSuperClass(boolean onSuperClass) {
         attributeOnSuperClass = onSuperClass;
     }
 
-    public boolean isAttributeOnSuperClass(){
+    public boolean isAttributeOnSuperClass() {
         return attributeOnSuperClass;
     }
 
     public boolean weaveValueHolders() {
         return weaveValueHolders;
     }
+    
     public void weaveVH(boolean weaveValueHolders, DatabaseMapping mapping) {
         this.weaveValueHolders = weaveValueHolders;
     }
@@ -94,6 +119,22 @@ public class AttributeDetails {
     
     public void setSetterMethodName(String setMethodName){
         this.setterMethodName = setMethodName;
+    }
+    
+    /**
+     * Set if the attribute has a real field.
+     * This allows properties to still be weaved at the field level.
+     */
+    public void setHasField(boolean hasField) {
+        this.hasField = hasField;
+    }
+    
+    /**
+     * Return if the attribute has a real field.
+     * This allows properties to still be weaved at the field level.
+     */
+    public boolean hasField() {
+        return hasField;
     }
     
     public boolean isCollectionMapping() {
@@ -110,7 +151,7 @@ public class AttributeDetails {
 	
     public String toString() {
         StringBuffer sb = new StringBuffer(attributeName);
-            if (referenceClassName != null) {
+        if (referenceClassName != null) {
             sb.append("[");
             sb.append(referenceClassName);
             sb.append("]");

@@ -87,10 +87,13 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, TestEve
         if ((getExecutionThread() != null) && getExecutionThread().shouldRunSetupOnly()) {
             TreePath path = getTestsTree().getSelectionPath();
             resetModels();
-            getTestsTree().setSelectionPath(path);
+            getTestsTree().setExpandsSelectedPaths(true);
+            getTestsTree().setSelectionPath(new TreePath(path.getPath()));
+            getTestsTree().expandPath(path);
+            getTestsTree().makeVisible(path);
+            getTestsTree().invalidate();
+            getTestsTree().validate();
             getTestsTree().repaint();
-            // Reset the session inspectors session as test model reset builds clean session.
-            getSessionInspectorPanel().setSession(getExecutor().getSession());
         } else {
             if (getSelectedEntity() instanceof TestModel) {
                 Thread thread = new Thread() {
@@ -101,6 +104,8 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, TestEve
                 thread.start();
             }
         }
+        // Reset the session inspectors session as test model reset builds clean session.
+        getSessionInspectorPanel().setSession(getExecutor().getSession());
 
         if (getExecutor().getSession() != null) {
             while (getExecutor().getAbstractSession().isInTransaction()) {
@@ -1200,6 +1205,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, TestEve
             properties.put("eclipselink.jdbc.driver", getExecutor().getSession().getLogin().getDriverClassName());
             properties.put("eclipselink.jdbc.url", getExecutor().getSession().getLogin().getConnectionString());
         }
+        properties.put("eclipselink.target-database", getExecutor().getSession().getDatasourceLogin().getPlatform().getClass().getName());
         properties.put("eclipselink.jdbc.user", getExecutor().getSession().getDatasourceLogin().getUserName());
         properties.put("eclipselink.jdbc.password", getExecutor().getSession().getDatasourceLogin().getPassword());
         properties.put("eclipselink.logging.level", getExecutor().getSession().getSessionLog().getLevelString());

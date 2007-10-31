@@ -229,7 +229,27 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Cascade discover and persist new objects during commit.
+     */
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+        Object cloneAttribute = getAttributeValueFromObject(object);
+        if ((cloneAttribute == null) || (!getIndirectionPolicy().objectIsInstantiated(cloneAttribute))) {
+            return;
+        }
 
+        ContainerPolicy containerPolicy = getContainerPolicy();
+        Object cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
+        Object iterator = containerPolicy.iteratorFor(cloneObjectCollection);
+        boolean cascade = isCascadePersist();
+        while (containerPolicy.hasNext(iterator)) {
+            Object nextObject = containerPolicy.next(iterator, uow);
+            uow.discoverAndPersistUnregisteredNewObjects(nextObject, cascade, newObjects, unregisteredExistingObjects, visitedObjects);
+        }
+    }
+    
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade

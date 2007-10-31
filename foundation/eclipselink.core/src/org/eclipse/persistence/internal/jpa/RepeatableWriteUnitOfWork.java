@@ -97,55 +97,12 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     /**
      * INTERNAL:
      * Traverse the object to find references to objects not registered in this unit of work.
+     * Any unregistered new objects found will be persisted or an error will be thrown depending on the mapping's cascade persist.
+     * References to deleted objects will also currently cause them to be undeleted.
      */
-    public void discoverUnregisteredNewObjects(IdentityHashtable clones, final IdentityHashtable knownNewObjects, final IdentityHashtable unregisteredExistingObjects, final IdentityHashtable visitedObjects) {
-        // This define an inner class for process the itteration operation, don't be scared, its just an inner class.
-        DescriptorIterator iterator = new DescriptorIterator() {
-            public void iterate(Object object) {
-                // If the object is read-only the do not continue the traversal.
-                if (isClassReadOnly(object.getClass(), this.getCurrentDescriptor())) {
-                    this.setShouldBreak(true);
-                    return;
-                }
-                
-                /* CR3440: Steven Vo
-                 * Include the case that object is original then do nothing.
-                 */
-                if (isSmartMerge() && isOriginalNewObject(object)) {
-                    return;
-                } else if (!isObjectRegistered(object)) { // Don't need to check for aggregates, as iterator does not iterate on them by default.
-                    if (checkForUnregisteredExistingObject(object)) { // Always ignore unregistered existing objects in JPA.
-                        // If the object exists we need to keep a record of this object to ignore it,
-                        // also need to stop iterating over it.
-                        unregisteredExistingObjects.put(object, object);
-                        this.setShouldBreak(true);
-                        return;
-                    } else {
-                        // This means it is a unregistered new object, only persist it if cascading, otherwise throw error.
-                        if ((getCurrentMapping() instanceof ForeignReferenceMapping) && ((ForeignReferenceMapping)getCurrentMapping()).isCascadePersist()) {
-                            ((RepeatableWriteUnitOfWork)getSession()).registerNewObjectForPersist(object, visitedObjects);
-                            knownNewObjects.put(object, object);
-                        } else {
-                            throw new IllegalStateException(ExceptionLocalization.buildMessage("new_object_found_during_commit", new Object[]{object}));
-                        }
-                    }
-                }
-            }
-        };
-
-        // Set the collection in the UnitofWork to be this list.
-        setUnregisteredExistingObjects(unregisteredExistingObjects);
-
-        iterator.setVisitedObjects(visitedObjects);
-        iterator.setResult(knownNewObjects);
-        iterator.setSession(this);
-        // When using wrapper policy in EJB the iteration should stop on beans,
-        // this is because EJB forces beans to be registered anyway and clone identity can be violated
-        // and the violated clones references to session objects should not be traversed.
-        iterator.setShouldIterateOverWrappedObjects(false);
-        
+    public void discoverUnregisteredNewObjects(IdentityHashtable clones, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects) {
         for (Enumeration clonesEnum = clones.keys(); clonesEnum.hasMoreElements(); ) {        
-            iterator.startIterationOn(clonesEnum.nextElement());
+            discoverAndPersistUnregisteredNewObjects(clonesEnum.nextElement(), false, newObjects, unregisteredExistingObjects, visitedObjects);
         }
     }
     

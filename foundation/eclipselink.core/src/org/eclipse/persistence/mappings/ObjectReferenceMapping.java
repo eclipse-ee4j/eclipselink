@@ -687,7 +687,19 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             }
         }
     }
-
+    
+    /**
+     * INTERNAL:
+     * Cascade discover and persist new objects during commit.
+     */
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+        Object attributeValue = getAttributeValueFromObject(object);
+        if (attributeValue != null && getIndirectionPolicy().objectIsInstantiated(attributeValue)) {
+            Object reference = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
+            uow.discoverAndPersistUnregisteredNewObjects(reference, isCascadePersist(), newObjects, unregisteredExistingObjects, visitedObjects);
+        }
+    }
+    
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade

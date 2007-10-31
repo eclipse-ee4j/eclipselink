@@ -27,9 +27,6 @@ import org.eclipse.persistence.queries.*;
  * mapped using this mapping. The format of the embedded
  * data is determined by the reference descriptor.
  *
- * @see SDKDescriptor
- * @see SDKFieldValue
- *
  * @author Big Country
  * @since TOPLink/Java 3.0
  */
@@ -65,7 +62,19 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
             builder.cascadePerformRemove(objectReferenced, uow, visitedObjects);
         }
     }
-
+    
+    /**
+     * INTERNAL:
+     * Cascade discover and persist new objects during commit.
+     */
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+        Object objectReferenced = getRealAttributeValueFromObject(object, uow);
+        if (objectReferenced != null) {
+            ObjectBuilder builder = getReferenceDescriptor(objectReferenced.getClass(), uow).getObjectBuilder();
+            builder.cascadeRegisterNewForCreate(objectReferenced, uow, visitedObjects);
+        }
+    }
+    
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade

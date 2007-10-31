@@ -1,10 +1,16 @@
-// Copyright (c) 2005, 2007, Oracle. All rights reserved.  
+/*******************************************************************************
+ * Copyright (c) 1998, 2007 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0, which accompanies this distribution
+ * and is available at http://www.eclipse.org/legal/epl-v10.html.
+ *
+ * Contributors:
+ *     Oracle - initial API and implementation from Oracle TopLink
+ ******************************************************************************/  
 package org.eclipse.persistence.internal.weaving;
 
-//J2SE imports
 import java.util.*;
 
-//ASM imports
 import org.eclipse.persistence.internal.libraries.asm.*;
 import org.eclipse.persistence.internal.libraries.asm.attrs.RuntimeVisibleAnnotations;
 import org.eclipse.persistence.internal.libraries.asm.attrs.Annotation;
@@ -50,8 +56,17 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     public static final String FETCHGROUP_SIGNATURE = "Lorg/eclipse/persistence/queries/FetchGroup;";
     public static final String SESSION_SIGNATURE = "Lorg/eclipse/persistence/sessions/Session;";
     public static final String PBOOLEAN_SIGNATURE = "Z";
+    public static final String LONG_SIGNATURE = "J";
     
+    // Cloneable
+    public static final String CLONEABLE_SHORT_SIGNATURE = "java/lang/Cloneable";
+    
+    /** Stores information on the class gathered from the temp class loader and descriptor. */
     protected ClassDetails classDetails;
+    /** Used to generate the serialization serial UUID based on the original class. */
+    protected UUIDGenerator uuidGenerator;
+    
+    // Keep track of what was weaved.
     protected boolean alreadyWeaved = false;
     public boolean weaved = false;
     public boolean weavedLazy = false;
@@ -101,6 +116,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     public ClassWeaver(ClassWriter classWriter, ClassDetails classDetails) {
         super(classWriter);
         this.classDetails = classDetails;
+        this.uuidGenerator = new UUIDGenerator(classWriter);
     }
 
     /**
@@ -241,7 +257,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         cv_init_VH.visitVarInsn(ALOAD, 0);
         cv_init_VH.visitTypeInsn(NEW, VH_SHORT_SIGNATURE);
         cv_init_VH.visitInsn(DUP);
-        if (attributeDetails.isMappedWithAttributeAccess()) {
+        if (attributeDetails.hasField()) {
             cv_init_VH.visitVarInsn(ALOAD, 0);
             cv_init_VH.visitFieldInsn(GETFIELD, className, attribute, attributeDetails.getReferenceClassType().getDescriptor());
             cv_init_VH.visitMethodInsn(INVOKESPECIAL, VH_SHORT_SIGNATURE, "<init>", "(Ljava/lang/Object;)V");
@@ -473,7 +489,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         cv_set.visitVarInsn(opcode, 1);
         cv_set.visitFieldInsn(PUTFIELD, classDetails.getClassName(), attribute, attributeDetails.getReferenceClassType().getDescriptor());
         
-        if (attributeDetails.isMappedWithAttributeAccess() && attributeDetails.weaveValueHolders()) {
+        if (attributeDetails.weaveValueHolders()) {
             // _persistence_variableName_vh.setValue(argument);
             cv_set.visitVarInsn(ALOAD, 0);
             cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attribute + "_vh", ClassWeaver.VHI_SIGNATURE);
@@ -509,7 +525,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
             cv_get.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_checkFetched", "(Ljava/lang/String;)V");
         }
         
-        if (attributeDetails.isMappedWithAttributeAccess() && attributeDetails.weaveValueHolders()) {
+        if (attributeDetails.weaveValueHolders()) {
             // _persistence_initialize_variableName_vh();
             cv_get.visitVarInsn(ALOAD, 0);
             cv_get.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + "_vh", "()V");
@@ -546,6 +562,78 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     public void addPersistenceEntityVariables() {
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_primaryKey", VECTOR_SIGNATURE, null, null);
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_cacheKey", CACHEKEY_SIGNATURE, null, null);
+    }
+    
+    /**
+     * Add an internal clone method.
+     * This will clone value holders to avoid change original/clone to effect the other.
+     * 
+     * public void _persistence_clone() {
+     *     ClassType clone = super.clone();
+     *     clone._attribute_vh = this._attribute_vh.clone();
+     *     ...
+     *     clone._persistence_listener = null;
+     *     return clone;
+     * }
+     */
+    public void addPersistenceClone(ClassDetails classDetails) {
+        // create the clone() method
+        CodeVisitor cv_clone = cv.visitMethod(ACC_PUBLIC, "_persistence_clone", "()Ljava/lang/Object;", null, null);
+
+        // ClassType clone = (ClassType)super.clone();
+        cv_clone.visitVarInsn(ALOAD, 0);
+        cv_clone.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "clone", "()Ljava/lang/Object;");
+        cv_clone.visitTypeInsn(CHECKCAST, classDetails.getClassName());
+        cv_clone.visitVarInsn(ASTORE, 2);
+        
+        for (Iterator iterator = classDetails.getAttributesMap().values().iterator(); iterator.hasNext(); ) {
+            AttributeDetails attributeDetails = (AttributeDetails)iterator.next();
+            if (attributeDetails.weaveValueHolders()) {
+                // clone._attribute_vh = this._attribute_vh.clone();
+                cv_clone.visitVarInsn(ALOAD, 2);
+                cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attributeDetails.getAttributeName() + "_vh", ClassWeaver.VHI_SIGNATURE);
+                Label label = new Label();
+                cv_clone.visitJumpInsn(IFNULL, label);
+                cv_clone.visitVarInsn(ALOAD, 2);
+                cv_clone.visitVarInsn(ALOAD, 0);
+                cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attributeDetails.getAttributeName() + "_vh", ClassWeaver.VHI_SIGNATURE);
+                cv_clone.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "clone", "()Ljava/lang/Object;");
+                cv_clone.visitTypeInsn(CHECKCAST, ClassWeaver.VHI_SHORT_SIGNATURE);
+                cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_" + attributeDetails.getAttributeName() + "_vh", ClassWeaver.VHI_SIGNATURE);
+                cv_clone.visitLabel(label);
+            }
+        }
+        if (classDetails.shouldWeaveChangeTracking()) {
+            // clone._persistence_listener = null;
+            cv_clone.visitVarInsn(ALOAD, 2);
+            cv_clone.visitInsn(ACONST_NULL);
+            cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_listener", PCL_SIGNATURE);
+        }
+        
+        // return clone;
+        cv_clone.visitVarInsn(ALOAD, 2);
+        cv_clone.visitInsn(ARETURN);
+        cv_clone.visitMaxs(0, 0);
+    }
+    
+    /**
+     * Add an internal shallow clone method.
+     * This can be used to optimize uow cloning.
+     * 
+     * public void _persistence_shallow_clone() {
+     *     return Object.clone();
+     * }
+     */
+    public void addShallowClone(ClassDetails classDetails) {
+        // create the clone() method
+        CodeVisitor cv_clone = cv.visitMethod(ACC_PUBLIC, "_persistence_shallow_clone", "()Ljava/lang/Object;", null, null);
+
+        // ClassType clone = (ClassType)super.clone();
+        cv_clone.visitVarInsn(ALOAD, 0);
+        cv_clone.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "clone", "()Ljava/lang/Object;");
+        
+        cv_clone.visitInsn(ARETURN);
+        cv_clone.visitMaxs(0, 0);
     }
     
     /**
@@ -740,6 +828,8 @@ public class ClassWeaver extends ClassAdapter implements Constants {
      * The new interfaces are pass to the super weaver.
      */
     public void visit(int version, int access, String name, String superName, String[] interfaces, String sourceFile) {
+        this.uuidGenerator.visit(version, access, name, superName, interfaces, sourceFile);
+        boolean weaveCloneable = true;
         // To prevent 'double' weaving: scan for PersistenceWeaved interface.
         for (int index = 0; index < interfaces.length; index++) {
             String existingInterface = interfaces[index];
@@ -750,15 +840,24 @@ public class ClassWeaver extends ClassAdapter implements Constants {
             } else if (CT_SHORT_SIGNATURE.equals(existingInterface)) {
                 // Disable weaving of change tracking if already implemented (such as by user).
                 classDetails.setShouldWeaveChangeTracking(false);
+            } else if (CLONEABLE_SHORT_SIGNATURE.equals(existingInterface)) {
+                weaveCloneable = false;
             }
         }
         int newInterfacesLength = interfaces.length;
+        // Cloneable
+        int cloneableIndex = 0;
+        weaveCloneable = classDetails.shouldWeaveInternal() && weaveCloneable && (classDetails.getSuperClassDetails() == null);
+        if (weaveCloneable) {
+            cloneableIndex = newInterfacesLength;
+            newInterfacesLength++;
+        }
         // PersistenceWeaved
         int persistenceWeavedIndex = newInterfacesLength;
         newInterfacesLength++;
         // PersistenceEntity
         int toplinkEntityIndex = 0;
-        boolean persistenceEntity = (classDetails.getSuperClassDetails() == null) && (!classDetails.isEmbedable());
+        boolean persistenceEntity = classDetails.shouldWeaveInternal() && (classDetails.getSuperClassDetails() == null) && (!classDetails.isEmbedable());
         if (persistenceEntity) {
             toplinkEntityIndex = newInterfacesLength;
             newInterfacesLength++;
@@ -799,6 +898,10 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         // Add 'marker' org.eclipse.persistence.internal.weaving.PersistenceWeaved interface.
         newInterfaces[persistenceWeavedIndex] = PERSISTENCE_WEAVED_SHORT_SIGNATURE;            
         weaved = true;
+        // Add Cloneable interface.
+        if (weaveCloneable) {
+            newInterfaces[cloneableIndex] = CLONEABLE_SHORT_SIGNATURE;
+        }
         // Add org.eclipse.persistence.internal.descriptors.PersistenceEntity interface.
         if (persistenceEntity) {
             newInterfaces[toplinkEntityIndex] = TOPLINK_ENTITY_SHORT_SIGNATURE;
@@ -823,27 +926,29 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         }
         super.visit(version, access, name, superName, newInterfaces, sourceFile);
     }
-
+    
+    public void visitField (int access, String name, String desc, Object value, Attribute attrs) {
+        this.uuidGenerator.visitField(access, name, desc, value, attrs);        
+        super.visitField(access, name, desc, value, attrs);
+    }
+  
     /**
      * Construct a MethodWeaver and allow it to process the method.
      */
-    public CodeVisitor visitMethod(int access, String methodName, String desc,
-            String[] exceptions, Attribute attrs) {
-
+    public CodeVisitor visitMethod(int access, String methodName, String desc, String[] exceptions, Attribute attrs) {
+        this.uuidGenerator.visitMethod(access, methodName, desc, exceptions, attrs);
         if (!alreadyWeaved) {
             // skip constructors, they will not changed
             if ("<init>".equals(methodName)||"<cinit>".equals(methodName)) {
                 return super.visitMethod(access, methodName, desc, exceptions, attrs);
-            } else if (classDetails.usesAttributeAccess()) {
-                // remaining modifications to the 'body' of the class are delegated to MethodWeaver
-                return new FieldAccessMethodWeaver(this, methodName, desc, cv.visitMethod(access, methodName, desc, exceptions, attrs));                
             } else {
-                return new PropertyAccessMethodWeaver(this, methodName, desc, cv.visitMethod(access, methodName, desc, exceptions, attrs));
+                // remaining modifications to the 'body' of the class are delegated to MethodWeaver
+                return new MethodWeaver(this, methodName, desc, cv.visitMethod(access, methodName, desc, exceptions, attrs));                
             }
         } else {
             return super.visitMethod(access, methodName, desc, exceptions, attrs);
         }
-    }
+    }    
 
     public void visitAttribute(Attribute attr) {
         if (!alreadyWeaved) {
@@ -862,16 +967,30 @@ public class ClassWeaver extends ClassAdapter implements Constants {
             return;
         }
         
-        if ((classDetails.getSuperClassDetails() == null) && (!classDetails.isEmbedable())) {
-            // Add PersistenceEntity variables and methods.
-            addPersistenceEntityVariables();
-            addPersistenceEntityMethods(this.classDetails);
-            weavedPersistenceEntity = true;
+        if (this.classDetails.shouldWeaveInternal()) {
+            // Add a serial UID if one was not defined in the class to allow portable serialization.
+            if (!this.uuidGenerator.hasSVUID) {
+                long suid = this.uuidGenerator.computeSVUID();
+                this.cv.visitField(ACC_PUBLIC + ACC_STATIC + ACC_FINAL, "serialVersionUID", LONG_SIGNATURE, suid, null);
+            }
+            // Add a persistence and shallow clone method.
+            if (this.classDetails.shouldWeaveValueHolders()) {
+                addPersistenceClone(this.classDetails);
+            }
+            if (this.classDetails.getSuperClassDetails() == null) {
+                addShallowClone(this.classDetails);        
+                if (!this.classDetails.isEmbedable()) {
+                    // Add PersistenceEntity variables and methods.
+                    addPersistenceEntityVariables();
+                    addPersistenceEntityMethods(this.classDetails);
+                    weavedPersistenceEntity = true;
+                }
+            }
         }
         
         boolean attributeAccess = false;
         // For each attribute we need to check what methods and variables to add.
-        for (Iterator iterator = classDetails.getAttributesMap().values().iterator(); iterator.hasNext();) {
+        for (Iterator iterator = this.classDetails.getAttributesMap().values().iterator(); iterator.hasNext();) {
             AttributeDetails attributeDetails = (AttributeDetails)iterator.next();
             // Only add to classes that actually contain the attribute we are processing
             // an attribute could be in the classDetails but not actually in the class
@@ -892,7 +1011,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
                     }
                 }
                 if (classDetails.shouldWeaveChangeTracking() || classDetails.shouldWeaveFetchGroups() || attributeDetails.weaveValueHolders()) {
-                    if (classDetails.usesAttributeAccess()) {
+                    if (attributeDetails.hasField()) {
                         weaved = true;
                         addGetterMethodForFieldAccess(classDetails, attributeDetails);
                         addSetterMethodForFieldAccess(classDetails, attributeDetails);

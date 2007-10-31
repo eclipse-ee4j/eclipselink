@@ -94,7 +94,6 @@ public class TestRunModel extends TestModel {
             tests.addElement("org.eclipse.persistence.testing.tests.schemaframework.StoredProcedureGeneratorModel");
             tests.addElement("org.eclipse.persistence.testing.tests.proxyindirection.ProxyIndirectionTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.localization.LocalizationTestModel");
-            tests.addElement("org.eclipse.persistence.testing.xml.XMLBasicModel");
             tests.addElement("org.eclipse.persistence.testing.tests.security.SecurityTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.history.HistoryTestRunModel");
             tests.addElement("org.eclipse.persistence.testing.tests.isolatedsession.IsolatedSessionTestModel");

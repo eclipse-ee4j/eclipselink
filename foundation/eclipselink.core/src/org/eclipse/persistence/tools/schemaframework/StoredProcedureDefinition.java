@@ -16,11 +16,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.*;
 
 /**
- * <p>
  * <b>Purpose</b>: Allow a semi-generic way of creating store procedures.
- * </p>
- * 
- * <p></p>
  */
 public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     protected Vector variables;
@@ -307,12 +303,12 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
             } else {
                 fieldType = new FieldTypeDefinition(argument.getTypeName());
             }
+            writer.write(platform.getProcedureArgumentString());            
             if (platform.shouldPrintOutputTokenAtStart()) {
-                writer.write(" " + platform.getCreationInOutputProcedureToken());
+                writer.write(" " + platform.getCreationInOutputProcedureToken() + " ");
             }
-            writer.write(platform.getProcedureArgumentString());
             writer.write(argument.getName());
-            if (platform.shouldPrintOutputTokenBeforeType() && !platform.shouldPrintOutputTokenAtStart()) {
+            if ((!platform.shouldPrintOutputTokenAtStart()) && platform.shouldPrintOutputTokenBeforeType()) {
                 writer.write(" " + platform.getCreationInOutputProcedureToken());
             }
             writer.write(" " + fieldType.getName());
@@ -332,7 +328,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
                 }
                 writer.write(")");
             }
-            if (!platform.shouldPrintOutputTokenBeforeType()  && !platform.shouldPrintOutputTokenAtStart()) {
+            if ((!platform.shouldPrintOutputTokenAtStart()) && (!platform.shouldPrintOutputTokenBeforeType())) {
                 writer.write(" " + platform.getCreationInOutputProcedureToken());
             }
         } catch (IOException ioException) {

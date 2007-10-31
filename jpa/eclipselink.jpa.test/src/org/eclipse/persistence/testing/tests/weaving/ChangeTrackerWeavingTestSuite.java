@@ -85,7 +85,7 @@ public class ChangeTrackerWeavingTestSuite  extends TestCase {
         session.setLogLevel(SessionLog.OFF);
         MetadataProcessor eap = new MetadataProcessor((AbstractSession) session, setupClassLoader, entities, true);
         eap.processAnnotations();
-        PersistenceWeaver tw = (PersistenceWeaver)TransformerFactory.createTransformerAndModifyProject(session, entities, Thread.currentThread().getContextClassLoader(), true, true, true);
+        PersistenceWeaver tw = (PersistenceWeaver)TransformerFactory.createTransformerAndModifyProject(session, entities, Thread.currentThread().getContextClassLoader(), true, true, true, true);
         byte[] newOrderBytes = tw.transform(simpleClassLoader, Order.class.getName().replace('.','/'), null, null, originalOrderBytes);
         byte[] newItemBytes = tw.transform(simpleClassLoader, Item.class.getName().replace('.','/'), null, null, originalItemBytes);
         

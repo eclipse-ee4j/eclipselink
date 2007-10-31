@@ -12,7 +12,6 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 import java.util.*;
 import java.io.Serializable;
 import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
 
 import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
@@ -78,21 +77,25 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
                          @StoredProcedureParameter(procedureParameterDirection=OUT, name="street_v", queryParameter="STREET", type=String.class)})
 })
 public class Address implements Serializable {
-	@Id
+    @Id
     // BUG 5079973 - this should be a valid specification, that is the generator
     // trumps the AUTO strategy defaulting.
     @GeneratedValue(generator="FA_ADD_SEQ_GENERATOR")
-	@SequenceGenerator(name="FA_ADD_SEQ_GENERATOR", sequenceName="ADDRESS_SEQ", allocationSize=25)
-	@Column(name="ADDRESS_ID")
-	private Integer id;
-	private String street;
-	private String city;
+    @SequenceGenerator(name="FA_ADD_SEQ_GENERATOR", sequenceName="ADDRESS_SEQ", allocationSize=25)
+    @Column(name="ADDRESS_ID")
+    private Integer id;
+    
+    private String street;
+    private String city;
     private String province;
-	@Column(name="P_CODE")
+    
+    @Column(name="P_CODE")
     private String postalCode;
+    
     private String country;
-	@OneToMany(cascade=ALL, mappedBy="address")
-	private Collection<Employee> employees;
+    
+    @OneToMany(cascade=ALL, mappedBy="address")
+    private Collection<Employee> employees;
 
     public Address() {
         city = "";
@@ -112,59 +115,90 @@ public class Address implements Serializable {
         this.employees = new Vector<Employee>();
     }
 
-	public Integer getId() { 
+    public Address copy() {
+        Address copy = new Address();
+        copy.id = this.id;
+        copy.street = this.street;
+        copy.city = this.city;
+        copy.province = this.province;
+        copy.country = this.country;
+        copy.postalCode = this.postalCode;
+        return copy;
+    }
+    
+    public TransferAddress transferCopy() {
+        TransferAddress copy = new TransferAddress();
+        copy.id = this.id;
+        copy.street = this.street;
+        copy.city = this.city;
+        copy.province = this.province;
+        copy.country = this.country;
+        copy.postalCode = this.postalCode;
+        return copy;
+    }
+    
+    public Integer getId() { 
         return id; 
     }
     
-	public void setId(Integer id) { 
+    public void setId(Integer id) { 
         this.id = id; 
     }
 
-	public String getStreet() { 
+    public String getStreet() { 
         return street; 
     }
     
-	public void setStreet(String street) { 
+    public void setStreet(String street) { 
         this.street = street; 
     }
 
-	public String getCity() { 
+    public String getCity() { 
         return city; 
     }
     
-	public void setCity(String city) { 
+    public void setCity(String city) { 
         this.city = city; 
     }
 
-	public String getProvince() { 
+    public String getProvince() { 
         return province; 
     }
         
-	public void setProvince(String province) { 
+    public void setProvince(String province) { 
         this.province = province; 
     }
 
-	public String getPostalCode() { 
+    public String getPostalCode() { 
         return postalCode; 
     }
     
-	public void setPostalCode(String postalCode) { 
+    public void setPostalCode(String postalCode) { 
         this.postalCode = postalCode; 
     }
 
-	public String getCountry() { 
+    public String getCountry() { 
         return country; 
     }
     
-	public void setCountry(String country) { 
+    public void setCountry(String country) { 
         this.country = country;
     }
     
-	public Collection<Employee> getEmployees() { 
+    public Collection<Employee> getEmployees() { 
         return employees; 
     }
     
     public void setEmployees(Collection<Employee> employees) {
-		this.employees = employees;
-	}
+        this.employees = employees;
+    }
+    
+    public class TransferAddress {
+        public Integer id;    
+        public String street;
+        public String city;
+        public String province;
+        public String postalCode;
+        public String country;
+    }
 }

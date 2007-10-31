@@ -167,7 +167,28 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
             }
         }
     }
-
+    
+    /**
+     * INTERNAL:
+     * Cascade discover and persist new objects during commit.
+     */
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+        Object cloneAttribute = getAttributeValueFromObject(object);
+        if (cloneAttribute == null ) {
+            return;
+        }
+        ContainerPolicy containerPolicy = getContainerPolicy();
+        Object cloneObjectCollection = getRealCollectionAttributeValueFromObject(object, uow);
+        Object iterator = containerPolicy.iteratorFor(cloneObjectCollection);
+        while (containerPolicy.hasNext(iterator)) {
+            Object nextObject = containerPolicy.next(iterator, uow);
+            if (nextObject != null) {
+                ObjectBuilder builder = getReferenceDescriptor(nextObject.getClass(), uow).getObjectBuilder();
+                builder.cascadeDiscoverAndPersistUnregisteredNewObjects(nextObject, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+            }
+        }
+    }
+    
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
@@ -511,27 +532,17 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
         ContainerPolicy containerPolicy = getContainerPolicy();
         AbstractSession session = mergeManager.getSession();
-        Object valueOfTarget = null;
-
-        //At this point the source's indirection must be instantiated or the changeSet would never have
-        // been created
-        Object sourceAggregate = null;
-
-        // iterate over the changes and merge the collections
+        // Iterate over the changes and merge the collections
         Vector aggregateObjects = ((AggregateCollectionChangeRecord)changeRecord).getChangedValues();
-        valueOfTarget = containerPolicy.containerInstance();
+        Object valueOfTarget = containerPolicy.containerInstance();
         // Next iterate over the changes and add them to the container
         ObjectChangeSet objectChanges = null;
-        for (int i = 0; i < aggregateObjects.size(); ++i) {
-            objectChanges = (ObjectChangeSet)aggregateObjects.elementAt(i);
-            Class localClassType = objectChanges.getClassType(session);
-            sourceAggregate = objectChanges.getUnitOfWorkClone();
-            //Since the CompositeCollectionMapping only registers an all or none
-            //change set, we can simply replace the entire collection;
-            containerPolicy.addInto(this.buildElementFromChangeSet(objectChanges, mergeManager), valueOfTarget, session);
-
-            Object targetAggregate = ((UnitOfWorkImpl)mergeManager.getSession()).getCloneToOriginals().get(sourceAggregate);
-
+        int size = aggregateObjects.size();
+        for (int index = 0; index < size; ++index) {
+            objectChanges = (ObjectChangeSet)aggregateObjects.get(index);
+            // Since the CompositeCollectionMapping only registers an all or none
+            // change set, we can simply replace the entire collection;
+            containerPolicy.addInto(buildElementFromChangeSet(objectChanges, mergeManager), valueOfTarget, session);
         }
         setRealAttributeValueInObject(target, valueOfTarget);
     }

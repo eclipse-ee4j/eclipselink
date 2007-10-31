@@ -6,8 +6,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-// Copyright (c) 2005, 2007, Oracle. All rights reserved.  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.weaving;
 
 // Java imports
@@ -37,7 +36,6 @@ import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.helper.Helper;
 
-
 /**
  * This class creates a ClassFileTransformer that is used for dynamic bytecode
  * weaving. It is called by {@link org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl#predeploy}
@@ -60,12 +58,14 @@ public class TransformerFactory {
     protected Collection entityClasses;
     protected Map classDetailsMap;
     protected ClassLoader classLoader;
-    protected boolean weaveChangeTrackingForPU;
-    protected boolean weaveLazyForPU;
-    protected boolean weaveFetchGroupsForPU;
+    protected boolean weaveChangeTracking;
+    protected boolean weaveLazy;
+    protected boolean weaveFetchGroups;
+    protected boolean weaveInternal;
     
-    public static ClassTransformer createTransformerAndModifyProject(Session session,
-        Collection entityClasses, ClassLoader classLoader, boolean weaveLazyForPU, boolean weaveChangeTrackingForPU, boolean weaveFetchGroupsForPU) {
+    public static ClassTransformer createTransformerAndModifyProject(
+            Session session, Collection entityClasses, ClassLoader classLoader,
+            boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal) {
         if (session == null) {
             throw new IllegalArgumentException("Weaver session cannot be null");
         }
@@ -73,19 +73,20 @@ public class TransformerFactory {
             ((AbstractSession)session).log(SessionLog.SEVERE, SessionLog.WEAVER, WEAVER_NULL_PROJECT, null);
             throw new IllegalArgumentException("Weaver session's project cannot be null");
         }
-        TransformerFactory tf = new TransformerFactory(session, entityClasses, classLoader, weaveLazyForPU, weaveChangeTrackingForPU, weaveFetchGroupsForPU);
+        TransformerFactory tf = new TransformerFactory(session, entityClasses, classLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
         tf.buildClassDetailsAndModifyProject();
         return tf.buildTopLinkWeaver();
     }
     
-    public TransformerFactory(Session session, Collection entityClasses, ClassLoader classLoader, boolean weaveLazyForPU, boolean weaveChangeTrackingForPU, boolean weaveFetchGroupsForPU) {
+    public TransformerFactory(Session session, Collection entityClasses, ClassLoader classLoader, boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal) {
         this.session = session;
         this.entityClasses = entityClasses;
         this.classLoader = classLoader;
         classDetailsMap = new HashMap();
-        this.weaveLazyForPU = weaveLazyForPU;
-        this.weaveChangeTrackingForPU = weaveChangeTrackingForPU;
-        this.weaveFetchGroupsForPU = weaveFetchGroupsForPU;
+        this.weaveLazy = weaveLazy;
+        this.weaveChangeTracking = weaveChangeTracking;
+        this.weaveFetchGroups = weaveFetchGroups;
+        this.weaveInternal = weaveInternal;
     }
     
     /**
@@ -113,7 +114,7 @@ public class TransformerFactory {
         boolean weaveValueHolders = canWeaveValueHolders(superClz, unMappedAttributes);
 
         List stillUnMappedMappings = null;
-        ClassDetails superClassDetails = createClassDetails(superClz, weaveValueHolders, weaveChangeTracking, weaveFetchGroupsForPU);
+        ClassDetails superClassDetails = createClassDetails(superClz, weaveValueHolders, weaveChangeTracking, weaveFetchGroups, weaveInternal);
         superClassDetails.setIsMappedSuperClass(true);
         if (!classDetailsMap.containsKey(superClassDetails.getClassName())){
             stillUnMappedMappings = storeAttributeMappings(superClz, superClassDetails, unMappedAttributes, weaveValueHolders);
@@ -146,15 +147,15 @@ public class TransformerFactory {
                 } else {
                     log(SessionLog.FINER, WEAVER_PROCESSING_CLASS, new Object[]{clz.getName()});
 
-                    boolean weaveValueHolders = weaveLazyForPU && canWeaveValueHolders(clz, descriptor.getMappings());
-                    boolean weaveChangeTracking = canChangeTrackingBeEnabled(descriptor, clz, weaveChangeTrackingForPU);
+                    boolean weaveValueHoldersForClass = weaveLazy && canWeaveValueHolders(clz, descriptor.getMappings());
+                    boolean weaveChangeTrackingForClass = canChangeTrackingBeEnabled(descriptor, clz, weaveChangeTracking);
                     
-                    ClassDetails classDetails = createClassDetails(clz, weaveValueHolders, weaveChangeTracking, weaveFetchGroupsForPU);
+                    ClassDetails classDetails = createClassDetails(clz, weaveValueHoldersForClass, weaveChangeTrackingForClass, weaveFetchGroups, weaveInternal);
                     if (descriptor.isAggregateDescriptor()) {
                         classDetails.setIsEmbedable(true);
                         classDetails.setShouldWeaveFetchGroups(false);
                     }
-                    List unMappedAttributes = storeAttributeMappings(clz, classDetails, descriptor.getMappings(), weaveValueHolders);
+                    List unMappedAttributes = storeAttributeMappings(clz, classDetails, descriptor.getMappings(), weaveValueHoldersForClass);
                     classDetailsMap.put(classDetails.getClassName() ,classDetails);
 
                     if (!unMappedAttributes.isEmpty()){
@@ -252,7 +253,7 @@ public class TransformerFactory {
         return weaveValueHolders;
     }
 
-    private ClassDetails createClassDetails(Class clz, boolean weaveValueHolders, boolean weaveChangeTracking, boolean weaveFetchGroups) {
+    private ClassDetails createClassDetails(Class clz, boolean weaveValueHolders, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal) {
         // compose className in JVM 'slash' format
         // instead of regular Java 'dotted' format
         String className = Helper.toSlashedClassName(clz.getName());
@@ -264,6 +265,7 @@ public class TransformerFactory {
         classDetails.setShouldWeaveValueHolders(weaveValueHolders);
         classDetails.setShouldWeaveChangeTracking(weaveChangeTracking);
         classDetails.setShouldWeaveFetchGroups(weaveFetchGroups);
+        classDetails.setShouldWeaveInternal(weaveInternal);
         return classDetails;
     }
     
@@ -282,10 +284,51 @@ public class TransformerFactory {
         }
         return null;
     }
-
+    
     /**
-     *  Use the database mapping for an attribute to find it's type.  The type returned will either be
-     *  the field type of the field in the object or the type returned by the getter method.
+     * Return if the class contains the field.
+     */
+    protected boolean hasFieldInClass(Class clz, String attributeName){       
+        try {
+            Field field = null;
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    field = (Field)AccessController.doPrivileged(new PrivilegedGetField(clz, attributeName, false));
+                } catch (PrivilegedActionException ignore) { }
+            } else {
+                field = PrivilegedAccessHelper.getField(clz, attributeName, false);
+            }
+            return field != null;
+        }  catch (Exception ignore) { }
+
+        return false;
+    }
+    
+    /**
+     * Return the class which is the source of the attribute.
+     * i.e. the class that defines the attribute in its class file.
+     */
+    private Class getAttributeDeclaringClass(Class theClass, String attributeName) {       
+        try {
+            Class sourceClass = null;
+            Field field = null;
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                try {
+                    field = (Field)AccessController.doPrivileged(new PrivilegedGetField(theClass, attributeName, false));
+                } catch (PrivilegedActionException exception) {
+                }
+            } else {
+                field = PrivilegedAccessHelper.getField(theClass, attributeName, false);
+            }
+            return field.getDeclaringClass();
+        }  catch (Exception e) {  }
+
+        return null;
+    }
+    
+    /**
+     * Use the database mapping for an attribute to find it's type.  The type returned will either be
+     * the field type of the field in the object or the type returned by the getter method.
      */
     private Class getAttributeTypeFromClass(Class clz, String attributeName, DatabaseMapping mapping, boolean checkSuperclass){       
         String getterMethod = mapping.getGetMethodName();
@@ -295,7 +338,7 @@ public class TransformerFactory {
                 if (checkSuperclass){
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
-                            method = AccessController.doPrivileged(new PrivilegedGetMethod(clz, getterMethod, null, false));
+                            method = (Method)AccessController.doPrivileged(new PrivilegedGetMethod(clz, getterMethod, null, false));
                         } catch (PrivilegedActionException exception) {
                         }
                     } else {
@@ -358,11 +401,11 @@ public class TransformerFactory {
      *  be found on MappedSuperclasses.
      */
     protected List storeAttributeMappings(Class clz, ClassDetails classDetails, List mappings, boolean weaveValueHolders) {      
-        List unMappedAttributes = new Vector();
+        List unMappedAttributes = new ArrayList();
         Map attributesMap = new HashMap();
         Map settersMap = new HashMap();
         Map gettersMap = new HashMap();
-        List lazyMappings = new Vector();
+        List lazyMappings = new ArrayList();
 
         for (Iterator iterator = mappings.iterator(); iterator.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping)iterator.next();
@@ -382,10 +425,20 @@ public class TransformerFactory {
             if (mapping.getGetMethodName() != null) {
                 gettersMap.put(mapping.getGetMethodName(), attributeDetails);
                 attributeDetails.setGetterMethodName(mapping.getGetMethodName());
-                if (mapping.getSetMethodName() != null){
+                if (mapping.getSetMethodName() != null) {
                     settersMap.put(mapping.getSetMethodName(), attributeDetails);
                     attributeDetails.setSetterMethodName(mapping.getSetMethodName());
                 }
+                // If the property has a matching field, then weave it instead (unless internal weaving is disabled).
+                if (this.weaveInternal) {
+                    attributeDetails.setHasField(hasFieldInClass(clz, attribute));
+                }
+            } else {
+                attributeDetails.setHasField(true);
+            }
+            // If the attribute has a field, then the weaver needs to know in which class it was defined.
+            if (attributeDetails.hasField()) {
+                attributeDetails.setDeclaringType(Type.getType(getAttributeDeclaringClass(clz, attribute)));
             }
 
             // Check for lazy/value-holder indirection.

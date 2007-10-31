@@ -170,6 +170,9 @@ public class PersistenceUnitProperties {
     /** Indicates whether weaving should be performed - "true" by default. */
     public static final String WEAVING = "eclipselink.weaving";
     
+    /** Indicates whether internal optimizations should be enabled through weaving - "true" by default. */
+    public static final String WEAVING_INTERNAL = "eclipselink.weaving.internal";
+    
     /** Indicates whether LAZY OneToOne mappings should be enabled through weaving - "true" by default. */
     public static final String WEAVING_LAZY = "eclipselink.weaving.lazy";
     

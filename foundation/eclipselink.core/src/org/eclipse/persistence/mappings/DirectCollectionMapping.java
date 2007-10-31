@@ -312,6 +312,14 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
         //as this mapping type references primitive objects this method does not apply
     }
+    
+    /**
+     * INTERNAL:
+     * Cascade discover and persist new objects during commit.
+     */
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+        // Direct mappings do not require any cascading.
+    }
 
     /**
      * INTERNAL:

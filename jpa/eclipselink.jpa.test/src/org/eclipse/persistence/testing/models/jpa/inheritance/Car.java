@@ -12,16 +12,21 @@
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import javax.persistence.*;
-import static javax.persistence.InheritanceType.*;
 
 @Entity
 @Table(name="CMP3_FUEL_VEH")
 @DiscriminatorValue("C")
 public class Car extends FueledVehicle {
     public static int PRE_PERSIST_COUNT = 0;
+        
+    public Object clone() {
+        Object clone =  super.clone();
+        clone.toString();
+        return clone;
+    }
     
     @PrePersist
-	public void prePersist() {
+    public void prePersist() {
         ++PRE_PERSIST_COUNT;
-	}
+    }
 }

@@ -12,16 +12,13 @@ package org.eclipse.persistence.internal.sessions;
 import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.descriptors.CMPPolicy;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.DescriptorEventManager;
+import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
@@ -552,9 +549,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     
             // Iterate over the changed objects only.
             discoverUnregisteredNewObjects(changedObjects, newObjects, existingObjects, visitedNodes);
+            setUnregisteredExistingObjects(existingObjects);
             setUnregisteredNewObjects(newObjects);
             if (assignSequences) {
-                assignSequenceNumbers(getUnregisteredNewObjects());
+                assignSequenceNumbers(newObjects);
             }
             for (Enumeration newObjectsEnum = newObjects.elements(); newObjectsEnum.hasMoreElements(); ) {
                 Object object = newObjectsEnum.nextElement();
@@ -867,25 +865,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Prepare for merge in nested uow.
      */
     public IdentityHashtable collectAndPrepareObjectsForNestedMerge() {
-        IdentityHashtable changedObjects = new IdentityHashtable(1 + getCloneMapping().size());
-
         discoverAllUnregisteredNewObjectsInParent();
-        discoverAllUnregisteredNewObjects();
-
-        //assignSequenceNumbers will collect the unregistered new objects and assign id's to all new
-        // objects
-        // Add any registered objects.
-        for (Enumeration clonesEnum = getCloneMapping().keys(); clonesEnum.hasMoreElements();) {
-            Object clone = clonesEnum.nextElement();
-            changedObjects.put(clone, clone);
-        }
-        for (Enumeration unregisteredNewObjectsEnum = getUnregisteredNewObjects().keys();
-                 unregisteredNewObjectsEnum.hasMoreElements();) {
-            Object newObject = unregisteredNewObjectsEnum.nextElement();
-            changedObjects.put(newObject, newObject);
-        }
-
-        return changedObjects;
+        return collectAndPrepareObjectsForCommit();
     }
 
     /**
@@ -1586,7 +1567,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         IdentityHashtable existingObjects = new IdentityHashtable();
 
         // Iterate over the clones.
-        discoverUnregisteredNewObjects(getCloneMapping(), newObjects, existingObjects, visitedNodes);
+        discoverUnregisteredNewObjects((IdentityHashtable)getCloneMapping().clone(), newObjects, existingObjects, visitedNodes);
 
         setUnregisteredNewObjects(newObjects);
         setUnregisteredExistingObjects(existingObjects);
@@ -3857,31 +3838,80 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         //as this is register new return the object passed in.
         return implementation;
     }
-
+    
     /**
      * INTERNAL:
-     *
+     * Discover any new objects referenced from registered objects and persist them.
+     * This is similar to persist, except that it traverses (all changed or new) objects
+     * during the commit to find any unregistered new objects and persists them.
+     * Only objects referenced by cascade persist mappings will be persisted,
+     * an error will be thrown from non-cascade persist mappings to new objects (detached existing object are ok...in thoery).
+     * This is specific to EJB 3.0 support.
+     * @param newObjects any new objects found must be added to this collection.
+     * @param cascadePersist determines if this call is cascading from a cascadePersist mapping or not.
+     */
+    public void discoverAndPersistUnregisteredNewObjects(Object object, boolean cascadePersist, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects) {
+        if (object == null) {
+            return;
+        }
+        if (cascadePersist && isObjectDeleted(object)) {
+            // It is deleted but reference by a cascade persist mapping, spec seems to state it should be undeleted, but seems wrong.
+            // TODO: Reconsider this.
+            undeleteObject(object);
+        }
+        if (visitedObjects.containsKey(object)) {
+            return;
+        }
+        visitedObjects.put(object, object);
+        ClassDescriptor descriptor = getDescriptor(object);        
+        // If the object is read-only or deleted then do not continue the traversal.
+        if (isClassReadOnly(object.getClass(), descriptor)) {
+            return;
+        }
+        if (!isObjectRegistered(object)) {
+            if (cascadePersist) {
+                // It is new and reference by a cascade persist mapping, persist it.
+                // This will also throw an exception if it is an unregistered existing object (which the spec seems to state).
+                registerNotRegisteredNewObjectForPersist(object, descriptor);
+                newObjects.put(object, object);
+            } else if (checkForUnregisteredExistingObject(object)) {
+                // Always ignore unregistered existing objects in JPA (when not cascade persist).
+                // If the object exists we need to keep a record of this object to ignore it,
+                // also need to stop iterating over it.
+                // Spec seems to say this is undefined.
+                unregisteredExistingObjects.put(object, object);
+                return;
+            } else {
+                // It is new but not reference by a cascade persist mapping, throw an error.
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("new_object_found_during_commit", new Object[]{object}));
+            }
+        }
+        descriptor.getObjectBuilder().cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, this);        
+    }
+    
+    /**
+     * INTERNAL:
      * Register the new object with the unit of work.
      * This will register the new object without cloning.
      * Checks based on existence will be completed and the create will be cascaded based on the
-     * object's mappings cascade requirements.  This is specific to EJB 3.0 support and is
+     * object's mappings cascade requirements.  This is specific to EJB 3.0 support.
      * @see #registerObject(Object)
      */
     public synchronized void registerNewObjectForPersist(Object newObject, IdentityHashtable visitedObjects) {
-        try {
-            if (newObject == null) {
-                return;
-            }
-            if(visitedObjects.containsKey(newObject)) {
-                return;
-            }
-            visitedObjects.put(newObject, newObject);
-            ClassDescriptor descriptor = getDescriptor(newObject);
-            if ((descriptor == null) || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { newObject }));
-            }
+        if (newObject == null) {
+            return;
+        }
+        if(visitedObjects.containsKey(newObject)) {
+            return;
+        }
+        visitedObjects.put(newObject, newObject);
+        ClassDescriptor descriptor = getDescriptor(newObject);
+        if ((descriptor == null) || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { newObject }));
+        }
 
-            startOperationProfile(SessionProfiler.Register);
+        startOperationProfile(SessionProfiler.Register);
+        try {
             Object registeredObject = checkIfAlreadyRegistered(newObject, descriptor);
             if (registeredObject == null) {
                 registerNotRegisteredNewObjectForPersist(newObject, descriptor);
@@ -3921,7 +3951,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         logDebugMessage(newObject, "register_new_for_persist");
         
         if (descriptor.getEventManager().hasAnyEventListeners()) {
-            org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(newObject);
+            DescriptorEvent event = new DescriptorEvent(newObject);
             event.setEventCode(DescriptorEventManager.PrePersistEvent);
             event.setSession(this);
             descriptor.getEventManager().executeEvent(event);

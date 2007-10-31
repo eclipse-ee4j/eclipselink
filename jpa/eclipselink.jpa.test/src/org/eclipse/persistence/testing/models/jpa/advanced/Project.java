@@ -24,19 +24,14 @@ import java.util.*;
 import java.io.Serializable;
 import javax.persistence.*;
 import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
 import static javax.persistence.InheritanceType.*;
-import static javax.persistence.FetchType.*;
 
 /**
- * Bean class: ProjectBean
- * Remote interface: Project
- * Primary key class: ProjectPK
- * Home interface: ProjectHome
- *
- * >Employees have a many-to-many relationship with Projects through the
- *  projects attribute.
- * >Projects refer to Employees through the employees attribute.
+ * Employees have a many-to-many relationship with Projects through the
+ * projects attribute.
+ * Projects refer to Employees through the teamMembers attribute.
+ * This class in used to test inheritance.
+ * The field names intentionally do not match the property names to test method weaving.
  */
 @Entity
 @Table(name="CMP3_PROJECT")
@@ -56,77 +51,75 @@ public class Project implements Serializable {
     public int post_persist_count = 0;
     public int post_load_count = 0;
     
-	private Integer id;
-	private int version;
-	private String name;
-	private String description;
-	private Employee teamLeader;
-	private Collection<Employee> teamMembers;
+    private Integer m_id;
+    private int m_version;
+    private String m_name;
+    private String m_description;
+    protected Employee m_teamLeader;
+    private Collection<Employee> m_teamMembers;
 
-	public Project () {
-        this.teamMembers = new Vector<Employee>();
-	}
+    public Project () {
+        this.m_teamMembers = new Vector<Employee>();
+    }
 
-	@Id
+    @Id
     @GeneratedValue(strategy=SEQUENCE, generator="PROJECT_SEQUENCE_GENERATOR")
-	@SequenceGenerator(name="PROJECT_SEQUENCE_GENERATOR", sequenceName="PROJECT_SEQ", allocationSize=10)
-	@Column(name="PROJ_ID")
-	public Integer getId() { 
-        return id; 
+    @SequenceGenerator(name="PROJECT_SEQUENCE_GENERATOR", sequenceName="PROJECT_SEQ", allocationSize=10)
+    @Column(name="PROJ_ID")
+    public Integer getId() { 
+        return m_id; 
     }
     
-	public void setId(Integer id) { 
-        this.id = id; 
+    public void setId(Integer id) { 
+        this.m_id = id; 
     }
 
-	@Version
-	@Column(name="VERSION")
-	public int getVersion() { 
-        return version; 
+    @Version
+    @Column(name="VERSION")
+    public int getVersion() { 
+        return m_version; 
     }
     
-	protected void setVersion(int version) { 
-        this.version = version; 
+    protected void setVersion(int version) { 
+        this.m_version = version; 
     }
 
-	@Column(name="PROJ_NAME")
-	public String getName() { 
-        return name; 
+    @Column(name="PROJ_NAME")
+    public String getName() { 
+        return m_name; 
     }
     
-	public void setName(String name) { 
-        this.name = name; 
+    public void setName(String name) { 
+        this.m_name = name; 
     }
 
-	@Column(name="DESCRIP")
-	public String getDescription() { 
-        return description; 
+    @Column(name="DESCRIP")
+    public String getDescription() { 
+        return m_description; 
     }
     
-	public void setDescription(String description) { 
-        this.description = description; 
+    public void setDescription(String description) { 
+        this.m_description = description; 
     }
 
-	@OneToOne(cascade = {CascadeType.MERGE})
-	@JoinColumn(name="LEADER_ID")
-	public Employee getTeamLeader() {
-        return teamLeader; 
+    @OneToOne(cascade = {CascadeType.MERGE})
+    @JoinColumn(name="LEADER_ID")
+    public Employee getTeamLeader() {
+        return m_teamLeader; 
     }
     
-	public void setTeamLeader(Employee teamLeader) { 
-        this.teamLeader = teamLeader; 
+    public void setTeamLeader(Employee teamLeader) { 
+        this.m_teamLeader = teamLeader; 
     }
 
-    @ManyToMany(
-        targetEntity=org.eclipse.persistence.testing.models.jpa.advanced.Employee.class,
-        mappedBy="projects")
-	public Collection getTeamMembers() { 
-        return teamMembers; 
+    @ManyToMany(targetEntity=Employee.class, mappedBy="projects")
+    public Collection getTeamMembers() { 
+        return m_teamMembers; 
     }
     
-	public void setTeamMembers(Collection<Employee> employees) {
-		this.teamMembers = employees;
-	}
+    public void setTeamMembers(Collection<Employee> employees) {
+        this.m_teamMembers = employees;
+    }
 
     public void addTeamMember(Employee employee) {
         getTeamMembers().add(employee);
@@ -144,37 +137,37 @@ public class Project implements Serializable {
     }
     
     @PrePersist
-	public void prePersist() {
+    public void prePersist() {
         ++pre_persist_count;
-	}
+    }
 
-	@PostPersist
-	public void postPersist() {
+    @PostPersist
+    public void postPersist() {
         ++post_persist_count;
-	}
+    }
 
-	@PreRemove
-	public void preRemove() {
+    @PreRemove
+    public void preRemove() {
         ++pre_remove_count;
-	}
+    }
 
-	@PostRemove
-	public void postRemove() {
+    @PostRemove
+    public void postRemove() {
         ++post_remove_count;
-	}
+    }
 
-	@PreUpdate
-	public void preUpdate() {
+    @PreUpdate
+    public void preUpdate() {
         ++pre_update_count;
-	}
+    }
 
-	@PostUpdate
-	public void postUpdate() {
+    @PostUpdate
+    public void postUpdate() {
         ++post_update_count;
-	}
+    }
 
-	@PostLoad
-	public void postLoad() {
+    @PostLoad
+    public void postLoad() {
         ++post_load_count;
-	}
+    }
 }

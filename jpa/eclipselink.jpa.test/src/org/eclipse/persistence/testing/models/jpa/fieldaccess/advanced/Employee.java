@@ -34,11 +34,6 @@ import static javax.persistence.GenerationType.*;
 import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_COLUMN;
 
 /**
- * Bean class: EmployeeBean
- * Remote interface: Employee
- * Primary key class: EmployeePK
- * Home interface: EmployeeHome
- *
  * Employees have a one-to-many relationship with Employees through the 
  * managedEmployees attribute.
  * Addresses exist in one-to-one relationships with Employees through the
@@ -115,18 +110,19 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
     coordinationType=INVALIDATE_CHANGED_OBJECTS
 )
 @Customizer(org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EmployeeCustomizer.class)
-public class Employee implements Serializable {
+public class Employee implements Serializable, Cloneable {
+
     public enum EmployeeStatus {FULL_TIME, PART_TIME, CONTRACT}
     public enum Gender { Female, Male }
     public enum SalaryRate {JUNIOR, SENIOR, MANAGER, EXECUTIVE}
     public enum Weekdays { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
     
-	@Column(table="CMP3_FA_SALARY")
+    @Column(table="CMP3_FA_SALARY")
     private int salary;
-	@Column(name="ROOM_NUM")
+    @Column(name="ROOM_NUM")
     private int roomNumber;
     
-	@Id
+    @Id
     @GeneratedValue(strategy=TABLE, generator="FA_EMP_TABLE_GENERATOR")
     @TableGenerator(
         name="FA_EMP_TABLE_GENERATOR", 
@@ -137,52 +133,61 @@ public class Employee implements Serializable {
         initialValue=50
     )
     @Column(name="EMP_ID")
-    private Integer id;
-	@Version
+    protected Integer id;
+    
+    @Version
     @Column(name="VERSION")
     private Integer version;
     
-	@Convert("sex")
+    @Convert("sex")
     private Gender gender;
-	@Enumerated
+    
+    @Enumerated
     @Column(name="STATUS")
     private EmployeeStatus status;
-	@Enumerated(EnumType.STRING)
+    
+    @Enumerated(EnumType.STRING)
     @Column(name="PAY_SCALE")
     private SalaryRate payScale;
     
     @Column(name="L_NAME")
-	private String lastName;
-	@Column(name="F_NAME")
+    private String lastName;
+    
+    @Column(name="F_NAME")
     private String firstName;
 	
-	@ManyToOne(cascade={PERSIST, MERGE}, fetch=LAZY)
+    @ManyToOne(cascade={PERSIST, MERGE}, fetch=LAZY)
     @JoinColumn(name="ADDR_ID")
     private Address address;
-	@ManyToOne(fetch=EAGER)
+    
+    @ManyToOne(fetch=EAGER)
     @JoinColumn(name="DEPT_ID")
     @JoinFetch(JoinFetchType.OUTER)
     private Department department;
-	@ManyToOne(cascade=PERSIST, fetch=LAZY)
+    
+    @ManyToOne(cascade=PERSIST, fetch=LAZY)
     private Employee manager;
-	@Embedded
+    
+    @Embedded
     @AttributeOverrides({
         @AttributeOverride(name="startDate", column=@Column(name="START_DATE", nullable=false)),
         @AttributeOverride(name="endDate", column=@Column(name="END_DATE", nullable=true))
     })
     private EmploymentPeriod period;
-	@Embedded
-        @AttributeOverrides({
-            @AttributeOverride(name="formerCompany", column=@Column(name="FORMER_COMPANY", nullable=false)),
-            @AttributeOverride(name="startDate", column=@Column(name="FORMER_START_DATE", nullable=false)),
-            @AttributeOverride(name="endDate", column=@Column(name="FORMER_END_DATE", nullable=true))
-	})
+    
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name="formerCompany", column=@Column(name="FORMER_COMPANY", nullable=false)),
+        @AttributeOverride(name="startDate", column=@Column(name="FORMER_START_DATE", nullable=false)),
+        @AttributeOverride(name="endDate", column=@Column(name="FORMER_END_DATE", nullable=true))
+    })
     private FormerEmployment formerEmployment;
-	@BasicCollection
-	@CollectionTable(name="CMP3_FA_EMP_WORKWEEK")
+    
+    @BasicCollection
+    @CollectionTable(name="CMP3_FA_EMP_WORKWEEK")
     private Set<Weekdays> workWeek;
     
-	@ManyToMany(cascade={PERSIST, MERGE})
+    @ManyToMany(cascade={PERSIST, MERGE})
     @JoinTable(
         name="CMP3_FA_EMP_PROJ",
         // Default for the project side and specify for the employee side
@@ -191,13 +196,16 @@ public class Employee implements Serializable {
         //inverseJoinColumns=@JoinColumn(name="PROJECTS_PROJ_ID", referencedColumnName="PROJ_ID")
     )
     private Collection<Project> projects;
-	@BasicCollection(valueColumn=@Column(name="DESCRIPTION"))
+    
+    @BasicCollection(valueColumn=@Column(name="DESCRIPTION"))
     @CollectionTable(name="CMP3_FA_RESPONS")
     private Collection<String> responsibilities;
-	@OneToMany(cascade=ALL, mappedBy="owner")
+    
+    @OneToMany(cascade=ALL, mappedBy="owner")
     @PrivateOwned
     private Collection<PhoneNumber> phoneNumbers;
-	@OneToMany(cascade=ALL, mappedBy="manager")
+    
+    @OneToMany(cascade=ALL, mappedBy="manager")
     private Collection<Employee> managedEmployees;
     
     public Employee () {
@@ -211,6 +219,14 @@ public class Employee implements Serializable {
         this();
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+    
+    public Employee clone() {
+        try {
+            return (Employee)super.clone();
+        } catch (CloneNotSupportedException exception) {
+            throw new InternalError(exception.toString());
+        }
     }
     
     public void addManagedEmployee(Employee emp) {

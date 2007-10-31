@@ -28,19 +28,6 @@ import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.TABLE;
 
-import org.eclipse.persistence.annotations.BasicCollection;
-import org.eclipse.persistence.annotations.Cache;
-import org.eclipse.persistence.annotations.CollectionTable;
-import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.ConversionValue;
-import org.eclipse.persistence.annotations.Customizer;
-import org.eclipse.persistence.annotations.JoinFetch;
-import org.eclipse.persistence.annotations.JoinFetchType;
-import org.eclipse.persistence.annotations.ObjectTypeConverter;
-import org.eclipse.persistence.annotations.PrivateOwned;
-import org.eclipse.persistence.annotations.TypeConverter;
-import org.eclipse.persistence.annotations.OptimisticLocking;
-
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 /**
@@ -55,22 +42,22 @@ import org.eclipse.persistence.annotations.PrivateOwned;
     query="select * from CMP3_FA_DEPT",
     resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Department.class
 )
-public class Department implements Serializable {
-	@Id
+public class Department implements Serializable {  
+    @Id
     @GeneratedValue(strategy=TABLE, generator="FA_DEP_TABLE_GENERATOR")
-	@TableGenerator(
+    @TableGenerator(
         name="FA_DEP_TABLE_GENERATOR", 
         table="CMP3_FA_DEPARTMENT_SEQ", 
         pkColumnName="SEQ_NAME", 
         valueColumnName="SEQ_COUNT",
         pkColumnValue="DEPT_SEQ"
     )
-	private Integer id;
+    private Integer id;
     private String name;
     
-	@OneToMany(fetch=EAGER, mappedBy="department")
-	private Collection<Employee> employees;
-	@OneToMany(fetch=EAGER, cascade=PERSIST)
+    @OneToMany(fetch=EAGER, mappedBy="department")
+    private Collection<Employee> employees;
+    @OneToMany(fetch=EAGER, cascade=PERSIST)
     private Collection<Employee> managers;
     @OneToMany(mappedBy="department")
     @PrivateOwned

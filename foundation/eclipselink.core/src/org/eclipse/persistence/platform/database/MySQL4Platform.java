@@ -19,14 +19,14 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
- *    <p><b>Purpose</b>: Provides MySQL specific behaviour.
- *    <p><b>Responsibilities</b>:<ul>
- *    <li> Native SQL for Date, Time, & Timestamp.
- *    <li> Native sequencing.
- *    <li> Mapping of class types to database types for the schema framework.
- *    <li> Pessimistic locking.
- *    <li> Platform specific operators.
- *    </ul>
+ * <p><b>Purpose</b>: Provides MySQL specific behaviour.
+ * <p><b>Responsibilities</b>:<ul>
+ * <li> Native SQL for Date, Time, & Timestamp.
+ * <li> Native sequencing.
+ * <li> Mapping of class types to database types for the schema framework.
+ * <li> Pessimistic locking.
+ *  <li> Platform specific operators.
+ * </ul>
  *
  * @since OracleAS TopLink 10<i>g</i> (10.1.3)
  */
@@ -137,35 +137,6 @@ public class MySQL4Platform extends DatabasePlatform {
     }
 
     /**
-     * This method is used to print the output parameter token when stored
-     * procedures are called
-     */
-    public String getInOutputProcedureToken() {
-        return "INOUT ";
-    }
-    
-    /**
-     * Used for stored procedure defs.
-     */
-    public String getProcedureAsString() {
-        return "";
-    }
-
-    /**
-     * Used for sp calls.
-     */
-    public String getProcedureArgumentSetter() {
-        return "";
-    }
-    
-    /**
-     * Used for sp calls.
-     */
-    public String getProcedureCallHeader() {
-        return "CALL ";
-    }
-    
-    /**
      * INTERNAL:
      * Used for constraint deletion.
      */
@@ -195,14 +166,14 @@ public class MySQL4Platform extends DatabasePlatform {
     }
 
     /**
-     * Answers whether platform is MySQL
+     * Answers whether platform is MySQL.
      */
     public boolean isMySQL() {
         return true;
     }
 
     /**
-     * Initialize any platform-specific operators
+     * Initialize any platform-specific operators.
      */
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
@@ -221,7 +192,7 @@ public class MySQL4Platform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     * Create the 10 based log operator for this platform
+     * Create the 10 based log operator for this platform.
      */
     protected ExpressionOperator logOperator() {
         ExpressionOperator result = new ExpressionOperator();
@@ -348,7 +319,7 @@ public class MySQL4Platform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     * Create the current date operator for this platform
+     * Create the current date operator for this platform.
      */
     protected ExpressionOperator currentDateOperator() {
         return ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentDate, "CURRENT_DATE");
@@ -356,7 +327,7 @@ public class MySQL4Platform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     * Append the receiver's field 'identity' constraint clause to a writer
+     * Append the receiver's field 'identity' constraint clause to a writer.
      */
     public void printFieldIdentityClause(Writer writer) throws ValidationException {
         try {
@@ -373,14 +344,6 @@ public class MySQL4Platform extends DatabasePlatform {
      * This method is to be used *ONLY* by sequencing classes
      */
     public boolean shouldNativeSequenceAcquireValueAfterInsert() {
-        return true;
-    }
-
-    /**
-     * This is required in the construction of the stored procedures with
-     * output parameters
-     */
-    public boolean shouldPrintOutputTokenAtStart() {
         return true;
     }
     
@@ -403,6 +366,7 @@ public class MySQL4Platform extends DatabasePlatform {
 
     /**
      * INTERNAL:
+     * MySQL supports temp tables for update-all, delete-all queries.
      */
     public boolean supportsGlobalTempTables() {
         return true;
@@ -410,6 +374,7 @@ public class MySQL4Platform extends DatabasePlatform {
 
     /**
      * INTERNAL:
+     * MySQL temp table syntax, used for update-all, delete-all queries.
      */
     protected String getCreateTempTableSqlPrefix() {
         return "CREATE TEMPORARY TABLE IF NOT EXISTS ";
@@ -417,6 +382,7 @@ public class MySQL4Platform extends DatabasePlatform {
 
     /**
      * INTERNAL:
+     * MySQL supports temp tables for update-all, delete-all queries.
      */
     public boolean shouldAlwaysUseTempStorageForModifyAll() {
         return true;
@@ -424,9 +390,7 @@ public class MySQL4Platform extends DatabasePlatform {
     
     /**
      * INTERNAL:
-     * Returns the correct quote character to use around SQL Identifiers that contain
-     * Space characters
-     * @return The quote character for this platform
+     * MySQL uses ' to allow identifier to have spaces.
      */
     public String getIdentifierQuoteCharacter() {
         return "`";
@@ -434,6 +398,46 @@ public class MySQL4Platform extends DatabasePlatform {
     
     /**
      * INTERNAL:
+     * MySQL uses the INOUT keyword for this.
+     */
+    public String getInOutputProcedureToken() {
+        return "INOUT";
+    }
+    
+    /**
+     * MySQL does not use the AS token.
+     */
+    public String getProcedureAsString() {
+        return "";
+    }
+    
+    /**
+     * INTERNAL:
+     * MySQL requires the direction at the start of the argument.
+     */
+    public boolean shouldPrintOutputTokenAtStart() {
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * MySQL requires BEGIN.
+     */
+    public String getProcedureBeginString() {
+        return "BEGIN ";
+    }
+
+    /**
+     * INTERNAL:
+     * MySQL requires END.
+     */
+    public String getProcedureEndString() {
+        return "END";
+    }
+    
+    /**
+     * INTERNAL:
+     * Writes MySQL specific SQL for accessing temp tables for update-all queries.
      */
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
                                                     Collection pkFields,
@@ -447,10 +451,11 @@ public class MySQL4Platform extends DatabasePlatform {
         writer.write(tempTableName);
         writeAutoAssignmentSetClause(writer, tableName, tempTableName, assignedFields);
         writeAutoJoinWhereClause(writer, tableName, tempTableName, pkFields);
-    }          
+    }
 
     /**
      * INTERNAL:
+     * Writes MySQL specific SQL for accessing temp tables for delete-all queries.
      */
     public void writeDeleteFromTargetTableUsingTempTableSql(Writer writer, DatabaseTable table, DatabaseTable targetTable,
                                                         Collection pkFields, 
@@ -465,5 +470,5 @@ public class MySQL4Platform extends DatabasePlatform {
         String tempTableName = getTempTableForTable(table).getQualifiedName();
         writer.write(tempTableName);
         writeJoinWhereClause(writer, targetTableName, tempTableName, targetPkFields, pkFields);
-    }          
+    }
 }

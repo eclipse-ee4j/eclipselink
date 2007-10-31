@@ -31,20 +31,29 @@ import javax.persistence.*;
 }
 )
 public class LargeProject extends Project {
-	private double budget;
+    private double budget;
+    
     public LargeProject () {
         super();
     }
+    
     public LargeProject (String name) {
         this();
         this.setName(name);
     }
 
-	public double getBudget() { 
+    public double getBudget() { 
         return budget; 
     }
     
-	public void setBudget(double budget) { 
-		this.budget = budget; 
-	}
+    public void setBudget(double budget) { 
+            this.budget = budget; 
+    }
+    
+    /**
+     * This tests accessing a superclass field.
+     */
+    public Employee getTeamLeader() {
+        return teamLeader; 
+    }
 }

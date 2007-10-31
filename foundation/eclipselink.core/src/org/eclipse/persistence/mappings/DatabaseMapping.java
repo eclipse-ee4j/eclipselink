@@ -214,6 +214,14 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Cascade discover and persist new objects during commit.
+     */
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+        // Do nothing by default, (direct and xml mappings do not require anything).
+    }
+    
+    /**
+     * INTERNAL:
      * Used by AttributeLevelChangeTracking to update a changeRecord with calculated changes
      * as apposed to detected changes.  If an attribute can not be change tracked it's
      * changes can be detected through this process.

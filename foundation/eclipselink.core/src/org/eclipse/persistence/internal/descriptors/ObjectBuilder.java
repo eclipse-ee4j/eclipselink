@@ -1395,25 +1395,43 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * THis method is used by the UnitOfWork to cascade registration of new objects.
-     * It may rais exceptions as described inthe EJB 3.x specification
+     * This method is used by the UnitOfWork to cascade registration of new objects.
+     * It may raise exceptions as described inthe EJB3 specification
      */
     public void cascadePerformRemove(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
-        Iterator mappings = getDescriptor().getMappings().iterator();
-        while (mappings.hasNext()) {
-            ((DatabaseMapping)mappings.next()).cascadePerformRemoveIfRequired(object, uow, visitedObjects);
+        // PERF: Avoid iterator.
+        List mappings = getDescriptor().getMappings();
+        for (int index = 0; index < mappings.size(); index++) {
+            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+            mapping.cascadePerformRemoveIfRequired(object, uow, visitedObjects);
         }
     }
 
     /**
      * INTERNAL:
-     * THis method is used by the UnitOfWork to cascade registration of new objects.
-     * It may rais exceptions as described inthe EJB 3.x specification
+     * Cascade discover and persist new objects during commit.
+     * It may raise exceptions as described inthe EJB3 specification
+     */
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+        // PERF: Avoid iterator.
+        List mappings = getDescriptor().getMappings();
+        for (int index = 0; index < mappings.size(); index++) {
+            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+            mapping.cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * This method is used by the UnitOfWork to cascade registration of new objects.
+     * It may raise exceptions as described inthe EJB3 specification
      */
     public void cascadeRegisterNewForCreate(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
-        Iterator mappings = getDescriptor().getMappings().iterator();
-        while (mappings.hasNext()) {
-            ((DatabaseMapping)mappings.next()).cascadeRegisterNewIfRequired(object, uow, visitedObjects);
+        // PERF: Avoid iterator.
+        List mappings = getDescriptor().getMappings();
+        for (int index = 0; index < mappings.size(); index++) {
+            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+            mapping.cascadeRegisterNewIfRequired(object, uow, visitedObjects);
         }
     }
 
@@ -1431,8 +1449,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Compares the two specified objects
      */
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
-        // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = getDescriptor().getMappings();
+        // PERF: Avoid iterator.
+        List mappings = getDescriptor().getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
 
@@ -1451,8 +1469,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Copy each attribute from one object into the other.
      */
     public void copyInto(Object source, Object target, boolean cloneOneToOneValueHolders) {
-        // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = getDescriptor().getMappings();
+        // PERF: Avoid iterator.
+        List mappings = getDescriptor().getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             Object value = null;

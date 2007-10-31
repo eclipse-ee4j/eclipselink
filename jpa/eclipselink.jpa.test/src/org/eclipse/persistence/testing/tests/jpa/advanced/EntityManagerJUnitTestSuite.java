@@ -2556,6 +2556,51 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.close();
     }
 
+    // Test the clone method works correctly with lazy attributes.
+    public void testCloneable() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        Employee employee = new Employee();
+        employee.setFirstName("Owen");
+        employee.setLastName("Hargreaves");
+        employee.getAddress();
+        Employee clone = employee.clone();
+        
+        Address address = new Address();
+        address.setCity("Munich");
+        clone.setAddress(address);
+        clone.getAddress();
+        em.persist(clone);
+        if (employee.getAddress() == clone.getAddress()) {
+            fail("Changing clone address changed original.");
+        }
+        commitTransaction(em);
+        clearCache();
+        closeEntityManager(em);
+        em = createEntityManager();
+        beginTransaction(em);
+        employee = em.find(Employee.class, clone.getId());
+        clone = employee.clone();
+        
+        address = new Address();
+        address.setCity("Not Munich");
+        clone.setAddress(address);
+        clone.getAddress();
+        if (employee.getAddress() == clone.getAddress()) {
+            fail("Changing clone address changed original.");
+        }
+        if (employee.getAddress() == null) {
+            fail("Changing clone address reset original to null.");
+        }
+        if (clone.getAddress() != address) {
+            fail("Changing clone did not work.");
+        }
+        em.remove(employee);
+        commitTransaction(em);
+        closeEntityManager(em);
+    }
+    
     // test for GlassFish bug 711 - throw a descriptive exception when an uninstantiated valueholder is serialized and then accessed
     public void testSerializedLazy(){
         org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();      
@@ -3269,7 +3314,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Shawshank"));
         
         em.getTransaction().begin();
-        employee.setAddress(null);
+        employee.setAddress((Address)null);
         em.remove(address);
         em.remove(employee);
         em.getTransaction().commit();
@@ -3323,9 +3368,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("The address was not persisted.", employee.getAddress() != null);
         assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
     
-        Address initialAddress = (Address)em.find(Address.class, new Integer(addressId));
+        Address initialAddress = em.find(Address.class, new Integer(addressId));
         em.getTransaction().begin();
-        employee.setAddress(null);
+        employee.setAddress((Address)null);
         em.remove(address);
         em.remove(employee);
         em.remove(initialAddress);
@@ -3381,7 +3426,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
         Address initialAddress = (Address)em.find(Address.class, new Integer(addressId));
         em.getTransaction().begin();
-        employee.setAddress(null);
+        employee.setAddress((Address)null);
         em.remove(address);
         em.remove(employee);
         em.remove(initialAddress);
@@ -3401,6 +3446,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Employee employee = new Employee();
         employee.setFirstName("Andy");
         employee.setLastName("Dufresne");
+        Employee manager = new Employee();
+        manager.setFirstName("Bobby");
+        manager.setLastName("Dufresne");
+        employee.setManager(manager);
         Address address = new Address();
         address.setCity("Shawshank");
         employee.setAddress(address);
@@ -3410,17 +3459,23 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.getTransaction().commit();
         int id = employee.getId();
         int addressId = address.getId();
+        int managerId = manager.getId();
         
         em = createEntityManager();
         
         em.getTransaction().begin();
         employee = em.find(Employee.class, new Integer(id));
         employee.getAddress();
+        employee.getManager();
 
         address = new Address();
         address.setCity("Metropolis");
-        employee.setAddressField(address);
-        try{
+        employee.setAddress(address);
+        manager = new Employee();
+        manager.setFirstName("Metro");
+        manager.setLastName("Dufresne");
+        employee.setManagerField(manager);
+        try {
             em.getTransaction().commit();
         } catch (RuntimeException e){
             if (em.getTransaction().isActive()){
@@ -3430,36 +3485,46 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         
         clearCache();
-        
-        employee = (Employee)em.find(Employee.class, new Integer(id));
+
+        em = createEntityManager();
+        employee = em.find(Employee.class, new Integer(id));
         address = employee.getAddress();
+        manager = employee.getManager();
 
         assertTrue("The address was not persisted.", employee.getAddress() != null);
         assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
+
+        assertTrue("The manager was not persisted.", employee.getManager() != null);
+        assertTrue("The manager was not correctly persisted.", employee.getManager().getFirstName().equals("Metro"));
         
-        Address initialAddress = (Address)em.find(Address.class, new Integer(addressId));
+        Address initialAddress = em.find(Address.class, new Integer(addressId));
+        Employee initialManager = em.find(Employee.class, new Integer(managerId));
         em.getTransaction().begin();
-        employee.setAddress(null);
+        employee.setAddress((Address)null);
         em.remove(address);
         em.remove(employee);
+        em.remove(manager);
         em.remove(initialAddress);
+        em.remove(initialManager);
         em.getTransaction().commit();
     }
-    	//bug gf674 - EJBQL delete query with IS NULL in WHERE clause produces wrong sql
-     public void testDeleteAllPhonesWithNullOwner() {
-         EntityManager em = createEntityManager();
-         em.getTransaction().begin();
-         try {
-         	em.createQuery("DELETE FROM PhoneNumber ph WHERE ph.owner IS NULL").executeUpdate();
-         } catch (Exception e) {
-         	fail("Exception thrown: " + e.getClass());
-         } finally {
+    
+    //bug gf674 - EJBQL delete query with IS NULL in WHERE clause produces wrong sql
+    public void testDeleteAllPhonesWithNullOwner() {
+        EntityManager em = createEntityManager();
+        em.getTransaction().begin();
+        try {
+            em.createQuery("DELETE FROM PhoneNumber ph WHERE ph.owner IS NULL").executeUpdate();
+        } catch (Exception e) {
+            fail("Exception thrown: " + e.getClass());
+        } finally {
             if (em.getTransaction().isActive()){
-                 em.getTransaction().rollback();
+                em.getTransaction().rollback();
             }
-             em.close();
-         }
-     }
+            em.close();
+        }
+    }
+     
      public void testDeleteAllProjectsWithNullTeamLeader() {
          internalDeleteAllProjectsWithNullTeamLeader("Project");
      }
@@ -4368,6 +4433,160 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (!(object instanceof FetchGroupTracker)) {
                 fail("Object not weaved for FetchGroupTracker:" + object);
             }
+        }
+    }
+        
+    // this test was failing after transaction ailitche_main_6333458_070821
+    public void testManyToOnePersistCascadeOnFlush() {
+        boolean pass = false;
+        EntityManager em = createEntityManager();
+        em.getTransaction().begin();
+        try {
+            String firstName = "testManyToOneContains";
+            Address address = new Address();
+            address.setCountry(firstName);
+            Employee employee = new Employee();
+            employee.setFirstName(firstName);
+            em.persist(employee);
+            
+            employee.setAddress(address);
+            em.flush();
+
+            pass = em.contains(address);
+        } finally {
+           em.getTransaction().rollback();
+           em.close();
+        }
+        if(!pass) {
+            fail("em.contains(address) returned false");
+        }
+    }
+        
+    // This test weaving works with over-writing methods in subclasses, and overloading methods.
+    public void testOverwrittingAndOverLoadingMethods() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Address address = new Address();
+            address.setCity("Ottawa");
+            Employee employee = new Employee();
+            employee.setAddress(address);
+            LargeProject project = new LargeProject();
+            project.setTeamLeader(employee);
+            em.persist(employee);
+            em.persist(project);
+            commitTransaction(em);
+            closeEntityManager(em);
+            em = createEntityManager();
+            beginTransaction(em);
+            employee = em.find(Employee.class, employee.getId());
+            project = em.find(LargeProject.class, project.getId());
+            if ((employee.getAddress("Home") == null) || (!employee.getAddress("Home").getCity().equals("Ottawa"))) {
+                fail("Get address did not work.");
+            }
+            employee.setAddress("Toronto");
+            if (!employee.getAddress().getCity().equals("Toronto")) {
+                fail("Set address did not work.");
+            }
+            if (project.getTeamLeader() != employee) {
+                fail("Get team leader did not work, team is: " + project.getTeamLeader() + " but should be:" + employee);
+            }
+            em.remove(employee.getAddress());
+            em.remove(employee);
+            em.remove(project);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+
+    // This tests that new objects referenced by new objects are found on commit.
+    public void testDiscoverNewReferencedObject() {
+        String firstName = "testDiscoverNewReferencedObject";
+        
+        // setup: create and persist Employee
+        EntityManager em = createEntityManager();
+        int employeeId = 0;
+        em.getTransaction().begin();
+        try {
+            Employee employee = new Employee();
+            employee.setFirstName(firstName);
+            employee.setLastName("Employee");
+            em.persist(employee);
+            em.getTransaction().commit();
+            employeeId = employee.getId();
+        } finally {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+        
+        // test: add to the exsisting Employee a new Manager with new Phones
+        em = createEntityManager();
+        int managerId = 0;
+        em.getTransaction().begin();
+        try {
+            Employee manager = new Employee();
+            manager.setFirstName(firstName);
+            manager.setLastName("Manager");
+            
+            PhoneNumber phoneNumber1 = new PhoneNumber("home", "613", "1111111");
+            manager.addPhoneNumber(phoneNumber1);
+            PhoneNumber phoneNumber2 = new PhoneNumber("work", "613", "2222222");
+            manager.addPhoneNumber(phoneNumber2);
+            
+            Employee employee = (Employee)em.find(Employee.class, employeeId);
+            manager.addManagedEmployee(employee);
+            em.getTransaction().commit();
+
+            managerId = manager.getId();
+        } finally {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+        
+        // verify: were all the new objects written to the data base?
+        String errorMsg = "";
+        em = createEntityManager();
+        try {
+            Employee manager = (Employee)em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.id = "+managerId).setHint("eclipselink.refresh", "true").getSingleResult();
+            if(manager == null) {
+                errorMsg = "Manager hasn't been written into the db";
+            } else {
+                if(manager.getPhoneNumbers().size() != 2) {
+                    errorMsg = "Manager has a wrong number of Phones = "+manager.getPhoneNumbers().size()+"; should be 2";
+                }
+            }
+        } finally {
+            em.close();
+        }
+        
+        // clean up: delete Manager - all other object will be cascade deleted.
+        em = createEntityManager();
+        em.getTransaction().begin();
+        try {
+            if(managerId != 0) {
+                Employee manager = (Employee)em.find(Employee.class, managerId);
+                em.remove(manager);
+            } else if(employeeId != 0) {
+                // if Manager hasn't been created - delete Employee
+                Employee employee = (Employee)em.find(Employee.class, employeeId);
+                em.remove(employee);
+            }
+        } finally {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+        
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
         }
     }
 

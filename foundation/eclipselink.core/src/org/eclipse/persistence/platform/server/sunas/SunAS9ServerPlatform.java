@@ -9,7 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.sunas;
 
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.transaction.sunas.SunAS9TransactionController;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.logging.SessionLog;
@@ -31,7 +31,7 @@ public class SunAS9ServerPlatform extends ServerPlatformBase {
      * INTERNAL:
      * Default Constructor: All behaviour for the default constructor is inherited
      */
-    public SunAS9ServerPlatform(DatabaseSessionImpl newDatabaseSession) {
+    public SunAS9ServerPlatform(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);
     }
 
@@ -42,9 +42,9 @@ public class SunAS9ServerPlatform extends ServerPlatformBase {
      * @return Class externalTransactionControllerClass
      *
      * @see org.eclipse.persistence.transaction.JTATransactionController
-     * @see ServerPlatformBase.isJTAEnabled()
-     * @see ServerPlatformBase.disableJTA()
-     * @see ServerPlatformBase.initializeExternalTransactionController()
+     * @see ServerPlatformBase#isJTAEnabled()
+     * @see ServerPlatformBase#disableJTA()
+     * @see ServerPlatformBase#initializeExternalTransactionController()
      */
     public Class getExternalTransactionControllerClass() {
     	if (externalTransactionControllerClass == null){

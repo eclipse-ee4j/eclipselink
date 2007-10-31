@@ -1,4 +1,12 @@
-// Copyright (c) 2005, 2007, Oracle. All rights reserved.  
+/*******************************************************************************
+ * Copyright (c) 1998, 2007 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0, which accompanies this distribution
+ * and is available at http://www.eclipse.org/legal/epl-v10.html.
+ *
+ * Contributors:
+ *     Oracle - initial API and implementation from Oracle TopLink
+ ******************************************************************************/  
 package org.eclipse.persistence.internal.weaving;
 
 import java.util.*;
@@ -23,6 +31,8 @@ public class ClassDetails {
     protected boolean shouldWeaveChangeTracking = false;
     /** Define if fetch groups should be weaved in this class. */    
     protected boolean shouldWeaveFetchGroups = false;
+    /** Define if internal optimizations should be weaved in this class. */    
+    protected boolean shouldWeaveInternal = false;
     /** Map of this class' persistent attributes where the key is the Attribute name. */
     protected Map<String, AttributeDetails> attributesMap;
     /** Map of this class' persistent get methods where the key is the getMethod name. */
@@ -97,6 +107,14 @@ public class ClassDetails {
         this.shouldWeaveFetchGroups = shouldWeaveFetchGroups;
     }
     
+    public boolean shouldWeaveInternal() {
+        return shouldWeaveInternal;
+    }
+    
+    public void setShouldWeaveInternal(boolean shouldWeaveInternal) {
+        this.shouldWeaveInternal = shouldWeaveInternal;
+    }
+    
     public Map getAttributesMap() {
         return attributesMap;
     }
@@ -151,7 +169,7 @@ public class ClassDetails {
      * 
      * This method assumes it is called when this class details is completely initialized.
      */
-    public boolean usesAttributeAccess(){
+    public boolean usesAttributeAccess() {
         if (this.usesAttributeAccess != null){
             return this.usesAttributeAccess.booleanValue();
         } else {
@@ -174,7 +192,7 @@ public class ClassDetails {
     
     public AttributeDetails getAttributeDetailsFromClassOrSuperClass(String attributeName){
         AttributeDetails attribute = attributesMap.get(attributeName);
-        if (attribute == null && superClassDetails != null){
+        if (attribute == null && superClassDetails != null) {
             return superClassDetails.getAttributeDetailsFromClassOrSuperClass(attributeName);
         }
        return attribute; 

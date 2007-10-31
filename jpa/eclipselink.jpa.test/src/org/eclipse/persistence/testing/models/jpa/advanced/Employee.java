@@ -37,11 +37,6 @@ import static org.eclipse.persistence.annotations.ChangeTrackingType.AUTO;
 import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_COLUMN;
 
 /**
- * Bean class: EmployeeBean
- * Remote interface: Employee
- * Primary key class: EmployeePK
- * Home interface: EmployeeHome
- *
  * Employees have a one-to-many relationship with Employees through the 
  * managedEmployees attribute.
  * Addresses exist in one-to-one relationships with Employees through the
@@ -120,7 +115,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 )
 @ChangeTracking(AUTO)
 @Customizer(org.eclipse.persistence.testing.models.jpa.advanced.EmployeeCustomizer.class)
-public class Employee implements Serializable {
+public class Employee implements Serializable, Cloneable {
     public enum EmployeeStatus {FULL_TIME, PART_TIME, CONTRACT}
     public enum Gender { Female, Male }
     public enum SalaryRate {JUNIOR, SENIOR, MANAGER, EXECUTIVE}
@@ -136,10 +131,11 @@ public class Employee implements Serializable {
     private EmployeeStatus status;
     private SalaryRate payScale;
     
-    private String lastName;
-    private String firstName;
+    /** The field names intentionally do not match the property names to test method weaving. */
+    private String m_lastName;
+    private String m_firstName;
 	
-    private Address address;
+    private Address m_address;
     private Department department;
     private Employee manager;
     private EmploymentPeriod period;
@@ -148,11 +144,11 @@ public class Employee implements Serializable {
     
     private Collection<Project> projects;
     private Collection<String> responsibilities;
-    private Collection<PhoneNumber> phoneNumbers;
+    private Collection<PhoneNumber> m_phoneNumbers;
     private Collection<Employee> managedEmployees;
     
     public Employee () {
-        this.phoneNumbers = new Vector<PhoneNumber>();
+        this.m_phoneNumbers = new Vector<PhoneNumber>();
         this.projects = new Vector<Project>();
         this.managedEmployees = new Vector<Employee>();
         this.responsibilities = new Vector<String>();
@@ -160,8 +156,16 @@ public class Employee implements Serializable {
     
     public Employee(String firstName, String lastName){
         this();
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.m_firstName = firstName;
+        this.m_lastName = lastName;
+    }
+    
+    public Employee clone() {
+        try {
+            return (Employee)super.clone();
+        } catch (CloneNotSupportedException exception) {
+            throw new InternalError(exception.toString());
+        }
     }
     
     public void addManagedEmployee(Employee emp) {
@@ -195,7 +199,7 @@ public class Employee implements Serializable {
     @ManyToOne(cascade={PERSIST, MERGE}, fetch=LAZY)
     @JoinColumn(name="ADDR_ID")
     public Address getAddress() { 
-        return address; 
+        return m_address; 
     }
     
     // Testing - Get methods with no corresponding set method, should be 
@@ -213,7 +217,7 @@ public class Employee implements Serializable {
     
     @Column(name="F_NAME")
     public String getFirstName() { 
-        return firstName; 
+        return m_firstName; 
     }
     
     @Convert("sex")
@@ -239,7 +243,7 @@ public class Employee implements Serializable {
     // Not defined in the XML, this should get processed.
     @Column(name="L_NAME")
     public String getLastName() { 
-        return lastName; 
+        return m_lastName; 
     }
 
     @OneToMany(cascade=ALL, mappedBy="manager")
@@ -271,7 +275,7 @@ public class Employee implements Serializable {
     @OneToMany(cascade=ALL, mappedBy="owner")
     @PrivateOwned
     public Collection<PhoneNumber> getPhoneNumbers() { 
-        return phoneNumbers; 
+        return m_phoneNumbers; 
     }
 
     @ManyToMany(cascade={PERSIST, MERGE})
@@ -353,13 +357,28 @@ public class Employee implements Serializable {
     }
     
     public void setAddress(Address address) {
-        this.address = address;
+        this.m_address = address;
+    }
+    
+    /**
+     * This tests having multiple getAddress methods, to ensure the weaver doesn't get confused.
+     */
+    public Address getAddress(String type) {
+        if (type.equals("Home")) {
+            return getAddress();
+        } else return new Address();
+    }
+    
+    /**
+     * This tests having multiple setAddress methods, to ensure the weaver doesn't get confused.
+     */
+    public void setAddress(String city) {
+        getAddress().setCity(city);
     }
     
     public void setAddressField(Address address){
-        // Call the set method for now, until the change tracking property access bug is fixed.
-        // TODO: Change this back after the bug is fixed.
-        setAddress(address);
+        // Set the field directly to test if the change is still detected.
+        this.m_address = address;
     }
     
     public void setDepartment(Department department) {
@@ -367,11 +386,11 @@ public class Employee implements Serializable {
     }
 
     public void setFemale() {
-        setGender(Gender.Female);
+        this.gender = Gender.Female;
     }
        
     public void setFirstName(String name) { 
-        this.firstName = name; 
+        this.m_firstName = name; 
     }
     
     public void setGender(Gender gender) { 
@@ -383,15 +402,19 @@ public class Employee implements Serializable {
     }
     
     public void setLastName(String name) { 
-        this.lastName = name; 
+        this.m_lastName = name; 
     }
     
     public void setMale() {
-        setGender(Gender.Male);
+        this.gender = Gender.Male;
     }
     
     public void setManagedEmployees(Collection<Employee> managedEmployees) {
         this.managedEmployees = managedEmployees;
+    }
+    
+    public void setManagerField(Employee manager) {
+        this.manager = manager;
     }
     
     public void setManager(Employee manager) {
@@ -411,22 +434,22 @@ public class Employee implements Serializable {
     }
 
     @Embedded
-        @AttributeOverrides({
-            @AttributeOverride(name="formerCompany", column=@Column(name="FORMER_COMPANY", nullable=false)),
-            @AttributeOverride(name="startDate", column=@Column(name="FORMER_START_DATE", nullable=false)),
-            @AttributeOverride(name="endDate", column=@Column(name="FORMER_END_DATE", nullable=true))
-	})
-	public FormerEmployment getFormerEmployment() {
-		return formerEmployment;
-	}
-    
-	public void setFormerEmployment(FormerEmployment formerEmployment) {
-		this.formerEmployment = formerEmployment;
-	}
+    @AttributeOverrides({
+        @AttributeOverride(name="formerCompany", column=@Column(name="FORMER_COMPANY", nullable=false)),
+        @AttributeOverride(name="startDate", column=@Column(name="FORMER_START_DATE", nullable=false)),
+        @AttributeOverride(name="endDate", column=@Column(name="FORMER_END_DATE", nullable=true))
+    })
+    public FormerEmployment getFormerEmployment() {
+            return formerEmployment;
+    }
+
+    public void setFormerEmployment(FormerEmployment formerEmployment) {
+            this.formerEmployment = formerEmployment;
+    }
 
     
     public void setPhoneNumbers(Collection<PhoneNumber> phoneNumbers) {
-        this.phoneNumbers = phoneNumbers;
+        this.m_phoneNumbers = phoneNumbers;
     }
     
     public void setProjects(Collection<Project> projects) {

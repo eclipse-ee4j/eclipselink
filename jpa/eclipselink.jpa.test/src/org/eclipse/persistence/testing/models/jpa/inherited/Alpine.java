@@ -23,7 +23,7 @@ import static javax.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name="CMP3_ALPINE")
-public class Alpine extends Beer  {
+public class Alpine extends Beer implements Cloneable {
     public enum Classification { STRONG, BITTER, SWEET }
     
     private Date bestBeforeDate;
@@ -40,6 +40,14 @@ public class Alpine extends Beer  {
         setId(serialNumber.getNumber());
         serialNumber.setAlpine(this);
         setSerialNumber(serialNumber);
+    }
+    
+    public Alpine clone() {
+        try {
+            return (Alpine)super.clone();
+        } catch (CloneNotSupportedException exception) {
+            throw new InternalError(exception.toString());
+        }
     }
     
     public void addInspectionDate(Date date) {

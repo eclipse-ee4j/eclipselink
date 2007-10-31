@@ -165,9 +165,15 @@ public class StaticWeaveClassTransformer {
         if (weaveFetchGroupsProperty != null && weaveFetchGroupsProperty.equalsIgnoreCase("false")) {
             weaveFetchGroups = false;
         }
+        
+        boolean weaveFetchInternal = true;
+        String weaveInternalProperty = (String)unitInfo.getProperties().get(PersistenceUnitProperties.WEAVING_INTERNAL);
+        if (weaveInternalProperty != null && weaveInternalProperty.equalsIgnoreCase("false")) {
+            weaveFetchInternal = false;
+        }
 
         // The transformer is capable of altering domain classes to handle a LAZY hint for OneToOne mappings.  It will only
         // be returned if we we are mean to process these mappings
-        return TransformerFactory.createTransformerAndModifyProject(session, entities, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups);
+        return TransformerFactory.createTransformerAndModifyProject(session, entities, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveFetchInternal);
     }
 }
