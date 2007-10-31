@@ -118,7 +118,7 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
             javaFiles[i] = fullName;
         }
 
-        int returnVal = CompileUtil.instance().compile("\"" + classgenCompilePath + "\"", javaFiles);
+        int returnVal = CompileUtil.instance().compile(classgenCompilePath, javaFiles);
         assertEquals(0, returnVal);
     }
 
