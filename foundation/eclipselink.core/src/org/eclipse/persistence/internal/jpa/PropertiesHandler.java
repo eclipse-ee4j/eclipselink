@@ -63,8 +63,12 @@ public class PropertiesHandler {
      * but will always return null
      * Throws IllegalArgumentException in case the property value is illegal.
      */
+    public static String getPropertyValue(String name, Map m) {
+        return Prop.getPropertyValueToApply(name, m, null, true);
+    }
+
     public static String getPropertyValueLogDebug(String name, Map m, AbstractSession session) {
-        return Prop.getPropertyValueToApply(name, m, session);
+        return Prop.getPropertyValueToApply(name, m, session, true);
     }
     
     /**
@@ -90,11 +94,11 @@ public class PropertiesHandler {
      * Throws IllegalArgumentException in case the property value is illegal.
      */
     public static Map getPrefixValues(String prefix, Map m) {
-        return Prop.getPrefixValuesToApply(prefix, m, null);
+        return Prop.getPrefixValuesToApply(prefix, m, null, true);
     }
     
     public static Map getPrefixValuesLogDebug(String prefix, Map m, AbstractSession session) {
-        return Prop.getPrefixValuesToApply(prefix, m, session);
+        return Prop.getPrefixValuesToApply(prefix, m, session, true);
     }
     
     /**
@@ -109,6 +113,38 @@ public class PropertiesHandler {
     
     public static String getDefaultPropertyValueLogDebug(String name, AbstractSession session) {
         return Prop.getDefaultPropertyValueToApply(name, session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Gets property value from AbstractSession.getProperties() map,
+     * if none found looks in its parent recursively;
+     * if none is found looks in System properties.
+     * Use this to get a value for a non-prefixed property.
+     * Throws IllegalArgumentException in case the property value is illegal.
+     */
+    public static String getSessionPropertyValue(String name, AbstractSession session) {
+        String value = null;
+        while(value == null && session != null) {
+            AbstractSession parent = session.getParent();
+            // Don't use System properties as default unless session has no parent.
+            // Motivation: look in all the recursive parents' properties before looking in System properties.
+            value = Prop.getPropertyValueToApply(name, session.getProperties(), null, parent == null);
+            session = parent;
+        }
+        return value;
+    }
+
+    public static String getSessionPropertyValueLogDebug(String name, AbstractSession session) {
+        String value = null;
+        while(value == null && session != null) {
+            AbstractSession parent = session.getParent();
+            // Don't use System properties as default unless session has no parent.
+            // Motivation: look in all the recursive parents' properties before looking in System properties.
+            value = Prop.getPropertyValueToApply(name, session.getProperties(), session, parent == null);
+            session = parent;
+        }
+        return value;
     }
     
     /**
@@ -140,7 +176,7 @@ public class PropertiesHandler {
             addProp(new CacheSharedProp());
             addProp(new DescriptorCustomizerProp());
             addProp(new BatchWritingProp());
-            addProp(new ProfilerProp());
+            addProp(new FlushClearCacheProp());
         }
         
         Prop(String name) {
@@ -152,30 +188,33 @@ public class PropertiesHandler {
             this.defaultValue = defaultValue;
         }
 
-        static String getPropertyValueFromMap(String name, Map m) {
+        static String getPropertyValueFromMap(String name, Map m, boolean useSystemAsDefault) {
             String value = (String)m.get(name);
-            return value == null ? System.getProperty(name) : value;
+            return value == null && useSystemAsDefault ? System.getProperty(name) : value;
         }
     
         // Collect all entries corresponding to the prefix name.
         // Note that entries from Map m override those from System properties.
-        static Map getPrefixValuesFromMap(String name, Map m) {
+        static Map getPrefixValuesFromMap(String name, Map m, boolean useSystemAsDefault) {
             Map mapOut = new HashMap();
             
-            Iterator it = (Iterator)AccessController.doPrivileged(
-                new PrivilegedAction() {
-                    public Object run() {
-                        return System.getProperties().entrySet().iterator();
-                    }    
-                }
-            );
-
-            while(it.hasNext()) {
-                Map.Entry entry = (Map.Entry)it.next();
-                String str = (String)entry.getKey();
-                if(str.startsWith(name)) {
-                    String entityName = str.substring(name.length(), str.length());
-                    mapOut.put(entityName, entry.getValue());
+            Iterator it;
+            if(useSystemAsDefault) {
+                it = (Iterator)AccessController.doPrivileged(
+                    new PrivilegedAction() {
+                        public Object run() {
+                            return System.getProperties().entrySet().iterator();
+                        }    
+                    }
+                );
+    
+                while(it.hasNext()) {
+                    Map.Entry entry = (Map.Entry)it.next();
+                    String str = (String)entry.getKey();
+                    if(str.startsWith(name)) {
+                        String entityName = str.substring(name.length(), str.length());
+                        mapOut.put(entityName, entry.getValue());
+                    }
                 }
             }
             
@@ -192,32 +231,32 @@ public class PropertiesHandler {
             return mapOut;
         }
     
-        static String getPropertyValue(String name, boolean shouldUseDefault, Map m, AbstractSession session) {
+        static String getPropertyValue(String name, boolean shouldUseDefault, Map m, AbstractSession session, boolean useSystemAsDefault) {
             Prop prop = (Prop)mainMap.get(name);
             if(prop == null) {
                 // it's not our property
                 return null; 
             }
-            String value = (String)getPropertyValueFromMap(name, m);
+            String value = (String)getPropertyValueFromMap(name, m, useSystemAsDefault);
             if(value == null) {
                 return null;
             }
             return prop.getValueToApply(value, shouldUseDefault, session);
         }
                 
-        static String getPropertyValueToApply(String name, Map m, AbstractSession session) {
+        static String getPropertyValueToApply(String name, Map m, AbstractSession session, boolean useSystemAsDefault) {
             Prop prop = (Prop)mainMap.get(name);
             if(prop == null) {
                 return null; 
             }
-            String value = (String)getPropertyValueFromMap(name, m);
+            String value = (String)getPropertyValueFromMap(name, m, useSystemAsDefault);
             if(value == null) {
                 return null;
             }
             return prop.getValueToApply(value, shouldUseDefault(value), session);
         }
                 
-        static Map getPrefixValuesToApply(String prefix, Map m, AbstractSession session) {
+        static Map getPrefixValuesToApply(String prefix, Map m, AbstractSession session, boolean useSystemAsDefault) {
             Prop prop = (Prop)mainMap.get(prefix);
             if(prop == null) {
                 // prefix doesn't correspond to a Prop object - it's not our property.
@@ -225,7 +264,7 @@ public class PropertiesHandler {
             }
             
             // mapps suffixes to property values
-            Map mapIn = (Map)getPrefixValuesFromMap(prefix, m);
+            Map mapIn = (Map)getPrefixValuesFromMap(prefix, m, useSystemAsDefault);
             if(mapIn.isEmpty()) {
                 return mapIn;
             }
@@ -501,16 +540,15 @@ public class PropertiesHandler {
             };
         }
     }
-    
-    protected static class ProfilerProp extends Prop {
-        ProfilerProp() {
-            super(PersistenceUnitProperties.PROFILER, PersistenceUnitProperties.DEFAULT);
-            this.shouldReturnOriginalValueIfValueToApplyNotFound = true;
-            String pcg = "org.eclipse.persistence.tools.profiler.";
-            valueArray = new Object[][] { 
-                {ProfilerType.PerformanceProfiler, pcg+ "PerformanceProfiler"}
+
+    protected static class FlushClearCacheProp extends Prop {
+        FlushClearCacheProp() {
+            super(PersistenceUnitProperties.FLUSH_CLEAR_CACHE, FlushClearCache.DEFAULT);
+            valueArray = new Object[] { 
+                FlushClearCache.Merge,
+                FlushClearCache.Drop,
+                FlushClearCache.DropInvalidate
             };
         }
     }
-
 }

@@ -259,6 +259,17 @@ public class PersistenceUnitProperties {
      */
     public static final String TEMPORAL_MUTABLE = "eclipselink.temporal.mutable";
     
+    /**
+     * Defines EntityManager cache behaviour after  a call to flush method
+     * followed by a call to clear method.
+     * This property could be specified while creating either EntityManagerFactory 
+     * (either in the map passed to createEntityManagerFactory method or in persistence.xml)
+     * or EntityManager (in the map passed to createEntityManager method);
+     * the latter overrides the former.
+     * @see FlushClearCache
+     */
+    public static final String FLUSH_CLEAR_CACHE = "eclipselink.flush-clear.cache";
+    
     /** INTERNAL: The following properties will not be displayed through logging but instead have an alternate value shown in the log. */
     public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<String, String>(1);
     //for gf3334, this property force persistence context to read through JTA-managed ("write") connection in case there is an active transaction.    

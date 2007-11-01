@@ -41,6 +41,7 @@ import junit.extensions.TestSetup;
 import junit.framework.*;
 
 import org.eclipse.persistence.jpa.config.CacheUsage;
+import org.eclipse.persistence.jpa.config.FlushClearCache;
 import org.eclipse.persistence.jpa.config.PessimisticLock;
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.jpa.config.EclipseLinkQueryHints;
@@ -1226,6 +1227,331 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertTrue("EntityManager not properly cleared", cleared);
         assertTrue("flushed data not merged", updated);
         assertTrue("unable to reset", reset);
+    }
+    
+    // gf3596: transactions never release memory until commit, so JVM eventually crashes
+    // The test verifies that there's no stale data read after transaction.
+    // Because there were no TopLinkProperties.FLUSH_CLEAR_CACHE property passed
+    // while creating either EM or EMF the tested behaviour corresponds to
+    // the default property value FlushClearCache.DropInvalidate.
+    // Note that the same test would pass with FlushClearCache.Merge
+    // (in that case all changes are merges into the shared cache after transaction committed),
+    // but the test would fail with FlushClearCache.Drop - that mode just drops em cache
+    // without doing any invalidation of the shared cache.
+    public void testClearWithFlush2() {
+        String firstName = "testClearWithFlush2";
+        
+        // setup
+        // create employee and manager - and then remove them from the shared cache
+        EntityManager em = createEntityManager();
+        int employee_1_NotInCache_id = 0;
+        int employee_2_NotInCache_id = 0;
+        int manager_NotInCache_id = 0;
+        em.getTransaction().begin();
+        try {
+            Employee employee_1_NotInCache = new Employee();
+            employee_1_NotInCache.setFirstName(firstName);
+            employee_1_NotInCache.setLastName("Employee_1_NotInCache");
+            
+            Employee employee_2_NotInCache = new Employee();
+            employee_2_NotInCache.setFirstName(firstName);
+            employee_2_NotInCache.setLastName("Employee_2_NotInCache");
+            
+            Employee manager_NotInCache = new Employee();
+            manager_NotInCache.setFirstName(firstName);
+            manager_NotInCache.setLastName("Manager_NotInCache");
+            // employee_1 is manager, employee_2 is not
+            manager_NotInCache.addManagedEmployee(employee_1_NotInCache);
+            
+            // persist
+            em.persist(manager_NotInCache);
+            em.persist(employee_1_NotInCache);
+            em.persist(employee_2_NotInCache);
+            em.getTransaction().commit();
+            
+            employee_1_NotInCache_id = employee_1_NotInCache.getId();
+            employee_2_NotInCache_id = employee_2_NotInCache.getId();
+            manager_NotInCache_id = manager_NotInCache.getId();
+        } catch (RuntimeException ex){
+            if (em.getTransaction().isActive()){
+                em.getTransaction().rollback();
+            }
+            em.close();
+            throw ex;
+        }
+        // remove both manager_NotInCache and employee_NotInCache from the shared cache
+        clearCache();
+        
+        // setup
+        // create employee and manager - and keep them in the shared cache
+        em = createEntityManager();
+        int employee_1_InCache_id = 0;
+        int employee_2_InCache_id = 0;
+        int manager_InCache_id = 0;
+        em.getTransaction().begin();
+        try {
+            Employee employee_1_InCache = new Employee();
+            employee_1_InCache.setFirstName(firstName);
+            employee_1_InCache.setLastName("Employee_1_InCache");
+            
+            Employee employee_2_InCache = new Employee();
+            employee_2_InCache.setFirstName(firstName);
+            employee_2_InCache.setLastName("Employee_2_InCache");
+            
+            Employee manager_InCache = new Employee();
+            manager_InCache.setFirstName(firstName);
+            manager_InCache.setLastName("Manager_InCache");
+            // employee_1 is manager, employee_2 is not
+            manager_InCache.addManagedEmployee(employee_1_InCache);
+            
+            // persist
+            em.persist(manager_InCache);
+            em.persist(employee_1_InCache);
+            em.persist(employee_2_InCache);
+            em.getTransaction().commit();
+            
+            employee_1_InCache_id = employee_1_InCache.getId();
+            employee_2_InCache_id = employee_2_InCache.getId();
+            manager_InCache_id = manager_InCache.getId();
+        } catch (RuntimeException ex){
+            if (em.getTransaction().isActive()){
+                em.getTransaction().rollback();
+            }
+            em.close();
+            throw ex;
+        }
+
+        // test
+        // create new employee and manager, change existing ones, flush, clear
+        em = createEntityManager();
+        int employee_1_New_id = 0;
+        int employee_2_New_id = 0;
+        int employee_3_New_id = 0;
+        int employee_4_New_id = 0;
+        int manager_New_id = 0;
+        em.getTransaction().begin();
+        try {
+            Employee employee_1_New = new Employee();
+            employee_1_New.setFirstName(firstName);
+            employee_1_New.setLastName("Employee_1_New");
+            em.persist(employee_1_New);
+            employee_1_New_id = employee_1_New.getId();
+            
+            Employee employee_2_New = new Employee();
+            employee_2_New.setFirstName(firstName);
+            employee_2_New.setLastName("Employee_2_New");
+            em.persist(employee_2_New);
+            employee_2_New_id = employee_2_New.getId();
+            
+            Employee employee_3_New = new Employee();
+            employee_3_New.setFirstName(firstName);
+            employee_3_New.setLastName("Employee_3_New");
+            em.persist(employee_3_New);
+            employee_3_New_id = employee_3_New.getId();
+            
+            Employee employee_4_New = new Employee();
+            employee_4_New.setFirstName(firstName);
+            employee_4_New.setLastName("Employee_4_New");
+            em.persist(employee_4_New);
+            employee_4_New_id = employee_4_New.getId();
+            
+            Employee manager_New = new Employee();
+            manager_New.setFirstName(firstName);
+            manager_New.setLastName("Manager_New");
+            em.persist(manager_New);
+            manager_New_id = manager_New.getId();
+
+            // find and update all objects created during setup
+            Employee employee_1_NotInCache = em.find(Employee.class, employee_1_NotInCache_id);
+            employee_1_NotInCache.setLastName(employee_1_NotInCache.getLastName() + "_Updated");
+            Employee employee_2_NotInCache = em.find(Employee.class, employee_2_NotInCache_id);
+            employee_2_NotInCache.setLastName(employee_2_NotInCache.getLastName() + "_Updated");
+            Employee manager_NotInCache = em.find(Employee.class, manager_NotInCache_id);
+            manager_NotInCache.setLastName(manager_NotInCache.getLastName() + "_Updated");
+
+            Employee employee_1_InCache = em.find(Employee.class, employee_1_InCache_id);
+            employee_1_InCache.setLastName(employee_1_InCache.getLastName() + "_Updated");
+            Employee employee_2_InCache = em.find(Employee.class, employee_2_InCache_id);
+            employee_2_InCache.setLastName(employee_2_InCache.getLastName() + "_Updated");
+            Employee manager_InCache = em.find(Employee.class, manager_InCache_id);
+            manager_InCache.setLastName(manager_InCache.getLastName() + "_Updated");
+
+            manager_NotInCache.addManagedEmployee(employee_1_New);
+            manager_InCache.addManagedEmployee(employee_2_New);
+            
+            manager_New.addManagedEmployee(employee_3_New);
+            manager_New.addManagedEmployee(employee_2_NotInCache);
+            manager_New.addManagedEmployee(employee_2_InCache);
+
+            // flush
+            em.flush();
+            
+            // clear and commit
+            em.clear();
+            em.getTransaction().commit();
+        } catch (RuntimeException ex){
+            if (em.getTransaction().isActive()){
+                em.getTransaction().rollback();
+            }
+            em.close();
+            throw ex;
+        }
+
+        // verify
+        String errorMsg = "";
+        em = createEntityManager();
+
+        // find and verify all objects created during setup and test
+
+        Employee manager_NotInCache = em.find(Employee.class, manager_NotInCache_id);
+        if(!manager_NotInCache.getLastName().endsWith("_Updated")) {
+            errorMsg = errorMsg + "manager_NotInCache lastName NOT updated; ";
+        }
+        Iterator it = manager_NotInCache.getManagedEmployees().iterator();
+        while(it.hasNext()) {
+            Employee emp = (Employee)it.next();
+            if(emp.getId() == employee_1_NotInCache_id) {
+                if(!emp.getLastName().endsWith("_Updated")) {
+                    errorMsg = errorMsg + "employee_1_NotInCache lastName NOT updated; ";
+                }
+            } else if(emp.getId() == employee_1_New_id) {
+                if(!emp.getLastName().endsWith("_New")) {
+                    errorMsg = errorMsg + "employee_1_New lastName wrong; ";
+                }
+            } else {
+                errorMsg = errorMsg + "manager_NotInCache has unexpected employee: lastName = " + emp.getLastName();
+            }
+        }
+        if(manager_NotInCache.getManagedEmployees().size() != 2) {
+            errorMsg = errorMsg + "manager_NotInCache.getManagedEmployees().size() != 2; size = " + manager_NotInCache.getManagedEmployees().size();
+        }
+
+        Employee manager_InCache = em.find(Employee.class, manager_InCache_id);
+        if(!manager_InCache.getLastName().endsWith("_Updated")) {
+            errorMsg = errorMsg + "manager_InCache lastName NOT updated; ";
+        }
+        it = manager_InCache.getManagedEmployees().iterator();
+        while(it.hasNext()) {
+            Employee emp = (Employee)it.next();
+            if(emp.getId() == employee_1_InCache_id) {
+                if(!emp.getLastName().endsWith("_Updated")) {
+                    errorMsg = errorMsg + "employee_1_InCache lastName NOT updated; ";
+                }
+            } else if(emp.getId() == employee_2_New_id) {
+                if(!emp.getLastName().endsWith("_New")) {
+                    errorMsg = errorMsg + "employee_2_New lastName wrong; ";
+                }
+            } else {
+                errorMsg = errorMsg + "manager_InCache has unexpected employee: lastName = " + emp.getLastName();
+            }
+        }
+        if(manager_InCache.getManagedEmployees().size() != 2) {
+            errorMsg = errorMsg + "manager_InCache.getManagedEmployees().size() != 2; size = " + manager_InCache.getManagedEmployees().size();
+        }
+
+        Employee manager_New = em.find(Employee.class, manager_New_id);
+        if(!manager_New.getLastName().endsWith("_New")) {
+            errorMsg = errorMsg + "manager_New lastName wrong; ";
+        }
+        it = manager_New.getManagedEmployees().iterator();
+        while(it.hasNext()) {
+            Employee emp = (Employee)it.next();
+            if(emp.getId() == employee_2_NotInCache_id) {
+                if(!emp.getLastName().endsWith("_Updated")) {
+                    errorMsg = errorMsg + "employee_2_NotInCache_id lastName NOT updated; ";
+                }
+            } else if(emp.getId() == employee_2_InCache_id) {
+                if(!emp.getLastName().endsWith("_Updated")) {
+                    errorMsg = errorMsg + "employee_2_InCache_id lastName NOT updated; ";
+                }
+            } else if(emp.getId() == employee_3_New_id) {
+                if(!emp.getLastName().endsWith("_New")) {
+                    errorMsg = errorMsg + "employee_3_New lastName wrong; ";
+                }
+            } else {
+                errorMsg = errorMsg + "manager_New has unexpected employee: lastName = " + emp.getLastName();
+            }
+        }
+        if(manager_New.getManagedEmployees().size() != 3) {
+            errorMsg = errorMsg + "manager_InCache.getManagedEmployees().size() != 3; size = " + manager_InCache.getManagedEmployees().size();
+        }
+        Employee employee_4_New = em.find(Employee.class, employee_4_New_id);
+        if(!employee_4_New.getLastName().endsWith("_New")) {
+            errorMsg = errorMsg + "employee_4_New lastName wrong; ";
+        }
+        em.close();
+        
+        // clean up
+        // remove all objects created during this test and clear the cache.
+        em = createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+            em.getTransaction().commit();
+        } catch (RuntimeException ex){
+            if (em.getTransaction().isActive()){
+                em.getTransaction().rollback();
+            }
+            // ignore exception in clean up in case there's an error in test
+            if(errorMsg.length() == 0) {
+                throw ex;
+            }
+        }
+        clearCache();
+        
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+    
+    public void testMassInsertFlushClear() {
+        int nFlushes = 10;
+        int nPersistsPerFlush = 100;
+        long defaultFreeMemory = internalMassInsertFlushClear(null, nFlushes, nPersistsPerFlush);
+        long mergeFreeMemory = internalMassInsertFlushClear(FlushClearCache.Merge, nFlushes, nPersistsPerFlush);
+        long diff = mergeFreeMemory - defaultFreeMemory;
+        long lowEstimateOfBytesPerObject = 200;
+        long diffPerObject = diff / (nFlushes * nPersistsPerFlush);
+        if(diffPerObject < lowEstimateOfBytesPerObject) {
+            fail("difference in freememory per object persisted " + diffPerObject + " is lower than lowEstimateOfBytesPerObject " + lowEstimateOfBytesPerObject);
+        }
+    }
+    
+    // memory usage with different FlushClearCache modes.
+    protected long internalMassInsertFlushClear(String propValue, int nFlushes, int nPersistsPerFlush) {
+        String firstName = "testMassInsertFlushClear";
+        EntityManager em;
+        if(propValue == null) {
+            // default value FlushClearCache.DropInvalidate will be used
+            em = createEntityManager();
+        } else {
+            HashMap map = new HashMap(1);
+            map.put(PersistenceUnitProperties.FLUSH_CLEAR_CACHE, propValue);
+            em = getEntityManagerFactory().createEntityManager(map);
+        }
+        em.getTransaction().begin();
+        try {
+            // Try to force garbage collection NOW.
+            System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();
+            long freeMemoryOld = Runtime.getRuntime().freeMemory();
+            for(int nFlush = 0; nFlush < nFlushes; nFlush++) {
+                for(int nPersist = 0; nPersist < nPersistsPerFlush; nPersist++) {
+                    Employee emp = new Employee();
+                    emp.setFirstName(firstName);
+                    int nEmployee = nFlush * nPersistsPerFlush + nPersist;
+                    emp.setLastName("lastName_" + Integer.toString(nEmployee));
+                    em.persist(emp);
+                }
+                em.flush();
+                em.clear();
+            }
+            // Try to force garbage collection NOW.
+            System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();
+            long freeMemoryNew = Runtime.getRuntime().freeMemory();
+            return freeMemoryOld - freeMemoryNew;
+        } finally {
+            em.getTransaction().rollback();
+        }
     }
     
     public void testClearInTransaction(){
@@ -4555,39 +4881,78 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em = createEntityManager();
         try {
             Employee manager = (Employee)em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.id = "+managerId).setHint("eclipselink.refresh", "true").getSingleResult();
-            if(manager == null) {
-                errorMsg = "Manager hasn't been written into the db";
-            } else {
-                if(manager.getPhoneNumbers().size() != 2) {
-                    errorMsg = "Manager has a wrong number of Phones = "+manager.getPhoneNumbers().size()+"; should be 2";
-                }
-            }
-        } finally {
-            em.close();
-        }
-        
-        // clean up: delete Manager - all other object will be cascade deleted.
-        em = createEntityManager();
+    // bug 6006423: BULK DELETE QUERY FOLLOWED BY A MERGE RETURNS DELETED OBJECT
+    public void testBulkDeleteThenMerge() {
+        String firstName = "testBulkDeleteThenMerge";
+
+        // setup - create Employee
+        EntityManager em = createEntityManager(); 
         em.getTransaction().begin();
+        Employee emp = new Employee();
+        emp.setFirstName(firstName);
+        emp.setLastName("Original");
+        em.persist(emp); 
+        em.getTransaction().commit();
+        em.close();
+
+        int id = emp.getId();
+        
+        // test
+        // delete the Employee using bulk delete
+        em = createEntityManager(); 
+        em.getTransaction().begin();
+        em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate(); 
+        em.getTransaction().commit();
+        em.close();
+
+        // then re-create and merge the Employee using the same pk
+        em = createEntityManager(); 
+        em.getTransaction().begin();
+        emp = new Employee();
+        emp.setId(id);
+        emp.setFirstName(firstName);
+        emp.setLastName("New");
+        em.merge(emp); 
         try {
-            if(managerId != 0) {
-                Employee manager = (Employee)em.find(Employee.class, managerId);
-                em.remove(manager);
-            } else if(employeeId != 0) {
-                // if Manager hasn't been created - delete Employee
-                Employee employee = (Employee)em.find(Employee.class, employeeId);
-                em.remove(employee);
-            }
+            em.getTransaction().commit();
         } finally {
-            if(em.getTransaction().isActive()) {
+            if (em.getTransaction().isActive()){
                 em.getTransaction().rollback();
             }
             em.close();
         }
         
+        // verify
+        String errorMsg = "";
+        em = createEntityManager(); 
+        // is the right Employee in the cache?
+        emp = (Employee)em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.id = " + id).getSingleResult();
+        if(emp == null) {
+            errorMsg = "Cache: Employee is not found; ";
+        } else {
+            if(!emp.getLastName().equals("New")) {
+                errorMsg = "Cache: wrong lastName = "+emp.getLastName()+"; should be New; ";
+            }
+        }
+        // is the right Employee in the db?
+        emp = (Employee)em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.id = " + id).setHint("toplink.refresh", Boolean.TRUE).getSingleResult();
+        if(emp == null) {
+            errorMsg = errorMsg + "DB: Employee is not found";
+        } else {
+            if(!emp.getLastName().equals("New")) {
+                errorMsg = "DB: wrong lastName = "+emp.getLastName()+"; should be New";
+            }
+            // clean up in case the employee is in the db
+            em.getTransaction().begin();
+            em.remove(emp);
+            em.getTransaction().commit();
+        }
+        em.close();
+
         if(errorMsg.length() > 0) {
             fail(errorMsg);
         }
     }
+    
 
 }

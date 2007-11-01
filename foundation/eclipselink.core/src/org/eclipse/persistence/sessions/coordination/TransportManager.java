@@ -69,7 +69,7 @@ public abstract class TransportManager {
     public static final int DEFAULT_NAMING_SERVICE = JNDI_NAMING_SERVICE;
 
     /** Default JNDI properties for remote access */
-    public static final String DEFAULT_CONTEXT_FACTORY = "com.evermind.server.rmi.RMIInitialContextFactory";
+    public static final String DEFAULT_CONTEXT_FACTORY = "oracle.j2ee.rmi.RMIInitialContextFactory";
     public static final String DEFAULT_DEDICATED_CONNECTION_KEY = "dedicated.connection";
     public static final String DEFAULT_DEDICATED_CONNECTION_VALUE = "true";
     public static final String DEFAULT_USER_NAME = "admin";

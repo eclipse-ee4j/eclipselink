@@ -1080,7 +1080,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Some require the OF some don't like it.
      */
     public String getSelectForUpdateString() {
-        return " FOR UPDATE OF *";
+        return " FOR UPDATE";
     }
 
     public String getSequenceCounterFieldName() {

@@ -104,7 +104,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
     public static final String USERNAME_DEFAULT = "admin";
     public static final String PASSWORD_DEFAULT = "password";
     public static final String ENCRYPTION_CLASS_DEFAULT = "org.eclipse.persistence.internal.security.JCEEncryptor";
-    public static final String INITIAL_CONTEXT_FACTORY_NAME_DEFAULT = "com.evermind.server.rmi.RMIInitialContextFactory";
+    public static final String INITIAL_CONTEXT_FACTORY_NAME_DEFAULT = "oracle.j2ee.rmi.RMIInitialContextFactory";
     public static final String SEND_MODE_DEFAULT = "Asynchronous";
     public static final String CHANNEL_DEFAULT = "TopLinkCommandChannel";
     public static final String ON_CONNECTION_ERROR_DEFAULT = "DiscardConnection";

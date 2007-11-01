@@ -845,7 +845,7 @@ public class MergeManager {
 
         //Must use the java class as this may be a bean that we are merging and it may not have the same class as the
         // objects in the cache.  As of EJB 2.0
-        Object objectFromCache = unitOfWork.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, descriptor.getJavaClass(), descriptor);
+        Object objectFromCache = unitOfWork.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, descriptor.getJavaClass(), false, descriptor);
         if (objectFromCache != null) {
             return objectFromCache;
         }

@@ -1299,6 +1299,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
+     * Gets the parent session.
+     */
+    public AbstractSession getParent() {
+        return null;
+    }
+
+    /**
+     * INTERNAL:
      * Gets the next link in the chain of sessions followed by a query's check
      * early return, the chain of sessions with identity maps all the way up to
      * the root session.

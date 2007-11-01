@@ -1065,7 +1065,7 @@ public class SessionsFactory {
         // Password - XML Schema default is password
         tm.setEncryptedPassword(namingConfig.getEncryptedPassword());
 
-        // Initial context factory name - XML Schema is com.evermind.server.rmi.RMIInitialContextFactory
+        // Initial context factory name - XML Schema is oracle.j2ee.rmi.RMIInitialContextFactory
         tm.setInitialContextFactoryName(namingConfig.getInitialContextFactoryName());
 
         // Properties (assumes they are all valid)
