@@ -126,8 +126,23 @@ public class SDOClassGenerator {
         if (null != messageID) {
             System.out.println(ToStringLocalization.buildMessage(messageID, new Object[] { Helper.getShortClassName(getClass()) }));
         }
-        System.out.println(ToStringLocalization.buildMessage("sdo_classgenerator_usage_help",//
-                                                             new Object[] { Helper.getShortClassName(getClass()) }));
+        
+        // Because we can no longer use Helper.cr() inside of message bundles, we must break
+        // up the message into separate lines and use Helper.cr() here instead. (bug6470503)
+        String messageString = ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_1of6", new Object[] { Helper.getShortClassName(getClass()) });
+		messageString += Helper.cr() + Helper.cr();
+		messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_2of6");
+		messageString += Helper.cr();
+		messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_3of6");
+		messageString += Helper.cr();
+		messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_4of6");
+		messageString += Helper.cr();
+		messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_5of6");
+		messageString += Helper.cr();
+		messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_6of6");
+		messageString += Helper.cr();
+		
+        System.out.println(messageString);
     }
 
     public Map generate(Reader xsdReader) {
