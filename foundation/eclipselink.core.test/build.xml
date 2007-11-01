@@ -44,7 +44,9 @@
         <filter token="boolvalue" value="${eclipselink.logging.boolvalue}"/>
         <filter token="dbPlatform" value="${db.platform}"/>
         <copy todir="${eclipselink.core.test}/${classes.dir}" filtering="true">
-            <fileset dir="${eclipselink.core.test}/${resource.dir}"/>
+            <fileset dir="${eclipselink.core.test}/${resource.dir}" 
+                includes="**/*" 
+                excludes="org/eclipse/persistence/testing/nlstests/**/*.xml"/>
          </copy>
     </target>
 
