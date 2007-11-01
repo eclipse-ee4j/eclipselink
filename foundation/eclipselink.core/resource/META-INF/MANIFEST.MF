@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Implementation-Title: Eclipse Persistence Services project
+Implementation-Title: Eclipse Persistence Services
 Implementation-Version: @VERSION@
 Implementation-Vendor: Oracle
 Release-Designation: Eclipse Incubation

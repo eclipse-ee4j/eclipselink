@@ -6,7 +6,7 @@
     <!-- versioning -->
     <!-- ${build_id} will be given by the build system. Manual build is SNAPSHOT. --> 
     <tstamp>
-       <format property="build_date" pattern="MM/dd/yyyy"/>
+       <format property="build_date" pattern="yyyyMMdd"/>
     </tstamp>
     <condition property="build_number" value="${build_id}">
         <not>
@@ -17,7 +17,7 @@
         </not>
     </condition>
     <property name="build_number" value="SNAPSHOT"/>
-    <property name="build_number_string" value="${build_number} (${build_date})"/>
+    <property name="build_number_string" value="${build_date}"/>
 
   <!-- all -->
   <target name="all" depends="package.eclipselink.jar, build.test, package.src.jar, package.package-renamer.jar, package.installer.zip" description="build EclipseLink distribution files"/>
@@ -45,7 +45,9 @@
 
     <target name="package.eclipselink.jar" depends="build.core" description="build EclipseLink jar">
       <unjar src="${eclipselink.extension.oracle}/${eclipselink.oracle.depend.jar}" dest="${build.dir}"/>
-      <jar jarfile="${eclipselink.jar}" manifest="${eclipselink.core}/${resource.dir}/META-INF/MANIFEST.MF">
+      <filter token="VERSION" value="${release.version} ${build_number_string}"/>
+      <copy file="${eclipselink.core}/${resource.dir}/META-INF/MANIFEST.MF" tofile="${build.dir}/META-INF/MANIFEST.MF" filtering="true"/>
+      <jar jarfile="${eclipselink.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
           <fileset dir="${eclipselink.core}/${classes.dir}">
             <include name="org/eclipse/persistence/**/*.class"/>
             <include name="deprecated/**/*.class"/>
@@ -134,58 +136,58 @@
     
     <!-- installer.zip -->
   <target name="package.installer.zip" description="build EclipseLink installer zip">
-    <zip destfile="${eclipselink-installer.zip}">
+    <zip destfile="${eclipselink-installer.prefix}${release.version}${eclipselink-installer.suffix}">
       <!-- miscellaneous files -->
-      <zipfileset dir=".">
+      <zipfileset dir="." prefix="eclipselink">
         <include name="${about-file}"/>
         <include name="${readme-file}"/>
         <include name="${license-files}"/>
       </zipfileset>
           
       <!-- setenv and package-rename scripts -->
-      <zipfileset dir="${eclipselink.core.bin}" prefix="bin">
+      <zipfileset dir="${eclipselink.core.bin}" prefix="eclipselink/bin">
         <include name="${setenv-scripts}"/>
         <include name="${package-rename-scripts}"/>
       </zipfileset>
       
       <!-- jaxb-compiler scripts -->
-      <zipfileset dir="${eclipselink.moxy.bin}" includes="${jaxb-compiler-scripts}" prefix="bin"/>
+      <zipfileset dir="${eclipselink.moxy.bin}" includes="${jaxb-compiler-scripts}" prefix="eclipselink/bin"/>
 
       <!-- sdo-compiler scripts -->
-      <zipfileset dir="${eclipselink.sdo.bin}" includes="${sdo-compiler-scripts}" prefix="bin"/>
+      <zipfileset dir="${eclipselink.sdo.bin}" includes="${sdo-compiler-scripts}" prefix="eclipselink/bin"/>
 
       <!-- package-rename.properties -->
-      <zipfileset dir="./${eclipselink.util.rename.utility.resource}" includes="${package-rename.properties}" fullpath="config/package-rename.properties"/>
+      <zipfileset dir="./${eclipselink.util.rename.utility.resource}" includes="${package-rename.properties}" fullpath="eclipselink/config/package-rename.properties"/>
         
       <!-- core jar's and zips -->  
-      <zipfileset dir="." prefix="jlib">
+      <zipfileset dir="." prefix="eclipselink/jlib">
         <include name="${eclipselink.jar}"/>
         <include name="${eclipselink-src.zip}"/>
       </zipfileset>
 
-      <zipfileset dir="./${eclipselink.util.rename.utility}" prefix="jlib">
+      <zipfileset dir="./${eclipselink.util.rename.utility}" prefix="eclipselink/jlib">
           <include name="${package-rename.jar}"/>
       </zipfileset>
 
       <!-- jpa persistence jar -->  
-      <zipfileset dir="${eclipselink.core.lib}/" includes="${persistence.jar}" prefix="jlib/jpa"/>
+      <zipfileset dir="${eclipselink.core.lib}/" includes="${persistence.jar}" prefix="eclipselink/jlib/jpa"/>
       
         <!-- moxy jar's and zips -->  
-        <zipfileset dir="${eclipselink.core.lib}/" prefix="jlib/moxy">
+        <zipfileset dir="${eclipselink.core.lib}/" prefix="eclipselink/jlib/moxy">
           <include name="${activation.jar}"/>
           <include name="${mail.jar}"/>
           <include name="${jsr173_1.0_api.jar}"/>
         </zipfileset>
         
       <!-- moxy jar's and zips -->  
-      <zipfileset dir="${eclipselink.moxy.lib}/" prefix="jlib/moxy">
+      <zipfileset dir="${eclipselink.moxy.lib}/" prefix="eclipselink/jlib/moxy">
         <include name="${jaxb-api.jar}"/>
         <include name="${jaxb-xjc.jar}"/>
         <include name="${jaxb-impl.jar}"/>
        </zipfileset>
         
       <!-- grab the sdo jar -->  
-      <zipfileset dir="${eclipselink.sdo.lib}/" includes="${commonj-sdo.jar}" prefix="jlib/sdo"/>
+      <zipfileset dir="${eclipselink.sdo.lib}/" includes="${commonj-sdo.jar}" prefix="eclipselink/jlib/sdo"/>
       
     </zip>
   </target>

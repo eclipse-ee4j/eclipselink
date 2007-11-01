@@ -16,7 +16,7 @@
 
     <target name="init">
         <tstamp>
-            <format property="build.date" pattern="MM/dd/yyyy"/>
+            <format property="build.date" pattern="yyyyMMdd"/>
         </tstamp> 
         <property name="build_number_string" value="${build.date}"/>
     </target>
