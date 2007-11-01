@@ -29,7 +29,7 @@
 
     <target name="package.eclipselink.jar" depends="build.core" description="build EclipseLink jar">
       <unjar src="${eclipselink.extension.oracle}/${eclipselink.oracle.depend.jar}" dest="${build.dir}"/>
-      <jar jarfile="${eclipselink.jar}" manifest="${eclipselink.core}/${resource.dir}/META-INF/manifest.mf">
+      <jar jarfile="${eclipselink.jar}" manifest="${eclipselink.core}/${resource.dir}/META-INF/MANIFEST.MF">
           <fileset dir="${eclipselink.core}/${classes.dir}">
             <include name="org/eclipse/persistence/**/*.class"/>
             <include name="deprecated/**/*.class"/>
