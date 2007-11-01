@@ -34,6 +34,7 @@ public class SDOTypeHelperTestSuite {
         TestSuite suite = new TestSuite("All TypHelper Tests");
         suite.addTest(new TestSuite(SDOTypeHelperBuiltinCommonjMapTestCases.class));
 				suite.addTest(new SDOTypeHelperDefineTestSuite().suite());			
+        suite.addTest(new TestSuite(OpenContentPropertiesByNameTestCases.class));
         return suite;
     }
 }
