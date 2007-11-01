@@ -11,8 +11,6 @@ package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
 
-import org.eclipse.persistence.internal.helper.Helper;
-
 /**
  * English ResourceBundle for ToStringLocalization messages.
  *
@@ -66,32 +64,35 @@ public class ToStringLocalizationResource extends ListResourceBundle {
                                            { "unknown", "unknown" },
                                            { "connector", "connector" },
                                            { "staticweave_processor_unknown_outcome", "Weaving classes stored in a directory and outputing to a JAR often leads to unexpected results." },
-                                           { "staticweave_commandline_help_message",
-                                               "  Usage: StaticWeave [options] source target\r\r"+
-                                               "  Options:\r"+
-                                               "    -classpath classpath\r" +
-                                               "           Set the user class path. use \";\" as delimiter in windows and \":\" in unix.\r"+
-                                               "    -persistenceinfo \r" +
-                                               "           Explicitly identify where META-INF/persistence.xml is stored. It must be the root of META-INF/persistence.xml.\r"+
-                                               "    -log \r" +
-                                               "           Specify logging file.\r"+
-                                               "    -loglevel \r" +
-                                               "           Specify a literal value of the toplink logging level(OFF,SEVERE,WARNING,INFO,CONFIG,FINE,FINER,FINEST).\r"+
-                                               "    The classpath must contain all the classes necessary to load the classes in the source.\r"+ 
-                                               "    The weaving will be performed in place if source and target point to the same location. Weaving in place is ONLY applicable for directory-based sources.\r"+ 
-                                               "  Example:\r" +
-                                               "    To weave all entites contained in c:\\foo-source.jar with its persistence.xml contained within the c:\\foo-containing-persistence-xml.jar,\r"+
-                                               "    and output to c:\\foo-target.jar,\r"+
-                                               "    StaticWeave -persistenceinfo c:\\foo-containing-persistence-xml.jar -classpath c:\\classpath1;c:\\classpath2 c:\\foo-source.jar c:\\foo-target.jar\r\r"},
-                                           { "sdo_classgenerator_usage_help", "{0} Usage: org.eclipse.persistence.sdo.helper.{0} [-options]" + Helper.cr() + Helper.cr() + "Options:" + Helper.cr() + //
-                                               	"    -help                        " + "Prints the help message text" + Helper.cr() + "    -sourceFile <FileName>       " + //
-                                               	"The input schema file (required)" + Helper.cr() + "    -targetDirectory <DirName>   " + //
-                                               	"The directory to generate Java source(optional)"  + 	Helper.cr() + "    -logLevel <level int>        " + //
-                                               	"Specify the integer value of the toplink logging level(8=OFF,7=SEVERE,6=WARNING,5=INFO,4=CONFIG,3=FINE,2=FINER(default),1=FINEST,0=ALL)." + Helper.cr()},
+                                           
+										   { "staticweave_commandline_help_message_1of16", "  Usage: StaticWeave [options] source target" },
+										   { "staticweave_commandline_help_message_2of16", "  Options:" },
+										   { "staticweave_commandline_help_message_3of16", "    -classpath classpath" },
+										   { "staticweave_commandline_help_message_4of16", "           Set the user class path.  Use \";\" as delimiter in Windows and \":\" in Unix." },
+										   { "staticweave_commandline_help_message_5of16", "    -persistenceinfo" },
+										   { "staticweave_commandline_help_message_6of16", "           Explicitly identify where META-INF/persistence.xml is stored.  It must be the root of META-INF/persistence.xml." },
+										   { "staticweave_commandline_help_message_7of16", "    -log" },
+										   { "staticweave_commandline_help_message_8of16", "           Specify logging file." },
+										   { "staticweave_commandline_help_message_9of16", "    -loglevel" },
+										   { "staticweave_commandline_help_message_10of16", "           Specify the integer value of the logging level (8=OFF,7=SEVERE,6=WARNING,5=INFO,4=CONFIG,3=FINE,2=FINER(default),1=FINEST,0=ALL)." },
+										   { "staticweave_commandline_help_message_11of16", "    The classpath must contain all the classes necessary to load the classes in the source." },
+										   { "staticweave_commandline_help_message_12of16", "    The weaving will be performed in place if source and target point to the same location.  Weaving in place is ONLY applicable for directory-based sources." },
+										   { "staticweave_commandline_help_message_13of16", "  Example:" },
+										   { "staticweave_commandline_help_message_14of16", "    To weave all entites contained in C:\\foo-source.jar with its persistence.xml contained within the C:\\foo-containing-persistence-xml.jar," },
+										   { "staticweave_commandline_help_message_15of16", "    and output to C:\\foo-target.jar:" },
+										   { "staticweave_commandline_help_message_16of16", "    StaticWeave -persistenceinfo C:\\foo-containing-persistence-xml.jar -classpath C:\\classpath1;C:\\classpath2 C:\\foo-source.jar C:\\foo-target.jar"},
+										   
+										   { "sdo_classgenerator_usage_help_1of6", "{0} Usage: org.eclipse.persistence.sdo.helper.{0} [-options]" },
+										   { "sdo_classgenerator_usage_help_2of6", "Options:" },
+										   { "sdo_classgenerator_usage_help_3of6", "    -help                        Prints the help message text" },
+										   { "sdo_classgenerator_usage_help_4of6", "    -sourceFile <FileName>       The input schema file (required)" },
+										   { "sdo_classgenerator_usage_help_5of6", "    -targetDirectory <DirName>   The directory to generate Java source (optional)" },
+										   { "sdo_classgenerator_usage_help_6of6", "    -logLevel <level int>        Specify the integer value of the logging level (8=OFF,7=SEVERE,6=WARNING,5=INFO,4=CONFIG,3=FINE,2=FINER(default),1=FINEST,0=ALL)." },                                               	
+                                               	
                                            { "sdo_classgenerator_usage_missing_sourcefile_value", "{0} The value of -sourceFile was not specified."},    
                                            { "sdo_classgenerator_usage_missing_targetdir", "{0} The value of -targetDirectory was not specified."},    
                                            { "sdo_classgenerator_usage_missing_sourcefile", "{0} The -sourceFile parameter was not specified and is required."}    
-                                                   };
+    };
 
     /**
      * Return the lookup table.

@@ -10,7 +10,6 @@
 package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
-import org.eclipse.persistence.internal.helper.Helper;
 
 public class JAXBLocalizationResource extends ListResourceBundle {
     static final Object[][] contents = {
@@ -31,11 +30,9 @@ public class JAXBLocalizationResource extends ListResourceBundle {
                                            { "impl_package_missing", "Implementation Class Package Name is missing" },
                                            { "missing_schema_file", "Input Schema file is missing" },
                                            { "missing_customization", "Input customization file is missing" },
-                                           { "missing_schema", Helper.cr() + "  --Schema file needs to be given as input with the option -schema <FileName>." },
                                            { "error", "Error: " },
                                            { "malformed_url_error", "Error: Unexpected MalformedURLException" },
                                            { "io_exception_error", "Error: Unexpected IOException" },
-                                           { "usage", "Usage: org.eclipse.persistence.jaxb.compiler.tljaxb [-options]" + Helper.cr() + Helper.cr() + "Options:" + Helper.cr() + "    -help                     " + "Prints the help message text" + Helper.cr() + "    -version                  " + "Prints the release version" + Helper.cr() + "    -sourceDir <DirName>      " + "The directory to generate Java source" + Helper.cr() + "    -generateWorkbench        " + "Option to generate a TopLink Mapping Workbench Project" + Helper.cr() + "    -workbenchDir <DirName>   " + "The directory to generate TopLink Mapping Workbench Project" + Helper.cr() + "    -schema    <FileName>     " + "The input schema file (required)" + Helper.cr() + "    -targetPkg <PkgName>      " + "The package name for generated Java files" + Helper.cr() + "    -implClassPkg <PkgName>   " + "The package name for generated impl classes, if different from Interfaces (optional)" + Helper.cr() + "    -interface                " + "Option to generate the Java interfaces only" + Helper.cr() + "    -verbose                  " + "Give a list of interfaces and classes that are generated" + Helper.cr() + "    -customize                " + "Specify a standard JAXB customization file to override default JAXB compiler behavior (optional)" + Helper.cr() },
                                            { "version", "Version: " },
     };
 

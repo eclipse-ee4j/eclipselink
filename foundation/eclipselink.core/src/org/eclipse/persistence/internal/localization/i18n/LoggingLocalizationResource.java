@@ -11,9 +11,6 @@ package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
 
-import org.eclipse.persistence.internal.helper.Helper;
-
-
 /**
  * English ResourceBundle for LoggingLocalization messages.
  *
@@ -177,8 +174,6 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "dir_cleaned_for_mw_files", "Files and sub-directories under directory {0} have been deleted in order to create a clean directory for the new generated TopLink Mapping Workbench project files" },
         { "mapping_not_supported_by_mw", "The TopLink mapping {0} is not supported by the mapping workbench" },
         { "toplink_ejb_jar_in_jar", "toplink-ejb-jar.xml is included in jar({0}) file, no migration therefore will be performed for this jar." },
-        { "migration_tool_usage", "The Oracle TopLink Migration Tool Usage:" + Helper.cr() + Helper.getTabs(1) + "java org.eclipse.persistence.tools.migration.TopLinkCmpMigrator {0}<''{1}''|''{2}''> [{3}<input dir>] [{4}[<ear>|<jar>] | {5}] {6}<output dir> [{7}] " + Helper.cr() + "Where:" + Helper.cr() + Helper.getTabs(1) + "{0}: The name of the native PM of the source input file(s). It is either ''Oc4j-native'' or ''WebLogic''." + Helper.cr() + Helper.getTabs(1) + "{3}: Input directory contains to-be-migrated descriptor files or archive file containing them. If not specified, the current directory is used as input directory." + Helper.cr() + Helper.getTabs(1) + "{4}: The archive (.ear or .jar) file containing ejb-jar.xml and native descriptor file like orion-ejb-jar.xml with the native CMP defined to be migrated." + Helper.cr() + Helper.getTabs(1) + "{5}: It signals that the descriptor files under the input directory is to be migrated." + Helper.cr() + Helper.getTabs(1) + "{6}: The (absolute or relative to the current) output directory that the migrated file(s) and log file output into. It must be specified." + Helper.cr() + Helper.getTabs(1) + "{7}: Verbose mode. The verbose logging messages would be printed out to the console." + Helper.cr() },
-        { "migration_tool_usage_exmaple", "Examples:" + Helper.cr() + Helper.getTabs(1) + "Example-1 (Oc4j-native ->Oc4j TopLink):  java org.eclipse.persistence.tools.migration.TopLinkCmpMigrator " + "-sOc4j-native -iC:/mywork/in -aEmployee.ear -oC:/mywork/out -v" + Helper.cr() + Helper.getTabs(1) + "Example-2 (WebLogic -> Oc4j TopLink) :  java org.eclipse.persistence.tools.migration.TopLinkCmpMigrator " + "-sWebLogic -x -oC:/mywork/out" },
         { "jta_cannot_be_disabled_in_cmp", "When using Container Managed Persistence (CMP), JTA cannot be disabled. TopLink will act as if JTA is enabled." },
         { "descriptor_named_query_cannot_be_added", "Cannot add a descriptor named query whose name conflict with an existing query. Query To Be Added: [{0}] is named: [{1}] with arguments [{2}]." },
 
