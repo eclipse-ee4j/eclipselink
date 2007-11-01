@@ -10,9 +10,13 @@
 package org.eclipse.persistence.internal.jpa;
 
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.Set;
 
+import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
+import org.eclipse.persistence.jpa.config.FlushClearCache;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.IdentityHashtable;
@@ -24,6 +28,7 @@ import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.sessions.IdentityMapAccessor;
 
 
 public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
@@ -43,10 +48,72 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     protected boolean shouldClearForCloseInsteadOfResume = false;
     
+    /** The FlashClearCache mode to be used (see oracle.toplink.config.FlushClearCache).
+     * Initialized by setUnitOfWorkChangeSet method in case it's null;
+     * commitAndResume sets this attribute back to null.
+     * Relevant only in case call to flush method followed by call to clear method.
+     */
+    protected transient String flushClearCache;
+    
+    /** Contains classes that should be invalidated in the shared cache on commit.
+     * Used only in case fushClearCache == FlushClearCache.DropInvalidate:
+     * clear method copies contents of updatedObjectsClasses to this set,
+     * adding classes of deleted objects, too;
+     * on commit the classes contained here are invalidated in the shared cache
+     * and the set is cleared.
+     * Relevant only in case call to flush method followed by call to clear method.
+     * Works together with flushClearCache.
+     */
+    protected transient Set<Class> classesToBeInvalidated;
+    
     public RepeatableWriteUnitOfWork(org.eclipse.persistence.internal.sessions.AbstractSession parentSession){
         super(parentSession);
         this.shouldTerminateTransaction = true;
         this.shouldNewObjectsBeCached = true;
+    }
+    
+    /**
+     * INTERNAL:
+     * This method will clear all registered objects from this UnitOfWork.
+     * If parameter value is 'true' then the cache(s) are cleared, too.
+     */
+    public void clear(boolean shouldClearCache) {
+        super.clear(shouldClearCache);
+        if(cumulativeUOWChangeSet != null) {
+            if(flushClearCache == null) {
+                flushClearCache = PropertiesHandler.getSessionPropertyValueLogDebug(PersistenceUnitProperties.FLUSH_CLEAR_CACHE, this);
+                if(flushClearCache == null) {
+                    flushClearCache = FlushClearCache.DEFAULT;
+                }
+            }
+            if(flushClearCache == FlushClearCache.Drop) {
+                cumulativeUOWChangeSet = null;
+                unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
+            } else if(flushClearCache == FlushClearCache.DropInvalidate) {
+                // classes of the updated objects should be invalidated in the shared cache on commit.
+                Set updatedObjectsClasses = cumulativeUOWChangeSet.findUpdatedObjectsClasses();
+                if(updatedObjectsClasses != null) {
+                    if(classesToBeInvalidated == null) {
+                        classesToBeInvalidated = updatedObjectsClasses;
+                    } else {
+                        classesToBeInvalidated.addAll(updatedObjectsClasses);
+                    }
+                }
+                // unregisteredDeletedObjectsCloneToBackupAndOriginal != null because cumulativeUOWChangeSet != null
+                if(!unregisteredDeletedObjectsCloneToBackupAndOriginal.isEmpty()) {
+                    if(classesToBeInvalidated == null) {
+                        classesToBeInvalidated = new HashSet<Class>();
+                    }
+                    Enumeration enumDeleted = unregisteredDeletedObjectsCloneToBackupAndOriginal.keys();
+                    // classes of the deleted objects should be invalidated in the shared cache
+                    while(enumDeleted.hasMoreElements()) {
+                        classesToBeInvalidated.add(enumDeleted.nextElement().getClass());
+                    }
+                }
+                cumulativeUOWChangeSet = null;
+                unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
+            }
+        }
     }
     
     /**
@@ -62,9 +129,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * they still might).
      */
     public void clearForClose(boolean shouldClearCache){
-        super.clearForClose(shouldClearCache);
         this.cumulativeUOWChangeSet = null;
         this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
+        super.clearForClose(shouldClearCache);
     }
     
     /**
@@ -157,6 +224,23 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     }
     
     /**
+     * INTERNAL: Merge the changes to all objects to the parent.
+     */
+    protected void mergeChangesIntoParent() {
+        if(classesToBeInvalidated != null) {
+            // get identityMap of the parent ServerSession
+            IdentityMapAccessor accessor = this.getParentIdentityMapSession(null, false, true).getIdentityMapAccessor();
+            Iterator<Class> it = classesToBeInvalidated.iterator();
+            while(it.hasNext()) {
+               accessor.invalidateClass(it.next(), false);
+            }
+            classesToBeInvalidated = null;
+        }
+        flushClearCache = null;
+        super.mergeChangesIntoParent();
+    }
+    
+    /**
      * INTERNAL:
      * Merge the attributes of the clone into the unit of work copy.
      */
@@ -207,6 +291,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                 commitToDatabaseWithPreBuiltChangeSet(changeSet, false);
                 writesCompleted();
             } catch (RuntimeException exception) {
+                clearFlushClearCache();
                 setLifecycle(WriteChangesFailed);
                 throw exception;
             }
@@ -360,5 +445,14 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
     public boolean shouldClearForCloseInsteadOfResume() {
         return shouldClearForCloseInsteadOfResume;
+    }
+
+    /**
+     * INTERNAL:
+     * Clears flushClearCache attribute and the related collections.
+     */
+    public void clearFlushClearCache() {
+        flushClearCache = null;
+        classesToBeInvalidated = null;
     }
 }
