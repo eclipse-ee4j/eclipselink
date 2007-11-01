@@ -4881,6 +4881,41 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em = createEntityManager();
         try {
             Employee manager = (Employee)em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.id = "+managerId).setHint("eclipselink.refresh", "true").getSingleResult();
+            if(manager == null) {
+                errorMsg = "Manager hasn't been written into the db";
+            } else {
+                if(manager.getPhoneNumbers().size() != 2) {
+                    errorMsg = "Manager has a wrong number of Phones = "+manager.getPhoneNumbers().size()+"; should be 2";
+                }
+            }
+        } finally {
+            em.close();
+        }
+        
+        // clean up: delete Manager - all other object will be cascade deleted.
+        em = createEntityManager();
+        em.getTransaction().begin();
+        try {
+            if(managerId != 0) {
+                Employee manager = (Employee)em.find(Employee.class, managerId);
+                em.remove(manager);
+            } else if(employeeId != 0) {
+                // if Manager hasn't been created - delete Employee
+                Employee employee = (Employee)em.find(Employee.class, employeeId);
+                em.remove(employee);
+            }
+        } finally {
+            if(em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+        
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+
     // bug 6006423: BULK DELETE QUERY FOLLOWED BY A MERGE RETURNS DELETED OBJECT
     public void testBulkDeleteThenMerge() {
         String firstName = "testBulkDeleteThenMerge";
