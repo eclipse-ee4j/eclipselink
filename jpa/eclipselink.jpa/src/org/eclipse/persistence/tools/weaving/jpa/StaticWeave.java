@@ -18,6 +18,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import org.eclipse.persistence.exceptions.StaticWeaveException;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -214,7 +215,43 @@ public class StaticWeave {
          */
         private void printUsage() {
             PrintStream o = vout;
-            o.println(ToStringLocalization.buildMessage("staticweave_commandline_help_message", new Object[]{null}));
+            
+            // Because we can no longer use Helper.cr() inside of message bundles, we must break
+            // up the message into separate lines and use Helper.cr() here instead. (bug6470503)
+    		String messageString = ToStringLocalization.buildMessage("staticweave_commandline_help_message_1of16");
+    		messageString += Helper.cr() + Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_2of16");
+    		messageString += Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_3of16");
+    		messageString += Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_4of16");
+    		messageString += Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_5of16");
+    		messageString += Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_6of16");
+    		messageString += Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_7of16");
+    		messageString += Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_8of16");
+    		messageString += Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_9of16");
+    		messageString += Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_10of16");
+    		messageString += Helper.cr() + Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_11of16");
+    		messageString += Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_12of16");
+    		messageString += Helper.cr() + Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_13of16");
+    		messageString += Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_14of16");
+    		messageString += Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_15of16");
+    		messageString += Helper.cr() + Helper.cr();
+    		messageString += ToStringLocalization.buildMessage("staticweave_commandline_help_message_16of16");
+    		messageString += Helper.cr() + Helper.cr();
+            
+            o.println(messageString);
         }
         
         /*
