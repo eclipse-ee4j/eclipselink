@@ -4,13 +4,13 @@
     <property file="./build.properties"/>
 
     <path id="compile.path">
-        <pathelement path="${antlr}/${classes.dir}"/>
-        <pathelement path="${asm}/${classes.dir}"/>
+        <pathelement path="${eclipselink.core.lib}/eclipselink-antlr.jar"/>
+        <pathelement path="${eclipselink.core.lib}/eclipselink-asm.jar"/>
+        <pathelement path="${junit.lib}"/>
         <fileset
             dir="${eclipselink.core.lib}"
             includes="${eclipselink.core.depend}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
-        <pathelement path="${junit.lib}"/>
     </path>
 	
     <!-- all -->
