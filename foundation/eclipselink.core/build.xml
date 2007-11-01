@@ -16,16 +16,36 @@
 
     <target name="init">
         <tstamp>
-            <format property="start.time" pattern="MM/dd/yyyy hh:mm aa"/>
+            <format property="build.date" pattern="MM/dd/yyyy"/>
         </tstamp> 
+        <property name="build_number_string" value="${build.date}"/>
     </target>
 
     <!-- compile --> 
     <target name="compile" depends="init" description="compile EclipseLink">  
         <mkdir dir="${eclipselink.core}/${classes.dir}"/>
+        <filter token="VERSION" value="${release.version}"/>
+        <filter token="BUILD_NUMBER" value="${build_number_string}"/>
+        <copy file="${eclipselink.core}/${src.dir}/org/eclipse/persistence/Version.java" tofile="${eclipselink.core}/${classes.dir}/org/eclipse/persistence/Version.java" filtering="true"/>
+        <javac srcdir="${eclipselink.core}/${classes.dir}" 
+               destdir="${eclipselink.core}/${classes.dir}"
+               includes="org/eclipse/persistence/Version.java"
+               debug="${javac.debug}" 
+               optimize="${javac.optimize}"
+               source="1.5" 
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true">
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+        <delete file="${eclipselink.core}/${classes.dir}/org/eclipse/persistence/Version.java"/>
         <javac srcdir="${eclipselink.core}/${src.dir}" 
                destdir="${eclipselink.core}/${classes.dir}"
                includes="org/eclipse/persistence/**, deprecated/**"
+               excludes="org/eclipse/persistence/Version.java"
                debug="${javac.debug}" 
                optimize="${javac.optimize}"
                source="1.5" 

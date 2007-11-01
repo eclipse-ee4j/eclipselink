@@ -22,8 +22,8 @@ public class Version {
     // The current version of TopLink. 
     // This will be used by all product components and included in exceptions.
     private static String product = "Eclipse Persistence Services";
-    private static final String version = "0.1-incubation";
-    private static final String buildNumber = "070904";
+    private static final String version = "@VERSION@";
+    private static final String buildNumber = "@BUILD_NUMBER@";
 
     /** Keep track of JDK version in order to make some decisions about datastructures. **/
     public static final int JDK_VERSION_NOT_SET = 0;

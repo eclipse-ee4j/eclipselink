@@ -3,6 +3,22 @@
   <property file="${user.home}/build.properties"/>
   <property file="./build.properties"/>
 
+    <!-- versioning -->
+    <!-- ${build_id} will be given by the build system. Manual build is SNAPSHOT. --> 
+    <tstamp>
+       <format property="build_date" pattern="MM/dd/yyyy"/>
+    </tstamp>
+    <condition property="build_number" value="${build_id}">
+        <not>
+            <or>
+                <equals arg1="${build_id}" arg2="" trim="true"/>
+                <equals arg1="${build_id}" arg2="local" trim="true"/>
+            </or>
+        </not>
+    </condition>
+    <property name="build_number" value="SNAPSHOT"/>
+    <property name="build_number_string" value="${build_number} (${build_date})"/>
+
   <!-- all -->
   <target name="all" depends="package.eclipselink.jar, build.test, package.src.jar, package.package-renamer.jar, package.installer.zip" description="build EclipseLink distribution files"/>
 
