@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -42,23 +43,26 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     /** Map containing user defined types */
-    private HashMap typesHashMap = new HashMap();
+    private Map typesHashMap = new HashMap();
 
     /** Map containing built-in types for primitive and SDO types */
-    private static final HashMap commonjHashMap = new HashMap();
+    private static final Map commonjHashMap = new HashMap();
 
     /** Map containing built-in types for Java types */
-    private static final HashMap commonjJavaHashMap = new HashMap();
+    private static final Map commonjJavaHashMap = new HashMap();
 
     /** Map containing built-in types for SDO Types keyed on Java class */
-    private static final HashMap sdoTypeForSimpleJavaType = new HashMap();
+    private static final Map sdoTypeForSimpleJavaType = new HashMap();
 
     /** a HashMap having SDO object as key and corresponding XSD Qname Object as value */
-    private static final HashMap sdoToXSDTypes = new HashMap();
+    private static final Map sdoToXSDTypes = new HashMap();
 
     /** a HashMap having XSD Qname Object as Key and corresponding SDO Object as value */
-    private static final HashMap xsdToSDOType = new HashMap();
+    private static final Map xsdToSDOType = new HashMap();
 
+    /** a HashMap keyed on Qname of defined open content properties */
+    private Map openContentProperties;
+    
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;
     private NamespaceResolver namespaceResolver;
@@ -69,12 +73,13 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         initCommonjJavaHashMap();
         initXsdToSDOType();
         initSdoToXSDType();
-        initSDOTypeForSimpleJavaTypeMap();
+        initSDOTypeForSimpleJavaTypeMap();        
     }
 
     public SDOTypeHelperDelegate(HelperContext aContext) {
         // set context before initializing maps
         aHelperContext = aContext;
+        initOpenProps();
     }
 
     /**
@@ -583,11 +588,11 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         return (SDOType)xsdToSDOType.get(aName);
     }
 
-    public void setTypesHashMap(HashMap typesHashMap) {
+    public void setTypesHashMap(Map typesHashMap) {
         this.typesHashMap = typesHashMap;
     }
 
-    public HashMap getTypesHashMap() {
+    public Map getTypesHashMap() {
         if (typesHashMap == null) {
             typesHashMap = new HashMap();
         }
@@ -595,8 +600,9 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     public void reset() {
-        typesHashMap = new HashMap();
+        typesHashMap = new HashMap();        
         namespaceResolver = new NamespaceResolver();
+        initOpenProps();
     }
 
     /**
@@ -633,10 +639,13 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @param property
      */
     private void defineOpenContentProperty(String propertyUri, String propertyName, Property property) {
-        if (propertyUri != null) {
-            boolean isElement = aHelperContext.getXSDHelper().isElement(property);
-            QName propertyQName = new QName(propertyUri, propertyName);
+        if (propertyUri != null) {            
+            QName propertyQName = new QName(propertyUri, propertyName);            
+            openContentProperties.put(propertyQName, property);
+            
+            boolean isElement = aHelperContext.getXSDHelper().isElement(property);            
             ((SDOXSDHelper)aHelperContext.getXSDHelper()).addGlobalProperty(propertyQName, property, isElement);
+            
 
             ((SDOProperty)property).setUri(propertyUri);
             XMLDescriptor aDescriptor = ((SDOType)property.getType()).getXmlDescriptor();
@@ -662,32 +671,22 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     /**
-
     Get the open Property with the specified uri and name, or null if
     not found.
     @param uri the namespace URI of the open Property.
     @param propertyName the name of the open Property.
     @return the open Property.
     */
-    public Property getOpenContentProperty(String uri, String propertyName) {
+    public Property getOpenContentProperty(String uri, String propertyName) {    
         QName qname = new QName(uri, propertyName);
-        Property property = null;
-
-        //first look in xsdHelper elements                        
-        property = ((SDOXSDHelper)aHelperContext.getXSDHelper()).getGlobalProperty(qname, true);
-        //next try xsdHelper attributes
-        if (property == null) {
-            property = ((SDOXSDHelper)aHelperContext.getXSDHelper()).getGlobalProperty(qname, false);
-        }
-
-        return property;
+        return (Property)openContentProperties.get(qname);
     }
 
     /**
      * INTERNAL:
      * @return
      */
-    private static HashMap getSDOTypeForSimpleJavaTypeMap() {
+    private static Map getSDOTypeForSimpleJavaTypeMap() {
         return sdoTypeForSimpleJavaType;
     }
 
@@ -776,5 +775,25 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             namespaceResolver = new NamespaceResolver();
         }
         return namespaceResolver;
+    }
+    
+   /**
+    * INTERNAL:
+    * Return the Map of Open Content Properties
+    */
+    public Map getOpenContentProperties(){
+      return openContentProperties;
+    }
+    
+    private void initOpenProps() {
+        openContentProperties = new HashMap();
+        openContentProperties.put(SDOConstants.MIME_TYPE_QNAME, SDOConstants.MIME_TYPE_PROPERTY);
+        openContentProperties.put(SDOConstants.MIME_TYPE_PROPERTY_QNAME, SDOConstants.MIME_TYPE_PROPERTY_PROPERTY);
+        openContentProperties.put(SDOConstants.SCHEMA_TYPE_QNAME, SDOConstants.XML_SCHEMA_TYPE_PROPERTY);
+        openContentProperties.put(SDOConstants.JAVA_CLASS_QNAME, SDOConstants.JAVA_CLASS_PROPERTY);
+        openContentProperties.put(SDOConstants.XML_ELEMENT_QNAME, SDOConstants.XMLELEMENT_PROPERTY);
+        openContentProperties.put(SDOConstants.XML_DATATYPE_QNAME, SDOConstants.XMLDATATYPE_PROPERTY);
+        openContentProperties.put(SDOConstants.XML_ID_PROPERTY_QNAME, SDOConstants.ID_PROPERTY);
+        openContentProperties.put(SDOConstants.DOCUMENTATION_PROPERTY_QNAME, SDOConstants.DOCUMENTATION_PROPERTY);
     }
 }

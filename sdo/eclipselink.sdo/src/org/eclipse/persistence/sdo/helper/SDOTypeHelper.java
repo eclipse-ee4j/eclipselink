@@ -12,7 +12,7 @@ package org.eclipse.persistence.sdo.helper;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.helper.TypeHelper;
-import java.util.HashMap;
+import java.util.Map;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -81,14 +81,14 @@ public interface SDOTypeHelper extends TypeHelper {
      *
      * @param typesHashMap
      */
-    public void setTypesHashMap(HashMap typesHashMap);
+    public void setTypesHashMap(Map typesHashMap);
 
     /**
      * INTERNAL:
      *
      * @return
      */
-    public HashMap getTypesHashMap();
+    public Map getTypesHashMap();
 
     /**
      * INTERNAL:
@@ -128,4 +128,10 @@ public interface SDOTypeHelper extends TypeHelper {
     * Return the NamespaceResolver
     */
     public NamespaceResolver getNamespaceResolver();
+
+    /**
+    * INTERNAL:
+    * Return the Map of Open Content Properties
+    */
+    public Map getOpenContentProperties();
 }

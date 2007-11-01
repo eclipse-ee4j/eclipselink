@@ -880,6 +880,15 @@ public class SDOTypesGenerator extends SchemaParser {
         if (nameValue != null) {
             //itemNameToSDOName.put(sdoTypeName, nameValue);
             p.setName(nameValue);
+            if(p.isGlobal() && targetNamespace != null){
+              QName propertyName = new QName(targetNamespace, nameValue);
+              ((SDOTypeHelper)aHelperContext.getTypeHelper()).getOpenContentProperties().put(propertyName, p);
+            }
+        }else{
+          if(p.isGlobal() && targetNamespace != null){
+              QName propertyName = new QName(targetNamespace, p.getName());              
+              ((SDOTypeHelper)aHelperContext.getTypeHelper()).getOpenContentProperties().put(propertyName, p);
+            }
         }
 
         //propertyType annotation

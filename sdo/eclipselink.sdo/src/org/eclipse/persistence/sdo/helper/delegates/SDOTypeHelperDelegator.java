@@ -66,7 +66,7 @@ public class SDOTypeHelperDelegator implements SDOTypeHelper {
     }
 
     public Type getOrCreateType(String uri, String typeName, String xsdLocalName) {
-        return getSDOTypeHelperDelegate().getOrCreateType(uri, typeName,xsdLocalName);
+        return getSDOTypeHelperDelegate().getOrCreateType(uri, typeName, xsdLocalName);
     }
 
     public Type getType(Class interfaceClass) {
@@ -93,11 +93,11 @@ public class SDOTypeHelperDelegator implements SDOTypeHelper {
         return getSDOTypeHelperDelegate().getSDOTypeFromXSDType(aName);
     }
 
-    public void setTypesHashMap(HashMap typesHashMap) {
+    public void setTypesHashMap(Map typesHashMap) {
         getSDOTypeHelperDelegate().setTypesHashMap(typesHashMap);
     }
 
-    public HashMap getTypesHashMap() {
+    public Map getTypesHashMap() {
         return getSDOTypeHelperDelegate().getTypesHashMap();
     }
 
@@ -169,7 +169,7 @@ public class SDOTypeHelperDelegator implements SDOTypeHelper {
     }
 
     public HelperContext getHelperContext() {
-        if(null == aHelperContext) {
+        if (null == aHelperContext) {
             aHelperContext = HelperProvider.getDefaultContext();
         }
         return aHelperContext;
@@ -201,5 +201,13 @@ public class SDOTypeHelperDelegator implements SDOTypeHelper {
       */
     public NamespaceResolver getNamespaceResolver() {
         return getSDOTypeHelperDelegate().getNamespaceResolver();
+    }
+
+    /**
+    * INTERNAL:
+    * Return the Map of Open Content Properties
+    */
+    public Map getOpenContentProperties() {
+        return getSDOTypeHelperDelegate().getOpenContentProperties();
     }
 }
