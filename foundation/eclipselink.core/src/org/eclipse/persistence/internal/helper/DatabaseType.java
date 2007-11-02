@@ -15,13 +15,12 @@ package org.eclipse.persistence.internal.helper;
 // Java extension imports
 
 // EclipseLink imports
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
-import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
 
 /**
- * <b>PUBLIC</b>: Marker interface for Database type metadata,
- * plus helper methods to generate Strings for the DECLARE stanza
- * of an Anonymous PL/SQL block
+ * <b>PUBLIC</b>: Interface used to categorize arguments to Stored Procedures as either
+ * 'simple' (use subclass SimpleDatabaseType) or 'complex' (use subclass ComplexDatabaseType) 
+ *
+ * <b>This version is 'stubbed' out until the solution to the 'order-of-out-args' issues is checked in
  *
  * @author Mike Norman - michael.norman@oracle.com
  * @since Oracle TopLink 11.x.x
@@ -30,73 +29,10 @@ public interface DatabaseType {
 
     public boolean isComplexDatabaseType();
     
-    public int getTypeCode();
+    public int getSqlCode();
 
-    public String getTypeName();
-
-    public String buildTargetDeclaration(DatabaseField databaseField, Integer direction, int index);
-
-    public String buildOutAssignment(DatabaseField databaseField, Integer direction, int index);
-
-    public void setConversionType(DatabaseField databaseField);
-
-    public String buildBeginBlock(DatabaseField databaseField, Integer direction, int i);
+    public int getConversionCode();
     
-    public enum DatabaseTypeHelper {
-        databaseTypeHelper;
-
-        public String buildTargetDeclaration(String name, String typeName, Integer direction,
-            int index) {
-            StringBuilder sb = buildTargetStringBuilder(name, typeName);
-            setTargetDirection(sb, direction, index);
-            return sb.toString();
-        }
-
-        public String buildTargetDeclaration(String name, String typeName, Integer direction,
-            int index, int length) {
-            StringBuilder sb = buildTargetStringBuilder(name, typeName);
-            sb.append("(");
-            sb.append(length);
-            sb.append(")");
-            setTargetDirection(sb, direction, index);
-            return sb.toString();
-        }
-
-        public String buildTargetDeclaration(String name, String typeName, Integer direction,
-            int index, int precision, int scale) {
-            StringBuilder sb = buildTargetStringBuilder(name, typeName);
-            sb.append("(");
-            sb.append(precision);
-            sb.append(",");
-            sb.append(scale);
-            sb.append(")");
-            setTargetDirection(sb, direction, index);
-            return sb.toString();
-        }
-
-        public String buildOutAssignment(String name, Integer direction, int index) {
-            StringBuilder sb = new StringBuilder(" :");
-            sb.append(index);
-            sb.append(" := ");
-            sb.append(name);
-            sb.append("_TARGET;");
-            return sb.toString();
-        }
-
-        protected StringBuilder buildTargetStringBuilder(String name, String typeName) {
-            StringBuilder sb = new StringBuilder(name);
-            sb.append("_TARGET ");
-            sb.append(typeName);
-            return sb;
-        }
-
-        protected void setTargetDirection(StringBuilder sb, Integer direction, int index) {
-            if (direction == IN || direction == INOUT) {
-                sb.append(" := :");
-                sb.append(index);
-            }
-            sb.append("; ");
-        }
-    }
+    public String getTypeName();
 
 }

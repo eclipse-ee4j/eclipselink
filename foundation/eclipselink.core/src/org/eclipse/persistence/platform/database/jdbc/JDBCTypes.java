@@ -42,15 +42,12 @@ import static java.sql.Types.TINYINT;
 import static java.sql.Types.VARBINARY;
 import static java.sql.Types.VARCHAR;
 
-// Java extension imports
-
 // EclipseLink imports
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseType;
-import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
 
 /**
  * <b>PUBLIC</b>: JDBC types
+ * 
  * @author  Mike Norman - michael.norman@oracle.com
  * @since  Oracle TopLink 11.x.x
  */
@@ -76,13 +73,6 @@ public enum JDBCTypes implements JDBCType {
         LONGVARCHAR_TYPE(LONGVARCHAR, "LONGVARCHAR"),
         NULL_TYPE(NULL, "NULL"),
         NUMERIC_TYPE(NUMERIC, "NUMERIC") {
-            @Override
-            public String buildTargetDeclaration(DatabaseField databaseField, Integer direction,
-                int index) {
-                return databaseTypeHelper.buildTargetDeclaration(databaseField.getName(),
-                    getTypeName(), direction, index, databaseField.getPrecision(),
-                    databaseField.getScale());
-            }
         },
         OTHER_TYPE(OTHER, "OTHER"),
         REAL_TYPE(REAL, "REAL"),
@@ -94,18 +84,12 @@ public enum JDBCTypes implements JDBCType {
         TINYINT_TYPE(TINYINT, "TINYINT"),
         VARBINARY_TYPE(VARBINARY, "VARBINARY"),
         VARCHAR_TYPE(VARCHAR, "VARCHAR") {
-            @Override
-            public String buildTargetDeclaration(DatabaseField databaseField, Integer direction,
-                int index) {
-                return databaseTypeHelper.buildTargetDeclaration(databaseField.getName(),
-                    getTypeName(), direction, index, databaseField.getLength());
-            }
         },
         ;
-
+        
         private final int typeCode;
         private final String typeName;
-
+        
         JDBCTypes(int typeCode, String typeName) {
             this.typeCode = typeCode;
             this.typeName = typeName;
@@ -115,30 +99,16 @@ public enum JDBCTypes implements JDBCType {
             return false;
         }
 
-        public int getTypeCode() {
+        public int getSqlCode() {
             return typeCode;
+        }
+        
+        public int getConversionCode() {
+            return getSqlCode();
         }
 
         public String getTypeName() {
             return typeName;
-        }
-
-        public String buildTargetDeclaration(DatabaseField databaseField, Integer direction,
-            int index) {
-            return databaseTypeHelper.buildTargetDeclaration(databaseField.getName(), getTypeName(),
-                direction, index);
-        }
-
-        public String buildBeginBlock(DatabaseField databaseField, Integer direction, int i) {
-            return null;
-        }
-
-        public String buildOutAssignment(DatabaseField databaseField, Integer direction, int index) {
-            return databaseTypeHelper.buildOutAssignment(databaseField.getName(), direction, index);
-        }
-
-        public void setConversionType(DatabaseField databaseField) {
-            databaseField.sqlType = typeCode;
         }
 
         public static DatabaseType getDatabaseTypeForCode(int typeCode) {

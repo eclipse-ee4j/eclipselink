@@ -10,57 +10,48 @@
 
 package org.eclipse.persistence.platform.database.oracle;
 
-// Javse imports
+// javase imports
 import static java.sql.Types.OTHER;
+import static java.sql.Types.STRUCT;
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.helper.SimpleDatabaseType;
-import static org.eclipse.persistence.platform.database.jdbc.JDBCTypes.NUMERIC_TYPE;
+import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 
 /**
- * <b>PUBLIC</b>: Oracle PL/SQL types
+ * <b>PUBLIC</b>: describe an Oracle PL/SQL Record type
+ * 
+ * <b>This version is 'stubbed' out until the solution to the 'order-of-out-args' issues is checked in
+ * 
  * @author  Mike Norman - michael.norman@oracle.com
  * @since  Oracle TopLink 11.x.x
  */
-public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
+public class PLSQLrecord implements ComplexDatabaseType, OraclePLSQLType, Cloneable {
 
-    BinaryInteger("BINARY_INTEGER"),
-    Dec("DEC") ,
-    Int("INT"),
-    Natural("NATURAL"),
-    NaturalN("NATURALN"),
-    PLSQLBoolean("BOOLEAN") {
-    },
-    PLSQLInteger("PLS_INTEGER"),
-    Positive("POSITIVE"),
-    PositiveN("POSITIVEN"),
-    SignType("SIGNTYPE"),
-    ;
-
-
-    private final String typeName;
-
-    OraclePLSQLTypes(String typeName) {
-        this.typeName = typeName;
-    }
-
+    protected String typeName;
+    boolean hasCompatibleType = false;
+    
     public boolean isComplexDatabaseType() {
-        return false;
+        return true;
     }
+
     public int getSqlCode() {
-        return OTHER;
+        if (hasCompatibleType) {
+            return STRUCT;
+        }
+        else {
+            return OTHER;
+        }
     }
 
     public int getConversionCode() {
-        // widest compatible type java.sql.Types.NUMERIC <-> BigDecimal 
-        return NUMERIC_TYPE.getConversionCode(); 
+        return getSqlCode();
     }
 
     public String getTypeName() {
         return typeName;
     }
-
-    public boolean isJDBCType() {
-        return false;
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
+
 }
