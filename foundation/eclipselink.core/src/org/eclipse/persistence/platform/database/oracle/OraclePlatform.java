@@ -62,6 +62,12 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      *   using the query's maxRows and FirstResult settings
      */ 
     protected boolean useRownumFiltering = true;
+    
+    /** 
+     * Advanced attribute indicating whether identity is supported,
+     *   see comment to setSupportsIdentity method.
+     */ 
+    protected boolean supportsIdentity;
 
     /**
      * Used for sp defs.
@@ -717,8 +723,18 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      *  and returns it. Currently implemented on Oracle only.
      *    @param sequenceName        Name known by Oracle to be a defined sequence
      */
-    public ValueReadQuery buildSelectQueryForNativeSequence(String seqName, Integer size) {
+    public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
         return new ValueReadQuery("SELECT " + getQualifiedSequenceName(seqName) + ".NEXTVAL FROM DUAL");
+    }
+
+    /**
+     * INTERNAL:
+     *  Though Oracle doesn't support identity it could be immitated,
+     *  see comment to setSupportsIdentity method.
+     *  @param sequenceName        Name known by Oracle to be a defined sequence
+     */
+    public ValueReadQuery buildSelectQueryForIdentity(String seqName, Integer size) {
+        return new ValueReadQuery("SELECT " + getQualifiedSequenceName(seqName) + ".CURRVAL FROM DUAL");
     }
 
     /**
@@ -834,11 +850,40 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     * Return true if the receiver uses host sequence numbers, generated on the database.
-     * Oracle does through global sequence objects.
+     *  INTERNAL:
+     *  Indicates whether the platform supports sequence objects.
+     *  This method is to be used *ONLY* by sequencing classes
      */
-    public boolean supportsNativeSequenceNumbers() {
+    public boolean supportsSequenceObjects() {
         return true;
+    }
+
+    /**
+     *  INTERNAL:
+     *  Indicates whether the platform supports identity.
+     *  This method is to be used *ONLY* by sequencing classes
+     */
+    public boolean supportsIdentity() {
+        return supportsIdentity;
+    }
+
+    /**
+     *  ADVANCED:
+     *  Oracle db doesn't support identity.
+     *  However it's possible to get identity-like behaviour
+     *  using sequence in an insert trigger - that's the only 
+     *  case when supportsIdentity should be set to true:
+     *  in this case all the sequences that have shouldAcquireValueAfterInsert
+     *  set to true will keep this setting (it would've been reversed in case
+     *  identity is not supported).
+     *  Note that with supportsIdentity==true attempt to create tables that have
+     *  identity fields will fail - Oracle doesn't support identity.
+     *  Therefore if there's table creation reqiured it should be done
+     *  with supportsIdentity==false, then set the flag to true and reset sequencing
+     *  (or logout and login the session).
+     */
+    public void setSupportsIdentity(boolean supportsIdentity) {
+        this.supportsIdentity = supportsIdentity;
     }
 
     /**
@@ -934,5 +979,53 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
         }
         call.setIgnoreFirstRowMaxResultsSettings(true);
+    }
+
+    /**
+     * INTERNAL:
+     * Override this method if the platform supports sequence objects.
+     * Returns sql used to create sequence object in the database.
+     */
+    public Writer buildSequenceObjectCreationWriter(Writer writer, String fullSeqName, int increment, int start) throws IOException {
+        writer.write("CREATE SEQUENCE ");
+        writer.write(fullSeqName);
+        if (increment != 1) {
+            writer.write(" INCREMENT BY " + increment);
+        }
+        writer.write(" START WITH " + start);
+        return writer;
+    }
+
+    /**
+     * INTERNAL:
+     * Override this method if the platform supports sequence objects.
+     * Returns sql used to delete sequence object from the database.
+     */
+    public Writer buildSequenceObjectDeletionWriter(Writer writer, String fullSeqName) throws IOException {
+        writer.write("DROP SEQUENCE ");
+        writer.write(fullSeqName);
+        return writer;
+    }
+
+    /**
+     * INTERNAL:
+     * Override this method if the platform supports sequence objects
+     * and isAlterSequenceObjectSupported returns true.
+     * Returns sql used to alter sequence object's increment in the database.
+     */
+    public Writer buildSequenceObjectAlterIncrementWriter(Writer writer, String fullSeqName, int increment) throws IOException {
+        writer.write("ALTER SEQUENCE ");
+        writer.write(fullSeqName);
+        writer.write(" INCREMENT BY " + increment);
+        return writer;
+    }
+
+    /**
+     * INTERNAL:
+     * Override this method if the platform supports sequence objects
+     * and it's possible to alter sequence object's increment in the database.
+     */
+    public boolean isAlterSequenceObjectSupported() {
+        return true;
     }
 }

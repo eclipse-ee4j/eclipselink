@@ -293,10 +293,6 @@ public class SchemaManager {
 
                 Sequence sequence = getSession().getDatasourcePlatform().getSequence(seqName);
 
-                if (sequence.shouldAcquireValueAfterInsert()) {
-                    continue;
-                }
-
                 SequenceDefinition sequenceDefinition = buildSequenceDefinition(sequence);
 
                 if (sequenceDefinition == null) {
@@ -383,45 +379,18 @@ public class SchemaManager {
     }
 
     protected SequenceDefinition buildSequenceDefinition(Sequence sequence) {
-        if (sequence instanceof DefaultSequence) {
-            String name = sequence.getName();
-            int size = sequence.getPreallocationSize();
-            int initialValue = sequence.getInitialValue();
-            sequence = getSession().getDatasourcePlatform().getDefaultSequence();
-
-            if (sequence instanceof TableSequence) {
-                TableSequence tableSequence = (TableSequence) sequence;
-                return new TableSequenceDefinition(name, tableSequence);
-            } else if (sequence instanceof NativeSequence) {
-                if (getSession().getDatasourcePlatform().isOracle()) {
-                    return new OracleSequenceDefinition(name, size, initialValue);
-                } else if (getSession().getDatasourcePlatform().isTimesTen()) {
-                    return new TimesTenSequenceDefinition(name, size, initialValue);
-                } else {
-                    return null;
-                }
-            } else {
-                return null;
-            }
-        } else if (sequence instanceof TableSequence) {
-            TableSequence tableSequence = (TableSequence) sequence;
-
-            return new TableSequenceDefinition(tableSequence);
-        } else if (sequence instanceof UnaryTableSequence) {
-            UnaryTableSequence unaryTableSequence = (UnaryTableSequence) sequence;
-
-            return new UnaryTableSequenceDefinition(unaryTableSequence);
-        } else if (sequence instanceof NativeSequence) {
-            if (getSession().getDatasourcePlatform().isOracle()) {
-                NativeSequence nativeSequence = (NativeSequence) sequence;
-
-                return new OracleSequenceDefinition(nativeSequence);
-            } else if (getSession().getDatasourcePlatform().isTimesTen()) {
-                NativeSequence nativeSequence = (NativeSequence)sequence;
-                return new TimesTenSequenceDefinition(nativeSequence);
-            } else {
-                return null;
-            }
+        if (sequence.shouldAcquireValueAfterInsert()) {
+            return null;
+        }
+        if (sequence instanceof TableSequence ||
+            (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof TableSequence)) {
+            return new TableSequenceDefinition(sequence);
+        } else if (sequence instanceof UnaryTableSequence ||
+                   (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof UnaryTableSequence)) {
+            return new UnaryTableSequenceDefinition(sequence);
+        } else if (sequence instanceof NativeSequence || 
+                   (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof NativeSequence)) {
+            return new SequenceObjectDefinition(sequence);
         } else {
             return null;
         }
@@ -989,7 +958,7 @@ public class SchemaManager {
      * Use the definition to alter sequence.
      */
     public void alterSequence(SequenceDefinition sequenceDefinition) throws EclipseLinkException {
-        if (!sequenceDefinition.isAlterSupported()) {
+        if (!sequenceDefinition.isAlterSupported(getSession())) {
             return;
         }
 

@@ -65,6 +65,8 @@ public abstract class NonRelationshipAccessor extends MetadataAccessor {
         
          if (name.equals(MetadataConstants.DEFAULT_TABLE_GENERATOR)) {
             m_validator.throwSequenceGeneratorUsingAReservedName(MetadataConstants.DEFAULT_TABLE_GENERATOR, sequenceGenerator.getLocation());
+        } else if (name.equals(MetadataConstants.DEFAULT_IDENTITY_GENERATOR)) {
+            m_validator.throwSequenceGeneratorUsingAReservedName(MetadataConstants.DEFAULT_IDENTITY_GENERATOR, sequenceGenerator.getLocation());
         }
             
         // Conflicting means that they do not have all the same values.
@@ -118,6 +120,8 @@ public abstract class NonRelationshipAccessor extends MetadataAccessor {
         
         if (name.equals(MetadataConstants.DEFAULT_SEQUENCE_GENERATOR)) {
             m_validator.throwTableGeneratorUsingAReservedName(MetadataConstants.DEFAULT_SEQUENCE_GENERATOR, tableGenerator.getLocation());
+        } else if (name.equals(MetadataConstants.DEFAULT_IDENTITY_GENERATOR)) {
+            m_validator.throwTableGeneratorUsingAReservedName(MetadataConstants.DEFAULT_IDENTITY_GENERATOR, tableGenerator.getLocation());
         }
 
         // Conflicting means that they do not have all the same values.

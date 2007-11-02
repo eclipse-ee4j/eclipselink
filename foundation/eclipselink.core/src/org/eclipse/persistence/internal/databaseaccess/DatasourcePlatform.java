@@ -663,14 +663,4 @@ public class DatasourcePlatform implements Platform {
     public String getIdentifierQuoteCharacter() {
         return "";
     }
-
-    /**
-     * INTERNAL:
-     * Platform specific sequencing initialization.
-     * This internal method should only be called by SequencingManager.
-     * By default does nothing.
-     */
-    public void platformSpecificSequencingInitialization(DatabaseSession session) {
-    }
-  
 }

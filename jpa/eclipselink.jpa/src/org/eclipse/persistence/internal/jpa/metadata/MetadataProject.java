@@ -763,7 +763,8 @@ public class MetadataProject {
     
             Sequence defaultAutoSequence = null;
             TableSequence defaultTableSequence = new TableSequence(MetadataConstants.DEFAULT_TABLE_GENERATOR);
-            NativeSequence defaultNativeSequence = new NativeSequence(MetadataConstants.DEFAULT_SEQUENCE_GENERATOR);
+            NativeSequence defaultObjectNativeSequence = new NativeSequence(MetadataConstants.DEFAULT_SEQUENCE_GENERATOR, false);
+            NativeSequence defaultIdentityNativeSequence = new NativeSequence(MetadataConstants.DEFAULT_IDENTITY_GENERATOR, 1, true);
             
             // Sequences keyed on generator names.
             Hashtable<String, Sequence> sequences = new Hashtable<String, Sequence>();
@@ -771,7 +772,7 @@ public class MetadataProject {
             for (MetadataSequenceGenerator sequenceGenerator : m_sequenceGenerators.values()) {
                 String sequenceGeneratorName = sequenceGenerator.getName();
                 String seqName = (sequenceGenerator.getSequenceName().equals("")) ? sequenceGeneratorName : sequenceGenerator.getSequenceName();
-                NativeSequence sequence = new NativeSequence(seqName, sequenceGenerator.getAllocationSize());
+                NativeSequence sequence = new NativeSequence(seqName, sequenceGenerator.getAllocationSize(), false);
                 sequences.put(sequenceGeneratorName, sequence);
                 
                 if (sequenceGeneratorName.equals(MetadataConstants.DEFAULT_AUTO_GENERATOR)) {
@@ -780,10 +781,10 @@ public class MetadataProject {
                     defaultAutoSequence = sequence;
                 } else if (sequenceGeneratorName.equals(MetadataConstants.DEFAULT_SEQUENCE_GENERATOR)) {
                     // SequenceGenerator deinfed with DEFAULT_SEQUENCE_GENERATOR.
-                    // All sequences of GeneratorType SEQUENCE and IDENTITY 
+                    // All sequences of GeneratorType SEQUENCE 
                     // referencing non-defined generators will use a clone of 
                     // the sequence defined by this generator.
-                    defaultNativeSequence = sequence;
+                    defaultObjectNativeSequence = sequence;
                 }
             }
 
@@ -835,6 +836,7 @@ public class MetadataProject {
 
             // Finally loop through descriptors and set sequences as required into 
             // Descriptors and Login
+            boolean usesAuto = false;
             for (Class entityClass : m_generatedValues.keySet()) {
                 MetadataDescriptor descriptor = m_allDescriptors.get(entityClass.getName());
                 MetadataGeneratedValue generatedValue = m_generatedValues.get(entityClass);
@@ -853,11 +855,18 @@ public class MetadataProject {
                             sequence = (Sequence)defaultTableSequence.clone();
                             sequence.setName(generatorName);
                         }
-                    } else if (generatedValue.getStrategy().equals(MetadataConstants.SEQUENCE) || generatedValue.getStrategy().equals(MetadataConstants.IDENTITY)) {
+                    } else if (generatedValue.getStrategy().equals(MetadataConstants.SEQUENCE)) {
                         if (generatorName.equals("")) {
-                            sequence = defaultNativeSequence;
+                            sequence = defaultObjectNativeSequence;
                         } else {
-                            sequence = (Sequence)defaultNativeSequence.clone();
+                            sequence = (Sequence)defaultObjectNativeSequence.clone();
+                            sequence.setName(generatorName);
+                        }
+                    } else if (generatedValue.getStrategy().equals(MetadataConstants.IDENTITY)) {
+                        if (generatorName.equals("")) {
+                            sequence = defaultIdentityNativeSequence;
+                        } else {
+                            sequence = (Sequence)defaultIdentityNativeSequence.clone();
                             sequence.setName(generatorName);
                         }
                     }
@@ -866,13 +875,25 @@ public class MetadataProject {
                 if (sequence != null) {
                     descriptor.setSequenceNumberName(sequence.getName());
                     login.addSequence(sequence);
-                } else if (generatedValue.getStrategy().equals(MetadataConstants.AUTO)) {
-                    if (defaultAutoSequence != null) {
-                        descriptor.setSequenceNumberName(defaultAutoSequence.getName());
-                        login.setDefaultSequence(defaultAutoSequence);
+                } else {
+                    // this must be generatedValue.getStrategy().equals(MetadataConstants.AUTO)
+                    usesAuto = true;
+                    String seqName;
+                    if (generatorName.equals("")) {
+                        if (defaultAutoSequence != null) {
+                            seqName = defaultAutoSequence.getName();
+                        } else {
+                            seqName = MetadataConstants.DEFAULT_AUTO_GENERATOR; 
+                        }
                     } else {
-                        descriptor.setSequenceNumberName(MetadataConstants.DEFAULT_AUTO_GENERATOR);
+                        seqName = generatorName;
                     }
+                    descriptor.setSequenceNumberName(seqName);
+                }
+            }
+            if(usesAuto) {
+                if (defaultAutoSequence != null) {
+                    login.setDefaultSequence(defaultAutoSequence);
                 }
             }
         }

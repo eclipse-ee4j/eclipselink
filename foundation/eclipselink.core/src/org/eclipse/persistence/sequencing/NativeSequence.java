@@ -26,9 +26,21 @@ import org.eclipse.persistence.exceptions.ValidationException;
  * For a SEQUENCE object the preallocation size must match the SEQUENCE objects "increment by".
  */
 public class NativeSequence extends QuerySequence {
+    /**
+     * true indicates that identity should be used - if the platform supports identity.
+     * false indicates that sequence objects should be used - if the platform supports sequence objects.
+     */
+    protected boolean shouldUseIdentityIfPlatformSupports = true;
+    
     public NativeSequence() {
         super();
         setShouldSkipUpdate(true);
+    }
+    
+    public NativeSequence(boolean shouldUseIdentityIfPlatformSupports) {
+        super();
+        setShouldSkipUpdate(true);
+        setShouldUseIdentityIfPlatformSupports(shouldUseIdentityIfPlatformSupports);
     }
     
     /**
@@ -39,6 +51,12 @@ public class NativeSequence extends QuerySequence {
         setShouldSkipUpdate(true);
     }
     
+    public NativeSequence(String name, boolean shouldUseIdentityIfPlatformSupports) {
+        super(name);
+        setShouldSkipUpdate(true);
+        setShouldUseIdentityIfPlatformSupports(shouldUseIdentityIfPlatformSupports);
+    }
+    
     /**
      * Create a new sequence with the name and sequence pre-allocation size.
      */
@@ -47,15 +65,35 @@ public class NativeSequence extends QuerySequence {
         setShouldSkipUpdate(true);
     }
 
+    public NativeSequence(String name, int size, boolean shouldUseIdentityIfPlatformSupports) {
+        super(name, size);
+        setShouldSkipUpdate(true);
+        setShouldUseIdentityIfPlatformSupports(shouldUseIdentityIfPlatformSupports);
+    }
+
     public NativeSequence(String name, int size, int initialValue) {
         super(name, size, initialValue);
         setShouldSkipUpdate(true);
+    }    
+
+    public NativeSequence(String name, int size, int initialValue, boolean shouldUseIdentityIfPlatformSupports) {
+        super(name, size, initialValue);
+        setShouldSkipUpdate(true);
+        setShouldUseIdentityIfPlatformSupports(shouldUseIdentityIfPlatformSupports);
     }    
 
     public boolean isNative() {
         return true;
     }
     
+    public void setShouldUseIdentityIfPlatformSupports(boolean shouldUseIdentityIfPlatformSupports) {
+        this.shouldUseIdentityIfPlatformSupports = shouldUseIdentityIfPlatformSupports;
+    }
+    
+    public boolean shouldUseIdentityIfPlatformSupports() {
+        return shouldUseIdentityIfPlatformSupports;
+    }
+
     public boolean equals(Object obj) {
         if (obj instanceof NativeSequence) {
             return equalNameAndSize(this, (NativeSequence)obj);
@@ -68,14 +106,22 @@ public class NativeSequence extends QuerySequence {
     * INTERNAL:
     */
     protected ValueReadQuery buildSelectQuery() {
-        return ((DatabasePlatform)getDatasourcePlatform()).buildSelectQueryForNativeSequence();
+        if(this.shouldAcquireValueAfterInsert()) {
+            return ((DatabasePlatform)getDatasourcePlatform()).buildSelectQueryForIdentity();
+        } else {
+            return ((DatabasePlatform)getDatasourcePlatform()).buildSelectQueryForSequenceObject();
+        }
     }
 
     /**
     * INTERNAL:
     */
     protected ValueReadQuery buildSelectQuery(String seqName, Integer size) {
-        return ((DatabasePlatform)getDatasourcePlatform()).buildSelectQueryForNativeSequence(seqName, size);
+        if(this.shouldAcquireValueAfterInsert()) {
+            return ((DatabasePlatform)getDatasourcePlatform()).buildSelectQueryForIdentity(seqName, size);
+        } else {
+            return ((DatabasePlatform)getDatasourcePlatform()).buildSelectQueryForSequenceObject(seqName, size);
+        }
     }
 
     /**
@@ -93,11 +139,23 @@ public class NativeSequence extends QuerySequence {
         if (!dbPlatform.supportsNativeSequenceNumbers() && (getSelectQuery() == null)) {
             throw ValidationException.platformDoesNotSupportSequence(getName(), Helper.getShortClassName(getDatasourcePlatform()), Helper.getShortClassName(this));
         }
-        super.onConnect();
-        if (dbPlatform != null) {
-            setShouldAcquireValueAfterInsert(dbPlatform.shouldNativeSequenceAcquireValueAfterInsert());
-            setShouldUseTransaction(dbPlatform.shouldNativeSequenceUseTransaction());
+        // Set shouldAcquireValueAfterInsert flag: identity -> true; sequence objects -> false.
+        if(dbPlatform.supportsIdentity() && shouldUseIdentityIfPlatformSupports()) {
+            // identity is both supported by platform and desired by the NativeSequence
+            setShouldAcquireValueAfterInsert(true);
+        } else if(dbPlatform.supportsSequenceObjects() && !shouldUseIdentityIfPlatformSupports()) {
+            // sequence objects is both supported by platform and desired by the NativeSequence
+            setShouldAcquireValueAfterInsert(false);
+        } else {
+            if(dbPlatform.supportsNativeSequenceNumbers()) {
+                // platform support contradicts to NativeSequence setting - go with platform supported choice.
+                // platform must support either identity or sequence objects (otherwise ValidationException would've been thrown earlier),
+                // therefore here dbPlatform.supportsIdentity() == !dbPlatform.supportsSequenceObjects().
+                setShouldAcquireValueAfterInsert(dbPlatform.supportsIdentity());
+            }
         }
+        setShouldUseTransaction(dbPlatform.shouldNativeSequenceUseTransaction());
+        super.onConnect();
     }
 
     /**

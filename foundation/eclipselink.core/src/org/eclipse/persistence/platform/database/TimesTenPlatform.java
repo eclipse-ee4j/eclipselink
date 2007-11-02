@@ -139,7 +139,7 @@ public class TimesTenPlatform extends DatabasePlatform {
      *  and returns it. 
      *    @param sequenceName        Name known by TimesTen to be a defined sequence
      */
-    public ValueReadQuery buildSelectQueryForNativeSequence(String seqName, Integer size) {
+    public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
         return new ValueReadQuery("SELECT " + getQualifiedSequenceName(seqName) + ".NEXTVAL FROM DUAL");
     }
 
@@ -222,10 +222,11 @@ public class TimesTenPlatform extends DatabasePlatform {
     }
 
     /**
-     * Return true if the receiver uses host sequence numbers, generated on the database.
-     * TimesTen does through global sequence objects.
+     *  INTERNAL:
+     *  Indicates whether the platform supports sequence objects.
+     *  This method is to be used *ONLY* by sequencing classes
      */
-    public boolean supportsNativeSequenceNumbers() {
+    public boolean supportsSequenceObjects() {
         return true;
     }
 
@@ -235,5 +236,31 @@ public class TimesTenPlatform extends DatabasePlatform {
 
     public void setSupportsForeignKeyConstraints(boolean supportsForeignKeyConstraints) {
         this.supportsForeignKeyConstraints = supportsForeignKeyConstraints;
+    }
+
+    /**
+     * INTERNAL:
+     * Override this method if the platform supports sequence objects.
+     * Returns sql used to create sequence object in the database.
+     */
+    public Writer buildSequenceObjectCreationWriter(Writer writer, String fullSeqName, int increment, int start) throws IOException {
+        writer.write("CREATE SEQUENCE ");
+        writer.write(fullSeqName);
+        if (increment != 1) {
+            writer.write(" INCREMENT BY " + increment);
+        }
+        writer.write(" START WITH " + start);
+        return writer;
+    }
+
+    /**
+     * INTERNAL:
+     * Override this method if the platform supports sequence objects.
+     * Returns sql used to delete sequence object from the database.
+     */
+    public Writer buildSequenceObjectDeletionWriter(Writer writer, String fullSeqName) throws IOException {
+        writer.write("DROP SEQUENCE ");
+        writer.write(fullSeqName);
+        return writer;
     }
 }

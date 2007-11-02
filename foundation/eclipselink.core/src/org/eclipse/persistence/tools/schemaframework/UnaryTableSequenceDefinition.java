@@ -14,6 +14,8 @@ import java.io.*;
 import java.math.BigDecimal;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.UnaryTableSequence;
 
 /**
@@ -23,19 +25,14 @@ import org.eclipse.persistence.sequencing.UnaryTableSequence;
  * <p>
  */
 public class UnaryTableSequenceDefinition extends SequenceDefinition {
-    public String sequenceCounterFieldName;
-
-    public UnaryTableSequenceDefinition(String name, String sequenceCounterFieldName) {
-        super(name);
-        setSequenceCounterFieldName(sequenceCounterFieldName);
-    }
-
-    public UnaryTableSequenceDefinition(UnaryTableSequence sequence) {
-        this(sequence.getName(), sequence.getCounterFieldName());
-    }
-
-    public UnaryTableSequenceDefinition(String name, UnaryTableSequence sequence) {
-        this(name, sequence.getCounterFieldName());
+    /**
+     * INTERNAL:
+     * Should be a sequence defining unary table sequence in the db:
+     * either UnaryTableSequence
+     * DefaultSequence (only if case platform.getDefaultSequence() is an UnaryTableSequence).
+     */
+    public UnaryTableSequenceDefinition(Sequence sequence) {
+        super(sequence);
     }
 
     /**
@@ -47,7 +44,7 @@ public class UnaryTableSequenceDefinition extends SequenceDefinition {
             writer.write("INSERT INTO ");
             writer.write(getName());
             writer.write("(" + getSequenceCounterFieldName());
-            writer.write(") values (0)");
+            writer.write(") values ("+Integer.toString(sequence.getInitialValue() - 1)+")");
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
@@ -83,15 +80,7 @@ public class UnaryTableSequenceDefinition extends SequenceDefinition {
      * Return the name of the only field of this table
      */
     public String getSequenceCounterFieldName() {
-        return sequenceCounterFieldName;
-    }
-
-    /**
-     * PUBLIC:
-     * Set the name of the only field of this table
-     */
-    public void setSequenceCounterFieldName(String sequenceCounterFieldName) {
-        this.sequenceCounterFieldName = sequenceCounterFieldName;
+        return getUnaryTableSequence().getCounterFieldName();
     }
 
     /**
@@ -103,5 +92,13 @@ public class UnaryTableSequenceDefinition extends SequenceDefinition {
         definition.setName(getName());
         definition.addField(getSequenceCounterFieldName(), BigDecimal.class);
         return definition;
+    }
+    
+    protected UnaryTableSequence getUnaryTableSequence() {
+        if(sequence instanceof UnaryTableSequence) {
+            return (UnaryTableSequence)sequence;
+        } else {
+            return (UnaryTableSequence)((DefaultSequence)sequence).getDefaultSequence();
+        }
     }
 }

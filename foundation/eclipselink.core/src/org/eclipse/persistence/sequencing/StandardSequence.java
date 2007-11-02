@@ -144,4 +144,12 @@ public abstract class StandardSequence extends Sequence {
         }
         return sequencesForName;
     }
+
+    public void setInitialValue(int initialValue) {
+        // sequence value should be positive
+        if(initialValue <= 0) {
+            initialValue = 1;
+        }
+        super.setInitialValue(initialValue);
+    }
 }

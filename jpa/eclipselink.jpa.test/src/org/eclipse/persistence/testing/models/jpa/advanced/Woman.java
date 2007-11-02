@@ -23,8 +23,7 @@ public class Woman {
 	public Woman() {}
     
     @Id
-    @GeneratedValue(strategy=SEQUENCE, generator="WOMAN_SEQUENCE_GENERATOR")
-	@SequenceGenerator(name="WOMAN_SEQUENCE_GENERATOR", sequenceName="WOMAN_SEQ")
+    @GeneratedValue(strategy=IDENTITY)
 	public Integer getId() { 
         return id; 
     }

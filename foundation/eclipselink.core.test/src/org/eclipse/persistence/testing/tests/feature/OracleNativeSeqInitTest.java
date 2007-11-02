@@ -11,20 +11,21 @@ package org.eclipse.persistence.testing.tests.feature;
 
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sequencing.NativeSequence;
-import org.eclipse.persistence.tools.schemaframework.OracleSequenceDefinition;
+import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sequencing.DefaultSequence;
+import org.eclipse.persistence.sequencing.NativeSequence;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
     // the following two modes test OracleSequenceDefinition.createOnDatabase method.
 
     // this mode tests creation of a new sequence after
-    // the sequence was droped:
-    // Next avilable sequence number will be 1.
+    // the sequence was dropped:
+    // Next available sequence number will be 1.
     public static final int DROP_CREATE = 0;
 
     // this mode tests creation of a sequence after
@@ -46,7 +47,7 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
     // CREATE_ALTER in case NEXTVAL was never called on the sequence
     // after it was created and therefore CURRVAL is undefined:
     // in this case a new sequence is created, just like in DROP_CREATE case.
-    // Next avilable sequence number will be 1.
+    // Next available sequence number will be 1.
     public static final int CREATE_ALTER = 3;
 
     protected Boolean usesNativeSequencingOriginal;
@@ -63,7 +64,8 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
     protected int id;
     protected ValidationException exception;
     protected String seqName;
-    protected OracleSequenceDefinition sequenceDefinition;
+    protected SequenceObjectDefinition sequenceDefinition;
+    protected Sequence sequence;
 
     protected boolean shouldUseSchemaManager;
     protected SchemaManager schemaManager;
@@ -103,16 +105,24 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
     }
 
     public void setup() {
-        if (!getSession().getPlatform().isOracle()) {
-            throw new TestWarningException("This test works with Oracle only");
+        if (!getSession().getPlatform().supportsSequenceObjects()) {
+            throw new TestWarningException("This test requires a platform that supports sequence objects");
         }
         ClassDescriptor descriptor = getSession().getDescriptor(Employee.class);
+        if (!descriptor.usesSequenceNumbers()) {
+            throw new TestWarningException("Employee doesn't use sequencing");
+        }
         originalSequence = getSession().getPlatform().getSequence(descriptor.getSequenceNumberName());
-        usesNativeSequencingOriginal = originalSequence instanceof NativeSequence;
+        usesNativeSequencingOriginal = (originalSequence instanceof NativeSequence ||
+                                        (originalSequence instanceof DefaultSequence && getSession().getPlatform().getDefaultSequence() instanceof NativeSequence)
+                                       ) && !originalSequence.shouldAcquireValueAfterInsert();
         if (!usesNativeSequencingOriginal) {
-            Sequence newSequence = new NativeSequence(originalSequence.getName(), originalSequence.getPreallocationSize());
+            NativeSequence newSequence = new NativeSequence(originalSequence.getName(), originalSequence.getPreallocationSize());
             newSequence.onConnect(originalSequence.getDatasourcePlatform());
             getAbstractSession().getPlatform().addSequence(newSequence);
+            sequence = newSequence;
+        } else {
+            sequence = originalSequence;
         }
 
         seqPreallocationSizeOriginal = originalSequence.getPreallocationSize();
@@ -125,17 +135,8 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
 
         getDatabaseSession().getSequencingControl().initializePreallocated();
 
-        // Get sequence corresponding to Employee class
-        String tableQualifier = getSession().getLogin().getTableQualifier();
-        if(tableQualifier != "")
-                        seqName = tableQualifier + "." + descriptor.getSequenceNumberName();
-        else
-                        seqName = descriptor.getSequenceNumberName();
-        if (!descriptor.usesSequenceNumbers()) {
-            throw new TestWarningException("Employee doesn't use sequencing");
-        }
-
-        sequenceDefinition = new OracleSequenceDefinition(seqName);
+        sequenceDefinition = new SequenceObjectDefinition(sequence);
+        sequenceDefinition.setQualifier(getSession().getLogin().getTableQualifier());
         if (shouldUseSchemaManager) {
             schemaManager = new SchemaManager(getDatabaseSession());
 
@@ -163,7 +164,8 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
             // create sequence with seqPreallocationSize.
             // note that both increment and starting value are set to
             // sequenceDefinition.getIncrement()
-            sequenceDefinition.setStartAndIncrement(seqPreallocationSize);
+            sequence.setInitialValue(1);
+            sequence.setPreallocationSize(seqPreallocationSize);
             create();
 
             // next available sequence number.
@@ -173,13 +175,15 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
             // create sequence with seqPreallocationSizeOld
             // note that both increment and starting value are set to
             // sequenceDefinition.getIncrement()
-            sequenceDefinition.setStartAndIncrement(seqPreallocationSizeOld);
+            sequence.setInitialValue(1);
+            sequence.setPreallocationSize(seqPreallocationSizeOld);
             create();
 
             // now sequence exists,
             // create sequence with seqPreallocationSize
             // Note that createOnDatabase will call alterOnDatabase
-            sequenceDefinition.setStartAndIncrement(seqPreallocationSize);
+            sequence.setInitialValue(1);
+            sequence.setPreallocationSize(seqPreallocationSize);
             create();
 
             // next available sequence number.
@@ -192,17 +196,19 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
             // create sequence with seqPreallocationSizeOld
             // note that both increment and starting value are set to
             // sequenceDefinition.getIncrement()
-            sequenceDefinition.setStartAndIncrement(seqPreallocationSizeOld);
+            sequence.setInitialValue(1);
+            sequence.setPreallocationSize(seqPreallocationSizeOld);
             create();
 
             // now sequence exists,
             // select NEXTVAL 
             // because it is the first call to NEXTVAL, the starting sequence value is returned,
             // and this value was set to seqPreallocationSizeOld by the first createOnDatabase
-            getSession().executeSelectingCall(new SQLCall("SELECT " + seqName + ".NEXTVAL FROM DUAL"));
+            sequenceDefinition.checkIfExist((AbstractSession)getSession());
 
             // alter increment of sequence with seqPreallocationSize.
-            sequenceDefinition.setStartAndIncrement(seqPreallocationSize);
+            sequence.setInitialValue(1);
+            sequence.setPreallocationSize(seqPreallocationSize);
             alter();
 
             // next available sequence number.
@@ -214,11 +220,13 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
             // create sequence with seqPreallocationSizeOld
             // note that both increment and starting value are set to
             // sequenceDefinition.getIncrement()
-            sequenceDefinition.setStartAndIncrement(seqPreallocationSizeOld);
+            sequence.setInitialValue(1);
+            sequence.setPreallocationSize(seqPreallocationSizeOld);
             create();
 
             // alter increment of sequence with seqPreallocationSize.
-            sequenceDefinition.setStartAndIncrement(seqPreallocationSize);
+            sequence.setInitialValue(1);
+            sequence.setPreallocationSize(seqPreallocationSize);
             alter();
 
             // next available sequence number.
@@ -247,6 +255,11 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
     }
 
     public void reset() {
+        // make sure reset isn't performed twice
+        if(sequence == null) {
+            return;
+        }
+        
         // make sure that upcoming DROP and CREATE haven't been cached
         // and therefore for sure will go through
         getSession().getPlatform().setShouldCacheAllStatements(false);
@@ -255,9 +268,9 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
 
         // Should setup Employee's sequence so that:
         // 1. seqPreallocationOriginal is used as an increment;
-        sequenceDefinition.setIncrement(seqPreallocationSizeOriginal);
+        sequence.setPreallocationSize(seqPreallocationSizeOriginal);
         // 2. the next available number is lastSeqNumberOriginal + 1
-        sequenceDefinition.setStart(lastSeqNumberOriginal + seqPreallocationSizeOriginal);
+        sequence.setInitialValue(lastSeqNumberOriginal + seqPreallocationSizeOriginal);
 
         // Re-create sequence in its original state
         create();
@@ -275,6 +288,8 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
         if ((usesNativeSequencingOriginal != null) && !usesNativeSequencingOriginal) {
             getAbstractSession().getPlatform().addSequence(originalSequence);
         }
+        
+        sequence = null;
     }
 
     protected void drop() {

@@ -119,25 +119,11 @@ public class DerbyPlatform extends DB2Platform {
         return " ON COMMIT DELETE ROWS NOT LOGGED";
     }
 
-    public boolean supportsNativeSequenceNumbers() {
-        return true;
-    }
-
-    /**
-     *  INTERNAL:
-     *    Indicates whether NativeSequence should retrieve
-     *  sequence value after the object has been inserted into the db
-     *  This method is to be used *ONLY* by sequencing classes
-     */
-    public boolean shouldNativeSequenceAcquireValueAfterInsert() {
-        return true;
-    }
-
     /**
      * INTERNAL:
      * Build the identity query for native sequencing.
      */
-    public ValueReadQuery buildSelectQueryForNativeSequence() {
+    public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         selectQuery.setSQLString("values IDENTITY_VAL_LOCAL()");
         return selectQuery;

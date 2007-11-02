@@ -24,8 +24,7 @@ public class Man {
 	public Man() {}
     
     @Id
-    @GeneratedValue(strategy=SEQUENCE, generator="MAN_SEQUENCE_GENERATOR")
-	@SequenceGenerator(name="MAN_SEQUENCE_GENERATOR", sequenceName="MAN_SEQ")
+    @GeneratedValue(strategy=IDENTITY)
 	public int getId() { 
         return id; 
     }

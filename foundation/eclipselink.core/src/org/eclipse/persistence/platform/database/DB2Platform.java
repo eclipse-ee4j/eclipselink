@@ -444,7 +444,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      * INTERNAL:
      * Build the identity query for native sequencing.
      */
-    public ValueReadQuery buildSelectQueryForNativeSequence() {
+    public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         StringWriter writer = new StringWriter();
         writer.write("SELECT IDENTITY_VAL_LOCAL() FROM SYSIBM.SYSDUMMY1");
@@ -466,20 +466,12 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * INTERNAL:
-     * If native sequencing is being used on DB2 then the values must be
-     * retrieved after the insert.
-     * This method is to be used *ONLY* by sequencing classes
+     *  INTERNAL:
+     *  Indicates whether the platform supports identity.
+     *  DB2 does through AS IDENTITY field types.
+     *  This method is to be used *ONLY* by sequencing classes
      */
-    public boolean shouldNativeSequenceAcquireValueAfterInsert() {
-        return true;
-    }
-
-    /**
-     * Return true if the receiver uses host sequence numbers, generated on the database.
-     * DB2 does through AS IDENTITY field types.
-     */
-    public boolean supportsNativeSequenceNumbers() {
+    public boolean supportsIdentity() {
         return true;
     }
 

@@ -14,6 +14,8 @@ import java.io.*;
 import java.math.BigDecimal;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 
 /**
@@ -24,31 +26,14 @@ import org.eclipse.persistence.sequencing.TableSequence;
  */
 public class TableSequenceDefinition extends SequenceDefinition {
 
-    /** Hold the name of the sequence table */
-    public String sequenceTableName;
-
-    /** Hold the name of the column in the sequence table which specifies the sequence name */
-    public String sequenceNameFieldName;
-
-    /** Hold the name of the column in the sequence table which specifies the sequence numeric value */
-    public String sequenceCounterFieldName;
-    
-    public int initialValue = 0;
-
-    public TableSequenceDefinition(String name, String sequenceTableName, String sequenceNameFieldName, String sequenceCounterFieldName, int initialValue) {
-        super(name);
-        setSequenceTableName(sequenceTableName);
-        setSequenceCounterFieldName(sequenceCounterFieldName);
-        setSequenceNameFieldName(sequenceNameFieldName);
-        setInitialValue(initialValue);
-    }
-
-    public TableSequenceDefinition(TableSequence sequence) {
-        this(sequence.getName(), sequence.getTableName(), sequence.getNameFieldName(), sequence.getCounterFieldName(), sequence.getInitialValue());
-    }
-
-    public TableSequenceDefinition(String name, TableSequence sequence) {
-        this(name, sequence.getTableName(), sequence.getNameFieldName(), sequence.getCounterFieldName(), sequence.getInitialValue());
+    /**
+     * INTERNAL:
+     * Should be a sequence defining table sequence in the db:
+     * either TableSequence
+     * DefaultSequence (only if case platform.getDefaultSequence() is a TableSequence).
+     */
+    public TableSequenceDefinition(Sequence sequence) {
+        super(sequence);
     }
 
     /**
@@ -63,7 +48,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
             writer.write("(" + getSequenceNameFieldName());
             writer.write(", " + getSequenceCounterFieldName());
             writer.write(") values (");
-            writer.write("'" + getName() + "', "  + initialValue + ")");
+            writer.write("'" + getName() + "', "  + Integer.toString(sequence.getInitialValue() - 1) + ")");
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
@@ -99,50 +84,22 @@ public class TableSequenceDefinition extends SequenceDefinition {
     /**
      * PUBLIC:
      */
-    public void setInitialValue(int initialValue) {
-        this.initialValue = initialValue;
-    }
-    
-    /**
-     * PUBLIC:
-     */
-    public void setSequenceTableName(String sequenceTableName) {
-        this.sequenceTableName = sequenceTableName;
-    }
-
-    /**
-     * PUBLIC:
-     */
     public String getSequenceTableName() {
-        return sequenceTableName;
-    }
-
-    /**
-     * PUBLIC:
-     */
-    public void setSequenceCounterFieldName(String sequenceCounterFieldName) {
-        this.sequenceCounterFieldName = sequenceCounterFieldName;
+        return getTableSequence().getTableName();
     }
 
     /**
      * PUBLIC:
      */
     public String getSequenceCounterFieldName() {
-        return sequenceCounterFieldName;
-    }
-
-    /**
-     * PUBLIC:
-     */
-    public void setSequenceNameFieldName(String sequenceNameFieldName) {
-        this.sequenceNameFieldName = sequenceNameFieldName;
+        return getTableSequence().getCounterFieldName();
     }
 
     /**
      * PUBLIC:
      */
     public String getSequenceNameFieldName() {
-        return sequenceNameFieldName;
+        return getTableSequence().getNameFieldName();
     }
 
     /**
@@ -155,5 +112,13 @@ public class TableSequenceDefinition extends SequenceDefinition {
         definition.addPrimaryKeyField(getSequenceNameFieldName(), String.class, 50);
         definition.addField(getSequenceCounterFieldName(), BigDecimal.class);
         return definition;
+    }
+    
+    protected TableSequence getTableSequence() {
+        if(sequence instanceof TableSequence) {
+            return (TableSequence)sequence;
+        } else {
+            return (TableSequence)((DefaultSequence)sequence).getDefaultSequence();
+        }
     }
 }

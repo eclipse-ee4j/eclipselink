@@ -23,6 +23,7 @@ import org.eclipse.persistence.queries.*;
  * <p><b>Purpose</b>: Provides SQL Server specific behaviour.
  * <p><b>Responsibilities</b>:<ul>
  * <li> Native SQL for byte[], Date, Time, & Timestamp.
+ * <li> Native sequencing using @@IDENTITY.
  * </ul>
  *
  * @since TOPLink/Java 1.0
@@ -161,7 +162,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      * INTERNAL:
      * Build the identity query for native sequencing.
      */
-    public ValueReadQuery buildSelectQueryForNativeSequence() {
+    public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         StringWriter writer = new StringWriter();
         writer.write("SELECT @@IDENTITY");
@@ -516,16 +517,6 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
     /**
-     *  INTERNAL:
-     * If native sequencing is being used on Sybase then the values must be
-     * retrieved after the insert.
-     * This method is to be used *ONLY* by sequencing classes
-     */
-    public boolean shouldNativeSequenceAcquireValueAfterInsert() {
-        return true;
-    }
-
-    /**
      * JDBC defines and outer join syntax, many drivers do not support this. So we normally avoid it.
      */
     public boolean shouldUseJDBCOuterJoinSyntax() {
@@ -533,10 +524,12 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
     /**
-     * Return true if the receiver uses host sequence numbers, generated on the database.
-     * Sybase does through IDENTITY field types.
+     *  INTERNAL:
+     *  Indicates whether the platform supports identity.
+     *  SQLServer does through IDENTITY field types.
+     *  This method is to be used *ONLY* by sequencing classes
      */
-    public boolean supportsNativeSequenceNumbers() {
+    public boolean supportsIdentity() {
         return true;
     }
 

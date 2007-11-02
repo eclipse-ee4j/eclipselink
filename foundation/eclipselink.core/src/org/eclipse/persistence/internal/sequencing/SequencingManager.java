@@ -290,9 +290,10 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         return getSequence(seqName);
     }
 
-    protected void logDebugPreallocation(String seqName, Vector sequences) {
+    protected void logDebugPreallocation(String seqName, Object firstSequenceValue, Vector sequences) {
         if (getOwnerSession().shouldLog(SessionLog.FINEST, SessionLog.SEQUENCING)) {
-            Object[] args = { seqName, new Integer(sequences.size()), sequences.firstElement(), sequences.lastElement() };
+            // the first value has been already removed from sequences vector 
+            Object[] args = { seqName, new Integer(sequences.size() + 1), firstSequenceValue, sequences.lastElement() };
             getOwnerSession().log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_preallocation", args);
         }
     }
@@ -518,7 +519,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                         // If preallocation size is 1, no point trying to add to global cache.
                         if (!sequences.isEmpty()) {
                             getPreallocationHandler().setPreallocated(seqName, sequences);
-                            logDebugPreallocation(seqName, sequences);
+                            logDebugPreallocation(seqName, sequenceValue, sequences);
                         }
                     } catch (RuntimeException ex) {
                         try {
@@ -567,7 +568,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                 // If preallocation size is 1, no point trying to add to global cache.
                 if (!sequences.isEmpty()) {
                     getPreallocationHandler().setPreallocated(seqName, sequences);
-                    logDebugPreallocation(seqName, sequences);
+                    logDebugPreallocation(seqName, sequenceValue, sequences);
                 }
             } finally {
                 releaseLock(seqName);
@@ -606,8 +607,6 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         if (!getOwnerSession().getProject().usesSequencing()) {
             return;
         }
-
-        getOwnerSession().getDatasourcePlatform().platformSpecificSequencingInitialization(getOwnerSession()); 
 
         onConnectAllSequences();
 
@@ -891,7 +890,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
             Vector v = sequenceVectors[i];
             if (v != null) {
                 getOwnerSession().log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_connected", states[i]);
-                for (int j = 1; j < v.size(); j++) {
+                for (int j = 0; j < v.size(); j++) {
                     Sequence sequence = (Sequence)v.elementAt(j);
                     Object[] args = { sequence.getName(), Integer.toString(sequence.getPreallocationSize()),
                             Integer.toString(sequence.getInitialValue())};

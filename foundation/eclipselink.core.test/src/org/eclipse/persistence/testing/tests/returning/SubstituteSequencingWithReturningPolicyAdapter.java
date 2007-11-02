@@ -12,10 +12,11 @@ package org.eclipse.persistence.testing.tests.returning;
 import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
 import org.eclipse.persistence.queries.DataModifyQuery;
-import org.eclipse.persistence.tools.schemaframework.OracleSequenceDefinition;
+import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 
@@ -119,7 +120,7 @@ public class SubstituteSequencingWithReturningPolicyAdapter implements ProjectAn
             String tableName = (String)tableNames.nextElement();
             String sequenceName = getSequenceNameFromTableName(tableName);
             if (!sequenceNameToDefinition.containsKey(sequenceName)) {
-                OracleSequenceDefinition definition = new OracleSequenceDefinition(sequenceName);
+                SequenceObjectDefinition definition = new SequenceObjectDefinition(new NativeSequence(sequenceName, 1, false));
                 sequenceNameToDefinition.put(sequenceName, definition);
                 schemaManager.createObject(definition);
             }

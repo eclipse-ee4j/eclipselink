@@ -257,11 +257,4 @@ public interface Platform extends Serializable, Cloneable {
      * Indicates whether defaultSequence is the same as platform default sequence.
      */
     public boolean usesPlatformDefaultSequence();
-    
-    /**
-     * INTERNAL:
-     * Platform specific sequencing initialization.
-     * This internal method should only be called by SequencingManager.
-     */
-    public void platformSpecificSequencingInitialization(DatabaseSession session);
 }

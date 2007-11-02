@@ -128,7 +128,7 @@ public class MySQL4Platform extends DatabasePlatform {
      * INTERNAL:
      * Build the identity query for native sequencing.
      */
-    public ValueReadQuery buildSelectQueryForNativeSequence() {
+    public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         StringWriter writer = new StringWriter();
         writer.write("SELECT LAST_INSERT_ID()");
@@ -339,16 +339,6 @@ public class MySQL4Platform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     * If native sequencing is being used on MySQL then the values must be
-     * retrieved after the insert.
-     * This method is to be used *ONLY* by sequencing classes
-     */
-    public boolean shouldNativeSequenceAcquireValueAfterInsert() {
-        return true;
-    }
-    
-    /**
-     * INTERNAL:
      * JDBC defines an outer join syntax which many drivers do not support. So we normally avoid it.
      */
     public boolean shouldUseJDBCOuterJoinSyntax() {
@@ -357,10 +347,10 @@ public class MySQL4Platform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     * Return true if the receiver uses host sequence numbers, generated on the database.
-     * MySQL does through AUTO_INCREMENT field types.
+     * Indicates whether the platform supports identity.
+     * MySQL supports native sequencing through AUTO_INCREMENT field types.
      */
-    public boolean supportsNativeSequenceNumbers() {
+    public boolean supportsIdentity() {
         return true;
     }
 

@@ -21,19 +21,17 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  *
  */
 public class XMLSequenceDefinition extends SequenceDefinition {
-    protected XMLSequence sequence;
 
     /**
      *
      */
     public XMLSequenceDefinition(XMLSequence sequence) {
-        super(sequence.getName());
-        this.sequence = sequence;
+        super(sequence);
     }
 
     public XMLSequenceDefinition(String name, XMLSequence sequence) {
-        super(name);
-        this.sequence = sequence;
+        super(sequence);
+        this.name = name;
     }
 
     /**
@@ -42,7 +40,7 @@ public class XMLSequenceDefinition extends SequenceDefinition {
      * Assume that the sequence table exists.
      */
     public boolean checkIfExist(AbstractSession session) throws DatabaseException {
-        ValueReadQuery query = sequence.getSelectQuery();
+        ValueReadQuery query = getXMLSequence().getSelectQuery();
         Vector args = new Vector(1);
         args.addElement(getName());
         Object result = session.executeQuery(query, args);
@@ -72,9 +70,9 @@ public class XMLSequenceDefinition extends SequenceDefinition {
      */
     public TableDefinition buildTableDefinition() {
         TableDefinition definition = new TableDefinition();
-        definition.setName(sequence.getRootElementName());
-        definition.addField(sequence.getNameElementName(), String.class);
-        definition.addField(sequence.getCounterElementName(), BigDecimal.class);
+        definition.setName(getXMLSequence().getRootElementName());
+        definition.addField(getXMLSequence().getNameElementName(), String.class);
+        definition.addField(getXMLSequence().getCounterElementName(), BigDecimal.class);
         return definition;
     }
 
@@ -83,8 +81,8 @@ public class XMLSequenceDefinition extends SequenceDefinition {
      */
     protected DatabaseQuery buildInsertSequenceQuery() {
         DataModifyQuery query = new DataModifyQuery();
-        query.addArgument(sequence.getNameElementName());
-        query.addArgument(sequence.getCounterElementName());
+        query.addArgument(getXMLSequence().getNameElementName());
+        query.addArgument(getXMLSequence().getCounterElementName());
         query.setCall(buildInsertSequenceCall());
         return query;
     }
@@ -94,8 +92,8 @@ public class XMLSequenceDefinition extends SequenceDefinition {
      */
     protected Call buildInsertSequenceCall() {
         XMLDataInsertCall call = new XMLDataInsertCall();
-        call.setRootElementName(sequence.getRootElementName());
-        call.setPrimaryKeyElementName(sequence.getNameElementName());
+        call.setRootElementName(getXMLSequence().getRootElementName());
+        call.setPrimaryKeyElementName(getXMLSequence().getNameElementName());
         return call;
     }
 
@@ -115,5 +113,9 @@ public class XMLSequenceDefinition extends SequenceDefinition {
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         // not used
         return writer;
+    }
+
+    protected XMLSequence getXMLSequence() {
+        return (XMLSequence)sequence;
     }
 }

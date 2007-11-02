@@ -50,7 +50,7 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.exceptions.ValidationException;
-//import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
+import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -2669,33 +2669,33 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     //test for bug 5170395: GET THE SEQUENCING EXCEPTION WHEN RUNNING FOR THE FIRST TIME ON A CLEAR SCHEMA
     public void testSequenceObjectDefinition() {
         EntityManager em = createEntityManager("fieldaccess");
-        ServerSession ss = ((org.eclipse.persistence.internal.jpa.EntityManagerImpl)em.getDelegate()).getServerSession();
-        /*if(!ss.getLogin().getPlatform().supportsSequenceObjects()) {
+        ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory("fieldaccess")).getServerSession();
+        if(!ss.getLogin().getPlatform().supportsSequenceObjects()) {
             // platform that supports sequence objects is required for this test
-            em.close();
+            closeEntityManager(em);
             return;
         }
         String seqName = "testSequenceObjectsDefinition";
         try {
             // first param is preallocationSize, second is startValue
             // both should be positive
-            //internalTestSequenceObjectDefinition(10, 1, seqName, em, ss);
-            //internalTestSequenceObjectDefinition(10, 5, seqName, em, ss);
-            //internalTestSequenceObjectDefinition(10, 15, seqName, em, ss);
+            internalTestSequenceObjectDefinition(10, 1, seqName, em, ss);
+            internalTestSequenceObjectDefinition(10, 5, seqName, em, ss);
+            internalTestSequenceObjectDefinition(10, 15, seqName, em, ss);
         } finally {
-            em.close();
-        }*/
+            closeEntityManager(em);
+        }
     }
 
-    /*protected void internalTestSequenceObjectDefinition(int preallocationSize, int startValue, String seqName, EntityManager em, ServerSession ss) {
+    protected void internalTestSequenceObjectDefinition(int preallocationSize, int startValue, String seqName, EntityManager em, ServerSession ss) {
         NativeSequence sequence = new NativeSequence(seqName, preallocationSize, startValue, false);
         sequence.onConnect(ss.getPlatform());
         SequenceObjectDefinition def = new SequenceObjectDefinition(sequence);
         // create sequence
         String createStr = def.buildCreationWriter(ss, new StringWriter()).toString();
-        em.getTransaction().begin();
+        beginTransaction(em);
         em.createNativeQuery(createStr).executeUpdate();
-        em.getTransaction().commit();
+        commitTransaction(em);
         try {
             // sequence value preallocated
             Vector seqValues = sequence.getGeneratedVector(null, ss);
@@ -2707,11 +2707,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             sequence.onDisconnect(ss.getPlatform());
             // drop sequence
             String dropStr = def.buildDeletionWriter(ss, new StringWriter()).toString();
-            em.getTransaction().begin();
+	        beginTransaction(em);
             em.createNativeQuery(dropStr).executeUpdate();
-            em.getTransaction().commit();
+            commitTransaction(em);
         }
-    }*/
+    }
     
     public void testMergeDetachedObject() {
         // Step 1 - read a department and clear the cache.

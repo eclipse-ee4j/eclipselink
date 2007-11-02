@@ -148,7 +148,7 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      * INTERNAL:
      * Build the identity query for native sequencing.
      */
-    public ValueReadQuery buildSelectQueryForNativeSequence() {
+    public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         StringWriter writer = new StringWriter();
         writer.write("SELECT DISTINCT(DBINFO('sqlca.sqlerrd1')) FROM systables");
@@ -241,16 +241,6 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
     }
 
     /**
-     *  INTERNAL:
-     * If native sequencing is being used on Informix then the values must be
-     * retrieved after the insert.
-     * This method is to be used *ONLY* by sequencing classes
-     */
-    public boolean shouldNativeSequenceAcquireValueAfterInsert() {
-        return true;
-    }
-
-    /**
     * Some Platforms want the constraint name after the constraint definition.
     */
     public boolean shouldPrintConstraintNameAfter() {
@@ -265,10 +255,12 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
     }
 
     /**
-     * Return true if the receiver uses host sequence numbers, generated on the database.
-     * Informix does this through SERIAL field types.
+     *  INTERNAL:
+     *  Indicates whether the platform supports identity.
+     *  Informix does this through SERIAL field types.
+     *  This method is to be used *ONLY* by sequencing classes
      */
-    public boolean supportsNativeSequenceNumbers() {
+    public boolean supportsIdentity() {
         return true;
     }
 }

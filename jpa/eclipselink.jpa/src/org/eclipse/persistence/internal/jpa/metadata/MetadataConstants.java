@@ -62,6 +62,7 @@ public class MetadataConstants {
     public static final String DEFAULT_AUTO_GENERATOR = "SEQ_GEN";
     public static final String DEFAULT_TABLE_GENERATOR = "SEQ_GEN_TABLE";
     public static final String DEFAULT_SEQUENCE_GENERATOR = "SEQ_GEN_SEQUENCE";
+    public static final String DEFAULT_IDENTITY_GENERATOR = "SEQ_GEN_IDENTITY";
     
     /* Reserved converter names. */
     public static final String CONVERT_NONE = "none";

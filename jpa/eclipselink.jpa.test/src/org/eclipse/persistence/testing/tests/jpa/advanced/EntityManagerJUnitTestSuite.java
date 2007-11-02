@@ -49,11 +49,12 @@ import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.tools.schemaframework.OracleSequenceDefinition;
+import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -1504,23 +1505,98 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
+    // gf3596: transactions never release memory until commit, so JVM eventually crashes.
+    // Attempts to compare memory consumption between the two FlushClearCache modes.
+    // If the values changed to be big enough (in TopLink I tried nFlashes = 30 , nInsertsPerFlush = 10000)
+    // internalMassInsertFlushClear(FlushClearCache.Merge, 30, 10000) will run out of memory,
+    // but internalMassInsertFlushClear(null, 30, 10000) will still be ok.
     public void testMassInsertFlushClear() {
-        int nFlushes = 10;
-        int nPersistsPerFlush = 100;
-        long defaultFreeMemory = internalMassInsertFlushClear(null, nFlushes, nPersistsPerFlush);
-        long mergeFreeMemory = internalMassInsertFlushClear(FlushClearCache.Merge, nFlushes, nPersistsPerFlush);
-        long diff = mergeFreeMemory - defaultFreeMemory;
+        int nFlushes = 20;
+        int nPersistsPerFlush = 50;
+        long[] defaultFreeMemoryDelta = internalMassInsertFlushClear(null, nFlushes, nPersistsPerFlush);
+        long[] mergeFreeMemoryDelta = internalMassInsertFlushClear(FlushClearCache.Merge, nFlushes, nPersistsPerFlush);
+        // disregard the flush if any of the two FreeMemoryDeltas is negative - clearly that's gc artefact.
+        int nEligibleFlushes = 0;
+        long diff = 0;
+        for(int nFlush = 0; nFlush < nFlushes; nFlush++) {
+            if(defaultFreeMemoryDelta[nFlush] >= 0 && mergeFreeMemoryDelta[nFlush] >= 0) {
+                nEligibleFlushes++;
+                diff = diff + mergeFreeMemoryDelta[nFlush] - defaultFreeMemoryDelta[nFlush];
+            }
+        }
         long lowEstimateOfBytesPerObject = 200;
-        long diffPerObject = diff / (nFlushes * nPersistsPerFlush);
+        long diffPerObject = diff / (nEligibleFlushes * nPersistsPerFlush);
         if(diffPerObject < lowEstimateOfBytesPerObject) {
             fail("difference in freememory per object persisted " + diffPerObject + " is lower than lowEstimateOfBytesPerObject " + lowEstimateOfBytesPerObject);
         }
     }
     
     // memory usage with different FlushClearCache modes.
-    protected long internalMassInsertFlushClear(String propValue, int nFlushes, int nPersistsPerFlush) {
+    protected long[] internalMassInsertFlushClear(String propValue, int nFlushes, int nPersistsPerFlush) {
+        // set logDebug to true to output the freeMemory values after each flush/clear
+        boolean logDebug = false;
         String firstName = "testMassInsertFlushClear";
         EntityManager em;
+        if(propValue == null) {
+            // default value FlushClearCache.DropInvalidate will be used
+            em = createEntityManager();
+            if(logDebug) {
+                System.out.println(FlushClearCache.DEFAULT);
+            }
+        } else {
+            HashMap map = new HashMap(1);
+            map.put(PersistenceUnitProperties.FLUSH_CLEAR_CACHE, propValue);
+            em = getEntityManagerFactory().createEntityManager(map);
+            if(logDebug) {
+                System.out.println(propValue);
+            }
+        }
+        // For enhance accuracy of memory measuring allocate everything first:
+        // make a first run and completely disregard its results - somehow
+        // that get freeMemory function to report more accurate results in the second run -
+        // which is the only one used to calculate results.
+        if(logDebug) {
+            System.out.println("The first run is ignored");
+        }
+        long freeMemoryOld;
+        long freeMemoryNew;
+        long[] freeMemoryDelta = new long[nFlushes];
+        em.getTransaction().begin();
+        try {
+            // Try to force garbage collection NOW.
+            System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();
+            freeMemoryOld = Runtime.getRuntime().freeMemory();
+            if(logDebug) {
+                System.out.println("initial freeMemory = " + freeMemoryOld);
+            }
+            for(int nFlush = 0; nFlush < nFlushes; nFlush++) {
+                for(int nPersist = 0; nPersist < nPersistsPerFlush; nPersist++) {
+                    Employee emp = new Employee();
+                    emp.setFirstName(firstName);
+                    int nEmployee = nFlush * nPersistsPerFlush + nPersist;
+                    emp.setLastName("lastName_" + Integer.toString(nEmployee));
+                    em.persist(emp);
+                }
+                em.flush();
+                em.clear();
+                // Try to force garbage collection NOW.
+                System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();
+                freeMemoryNew = Runtime.getRuntime().freeMemory();
+                freeMemoryDelta[nFlush] = freeMemoryOld - freeMemoryNew;
+                freeMemoryOld = freeMemoryNew;
+                if(logDebug) {
+                    System.out.println(nFlush +": after flush/clear freeMemory = " + freeMemoryNew);
+                }
+            }
+        } finally {
+            em.getTransaction().rollback();
+            em = null;
+        }
+
+        if(logDebug) {
+            System.out.println("The second run");
+        }
+        // now allocate again - with gc and memory measuring
         if(propValue == null) {
             // default value FlushClearCache.DropInvalidate will be used
             em = createEntityManager();
@@ -1533,7 +1609,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try {
             // Try to force garbage collection NOW.
             System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();
-            long freeMemoryOld = Runtime.getRuntime().freeMemory();
+            freeMemoryOld = Runtime.getRuntime().freeMemory();
+            if(logDebug) {
+                System.out.println("initial freeMemory = " + freeMemoryOld);
+            }
             for(int nFlush = 0; nFlush < nFlushes; nFlush++) {
                 for(int nPersist = 0; nPersist < nPersistsPerFlush; nPersist++) {
                     Employee emp = new Employee();
@@ -1544,16 +1623,21 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 }
                 em.flush();
                 em.clear();
+                // Try to force garbage collection NOW.
+                System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();
+                freeMemoryNew = Runtime.getRuntime().freeMemory();
+                freeMemoryDelta[nFlush] = freeMemoryOld - freeMemoryNew;
+                freeMemoryOld = freeMemoryNew;
+                if(logDebug) {
+                    System.out.println(nFlush +": after flush/clear freeMemory = " + freeMemoryNew);
+                }
             }
-            // Try to force garbage collection NOW.
-            System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();System.gc();
-            long freeMemoryNew = Runtime.getRuntime().freeMemory();
-            return freeMemoryOld - freeMemoryNew;
+            return freeMemoryDelta;
         } finally {
             em.getTransaction().rollback();
         }
     }
-    
+
     public void testClearInTransaction(){
         EntityManager em = createEntityManager();
         em.getTransaction().begin();
@@ -2983,45 +3067,49 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     //test for bug 5170395: GET THE SEQUENCING EXCEPTION WHEN RUNNING FOR THE FIRST TIME ON A CLEAR SCHEMA
-    public void testOracleSequenceDefinition() {
+    public void testSequenceObjectDefinition() {
         EntityManager em = createEntityManager();
         ServerSession ss = ((org.eclipse.persistence.internal.jpa.EntityManagerImpl)em).getServerSession();
-        if(!ss.getLogin().getPlatform().isOracle()) {
-            // Oracle platform is required for this test
+        if(!ss.getLogin().getPlatform().supportsSequenceObjects()) {
+            // platform that supports sequence objects is required for this test
             em.close();
             return;
         }
-        String seqName = "testOracleSequenceDefinition";
+        String seqName = "testSequenceObjectDefinition";
         try {
             // first param is preallocationSize, second is startValue
             // both should be positive
-            internalTestOracleSequenceDefinition(10, 1, seqName, em);
-            internalTestOracleSequenceDefinition(10, 5, seqName, em);
-            internalTestOracleSequenceDefinition(10, 15, seqName, em);
+            internalTestSequenceObjectDefinition(10, 1, seqName, em, ss);
+            internalTestSequenceObjectDefinition(10, 5, seqName, em, ss);
+            internalTestSequenceObjectDefinition(10, 15, seqName, em, ss);
         } finally {
             em.close();
         }
     }
 
-    protected void internalTestOracleSequenceDefinition(int preallocationSize, int startValue, String seqName, EntityManager em) {
-        OracleSequenceDefinition def = new OracleSequenceDefinition(seqName, preallocationSize, startValue);
+    protected void internalTestSequenceObjectDefinition(int preallocationSize, int startValue, String seqName, EntityManager em, ServerSession ss) {
+        NativeSequence sequence = new NativeSequence(seqName, preallocationSize, startValue, false);
+        sequence.onConnect(ss.getPlatform());
+        SequenceObjectDefinition def = new SequenceObjectDefinition(sequence);
         // create sequence
-        String createStr = def.buildCreationWriter(null, new StringWriter()).toString();
+        String createStr = def.buildCreationWriter(ss, new StringWriter()).toString();
+        em.getTransaction().begin();
         em.createNativeQuery(createStr).executeUpdate();
+        em.getTransaction().commit();
         try {
-            // select first value
-            int firstSelectedValue = ((Number)((List)em.createNativeQuery("SELECT "+seqName+".NEXTVAL FROM DUAL").getSingleResult()).get(0)).intValue();
-
-            // calculated the first sequence value to be used by TopLink
-            int firstSequenceValue = firstSelectedValue - preallocationSize + 1;
-
+            // sequence value preallocated
+            Vector seqValues = sequence.getGeneratedVector(null, ss);
+            int firstSequenceValue = ((Number)seqValues.elementAt(0)).intValue();
             if(firstSequenceValue != startValue) {
                 fail(seqName + " sequence with preallocationSize = "+preallocationSize+" and startValue = " + startValue + " produced wrong firstSequenceValue =" + firstSequenceValue);
             }
         } finally {
+            sequence.onDisconnect(ss.getPlatform());
             // drop sequence
-            String dropStr = def.buildDeletionWriter(null, new StringWriter()).toString();
+            String dropStr = def.buildDeletionWriter(ss, new StringWriter()).toString();
+            em.getTransaction().begin();
             em.createNativeQuery(dropStr).executeUpdate();
+            em.getTransaction().commit();
         }
     }
     
@@ -4970,7 +5058,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
         }
         // is the right Employee in the db?
-        emp = (Employee)em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.id = " + id).setHint("toplink.refresh", Boolean.TRUE).getSingleResult();
+        emp = (Employee)em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.id = " + id).setHint("eclipselink.refresh", Boolean.TRUE).getSingleResult();
         if(emp == null) {
             errorMsg = errorMsg + "DB: Employee is not found";
         } else {
@@ -4989,5 +5077,35 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
+    public void testNativeSequences() {
+        ServerSession ss = JUnitTestCase.getServerSession();
+        boolean doesPlatformSupportIdentity = ss.getPlatform().supportsIdentity();
+        boolean doesPlatformSupportSequenceObjects = ss.getPlatform().supportsSequenceObjects();
+        String errorMsg = "";
+        
+        // SEQ_GEN_IDENTITY sequence defined by
+        // @GeneratedValue(strategy=IDENTITY)
+        boolean isIdentity = ss.getPlatform().getSequence("SEQ_GEN_IDENTITY").shouldAcquireValueAfterInsert();
+        if(doesPlatformSupportIdentity != isIdentity) {
+            errorMsg = "SEQ_GEN_IDENTITY: doesPlatformSupportIdentity = " + doesPlatformSupportIdentity +", but isIdentity = " + isIdentity +"; ";
+        }
+
+        // ADDRESS_SEQ sequence defined by
+        // @GeneratedValue(generator="ADDRESS_SEQ")
+        // @SequenceGenerator(name="ADDRESS_SEQ", allocationSize=25)
+        boolean isSequenceObject = !ss.getPlatform().getSequence("ADDRESS_SEQ").shouldAcquireValueAfterInsert();
+        if(doesPlatformSupportSequenceObjects != isSequenceObject) {
+            errorMsg = errorMsg +"ADDRESS_SEQ: doesPlatformSupportSequenceObjects = " + doesPlatformSupportSequenceObjects +", but isSequenceObject = " + isSequenceObject;
+        }
+        
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+    
+    public static void main(String[] args) {
+        // Now run JUnit.
+        junit.swingui.TestRunner.main(args);
+    }
 
 }

@@ -12,6 +12,7 @@ package org.eclipse.persistence.tools.schemaframework;
 import java.io.Writer;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sequencing.Sequence;
 
 /**
  * <p>
@@ -20,9 +21,17 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * <p>
  */
 public abstract class SequenceDefinition extends DatabaseObjectDefinition {
+    protected Sequence sequence;
+    
     public SequenceDefinition(String name) {
         super();
         this.name = name;
+    }
+
+    public SequenceDefinition(Sequence sequence) {
+        super();
+        this.sequence = sequence;
+        this.name = sequence.getName();
     }
 
     /**
@@ -35,7 +44,7 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Indicates whether alter is supported
      */
-    public boolean isAlterSupported() {
+    public boolean isAlterSupported(AbstractSession session) {
         return false;
     }
 

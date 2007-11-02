@@ -221,7 +221,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * INTERNAL:
      * Build the identity query for native sequencing.
      */
-    public ValueReadQuery buildSelectQueryForNativeSequence() {
+    public ValueReadQuery buildSelectQueryForIdentity() {
         ValueReadQuery selectQuery = new ValueReadQuery();
         StringWriter writer = new StringWriter();
         writer.write("SELECT @@IDENTITY");
@@ -579,16 +579,6 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     *  INTERNAL:
-     * If native sequencing is being used on Sybase then the values must be
-     * retrieved after the insert.
-     * This method is to be used *ONLY* by sequencing classes
-     */
-    public boolean shouldNativeSequenceAcquireValueAfterInsert() {
-        return true;
-    }
-
-    /**
      * JDBC defines and outer join syntax, many drivers do not support this. So we normally avoid it.
      */
     public boolean shouldUseJDBCOuterJoinSyntax() {
@@ -596,10 +586,12 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     * Return true if the receiver uses host sequence numbers, generated on the database.
-     * Sybase does through IDENTITY field types.
+     *  INTERNAL:
+     *  Indicates whether the platform supports identity.
+     *  Sybase does through IDENTITY field types.
+     *  This method is to be used *ONLY* by sequencing classes
      */
-    public boolean supportsNativeSequenceNumbers() {
+    public boolean supportsIdentity() {
         return true;
     }
 

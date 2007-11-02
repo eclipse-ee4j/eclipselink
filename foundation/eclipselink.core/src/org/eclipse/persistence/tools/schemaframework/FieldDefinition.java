@@ -135,11 +135,13 @@ public class FieldDefinition implements Serializable, Cloneable {
                 }
 
                 String qualifiedName = table.getFullName() + '.' + getName();
-                session.getPlatform().printFieldTypeSize(writer, this, fieldType, session, qualifiedName);
-                session.getPlatform().printFieldUnique(writer, isUnique(), session, qualifiedName);        
-                if (isIdentity()) {
-                    String name = table.getFullName() + '.' + getName();
-                    session.getPlatform().printFieldIdentityClause(writer, session, name);
+                boolean shouldPrintFieldIdentityClause = isIdentity() && session.getPlatform().shouldPrintFieldIdentityClause(session, qualifiedName);
+                session.getPlatform().printFieldTypeSize(writer, this, fieldType, shouldPrintFieldIdentityClause);
+                if(isUnique()) {
+                    session.getPlatform().printFieldUnique(writer, shouldPrintFieldIdentityClause);
+                }
+                if (shouldPrintFieldIdentityClause) {
+                    session.getPlatform().printFieldIdentityClause(writer);
                 }
                 if (shouldAllowNull() && fieldType.shouldAllowNull()) {
                     session.getPlatform().printFieldNullClause(writer);
