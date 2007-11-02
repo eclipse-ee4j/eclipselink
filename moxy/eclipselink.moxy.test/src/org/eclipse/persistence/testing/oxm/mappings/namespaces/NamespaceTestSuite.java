@@ -36,7 +36,7 @@ public class NamespaceTestSuite extends TestCase {
         // System.setProperty("useDeploymentXML", "true");
         // System.setProperty("useDocPres", "true");
         // System.setProperty("useLogging", "true");
-        System.setProperty("useSAXParsing", "true");
+        //System.setProperty("useSAXParsing", "true");
         junit.textui.TestRunner.main(arguments);
     }
 }

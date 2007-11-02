@@ -13,21 +13,28 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
+
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.factories.MissingDescriptorListener;
+import org.eclipse.persistence.sessions.factories.ObjectPersistenceRuntimeXMLProject_11_1_1;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
@@ -37,19 +44,19 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public abstract class OXTestCase extends XMLTestCase {
-    public boolean useLogging = false;
-    public boolean deploymentXML = false;
-    public boolean useSAX = false;
-    public boolean useDocPres = false;
-
+    public boolean useLogging = false;    
+    public static enum Platform { DOM, SAX, DOC_PRES };
+    public static enum Metadata { JAVA, XML_TOPLINK, XML_ECLIPSELINK };
+    public static Platform platform;;
+    public static Metadata metadata;
+    
     public OXTestCase(String name) {
         super(name);
-        deploymentXML = Boolean.getBoolean("useDeploymentXML");
-        useSAX = Boolean.getBoolean("useSAXParsing");
         useLogging = Boolean.getBoolean("useLogging");
-        useDocPres = Boolean.getBoolean("useDocPres");
+        platform = getPlatform();
+        metadata = getMetadata();
     }
-
+    
     public XMLContext getXMLContext(String name) {
         Session session = SessionManager.getManager().getSession(name, false);
         Project project = session.getProject();
@@ -57,7 +64,7 @@ public abstract class OXTestCase extends XMLTestCase {
     }
 
     public XMLContext getXMLContext(Project project) {
-        if (this.useDocPres) {
+        if (platform == Platform.DOC_PRES) {
             java.util.Collection descriptors = project.getDescriptors().values();
             java.util.Iterator iter = descriptors.iterator();
             while (iter.hasNext()) {
@@ -84,65 +91,54 @@ public abstract class OXTestCase extends XMLTestCase {
     }
 
     public Project getNewProject(Project originalProject, ClassLoader classLoader) {
-        if (deploymentXML) {
-            Project newProject = null;
+        Project newProject = originalProject;
+        
+        switch (metadata) {
+		case JAVA:
+			break;
+		default:
             try {
-                //write the deployment XML file to deploymentXML-file.xml
-                XMLProjectWriter writer = new XMLProjectWriter();
+                // Write the deployment XML file to deploymentXML-file.xml
                 String fileName = "deploymentXML-file.xml";
-                java.io.FileWriter fWriter = new FileWriter(fileName);
-                writer.write(originalProject, fWriter);
+                FileWriter fWriter = new FileWriter(fileName);
+                write(originalProject, fWriter);
                 fWriter.close();
-
-                //also write the deployment XML file to a stringwriter for logging
+                // Also write the deployment XML file to a stringwriter for logging
                 if (useLogging) {
                     StringWriter stringWriter = new StringWriter();
-                    XMLProjectWriter.write(originalProject, stringWriter);
+                    write(originalProject, stringWriter);
                     log("DEPLOYMENT XML " + stringWriter.toString());
                 }
-
-                //read the deploymentXML-file.xml back in with XMLProjectReader							
+                // Read the deploymentXML-file.xml back in with XMLProjectReader							
                 FileInputStream inStream = new FileInputStream(fileName);
                 FileReader fileReader = new FileReader(fileName);
-                XMLProjectReader projectReader = new XMLProjectReader();
-                newProject = projectReader.read(fileReader, classLoader);
+                newProject = XMLProjectReader.read(fileReader, classLoader);
                 inStream.close();
                 fileReader.close();
                 File f = new File(fileName);
                 f.delete();
-
             } catch (Exception e) {
                 e.printStackTrace();
                 StringWriter stringWriter = new StringWriter();
-                XMLProjectWriter writer = new XMLProjectWriter();
-                String fileName = "";
-                writer.write(originalProject, stringWriter);
-
+                write(originalProject, stringWriter);
                 StringReader reader = new StringReader(stringWriter.toString());
-
                 log("DEPLOYMENT XML" + stringWriter.toString());
-                XMLProjectReader projectReader = new XMLProjectReader();
-                newProject = projectReader.read(reader, classLoader);
+                newProject = XMLProjectReader.read(reader, classLoader);
+            }
+		}
 
-            }
-
-            if ((newProject.getDatasourceLogin() == null) || (!(newProject.getDatasourceLogin() instanceof XMLLogin))) {
-                newProject.setDatasourceLogin(new XMLLogin());
-            }
-            newProject.getDatasourceLogin().setPlatform(new DOMPlatform());
-            return newProject;
-
-        } else {
-            if ((originalProject.getDatasourceLogin() == null) || (!(originalProject.getDatasourceLogin() instanceof XMLLogin))) {
-                originalProject.setDatasourceLogin(new XMLLogin());
-            }
-            if (useSAX) {
-                originalProject.getDatasourceLogin().setPlatform(new SAXPlatform());
-            } else {
-                originalProject.getDatasourceLogin().setPlatform(new DOMPlatform());
-            }
-            return originalProject;
+        if ((newProject.getDatasourceLogin() == null) || (!(newProject.getDatasourceLogin() instanceof XMLLogin))) {
+        	newProject.setDatasourceLogin(new XMLLogin());
         }
+        
+        switch (platform) {
+        case SAX: 
+        	newProject.getDatasourceLogin().setPlatform(new SAXPlatform());
+        	break;
+        default: 
+        	newProject.getDatasourceLogin().setPlatform(new DOMPlatform());
+        }
+        return newProject;
     }
 
     protected void log(Document document) {
@@ -155,9 +151,6 @@ public abstract class OXTestCase extends XMLTestCase {
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(document);
             StreamResult result = new StreamResult(System.out);
-
-            //transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-            //transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, false);
             transformer.transform(source, result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -181,15 +174,31 @@ public abstract class OXTestCase extends XMLTestCase {
     public String getName() {
         String longClassName = this.getClass().getName();
         String shortClassName = longClassName.substring(longClassName.lastIndexOf(".") + 1, longClassName.length() - 1);
-        if (useDocPres) {
-            return "Doc Pres:" + shortClassName + ": " + super.getName();
-        } else if (deploymentXML) {
-            return "Deployment XML:" + shortClassName + ": " + super.getName();
-        } else if (useSAX) {
-            return "SAX Parsing: " + shortClassName + ": " + super.getName();
-        }
-        return shortClassName + ": " + super.getName();
+        String description = "";
+        
+        switch (metadata) {
+		case XML_ECLIPSELINK:
+        	description = "Deployment XML w/";
+			break;
+		case XML_TOPLINK:
+        	description = "TL Deployment XML w/";
+			break;
+		default:
+        	description = "Java Project Source w/";
+		}
 
+        switch (platform) {
+        case DOC_PRES:
+        	description += "Doc Pres: ";
+        	break;
+        case DOM:
+        	description += "DOM Parsing: ";
+        	break;
+        default:
+        	description += "SAX Parsing: ";
+        }
+
+        return description + shortClassName + ": " + super.getName();
     }
 
     protected void removeEmptyTextNodes(Node node) {
@@ -214,5 +223,58 @@ public abstract class OXTestCase extends XMLTestCase {
         returnString = returnString.replaceAll("\r", "");
 
         return returnString;
+    }
+    
+    /**
+     * Return the Platform to be used based on the "platformType" 
+     * System property
+     * 
+     * @see Platform
+     */
+    public Platform getPlatform() {
+        String platformStr = System.getProperty("platformType", "SAX");
+        if (platformStr.equals("SAX")) {
+        	return Platform.SAX;
+        }
+        if (platformStr.equals("DOM")) {
+        	return Platform.DOM;
+        }
+        return Platform.DOC_PRES; 
+    }
+
+    /**
+     * Return the Metadata type based on the "metadataType" 
+     * System property
+     * 
+     * @see Metadata
+     */
+    public Metadata getMetadata() {
+        String metadataStr = System.getProperty("metadataType", "JAVA");
+        if (metadataStr.equals("JAVA")) {
+        	return Metadata.JAVA;
+        }
+        if (metadataStr.equals("XML_ECLIPSELINK")) {
+        	return Metadata.XML_ECLIPSELINK;
+        }
+        return Metadata.XML_TOPLINK;
+    }
+    
+    // Write out deployment XML
+    public void write(Project project, Writer writer) {
+    	// Write out EclipseLink deployment XML
+    	if (metadata == Metadata.XML_ECLIPSELINK) {
+    		XMLProjectWriter.write(project, writer);
+    		return;
+    	}
+    	// Write out TL deployment XML 
+        XMLContext context = new XMLContext(new ObjectPersistenceRuntimeXMLProject_11_1_1());
+        context.getSession(project).getEventManager().addListener(new MissingDescriptorListener());
+        XMLMarshaller marshaller = context.createMarshaller();
+        marshaller.marshal(project, writer);
+        try {
+            writer.flush();
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
+        }
     }
 }

@@ -35,7 +35,7 @@ public class AnyAttributeUsingMapProject extends Project {
         mapping.setAttributeName("any");
         mapping.setGetMethodName("getAny");
         mapping.setSetMethodName("setAny");
-        mapping.useMapClassName("java.util.Hashtable");
+        mapping.useMapClass(java.util.Hashtable.class);
         descriptor.addMapping(mapping);
         
         return descriptor;

@@ -42,7 +42,7 @@ public class DirectCollectionErrorTestCases extends OXTestCase {
             this.assertTrue("The appropriate Descriptor exception was not encountered", foundException);
             return;
         } catch (XMLMarshalException marshalException) {
-            this.assertTrue("An unexcepted XMLMarshalException occurred", deploymentXML);
+            this.assertTrue("An unexcepted XMLMarshalException occurred", !(metadata == Metadata.JAVA));
             return;
         } catch (Exception e) {
             fail("An unexcepted exception occurred");

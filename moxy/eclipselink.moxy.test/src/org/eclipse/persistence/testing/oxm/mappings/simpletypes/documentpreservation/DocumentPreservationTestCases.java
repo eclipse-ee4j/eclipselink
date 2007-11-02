@@ -32,6 +32,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
 import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
@@ -48,7 +49,7 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
         setControlDocument(XML_CONTROL_RESOURCE);
         setProject(new EmployeeProject());
         //this test is only run with doc pres turned on
-        useDocPres = true;
+        platform = Platform.DOC_PRES;
     }
 
     protected Object getControlObject() {
@@ -76,7 +77,7 @@ public class DocumentPreservationTestCases extends XMLMappingTestCases {
     }
 
     private XMLContext getXMLContext() {
-        if (!deploymentXML) {
+        if (metadata == Metadata.JAVA) {
             if (xmlContext == null) {
                 xmlContext = new XMLContext(new EmployeeProject());
                 xmlContext.getSession(0).getDatasourceLogin().setPlatform(new DOMPlatform());

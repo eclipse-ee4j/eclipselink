@@ -57,7 +57,7 @@ public class XMLUnmarshalTestCases extends OXTestCase {
         context = getXMLContext(SESSION_NAME);
         unmarshaller = context.createUnmarshaller();
         controlObject = setupControlObject();
-        super.useSAX = true;
+        super.platform = Platform.SAX;
     }
 
     protected Employee setupControlObject() {

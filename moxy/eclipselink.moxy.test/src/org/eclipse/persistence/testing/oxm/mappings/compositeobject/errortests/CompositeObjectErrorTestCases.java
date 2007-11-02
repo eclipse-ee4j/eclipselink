@@ -43,7 +43,7 @@ public class CompositeObjectErrorTestCases extends OXTestCase {
             return;
 
         } catch (XMLMarshalException marshalException) {
-            this.assertTrue("An unexcepted XMLMarshalException occurred", deploymentXML);
+            this.assertTrue("An unexcepted XMLMarshalException occurred", !(metadata == Metadata.JAVA));
             return;
         } catch (Exception e) {
             fail("An unexcepted exception occurred");

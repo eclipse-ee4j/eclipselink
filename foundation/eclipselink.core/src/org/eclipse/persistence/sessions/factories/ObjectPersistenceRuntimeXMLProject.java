@@ -3873,7 +3873,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setSchemaReference(new XMLSchemaClassPathReference("xsd/toplink-object-persistence_10_1_3.xsd"));
 
         XMLTransformationMapping versionMapping = new XMLTransformationMapping();
-        versionMapping.addFieldTransformer("@version", new ConstantTransformer(DatabaseLogin.getVersion()));
+        versionMapping.addFieldTransformer("@version", getConstantTransformerForProjectVersionMapping());
         descriptor.addMapping(versionMapping);
 
         XMLDirectMapping nameMapping = new XMLDirectMapping();
@@ -5351,5 +5351,12 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setDefaultRootElement("change-policy");
         descriptor.getInheritancePolicy().setParentClass(ObjectChangePolicy.class);
         return descriptor;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    protected ConstantTransformer getConstantTransformerForProjectVersionMapping() {
+    	return new ConstantTransformer("Oracle TopLink - 10g Release 1 (10.1.3)");
     }
 }

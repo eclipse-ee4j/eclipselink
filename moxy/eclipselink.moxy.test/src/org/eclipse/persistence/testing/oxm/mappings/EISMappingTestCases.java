@@ -50,7 +50,9 @@ public abstract class EISMappingTestCases extends OXTestCase {
         super(name);
         setupParser();
         //doc pres is not supported with EIS
-        useDocPres = false;
+        if (platform == Platform.DOC_PRES) {
+        	platform = Platform.DOM;
+        }
     }
 
     abstract protected String getTestDocument();
@@ -82,7 +84,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
     }
 
     protected void setProject(Project project) {
-        if (deploymentXML) {
+        if (!(metadata == Metadata.JAVA)) {
             String directorySetting = (String)((EISLogin)project.getDatasourceLogin()).getProperty("directory");
             StringWriter stringWriter = new StringWriter();
             new XMLProjectWriter().write(project, stringWriter);

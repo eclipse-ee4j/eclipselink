@@ -97,7 +97,7 @@ public class XMLMarshallerNoDefaultRootTestCases extends OXTestCase {
     }
 
     public void testMarshalObjectToElementWithTypeAttribute() throws Exception {
-        if (!useDocPres) {
+        if (!(platform == Platform.DOC_PRES)) {
             Document marshalToNodeControl = setupControlDocument(MARSHAL_TO_NODE_RESOURCE_NODEFAULT);
 
             Document document = parser.newDocument();
@@ -117,7 +117,7 @@ public class XMLMarshallerNoDefaultRootTestCases extends OXTestCase {
     }
 
     public void testMarshalObjectToElementWithXSIPrefixBeingUsed() throws Exception {
-        if (!useDocPres) {
+        if (!(platform == Platform.DOC_PRES)) {
             NamespaceResolver try_test = new NamespaceResolver();
             try_test.put("xsi", "http://www.a_test.com");
             ((XMLDescriptor)(defaultProject.getDescriptor(Employee.class))).setNamespaceResolver(try_test);
@@ -138,7 +138,7 @@ public class XMLMarshallerNoDefaultRootTestCases extends OXTestCase {
     }
 
     public void testMarshalObjectToElement() throws Exception {
-        if (!useDocPres) {
+        if (!(platform == Platform.DOC_PRES)) {
             Document marshalToNodeControl = setupControlDocument(MARSHAL_TO_NODE_RESOURCE_NODEFAULT);
 
             Document document = parser.newDocument();

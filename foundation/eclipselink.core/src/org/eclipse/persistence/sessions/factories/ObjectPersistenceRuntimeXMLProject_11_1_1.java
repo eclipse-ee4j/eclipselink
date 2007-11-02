@@ -37,6 +37,7 @@ import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
@@ -1428,5 +1429,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
               	((XMLNillableMapping)object).setNullPolicy((AbstractNullPolicy)value);
           	}
          }
+     }
+
+     /**
+      * INTERNAL:
+      */
+     protected ConstantTransformer getConstantTransformerForProjectVersionMapping() {
+     	return new ConstantTransformer("Oracle TopLink - 11g Release 1 (11.1.1)");
      }
 }

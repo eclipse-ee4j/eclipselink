@@ -12,6 +12,9 @@ package org.eclipse.persistence.testing.oxm.mappings.directtofield;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import org.eclipse.persistence.testing.oxm.OXTestCase;
+import org.eclipse.persistence.testing.oxm.OXTestCase.Platform;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.cdata.DirectToFieldCDATATestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.defaultnullvalue.DefaultNullValueTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.errortests.DirectToFieldErrorTestCases;
@@ -21,7 +24,6 @@ import org.eclipse.persistence.testing.oxm.mappings.directtofield.identifiedbypo
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectIsSetNodeNullPolicyFalseTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectIsSetNodeNullPolicyTrueTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectIsSetNullPolicyAttributeAbsentIsSetAbsentFalseTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectIsSetNullPolicyAttributeAbsentIsSetAbsentTrueTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectIsSetNullPolicyAttributeSetEmptyFalseTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectIsSetNullPolicyAttributeSetEmptyTrueTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectIsSetNullPolicyAttributeSetNonNullTestCases;
@@ -61,13 +63,15 @@ import org.eclipse.persistence.testing.oxm.mappings.directtofield.singleattribut
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.typeattribute.TypeAttributeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.union.UnionTestCases;
 
-public class DirectToFieldMappingTestSuite extends TestCase {
+public class DirectToFieldMappingTestSuite extends OXTestCase {
+	public DirectToFieldMappingTestSuite(String name) {
+		super(name);
+	}
     public static Test suite() {
         TestSuite suite = new TestSuite("Direct to Field Mapping Test Suite");
-        
         suite.addTest(IdentifiedByNameTestCases.suite());
         
-        if((!Boolean.getBoolean("useDocPres"))){
+        if (!(platform == Platform.DOC_PRES)) {
         	// The following tests are commented out lower in this suite
             suite.addTestSuite(DirectToFieldCDATATestCases.class); // 1 docpres
         	suite.addTestSuite(DirectNullPolicyElementSetEmptyTestCases.class); // 3 docpres

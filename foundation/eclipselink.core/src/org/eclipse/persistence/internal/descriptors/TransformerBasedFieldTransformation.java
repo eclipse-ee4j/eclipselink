@@ -13,7 +13,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.mappings.transformers.*;
 
@@ -37,7 +36,8 @@ public class TransformerBasedFieldTransformation extends FieldTransformation {
     public TransformerBasedFieldTransformation(FieldTransformer aTransformer) {
         transformer = aTransformer;
         if (transformer != null) {
-            setTransformerClassName(transformer.getClass().getName());
+        	setTransformerClass(transformer.getClass());
+        	setTransformerClassName(transformer.getClass().getName());
         }
     }
 
