@@ -9,39 +9,20 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
-// javase imports
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.sql.Array;
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Struct;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Vector;
-
-// EclipseLink imports
+import java.util.*;
+import java.sql.*;
+import java.io.*;
+import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.expressions.ParameterExpression;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.FalseUndefinedTrue;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.queries.CallQueryMechanism;
-import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
+import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
-import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.queries.ReadObjectQuery;
-import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 
 /**
  * INTERNAL:
@@ -661,8 +642,9 @@ public abstract class DatabaseCall extends DatasourceCall {
             return statement;
         }
 
-        session.getPlatform().setParameterValuesInDatabaseCall(this, this.getParameters(),
-            (PreparedStatement)statement, session);
+        for (int index = 0; index < getParameters().size(); index++) {
+            session.getPlatform().setParameterValueInDatabaseCall(this.getParameters(), (PreparedStatement)statement, index, session);
+        }
 
         return statement;
     }
@@ -702,7 +684,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     /**
      * Callable statement is required if there is an output parameter.
      */
-    public void setIsCallableStatementRequired(boolean isCallableStatementRequired) {
+    protected void setIsCallableStatementRequired(boolean isCallableStatementRequired) {
         this.isCallableStatementRequired = isCallableStatementRequired;
     }
 
@@ -951,8 +933,7 @@ public abstract class DatabaseCall extends DatasourceCall {
                 } else if (parameterType == LITERAL) {
                     parametersValues.add(parameter);
                 } else if (parameterType == IN) {
-                    Object value = getValueForInParameter(parameter, parametersValues, 
-                        translationRow, modifyRow, session, true);
+                    Object value = getValueForInParameter(parameter, translationRow, modifyRow, session, true);
                     parametersValues.add(value);
                 } else if (parameterType == INOUT) {
                     Object value = getValueForInOutParameter(parameter, translationRow, modifyRow, session);

@@ -9,31 +9,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-// javase imports
-import java.sql.Array;
-import java.sql.CallableStatement;
-import java.sql.SQLException;
-import java.sql.Struct;
-import java.util.Iterator;
 import java.util.Vector;
-
-// EclipseLink imports
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.databaseaccess.InOutputParameterForCallableStatement;
-import org.eclipse.persistence.internal.databaseaccess.OutputParameterForCallableStatement;
-import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseType;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
+import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
-import org.eclipse.persistence.platform.database.oracle.OraclePLSQLType;
-import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * <b>Purpose</b>: Used to define a platform independent procedure call.
@@ -42,7 +22,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  */
 public class StoredProcedureCall extends DatabaseCall {
     protected String procedureName;
-    protected Vector<String> procedureArgumentNames;
+    protected Vector procedureArgumentNames;
 
     public StoredProcedureCall() {
         super();
@@ -150,34 +130,6 @@ public class StoredProcedureCall extends DatabaseCall {
 
     /**
      * PUBLIC:
-     * Define the output argument to the stored procedure and its field and argument name.
-     * The presence of the single parameter procedureParameterAndArgumentFieldName indicates that
-     * the name of the procedure argument and the TopLink argument fieldName are the same.
-     * The databaseType parameter classifies the parameter (JDBCType vs. OraclePLSQLType, simple
-     * vs. complex)
-     */
-    public void addNamedArgument(String procedureParameterAndArgumentFieldName, DatabaseType databaseType) {
-        addNamedArgument(procedureParameterAndArgumentFieldName,
-            procedureParameterAndArgumentFieldName, databaseType);
-    }
-
-    /**
-     * PUBLIC:
-     * Define the output argument to the stored procedure and its field and argument name.
-     * The procedureParameterName is the name of the procedure argument.
-     * The argumentFieldName is the argument name to be passed to the TopLink query.
-     * The databaseType parameter classifies the parameter (JDBCType vs. OraclePLSQLType, simple
-     * vs. complex)
-     */
-    public void addNamedArgument(String procedureParameterName, String argumentFieldName, DatabaseType databaseType) {
-        getProcedureArgumentNames().add(procedureParameterName);
-        DatabaseField field = new DatabaseField(argumentFieldName);
-        field.setDatabaseType(databaseType);
-        appendIn(field);
-    }
-
-    /**
-     * PUBLIC:
      * Define the inoutput argument to the stored procedure and the field/argument name to be substitute for it on the way in and out.
      * The procedureParameterAndArgumentFieldName is the name of the procedure argument expected,
      * the field or argument name to be used to pass to the procedure and,
@@ -196,8 +148,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * is the result of the output row.
      */
     public void addNamedInOutputArgument(String procedureParameterName, String argumentFieldName) {
-        addNamedInOutputArgument(procedureParameterName, argumentFieldName, argumentFieldName,
-            (Class)null);
+        addNamedInOutputArgument(procedureParameterName, argumentFieldName, argumentFieldName, null);
     }
 
     /**
@@ -334,61 +285,6 @@ public class StoredProcedureCall extends DatabaseCall {
 
     /**
      * PUBLIC:
-     * Define the inoutput argument to the stored procedure.
-     * The presence of the single parameter procedureParameterAndArgumentFieldName indicates that
-     * the name of the procedure argument and the TopLink argument fieldName are the same.
-     * The databaseType parameter classifies the parameter (JDBCType vs. OraclePLSQLType, simple
-     * vs. complex)
-     */
-    public void addNamedInOutputArgument(String procedureParameterAndArgumentFieldName,
-        DatabaseType databaseType) {
-        addNamedInOutputArgument(procedureParameterAndArgumentFieldName,
-            procedureParameterAndArgumentFieldName, procedureParameterAndArgumentFieldName,
-            databaseType);
-    }
-
-    /**
-     * PUBLIC:
-     * Define the inoutput argument to the stored procedure.
-     * The procedureParameterName is the name of the procedure argument.
-     * The argumentFieldName is the argument name to be passed to the TopLink query.
-     * The databaseType parameter classifies the parameter (JDBCType vs. OraclePLSQLType, simple
-     * vs. complex)
-     */
-    public void addNamedInOutputArgument(String procedureParameterName, String argumentFieldName,
-        DatabaseType databaseType) {
-        addNamedInOutputArgument(procedureParameterName, argumentFieldName, argumentFieldName,
-            databaseType);
-    }
-
-    /**
-     * PUBLIC:
-     * Define the inout parameter for a stored procedure.
-     * The procedureParameterName is the name of the procedure parameter.
-     * The inArgumentFieldName is the argument name to be passed to the TopLink query.
-     * The outArgumentFieldName is a separate argument name for the inout parameter
-     * that allows one to retrieve the out value from the TopLink query using a different name.
-     * The databaseType parameter classifies the parameter (JDBCType vs. OraclePLSQLType, simple
-     * vs. complex)
-     */
-    public void addNamedInOutputArgument(String procedureParameterName, String inArgumentFieldName,
-        String outArgumentFieldName, DatabaseType databaseType) {
-        
-        getProcedureArgumentNames().add(procedureParameterName);
-        DatabaseField inField = new DatabaseField(inArgumentFieldName);
-        inField.setDatabaseType(databaseType);
-        if (inArgumentFieldName.equals(outArgumentFieldName)) {
-            appendInOut(inField);
-        }
-        else {
-            DatabaseField outField = new DatabaseField(outArgumentFieldName);
-            outField.setDatabaseType(databaseType);
-            appendInOut(inField, outField);
-        }
-    }
-
-    /**
-     * PUBLIC:
      * Define the output argument to the stored procedure and the field/argument name to be substitute for it.
      * The procedureParameterAndArgumentFieldName is the name of the procedure argument expected,
      * and is the field or argument name to be used to pass to the procedure.
@@ -488,102 +384,6 @@ public class StoredProcedureCall extends DatabaseCall {
         field.setType(javaType);
         field.setNestedTypeField(nestedType);
         appendOut(field);
-    }
-
-    /**
-     * PUBLIC:
-     * Define an out parameter for a stored procedure.
-     * The presence of the single parameter procedureParameterAndArgumentFieldName indicates that
-     * the name of the procedure argument and the TopLink argument fieldName are the same.
-     * The databaseType parameter classifies the parameter (JDBCType vs. OraclePLSQLType, simple
-     * vs. complex)
-     */
-    public void addNamedOutputArgument(String procedureParameterAndArgumentFieldName, 
-        DatabaseType databaseType) {
-        addNamedOutputArgument(procedureParameterAndArgumentFieldName,
-            procedureParameterAndArgumentFieldName, databaseType);
-    }
-
-    /**
-     * PUBLIC:
-     * Define an out parameter for a stored procedure.
-     * The procedureParameterName is the name of the procedure argument.
-     * The argumentFieldName is that name by which one can retrieve the out value from the TopLink
-     * query.
-     * The databaseType parameter classifies the parameter (JDBCType vs. OraclePLSQLType, simple
-     * vs. complex)
-     */
-    public void addNamedOutputArgument(String procedureParameterName, String argumentFieldName,
-        DatabaseType databaseType) {
-        getProcedureArgumentNames().add(procedureParameterName);
-        
-        DatabaseField field = null;
-        if (databaseType.isComplexDatabaseType()) {
-            field = new ObjectRelationalDatabaseField(argumentFieldName);
-            field.setSqlType(databaseType.getTypeCode());
-            ((ObjectRelationalDatabaseField)field).setSqlTypeName(
-                ((ComplexDatabaseType)databaseType).getTypeName());
-            ((ComplexDatabaseType)databaseType).setCall(this);
-        }
-        else {
-            field = new DatabaseField(argumentFieldName);
-        }
-        field.setDatabaseType(databaseType);
-        appendOut(field);
-    }
-    
-    // Note: there are no addUnamedArgument(... DatabaseType databaseType) methods -
-    // custom DatabaseType's require a parameter name
-
-
-    /**
-     * PUBLIC:
-     * @return true any of the procedure's parameter are an OraclePLSQLType
-     */
-    public boolean hasNonJDBCTypes() {
-        
-        boolean hasNonJDBCTypes = false;
-        int size = getParameters().size();
-        for (int i = 0; i < size; i++) {
-            if (isNonJDBCParameter(getParameters().get(i))) {
-                hasNonJDBCTypes = true;
-                break;
-            }
-        }
-        return hasNonJDBCTypes;
-    }
-    
-    protected DatabaseField getFieldParameterFor(Object parameter) {
-
-        DatabaseField fieldParameter = null;
-        if (parameter instanceof DatabaseField) {
-            fieldParameter = (DatabaseField)parameter;
-        }
-        else if (parameter instanceof OutputParameterForCallableStatement) {
-            fieldParameter = ((OutputParameterForCallableStatement)parameter).getOutputField();
-        }
-        else if (parameter instanceof Object []) {
-            Object[] outParameters = (Object[])parameter;
-            Object outParameter = outParameters[0];
-            if (outParameter instanceof DatabaseField) {
-                fieldParameter = (DatabaseField)outParameter;
-            }
-        }
-        if (fieldParameter != null && fieldParameter.getDatabaseType() != null &&
-            (fieldParameter.getDatabaseType() instanceof OraclePLSQLType)) {
-        }
-        return fieldParameter;
-    }
-    
-    protected boolean isNonJDBCParameter(Object parameter) {
-
-        boolean isNonJDBCParameter = false;
-        DatabaseField fieldParameter = getFieldParameterFor(parameter);
-        if (fieldParameter != null && fieldParameter.getDatabaseType() != null &&
-            (fieldParameter.getDatabaseType() instanceof OraclePLSQLType)) {
-            isNonJDBCParameter = true;
-        }
-        return isNonJDBCParameter;
     }
 
     /**
@@ -894,94 +694,7 @@ public class StoredProcedureCall extends DatabaseCall {
     public void addUnamedOutputArgument(String argumentFieldName, int jdbcType, String typeName, Class javaType, DatabaseField nestedType) {
         addNamedOutputArgument(null, argumentFieldName, jdbcType, typeName, javaType, nestedType);
     }
-
-    /**
-     * INTERNAL: (override implementation in DatabaseCall)
-     * If a StoredProcedureCall has <b>any<b> non-JDBC types, the target procedure was invoked via
-     * an Anonymous PL/SQL block; if <b>any<b> of its arguments are inout - regardless of whether or
-     * not they are non-JDBC types - then the index calculation to retrieve the 'out' portion of that
-     * parameter's value is different than the 'normal' buildOutputRow. Anonymous PL/SQL blocks do
-     * not support inout arguments; therefore, during the invocation an an extra 'out' binding
-     * at position N+1 was made; as a side-effect, this causes the indices of any subsequent out or
-     * inout parameter to be shuffled down.
-     */
-    @Override
-    public AbstractRecord buildOutputRow(CallableStatement statement)
-        throws SQLException {
-        
-        if (!hasNonJDBCTypes()) {
-            return super.buildOutputRow(statement);
-        }
-        
-        AbstractRecord row = new DatabaseRecord();
-        for (int i = 0, index = 1, l = parameters.size(); i < l; i++, index++) {
-            Object parameter = parameters.elementAt(i);
-            if (parameter instanceof OutputParameterForCallableStatement) {
-                OutputParameterForCallableStatement outParameter = 
-                    (OutputParameterForCallableStatement)parameter;
-                if (outParameter instanceof InOutputParameterForCallableStatement) {
-                    ++index;
-                }
-                // TODO - borrowed verbatim from implementation in DatabaseCall; this should be
-                // refactored
-                if (!outParameter.isCursor()) {
-                    DatabaseField outputField = outParameter.getOutputField();
-                    DatabaseType databaseType = outputField.getDatabaseType();
-                    if (databaseType != null && databaseType.isComplexDatabaseType()) {
-                        ((ComplexDatabaseType)databaseType).buildOutputRow(row, statement, index);
-                    }
-                    else {
-                        Object value = statement.getObject(index);
-                        DatabaseField field = outParameter.getOutputField();
-                        if (value instanceof Struct){
-                            ClassDescriptor descriptor = this.getQuery().getSession().getDescriptor(field.getType());
-                            if ((value!=null) && (descriptor!=null) && 
-                                (descriptor.isObjectRelationalDataTypeDescriptor())){
-                                AbstractRecord nestedRow = 
-                                    ((ObjectRelationalDataTypeDescriptor)descriptor).
-                                        buildRowFromStructure((Struct)value);
-                                ReadObjectQuery query = new ReadObjectQuery();
-                                query.setSession(this.getQuery().getSession());
-                                value = descriptor.getObjectBuilder().buildObject(query, nestedRow);
-                            }
-                        } else if ((value instanceof Array)&&( field.isObjectRelationalDatabaseField() )){
-                            value = ObjectRelationalDataTypeDescriptor.buildContainerFromArray(
-                                (Array)value, (ObjectRelationalDatabaseField)field,
-                                this.getQuery().getSession());
-                        }
-                        row.put(field, value);
-                    }
-                }
-            }
-        }
-
-        return row;
-    }
     
-    @Override
-    protected Object getValueForInParameter(Object parameter, Vector parameterValues,
-        AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session,
-        boolean shouldBind) {
-        
-        DatabaseField fieldParameter = getFieldParameterFor(parameter);
-        if (!isNonJDBCParameter(fieldParameter)) {
-            return super.getValueForInParameter(parameter, parameterValues, translationRow,
-                modifyRow, session, shouldBind);
-        }
-        else {
-            DatabaseType databaseType = fieldParameter.getDatabaseType();
-            if (databaseType.isComplexDatabaseType()) {
-               ComplexDatabaseType complexDatabaseType = (ComplexDatabaseType)databaseType;
-               return complexDatabaseType.getValueForInParameter(parameter, parameterValues,
-                   translationRow, modifyRow, session, shouldBind);
-            }
-            else {
-                return super.getValueForInParameter(parameter, parameterValues, translationRow,
-                    modifyRow, session, shouldBind);
-            }
-        }
-    }
-   
     /**
      * INTERNAL:
      * Return call header for the call string.
@@ -1006,7 +719,7 @@ public class StoredProcedureCall extends DatabaseCall {
      */
     public Vector getProcedureArgumentNames() {
         if (procedureArgumentNames == null) {
-            procedureArgumentNames = new NonSynchronizedVector();
+            procedureArgumentNames = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
         }
         return procedureArgumentNames;
     }
@@ -1037,7 +750,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * The if the names are provide the order is not required to match the call def.
      * This is lazy initialized to conserv space on calls that have no parameters.
      */
-    public void setProcedureArgumentNames(Vector<String> procedureArgumentNames) {
+    public void setProcedureArgumentNames(Vector procedureArgumentNames) {
         this.procedureArgumentNames = procedureArgumentNames;
     }
 
@@ -1049,105 +762,6 @@ public class StoredProcedureCall extends DatabaseCall {
         this.procedureName = procedureName;
     }
 
-    /**
-     * PUBLIC:
-     * helper method that sets the length of the parameter named 'parameterName'
-     * Used by the code that builds Anonymous PL/SQL blocks's temporary '_TARGET'
-     * variables
-     */
-    public void setParameterLength(String parameterName, int length) {
-        if (parameterName != null) {
-            int idx = 0;
-            for (Iterator i = getProcedureArgumentNames().iterator(); i.hasNext();) {
-                String paramName = (String)i.next();
-                if (parameterName.equalsIgnoreCase(paramName)) {
-                    setParameterLength(idx, length);
-                    break;
-                }
-                idx++;
-            }
-        }
-    }
-
-    /**
-     * PUBLIC:
-     * helper method that sets the length of the parameter at index 'parameterIndex'
-     * Used by the code that builds Anonymous PL/SQL blocks's temporary '_TARGET'
-     * variables
-     */
-    public void setParameterLength(int parameterIndex, int length) {
-        DatabaseField field = (DatabaseField)getParameters().get(parameterIndex);
-        if (field != null) {
-            field.setLength(length);
-        }
-    }
-
-    /**
-     * PUBLIC:
-     * helper method that sets the scale of the parameter named 'parameterName'
-     * Used by the code that builds Anonymous PL/SQL blocks's temporary '_TARGET'
-     * variables
-     */
-    public void setParameterScale(String parameterName, int scale) {
-        if (parameterName != null) {
-            int idx = 0;
-            for (Iterator i = getProcedureArgumentNames().iterator(); i.hasNext();) {
-                String paramName = (String)i.next();
-                if (parameterName.equalsIgnoreCase(paramName)) {
-                    setParameterScale(idx, scale);
-                    break;
-                }
-                idx++;
-            }
-        }
-    }
-
-    /**
-     * PUBLIC:
-     * helper method that sets the scale of the parameter at index 'parameterIndex'
-     * Used by the code that builds Anonymous PL/SQL blocks's temporary '_TARGET'
-     * variables
-     */
-    public void setParameterScale(int parameterIndex, int scale) {
-        DatabaseField field = (DatabaseField)getParameters().get(parameterIndex);
-        if (field != null) {
-            field.setScale(scale);
-        }
-    }
-
-    /**
-     * PUBLIC:
-     * helper method that sets the precision of the parameter named 'parameterName'
-     * Used by the code that builds Anonymous PL/SQL blocks's temporary '_TARGET'
-     * variables
-     */
-    public void setParameterPrecision(String parameterName, int precision) {
-        if (parameterName != null) {
-            int idx = 0;
-            for (Iterator i = getProcedureArgumentNames().iterator(); i.hasNext();) {
-                String paramName = (String)i.next();
-                if (parameterName.equalsIgnoreCase(paramName)) {
-                    setParameterPrecision(idx, precision);
-                    break;
-                }
-                idx++;
-            }
-        }
-    }
-
-    /**
-     * PUBLIC:
-     * helper method that sets the precision of the parameter at index 'parameterIndex'
-     * Used by the code that builds Anonymous PL/SQL blocks's temporary '_TARGET'
-     * variables
-     */
-    public void setParameterPrecision(int parameterIndex, int precision) {
-        DatabaseField field = (DatabaseField)getParameters().get(parameterIndex);
-        if (field != null) {
-            field.setPrecision(precision);
-        }
-    }
-    
     public String toString() {
         return Helper.getShortClassName(getClass()) + "(" + getProcedureName() + ")";
     }

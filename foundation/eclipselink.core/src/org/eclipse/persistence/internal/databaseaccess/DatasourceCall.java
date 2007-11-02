@@ -9,25 +9,18 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
-// javase imports
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Vector;
-
-// EclipseLink imports
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.expressions.ParameterExpression;
-import org.eclipse.persistence.internal.helper.DatabaseField;
+import java.util.*;
+import java.io.*;
+import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.localization.WarningLocalization;
-import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
-import org.eclipse.persistence.internal.queries.DatasourceCallQueryMechanism;
+import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
-import org.eclipse.persistence.queries.Call;
-import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:
@@ -45,14 +38,14 @@ public abstract class DatasourceCall implements Call {
 
     // The parameter types determine if the parameter is a modify, translation or literal type.
     transient protected Vector parameterTypes;
-    public static final Integer LITERAL = Integer.valueOf(1); // Integer interns -128 to 127, use its cache
-    public static final Integer MODIFY = Integer.valueOf(2);
-    public static final Integer TRANSLATION = Integer.valueOf(3);
-    public static final Integer CUSTOM_MODIFY = Integer.valueOf(4);
-    public static final Integer OUT = Integer.valueOf(5);
-    public static final Integer INOUT = Integer.valueOf(6);
-    public static final Integer IN = Integer.valueOf(7);
-    public static final Integer OUT_CURSOR = Integer.valueOf(8);
+    public static final Integer LITERAL = new Integer(1);
+    public static final Integer MODIFY = new Integer(2);
+    public static final Integer TRANSLATION = new Integer(3);
+    public static final Integer CUSTOM_MODIFY = new Integer(4);
+    public static final Integer OUT = new Integer(5);
+    public static final Integer INOUT = new Integer(6);
+    public static final Integer IN = new Integer(7);
+    public static final Integer OUT_CURSOR = new Integer(8);
 
     // Store if the call has been prepared.
     protected boolean isPrepared;
@@ -630,7 +623,7 @@ public abstract class DatasourceCall implements Call {
                         appendParameter(writer, value, session);
                     } else if (parameterType == IN) {
                         Object parameter = parameterFields.get(parameterIndex);
-                        Object value = getValueForInParameter(parameter, null, translationRow, modifyRow, session, false);
+                        Object value = getValueForInParameter(parameter, translationRow, modifyRow, session, false);
                         appendParameter(writer, value, session);
                     } else if (parameterType == INOUT) {
                         Object parameter = parameterFields.get(parameterIndex);
@@ -655,10 +648,7 @@ public abstract class DatasourceCall implements Call {
      * In case shouldBind==true tries to return a DatabaseField with type instead of null,
      * returns null only in case no DatabaseField with type was found.
      */
-    protected Object getValueForInParameter(Object parameter, Vector parameterValues,
-        AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session,
-        boolean shouldBind) {
-        
+    protected Object getValueForInParameter(Object parameter, AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session, boolean shouldBind) {
         Object value = parameter;
 
         // Parameter expressions are used for nesting and correct mapping conversion of the value.
@@ -715,7 +705,7 @@ public abstract class DatasourceCall implements Call {
     protected Object getValueForInOutParameter(Object parameter, AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
         // parameter ts an array of two Objects: inParameter and outParameter
         Object inParameter = ((Object[])parameter)[0];
-        Object inValue = getValueForInParameter(inParameter, null, translationRow, modifyRow, session, true);
+        Object inValue = getValueForInParameter(inParameter, translationRow, modifyRow, session, true);
         Object outParameter = ((Object[])parameter)[1];
         return createInOutParameter(inValue, outParameter, session);
     }

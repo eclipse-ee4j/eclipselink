@@ -9,13 +9,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
-// javase imports
-import java.io.Serializable;
-import static java.lang.Integer.MIN_VALUE;
-
-// EclipseLink imports
-import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
+import java.io.*;
+import org.eclipse.persistence.internal.databaseaccess.*;
 
 /**
  * INTERNAL:
@@ -53,17 +48,11 @@ public class DatabaseField implements Cloneable, Serializable {
     public transient Class type;
     
     /**
-     * used to represent the sql type code when it has not being defined
+     * Respective JDBC type of the field's value.
+     * This overrides the class type, which the JDBC type is normally computed from.
+     * PERF: Allow direct variable access from getObject.
      */
-    public static final int NULL_SQL_TYPE = MIN_VALUE;
-
-    /**
-     * Type of field; usually based upon java.sql.TYPES, but allows for 
-     * extended platform-specific types
-     */
-    public int sqlType = NULL_SQL_TYPE;
-    
-    public DatabaseType databaseType = null;
+    public int sqlType;
 
     /**
      * Store normal index of field in result set to optimize performance.
@@ -71,6 +60,11 @@ public class DatabaseField implements Cloneable, Serializable {
      */
     public int index;
     
+    /**
+     * used to represent the value when it has not being defined
+     */
+    public static final int NULL_SQL_TYPE = -1;
+
     public DatabaseField() {
         this("", new DatabaseTable());
     }
@@ -186,13 +180,7 @@ public class DatabaseField implements Cloneable, Serializable {
      * Get the SQL fragment that is used when generating the DDL for the column.
      */
     public String getColumnDefinition() {
-        if (columnDefinition.length() > 0) {
-            return columnDefinition;
-        }
-        if (databaseType != null) {
-            return databaseType.getTypeName();
-        }
-        return "";
+        return this.columnDefinition;
     }
     
     /**
@@ -270,10 +258,6 @@ public class DatabaseField implements Cloneable, Serializable {
      */
     public int getSqlType() {
         return sqlType;
-    }
-    
-    public DatabaseType getDatabaseType() {
-        return databaseType;
     }
 
     /**
@@ -425,12 +409,6 @@ public class DatabaseField implements Cloneable, Serializable {
      */
     public void setSqlType(int sqlType) {
         this.sqlType = sqlType;
-        databaseType = JDBCTypes.getDatabaseTypeForCode(sqlType);
-    }
-    
-    public void setDatabaseType(DatabaseType databaseType) {
-        this.databaseType = databaseType;
-        databaseType.setConversionType(this);
     }
     
     /**
