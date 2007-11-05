@@ -22,27 +22,44 @@ import org.eclipse.persistence.mappings.converters.*;
  */
 public class TypeConversionConverterDataClassIsArrayTest extends ProjectClassGeneratorResultFileTest {
 
-    protected ClassDescriptor descriptorToModify;
+	protected ClassDescriptor descriptor;
+	protected DirectToFieldMapping mapping;
+	protected Class classType;
 
-    public TypeConversionConverterDataClassIsArrayTest() {
-        super(new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject(), 
-              "blobDataMappingConverter.setDataClass(byte[].class);");
-        setDescription("Test addTypeConversionConverterLines method -> setDataClass() generates legal array code");
-    }
+	public TypeConversionConverterDataClassIsArrayTest(Class classType) {
+		super(new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject());
+		setDescription("Test addTypeConversionConverterLines method -> setDataClassName() generates legal array code");
+		setName(getName() + "[" + classType.getName() + "]");
+		// should validate to prevent improper test usage
+		if (!classType.isArray()) {
+			throwError("ClassType must be an array type: " + classType);
+		}
+		this.classType = classType;
+		String expectedName = classType.getComponentType().getName();
+		this.testString = "someDataMappingConverter.setDataClass(" + expectedName + "[].class);";
+	}
 
-    public void setup() {
-        getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(
-            org.eclipse.persistence.testing.models.employee.domain.Employee.class);
-        
-        DirectToFieldMapping blobDataMapping = new DirectToFieldMapping();
-        blobDataMapping.setAttributeName("blobData");
-        blobDataMapping.setFieldName("MR_BLOBBY.BLOB_DATA");
-        TypeConversionConverter blobDataMappingConverter = new TypeConversionConverter();
-        blobDataMappingConverter.setDataClass(java.sql.Blob.class);
-        blobDataMappingConverter.setDataClass(byte[].class);
-        blobDataMapping.setConverter(blobDataMappingConverter);
-        descriptorToModify.addMapping(blobDataMapping);
-    }
+	public void setup() {
+		getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+		descriptor = (ClassDescriptor)project.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+
+		mapping = new DirectToFieldMapping();
+		mapping.setAttributeName("someData");
+		mapping.setFieldName("SOME_TABLE.SOME_DATA");
+
+		TypeConversionConverter someConverter = new TypeConversionConverter();
+		// MW only sets dataClassName, this is translated to dataClass when written to the project java file 
+		someConverter.setDataClassName(classType.getName());
+		mapping.setConverter(someConverter);
+		descriptor.addMapping(mapping);
+	}
+
+	public void reset() {
+		if (descriptor != null) {
+			descriptor.getMappings().remove(mapping);
+			mapping.setDescriptor(null);
+		}
+		super.reset();
+	}
 
 }

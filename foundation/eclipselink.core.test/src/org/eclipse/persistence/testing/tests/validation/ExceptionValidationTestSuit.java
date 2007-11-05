@@ -42,5 +42,8 @@ public class ExceptionValidationTestSuit extends org.eclipse.persistence.testing
 
         addTest(new NestedUOWWithUpdateAllQueryTest());
         addTest(new ExceptionSerializationTestCase());
+        
+        //Bug6119707
+        addTest(new QueryParameterForOneToOneValidationTest());
     }
 }

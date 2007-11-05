@@ -2756,12 +2756,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         getObjectBuilder().initializeJoinedAttributes();
         if (hasInheritance()) {
-            Vector children = getInheritancePolicy().getChildDescriptors();
-
-            // use indeces to avoid synchronization.
-            for (int i = 0; i < children.size(); i++) {
-                InheritancePolicy child = (InheritancePolicy)children.elementAt(0);
-                child.getDescriptor().reInitializeJoinedAttributes();
+			Vector children = getInheritancePolicy().getChildDescriptors(); 
+			// use indices to avoid synchronization problems. 
+            for (int i = 0; i < children.size(); i++) { 
+            	// Bug 6001198 - Child descriptors collection contains descriptors
+	            // also use 'i' indice, in order to correctly iterate
+    	        ClassDescriptor child = (ClassDescriptor)children.elementAt(i); 
+        	    child.reInitializeJoinedAttributes(); 
             }
         }
     }

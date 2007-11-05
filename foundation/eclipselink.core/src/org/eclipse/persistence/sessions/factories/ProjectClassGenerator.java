@@ -1350,16 +1350,19 @@ public class ProjectClassGenerator {
     protected void addTypeConversionConverterLines(NonreflectiveMethodDefinition method, String converterName, TypeConversionConverter converter) {
         if (converter.getObjectClassName() != null) {
             // Bug 5170735 - if a conversion object class is an array type, we need to use different notation
-            if (converter.getObjectClass().isArray()) {
-                method.addLine(converterName + ".setObjectClass(" + converter.getObjectClass().getComponentType() + "[].class);");
-            } else {
-                method.addLine(converterName + ".setObjectClass(" + converter.getObjectClassName() + ".class);");
+			// retrieve the component type from the converter's ocj
+			String arrayComponentType = Helper.getComponentTypeNameFromArrayString(converter.getObjectClassName());
+			if (arrayComponentType != null) {
+				method.addLine(converterName + ".setObjectClass(" + arrayComponentType + "[].class);");
+			} else {
+				method.addLine(converterName + ".setObjectClass(" + converter.getObjectClassName() + ".class);");
             }
         }
         if (converter.getDataClassName() != null) {
             // Bug 5170735 - if a conversion data class is an array type, we need to use different notation
-            if (converter.getDataClass().isArray()) {
-                method.addLine(converterName + ".setDataClass(" + converter.getDataClass().getComponentType() + "[].class);");
+			String arrayComponentType = Helper.getComponentTypeNameFromArrayString(converter.getDataClassName());
+        	if (arrayComponentType != null) {
+        		method.addLine(converterName + ".setDataClass(" + arrayComponentType + "[].class);");
             } else {
                 method.addLine(converterName + ".setDataClass(" + converter.getDataClassName() + ".class);");
             }

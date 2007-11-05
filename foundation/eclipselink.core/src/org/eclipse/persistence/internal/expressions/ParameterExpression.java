@@ -165,7 +165,7 @@ public class ParameterExpression extends BaseExpression {
 
     /**
      * Extract the value from the row.
-     * This may require recusion if it is a nested parameter.
+     * This may require recursion if it is a nested parameter.
      */
     public Object getValue(AbstractRecord translationRow, AbstractSession session) {
         if (getField() == null) {
@@ -183,15 +183,25 @@ public class ParameterExpression extends BaseExpression {
 
             ClassDescriptor descriptor = session.getDescriptor(value);
             //Bug4924639  Aggregate descriptors have to be acquired from their mapping as they are cloned and initialized by each mapping
-            if (descriptor.isAggregateDescriptor() && ((ParameterExpression)getBaseExpression()).getLocalBase().isObjectExpression()) {
+            if (descriptor != null && descriptor.isAggregateDescriptor() && ((ParameterExpression)getBaseExpression()).getLocalBase().isObjectExpression()) {
                 descriptor = ((ObjectExpression)((ParameterExpression)getBaseExpression()).getLocalBase()).getDescriptor();
             }
+            
+            // Bug6119707 validate parameter type against mapping
+            if (descriptor == null) {
+                validateParameterValueAgainstMapping(value);
+            }
+
             if (descriptor != null) {
                 // For bug 2990493 must unwrap for EJBQL "Select Person(p) where p = ?1"
                 //if we had to unwrap it make sure we replace the argument with this value
                 //incase it is needed again, say in conforming.
                 //bug 3750793
                 value = descriptor.getObjectBuilder().unwrapObject(value, session);
+                
+                // Bug6119707 must unwrap before validating parameter type
+                validateParameterValueAgainstMapping(value);
+                
                 translationRow.put(((ParameterExpression)getBaseExpression()).getField(), value);
 
                 // The local parameter is either a field or attribute of the object.
@@ -315,6 +325,23 @@ public class ParameterExpression extends BaseExpression {
      */
     public Expression twistedForBaseAndContext(Expression newBase, Expression context) {
         return context.getField(getField());
+    }
+    
+    /**
+     * INTERNAL
+     * Validate the passed parameter against the local base mapping.
+     * Throw a QueryException if the parameter is of an incorrect class for object comparison.
+     * Added for Bug6119707
+     */
+    protected void validateParameterValueAgainstMapping(Object value) {
+        ParameterExpression baseExpression = (ParameterExpression)getBaseExpression();
+        ObjectExpression queryKey = (ObjectExpression) baseExpression.getLocalBase();
+        if (value != null && queryKey != null && queryKey.isObjectExpression()) {
+            DatabaseMapping mapping = queryKey.getMapping();
+            if (mapping != null && mapping.isForeignReferenceMapping() && !mapping.getReferenceDescriptor().getJavaClass().isInstance(value)) {
+                throw QueryException.incorrectClassForObjectComparison(baseExpression, value, mapping);
+            }
+        }
     }
 
     /**

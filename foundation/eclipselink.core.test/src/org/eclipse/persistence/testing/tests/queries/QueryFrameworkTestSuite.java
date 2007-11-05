@@ -42,6 +42,8 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(buildGetSQLTest());
         addTest(buildJoinSubclassesQueryTest());
         addTest(buildRecordTest());
+        // Bug 6450867 - TOPLINK-6069 ON READOBJECTQUERY ON ENTITY USING MULTIPLE TABLE MAPPING
+        addTest(new ConformResultsWithMultitableAndJoiningTest());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new test cases into it.

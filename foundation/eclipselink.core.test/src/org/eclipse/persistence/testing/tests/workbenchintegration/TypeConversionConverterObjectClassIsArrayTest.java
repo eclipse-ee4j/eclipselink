@@ -22,27 +22,43 @@ import org.eclipse.persistence.mappings.converters.*;
  */
 public class TypeConversionConverterObjectClassIsArrayTest extends ProjectClassGeneratorResultFileTest {
 
-    protected ClassDescriptor descriptorToModify;
+	protected ClassDescriptor descriptor;
+	protected DirectToFieldMapping mapping;
+	protected Class classType;
 
-    public TypeConversionConverterObjectClassIsArrayTest() {
-        super(new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject(), 
-            "blobDataMappingConverter.setObjectClass(byte[].class);");
-        setDescription("Test addTypeConversionConverterLines method -> setObjectClass() generates legal array code");    
-    }
-    
-    public void setup() {
-        getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        descriptorToModify = (ClassDescriptor)project.getDescriptors().get(
-            org.eclipse.persistence.testing.models.employee.domain.Employee.class);
-        
-        DirectToFieldMapping blobDataMapping = new DirectToFieldMapping();
-        blobDataMapping.setAttributeName("blobData");
-        blobDataMapping.setFieldName("MR_BLOBBY.BLOB_DATA");
-        TypeConversionConverter blobDataMappingConverter = new TypeConversionConverter();
-        blobDataMappingConverter.setObjectClass(byte[].class);
-        blobDataMappingConverter.setDataClass(java.sql.Blob.class);
-        blobDataMapping.setConverter(blobDataMappingConverter);
-        descriptorToModify.addMapping(blobDataMapping);
-    }
+	public TypeConversionConverterObjectClassIsArrayTest(Class classType) {
+		super(new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject());
+		setDescription("Test addTypeConversionConverterLines method -> setObjectClassName() generates legal array code");
+		setName(getName() + "[" + classType.getName() + "]");
+		// should validate to prevent improper test usage
+		if (!classType.isArray()) {
+			throwError("ClassType must be an array type: " + classType);
+		}
+		this.classType = classType;
+		String expectedName = classType.getComponentType().getName();
+		this.testString = "someDataMappingConverter.setObjectClass(" + expectedName + "[].class);";
+	}
 
+	public void setup() {
+		getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+		descriptor = (ClassDescriptor)project.getDescriptors().get(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
+
+		mapping = new DirectToFieldMapping();
+		mapping.setAttributeName("someData");
+		mapping.setFieldName("SOME_TABLE.SOME_DATA");
+
+		TypeConversionConverter someConverter = new TypeConversionConverter();
+		// MW only sets dataClassName, this is translated to dataClass when written to the project java file
+		someConverter.setObjectClassName(classType.getName());
+		mapping.setConverter(someConverter);
+		descriptor.addMapping(mapping);
+	}
+
+	public void reset() {
+		if (descriptor != null) {
+			descriptor.getMappings().remove(mapping);
+			mapping.setDescriptor(null);
+		}
+		super.reset();
+	}
 }

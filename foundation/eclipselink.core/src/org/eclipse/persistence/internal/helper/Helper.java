@@ -365,7 +365,27 @@ public class Helper implements Serializable {
         }
     }
     
-    
+    public static String getComponentTypeNameFromArrayString(String aString) {
+		if (aString == null || aString.length() == 0) {
+	    	return null;
+		}
+		// complex array component type case 
+		if (aString.length() > 3 && (aString.startsWith("[L") & aString.endsWith(";"))) {
+	    	return aString.substring(2, aString.length() - 1);
+		} else if (aString.startsWith("[")){
+	    	Class primitiveClass = null;
+			try {
+	        	primitiveClass = Class.forName(aString);
+			} catch (ClassNotFoundException cnf) {
+	        	// invalid name specified - do not rethrow exception
+				primitiveClass = null;
+			}
+			if (primitiveClass != null) {
+				return primitiveClass.getComponentType().getName();
+			}
+		}
+		return null;
+    }
     
     public static boolean compareArrays(Object[] array1, Object[] array2) {
         if (array1.length != array2.length) {

@@ -177,8 +177,15 @@ new ProjectClassGeneratorResultFileTest(new org.eclipse.persistence.testing.mode
         suite.addTest(new MapPolicyIndirectionTest());
 
         // Bug 5170735 - PROJECTCLASSGENERATOR GENERATES NON-COMPILING CODE FOR TYPECONVERSIONCONVERTER
-        suite.addTest(new TypeConversionConverterDataClassIsArrayTest());
-        suite.addTest(new TypeConversionConverterObjectClassIsArrayTest());
+        suite.addTest(new TypeConversionConverterDataClassIsArrayTest(byte[].class));
+        suite.addTest(new TypeConversionConverterDataClassIsArrayTest(Byte[].class));
+        suite.addTest(new TypeConversionConverterDataClassIsArrayTest(char[].class));
+        suite.addTest(new TypeConversionConverterDataClassIsArrayTest(Character[].class));
+         
+        suite.addTest(new TypeConversionConverterObjectClassIsArrayTest(byte[].class));
+        suite.addTest(new TypeConversionConverterObjectClassIsArrayTest(Byte[].class));
+        suite.addTest(new TypeConversionConverterObjectClassIsArrayTest(char[].class));
+        suite.addTest(new TypeConversionConverterObjectClassIsArrayTest(Character[].class));
 
         return suite;
     }
