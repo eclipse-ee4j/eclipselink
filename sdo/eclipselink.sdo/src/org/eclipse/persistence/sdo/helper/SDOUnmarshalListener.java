@@ -171,7 +171,9 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                         for (int m = 0; m < indexsToDelete.size(); m++) {
                                             int toDeleteIndex = ((Integer)indexsToDelete.get(m)).intValue();
                                             SDODataObject nextToDelete = (SDODataObject)toDelete.get(m);
+                                            ((SDOChangeSummary)nextModifiedDO.getChangeSummary()).pauseLogging();
                                             lw.add(toDeleteIndex, nextToDelete);
+                                            ((SDOChangeSummary)nextModifiedDO.getChangeSummary()).resumeLogging();
                                         }
                                         for (int m = indexsToDelete.size() - 1; m >= 0; m--) {
                                             int toDeleteIndex = ((Integer)indexsToDelete.get(m)).intValue();

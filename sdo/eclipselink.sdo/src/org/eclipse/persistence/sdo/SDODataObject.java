@@ -1326,7 +1326,9 @@ public class SDODataObject implements DataObject {
         boolean wasSet = isSet(property);
 
         if (wasSet) {
-            _setModified(true);
+            if(!fromDelete){
+              _setModified(true);
+            }
         } else {
             return;
         }
@@ -2039,7 +2041,6 @@ public class SDODataObject implements DataObject {
     private void detach(boolean fromDelete, boolean updateSequence) {
         // Note: there is no case10 where fromDelete=true and updateSequence=false
         Property containmentProperty = getContainmentProperty();
-        _setDeleted(true);
 
         if ((containmentProperty != null) && containmentProperty.isReadOnly()) {
             //TODO: throw UnsupportedOperationException                                  
@@ -2056,6 +2057,7 @@ public class SDODataObject implements DataObject {
                 ((SDODataObject)getContainer()).unset(containmentProperty, fromDelete, updateSequence);
             }
         } else {
+            _setDeleted(true);
             detachOrDelete(fromDelete);
         }
     }
@@ -2260,8 +2262,8 @@ public class SDODataObject implements DataObject {
     private void _setDeleted(boolean deleted) {
         // reduced scope from public to private 17 May 2007 - use the public deprecated public function until we remove it
         if (changeSummary != null) {
-            ((SDOChangeSummary)changeSummary).setDeleted(this, deleted);
-            if (isLogging()) {
+            boolean wasDeleted = ((SDOChangeSummary)changeSummary).setDeleted(this, deleted);
+            if (wasDeleted && isLogging()) {
                 updateChangeSummaryWithOriginalValues();
             }
         }

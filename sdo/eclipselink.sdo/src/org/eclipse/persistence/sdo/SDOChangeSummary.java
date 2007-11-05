@@ -177,9 +177,9 @@ public class SDOChangeSummary implements ChangeSummary {
     * Set flag modified value.
     * @param deleted   flag modified's new value.
     */
-    public void setDeleted(DataObject anObject, boolean deleted) {
+   public boolean setDeleted(DataObject anObject, boolean deleted) {
         if (getRootObject() == anObject) {
-            return;
+            return false;
         }
 
         // Explicitly clear the flag
@@ -187,17 +187,26 @@ public class SDOChangeSummary implements ChangeSummary {
             deletedList.remove(anObject);
         }
 
-        if (isLogging() && !this.isDeleted(anObject)) {
-            if (deleted) {
+        if (isLogging() && !this.isDeleted(anObject)) {            
+            if (deleted) {            
                 // remove from other sets
                 modifiedList.remove(anObject);
-                createdList.remove(anObject);
-                // add to deleted items                
-                pauseLogging();
-                deletedList.add(anObject);
-                resumeLogging();
+                
+                if(isCreated(anObject)){
+                  createdList.remove(anObject);
+                  
+                  oldSettings.remove(anObject);
+                  originalValueStores.remove(anObject);
+                  originalElements.remove(anObject);                  
+                  return false;
+                }else {
+                  pauseLogging();
+                  deletedList.add(anObject);
+                  resumeLogging();
+                }
             }
         }
+        return true;
     }
 
     /**
