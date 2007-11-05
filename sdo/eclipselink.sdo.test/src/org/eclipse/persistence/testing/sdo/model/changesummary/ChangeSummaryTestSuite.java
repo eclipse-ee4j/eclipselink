@@ -44,7 +44,8 @@ public class ChangeSummaryTestSuite {
         suite.addTest(new TestSuite(ChangeSummaryXSDwSeqTestCases.class));
         suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootUndoWSeqTestCases.class));
 
-        // model tests
+        // model tests        
+        suite.addTest(new TestSuite(ChangeSummaryBug6599313TestCases.class));
         suite.addTest(new TestSuite(ChangeSummaryIsCreatedIsDeletedIsModifiedTest.class));
         suite.addTest(new TestSuite(ChangeSummaryGetChangedDataObjectsTest.class));
         suite.addTest(new TestSuite(ChangeSummaryInitalizedInCreatingDataObjectTests.class));
