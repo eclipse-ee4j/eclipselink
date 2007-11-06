@@ -21,7 +21,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
+import java.util.WeakHashMap;
+
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -42,8 +45,6 @@ import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
-import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.xml.sax.InputSource;
@@ -58,8 +59,10 @@ import org.xml.sax.InputSource;
 public class SDOXMLHelperDelegate implements SDOXMLHelper {
     private SDOClassLoader loader;
     private XMLContext xmlContext;
-    private XMLMarshaller xmlMarshaller;
-    private XMLUnmarshaller xmlUnmarshaller;
+    
+    private Map<Thread, XMLMarshaller> xmlMarshallerMap;
+    private Map<Thread, XMLUnmarshaller> xmlUnmarshallerMap;
+
     private Project topLinkProject;
     private boolean isDirty;
     private TimeZone timeZone;
@@ -72,6 +75,8 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         aHelperContext = aContext;
         // This ClassLoader is internal to SDO so no inter servlet-ejb container context issues should arise
         loader = new SDOClassLoader(Thread.currentThread().getContextClassLoader(), aContext);
+        xmlMarshallerMap = new WeakHashMap<Thread, XMLMarshaller>();
+        xmlUnmarshallerMap = new WeakHashMap<Thread, XMLUnmarshaller>();        
     }
 
     /**
@@ -426,31 +431,23 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
 
     public void addDescriptor(XMLDescriptor descriptor) {
         getTopLinkProject().addDescriptor(descriptor);
-        if (xmlContext != null) {
-            getXmlContext().storeXMLDescriptorByQName(descriptor);
-            isDirty = true;
-        }
+        isDirty = true;
     }
 
     public void addDescriptors(List descriptors) {
         for (int i = 0; i < descriptors.size(); i++) {
             XMLDescriptor nextDescriptor = (XMLDescriptor)descriptors.get(i);
             getTopLinkProject().addDescriptor(nextDescriptor);
-            if (xmlContext != null) {
-                xmlContext.storeXMLDescriptorByQName(nextDescriptor);
-            }
         }
-        if (xmlContext != null) {
-            isDirty = true;
-        }
+        isDirty = true;
     }
 
     public void setTopLinkProject(Project toplinkProject) {
         this.topLinkProject = toplinkProject;
         //TODO: temporarily nulling things out but should eventually have sessionbroker or list of sessions        
         this.xmlContext = null;
-        this.xmlMarshaller = null;
-        this.xmlUnmarshaller = null;
+        this.xmlMarshallerMap.clear();
+        this.xmlUnmarshallerMap.clear();
     }
 
     public Project getTopLinkProject() {
@@ -470,43 +467,56 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     }
 
     public void setXmlMarshaller(XMLMarshaller xmlMarshaller) {
-        this.xmlMarshaller = xmlMarshaller;
+        this.xmlMarshallerMap.put(Thread.currentThread(), xmlMarshaller);
     }
 
     public XMLMarshaller getXmlMarshaller() {
-        XMLAttachmentMarshaller attachmentMarshaller = null;
-        if (xmlMarshaller != null) {
-            attachmentMarshaller = xmlMarshaller.getAttachmentMarshaller();
+    	XMLMarshaller marshaller = xmlMarshallerMap.get(Thread.currentThread());
+    	
+    	if (marshaller == null) {
+            marshaller = getXmlContext().createMarshaller();
+            marshaller.setMarshalListener(new SDOMarshalListener(marshaller, aHelperContext.getTypeHelper()));
+            xmlMarshallerMap.put(Thread.currentThread(), marshaller);
         }
-        XMLMarshaller newMarshaller = getXmlContext().createMarshaller();
-        newMarshaller.setMarshalListener(new SDOMarshalListener(newMarshaller, aHelperContext.getTypeHelper()));
-        newMarshaller.setAttachmentMarshaller(attachmentMarshaller);
-        xmlMarshaller = newMarshaller;
-        return newMarshaller;
+        
+    	XMLContext context = getXmlContext();
+    	if (marshaller.getXMLContext() != context) { 
+    		marshaller.setXMLContext(context);
+    	}
+        return marshaller;
     }
 
     public void setXmlUnmarshaller(XMLUnmarshaller xmlUnmarshaller) {
-        this.xmlUnmarshaller = xmlUnmarshaller;
+    	this.xmlUnmarshallerMap.put(Thread.currentThread(), xmlUnmarshaller);
     }
 
     public XMLUnmarshaller getXmlUnmarshaller() {
-        XMLAttachmentUnmarshaller attachmentUnmarshaller = null;
-        if (xmlUnmarshaller != null) {
-            attachmentUnmarshaller = xmlUnmarshaller.getAttachmentUnmarshaller();
+        XMLUnmarshaller unmarshaller = xmlUnmarshallerMap.get(Thread.currentThread());
+    	
+    	if (unmarshaller == null) {
+            unmarshaller = getXmlContext().createUnmarshaller();
+            unmarshaller.setUnmarshalListener(new SDOUnmarshalListener(aHelperContext));
+            unmarshaller.setResultAlwaysXMLRoot(true);
+            xmlUnmarshallerMap.put(Thread.currentThread(), unmarshaller);
         }
-        XMLUnmarshaller newUnmarshaller = getXmlContext().createUnmarshaller();
-        newUnmarshaller.setUnmarshalListener(new SDOUnmarshalListener(aHelperContext));
-        newUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
-        newUnmarshaller.setResultAlwaysXMLRoot(true);
-        xmlUnmarshaller = newUnmarshaller;
-        return newUnmarshaller;
+        
+    	XMLContext context = getXmlContext();
+    	if (unmarshaller.getXMLContext() != context) { 
+    		unmarshaller.setXMLContext(context);
+    	}
+        return unmarshaller;
     }
 
+    public void setDirty(boolean value) {
+    	this.isDirty = value;    	
+    }
+    
+    
     public void reset() {
         setXmlContext(null);
-        setXmlMarshaller(null);
+        this.xmlMarshallerMap.clear();
+        this.xmlUnmarshallerMap.clear();
         setLoader(new SDOClassLoader(getClass().getClassLoader(), (HelperContext)this));
-        setXmlUnmarshaller(null);
         setTopLinkProject(null);
     }
 
