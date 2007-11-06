@@ -91,8 +91,7 @@ public class XMLMarshaller {
     * @param session A single session
     */
     public XMLMarshaller(XMLContext xmlContext) {
-        this.xmlContext = xmlContext;
-        initialize();
+        setXMLContext(xmlContext);
     }
 
     private void initialize() {
@@ -110,6 +109,14 @@ public class XMLMarshaller {
     public XMLContext getXMLContext() {
         return xmlContext;
     }
+    
+    /** 
+     * Set the XMLContext used by this instance of XMLMarshaller.
+     */
+    public void setXMLContext(XMLContext value) {
+        xmlContext =  value;
+        initialize();
+    }    
 
     /**
     * Returns if this XMLMarshaller should format the XML
