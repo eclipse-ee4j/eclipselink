@@ -139,20 +139,25 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
 	 * by the persistence provider.
 	 */
 	public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo info, Map properties){
-		Map nonNullProperties = (properties == null) ? new HashMap() : properties;
+            Map nonNullProperties = (properties == null) ? new HashMap() : properties;
+        
 	    EntityManagerSetupImpl emSetupImpl = null;
+            boolean isNew = false;
+            ClassTransformer transformer = null;
 	    synchronized (EntityManagerFactoryProvider.emSetupImpls) {
 	    	String urlAndName = info.getPersistenceUnitRootUrl() + info.getPersistenceUnitName();
 	        emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(urlAndName);
 	        if (emSetupImpl == null){
 	        	emSetupImpl = new EntityManagerSetupImpl();
+                    isNew = true;
 	            emSetupImpl.setIsInContainerMode(true);        
+                    // if predeploy fails then emSetupImpl shouldn't be added to FactoryProvider
+                    transformer = emSetupImpl.predeploy(info, nonNullProperties);
 	            EntityManagerFactoryProvider.addEntityManagerSetupImpl(urlAndName, emSetupImpl);
 	        }
 	    }
 	        
-	    ClassTransformer transformer = null;
-	    if(!emSetupImpl.isDeployed()) {
+            if(!isNew && !emSetupImpl.isDeployed()) {
 	    	transformer = emSetupImpl.predeploy(info, nonNullProperties);
 	    }
 	    if (transformer != null){
