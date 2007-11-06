@@ -158,6 +158,14 @@ public interface SDOXMLHelper extends XMLHelper {
 
     /**
      * INTERNAL:
+     * Set the dirty flag.
+     * 
+     * @param value
+     */
+    public void setDirty(boolean value);
+    
+    /**
+     * INTERNAL:
      * 
      */
     public void reset();
