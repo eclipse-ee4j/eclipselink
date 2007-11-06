@@ -237,6 +237,10 @@ public class SDOXMLHelperDelegator implements SDOXMLHelper {
         aHelperContext = helperContext;
     }
 
+    public void setDirty(boolean value) {
+    	getSDOXMLHelperDelegate().setDirty(value);    	
+    }
+    
     public void reset() {
         getSDOXMLHelperDelegate().reset();
     }
