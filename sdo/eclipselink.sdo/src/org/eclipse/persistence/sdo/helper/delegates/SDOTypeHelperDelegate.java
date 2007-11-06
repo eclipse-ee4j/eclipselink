@@ -665,6 +665,8 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
                     aDescriptor.setDefaultRootElement(rootName);
                     QName elementType = new QName(propertyUri, rootName);
                     aDescriptor.setDefaultRootElementType(elementType);
+                    
+                    ((SDOXMLHelper) aHelperContext.getXMLHelper()).setDirty(true);
                 }
             }
         }
