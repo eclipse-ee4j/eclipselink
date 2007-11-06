@@ -71,8 +71,7 @@ public class XMLUnmarshaller {
     private Class unmappedContentHandlerClass;
 
     protected XMLUnmarshaller(XMLContext xmlContext) {
-        this.xmlContext = xmlContext;
-        initialize();
+        setXMLContext(xmlContext);
     }
 
     private void initialize() {
@@ -122,6 +121,14 @@ public class XMLUnmarshaller {
         return xmlContext;
     }
 
+    /** 
+     * Set the XMLContext used by this instance of XMLUnmarshaller.
+     */
+    public void setXMLContext(XMLContext value) {
+        xmlContext =  value;
+        initialize();
+    }
+    
     /**
     * Get the validation mode set on this XMLUnmarshaller
     * By default, the unmarshaller is set to be NONVALIDATING
