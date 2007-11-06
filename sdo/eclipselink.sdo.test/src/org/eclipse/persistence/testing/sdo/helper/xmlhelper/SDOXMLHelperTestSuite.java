@@ -13,6 +13,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.load.SDOXMLHelperLoadTestSuite;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.save.SDOXMLHelperSaveTestSuite;
+import org.eclipse.persistence.testing.sdo.helper.xmlhelper.threadsafety.SDOXMLHelperThreadSafetyTestSuite;
 
 public class SDOXMLHelperTestSuite {
     public SDOXMLHelperTestSuite() {
@@ -26,6 +27,7 @@ public class SDOXMLHelperTestSuite {
         TestSuite suite = new TestSuite("All XMLHelper Tests");
         suite.addTest(new SDOXMLHelperLoadTestSuite().suite());
         suite.addTest(new SDOXMLHelperSaveTestSuite().suite());
+        suite.addTest(new SDOXMLHelperThreadSafetyTestSuite().suite());
         return suite;
     }
 }
