@@ -93,7 +93,7 @@ public class SDODataObject implements DataObject {
     private ValueStore currentValueStore;
     private List openContentProperties;
     private List openContentPropertiesAttributes;
-    private Map openContentPropertiesMap;
+    private Map openContentAliasNames;
     private String containmentPropertyName;
     private ChangeSummary changeSummary;
     private List instanceProperties;
@@ -2154,11 +2154,27 @@ public class SDODataObject implements DataObject {
         if (getType() == null) {
             throw new UnsupportedOperationException("Type is null");
         }
-        Property p = getType().getProperty(propertyName);
-        if (null == p) {
-            p = (Property)_getOpenContentPropertiesMap().get(propertyName);
+        Property property = getType().getProperty(propertyName);
+        if (null == property) {
+            property = (Property)_getOpenContentAliasNamesMap().get(propertyName);
+            if (null == property) {
+                for (int i = 0; i < _getOpenContentProperties().size(); i++) {
+                    Property nextProp = (Property)_getOpenContentProperties().get(i);
+                    if (nextProp.getName().equals(propertyName)) {
+                        return nextProp;
+                    }
+                }
+                if (null == property) {
+                    for (int i = 0; i < _getOpenContentPropertiesAttributes().size(); i++) {
+                        Property nextProp = (Property)_getOpenContentPropertiesAttributes().get(i);
+                        if (nextProp.getName().equals(propertyName)) {
+                           return nextProp;
+                        }
+                    }
+                }
+            }
         }
-        return p;
+        return property;
     }
 
     /**
@@ -2788,13 +2804,10 @@ public class SDODataObject implements DataObject {
     public Map _getOpenContentPropertiesAttributesMap() {
         Map openContentPropertiesAttrs = new HashMap();
         for (int i = 0, size = _getOpenContentPropertiesAttributes().size(); i < size; i++) {
-            Property next = (Property)_getOpenContentPropertiesAttributes().get(i);
-            Object value = get(next);
-            String uri = null;
-
-            //null means attributes won't be prefix qualified
-            QName qname = new QName(uri, next.getName());
-            openContentPropertiesAttrs.put(qname, value);
+            Property next = (Property)_getOpenContentPropertiesAttributes().get(i);            
+            //if uri is null then attributes won't be prefix qualified                      
+            QName qname = new QName(((SDOProperty)next).getUri(), next.getName());
+            openContentPropertiesAttrs.put(qname, get(next));
         }
 
         return openContentPropertiesAttrs;
@@ -2809,7 +2822,20 @@ public class SDODataObject implements DataObject {
 
             if ((!nextKey.getNamespaceURI().equals(XMLConstants.XMLNS_URL)) && (!((nextKey.getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL)) && nextKey.getLocalPart().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)))) {
                 Object value = openAttributeProperties.get(nextKey);
-                set(nextKey.getLocalPart(), value);
+                SDOProperty prop = (SDOProperty)aHelperContext.getXSDHelper().getGlobalProperty(nextKey.getNamespaceURI(), nextKey.getLocalPart(), false);
+                if (prop == null) {                
+                    DataObject propDo = aHelperContext.getDataFactory().create(SDOConstants.SDO_PROPERTY);
+                    propDo.set("name", nextKey.getLocalPart());
+                    propDo.set("type", SDOConstants.SDO_STRING);
+                    propDo.set("many", false);                                        
+                    prop = (SDOProperty)aHelperContext.getTypeHelper().defineOpenContentProperty(null, propDo);
+                    prop.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.FALSE);
+                    prop.setUri(nextKey.getNamespaceURI());
+                
+                    set(prop, value);
+                } else {                    
+                    set(prop, value);                    
+                }
             }
         }
     }
@@ -2863,7 +2889,7 @@ public class SDODataObject implements DataObject {
                 theType = ((DataObject)next).getType();
             }
             if (propertyName != null) {
-                SDOProperty prop = (SDOProperty)aHelperContext.getTypeHelper().getOpenContentProperty(propertyUri, propertyName);
+                SDOProperty prop = (SDOProperty)aHelperContext.getXSDHelper().getGlobalProperty(propertyUri, propertyName, true);
                 if (prop == null) {
                     DataObject propDo = aHelperContext.getDataFactory().create(SDOConstants.SDO_PROPERTY);
                     propDo.set("name", propertyName);
@@ -2965,30 +2991,16 @@ public class SDODataObject implements DataObject {
         }
         return openContentProperties;
     }
+        
 
-    /**
-     * INTERNAL:
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * Use {@link #_getOpenContentPropertiesMap()} instead
-     * @return
-     */
-    public Map getOpenContentPropertiesMap() {
-        return _getOpenContentPropertiesMap();
-    }
-
-    /**
-     * INTERNAL:
-     * Return the map of open content properties
-     * @return
-     */
-    private Map _getOpenContentPropertiesMap() {
-        if (null == openContentPropertiesMap) {
-            openContentPropertiesMap = new HashMap();
+    private Map<String, Property> _getOpenContentAliasNamesMap() {
+        if (openContentAliasNames == null) {
+            openContentAliasNames = new HashMap();
         }
-        return openContentPropertiesMap;
+        return openContentAliasNames;
     }
 
-    /**
+   /**
      * INTERNAL:
      */
     private void convertValueAndSet(Property property, Object originalValue) {
@@ -3412,7 +3424,7 @@ public class SDODataObject implements DataObject {
     public Object getPropertyInternal(Property property) {
         int index = ((SDOProperty)property).getIndexInType();
         if (index == -1) {
-            return _getCurrentValueStore().getOpenContentProperty(property.getName());
+            return _getCurrentValueStore().getOpenContentProperty(property);
         } else {
             return _getCurrentValueStore().getDeclaredProperty(index);
         }
@@ -3428,7 +3440,7 @@ public class SDODataObject implements DataObject {
     public void setPropertyInternal(Property property, Object value, boolean updateSequence) {
         int index = ((SDOProperty)property).getIndexInType();
         if (index == -1) {
-            _getCurrentValueStore().setOpenContentProperty(property.getName(), value);
+            _getCurrentValueStore().setOpenContentProperty(property, value);
         } else {
             _getCurrentValueStore().setDeclaredProperty(index, value);
         }
@@ -3462,25 +3474,23 @@ public class SDODataObject implements DataObject {
      * @param property
      */
     public void addOpenContentProperty(Property property) {
-        Property prop = (Property)_getOpenContentPropertiesMap().get(property.getName());
-        if (prop == null) {
-            // remove from unset map if previously unset
+        List theList = null;
+        if (aHelperContext.getXSDHelper().isAttribute(property)) {
+            theList = _getOpenContentPropertiesAttributes();
+        }else {
+            theList = _getOpenContentProperties();
+        }
+        
+        if (!theList.contains(property)) {
             if (isLogging()) {
-                ((SDOChangeSummary)getChangeSummary()).removeUnsetOCProperty(this, property);
+                ((SDOChangeSummary)getChangeSummary()).removeUnsetOCProperty(this, property);   
             }
-
-            _getOpenContentPropertiesMap().put(property.getName(), property);
-            if (aHelperContext.getXSDHelper().isAttribute(property)) {
-                _getOpenContentPropertiesAttributes().add(property);
-            } else {
-                _getOpenContentProperties().add(property);
-            }
-
+            theList.add(property);
             getInstanceProperties().add(property);
             for (int i = 0, size = property.getAliasNames().size(); i < size; i++) {
-                _getOpenContentPropertiesMap().put(property.getAliasNames().get(i), property);
+                _getOpenContentAliasNamesMap().put((String)property.getAliasNames().get(i), property);
             }
-        }
+        }        
     }
 
     /**
@@ -3497,12 +3507,11 @@ public class SDODataObject implements DataObject {
         }
 
         // remove oc property
-        _getOpenContentPropertiesMap().remove(property.getName());
         _getOpenContentProperties().remove(property);
         _getOpenContentPropertiesAttributes().remove(property);
         getInstanceProperties().remove(property);
         for (int i = 0, size = property.getAliasNames().size(); i < size; i++) {
-            _getOpenContentPropertiesMap().remove(property.getAliasNames().get(i));
+           _getOpenContentAliasNamesMap().remove(property.getAliasNames().get(i));
         }
     }
 
@@ -3515,7 +3524,7 @@ public class SDODataObject implements DataObject {
     public boolean isSetInternal(Property property) {
         int index = ((SDOProperty)property).getIndexInType();
         if (index == -1) {
-            return _getCurrentValueStore().isSetOpenContentProperty(property.getName());
+            return _getCurrentValueStore().isSetOpenContentProperty(property);
         } else {
             return _getCurrentValueStore().isSetDeclaredProperty(index);
         }
@@ -3538,7 +3547,7 @@ public class SDODataObject implements DataObject {
             }
         } else {
             if (property.isOpenContent()) {
-                _getCurrentValueStore().unsetOpenContentProperty(property.getName());
+                _getCurrentValueStore().unsetOpenContentProperty(property);
                 removeOpenContentProperty(property);
             } else {
                 _getCurrentValueStore().unsetDeclaredProperty(((SDOProperty)property).getIndexInType());

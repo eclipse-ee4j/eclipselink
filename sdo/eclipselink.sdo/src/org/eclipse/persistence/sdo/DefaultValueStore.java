@@ -57,11 +57,11 @@ public class DefaultValueStore implements ValueStore {
      * and each object in the List will be {@link Type#isInstance an instance of}
      * the property's {@link Property#getType type}.
      * Otherwise the result will directly be an instance of the property's type.
-     * @param propertyName the property name of the value to fetch.
+     * @param property the property to fetch the value of.
      * @return the value of the given property of the object.
      */
-    public Object getOpenContentProperty(String propertyName) {
-        return getOpenContentValues().get(propertyName);
+    public Object getOpenContentProperty(Property property) {
+        return getOpenContentValues().get(property);
     }
 
     /**
@@ -94,11 +94,11 @@ public class DefaultValueStore implements ValueStore {
       * the existing contents are cleared and the contents of the new value are added.
       * Otherwise the new value directly must be an instance of the property's type
       * and it becomes the new value of the property of the object.
-      * @param propertyName the property name of the value to set.
+     * @param property the property to be set.
       * @param value the new value for the property.
       */
-    public void setOpenContentProperty(String propertyName, Object value) {
-        getOpenContentValues().put(propertyName, value);
+    public void setOpenContentProperty(Property property, Object value) {    
+        getOpenContentValues().put(property, value);
     }
 
     /**
@@ -132,11 +132,11 @@ public class DefaultValueStore implements ValueStore {
       * <ol><li>any call to set() without a call to unset() will cause isSet() to return true, or </li>
       *   <li>the current value is compared to the default value and isSet() returns true when they differ.</li>
       * </ol></ul><p>
-      * @param propertyName the property in question.
+     * @param property the property in question.
       * @return whether the property of the object is set.
       */
-    public boolean isSetOpenContentProperty(String propertyName) {
-        return getOpenContentValues().containsKey(propertyName);
+    public boolean isSetOpenContentProperty(Property property) {
+        return getOpenContentValues().containsKey(property);
     }
 
     /**
@@ -174,11 +174,11 @@ public class DefaultValueStore implements ValueStore {
      * @see #isSetDeclaredProperty(int)
      * @see #setDeclaredProperty(int, Object)
      * @see #getDeclaredProperty(int)
-     * @param propertyName
+     * @param property
      * @return void
      */
-    public void unsetOpenContentProperty(String propertyName) {
-        getOpenContentValues().remove(propertyName);
+    public void unsetOpenContentProperty(Property property) {    
+        getOpenContentValues().remove(property);
     }
 
     /**

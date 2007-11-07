@@ -633,10 +633,9 @@ public class SDOCopyHelper implements CopyHelper {
             // iterate existing open content properties            
             for (Iterator i = ocPropertiesList.iterator(); i.hasNext();) {
                 Property ocProperty = (Property)i.next();
-                String propName = ocProperty.getName();
-                if (aVSOriginal.isSetOpenContentProperty(propName)) {
+                if (aVSOriginal.isSetOpenContentProperty(ocProperty)) {
                     // get oc value              
-                    Object anOCPropertyItem = aVSOriginal.getOpenContentProperty(propName);
+                    Object anOCPropertyItem = aVSOriginal.getOpenContentProperty(ocProperty);
 
                     // get oc copy - shallow copy the object values
                     if (ocProperty.isMany()) {
@@ -647,14 +646,14 @@ public class SDOCopyHelper implements CopyHelper {
 
                         // add reference of new copy of original List keyed on original List
                         copyListWrapperCS2toCopyOfListCS2Map.put((anOriginalObject).getList(ocProperty), aCopyOfListCopy);
-                        aVSCopy.setOpenContentProperty(propName, aCopyOfListCopy);
+                        aVSCopy.setOpenContentProperty(ocProperty, aCopyOfListCopy);
                     } else {
                         // handle complex single case
                         if (!ocProperty.getType().isDataType()) {
-                            aVSCopy.setOpenContentProperty(propName, origDOCS1toCopyDOCS2Map.get(aVSPropertyItem));
+                            aVSCopy.setOpenContentProperty(ocProperty, origDOCS1toCopyDOCS2Map.get(aVSPropertyItem));
                         } else {
                             // simple singles set
-                            aVSCopy.setOpenContentProperty(propName, anOCPropertyItem);
+                            aVSCopy.setOpenContentProperty(ocProperty, anOCPropertyItem);
                         }
                     }
                 }

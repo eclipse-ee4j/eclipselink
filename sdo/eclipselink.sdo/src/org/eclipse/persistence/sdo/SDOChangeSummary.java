@@ -905,7 +905,7 @@ public class SDOChangeSummary implements ChangeSummary {
             vs = ((SDODataObject)dataObject)._getCurrentValueStore();
         }
         if (property.isOpenContent()) {
-            return vs.isSetOpenContentProperty(property.getName());
+            return vs.isSetOpenContentProperty(property);
         } else {
             return vs.isSetDeclaredProperty(((SDOProperty)property).getIndexInType());
         }
@@ -926,7 +926,7 @@ public class SDOChangeSummary implements ChangeSummary {
         }
 
         if (property.isOpenContent()) {
-            return vs.getOpenContentProperty(property.getName());
+            return vs.getOpenContentProperty(property);
         } else {
             return vs.getDeclaredProperty(((SDOProperty)property).getIndexInType());
         }
@@ -942,7 +942,7 @@ public class SDOChangeSummary implements ChangeSummary {
     public void setPropertyInternal(DataObject dataObject, Property property, Object value) {
         ValueStore vs = (ValueStore)originalValueStores.get(dataObject);
         if (property.isOpenContent()) {
-            vs.setOpenContentProperty(property.getName(), value);
+            vs.setOpenContentProperty(property, value);
         } else {
             vs.setDeclaredProperty(((SDOProperty)property).getIndexInType(), value);
         }
@@ -1003,13 +1003,13 @@ public class SDOChangeSummary implements ChangeSummary {
             originalElements.put(currentValue, new ArrayList());
             if (property.isOpenContent()) {
                 //TODO:
-                vs.unsetOpenContentProperty(property.getName());                
+                vs.unsetOpenContentProperty(property);                
             } else {
                 vs.unsetDeclaredProperty(((SDOProperty)property).getIndexInType());
             }
         } else {
             if (property.isOpenContent()) {
-                vs.unsetOpenContentProperty(property.getName());                
+                vs.unsetOpenContentProperty(property);                
             } else {
                 vs.unsetDeclaredProperty(((SDOProperty)property).getIndexInType());
             }
