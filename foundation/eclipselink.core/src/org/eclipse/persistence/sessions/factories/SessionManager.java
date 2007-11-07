@@ -15,7 +15,6 @@ import java.util.*;
 import org.eclipse.persistence.internal.sessions.factories.*;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.logging.*;
-import org.eclipse.persistence.sessions.SessionLog;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.broker.*;

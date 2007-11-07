@@ -10,6 +10,7 @@
 package org.eclipse.persistence.internal.sessions.remote;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.remote.*;
 
 /**
@@ -32,7 +33,7 @@ public class ConnectToJNDISessionCommand implements RemoteCommand {
     public void execute(AbstractSession session, RemoteSessionController remoteSessionController) {
         AbstractJNDIClusteringService service = (AbstractJNDIClusteringService)session.getCacheSynchronizationManager().getClusteringService();
         session.getCacheSynchronizationManager().getRemoteConnections().put(sessionId, service.createRemoteConnection(sessionId, jndiURL));
-        session.logDebug("Received Remote Connection from " + sessionId);
+        session.log(SessionLog.FINEST, "Received Remote Connection from " + sessionId, (Object[])null, null, false);
     }
 
     public String getJndiURL() {

@@ -803,50 +803,9 @@ public interface Session {
     public void log(SessionLogEntry entry);
 
     /**
-     * OBSOLETE:
-     * @deprecated    Replaced by log(org.eclipse.persistence.logging.SessionLogEntry)
-     * @see #log(org.eclipse.persistence.logging.SessionLogEntry)
-     */
-    public void log(org.eclipse.persistence.sessions.SessionLogEntry entry);
-
-    /**
-     * OBSOLETE:
-     * @deprecated    No direct replacement, moved to internal AbstractSession.
-     * @see #logMessage(String)
-     */
-    public void logDebug(String message, Object[] arguments);
-
-    /**
-     * OBSOLETE:
-     * @deprecated    No direct replacement, moved to internal AbstractSession.
-     * @see #logMessage(String)
-     */
-    public void logDebug(String message);
-
-    /**
-     * OBSOLETE:
-     * @deprecated    No direct replacement, moved to internal AbstractSession.
-     */
-    public void logException(Exception exception);
-
-    /**
-     * OBSOLETE:
-     * @deprecated    Replaced by log(int level, String category, String message, Object[] params)
-     * @see #logMessage(String)
-     */
-    public void logMessage(String message, Object[] arguments);
-
-    /**
      * Log a untranslated message to the TopLink log at FINER level.
      */
     public void logMessage(String message);
-
-    /**
-     * OBSOLETE:
-     * @deprecated    Replaced by setLogLevel(int level, String category);
-     * @see #setLogLevel(int level)
-     */
-    public void logMessages();
 
     /**
      * PUBLIC:
@@ -1123,22 +1082,6 @@ public interface Session {
      * @see #logMessages()
      */
     public void setSessionLog(SessionLog sessionLog);
-
-    /**
-     * OBSOLETE:
-     * Replaced by setSessionLog(org.eclipse.persistence.logging.SessionLog);
-     * @deprecated
-     * @see #setSessionLog(org.eclipse.persistence.logging.SessionLog)
-     */
-    public void setSessionLog(org.eclipse.persistence.sessions.SessionLog sessionLog);
-
-    /**
-     * OBSOLETE:
-     * Replaced by setLogLevel(int level, String category);
-     * @deprecated
-     * @see #setLogLevel(int)
-     */
-    public void setShouldLogMessages(boolean shouldLogMessages);
 
     /**
      * PUBLIC:

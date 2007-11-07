@@ -899,22 +899,6 @@ public class SessionBroker extends DatabaseSessionImpl {
     }
 
     /**
-    * Obsolete:
-    * Replaced by setLogLevel(int level, String category)
-    * @deprecated
-    * @see #setLogLevel(int level, String category)
-    */
-    public void setShouldLogMessages(boolean shouldLog) {
-        super.setShouldLogMessages(shouldLog);
-
-        for (Iterator sessionEnum = getSessionsByName().values().iterator();
-                 sessionEnum.hasNext();) {
-            AbstractSession session = (AbstractSession)sessionEnum.next();
-            session.setShouldLogMessages(shouldLog);
-        }
-    }
-
-    /**
      * INTERNAL:
      * This method notifies the accessor that a particular sets of writes has
      * completed.  This notification can be used for such thing as flushing the

@@ -9,16 +9,17 @@
  ******************************************************************************/  
 package org.eclipse.persistence.logging;
 
-import java.util.*;
-import java.text.*;
+import java.util.Date;
+import java.text.DateFormat;
 import java.io.*;
 
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.DateFormatThreadLocal;
-import org.eclipse.persistence.internal.localization.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
+import org.eclipse.persistence.exceptions.ValidationException;
 
 /**
  * Represents the abstract log that implements all the generic logging functions.
@@ -111,44 +112,44 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     protected DateFormatThreadLocal dateFormat;
     
     /**
-     * Allows the printing of the stack to be explictitly disabled/enabled.
+     * Allows the printing of the stack to be explicitly disabled/enabled.
      * CR #3870467.
-     * null value is default behavoir of determining from log level.
+     * null value is default behavior of determining from log level.
      */
     protected Boolean shouldLogExceptionStackTrace;
     
     /**
-     * Allows the printing of the date to be explictitly disabled/enabled.
+     * Allows the printing of the date to be explicitly disabled/enabled.
      * CR #3870467.
-     * null value is default behavoir of determining from log level.
+     * null value is default behavior of determining from log level.
      */
     protected Boolean shouldPrintDate;
     
     /**
-     * Allows the printing of the thread to be explictitly disabled/enabled.
+     * Allows the printing of the thread to be explicitly disabled/enabled.
      * CR #3870467.
-     * null value is default behavoir of determining from log level.
+     * null value is default behavior of determining from log level.
      */
     protected Boolean shouldPrintThread;
         
     /**
-     * Allows the printing of the session to be explictitly disabled/enabled.
+     * Allows the printing of the session to be explicitly disabled/enabled.
      * CR #3870467.
-     * null value is default behavoir of determining from log level.
+     * null value is default behavior of determining from log level.
      */
     protected Boolean shouldPrintSession;
 
     /**
-     * Allows the printing of the connection to be explictitly disabled/enabled.
+     * Allows the printing of the connection to be explicitly disabled/enabled.
      * CR #4157545.
-     * null value is default behavoir of determining from log level.
+     * null value is default behavior of determining from log level.
      */
     protected Boolean shouldPrintConnection;
 
 
     /**
      * Return the system default log level.
-     * This is based on the System property "topink.logging.level", or INFO if not set.
+     * This is based on the System property "eclipselink.logging.level", or INFO if not set.
      */
     public static int getDefaultLoggingLevel() {
         String logLevel = System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL);
@@ -482,27 +483,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     public abstract void log(SessionLogEntry sessionLogEntry);
     
     /**
-     * OBSOLETE:
-     * @deprecated replaced by log(org.eclipse.persistence.logging.SessionLogEntry)
-     */
-    public void log(org.eclipse.persistence.sessions.SessionLogEntry entry) {
-        if (!shouldLog(entry.getLevel())) {
-            return;
-        }
-        synchronized (this) {
-            SessionLogEntry newEntry = new SessionLogEntry(entry.getSession());
-            newEntry.setException(entry.getException());
-            newEntry.setLevel(entry.getLevel());
-            newEntry.setMessage(entry.getMessage());
-            newEntry.setDate(entry.getDate());
-            newEntry.setConnection(entry.getConnection());
-            newEntry.setNameSpace(entry.getNameSpace());
-            newEntry.setParameters(entry.getParameters());
-            log(newEntry);
-        }
-    }
-
-    /**
      * By default the session (and its connection is available) are printed,
      * this can be turned off.
      */
@@ -537,28 +517,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             this.shouldPrintConnection = Boolean.TRUE;
         } else {
             this.shouldPrintConnection = Boolean.FALSE;            
-        }
-    }
-
-    /**
-     * OBSOLETE:
-     * @deprecated replaced by level
-     */
-    public boolean shouldLogExceptions() {
-        if (this.level > WARNING) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
-     * OBSOLETE:
-     * @deprecated replaced by level
-     */
-    public void setShouldLogExceptions(boolean shouldLogExceptions) {
-        if (shouldLogExceptions && (level > WARNING)) {
-            setLevel(WARNING);
         }
     }
 
@@ -668,28 +626,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         this.writer = new OutputStreamWriter(outputstream);
     }
     
-    /**
-     * OBSOLETE:
-     * @deprecated replaced by level
-     */
-    public boolean shouldLogDebug() {
-        if (this.level > FINEST) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
-     * OBSOLETE:
-     * @deprecated replaced by level
-     */
-    public void setShouldLogDebug(boolean shouldLogDebug) {
-        if (shouldLogDebug) {
-            setLevel(FINEST);
-        }
-    }
-
     /**
      * PUBLIC:
      * Return the date format to be used when printing a log entry date.

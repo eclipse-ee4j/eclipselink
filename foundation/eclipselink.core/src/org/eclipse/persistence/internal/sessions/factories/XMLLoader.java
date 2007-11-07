@@ -710,7 +710,11 @@ public class XMLLoader {
     public void process_enable_logging_Tag(Node node, ObjectHolder sessionHolder) {
         try {
             Boolean bool = Boolean.valueOf(node.getFirstChild().getNodeValue());
-            ((AbstractSession)sessionHolder.getObject()).setShouldLogMessages(bool.booleanValue());
+            if (bool.booleanValue() && (((AbstractSession)sessionHolder.getObject()).getSessionLog().getLevel() > SessionLog.FINER)) {
+            	((AbstractSession)sessionHolder.getObject()).setLogLevel(SessionLog.FINER);
+            } else if (!bool.booleanValue()) {
+            	((AbstractSession)sessionHolder.getObject()).setLogLevel(SessionLog.OFF);
+            }
         } catch (Exception exception) {
             getExceptionStore().add(SessionLoaderException.failedToLoadTag(node.getNodeName(), node.getFirstChild().getNodeValue(), exception));
         }
@@ -1339,7 +1343,9 @@ public class XMLLoader {
     public void process_log_debug_Tag(Node node, ObjectHolder sessionHolder) {
         try {
             Boolean bool = Boolean.valueOf(node.getFirstChild().getNodeValue());
-            ((AbstractSession)sessionHolder.getObject()).getSessionLog().setShouldLogDebug(bool.booleanValue());
+            if(bool) {
+            	((AbstractSession)sessionHolder.getObject()).getSessionLog().setLevel(SessionLog.FINEST);
+            }
         } catch (Throwable exception) {
             getExceptionStore().add(SessionLoaderException.failedToLoadTag(node.getNodeName(), node.getFirstChild().getNodeValue(), exception));
         }
@@ -1352,7 +1358,9 @@ public class XMLLoader {
     public void process_log_exceptions_Tag(Node node, ObjectHolder sessionHolder) {
         try {
             Boolean bool = Boolean.valueOf(node.getFirstChild().getNodeValue());
-            ((AbstractSession)sessionHolder.getObject()).getSessionLog().setShouldLogExceptions(bool.booleanValue());
+            if(bool && ((AbstractSession)sessionHolder.getObject()).getSessionLog().getLevel() > SessionLog.WARNING) {
+            	((AbstractSession)sessionHolder.getObject()).getSessionLog().setLevel(SessionLog.WARNING);
+            }
         } catch (Throwable exception) {
             getExceptionStore().add(SessionLoaderException.failedToLoadTag(node.getNodeName(), node.getFirstChild().getNodeValue(), exception));
         }

@@ -9,8 +9,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.logging;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.Writer;
+
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.Helper;
 
 /**
  * <p><b>Purpose</b>: Default log used for the session when message logging is enabled.
@@ -23,8 +29,8 @@ import java.io.Writer;
  * As well information about the message can be logged such as,<ul>
  * <li> the session logging the message
  * <li> the connection executing the SQL
- * <li> the thread in which the log entry occured
- * <li> the exact time (to milliseconds) that the log entry occured
+ * <li> the thread in which the log entry occurred
+ * <li> the exact time (to milliseconds) that the log entry occurred
  * <li> the stack trace to the exception
  * </ul>
  * @see SessionLog
@@ -32,7 +38,10 @@ import java.io.Writer;
  *
  * @author Big Country
  */
-public class DefaultSessionLog extends org.eclipse.persistence.sessions.DefaultSessionLog {
+public class DefaultSessionLog extends AbstractSessionLog implements Serializable {
+
+    /** The filename associated with this DefaultSessionLog, if it is being written out to a file **/
+    protected String fileName;
 
     /**
      * PUBLIC:
@@ -47,22 +56,24 @@ public class DefaultSessionLog extends org.eclipse.persistence.sessions.DefaultS
      * Create a new default session log for the given writer.
      */
     public DefaultSessionLog(Writer writer) {
-        super(writer);
+        this();
+        this.initialize(writer);
     }
 
     /**
-    * Initialize the log to be backward-compatible with
-    * the original TopLink log.
-    */
+     * Initialize the log to be backward-compatible with
+     * the original TopLink log.
+     */
     protected void initialize() {
-        super.initialize();
+        this.setShouldPrintSession(true);
+        this.setShouldPrintConnection(true);
     }
 
     /**
      * Initialize the log.
      */
     protected void initialize(Writer writer) {
-        super.initialize(writer);
+        this.writer = writer;
     }
 
     /**
@@ -70,8 +81,35 @@ public class DefaultSessionLog extends org.eclipse.persistence.sessions.DefaultS
      * Log the entry.
      * This writes the log entries information to a writer such as System.out or a file.
      */
-    public void log(org.eclipse.persistence.logging.SessionLogEntry entry) {
-        super.log(entry);
+    public void log(SessionLogEntry entry) {
+        if (!shouldLog(entry.getLevel())) {
+            return;
+        }
+
+        synchronized (this) {
+            try {
+                printPrefixString(entry.getLevel());
+                this.getWriter().write(getSupplementDetailString(entry));
+    
+                if (entry.hasException()) {
+                    if (entry.getLevel() == SEVERE) {
+                        entry.getException().printStackTrace(new PrintWriter(getWriter()));
+                    } else if (entry.getLevel() <= WARNING) {
+                        if (shouldLogExceptionStackTrace()) {
+                            entry.getException().printStackTrace(new PrintWriter(getWriter()));
+                        } else {
+                            writeMessage(entry.getException().toString());
+                        }
+                    }
+                } else {
+                    writeMessage(formatMessage(entry));
+                }
+                getWriter().write(Helper.cr());
+                getWriter().flush();
+            } catch (IOException exception) {
+                throw ValidationException.logIOError(exception);
+            }
+        }
     }
 
     /**
@@ -80,7 +118,14 @@ public class DefaultSessionLog extends org.eclipse.persistence.sessions.DefaultS
      * formatted log entries for a file name.
      */
     public void setWriter(String aFileName) {
-        super.setWriter(aFileName);
+        if (aFileName != null) {
+            try {
+                this.writer = new FileWriter(aFileName);
+                this.fileName = aFileName;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -88,23 +133,22 @@ public class DefaultSessionLog extends org.eclipse.persistence.sessions.DefaultS
      * For the given writer, return it's associated filename.
      * If associated writer does not have a filename, return null.
      */
-
     //Added for F2104: Properties.XML  .. gn
     public String getWriterFilename() {
-        return super.getWriterFilename();
+        return fileName;
     }
 
     /**
      * Append the specified message information to the writer.
      */
     protected void writeMessage(String message) throws IOException {
-        super.writeMessage(message);
+        this.getWriter().write(message);
     }
 
     /**
      * Append the separator string to the writer.
      */
     protected void writeSeparator() throws IOException {
-        super.writeSeparator();
+        this.getWriter().write("--");
     }
 }

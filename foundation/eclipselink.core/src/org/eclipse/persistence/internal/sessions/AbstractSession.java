@@ -2439,89 +2439,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     }
 
     /**
-     * OBSOLETE:
-     * @deprecated    Replaced by log(org.eclipse.persistence.logging.SessionLogEntry)
-     * @see #log(org.eclipse.persistence.logging.SessionLogEntry)
-     */
-    public void log(org.eclipse.persistence.sessions.SessionLogEntry entry) {
-        if (shouldLog(entry.getLevel(), entry.getNameSpace())) {
-            if (entry.getSession() == null) {// Used for proxy session.
-                entry.setSession(this);
-            }
-            getSessionLog().log(entry);
-        }
-    }
-
-    /**
-     * OBSOLETE:
-     * @deprecated    Replaced by log(int level, String category, String message, Object[] params)
-     * @see #log(int level, String category, String message, Object[] params)
-     */
-    public void logDebug(String message, Object[] arguments) {
-        log(SessionLog.FINEST, null, message, arguments);
-    }
-
-    /**
-     * OBSOLETE:
-     * @deprecated    Replaced by log(int level, String message, Object[] params, Accessor accessor, boolean shouldTranslate)
-     * @see #log(int, String, String)
-     */
-    public void logDebug(String message) {
-        log(SessionLog.FINEST, message, (Object[])null, null, false);
-    }
-
-    /**
-     * OBSOLETE:
-     * @deprecated    Replaced by logThrowable(int level, String category, Throwable throwable)
-     * @see #logThrowable(int level, String category, Throwable throwable)
-     */
-    public void logException(Exception exception) {
-        logThrowable(SessionLog.SEVERE, null, exception);
-    }
-
-    /**
-     * OBSOLETE:
-     * @deprecated    Replaced by log(int level, String category, String message, Object[] params)
-     * @see #log(int level, String category, String message, Object[] params)
-     */
-    public void logMessage(String message, Object[] arguments) {
-        log(SessionLog.FINER, null, message, arguments);
-    }
-
-    /**
      * Log a untranslated message to the TopLink log at FINER level.
      */
     public void logMessage(String message) {
         log(SessionLog.FINER, message, (Object[])null, null, false);
-    }
-
-    /**
-     * INTERNAL:
-     * Log the message for the specified accessor.  The parameter 'message' is a string that needs to be
-     * translated.
-     * @deprecated
-     */
-    public void logMessage(String message, Object[] arguments, Accessor accessor) {
-        log(SessionLog.FINER, message, arguments, accessor);
-    }
-
-    /**
-     * INTERNAL:
-     * Log the message for the specified accessor.  The parameter 'message' is a translated string or a string
-     * that does not need to be translated.
-     * @deprecated
-     */
-    public void logMessage(String message, Accessor accessor) {
-        log(SessionLog.FINER, message, (Object[])null, accessor, false);
-    }
-
-    /**
-     * OBSOLETE:
-     * @deprecated    Replaced by setLogLevel(int level);
-     * @see #setLogLevel(int)
-     */
-    public void logMessages() {
-        setShouldLogMessages(true);
     }
 
     /**
@@ -3142,30 +3063,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         this.sessionLog = sessionLog;
         if ((sessionLog != null) && (sessionLog.getSession() == null)) {
             sessionLog.setSession(this);
-        }
-    }
-
-    /**
-     * OBSOLETE:
-     * Replaced by setSessionLog(org.eclipse.persistence.logging.SessionLog);
-     * @deprecated
-     * @see #setSessionLog(org.eclipse.persistence.logging.SessionLog)
-     */
-    public void setSessionLog(org.eclipse.persistence.sessions.SessionLog sessionLog) {
-        setSessionLog((org.eclipse.persistence.logging.SessionLog)sessionLog);
-    }
-
-    /**
-     * OBSOLETE:
-     * Replaced by setLogLevel(int, String);
-     * @deprecated
-     * @see #setLogLevel(int)
-     */
-    public void setShouldLogMessages(boolean shouldLogMessages) {
-        if (shouldLogMessages && (getLogLevel(null) > SessionLog.FINER)) {
-            setLogLevel(SessionLog.FINER);
-        } else if (!shouldLogMessages) {
-            setLogLevel(SessionLog.OFF);
         }
     }
 

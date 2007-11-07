@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * <p>
@@ -85,7 +86,7 @@ public class DefaultConnector implements Connector {
             } catch (SQLException sqlException) {
                 driverManagerException = sqlException;
                 if(session != null) {
-                    ((org.eclipse.persistence.internal.sessions.AbstractSession)session).logThrowable(org.eclipse.persistence.logging.SessionLog.WARNING, SessionLog.CONNECTION, sqlException);
+                    ((org.eclipse.persistence.internal.sessions.AbstractSession)session).logThrowable(SessionLog.WARNING, SessionLog.CONNECTION, sqlException);
                 }
             }
         }

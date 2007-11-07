@@ -10,6 +10,7 @@
 package org.eclipse.persistence.logging;
 
 import java.util.Date;
+import java.io.Serializable;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -27,14 +28,28 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @author Big Country
  * @since TOPLink/Java 3.0
  */
-public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLogEntry {
+public class SessionLogEntry implements Serializable {
+    protected Date date;
+    protected transient AbstractSession session;
+    protected transient Thread thread;
+    protected transient Accessor connection;
+    protected String message;
+    protected Throwable throwable;
+    protected int level;
+    protected String nameSpace;
+    protected Object[] parameters;
+    protected boolean shouldTranslate;
 
     /**
      * PUBLIC:
      * Create a new session log entry for a session
      */
-    public SessionLogEntry(org.eclipse.persistence.internal.sessions.AbstractSession session) {
-        super(session);
+    public SessionLogEntry(AbstractSession session) {
+        this.date = new Date();
+        this.thread = Thread.currentThread();
+        this.session = session;
+        this.message = "";
+        this.level = SessionLog.INFO;
     }
 
     /**
@@ -42,7 +57,9 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Create a new session log entry for a session and an exception
      */
     public SessionLogEntry(AbstractSession session, Throwable throwable) {
-        super(session, throwable);
+        this(session);
+        this.throwable = throwable;
+        this.level = SessionLog.SEVERE;
     }
 
     /**
@@ -50,7 +67,8 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Create a new session log entry for a session and a message
      */
     public SessionLogEntry(AbstractSession session, String message) {
-        super(session, message);
+        this(session);
+        this.message = message;
     }
 
     /**
@@ -58,57 +76,52 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Create a new session log entry for a session, a message and an accessor
      */
     public SessionLogEntry(AbstractSession session, String message, Accessor connection) {
-        super(session, message, connection);
-    }
-
-    /**
-    * OBSOLETE:
-    * @deprecated replaced by SessionLogEntry(int level, Session session, String message,
-    * Object[] params, Accessor connection, boolean shouldTranslate)
-     */
-    public SessionLogEntry(AbstractSession session, String message, boolean isDebug, Accessor connection) {
-        super(session, message, isDebug, connection);
-    }
-
-    /**
-    * OBSOLETE:
-    * @deprecated replaced by SessionLogEntry(int level, Session session, String message,
-    * Object[] params, Accessor connection, boolean shouldTranslate)
-     */
-    public SessionLogEntry(AbstractSession session, String message, boolean isDebug) {
-        super(session, message, isDebug);
+        this(session, message);
+        this.connection = connection;
     }
 
     /**
      * PUBLIC:
-     * Create a new session log entry for a request level, a session, a message and an accessor
+     * Create a new session log entry for a request level, a session, a message and an accessor.
+     * <br>Possible values for log level are listed in SessionLog.
+     * @see SessionLog
      */
     public SessionLogEntry(int level, AbstractSession session, String message, Object[] params, Accessor connection, boolean shouldTranslate) {
-        super(level, session, message, params, connection, shouldTranslate);
+        this(session, message, connection);
+        this.level = level;
+        this.parameters = params;
+        this.shouldTranslate = shouldTranslate;
     }
 
     /**
      * PUBLIC:
-     * Create a new session log entry for a request level, a session, a message and an accessor
+     * Create a new session log entry for a request level, a session, a message and an accessor.
+     * <br>Possible values for log level and category are listed in SessionLog.
+     * @see SessionLog
      */
     public SessionLogEntry(int level, String category, AbstractSession session, String message, Object[] params, Accessor connection, boolean shouldTranslate) {
-        super(level, category, session, message, params, connection, shouldTranslate);
+        this(level, session, message, params, connection, shouldTranslate);
+        this.nameSpace = category;
     }
 
     /**
      * PUBLIC:
-     * Create a new session log entry for a session, a level, a category and an exception
+     * Create a new session log entry for a session, a level, a category and an exception.
+     * <br>Possible values for log level and category are listed in SessionLog.
+     * @see SessionLog
      */
     public SessionLogEntry(AbstractSession session, int level, String category, Throwable throwable) {
-        super(session, level, category, throwable);
+        this(session, throwable);
+        this.level = level;
+        this.nameSpace = category;
     }
 
     /**
-    * PUBLIC:
-    * Return the connection that generated the log entry.
-    */
+     * PUBLIC:
+     * Return the connection that generated the log entry.
+     */
     public Accessor getConnection() {
-        return super.getConnection();
+        return connection;
     }
 
     /**
@@ -116,7 +129,7 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Return the date of the log entry.
      */
     public Date getDate() {
-        return super.getDate();
+        return date;
     }
 
     /**
@@ -124,7 +137,7 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Return the exception that caused the log entry.
      */
     public Throwable getException() {
-        return super.getException();
+        return throwable;
     }
 
     /**
@@ -132,7 +145,7 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Return the log entry's message.
      */
     public String getMessage() {
-        return super.getMessage();
+        return message;
     }
 
     /**
@@ -140,7 +153,7 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Return the session that generated the log entry.
      */
     public AbstractSession getSession() {
-        return super.getSession();
+        return session;
     }
 
     /**
@@ -148,23 +161,27 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Return the thread that was active when the log entry was generated.
      */
     public Thread getThread() {
-        return super.getThread();
+        return thread;
     }
 
     /**
      * PUBLIC:
      * Return the request level of the log entry.
+     * <br>Possible values for log level are listed in SessionLog.
+     * @see SessionLog
      */
     public int getLevel() {
-        return super.getLevel();
+        return level;
     }
 
     /**
      * PUBLIC:
      * Return the name space of the log entry.
+     * <br>Possible values for log category (a String) are listed in SessionLog.
+     * @see SessionLog
      */
     public String getNameSpace() {
-        return super.getNameSpace();
+        return nameSpace;
     }
 
     /**
@@ -172,7 +189,7 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Return the array of parameters to the message.
      */
     public Object[] getParameters() {
-        return super.getParameters();
+        return parameters;
     }
 
     /**
@@ -180,7 +197,7 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Return if the message should be translated.
      */
     public boolean shouldTranslate() {
-        return super.shouldTranslate();
+        return shouldTranslate;
     }
 
     /**
@@ -188,7 +205,7 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Return if the log entry was for an exception.
      */
     public boolean hasException() {
-        return super.hasException();
+        return getException() != null;
     }
 
     /**
@@ -196,7 +213,7 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Set the connection that generated the log entry.
      */
     public void setConnection(Accessor connection) {
-        super.setConnection(connection);
+        this.connection = connection;
     }
 
     /**
@@ -204,7 +221,7 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Set the date of the log entry.
      */
     public void setDate(Date date) {
-        super.setDate(date);
+        this.date = date;
     }
 
     /**
@@ -212,7 +229,7 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Set the exception that caused the log entry.
      */
     public void setException(Throwable throwable) {
-        super.setException(throwable);
+        this.throwable = throwable;
     }
 
     /**
@@ -220,7 +237,7 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Set the entry's message.
      */
     public void setMessage(String message) {
-        super.setMessage(message);
+        this.message = message;
     }
 
     /**
@@ -228,7 +245,7 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Set the session that generated the log entry.
      */
     public void setSession(AbstractSession session) {
-        super.setSession(session);
+        this.session = session;
     }
 
     /**
@@ -236,23 +253,27 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Set the thread that was active when the log entry was generated.
      */
     public void setThread(Thread thread) {
-        super.setThread(thread);
+        this.thread = thread;
     }
 
     /**
      * PUBLIC:
      * Set the request level of the log entry.
+     * <br>Possible values for log level are listed in SessionLog.
+     * @see SessionLog
      */
     public void setLevel(int level) {
-        super.setLevel(level);
+        this.level = level;
     }
 
     /**
      * PUBLIC:
      * Set the name space of the log entry.
+     * <br>Possible values for log category (a String) are listed in SessionLog.
+     * @see SessionLog
      */
     public void setNameSpace(String nameSpace) {
-        super.setNameSpace(nameSpace);
+        this.nameSpace = nameSpace;
     }
 
     /**
@@ -260,7 +281,7 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
     * Set the array of parameters to the message.
     */
     public void setParameters(Object[] params) {
-        super.setParameters(params);
+        this.parameters = params;
     }
 
     /**
@@ -268,7 +289,7 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Set if the message should be translated.
      */
     public void setShouldTranslate(boolean shouldTranslate) {
-        super.setShouldTranslate(shouldTranslate);
+        this.shouldTranslate = shouldTranslate;
     }
 
     /**
@@ -276,6 +297,6 @@ public class SessionLogEntry extends org.eclipse.persistence.sessions.SessionLog
      * Print message.
      */
     public String toString() {
-        return super.toString();
+        return org.eclipse.persistence.internal.helper.Helper.getShortClassName(getClass()) + "(" + getMessage() + ")";
     }
 }
