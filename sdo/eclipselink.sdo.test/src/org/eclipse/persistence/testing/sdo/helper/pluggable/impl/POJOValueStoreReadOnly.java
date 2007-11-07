@@ -71,13 +71,13 @@ public class POJOValueStoreReadOnly extends POJOValueStore {
     boolean isGetMethod,//
     Object aReceiverObject,// 
     String methodPrefix,// 
-    String propertyName,//
+    commonj.sdo.Property property,//
     Object aParamObject) {
         // Note: verify parameters but allow a null aParamObject for set functions
         if (aReceiverObject == null) {
             throw new IllegalArgumentException(ERROR_PLUGGABLE_MSG_OBJECT_NULL);
         }
-        if (propertyName == null) {
+        if (property == null) {
             throw new IllegalArgumentException(ERROR_PLUGGABLE_MSG_PROPERTY_NAME_NULL);
         }
         if (methodPrefix == null) {
@@ -100,8 +100,8 @@ public class POJOValueStoreReadOnly extends POJOValueStore {
 
                 // TODO: set(null)
                 StringBuffer methodName = new StringBuffer(methodPrefix);
-                methodName.append(propertyName.substring(0, 1).toUpperCase());
-                methodName.append(propertyName.substring(1));
+                methodName.append(property.getName().substring(0, 1).toUpperCase());
+                methodName.append(property.getName().substring(1));
                 methodName.append(isManyPostFix);
                 Class aReceiverClass = aReceiverObject.getClass();
 

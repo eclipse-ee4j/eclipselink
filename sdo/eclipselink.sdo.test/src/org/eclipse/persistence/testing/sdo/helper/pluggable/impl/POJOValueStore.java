@@ -189,39 +189,39 @@ public abstract class POJOValueStore implements ValueStore {
 
     public Object getDeclaredProperty(int propertyIndex) {
         //Property property = (Property)((SDOType)dataObject.getType()).getPropertiesArray()[propertyIndex];
-        return get(((Property)((SDOType)dataObject.getType()).getPropertiesArray()[propertyIndex]).getName());
+        return get(((Property)((SDOType)dataObject.getType()).getPropertiesArray()[propertyIndex]));
     }
 
-    public Object getOpenContentProperty(String propertyName) {
-        return get(propertyName);
+    public Object getOpenContentProperty(Property property) {
+        return get(property);
     }
 
     public void setDeclaredProperty(int propertyIndex, Object value) {
         // get property via index
         Property property = (Property)((SDOType)dataObject.getType()).getPropertiesArray()[propertyIndex];
-        set(property.getName(), value, false);
+        set(property, value, false);
     }
 
-    public void setOpenContentProperty(String propertyName, Object value) {
-        set(propertyName, value, false);
+    public void setOpenContentProperty(Property property, Object value) {
+        set(property, value, false);        
     }
 
     public boolean isSetDeclaredProperty(int propertyIndex) {
         Property property = (Property)((SDOType)dataObject.getType()).getPropertiesArray()[propertyIndex];
-        return isSet(property.getName());
+        return isSet(property);
     }
 
-    public boolean isSetOpenContentProperty(String propertyName) {
-        return isSet(propertyName);
+    public boolean isSetOpenContentProperty(Property property) {
+        return isSet(property);
     }
 
     public void unsetDeclaredProperty(int propertyIndex) {
         Property property = (Property)((SDOType)dataObject.getType()).getPropertiesArray()[propertyIndex];
-        unset(property.getName());
+        unset(property);
     }
 
-    public void unsetOpenContentProperty(String propertyName) {
-        unset(propertyName);
+    public void unsetOpenContentProperty(Property property) {
+        unset(property);
     }
 
     public void initialize(DataObject aDataObject) {
@@ -232,7 +232,7 @@ public abstract class POJOValueStore implements ValueStore {
      * TestCase: A set of a List
      */
     public void setManyProperty(Property property, Object value) {
-        set(property.getName(), value, false);
+        set(property, value, false);
         //((SDODataObject)dataObject).updateContainment(property, (List)value);
     }
 
@@ -255,7 +255,7 @@ public abstract class POJOValueStore implements ValueStore {
     boolean isGetMethod,//
     Object aReceiverObject,// 
     String methodPrefix,// 
-    String propertyName,//
+    Property property,//
     Object aParamObject);
 
     /*
@@ -264,25 +264,23 @@ public abstract class POJOValueStore implements ValueStore {
      * @see java.util.HashMap#get(java.lang.Object)
      */
     private Object get(Object key) {
-        if (!(key instanceof String)) {
+        if (!(key instanceof Property)) {
             // TODO: Throw exception? only String keys are supported        	
             return null;
         }
-        String propertyName = (String)key;
+        Property property = (Property)key;
         Object value = null;
 
-        if ((propertyName != null) && (propertyName.length() > 0)) {
+        if (property != null) {
             // check map for wrapped object first
-            if (properties.containsKey(propertyName)) {
-                value = properties.get(propertyName);
+            if (properties.containsKey(property)) {
+                value = properties.get(property);
             } else {
-                value = invokeMethodPrivate(false, true, object, METHOD_PREFIX_FOR_GET, propertyName, null);
-                Property property = (Property)dataObject.getInstanceProperty(propertyName);
-
+                value = invokeMethodPrivate(false, true, object, METHOD_PREFIX_FOR_GET, property, null);
                 // check if we are getting a simple type
                 if (property.getType().isDataType()) {
                     // save the simple type in our map
-                    properties.put(propertyName, value);
+                    properties.put(property, value);
                     return value;
                 } else {
                     // we are returning a complex type - check if it is many valued
@@ -323,13 +321,13 @@ public abstract class POJOValueStore implements ValueStore {
                         }
 
                         // save the wrapper in our map
-                        properties.put(propertyName, aList);
+                        properties.put(property, aList);
                         // return the new list
                         value = aList;
                     } else {// single DataObject
                         value = wrapPrivate(value, property);
                         // save the wrapper in our map
-                        properties.put(propertyName, value);
+                        properties.put(property, value);
                     }
                 }
             }
@@ -364,39 +362,34 @@ public abstract class POJOValueStore implements ValueStore {
         }
 
         // remove object from POJO also
-        if (key instanceof String) {
-            // get Property to check isSet status
-            Property property = dataObject.getInstanceProperty((String)key);
-
+        if (key instanceof Property) {
             // get default value for this object
-            Object defaultValue = property.getDefault();
+            Object defaultValue = ((Property)key).getDefault();
 
             // TODO: Handle primitives - wait for Nillable spec.
-            set((String)key, defaultValue, true);
+            set((Property)key, defaultValue, true);
         }
     }
 
     // overload set so that we don't cache for unset(property, field)
-    private Object set(String propertyName, Object value, boolean calledFromUnSet) {
-        if (propertyName instanceof String) {
+    private Object set(Property property, Object value, boolean calledFromUnSet) {        
             // TODO: verified issue20060822-1: empty ListWrapper's are stored as null in POJOs
             if (value instanceof List && (((List)value).size() < 1)) {
                 value = null;
             }
 
-            // null propertyName is handled by DataObject
-            Property property = dataObject.getInstanceProperty((String)propertyName);
+            // null propertyName is handled by DataObject            
             Object aReturn = null;
-            if ((propertyName != null) && (((String)propertyName).length() > 0)) {
+            if (property != null) {
                 // simple case
                 if ((property != null) && (property.getType() != null) && property.getType().isDataType()) {
                     // save the simple type in our map
                     if (!calledFromUnSet) {
-                        properties.put(propertyName, value);
+                        properties.put(property, value);
                     }
 
                     // Use reflection and a method pointer to set property value
-                    aReturn = invokeMethodPrivate(false, false, object, METHOD_PREFIX_FOR_SET, (String)propertyName, value);
+                    aReturn = invokeMethodPrivate(false, false, object, METHOD_PREFIX_FOR_SET, property, value);
                 } else {
                     if ((property != null) && property.isMany()) {
                         //((SDODataObject)dataObject).updateContainment(property, (List)value);
@@ -406,7 +399,7 @@ public abstract class POJOValueStore implements ValueStore {
                         // extract out the POJO as the set operand
                         // cache the wrapped object
                         if (!calledFromUnSet) {
-                            properties.put(propertyName, value);// set on first set only
+                            properties.put(property, value);// set on first set only
                         }
 
                         // iterate out the SDO's from the list - pass a null value directly to the POJO
@@ -423,11 +416,11 @@ public abstract class POJOValueStore implements ValueStore {
 
                         // invoke a set on the POJO
                         aReturn = invokeMethodPrivate(true, false, object, METHOD_PREFIX_FOR_SET,//
-                                                      (String)propertyName, aWrappedList);
+                                                      property, aWrappedList);
                     } else {
                         // cache the wrapped object
                         if (!calledFromUnSet) {
-                            properties.put(propertyName, value);
+                            properties.put(property, value);
                         }
 
                         // get the embeded POJO from the wrapped object - pass a null value directly to the POJO
@@ -438,17 +431,13 @@ public abstract class POJOValueStore implements ValueStore {
 
                         // invoke a set on the POJO
                         aReturn = invokeMethodPrivate(true, false, object, METHOD_PREFIX_FOR_SET,//
-                                                      (String)propertyName, pojoValue);
+                                                      property, pojoValue);
                     }
                 }
             } else {
                 throw new IllegalArgumentException(ERROR_PLUGGABLE_MSG_PROPERTY_NAME_NULL);
             }
-            return aReturn;
-
-        } else {
-            return properties.put(propertyName, value);
-        }
+            return aReturn;        
     }
 
     // out of interface functions
@@ -458,35 +447,35 @@ public abstract class POJOValueStore implements ValueStore {
      * @param anObject
      * @return
      */
-    private boolean isSet(String propertyName) {
+    private boolean isSet(Property property) {
         // null propertyName is handled by DataObject
         boolean isSet = false;
         Object value = null;
 
         // check the cache first for previously set values
         // Note: this check must match the logic in set for unset calls (cache must be cleared)
-        if (properties.containsKey(propertyName)) {
+        if (properties.containsKey(property)) {
             isSet = true;
         } else {
-            if ((propertyName != null) && (propertyName.length() > 0)) {
+            if (property != null) {
                 // integrity checking - embedded POJO should not be null
                 // issue 20060830-1: isSet status of null POJO's = false
                 if (object == null) {
                     // TODO: Throw exception
-                    System.out.println("_POJOValueStore.isSet(" + propertyName + ") - parent object is null");
+                    System.out.println("_POJOValueStore.isSet(" + property.getName() + ") - parent object is null");
                 }
 
                 // handle many valued isSet
                 if (object instanceof List) {
                     // TODO: This needs better refactoring - check first element class
                     value = ((List)object).get(0);
-                    if ((value != null) && value.getClass().getSimpleName().equalsIgnoreCase(propertyName)) {
+                    if(value != null){
                         isSet = true;
                     }
                 } else {
                     // Use reflection and a method pointer to get property value
                     value = invokeMethodPrivate(false, true, object, METHOD_PREFIX_FOR_ISSET,//
-                                                propertyName, (Object[])null);
+                                                property, (Object[])null);
                     // TODO: verify that isSet(property)=null -> false
                     if (value != null) {
                         isSet = true;

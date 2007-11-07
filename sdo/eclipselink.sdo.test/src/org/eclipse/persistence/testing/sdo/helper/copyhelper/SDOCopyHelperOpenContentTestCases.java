@@ -67,7 +67,7 @@ public class SDOCopyHelperOpenContentTestCases extends SDOTestCase {
     protected void compareOpenContentProperties(DataObject copy, boolean shallow) {
         int ocPropSize = ((SDODataObject)rootObject)._getOpenContentProperties().size();
         assertEquals(ocPropSize, ((SDODataObject)copy)._getOpenContentProperties().size());
-        assertEquals(((SDODataObject)rootObject).getOpenContentPropertiesMap().size(), ((SDODataObject)copy).getOpenContentPropertiesMap().size());
+        assertEquals(((SDODataObject)rootObject)._getOpenContentPropertiesAttributes().size(), ((SDODataObject)copy)._getOpenContentPropertiesAttributes().size());        
         assertEquals(rootObject.getInstanceProperties().size(), copy.getInstanceProperties().size());
         for (int i = 0; i < ocPropSize; i++) {
             Property next = (Property)((SDODataObject)rootObject)._getOpenContentProperties().get(i);

@@ -19,6 +19,10 @@
 	<xsd:element name="birthDate" type="xsd:date"/>
 
 	<xsd:element name="age" type="xsd:string"/>
+
+	<xsd:element name="globalTest" type="xsd:string"/>
+
+	<xsd:attribute name="globalTest" type="xsd:string"/>
 	
 	<xsd:complexType name="address-type">
     		<xsd:sequence>

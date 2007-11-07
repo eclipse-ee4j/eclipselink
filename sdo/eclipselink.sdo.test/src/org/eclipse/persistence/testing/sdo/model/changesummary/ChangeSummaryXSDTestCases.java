@@ -408,7 +408,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         
         // verify oc Property is in valueStore
         String openRootPropertyToBeDeletedAfterUndo = (String)((SDODataObject)rootObject)._getCurrentValueStore()//
-        	.getOpenContentProperty(openRootPropertyToBeDeleted.getName());
+        	.getOpenContentProperty(openRootPropertyToBeDeleted);
         assertNotNull(openRootPropertyToBeDeletedAfterUndo);
         assertEquals(openRootPropertyToBeDeletedAfterUndo, OC_PROP2SimpleSingleVALUE);
 
@@ -423,7 +423,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         
         // verify oc Property is in valueStore
         String openRootPropertyToBeDeletedAfterUndo2 = (String)((SDODataObject)rootObject)._getCurrentValueStore()//
-        	.getOpenContentProperty(openRootPropertyToBeDeleted2.getName());
+        	.getOpenContentProperty(openRootPropertyToBeDeleted2);
         assertNotNull(openRootPropertyToBeDeletedAfterUndo2);
         assertEquals(openRootPropertyToBeDeletedAfterUndo2, OC_PROP2SimpleSingleVALUE + "1");
 
@@ -438,7 +438,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         
         // verify oc Property is in valueStore
         String openRootPropertyToBeDeletedAfterUndo3 = (String)((SDODataObject)rootObject)._getCurrentValueStore()//
-        	.getOpenContentProperty(openRootPropertyToBeDeleted3.getName());
+        	.getOpenContentProperty(openRootPropertyToBeDeleted3);
         assertNotNull(openRootPropertyToBeDeletedAfterUndo3);
         assertEquals(openRootPropertyToBeDeletedAfterUndo3, OC_PROP2SimpleSingleVALUE + "2");
         
@@ -717,7 +717,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         
         // verify oc Property is in valueStore
         String openRootPropertyToBeDeletedAfterUndo = (String)((SDODataObject)rootObject)._getCurrentValueStore()//
-        	.getOpenContentProperty(openRootPropertyToBeDeleted.getName());
+        	.getOpenContentProperty(openRootPropertyToBeDeleted);
         assertNull(openRootPropertyToBeDeletedAfterUndo);
         //assertEquals(openRootPropertyToBeDeletedAfterUndo, OC_PROP2SimpleSingleVALUE);        
     }
@@ -1003,7 +1003,7 @@ public class ChangeSummaryXSDTestCases extends SDOTestCase {
         
         // verify oc Property is in valueStore
         String openRootPropertyToBeDeletedAfterUndo = (String)((SDODataObject)rootObject)._getCurrentValueStore()//
-        	.getOpenContentProperty(openRootPropertyToBeDeleted.getName());
+        	.getOpenContentProperty(openRootPropertyToBeDeleted);
         assertNotNull(openRootPropertyToBeDeletedAfterUndo);
         assertEquals(openRootPropertyToBeDeletedAfterUndo, OC_PROP2SimpleSingleVALUE);
         

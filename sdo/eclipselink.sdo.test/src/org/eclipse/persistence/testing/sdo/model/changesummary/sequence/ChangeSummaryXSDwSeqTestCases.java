@@ -411,7 +411,7 @@ public class ChangeSummaryXSDwSeqTestCases extends SDOTestCase {
         
         // verify oc Property is in valueStore
         String openRootPropertyToBeDeletedAfterUndo = (String)((SDODataObject)rootObject)._getCurrentValueStore()//
-    		.getOpenContentProperty(openRootPropertyToBeDeleted.getName());
+    		.getOpenContentProperty(openRootPropertyToBeDeleted);
         assertNotNull(openRootPropertyToBeDeletedAfterUndo);
         assertEquals(openRootPropertyToBeDeletedAfterUndo, OC_PROP2SimpleSingleVALUE);
         
