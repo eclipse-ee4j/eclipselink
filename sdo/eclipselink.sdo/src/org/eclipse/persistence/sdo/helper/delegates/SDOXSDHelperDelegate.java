@@ -36,7 +36,7 @@ import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.record.FormattedWriterRecord;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.oxm.record.WriterRecord;
 import org.w3c.dom.Element;
 
 /**
@@ -383,7 +383,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
     public Map buildAppInfoMap(List appInfoElements) {
         HashMap appInfoMap = new HashMap();
 
-        //build AppInfoMap
+        // Build AppInfo map
         if (appInfoElements != null) {
             for (int i = 0; i < appInfoElements.size(); i++) {
                 Element nextElement = (Element)appInfoElements.get(i);
@@ -391,17 +391,11 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
                 if (nextElement.getNamespaceURI().equals(XMLConstants.SCHEMA_URL) && nextElement.getLocalName().equals("appinfo")) {
                     String key = nextElement.getAttribute(SDOConstants.APPINFO_SOURCE_ATTRIBUTE);
                     String value = (String)appInfoMap.get(key);
-                    if (value == null) {
-                        StringWriter sw = new StringWriter();
-                        XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer().transform(nextElement, sw);
-                        appInfoMap.put(key, sw.toString());
-                    } else {
-                        //need to concatenate Strings
-                        StringWriter sw = new StringWriter();
-                        XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer().transform(nextElement, sw);
-                        String concat = value + sw.toString();
-                        appInfoMap.put(key, concat);
-                    }
+                    StringWriter sw = new StringWriter();
+                    WriterRecord wrec = new WriterRecord();
+                    wrec.setWriter(sw);
+                    wrec.node(nextElement, new NamespaceResolver());
+                    appInfoMap.put(key, value == null ? sw.toString() : value + sw.toString());
                 }
             }
         }

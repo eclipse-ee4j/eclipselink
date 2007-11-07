@@ -230,7 +230,7 @@ public class DefineAndGenerateAppInfoTNSTestCases extends DefineAndGenerateAppIn
     }
 
     protected String getTestControlString() {        
-        String controlString = "<xsd:appinfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" source=\"itemTest\">" + "\n" + "   <someTag xmlns=\"theTNS\">blah blah itemTest</someTag>" + "\n" + "</xsd:appinfo>" + "\n" + "<xsd:appinfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" source=\"itemTest\">" + "\n" + "   <anotherTag xmlns=\"theTNS\">blah blah itemTest</anotherTag>" + "\n" + "</xsd:appinfo>";
+        String controlString = "<xsd:appinfo source=\"itemTest\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + "\n" + "   <someTag>blah blah itemTest</someTag>" + "\n" + "</xsd:appinfo>" + "\n" + "<xsd:appinfo source=\"itemTest\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + "\n" + "   <anotherTag>blah blah itemTest</anotherTag>" + "\n" + "</xsd:appinfo>";
         return controlString;
     }
 }

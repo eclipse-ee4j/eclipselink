@@ -14,7 +14,6 @@ import java.util.Stack;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
@@ -89,9 +88,15 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         String attributeNamespaceURI;
         for (int x = 0; x < numberOfAttributes; x++) {
             attributeNamespaceURI = atts.getURI(x);
+            // Empty string will be treated as a null URI
             if ((null != attributeNamespaceURI) && ("".equals(attributeNamespaceURI))) {
-                attributeNamespaceURI = null;
+            	attributeNamespaceURI = null;
             }
+            // Handle case where prefix/uri are not set on an xmlns prefixed attribute
+            if (attributeNamespaceURI == null && atts.getQName(x).startsWith(XMLConstants.XMLNS + ":")) {
+        		attributeNamespaceURI = XMLConstants.XMLNS_URL;
+            }
+            
             if (attributeNamespaceURI == null) {
                 element.setAttribute(atts.getQName(x), atts.getValue(x));
             } else {

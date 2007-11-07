@@ -17,6 +17,7 @@ public class XSDHelperDefineAndGenerateTestSuite {
     }
 
     public static void main(String[] args) {
+    	//System.setProperty("useLogging", "true");
         junit.textui.TestRunner.run(suite());
     }
 
