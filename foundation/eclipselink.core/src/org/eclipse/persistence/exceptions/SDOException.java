@@ -63,6 +63,8 @@ public class SDOException extends EclipseLinkException {
     public static final int CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE = 45031;
     public static final int XMLMARSHAL_EXCEPTION_OCCURRED = 45032;
     public static final int TYPE_REFERENCED_BUT_NEVER_DEFINED = 45033;
+    public static final int OPTIONS_MUST_BE_A_MAP = 45034;
+    public static final int TYPE_OPTION_MUST_BE_AN_SDOTYPE = 45035;
     
     protected SDOException(String message) {
         super(message);
@@ -454,4 +456,26 @@ public class SDOException extends EclipseLinkException {
           exception.setErrorCode(TYPE_REFERENCED_BUT_NEVER_DEFINED);
           return exception;
       }
+      
+    /**
+     * INTERNAL:
+     * thrown from SDOXMLHelperDelegate 
+     */
+     public static SDOException optionsMustBeAMap(Exception nestedException) {
+        Object[] args = {};
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, OPTIONS_MUST_BE_A_MAP, args), nestedException);
+        exception.setErrorCode(OPTIONS_MUST_BE_A_MAP);
+        return exception;
+    }
+    
+      /**
+     * INTERNAL:
+     * thrown from SDOXMLHelperDelegate 
+     */
+     public static SDOException typeOptionMustBeAnSDOType(Exception nestedException) {
+        Object[] args = {};
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, TYPE_NOT_FOUND_FOR_INTERFACE, args), nestedException);
+        exception.setErrorCode(TYPE_NOT_FOUND_FOR_INTERFACE);
+        return exception;
+    }
 }
