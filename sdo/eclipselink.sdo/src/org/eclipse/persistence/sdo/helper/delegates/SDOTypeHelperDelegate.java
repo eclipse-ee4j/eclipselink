@@ -43,7 +43,7 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     /** Map containing user defined types */
-    private Map typesHashMap = new HashMap();
+    private Map typesHashMap;
 
     /** Map containing built-in types for primitive and SDO types */
     private static final Map commonjHashMap = new HashMap();
@@ -79,6 +79,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     public SDOTypeHelperDelegate(HelperContext aContext) {
         // set context before initializing maps
         aHelperContext = aContext;
+        initTypesHashMap();
         initOpenProps();
     }
 
@@ -126,6 +127,15 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         commonjJavaHashMap.put(SDOConstants.INTOBJECT, SDOConstants.SDO_INTOBJECT);
         commonjJavaHashMap.put(SDOConstants.LONGOBJECT, SDOConstants.SDO_LONGOBJECT);
         commonjJavaHashMap.put(SDOConstants.SHORTOBJECT, SDOConstants.SDO_SHORTOBJECT);
+    }
+    
+    /**
+     * initlizes HashMap typesHashMap.
+     */
+    private void initTypesHashMap() {
+      typesHashMap = new HashMap();
+      QName qname = new QName(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);
+      typesHashMap.put(qname, SDOConstants.SDO_XMLHELPER_LOAD_OPTIONS);
     }
 
     /**
@@ -600,7 +610,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     public void reset() {
-        typesHashMap = new HashMap();        
+        initTypesHashMap();
         namespaceResolver = new NamespaceResolver();
         initOpenProps();
     }
@@ -665,7 +675,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
                     aDescriptor.setDefaultRootElement(rootName);
                     QName elementType = new QName(propertyUri, rootName);
                     aDescriptor.setDefaultRootElementType(elementType);
-                    
+
                     ((SDOXMLHelper) aHelperContext.getXMLHelper()).setDirty(true);
                 }
             }

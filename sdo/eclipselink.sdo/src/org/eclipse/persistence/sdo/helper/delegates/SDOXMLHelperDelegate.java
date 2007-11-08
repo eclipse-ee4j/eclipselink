@@ -183,17 +183,19 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
             unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource);
         } else {
             try {
-                Map optionsMap = (Map)options;
+                DataObject optionsDataObject = (DataObject)options;
                 try {
-                    SDOType theType = (SDOType)optionsMap.get(SDOConstants.TYPE_LOAD_OPTION);
+                    SDOType theType = (SDOType)optionsDataObject.get(SDOConstants.TYPE_LOAD_OPTION);
                     if (theType != null) {
                         unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource, theType.getImplClass());
+                    }else{
+                        unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource);
                     }
                 } catch (ClassCastException ccException) {                  
-                  throw SDOException.typeOptionMustBeAnSDOType(ccException);
+                  throw SDOException.typePropertyMustBeAType(ccException);
                 }
             } catch (ClassCastException ccException) {
-               throw SDOException.optionsMustBeAMap(ccException);            
+               throw SDOException.optionsMustBeADataObject(ccException, SDOConstants.ORACLE_SDO_URL ,SDOConstants.XMLHELPER_LOAD_OPTIONS);            
             }
         }
 
@@ -247,17 +249,19 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
             unmarshalledObject = anXMLUnmarshaller.unmarshal(source);
         } else {                     
             try {
-                Map optionsMap = (Map)options;
+                DataObject optionsDataObject = (DataObject)options;
                 try {
-                    SDOType theType = (SDOType)optionsMap.get(SDOConstants.TYPE_LOAD_OPTION);
+                    SDOType theType = (SDOType)optionsDataObject.get(SDOConstants.TYPE_LOAD_OPTION);
                     if (theType != null) {
                         unmarshalledObject = anXMLUnmarshaller.unmarshal(source, theType.getImplClass());
+                    }else{
+                        unmarshalledObject = anXMLUnmarshaller.unmarshal(source);
                     }
                 } catch (ClassCastException ccException) {                  
-                  throw SDOException.typeOptionMustBeAnSDOType(ccException);
+                  throw SDOException.typePropertyMustBeAType(ccException);
                 }
-            } catch (ClassCastException ccException) {
-               throw SDOException.optionsMustBeAMap(ccException);            
+            } catch (ClassCastException ccException) {               
+               throw SDOException.optionsMustBeADataObject(ccException, SDOConstants.ORACLE_SDO_URL ,SDOConstants.XMLHELPER_LOAD_OPTIONS);            
             }           
             
         }

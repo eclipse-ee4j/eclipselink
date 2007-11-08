@@ -92,6 +92,9 @@ public class SDOConstants {
     public static final String LONGOBJECT = "LongObject";
     public static final String SHORTOBJECT = "ShortObject";
 
+    public static final String XMLHELPER_LOAD_OPTIONS ="LoadOptions";
+    public static final String TYPE_LOAD_OPTION = "type";
+    
     /**Type objects for types in the commonj.sdo namespace */
 
     // make the HelperContext global
@@ -125,6 +128,7 @@ public class SDOConstants {
     public static final SDOType SDO_YEARMONTH = new SDOType(SDO_URL, YEARMONTH, globalHelperContext);
     public static final SDOType SDO_YEARMONTHDAY = new SDOType(SDO_URL, YEARMONTHDAY, globalHelperContext);
     public static final SDOType SDO_URI = new SDOType(SDO_URL, URI, globalHelperContext);
+    public static final SDOType SDO_XMLHELPER_LOAD_OPTIONS = new SDOType(ORACLE_SDO_URL, XMLHELPER_LOAD_OPTIONS, globalHelperContext);
 
     /** Numeric primitive default instances see p 45 of Java Spec. 4th ed */
     public static final Boolean BOOLEAN_DEFAULT = Boolean.FALSE;
@@ -327,9 +331,7 @@ public class SDOConstants {
 
     /** A classloader toString containing (oc4j:) means we are running from an 4 levels up from an ejb container */
     public static final String CLASSLOADER_OC4J_FRAGMENT = "oc4j:";
-
-    public static final String TYPE_LOAD_OPTION = "type";
-
+    
     /** XPath related constants*/
     /** XPath ns separator ":" */
     public static final String SDO_XPATH_NS_SEPARATOR_FRAGMENT = ":";
@@ -447,7 +449,7 @@ public class SDOConstants {
 
         SDO_URI.setDataType(true);
         SDO_URI.setInstanceClass(ClassConstants.STRING);
-
+        
         // TODO: dataType=false will cause copyHelper to fail on equality because default contructor is invoked
         SDO_CHANGESUMMARY.setDataType(true);
         SDO_CHANGESUMMARY.setAbstract(true);
@@ -613,6 +615,13 @@ public class SDOConstants {
 
         SDO_SHORTOBJECT.setDataType(true);
         SDO_SHORTOBJECT.setInstanceClass(ClassConstants.SHORT);
+
+        SDO_XMLHELPER_LOAD_OPTIONS.setDataType(false);
+        SDOProperty typeOptionProperty = new SDOProperty(globalHelperContext);
+        typeOptionProperty.setName(TYPE_LOAD_OPTION);
+        typeOptionProperty.setMany(false);
+        typeOptionProperty.setType(SDO_TYPE);
+        SDO_XMLHELPER_LOAD_OPTIONS.addDeclaredProperty(typeOptionProperty);
 
         // initialize the built-in open content property values (to be appended into the user defined open content properties map)
         // the SDOTypeHelperDelegate.openContentProperties Map contains both global properties (here) and user defined properties
