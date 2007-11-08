@@ -178,7 +178,24 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     public XMLDocument load(InputSource inputSource, String locationURI, Object options) throws IOException {
         // get XMLUnmarshaller once - as we may create a new instance if this helper isDirty=true
         XMLUnmarshaller anXMLUnmarshaller = getXmlUnmarshaller();
-        Object unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource);
+        Object unmarshalledObject = null;
+        if (options == null) {
+            unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource);
+        } else {
+            try {
+                Map optionsMap = (Map)options;
+                try {
+                    SDOType theType = (SDOType)optionsMap.get(SDOConstants.TYPE_LOAD_OPTION);
+                    if (theType != null) {
+                        unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource, theType.getImplClass());
+                    }
+                } catch (ClassCastException ccException) {                  
+                  throw SDOException.typeOptionMustBeAnSDOType(ccException);
+                }
+            } catch (ClassCastException ccException) {
+               throw SDOException.optionsMustBeAMap(ccException);            
+            }
+        }
 
         if (unmarshalledObject instanceof XMLRoot) {
             XMLRoot xmlRoot = (XMLRoot)unmarshalledObject;
@@ -225,7 +242,26 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     public XMLDocument load(Source source, String locationURI, Object options) throws IOException {
         // get XMLUnmarshaller once - as we may create a new instance if this helper isDirty=true
         XMLUnmarshaller anXMLUnmarshaller = getXmlUnmarshaller();
-        Object unmarshalledObject = anXMLUnmarshaller.unmarshal(source);
+        Object unmarshalledObject = null;
+        if (options == null) {
+            unmarshalledObject = anXMLUnmarshaller.unmarshal(source);
+        } else {                     
+            try {
+                Map optionsMap = (Map)options;
+                try {
+                    SDOType theType = (SDOType)optionsMap.get(SDOConstants.TYPE_LOAD_OPTION);
+                    if (theType != null) {
+                        unmarshalledObject = anXMLUnmarshaller.unmarshal(source, theType.getImplClass());
+                    }
+                } catch (ClassCastException ccException) {                  
+                  throw SDOException.typeOptionMustBeAnSDOType(ccException);
+                }
+            } catch (ClassCastException ccException) {
+               throw SDOException.optionsMustBeAMap(ccException);            
+            }           
+            
+        }
+        
         if (unmarshalledObject instanceof XMLRoot) {
             XMLRoot xmlRoot = (XMLRoot)unmarshalledObject;
             XMLDocument xmlDocument = createDocument((DataObject)((XMLRoot)unmarshalledObject).getObject(), ((XMLRoot)unmarshalledObject).getNamespaceURI(), ((XMLRoot)unmarshalledObject).getLocalName());

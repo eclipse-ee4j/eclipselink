@@ -328,6 +328,8 @@ public class SDOConstants {
     /** A classloader toString containing (oc4j:) means we are running from an 4 levels up from an ejb container */
     public static final String CLASSLOADER_OC4J_FRAGMENT = "oc4j:";
 
+    public static final String TYPE_LOAD_OPTION = "type";
+
     /** XPath related constants*/
     /** XPath ns separator ":" */
     public static final String SDO_XPATH_NS_SEPARATOR_FRAGMENT = ":";
