@@ -3,5 +3,3 @@ org.apache.ant_1.6.5.v200706080840.zip
 
 The bundle can be downloaded from:
     http://download.eclipse.org/tools/orbit/downloads
-
-test to see if I can commit
