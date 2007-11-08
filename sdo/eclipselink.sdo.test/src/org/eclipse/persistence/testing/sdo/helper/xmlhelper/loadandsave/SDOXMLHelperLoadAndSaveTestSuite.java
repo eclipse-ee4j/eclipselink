@@ -69,6 +69,7 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
         suite.addTest(new TestSuite(LoadAndSaveBug6130541TestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveAttributeGroupTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveGroupTestCases.class));
+        suite.addTest(new TestSuite(LoadAndSaveWithTypeBug6522867TestCases.class));
 
         // test DirectMapping        
         suite.addTest(new TestSuite(IsSetNillableOptionalWithDefaultSetNullTestCases.class));

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:items xmlns:ns0="http://www.example.org">
+   <ns0:item partNum="872-AA" quantity="1">
+      <ns0:productName>Lawnmower</ns0:productName>
+      <ns0:USPrice>148.95</ns0:USPrice>
+      <ns0:comment>Confirm this is electric</ns0:comment>
+   </ns0:item>
+   <ns0:item partNum="926-AA" quantity="1">
+      <ns0:productName>Baby Monitor</ns0:productName>
+      <ns0:CDNPrice>39.98</ns0:CDNPrice>
+      <ns0:exchangeRate>1.3</ns0:exchangeRate>
+      <ns0:shipDate>1999-05-21</ns0:shipDate>
+   </ns0:item>
+</ns0:items>

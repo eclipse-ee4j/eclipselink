@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:items xsi:type="ns0:Items" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <item partNum="872-AA" quantity="1">
+      <productName>Lawnmower</productName>
+      <USPrice>148.95</USPrice>
+      <comment>Confirm this is electric</comment>
+   </item>
+   <item partNum="926-AA" quantity="1">
+      <productName>Baby Monitor</productName>
+      <CDNPrice>39.98</CDNPrice>
+      <exchangeRate>1.3</exchangeRate>
+      <shipDate>1999-05-21</shipDate>
+   </item>
+</ns0:items>
