@@ -48,7 +48,7 @@ public class LoadAndSaveWithTypeBug6522867TestCases extends LoadAndSaveWithOptio
         return "./org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderComplex.xsd";
     }
 
-    protected String getControlRootURI() {
+    protected String getControlRootURI() {        
         return "http://www.example.org";
     }
 
@@ -56,11 +56,12 @@ public class LoadAndSaveWithTypeBug6522867TestCases extends LoadAndSaveWithOptio
         return "items";
     }
 
-    protected Object getOptions() {
-        HashMap optionsMap = new HashMap();
+    protected Object getOptions() {   
         Type theType = typeHelper.getType("http://www.example.org", "Items");
-        optionsMap.put("type", theType);
-        return optionsMap;
+        
+        DataObject optionsDataObject = dataFactory.create(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);              
+        optionsDataObject.set(SDOConstants.TYPE_LOAD_OPTION ,theType);
+        return optionsDataObject;
     }
 
     protected String getRootInterfaceName() {
