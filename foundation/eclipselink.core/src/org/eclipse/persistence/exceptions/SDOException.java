@@ -63,8 +63,8 @@ public class SDOException extends EclipseLinkException {
     public static final int CANNOT_SET_PROPERTY_TYPE_ANNOTATION_IF_TARGET_DATATYPE_TRUE = 45031;
     public static final int XMLMARSHAL_EXCEPTION_OCCURRED = 45032;
     public static final int TYPE_REFERENCED_BUT_NEVER_DEFINED = 45033;
-    public static final int OPTIONS_MUST_BE_A_MAP = 45034;
-    public static final int TYPE_OPTION_MUST_BE_AN_SDOTYPE = 45035;
+    public static final int OPTIONS_MUST_BE_A_DATAOBJECT = 45034;
+    public static final int TYPE_PROPERTY_MUST_BE_A_TYPE = 45035;
     
     protected SDOException(String message) {
         super(message);
@@ -461,10 +461,10 @@ public class SDOException extends EclipseLinkException {
      * INTERNAL:
      * thrown from SDOXMLHelperDelegate 
      */
-     public static SDOException optionsMustBeAMap(Exception nestedException) {
-        Object[] args = {};
-        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, OPTIONS_MUST_BE_A_MAP, args), nestedException);
-        exception.setErrorCode(OPTIONS_MUST_BE_A_MAP);
+     public static SDOException optionsMustBeADataObject(Exception nestedException, String uri, String name) {
+        Object[] args = {uri, name};
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, OPTIONS_MUST_BE_A_DATAOBJECT, args), nestedException);
+        exception.setErrorCode(OPTIONS_MUST_BE_A_DATAOBJECT);
         return exception;
     }
     
@@ -472,10 +472,10 @@ public class SDOException extends EclipseLinkException {
      * INTERNAL:
      * thrown from SDOXMLHelperDelegate 
      */
-     public static SDOException typeOptionMustBeAnSDOType(Exception nestedException) {
+     public static SDOException typePropertyMustBeAType(Exception nestedException) {
         Object[] args = {};
-        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, TYPE_NOT_FOUND_FOR_INTERFACE, args), nestedException);
-        exception.setErrorCode(TYPE_NOT_FOUND_FOR_INTERFACE);
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, TYPE_PROPERTY_MUST_BE_A_TYPE, args), nestedException);
+        exception.setErrorCode(TYPE_PROPERTY_MUST_BE_A_TYPE);
         return exception;
     }
 }
