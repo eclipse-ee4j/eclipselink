@@ -30,6 +30,8 @@ public class PersistenceUnitLoadingException  extends EclipseLinkException {
     public static final int EXCEPTION_OPENING_ORM_XML = 30010;
     public static final int COULD_NOT_GET_CLASS_NAMES_FROM_URL = 30011;
     public static final int COULD_NOT_GET_PERSISTENCE_UNIT_INFO_FROM_URL = 30012;
+    public static final int EXCEPTION_BUILDING_PERSISTENCE_UNIT_NAME = 30013;
+    
 
     /**
      * INTERNAL:
@@ -161,6 +163,15 @@ public class PersistenceUnitLoadingException  extends EclipseLinkException {
         loadingException.setErrorCode(COULD_NOT_GET_PERSISTENCE_UNIT_INFO_FROM_URL);
         return loadingException;
     } 
+    
+    public static PersistenceUnitLoadingException couldNotBuildPersistenceUntiName(Exception e,String url,String puName ) {
+        Object[] args = {url,puName};
+
+        PersistenceUnitLoadingException loadingException = new PersistenceUnitLoadingException(ExceptionMessageGenerator.buildMessage(PersistenceUnitLoadingException.class, EXCEPTION_BUILDING_PERSISTENCE_UNIT_NAME, args),e);
+        loadingException.setErrorCode(EXCEPTION_BUILDING_PERSISTENCE_UNIT_NAME);
+        return loadingException;
+    } 
+    
     public String getResourceName(){
         return resourceName;
     }

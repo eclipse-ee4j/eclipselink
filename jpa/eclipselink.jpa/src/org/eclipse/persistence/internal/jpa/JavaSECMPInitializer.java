@@ -90,7 +90,8 @@ public class JavaSECMPInitializer implements PersistenceInitializationActivator 
         // we will only attempt to deploy when TopLink is specified as the provider or the provider is unspecified
         String providerClassName = persistenceUnitInfo.getPersistenceProviderClassName();
         if (persistenceActivator.isPersistenceProviderSupported(providerClassName)){
-            EntityManagerSetupImpl emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(persistenceUnitInfo.getPersistenceUnitRootUrl()+persistenceUnitInfo.getPersistenceUnitName());
+            String puName = PersistenceUnitProcessor.buildPersistenceUnitName(persistenceUnitInfo.getPersistenceUnitRootUrl(),persistenceUnitInfo.getPersistenceUnitName());
+            EntityManagerSetupImpl emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(puName);
             // if we already have an EntityManagerSetupImpl this PU has already been processed.  Use the existing one
             if (emSetupImpl != null && !emSetupImpl.isUndeployed()){
                 return false;

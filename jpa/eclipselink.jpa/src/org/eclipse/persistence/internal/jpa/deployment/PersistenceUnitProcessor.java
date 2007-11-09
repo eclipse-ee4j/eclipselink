@@ -26,6 +26,8 @@ import java.util.HashSet;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.persistence.spi.PersistenceUnitInfo;
+import java.net.URLDecoder;
+import java.io.UnsupportedEncodingException;
 
 import org.xml.sax.XMLReader;
 import org.xml.sax.InputSource;
@@ -347,4 +349,22 @@ public class PersistenceUnitProcessor  {
         }
         return myContentHandler.getPersistenceUnits();
     }
+    
+    /**
+     * Build the unique persistence name by concatenating the decoded URL wiht persistence unit name.
+     * Decoding url is required while persistence on multiple-bytes OS.  
+     * @param URL
+     * @param puName
+     * @return String
+     */
+   public static String buildPersistenceUnitName(URL url, String puName){
+       String fullPuName = null;
+       try {
+           fullPuName = URLDecoder.decode(url.toString(), "UTF8")+puName;
+       } catch (UnsupportedEncodingException e) {
+           throw PersistenceUnitLoadingException.couldNotBuildPersistenceUntiName(e,url.toString(),puName);
+       }
+       return fullPuName;
+   }
+
 }

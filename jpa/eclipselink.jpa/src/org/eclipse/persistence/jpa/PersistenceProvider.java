@@ -60,18 +60,17 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
 	    	Enumeration<URL> resources = currentLoader.getResources("META-INF/persistence.xml");
 	        boolean initialized = false;
 	        while (resources.hasMoreElements()) {
-	        	URL url = PersistenceUnitProcessor.computePURootURL(resources.nextElement());
-	            String urlAndName = url + name;
+                String puName = PersistenceUnitProcessor.buildPersistenceUnitName(PersistenceUnitProcessor.computePURootURL(resources.nextElement()), name);
 	            
 	            synchronized (EntityManagerFactoryProvider.emSetupImpls){
-	            	emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(urlAndName);
+	            	emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(puName);
 	                if (emSetupImpl == null || emSetupImpl.isUndeployed()){
 	                	if (!initialized) {
 	                		initializer.initialize(nonNullProperties, this);
 	                        initialized = true;
 	                	}
 	                        
-	                    emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(urlAndName);
+	                    emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(puName);
 	                }
 	            }
 
@@ -145,15 +144,16 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             boolean isNew = false;
             ClassTransformer transformer = null;
 	    synchronized (EntityManagerFactoryProvider.emSetupImpls) {
-	    	String urlAndName = info.getPersistenceUnitRootUrl() + info.getPersistenceUnitName();
-	        emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(urlAndName);
+            String puName = PersistenceUnitProcessor.buildPersistenceUnitName(info.getPersistenceUnitRootUrl(), info.getPersistenceUnitName());
+	    	
+	        emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(puName);
 	        if (emSetupImpl == null){
 	        	emSetupImpl = new EntityManagerSetupImpl();
                     isNew = true;
 	            emSetupImpl.setIsInContainerMode(true);        
                     // if predeploy fails then emSetupImpl shouldn't be added to FactoryProvider
                     transformer = emSetupImpl.predeploy(info, nonNullProperties);
-	            EntityManagerFactoryProvider.addEntityManagerSetupImpl(urlAndName, emSetupImpl);
+	            EntityManagerFactoryProvider.addEntityManagerSetupImpl(puName, emSetupImpl);
 	        }
 	    }
 	        
