@@ -157,6 +157,7 @@ public class QueryException extends ValidationException {
     public final static int DISTINCT_COUNT_ON_OUTER_JOINED_COMPOSITE_PK = 6145;
     public final static int QUERY_HINT_CONTAINED_INVALID_INTEGER_VALUE = 6146;
     public final static int EXPRESSION_DOES_NOT_SUPPORT_PARTAIL_ATTRIBUTE_READING = 6147;    
+    public final static int MAP_KEY_IS_NULL = 6150;
 
     /**
      * INTERNAL:
@@ -717,6 +718,14 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
+    public static ValidationException mapKeyIsNull(Object element, Object container) {
+        Object[] args = { element.getClass(), container.getClass() };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(QueryException.class, MAP_KEY_IS_NULL, args));
+        validationException.setErrorCode(MAP_KEY_IS_NULL);
+        return validationException;
+    }
+    
     public static ValidationException mapKeyNotComparable(Object anObject, Object aContainer) {
         Object[] args = { anObject.toString(), anObject.getClass(), aContainer, aContainer.getClass() };
 

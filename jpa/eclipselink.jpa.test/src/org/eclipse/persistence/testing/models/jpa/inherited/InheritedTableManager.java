@@ -221,6 +221,16 @@ public class InheritedTableManager extends TableCreator {
         VERSION_field.setIsIdentity(false);
         VERSION_field.setShouldAllowNull(true);
         table.addField(VERSION_field);
+        
+        FieldDefinition UNIQUE_KEY_field = new FieldDefinition();
+        UNIQUE_KEY_field.setName("UNIQUEKEY");
+        UNIQUE_KEY_field.setTypeName("NUMERIC");
+        UNIQUE_KEY_field.setSize(15);
+        UNIQUE_KEY_field.setIsPrimaryKey(false);
+        UNIQUE_KEY_field.setUnique(true);
+        UNIQUE_KEY_field.setIsIdentity(false);
+        UNIQUE_KEY_field.setShouldAllowNull(false);
+        table.addField(UNIQUE_KEY_field);
 
         return table;
     }

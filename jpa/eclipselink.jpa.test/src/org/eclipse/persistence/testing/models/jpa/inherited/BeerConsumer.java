@@ -34,6 +34,7 @@ public class BeerConsumer {
     private Integer version;
     private String name;
     private Collection<Alpine> alpineBeersToConsume;
+    private Map<Integer, Blue> blueBeersToConsume;
     private Map<Integer, Canadian> canadianBeersToConsume;
     private Map<Integer, Certification> certifications;
     private Map<TelephoneNumberPK, TelephoneNumber> telephoneNumbers;
@@ -41,6 +42,7 @@ public class BeerConsumer {
     public BeerConsumer() {
         super();
         alpineBeersToConsume = new Vector<Alpine>();
+        blueBeersToConsume = new Hashtable<Integer, Blue>();
         canadianBeersToConsume = new Hashtable<Integer, Canadian>();
         certifications = new Hashtable<Integer, Certification>();
         telephoneNumbers = new Hashtable<TelephoneNumberPK, TelephoneNumber>();
@@ -54,6 +56,11 @@ public class BeerConsumer {
     public void addAlpineBeerToConsume(Alpine alpine, int index) {
         alpine.setBeerConsumer(this);
         ((Vector) alpineBeersToConsume).insertElementAt(alpine, index);
+    }
+    
+    public void addBlueBeerToConsume(Blue blue) {
+        blue.setBeerConsumer(this);
+        blueBeersToConsume.put(blue.getUniqueKey(), blue);
     }
     
     /**
@@ -75,6 +82,12 @@ public class BeerConsumer {
     
     public Alpine getAlpineBeerToConsume(int index) {
         return (Alpine) ((Vector) alpineBeersToConsume).elementAt(index);
+    }
+    
+    @OneToMany(mappedBy="beerConsumer", cascade=ALL)
+    @MapKey(name="uniqueKey")
+    public Map<Integer, Blue> getBlueBeersToConsume() {
+        return blueBeersToConsume;
     }
     
     @OneToMany(mappedBy="beerConsumer", cascade=ALL)
@@ -196,6 +209,10 @@ public class BeerConsumer {
     
     public void setAlpineBeersToConsume(Collection<Alpine> alpineBeersToConsume) {
         this.alpineBeersToConsume = alpineBeersToConsume;
+    }
+    
+    public void setBlueBeersToConsume(Map<Integer, Blue> blueBeersToConsume) {
+        this.blueBeersToConsume = blueBeersToConsume;
     }
     
     public void setCanadianBeersToConsume(Map<Integer, Canadian> canadianBeersToConsume) {

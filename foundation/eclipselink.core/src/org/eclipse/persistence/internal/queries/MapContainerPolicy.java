@@ -91,7 +91,13 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             if (key != null) {
                 return ((Map)container).put(key, wrapped) != null;
             } else {
-                return ((Map)container).put(keyFrom(element, session), wrapped) != null;
+                Object keyFromElement = keyFrom(element, session);
+                
+                if (keyFromElement == null) {
+                    throw QueryException.mapKeyIsNull(element, container);
+                }
+                
+                return ((Map)container).put(keyFromElement, wrapped) != null;
             }
         } catch (ClassCastException ex1) {
             throw QueryException.mapKeyNotComparable(element, container);

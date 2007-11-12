@@ -19,7 +19,7 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 @Table(name="CMP3_BLUE")
 public class Blue extends Beer  {
     public ValueHolderInterface ignoredObject;
-    
+    private Integer uniqueKey;
     public Blue() {}
     
     // This class is intentionally left with no annotations to test that
@@ -43,5 +43,13 @@ public class Blue extends Beer  {
     
     public void setIgnoredObject(ValueHolderInterface ignoredObject) {
         this.ignoredObject = ignoredObject;
+    }
+    
+    public Integer getUniqueKey() {
+        return uniqueKey;
+    }
+    
+    public void setUniqueKey(Integer uniqueKey) {
+        this.uniqueKey = uniqueKey;
     }
 }
