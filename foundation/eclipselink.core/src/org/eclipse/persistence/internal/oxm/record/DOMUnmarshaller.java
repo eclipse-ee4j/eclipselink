@@ -54,15 +54,15 @@ import org.xml.sax.InputSource;
  */
 public class DOMUnmarshaller implements PlatformUnmarshaller {
     private XMLParser parser;
-    private XMLContext xmlContext;
+    private XMLUnmarshaller xmlUnmarshaller;
     private boolean isResultAlwaysXMLRoot;
 
-    public DOMUnmarshaller(XMLContext xmlContext) {
+    public DOMUnmarshaller(XMLUnmarshaller xmlUnmarshaller) {
         super();
         parser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
         parser.setNamespaceAware(true);
         parser.setValidationMode(XMLParser.NONVALIDATING);
-        this.xmlContext = xmlContext;
+        this.xmlUnmarshaller = xmlUnmarshaller;
     }
 
     public EntityResolver getEntityResolver() {
@@ -101,67 +101,67 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         }
     }
 
-    public Object unmarshal(File file, XMLUnmarshaller unmarshaller) {
+    public Object unmarshal(File file) {
         try {
             Document document = null;
             document = parser.parse(file);
-            return xmlToObject(new DOMRecord(document), unmarshaller);
+            return xmlToObject(new DOMRecord(document));
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }
 
-    public Object unmarshal(File file, Class clazz, XMLUnmarshaller unmarshaller) {
+    public Object unmarshal(File file, Class clazz) {
         try {
             Document document = null;
             document = parser.parse(file);
-            return xmlToObject(new DOMRecord(document), clazz, unmarshaller);
+            return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }
 
-    public Object unmarshal(InputStream inputStream, XMLUnmarshaller unmarshaller) {
+    public Object unmarshal(InputStream inputStream) {
         try {
             Document document = null;
             document = parser.parse(inputStream);
-            return xmlToObject(new DOMRecord(document), unmarshaller);
+            return xmlToObject(new DOMRecord(document));
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }
 
-    public Object unmarshal(InputStream inputStream, Class clazz, XMLUnmarshaller unmarshaller) {
+    public Object unmarshal(InputStream inputStream, Class clazz) {
         try {
             Document document = null;
             document = parser.parse(inputStream);
-            return xmlToObject(new DOMRecord(document), clazz, unmarshaller);
+            return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }
 
-    public Object unmarshal(InputSource inputSource, XMLUnmarshaller unmarshaller) {
+    public Object unmarshal(InputSource inputSource) {
         try {
             Document document = null;
             document = parser.parse(inputSource);
-            return xmlToObject(new DOMRecord(document), unmarshaller);
+            return xmlToObject(new DOMRecord(document));
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }
 
-    public Object unmarshal(InputSource inputSource, Class clazz, XMLUnmarshaller unmarshaller) {
+    public Object unmarshal(InputSource inputSource, Class clazz) {
         try {
             Document document = null;
             document = parser.parse(inputSource);
-            return xmlToObject(new DOMRecord(document), clazz, unmarshaller);
+            return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }
 
-    public Object unmarshal(Node node, XMLUnmarshaller unmarshaller) {
+    public Object unmarshal(Node node) {
         Element element = null;
         switch (node.getNodeType()) {
         case Node.DOCUMENT_NODE: {
@@ -175,10 +175,10 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         default:
             throw XMLMarshalException.unmarshalException();
         }
-        return xmlToObject(new DOMRecord(element), unmarshaller);
+        return xmlToObject(new DOMRecord(element));
     }
 
-    public Object unmarshal(Node node, Class clazz, XMLUnmarshaller unmarshaller) {
+    public Object unmarshal(Node node, Class clazz) {
         Element element = null;
         switch (node.getNodeType()) {
         case Node.DOCUMENT_NODE: {
@@ -192,64 +192,64 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         default:
             throw XMLMarshalException.unmarshalException();
         }
-        return xmlToObject(new DOMRecord(element), clazz, unmarshaller);
+        return xmlToObject(new DOMRecord(element), clazz);
     }
 
-    public Object unmarshal(Reader reader, XMLUnmarshaller unmarshaller) {
+    public Object unmarshal(Reader reader) {
         try {
             Document document = null;
             document = parser.parse(reader);
-            return xmlToObject(new DOMRecord(document), unmarshaller);
+            return xmlToObject(new DOMRecord(document));
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }
 
-    public Object unmarshal(Reader reader, Class clazz, XMLUnmarshaller unmarshaller) {
+    public Object unmarshal(Reader reader, Class clazz) {
         try {
             Document document = null;
             document = parser.parse(reader);
-            return xmlToObject(new DOMRecord(document), clazz, unmarshaller);
+            return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }
 
-    public Object unmarshal(Source source, XMLUnmarshaller unmarshaller) {
+    public Object unmarshal(Source source) {
         try {
             Document document = null;
             document = parser.parse(source);
-            return xmlToObject(new DOMRecord(document), unmarshaller);
+            return xmlToObject(new DOMRecord(document));
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }
 
-    public Object unmarshal(Source source, Class clazz, XMLUnmarshaller unmarshaller) {
+    public Object unmarshal(Source source, Class clazz) {
         try {
             Document document = null;
             document = parser.parse(source);
-            return xmlToObject(new DOMRecord(document), clazz, unmarshaller);
+            return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }
 
-    public Object unmarshal(URL url, XMLUnmarshaller unmarshaller) {
+    public Object unmarshal(URL url) {
         try {
             Document document = null;
             document = parser.parse(url);
-            return xmlToObject(new DOMRecord(document), unmarshaller);
+            return xmlToObject(new DOMRecord(document));
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }
 
-    public Object unmarshal(URL url, Class clazz, XMLUnmarshaller unmarshaller) {
+    public Object unmarshal(URL url, Class clazz) {
         try {
             Document document = null;
             document = parser.parse(url);
-            return xmlToObject(new DOMRecord(document), clazz, unmarshaller);
+            return xmlToObject(new DOMRecord(document), clazz);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
@@ -259,6 +259,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
      * INTERNAL: Return the descriptor for the document.
      */
     protected XMLDescriptor getDescriptor(DOMRecord xmlRecord) throws XMLMarshalException {
+    	XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
         QName rootQName = new QName(xmlRecord.getNamespaceURI(), xmlRecord.getLocalName());
         XMLDescriptor xmlDescriptor = xmlContext.getDescriptor(rootQName);
         if (null == xmlDescriptor) {
@@ -288,15 +289,15 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
      * @throws XMLMarshalException
      *             if an error occurred during unmarshalling
      */
-    public Object xmlToObject(DOMRecord xmlRecord, XMLUnmarshaller unmarshaller) throws XMLMarshalException {
+    public Object xmlToObject(DOMRecord xmlRecord) throws XMLMarshalException {
         XMLDescriptor xmlDescriptor = getDescriptor(xmlRecord);
-        return xmlToObject(xmlRecord, xmlDescriptor.getJavaClass(), unmarshaller);
+        return xmlToObject(xmlRecord, xmlDescriptor.getJavaClass());
     }
 
     /**
      * INTERNAL: Convert the Oracle XMLDocument to the reference-class.
      */
-    public Object xmlToObject(DOMRecord xmlRow, Class referenceClass, XMLUnmarshaller unmarshaller) throws XMLMarshalException {
+    public Object xmlToObject(DOMRecord xmlRow, Class referenceClass) throws XMLMarshalException {
         //Try to get the Encoding and Version from DOM3 APIs if available
         String xmlEncoding = "UTF-8";
         String xmlVersion = "1.0";
@@ -349,6 +350,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 
         // for XMLObjectReferenceMappings we need a non-shared cache, so
         // try and get a Unit Of Work from the XMLContext
+        XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
         AbstractSession session = xmlContext.getReadSession(referenceClass);
         
         ReadObjectQuery query = new ReadObjectQuery();
@@ -360,13 +362,13 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             throw XMLMarshalException.descriptorNotFoundInProject(referenceClass.getName());
         }
 
-        xmlRow.setUnmarshaller(unmarshaller);
+        xmlRow.setUnmarshaller(xmlUnmarshaller);
         xmlRow.setDocPresPolicy(xmlContext.getDocumentPreservationPolicy(session));
         XMLObjectBuilder objectBuilder = (XMLObjectBuilder) descriptor.getObjectBuilder();
         Object object = objectBuilder.buildObject(query, xmlRow, null);
         
         // resolve mapping references
-        unmarshaller.resolveReferences(session);
+        xmlUnmarshaller.resolveReferences(session);
 
         String elementNamespaceUri = xmlRow.getDOM().getNamespaceURI();
         String elementLocalName = xmlRow.getDOM().getLocalName();

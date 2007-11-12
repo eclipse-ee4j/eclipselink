@@ -37,33 +37,33 @@ public interface PlatformUnmarshaller {
 
     public abstract void setSchemas(Object[] schemas);
 
-    public abstract Object unmarshal(File file, XMLUnmarshaller unmarshaller);
+    public abstract Object unmarshal(File file);
 
-    public abstract Object unmarshal(File file, Class clazz, XMLUnmarshaller unmarshaller);
+    public abstract Object unmarshal(File file, Class clazz);
 
-    public abstract Object unmarshal(InputStream inputStream, XMLUnmarshaller unmarshaller);
+    public abstract Object unmarshal(InputStream inputStream);
 
-    public abstract Object unmarshal(InputStream inputStream, Class clazz, XMLUnmarshaller unmarshaller);
+    public abstract Object unmarshal(InputStream inputStream, Class clazz);
 
-    public abstract Object unmarshal(InputSource inputSource, XMLUnmarshaller unmarshaller);
+    public abstract Object unmarshal(InputSource inputSource);
 
-    public abstract Object unmarshal(InputSource inputSource, Class clazz, XMLUnmarshaller unmarshaller);
+    public abstract Object unmarshal(InputSource inputSource, Class clazz);
 
-    public abstract Object unmarshal(Node node, XMLUnmarshaller unmarshaller);
+    public abstract Object unmarshal(Node node);
 
-    public abstract Object unmarshal(Node node, Class clazz, XMLUnmarshaller unmarshaller);
+    public abstract Object unmarshal(Node node, Class clazz);
 
-    public abstract Object unmarshal(Reader reader, XMLUnmarshaller unmarshaller);
+    public abstract Object unmarshal(Reader reader);
 
-    public abstract Object unmarshal(Reader reader, Class clazz, XMLUnmarshaller unmarshaller);
+    public abstract Object unmarshal(Reader reader, Class clazz);
 
-    public abstract Object unmarshal(Source source, XMLUnmarshaller unmarshaller);
+    public abstract Object unmarshal(Source source);
 
-    public abstract Object unmarshal(Source source, Class clazz, XMLUnmarshaller unmarshaller);
+    public abstract Object unmarshal(Source source, Class clazz);
 
-    public abstract Object unmarshal(URL url, XMLUnmarshaller unmarshaller);
+    public abstract Object unmarshal(URL url);
 
-    public abstract Object unmarshal(URL url, Class clazz, XMLUnmarshaller unmarshaller);
+    public abstract Object unmarshal(URL url, Class clazz);
     
     public abstract void setResultAlwaysXMLRoot(boolean alwaysReturnRoot);
     

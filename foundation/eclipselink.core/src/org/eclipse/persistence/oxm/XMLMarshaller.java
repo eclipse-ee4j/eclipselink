@@ -92,6 +92,7 @@ public class XMLMarshaller {
     */
     public XMLMarshaller(XMLContext xmlContext) {
         setXMLContext(xmlContext);
+        initialize();
     }
 
     private void initialize() {
@@ -115,7 +116,6 @@ public class XMLMarshaller {
      */
     public void setXMLContext(XMLContext value) {
         xmlContext =  value;
-        initialize();
     }    
 
     /**

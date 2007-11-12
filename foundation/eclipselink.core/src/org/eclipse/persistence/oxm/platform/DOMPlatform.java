@@ -11,7 +11,7 @@ package org.eclipse.persistence.oxm.platform;
 
 import org.eclipse.persistence.internal.oxm.record.DOMUnmarshaller;
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
-import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 
 /**
  * INTERNAL:
@@ -31,7 +31,7 @@ public class DOMPlatform extends XMLPlatform {
     /**
      * INTERNAL:
      */
-    public PlatformUnmarshaller newPlatformUnmarshaller(XMLContext xmlContext) {
-        return new DOMUnmarshaller(xmlContext);
+    public PlatformUnmarshaller newPlatformUnmarshaller(XMLUnmarshaller xmlUnmarshaller) {
+        return new DOMUnmarshaller(xmlUnmarshaller);
     }
 }

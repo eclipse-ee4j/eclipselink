@@ -13,7 +13,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
-import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 
 public abstract class XMLPlatform extends DatasourcePlatform {
     public ConversionManager getConversionManager() {
@@ -28,5 +28,5 @@ public abstract class XMLPlatform extends DatasourcePlatform {
     /**
      * INTERNAL:
      */
-    public abstract PlatformUnmarshaller newPlatformUnmarshaller(XMLContext xmlContext);
+    public abstract PlatformUnmarshaller newPlatformUnmarshaller(XMLUnmarshaller xmlUnmarshaller);
 }

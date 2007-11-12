@@ -48,8 +48,8 @@ public class XMLBinder {
     DocumentPreservationPolicy documentPreservationPolicy;
     DOMReader reader;
     public XMLBinder(XMLContext context) {
-        saxUnmarshaller = new SAXUnmarshaller(context);
         unmarshaller = context.createUnmarshaller();
+        saxUnmarshaller = new SAXUnmarshaller(unmarshaller);        
         this.context = context;
         documentPreservationPolicy = new XMLBinderPolicy();
         reader = new DOMReader();
@@ -62,14 +62,14 @@ public class XMLBinder {
      */
     public Object unmarshal(org.w3c.dom.Node node) {
         reader.setDocPresPolicy(documentPreservationPolicy);
-        Object toReturn = saxUnmarshaller.unmarshal(reader, node, unmarshaller);
+        Object toReturn = saxUnmarshaller.unmarshal(reader, node);
         return toReturn;
     }
     
     public XMLRoot unmarshal(org.w3c.dom.Node node, Class javaClass) {
         XMLRoot root = null;
         reader.setDocPresPolicy(documentPreservationPolicy);
-        root = (XMLRoot)saxUnmarshaller.unmarshal(reader, node, javaClass, unmarshaller);
+        root = (XMLRoot)saxUnmarshaller.unmarshal(reader, node, javaClass);
         return root;
     }
     /**
