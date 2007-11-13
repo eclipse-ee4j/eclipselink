@@ -133,7 +133,7 @@ public abstract class AbstractNullPolicy {
 
 	/**
 	 * INTERNAL: 
-	 * When using the SAX Platform, this method is responsible for
+	 * When using the SAX or DOM Platform, this method is responsible for
 	 * marshalling null values for the XML Direct Mapping.
 	 * 
 	 * @param xPathFragment
