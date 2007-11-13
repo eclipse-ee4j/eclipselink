@@ -238,6 +238,12 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      * Allows for subclasses to convert the attribute value.
      */
     public Object getAttributeValue(Object fieldValue, AbstractSession session, XMLRecord record) {
+    	// Unmarshal DOM
+        // If attribute is empty string representing (null) then return the nullValue
+        if (EMPTY_STRING.equals(fieldValue)) {
+            fieldValue = null;
+        }
+        
         // PERF: Direct variable access.
         Object attributeValue = fieldValue;
         // If attribute is absent check the policy
@@ -250,16 +256,6 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
             }
         }
         
-        // Attributes that are an empty string always represent (null) - do not check the policy for isNullRepresentedByEmptyNode()=true
-        if (null != fieldValue && EMPTY_STRING.equals(fieldValue)) {// && getNullPolicy().isNullRepresentedByEmptyNode()) {
-        	// No conversion necessary, return immediately
-            return nullValue;
-        }
-        
-        if ((fieldValue == null) && (this.nullValue != null)) {// Translate default null value
-            return this.nullValue;
-        }
-
         // Allow for user defined conversion to the object value.       
         if (hasConverter()) {
             if (getConverter() instanceof XMLConverter) {
@@ -290,17 +286,12 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      * Process any converter if defined, and check for null values.
      */
     public Object getFieldValue(Object attributeValue, AbstractSession session, XMLRecord record) {
+    	// Marshal
         // PERF: This method is a major performance code point,
         // so has been micro optimized and uses direct variable access.
         Object fieldValue = attributeValue;
         if ((this.nullValue != null) && (this.nullValue.equals(fieldValue))) {
             return null;
-        }
-
-        // If attribute is empty string representing (null) then check the policy for null handling
-        if (null != fieldValue && EMPTY_STRING.equals(fieldValue)) {// && getNullPolicy().isNullRepresentedByEmptyNode()) {
-        	// No conversion necessary, return immediately
-            return nullValue;
         }
 
         // Allow for user defined conversion to the object value.       
