@@ -405,9 +405,11 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * PUBLIC:
-     * Return the name of the attribute set in the mapping.
+     * Return the name of the attribute set in the mapping. 
      */
     public String getAttributeName() {
+    	// The attribute name on the attributeAccessor will allways override any attribute already set
+    	// Use the attributeAccessor attribute over the current attribute name
         if (attributeName == null) {
             attributeName = getAttributeAccessor().getAttributeName();
         }
@@ -1219,6 +1221,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      */
     public void setAttributeName(String attributeName) {
         getAttributeAccessor().setAttributeName(attributeName);
+        // Clear the mapping attribute name until a getAttributeName() call copies the accessor attributeName        
         this.attributeName = null;
     }
 
