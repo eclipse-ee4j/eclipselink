@@ -123,7 +123,6 @@ static class TestRunner implements Runnable {
             try {
                 XMLDocument doc = aStaticHelperContext2.getXMLHelper().load(testDoc);
                 anObject = doc.getRootObject();
-                ((SDOType)anObject.getType()).setOpen(true);
                 // the following line tests SDOTypeHelperDelegate.initOpenContentProps() synchronization block
                 anObject.set("myOpen", "ocValue");
                 // we used to collide on a shared XMLUnMarshaller instance
