@@ -10,13 +10,13 @@
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.defaultnullvalue.xmlattribute;
 
 import junit.textui.TestRunner;
+
+import org.eclipse.persistence.testing.oxm.OXTestCase.Platform;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.defaultnullvalue.Employee;
-import java.util.*;
 
 public class MissingAttributeTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directtofield/defaultnullvalue/xmlattribute/MissingAttribute.xml";
-    private final static int CONTROL_ID = -1;
 
     public MissingAttributeTestCases(String name) throws Exception {
         super(name);
@@ -25,10 +25,21 @@ public class MissingAttributeTestCases extends XMLMappingTestCases {
     }
 
     protected Object getControlObject() {
-        Employee employee = new Employee();
-        employee.setID(CONTROL_ID);
-        return employee;
-    }
+  	    Employee employee = new Employee();
+  	    // We currently have different behavior when using XMLProjectReader
+  	    if(platform==Platform.DOM && metadata==Metadata.XML_ECLIPSELINK) {
+  	    	employee.setID(DefaultNullValueAttributeProject.CONTROL_ID); 
+  	    	// See bug#209398 - current behavior for deployment xml is to not preserve the nullValue of ""
+  	    	//employee.setFirstName(DefaultNullValueAttributeProject.CONTROL_FIRSTNAME);
+  	    } else {
+  	    	employee.setID(DefaultNullValueAttributeProject.CONTROL_ID); 
+  	    	// See bug#209398 - current behavior for deployment xml is to not preserve the nullValue of ""
+  	    	employee.setFirstName(DefaultNullValueAttributeProject.CONTROL_FIRSTNAME);
+  	    }
+  	    	
+  	    return employee;
+  	  }
+    
     
      public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.mappings.directtofield.defaultnullvalue.xmlattribute.MissingAttributeTestCases" };

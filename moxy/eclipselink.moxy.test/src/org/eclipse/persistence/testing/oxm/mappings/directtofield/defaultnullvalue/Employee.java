@@ -11,6 +11,8 @@ package org.eclipse.persistence.testing.oxm.mappings.directtofield.defaultnullva
 
 public class Employee {
     private int id;
+    private int numericNoNullValue;
+    private String firstName;
 
     public int getID() {
         return id;
@@ -23,16 +25,52 @@ public class Employee {
     public boolean equals(Object object) {
         try {
             Employee employee = (Employee)object;
-            return id == employee.id;
+            if(this.getID() != employee.getID()) {
+                return false;
+            }
+            if(this.getNumericNoNullValue() != employee.getNumericNoNullValue()) {
+                return false;
+            }
+            if(this.getFirstName() != employee.getFirstName()) {
+                if(this.getFirstName() == null) {
+                    return false;
+                }
+                if(!this.getFirstName().equals(employee.getFirstName())) {
+                    return false;
+                }
+              }
+            return true;
         } catch (ClassCastException e) {
             return false;
         }
     }
 
     public String toString() {
-        String string = "Employee(id=";
-        string += id;
-        string += ")";
-        return string;
+        StringBuffer aBuffer = new StringBuffer();
+        aBuffer.append("Employee(id=");
+        aBuffer.append(getID());
+        aBuffer.append(", numericNoNullValue=");
+        aBuffer.append(getNumericNoNullValue());
+        aBuffer.append(", firstName=");
+        aBuffer.append(getFirstName());
+        aBuffer.append(")");
+        return aBuffer.toString();
+        
     }
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public int getNumericNoNullValue() {
+		return numericNoNullValue;
+	}
+
+	public void setNumericNoNullValue(int numericNoNullValue) {
+		this.numericNoNullValue = numericNoNullValue;
+	}
 }

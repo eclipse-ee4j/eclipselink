@@ -49,6 +49,15 @@ public abstract class OXTestCase extends XMLTestCase {
     public static enum Metadata { JAVA, XML_TOPLINK, XML_ECLIPSELINK };
     public static Platform platform;;
     public static Metadata metadata;
+    // Constants
+    public static final String PLATFORM_KEY = "platformType";
+    public static final String PLATFORM_DOM = "DOM";
+    public static final String PLATFORM_DOC_PRES = "DOC_PRES";
+    public static final String PLATFORM_SAX = "SAX";
+    public static final String METADATA_KEY = "metadataType";
+    public static final String METADATA_JAVA = "JAVA";
+    public static final String METADATA_TOPLINK = "TOPLINK";
+    public static final String METADATA_XML_ECLIPSELINK = "XML_ECLIPSELINK";
     
     public OXTestCase(String name) {
         super(name);
@@ -232,11 +241,11 @@ public abstract class OXTestCase extends XMLTestCase {
      * @see Platform
      */
     public Platform getPlatform() {
-        String platformStr = System.getProperty("platformType", "SAX");
-        if (platformStr.equals("SAX")) {
+        String platformStr = System.getProperty(PLATFORM_KEY, PLATFORM_SAX);
+        if (platformStr.equals(PLATFORM_SAX)) {
         	return Platform.SAX;
         }
-        if (platformStr.equals("DOM")) {
+        if (platformStr.equals(PLATFORM_DOM)) {
         	return Platform.DOM;
         }
         return Platform.DOC_PRES; 
@@ -249,11 +258,11 @@ public abstract class OXTestCase extends XMLTestCase {
      * @see Metadata
      */
     public Metadata getMetadata() {
-        String metadataStr = System.getProperty("metadataType", "JAVA");
-        if (metadataStr.equals("JAVA")) {
+        String metadataStr = System.getProperty(METADATA_KEY, METADATA_JAVA);
+        if (metadataStr.equals(METADATA_JAVA)) {
         	return Metadata.JAVA;
         }
-        if (metadataStr.equals("XML_ECLIPSELINK")) {
+        if (metadataStr.equals(METADATA_XML_ECLIPSELINK)) {
         	return Metadata.XML_ECLIPSELINK;
         }
         return Metadata.XML_TOPLINK;

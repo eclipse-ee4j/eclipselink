@@ -67,11 +67,10 @@ public class DirectToFieldMappingTestSuite extends OXTestCase {
 	public DirectToFieldMappingTestSuite(String name) {
 		super(name);
 	}
+	
     public static Test suite() {
         TestSuite suite = new TestSuite("Direct to Field Mapping Test Suite");
-        suite.addTest(IdentifiedByNameTestCases.suite());
-        
-        if (!(platform == Platform.DOC_PRES)) {
+        if(!System.getProperty(PLATFORM_KEY, PLATFORM_SAX).equals(PLATFORM_DOC_PRES)) { //if (!(platform == Platform.DOC_PRES)) { // platform is null here
         	// The following tests are commented out lower in this suite
             suite.addTestSuite(DirectToFieldCDATATestCases.class); // 1 docpres
         	suite.addTestSuite(DirectNullPolicyElementSetEmptyTestCases.class); // 3 docpres
@@ -145,15 +144,14 @@ public class DirectToFieldMappingTestSuite extends OXTestCase {
 		suite.addTestSuite(DirectIsSetNullPolicyAttributeAbsentIsSetAbsentFalseTestCases.class); // g
 		//suite.addTestSuite(DirectIsSetNullPolicyAttributeAbsentIsSetAbsentTrueTestCases.class);  // TODO: UC 5-9 Is not valid
 
-        return suite;
+		return suite;
     }
 
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.mappings.directtofield.DirectToFieldMappingTestSuite" };
-        //System.setProperty("useDeploymentXML", "true");
-        //System.setProperty("useDocPres", "true");
-        //System.setProperty("useLogging", "true");
-        //System.setProperty("useSAXParsing", "true");
+        //platform = Platform.DOM;
+        //platform = Platform.DOC_PRES;
+        //platform = Platform.SAX;
         junit.textui.TestRunner.main(arguments);
     }
 }

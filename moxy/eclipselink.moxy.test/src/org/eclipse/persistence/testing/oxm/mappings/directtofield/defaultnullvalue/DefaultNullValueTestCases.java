@@ -18,10 +18,12 @@ import org.eclipse.persistence.testing.oxm.mappings.directtofield.defaultnullval
 public class DefaultNullValueTestCases extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("Default Null Value Test Suite");
-        suite.addTestSuite(MissingAttributeTestCases.class);
-        suite.addTestSuite(NotMissingAttributeTestCases.class);
+        suite.addTestSuite(MissingAttributeTestCases.class);       
+        suite.addTestSuite(EmptyAttributeTestCases.class);   
+        suite.addTestSuite(NotMissingAttributeTestCases.class);        
         suite.addTestSuite(MissingElementTestCases.class);
-        suite.addTestSuite(NotMissingElementTestCases.class);
+        suite.addTestSuite(EmptyElementTestCases.class);
+        suite.addTestSuite(NotMissingElementTestCases.class);        
         return suite;
     }
 
