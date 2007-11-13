@@ -727,8 +727,18 @@ public class QueryException extends ValidationException {
     }
     
     public static ValidationException mapKeyNotComparable(Object anObject, Object aContainer) {
-        Object[] args = { anObject.toString(), anObject.getClass(), aContainer, aContainer.getClass() };
+        String obj;
+        String objType;
+        
+        if (anObject == null) {
+            obj = "null";
+            objType = "NULL";
+        } else {
+            obj = anObject.toString();
+            objType = anObject.getClass().toString();
+        }
 
+        Object[] args = { obj, objType, aContainer, aContainer.getClass() };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(QueryException.class, MAP_KEY_NOT_COMPARABLE, args));
         validationException.setErrorCode(MAP_KEY_NOT_COMPARABLE);
         return validationException;

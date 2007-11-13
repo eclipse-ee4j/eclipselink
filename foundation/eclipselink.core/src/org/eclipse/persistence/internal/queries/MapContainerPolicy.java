@@ -93,14 +93,25 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             } else {
                 Object keyFromElement = keyFrom(element, session);
                 
-                if (keyFromElement == null) {
-                    throw QueryException.mapKeyIsNull(element, container);
+                try {
+                    Object result = ((Map)container).put(keyFromElement, wrapped);
+                    return null != result;
+                } catch (NullPointerException e) { 
+                    // If the container Map is a concrete type that does not 
+                    // allow null keys then throw a QueryException. Note, a 
+                    // HashMap permits null keys.
+                    if (keyFromElement == null) {
+                        // TreeMap, HashTable, SortedMap do not permit null keys 
+                        throw QueryException.mapKeyIsNull(element, container);            		
+                    } else {
+                        // We got a null pointer exception for some other reason
+                        // so re-throw the exception.
+                        throw e;
+                    }
                 }
-                
-                return ((Map)container).put(keyFromElement, wrapped) != null;
             }
         } catch (ClassCastException ex1) {
-            throw QueryException.mapKeyNotComparable(element, container);
+            throw QueryException.mapKeyNotComparable(key, container);
         }
     }
 
