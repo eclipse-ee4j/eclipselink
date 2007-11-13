@@ -18,6 +18,7 @@
     </condition>
     <property name="build_number" value="SNAPSHOT"/>
     <property name="build_number_string" value="${build_date}"/>
+    <property name="installer_id" value="build_date"/>
 
   <!-- all -->
   <target name="all" depends="package.eclipselink.jar, build.test, package.src.jar, package.package-renamer.jar, package.installer.zip" description="build EclipseLink distribution files"/>
@@ -136,7 +137,7 @@
     
     <!-- installer.zip -->
   <target name="package.installer.zip" description="build EclipseLink installer zip">
-    <zip destfile="${eclipselink-installer.prefix}${release.version}${eclipselink-installer.suffix}">
+    <zip destfile="${eclipselink-installer.prefix}${installer_id}${eclipselink-installer.suffix}">
       <!-- miscellaneous files -->
       <zipfileset dir="." prefix="eclipselink">
         <include name="${about-file}"/>
