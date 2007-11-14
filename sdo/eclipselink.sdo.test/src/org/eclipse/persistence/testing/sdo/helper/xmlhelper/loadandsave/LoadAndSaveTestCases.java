@@ -30,7 +30,7 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
     abstract protected String getRootInterfaceName();
 
     public void testLoadFromStringSaveDocumentToWriter() throws Exception {
-        List types = defineTypes();
+        defineTypes();
 
         FileInputStream inputStream = new FileInputStream(getControlFileName());
         byte[] bytes = new byte[inputStream.available()];
@@ -45,7 +45,7 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
     }
 
     public void testClassGenerationLoadAndSave() throws Exception {
-        // TODO: hardcoded path should be parameterized as an option to the test suite 
+        // TODO: hard coded path should be parameterized as an option to the test suite 
         String tmpDirName = tempFileDir + "/tmp/";
         File f = new File(tmpDirName);
         f.mkdir();
@@ -73,9 +73,7 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
 
         assertEquals(urlLoadedClass, loadedClass2);
         FileInputStream inputStream = new FileInputStream(getControlFileName());
-        byte[] bytes = new byte[inputStream.available()];
-        inputStream.read(bytes);
-        XMLDocument document = xmlHelper.load(new String(bytes));
+        XMLDocument document = xmlHelper.load(inputStream);
         Class loadedClass = document.getRootObject().getType().getInstanceClass();
         assertEquals(urlLoadedClass, loadedClass);
 
@@ -102,7 +100,6 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
     }
 
     public void compileFiles(String dirName, List packages) throws Exception {
-        // deleteDirsOnExit(new File(dirName));
         List allFilesInAllPackages = new ArrayList();
 
         for (int i = 0; i < packages.size(); i++) {
@@ -132,7 +129,7 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
 
     public void tearDown() throws Exception {
         super.tearDown();
-        // TODO: hardcoded path should be parameterized as an option to the test suite 
+        // TODO: hard coded path should be parameterized as an option to the test suite 
         String tmpDirName = tempFileDir + "/tmp/";
         emptyAndDeleteDirectory(new File(tmpDirName));
     }

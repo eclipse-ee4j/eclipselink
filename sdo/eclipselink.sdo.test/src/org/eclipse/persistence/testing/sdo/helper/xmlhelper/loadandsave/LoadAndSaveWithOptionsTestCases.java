@@ -64,7 +64,7 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
     }
 
     public void testLoadFromInputStreamSaveDocumentToOutputStream() throws Exception {
-        List types = defineTypes();
+        defineTypes();
 
         FileInputStream inputStream = new FileInputStream(getControlFileName());
         XMLDocument document = xmlHelper.load(inputStream, null, getOptions());
@@ -90,7 +90,7 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
 
     //
     public void testLoadFromInputStreamWithURIAndOptionsSaveDataObjectToOutputStream() throws Exception {
-        List types = defineTypes();
+        defineTypes();
         FileInputStream inputStream = new FileInputStream(getControlFileName());
         XMLDocument document = xmlHelper.load(inputStream, null, getOptions());// xsi:type will be written out
         verifyAfterLoad(document);
@@ -104,7 +104,7 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
     //
     // xpaths/doms null
     public void testLoadFromFileReaderWithURIAndOptionsStreamSaveDataObjectToWriter() throws Exception {
-        List types = defineTypes();
+        defineTypes();
         FileReader reader = new FileReader(getControlFileName());
         XMLDocument document = xmlHelper.load(reader, null, getOptions());
         verifyAfterLoad(document);
@@ -113,12 +113,12 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
         compareXML(getControlDataObjectFileName(), s);
     }
 
-    // ok except will set isDirty=true which will clear marshalledObject in xmlMarshaller
+    // okay except will set isDirty=true which will clear marshalledObject in xmlMarshaller
     public void testLoadFromAndSaveAfterDefineMultipleSchemas() throws Exception {
-        List types = defineTypes();
+        defineTypes();
         xsdHelper.define(getSchema(getUnrelatedSchemaName()));
-        FileReader reader = new FileReader(getControlFileName());
-        XMLDocument document = xmlHelper.load(reader, null, getOptions());// xsi:type will be written out
+        FileInputStream inputStream = new FileInputStream(getControlFileName());
+        XMLDocument document = xmlHelper.load(inputStream, null, getOptions());// xsi:type will be written out
         verifyAfterLoad(document);
         String s = xmlHelper.save(document.getRootObject(), getControlRootURI(), getControlRootName());
         compareXML(getControlDataObjectFileName(), s);
@@ -131,7 +131,7 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
         Document document1 = null;
 
         //DOMSource source = null;
-        List types = defineTypes();
+        defineTypes();
         factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setValidating(false);
@@ -157,7 +157,7 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
         Document document1 = null;
         DOMSource source = null;
 
-        List types = defineTypes();
+        defineTypes();
 
         factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -183,7 +183,7 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
     public void testLoadFromSAXSourceWithURIAndOptionsSaveDataObjectToStreamResult() throws Exception {
         SAXSource source = null;
 
-        List types = defineTypes();
+        defineTypes();
         FileInputStream inputStream = new FileInputStream(getControlFileName());
         source = new SAXSource(new InputSource(inputStream));
 
@@ -201,7 +201,7 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
     public void testLoadFromStreamSourceWithURIAndOptionsSaveDataObjectToStreamResult() throws Exception {
         StreamSource source = null;
 
-        List types = defineTypes();
+        defineTypes();
 
         FileInputStream inputStream = new FileInputStream(getControlFileName());
 
