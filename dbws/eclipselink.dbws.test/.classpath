@@ -6,6 +6,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.dbws"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.dbws.lib"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core.test"/>
-	<classpathentry kind="lib" path="C:/Documents and Settings/mnorman/My Documents/Oracle/WorkArchive/eclipselink/pb4/junit4-ext-pb4.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
