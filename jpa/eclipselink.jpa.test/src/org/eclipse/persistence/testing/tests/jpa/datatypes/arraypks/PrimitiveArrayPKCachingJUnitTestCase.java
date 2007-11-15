@@ -52,7 +52,10 @@ public class PrimitiveArrayPKCachingJUnitTestCase extends JUnitTestCase{
 
             protected void setUp(){
                 DatabaseSession session = JUnitTestCase.getServerSession();
-                assertTrue("Warning, RAW type used for Primary keys only supported on Oracle",  (session).getPlatform().isOracle());
+            	if (!(JUnitTestCase.getServerSession()).getPlatform().isOracle()){
+            		session.logMessage("Warning, RAW type used for Primary keys only supported on Oracle");
+            	    return;
+            	}
                 new PrimitiveArraysAsPrimaryKeyTableCreator().replaceTables(session);
             }
 
@@ -67,6 +70,10 @@ public class PrimitiveArrayPKCachingJUnitTestCase extends JUnitTestCase{
      * is returned from the database.  
      */
     public void testPrimitiveByteArrayPK() {
+    	if (!(JUnitTestCase.getServerSession()).getPlatform().isOracle()){
+    		JUnitTestCase.getServerSession().logMessage("Warning, RAW type used for Primary keys only supported on Oracle");
+    	    return;
+    	}
         EntityManager em = createEntityManager();
         
         java.util.UUID uuid = UUID.randomUUID();

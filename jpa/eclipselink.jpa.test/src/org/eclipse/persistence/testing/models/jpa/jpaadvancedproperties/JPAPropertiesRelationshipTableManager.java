@@ -52,7 +52,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
 
         FieldDefinition fieldCUST_ID = new FieldDefinition();
         fieldCUST_ID.setName("CUST_ID");
-        fieldCUST_ID.setTypeName("NUMBER");
+        fieldCUST_ID.setTypeName("NUMERIC");
         fieldCUST_ID.setSize(15);
         fieldCUST_ID.setSubSize(0);
         fieldCUST_ID.setIsPrimaryKey(true);
@@ -102,7 +102,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
 
         FieldDefinition fieldITEM_ID = new FieldDefinition();
         fieldITEM_ID.setName("ID");
-        fieldITEM_ID.setTypeName("NUMBER");
+        fieldITEM_ID.setTypeName("NUMERIC");
         fieldITEM_ID.setSize(15);
         fieldITEM_ID.setSubSize(0);
         fieldITEM_ID.setIsPrimaryKey(true);
@@ -142,7 +142,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
 
         FieldDefinition fieldITEM_ID = new FieldDefinition();
         fieldITEM_ID.setName("ID");
-        fieldITEM_ID.setTypeName("NUMBER");
+        fieldITEM_ID.setTypeName("NUMERIC");
         fieldITEM_ID.setSize(15);
         fieldITEM_ID.setSubSize(0);
         fieldITEM_ID.setIsPrimaryKey(true);
@@ -181,7 +181,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
 
         FieldDefinition fieldCUST_ID = new FieldDefinition();
         fieldCUST_ID.setName("CUSTOMER_CUST_ID");
-        fieldCUST_ID.setTypeName("NUMBER");
+        fieldCUST_ID.setTypeName("NUMERIC");
         fieldCUST_ID.setSize(15);
         fieldCUST_ID.setSubSize(0);
         fieldCUST_ID.setIsPrimaryKey(false);
@@ -192,7 +192,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
         
         FieldDefinition fieldBILLED_CUST_ID = new FieldDefinition();
         fieldBILLED_CUST_ID.setName("BILLEDCUSTOMER_CUST_ID");
-        fieldBILLED_CUST_ID.setTypeName("NUMBER");
+        fieldBILLED_CUST_ID.setTypeName("NUMERIC");
         fieldBILLED_CUST_ID.setSize(15);
         fieldBILLED_CUST_ID.setSubSize(0);
         fieldBILLED_CUST_ID.setIsPrimaryKey(false);
@@ -203,7 +203,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
         
         FieldDefinition fieldSALESPERSON_ID = new FieldDefinition();
         fieldSALESPERSON_ID.setName("SALESPERSON_ID");
-        fieldSALESPERSON_ID.setTypeName("NUMBER");
+        fieldSALESPERSON_ID.setTypeName("NUMERIC");
         fieldSALESPERSON_ID.setSize(15);
         fieldSALESPERSON_ID.setSubSize(0);
         fieldSALESPERSON_ID.setIsPrimaryKey(false);
@@ -214,7 +214,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
         
         FieldDefinition fieldITEM_ID = new FieldDefinition();
         fieldITEM_ID.setName("ITEM_ID");
-        fieldITEM_ID.setTypeName("NUMBER");
+        fieldITEM_ID.setTypeName("NUMERIC");
         fieldITEM_ID.setSize(15);
         fieldITEM_ID.setSubSize(0);
         fieldITEM_ID.setIsPrimaryKey(false);
@@ -225,7 +225,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
 
         FieldDefinition fieldORDER_ID = new FieldDefinition();
         fieldORDER_ID.setName("ORDER_ID");
-        fieldORDER_ID.setTypeName("NUMBER");
+        fieldORDER_ID.setTypeName("NUMERIC");
         fieldORDER_ID.setSize(15);
         fieldORDER_ID.setSubSize(0);
         fieldORDER_ID.setIsPrimaryKey(true);
@@ -236,7 +236,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
 
         FieldDefinition fieldQUANTITY = new FieldDefinition();
         fieldQUANTITY.setName("QUANTITY");
-        fieldQUANTITY.setTypeName("NUMBER");
+        fieldQUANTITY.setTypeName("NUMERIC");
         fieldQUANTITY.setSize(15);
         fieldQUANTITY.setSubSize(0);
         fieldQUANTITY.setIsPrimaryKey(false);
@@ -304,7 +304,7 @@ public class JPAPropertiesRelationshipTableManager extends TableCreator {
 
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
-        fieldID.setTypeName("NUMBER");
+        fieldID.setTypeName("NUMERIC");
         fieldID.setSize(15);
         fieldID.setSubSize(0);
         fieldID.setIsPrimaryKey(true);

@@ -1487,7 +1487,16 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em = createEntityManager();
         try {
             em.getTransaction().begin();
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
+            List<Employee> list = em.createQuery("Select e from Employee e where e.firstName = '"+firstName+"'").getResultList();
+            Iterator<Employee> i = list.iterator();
+            while (i.hasNext()){
+            	Employee e = i.next();
+            	if (e.getManager() != null){
+            		e.getManager().removeManagedEmployee(e);
+            		e.setManager(null);
+            	}
+            	em.remove(e);
+            }
             em.getTransaction().commit();
         } catch (RuntimeException ex){
             if (em.getTransaction().isActive()){

@@ -24,6 +24,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.*;
@@ -63,7 +64,9 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         return new TestSetup(suite) {
             
             protected void setUp(){               
-                DatabaseSession session = JUnitTestCase.getServerSession(persistenceUnitName); 
+                ServerSession session = JUnitTestCase.getServerSession(persistenceUnitName);
+                session.logout();
+                session.loginAndDetectDatasource();
                 JPAPropertiesRelationshipTableManager tm = new JPAPropertiesRelationshipTableManager();
                 tm.replaceTables(session);
             }
