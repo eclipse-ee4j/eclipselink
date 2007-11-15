@@ -257,7 +257,7 @@ public class XMLLoader {
                 continue;
             }
             if (getExceptionStore().isEmpty()) {
-                // If the session is not allready loaded, then add to session Manager
+                // If the session is not already loaded, then add to session Manager
                 if (!sessionManager.getSessions().containsKey(((AbstractSession)sessionHolder.getObject()).getName())) {
                     sessionManager.addSession((AbstractSession)sessionHolder.getObject());
                     ((AbstractSession)sessionHolder.getObject()).getDatasourcePlatform().getConversionManager().setLoader(loader);
