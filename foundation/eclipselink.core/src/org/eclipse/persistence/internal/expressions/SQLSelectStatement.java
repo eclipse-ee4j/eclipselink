@@ -328,7 +328,7 @@ public class SQLSelectStatement extends SQLStatement {
 
                     //Bug#4240751 Treat ManyToManyMapping separately for out join
                 } else if (outerExpression.getMapping().isManyToManyMapping()) {
-                    // Must ourerjoin each of the targets tables.
+                    // Must outer join each of the targets tables.
                     // The first table is joined with the mapping join criteria,
                     // the rest of the tables are joined with the additional join criteria.
                     // For example: EMPLOYEE t1 LEFT OUTER JOIN (PROJ_EMP t3 LEFT OUTER JOIN PROJECT t0 ON (t0.PROJ_ID = t3.PROJ_ID)) ON (t3.EMP_ID = t1.EMP_ID)
