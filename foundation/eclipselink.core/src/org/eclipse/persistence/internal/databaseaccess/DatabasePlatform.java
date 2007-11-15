@@ -582,7 +582,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             String name = (String)call.getProcedureArgumentNames().elementAt(index);
             Object parameter = call.getParameters().elementAt(index);
             Integer parameterType = (Integer)call.getParameterTypes().elementAt(index);
-            if (name != null) {
+            if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
                 writer.write(getProcedureArgumentString());
                 writer.write(name);
                 writer.write(getProcedureArgumentSetter());
@@ -1579,6 +1579,17 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public boolean shouldPrintOutputTokenAtStart() {
         return false;
+    }
+    
+    
+    /**
+     * INTERNAL:
+     * Should the variable name of a stored procedure call be printed as part of the procedure call
+     * e.g. EXECUTE PROCEDURE MyStoredProc(myvariable = ?)
+     * @return
+     */
+    public boolean shouldPrintStoredProcedureArgumentNameInCall(){
+	    return true;
     }
     
     public boolean shouldTrimStrings() {

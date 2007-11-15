@@ -380,6 +380,16 @@ public class MySQL4Platform extends DatabasePlatform {
     
     /**
      * INTERNAL:
+     * MySQL stored procedure calls do not require the argument name be printed in the call string
+     * e.g. call MyStoredProc(?) instead of call MyStoredProc(myvariable = ?)
+     * @return
+     */
+    public boolean shouldPrintStoredProcedureArgumentNameInCall(){
+	    return false;
+    }
+   
+    /**
+     * INTERNAL:
      * MySQL uses ' to allow identifier to have spaces.
      */
     public String getIdentifierQuoteCharacter() {
@@ -399,6 +409,13 @@ public class MySQL4Platform extends DatabasePlatform {
      */
     public String getProcedureAsString() {
         return "";
+    }
+    
+    /**
+     * Used for sp calls.
+     */
+    public String getProcedureCallHeader() {
+        return "CALL ";
     }
     
     /**
