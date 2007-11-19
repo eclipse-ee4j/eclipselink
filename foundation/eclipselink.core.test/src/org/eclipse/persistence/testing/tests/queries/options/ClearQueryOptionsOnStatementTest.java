@@ -5,6 +5,7 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 
@@ -95,10 +96,9 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
         DatabaseAccessor accessor = (DatabaseAccessor) impl.getAccessor();
         Hashtable statementCache = null;
         try {
-            Method method = Helper.getDeclaredMethod(
-                DatabaseAccessor.class, 
-                "getStatementCache", 
-                new Class[]{});
+            Method method = PrivilegedAccessHelper.getDeclaredMethod(DatabaseAccessor.class,
+                "getStatementCache", new Class[]{});
+            method.setAccessible(true);
             statementCache = (Hashtable) method.invoke(accessor, new Object[] {});
         } catch (Exception nsme) {
             throwError("Could not invoke DatabaseAccessor>>getStatementCache()", nsme);
