@@ -25,6 +25,8 @@ EXCEPTION DESCRIPTION: The field [DatabaseField(LPROJECT.PROJ_ID)] in this
 expression has an invalid table in this context. */
 
 // Domain imports
+import java.util.Vector;
+
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
 //TopLink imports
@@ -44,7 +46,14 @@ public class ComplexInheritanceTest extends org.eclipse.persistence.testing.test
         String projectName = null;
 
         getAbstractSession().addAlias("ProjectBaseClass", getSession().getDescriptor(Project.class));
-        Project project = (Project)getSomeProjects().firstElement();
+        Project project = null;
+        Vector projects = getSomeProjects();
+        for(int i = 0; i < projects.size(); i++) {
+            project = (Project)projects.elementAt(i);
+            if(project instanceof LargeProject) {
+                break;
+            }
+        }
         projectName = project.getName();
         ReadObjectQuery roq = new ReadObjectQuery();
         ExpressionBuilder eb = new ExpressionBuilder();
@@ -54,7 +63,14 @@ public class ComplexInheritanceTest extends org.eclipse.persistence.testing.test
         LargeProject proj = (LargeProject)getSession().executeQuery(roq);
 
         //Set Project object which will be compared against the one returned by EJBQL
-        setOriginalOject(proj);
+        if(proj == null) {
+            // null OriginalObject should be deemed equal to an empty Vector - but comparator
+            // returns returns false.
+            // Substitute null with an empty Vector to get the through this comparator limitation.
+            setOriginalOject(new Vector(0));
+        } else {
+            setOriginalOject(proj);
+        }
 
         //Set criteria for EJBQL and call super-class method to construct the EJBQL query
         String ejbql = "SELECT OBJECT(project) FROM ProjectBaseClass project WHERE project.name = \"" + projectName + "\"";

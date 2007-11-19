@@ -12,6 +12,7 @@ package org.eclipse.persistence.testing.tests.workbenchintegration;
 import org.eclipse.persistence.testing.tests.proxyindirection.ProxyIndirectionTestModel;
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.tests.aggregate.AggregateTestModel;
 import org.eclipse.persistence.testing.tests.directmap.DirectMapMappingBatchReadTest;
 import org.eclipse.persistence.testing.tests.directmap.DirectMapMappingDeleteTest;
@@ -48,7 +49,9 @@ public class XMLProjectWriterTestModel extends TestModel {
         addRequiredSystem(new DirectMapMappingMWIntergrationSystem());
         addRequiredSystem(new CMWorkbenchIntegrationSystem());
         addRequiredSystem(new ProxyIndirectionMWIntegrationSystem());
-        addRequiredSystem(new InsuranceORWorkbenchIntegrationSystem());
+        if(this.getSession().getPlatform().isOracle()) {
+        	addRequiredSystem(new InsuranceORWorkbenchIntegrationSystem());
+        }
         addRequiredSystem(new MappingModelWorkbenchIntegrationSystem());
         addRequiredSystem(new MultipleTableModelWorkbenchIntegrationSystem());
     }
@@ -146,7 +149,14 @@ public class XMLProjectWriterTestModel extends TestModel {
         addTest(proxyIndirectSuite);
 
         //Insurance model test
-        TestSuite insuranceORTestSuite = new TestSuite();
+        class TestSuiteOracleOnly extends TestSuite {
+            public void setup() {
+                if(!getSession().getPlatform().isOracle()) {
+                    throw new TestWarningException("This test suite is intended for Oracle databases only.");
+                }
+            }
+        }
+        TestSuiteOracleOnly insuranceORTestSuite = new TestSuiteOracleOnly();
         insuranceORTestSuite.setName("InsuranceORTestModel");
         insuranceORTestSuite.setDescription("Tests to enusre Insurance - object relationship descriptor - is properly written to and read from XML.");
         insuranceORTestSuite.addTest(InsuranceObjectRelationalTestModel.getDeleteObjectTestSuite());

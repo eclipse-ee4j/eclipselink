@@ -9,6 +9,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpql;
 
+import java.util.Vector;
+
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -58,7 +60,14 @@ public class ComplexInheritanceUsingNamedQueryTest extends org.eclipse.persisten
 
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
-        Project project = (Project)getSomeProjects().firstElement();
+        Project project = null;
+        Vector projects = getSomeProjects();
+        for(int i = 0; i < projects.size(); i++) {
+            project = (Project)projects.elementAt(i);
+            if(project instanceof LargeProject) {
+                break;
+            }
+        }
         setArgument(project.getName());
 
         //set up query, using query framework, to return a Project object which will be compared
@@ -69,7 +78,14 @@ public class ComplexInheritanceUsingNamedQueryTest extends org.eclipse.persisten
         Expression whereClause = eb.get("name").equal(getArgument());
         roq.setSelectionCriteria(whereClause);
         Project proj = (Project)getSession().executeQuery(roq);
-        setOriginalOject(proj);
+        if(proj == null) {
+            // null OriginalObject should be deemed equal to an empty Vector - but comparator
+            // returns returns false.
+            // Substitute null with an empty Vector to get the through this comparator limitation.
+            setOriginalOject(new Vector(0));
+        } else {
+            setOriginalOject(proj);
+        }
 
         //register named query with Project descriptor
         setUpSessionWithNamedQuery();

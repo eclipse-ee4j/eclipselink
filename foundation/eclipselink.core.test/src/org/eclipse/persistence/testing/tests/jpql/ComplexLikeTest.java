@@ -23,7 +23,7 @@ public class ComplexLikeTest extends org.eclipse.persistence.testing.tests.jpql.
         String firstName = emp.getFirstName();
         String partialFirstName = emp.getFirstName().substring(0, 1);
         partialFirstName = partialFirstName + "_";
-        partialFirstName = partialFirstName + firstName.substring(2, 4);
+        partialFirstName = partialFirstName + firstName.substring(2, Math.min(4, firstName.length()));
         partialFirstName = partialFirstName + "%";
 
         ReadAllQuery raq = new ReadAllQuery();

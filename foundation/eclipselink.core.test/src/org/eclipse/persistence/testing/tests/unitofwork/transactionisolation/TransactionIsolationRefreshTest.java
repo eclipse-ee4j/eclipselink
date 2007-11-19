@@ -98,8 +98,9 @@ public class TransactionIsolationRefreshTest extends AutoVerifyTestCase {
         strongAssert(!clone.getFirstName().equals("budd"), "Did not refresh the clone (direct to field)");
         strongAssert(!clone.getAddress().getCity().equals("El Paso"), 
                      "Did not refresh the clone (private one to one)");
-        strongAssert(clone.getProjects().isEmpty() || 
-                     !((SmallProject)clone.getProjects().elementAt(0)).getName().equals("survive"), 
+        strongAssert(clone.getProjects().size() != 1 || 
+                    !(clone.getProjects().elementAt(0) instanceof SmallProject) || 
+                    !((SmallProject)clone.getProjects().elementAt(0)).getName().equals("survive"), 
                      "Did not refresh the clone (many to many)");
         strongAssert(clone.getPeriod().getEndDate() != null, "Did not refresh the clone (aggregate)");
         strongAssert((clone.getManager() == null) || !clone.getManager().getFirstName().equals("Bill"), 

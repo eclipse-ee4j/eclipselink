@@ -11,6 +11,7 @@ package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.util.Vector;
 
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -74,7 +75,8 @@ public class DeepNestedUnitOfWorkTest extends WriteObjectTest {
         employee.addResponsibility("buy donuts");
         // One to one private/public
         employee.setAddress(new org.eclipse.persistence.testing.models.employee.domain.EmployeePopulator().addressExample10());
-        employee.setManager((Employee)this.unitOfWork[2].readObject(Employee.class));
+        // make sure that the employee is not his own manager
+        employee.setManager((Employee)this.unitOfWork[2].readObject(Employee.class, (new ExpressionBuilder()).get("id").notEqual(employee.getId())));
     }
 
     protected void setup() {

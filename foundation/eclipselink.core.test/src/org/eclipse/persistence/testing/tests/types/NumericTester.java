@@ -383,6 +383,11 @@ public class NumericTester extends TypeTester {
         } catch (TestException exception) {
             if (testCase.getSession().getLogin().isJDBCODBCBridge()) {
                 throw new TestWarningException("This error occured because driver data optimization is used " + "and JDBC-ODBC looses precision on numerics over 15 digits.");
+            } else if(getTestName().equals("MINIMUM") || getTestName().equals("MAXIMUM")) {
+                // Bug 210153
+                throw new TestWarningException("MINIMUM and MAXIMUM tests fail on several platforms due to precision loss.");
+            } else {
+                throw exception;
             }
         }
     }

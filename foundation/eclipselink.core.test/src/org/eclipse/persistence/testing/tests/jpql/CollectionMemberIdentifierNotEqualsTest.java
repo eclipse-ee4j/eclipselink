@@ -23,8 +23,12 @@ class CollectionMemberIdentifierNotEqualsTest extends JPQLParameterTestCase {
 
         setEjbqlString(ejbqlString);
 
-        //Comment out the line below. ET
-        //employees.removeElementAt(0);
+        // The query selects all the employees that have at least one phone that differs from the specified one:
+        // that means the Employee who owns the specified phone will not be returned only in case
+        // the specified phone is the only phone he has.
+        if(emp.getPhoneNumbers().size() == 1) {
+            employees.removeElementAt(0);
+        }
         setOriginalOject(employees);
 
         Vector parameters = new Vector();

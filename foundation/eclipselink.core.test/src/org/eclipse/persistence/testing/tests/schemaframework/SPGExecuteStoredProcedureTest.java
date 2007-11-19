@@ -23,6 +23,7 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
     int updateSuccess = 1;
     int deleteSuccess = 1;
     String parameterNamePrefix;
+    boolean shouldUseNamedArguments;
     static final Integer menuID = new Integer(99);
     static final Integer restaurantID = new Integer(100);
     static final Integer dinerID = new Integer(101);
@@ -58,72 +59,73 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
     }
 
     public void setup() {
-        if(getSession().getDatasourcePlatform().isOracle()) 
-        {
-          parameterNamePrefix = "P_";
-        } else 
-        {
-          parameterNamePrefix = "";
+        shouldUseNamedArguments = !getSession().getDatasourcePlatform().isMySQL();
+        if(shouldUseNamedArguments) {
+            if(getSession().getDatasourcePlatform().isOracle()) {
+                parameterNamePrefix = "P_";
+            } else {
+                parameterNamePrefix = "";
+            }
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("INS_Menu");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",menuID);
-        call.addNamedArgumentValue(parameterNamePrefix + "REST_ID",restaurantID);
-        call.addNamedArgumentValue(parameterNamePrefix + "TYPE",menuType);
+        addArgumentValue(call, "ID",menuID);
+        addArgumentValue(call, "REST_ID",restaurantID);
+        addArgumentValue(call, "TYPE",menuType);
         insertSuccess = insertSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("INS_Diner");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",dinerID);
-        call.addNamedArgumentValue(parameterNamePrefix + "F_NAME",dinerFirstName);
-        call.addNamedArgumentValue(parameterNamePrefix + "CLASS",dinerClass);
-        call.addNamedArgumentValue(parameterNamePrefix + "L_NAME",dinerLastName);
+        addArgumentValue(call, "ID",dinerID);
+        addArgumentValue(call, "F_NAME",dinerFirstName);
+        addArgumentValue(call, "CLASS",dinerClass);
+        addArgumentValue(call, "L_NAME",dinerLastName);
         insertSuccess = insertSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("INS_Person");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",personID);
-        call.addNamedArgumentValue(parameterNamePrefix + "F_NAME",personFirstName);
-        call.addNamedArgumentValue(parameterNamePrefix + "CLASS",personClass);
-        call.addNamedArgumentValue(parameterNamePrefix + "L_NAME",personLastName);
+        addArgumentValue(call, "ID",personID);
+        addArgumentValue(call, "F_NAME",personFirstName);
+        addArgumentValue(call, "CLASS",personClass);
+        addArgumentValue(call, "L_NAME",personLastName);
         insertSuccess = insertSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("INS_Location");
-        call.addNamedArgumentValue(parameterNamePrefix + "AREA",locationArea);
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",locationID);
-        call.addNamedArgumentValue(parameterNamePrefix + "CITY",locationCity);
+        addArgumentValue(call, "AREA",locationArea);
+        addArgumentValue(call, "ID",locationID);
+        addArgumentValue(call, "CITY",locationCity);
         insertSuccess = insertSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("INS_Waiter");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",waiterID);
-        call.addNamedArgumentValue(parameterNamePrefix + "F_NAME",waiterFirstName);
-        call.addNamedArgumentValue(parameterNamePrefix + "SPECIALT",waiterSpeciality);
-        call.addNamedArgumentValue(parameterNamePrefix + "CLASS",waiterClass);
-        call.addNamedArgumentValue(parameterNamePrefix + "W_RST_ID",restaurantID);
-        call.addNamedArgumentValue(parameterNamePrefix + "L_NAME",waiterLastName);
+        addArgumentValue(call, "ID",waiterID);
+        addArgumentValue(call, "F_NAME",waiterFirstName);
+        addArgumentValue(call, "SPECIALT",waiterSpeciality);
+        addArgumentValue(call, "CLASS",waiterClass);
+        addArgumentValue(call, "W_RST_ID",restaurantID);
+        addArgumentValue(call, "L_NAME",waiterLastName);
         insertSuccess = insertSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("INS_MenuItem");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",menuItemID);
-        call.addNamedArgumentValue(parameterNamePrefix + "MENU_ID",menuID);
-        call.addNamedArgumentValue(parameterNamePrefix + "PRICE",menuItemPrice);
-        call.addNamedArgumentValue(parameterNamePrefix + "NAME",menuItemName);
+        addArgumentValue(call, "ID",menuItemID);
+        addArgumentValue(call, "MENU_ID",menuID);
+        addArgumentValue(call, "PRICE",menuItemPrice);
+        addArgumentValue(call, "NAME",menuItemName);
         insertSuccess = insertSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("INS_Restaurant");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",restaurantID);
-        call.addNamedArgumentValue(parameterNamePrefix + "NAME",restaurantName);
+        addArgumentValue(call, "ID",restaurantID);
+        addArgumentValue(call, "NAME",restaurantName);
         insertSuccess = insertSuccess * getSession().executeNonSelectingCall(call);
         }
     }
@@ -132,62 +134,62 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("UPD_Menu");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",menuID);
-        call.addNamedArgumentValue(parameterNamePrefix + "REST_ID",restaurantID);
-        call.addNamedArgumentValue(parameterNamePrefix + "TYPE",menuTypeUpdate);
+        addArgumentValue(call, "ID",menuID);
+        addArgumentValue(call, "REST_ID",restaurantID);
+        addArgumentValue(call, "TYPE",menuTypeUpdate);
         updateSuccess = updateSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("UPD_Diner");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",dinerID);
-        call.addNamedArgumentValue(parameterNamePrefix + "F_NAME",dinerFirstNameUpdate);
-        call.addNamedArgumentValue(parameterNamePrefix + "CLASS",dinerClass);
-        call.addNamedArgumentValue(parameterNamePrefix + "L_NAME",dinerLastName);
+        addArgumentValue(call, "ID",dinerID);
+        addArgumentValue(call, "F_NAME",dinerFirstNameUpdate);
+        addArgumentValue(call, "CLASS",dinerClass);
+        addArgumentValue(call, "L_NAME",dinerLastName);
         updateSuccess = updateSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("UPD_Person");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",personID);
-        call.addNamedArgumentValue(parameterNamePrefix + "F_NAME",personFirstNameUpdate);
-        call.addNamedArgumentValue(parameterNamePrefix + "CLASS",personClass);
-        call.addNamedArgumentValue(parameterNamePrefix + "L_NAME",personLastName);
+        addArgumentValue(call, "ID",personID);
+        addArgumentValue(call, "F_NAME",personFirstNameUpdate);
+        addArgumentValue(call, "CLASS",personClass);
+        addArgumentValue(call, "L_NAME",personLastName);
         updateSuccess = updateSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("UPD_Location");
-        call.addNamedArgumentValue(parameterNamePrefix + "AREA",locationAreaUpdate);
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",locationID);
-        call.addNamedArgumentValue(parameterNamePrefix + "CITY",locationCity);
+        addArgumentValue(call, "AREA",locationAreaUpdate);
+        addArgumentValue(call, "ID",locationID);
+        addArgumentValue(call, "CITY",locationCity);
         updateSuccess = updateSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("UPD_Waiter");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",waiterID);
-        call.addNamedArgumentValue(parameterNamePrefix + "F_NAME",waiterFirstName);
-        call.addNamedArgumentValue(parameterNamePrefix + "SPECIALT",waiterSpecialityUpdate);
-        call.addNamedArgumentValue(parameterNamePrefix + "CLASS",waiterClass);
-        call.addNamedArgumentValue(parameterNamePrefix + "W_RST_ID",restaurantID);
-        call.addNamedArgumentValue(parameterNamePrefix + "L_NAME",waiterLastName);
+        addArgumentValue(call, "ID",waiterID);
+        addArgumentValue(call, "F_NAME",waiterFirstName);
+        addArgumentValue(call, "SPECIALT",waiterSpecialityUpdate);
+        addArgumentValue(call, "CLASS",waiterClass);
+        addArgumentValue(call, "W_RST_ID",restaurantID);
+        addArgumentValue(call, "L_NAME",waiterLastName);
         updateSuccess = updateSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("UPD_MenuItem");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",menuItemID);
-        call.addNamedArgumentValue(parameterNamePrefix + "MENU_ID",menuID);
-        call.addNamedArgumentValue(parameterNamePrefix + "PRICE",menuItemPriceUpdate);
-        call.addNamedArgumentValue(parameterNamePrefix + "NAME",menuItemName);
+        addArgumentValue(call, "ID",menuItemID);
+        addArgumentValue(call, "MENU_ID",menuID);
+        addArgumentValue(call, "PRICE",menuItemPriceUpdate);
+        addArgumentValue(call, "NAME",menuItemName);
         updateSuccess = updateSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("UPD_Restaurant");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",restaurantID);
-        call.addNamedArgumentValue(parameterNamePrefix + "NAME",restaurantNameUpdate);
+        addArgumentValue(call, "ID",restaurantID);
+        addArgumentValue(call, "NAME",restaurantNameUpdate);
         updateSuccess = updateSuccess * getSession().executeNonSelectingCall(call);
         }
     }
@@ -196,61 +198,61 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("DEL_Menu");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",menuID);
+        addArgumentValue(call, "ID",menuID);
         deleteSuccess = deleteSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("D_1M_Menu_items");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",menuID);
+        addArgumentValue(call, "ID",menuID);
         deleteSuccess = deleteSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("DEL_Diner");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",dinerID);
+        addArgumentValue(call, "ID",dinerID);
         deleteSuccess = deleteSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("DEL_Person");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",personID);
+        addArgumentValue(call, "ID",personID);
         deleteSuccess = deleteSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("DEL_Location");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",locationID);
+        addArgumentValue(call, "ID",locationID);
         deleteSuccess = deleteSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("DEL_Waiter");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",waiterID);
+        addArgumentValue(call, "ID",waiterID);
         deleteSuccess = deleteSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("DEL_MenuItem");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",menuItemID);
+        addArgumentValue(call, "ID",menuItemID);
         deleteSuccess = deleteSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("DEL_Restaurant");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",restaurantID);
+        addArgumentValue(call, "ID",restaurantID);
         deleteSuccess = deleteSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("D_1M_Restaurant_waiters");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",restaurantID);
+        addArgumentValue(call, "ID",restaurantID);
         deleteSuccess = deleteSuccess * getSession().executeNonSelectingCall(call);
         }
         {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("D_1M_Restaurant_menus");
-        call.addNamedArgumentValue(parameterNamePrefix + "ID",restaurantID);
+        addArgumentValue(call, "ID",restaurantID);
         deleteSuccess = deleteSuccess * getSession().executeNonSelectingCall(call);
         }
     }
@@ -258,6 +260,14 @@ public class SPGExecuteStoredProcedureTest extends TestCase {
     public void verify() {
         if(insertSuccess * updateSuccess * deleteSuccess == 0 ) {
           throw new TestErrorException("Failed to call stored procedures.") ;
+        }
+    }
+
+    protected void addArgumentValue(StoredProcedureCall call, String name, Object value) {
+        if(shouldUseNamedArguments) {
+            call.addNamedArgumentValue(parameterNamePrefix + name, value);
+        } else {
+            call.addUnamedArgumentValue(value);
         }
     }
 }

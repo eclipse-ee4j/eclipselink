@@ -61,6 +61,7 @@ public class TestSuite extends TestCollection {
     public void execute(TestExecutor executor) throws Throwable {
         setSummary(new TestResultsSummary(this));
         setExecutor(executor);
+        setupEntity();
         setFinishedTests(new Vector());
         long startTime = System.currentTimeMillis();
         for (Enumeration tests = getTests().elements(); tests.hasMoreElements();) {
@@ -124,7 +125,12 @@ public class TestSuite extends TestCollection {
         return;
     }
 
-    public void setupEntity() {
-        ;
+    public void setupEntity() throws Throwable {
+        try {
+            setup();
+        } catch (Throwable exception) {
+            getSummary().setSetupException(exception);
+            throw exception;
+        }
     }
 }

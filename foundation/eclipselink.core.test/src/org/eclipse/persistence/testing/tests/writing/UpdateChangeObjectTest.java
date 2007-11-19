@@ -49,6 +49,15 @@ public class UpdateChangeObjectTest extends ComplexUpdateTest {
         employee.addPhoneNumber(new org.eclipse.persistence.testing.models.employee.domain.PhoneNumber("office", "416", "8224599"));
         // One to one private/public
         employee.setAddress(new org.eclipse.persistence.testing.models.employee.domain.EmployeePopulator().addressExample12());
-        employee.setManager((Employee)getSession().readObject(Employee.class));
+        // make sure that the employee is not his own manager
+        Vector employees = getSession().readAllObjects(Employee.class);
+        Employee manager = null;
+        for(int i=0; i<employees.size(); i++) {
+            manager = (Employee)employees.elementAt(i);
+            if(!manager.getId().equals(employee.getId())) {
+                break;
+            }
+        }
+        employee.setManager(manager);
     }
 }

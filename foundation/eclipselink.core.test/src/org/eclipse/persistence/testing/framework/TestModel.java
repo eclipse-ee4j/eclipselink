@@ -294,13 +294,16 @@ public class TestModel extends TestCollection {
             setTests(getOriginalTests());
             setIsSetup(false);
         }
+        if(this.getSummary().didSetupWarn()) {
+            return;
+        }
         reset();
-        // To improve test consistentcy cleanup the session and executor better.
+        // To improve test consistency cleanup the session and executor better.
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         if (shouldResetSystemAfterEachTestModel()) {            
             getExecutor().setConfiguredSystems(new Vector());
 
-            // Logout and clean/reset the session incase test model failed ungracefully.
+            // Logout and clean/reset the session in case test model failed ungracefully.
             if (getSession().isDatabaseSession()) {
                 try {
                     getDatabaseSession().logout();
@@ -355,7 +358,7 @@ public class TestModel extends TestCollection {
     }
 
     /**
-     * Set all the required sytems that need to be configured even if they are already configured.
+     * Set all the required systems that need to be configured even if they are already configured.
      */
     public void setForcedRequiredSystems(Vector systems) {
         this.forcedRequiredSystems = systems;

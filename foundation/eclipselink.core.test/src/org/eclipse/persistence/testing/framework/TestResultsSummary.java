@@ -32,6 +32,7 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
     protected int problems;
     protected int fatalErrors;
     protected int setupFailures;
+    protected int setupWarnings;
     protected int totalTests;
     protected transient TestCollection testCollection;
     protected long totalTime;
@@ -47,6 +48,7 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
         this.errors = 0;
         this.fatalErrors = 0;
         this.setupFailures = 0;
+        this.setupWarnings = 0;
         this.totalTests = 0;
     }
 
@@ -117,8 +119,11 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
         setFatalErrors(getFatalErrors() + testSummary.getFatalErrors());
         setTotalTests(getTotalTests() + testSummary.getTotalTests());
         setSetupFailures(getSetupFailures() + testSummary.getSetupFailures());
+        setSetupWarnings(getSetupWarnings() + testSummary.getSetupWarnings());
         if (testSummary.didSetupFail()) {
             setSetupFailures(getSetupFailures() + 1);
+        } else if (testSummary.didSetupWarn()) {
+            setSetupWarnings(getSetupWarnings() + 1);
         }
         testCollection.getSummary().setParent(this);
         LoadBuildSystem.loadBuild.addSummary(this);
@@ -136,7 +141,11 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
     }
 
     public boolean didSetupFail() {
-        return getSetupException() != null;
+        return getSetupException() != null && !didSetupWarn();
+    }
+
+    public boolean didSetupWarn() {
+        return getSetupException() != null && (getSetupException() instanceof TestWarningException);
     }
 
     public String getDescription() {
@@ -163,6 +172,14 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
 
     public int getSetupFailures() {
         return setupFailures;
+    }
+
+    public void setSetupWarnings(int setupWarnings) {
+        this.setupWarnings = setupWarnings;
+    }
+
+    public int getSetupWarnings() {
+        return setupWarnings;
     }
 
     public BigDecimal getId() {
@@ -261,7 +278,7 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
      */
     public boolean hasPassed() {
         // This is a safest way to check then doing totaltests == passedtests.
-        if ((getWarnings() != 0) || (getFatalErrors() != 0) || (getProblems() != 0) || (getErrors() != 0) || didSetupFail() || (getSetupFailures() != 0)) {
+        if ((getWarnings() != 0) || (getFatalErrors() != 0) || (getProblems() != 0) || (getErrors() != 0) || didSetupFail() || (getSetupFailures() != 0) || didSetupWarn() || (getSetupWarnings() != 0)) {
             return false;
         }
         return true;
@@ -304,6 +321,11 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
                 PrintWriter printWriter = new PrintWriter(log);
                 getSetupException().printStackTrace(printWriter);
                 log.flush();
+            } else if (didSetupWarn()) {
+                log.write(indentationString + "SETUP WARNING: " + org.eclipse.persistence.internal.helper.Helper.cr());
+                ((TestWarningException)getSetupException()).setIndentationString(indentationString);
+                log.write(getSetupException() + org.eclipse.persistence.internal.helper.Helper.cr());
+                log.flush();
             } else {
                 if ((getErrors() > 0) || (getFatalErrors() > 0) || (getProblems() > 0)) {
                     log.write(indentationString + "###ERRORS###" + org.eclipse.persistence.internal.helper.Helper.cr());
@@ -313,6 +335,7 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
                 log.write(indentationString + "Errors: " + getErrors() + org.eclipse.persistence.internal.helper.Helper.cr());
                 log.write(indentationString + "Fatal Errors: " + getFatalErrors() + org.eclipse.persistence.internal.helper.Helper.cr());
                 log.write(indentationString + "Passed: " + getPassed() + org.eclipse.persistence.internal.helper.Helper.cr());
+                log.write(indentationString + "Setup Warnings: " + getSetupWarnings() + org.eclipse.persistence.internal.helper.Helper.cr());
                 log.write(indentationString + "Setup Failures: " + getSetupFailures() + org.eclipse.persistence.internal.helper.Helper.cr());
                 log.write(indentationString + "Total Time: " + getTotalTime() + org.eclipse.persistence.internal.helper.Helper.cr());
                 log.write(indentationString + "Total Tests: " + getTotalTests() + org.eclipse.persistence.internal.helper.Helper.cr() + org.eclipse.persistence.internal.helper.Helper.cr());
@@ -366,6 +389,7 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
         setErrors(0);
         setFatalErrors(0);
         setSetupFailures(0);
+        setSetupWarnings(0);
         setTotalTests(0);
     }
 

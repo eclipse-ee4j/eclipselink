@@ -14,6 +14,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 
@@ -33,9 +34,10 @@ public class GetObjectFromIdentityMapTest extends TestCase {
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         ExpressionBuilder employees = new ExpressionBuilder();
-        expression = employees.get("firstName").equal("Sarah");
-        expression = expression.and(employees.get("lastName").equal("Way"));
-        employee = (Employee)getSession().readObject(Employee.class, expression);
+        employee = (Employee)getSession().readObject(Employee.class);
+        if(employee == null) {
+        	throw new TestProblemException("No employees available");
+        }
     }
 
     public void test() {

@@ -10,6 +10,7 @@
 package org.eclipse.persistence.testing.tests.conversion;
 
 import org.eclipse.persistence.platform.database.oracle.Oracle9Platform;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 
 // This test retrieves all the classes that can be converted from a given class by 
 // calling getDataTypesConvertedFrom() in Oracle9Platform. 
@@ -20,6 +21,9 @@ public class DataTypesConvertedFromAClassForOracle9Test extends DataTypesConvert
     }
 
     public void setup() {
+        if(!getSession().getPlatform().isOracle()) {
+            throw new TestWarningException("This test requires Oracle database");
+        }
         cm = getSession().getPlatform();
     }
 

@@ -24,7 +24,7 @@ public class IsolatedSessionTestModel extends TestModel {
 
     public void addRequiredSystems() {
         if (!(getSession().getPlatform() instanceof OraclePlatform)) {
-            throw new TestProblemException("This model is intended for Oracle databases only.");
+            throw new TestWarningException("This model is intended for Oracle databases only.");
         }
         addRequiredSystem(new IsolatedSessionSystem());
     }

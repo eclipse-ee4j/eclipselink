@@ -145,7 +145,7 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
         boolean query2TimedOut = false;
         
         String sql;
-        if(getSession().getLogin().getDatasourcePlatform().isDB2())
+        if(getSession().getLogin().getDatasourcePlatform().isDB2() || getSession().getLogin().getDatasourcePlatform().isMySQL())
         {
           sql = "SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c,EMPLOYEE d";
         } else if (getSession().getLogin().getDatasourcePlatform().isSybase())

@@ -27,25 +27,13 @@ public class PerformDeletesFirstIgnoreUpdateTest2 extends PerformDeletesFirstIgn
     }
 
     public void test() {
-        Employee employee = (Employee)getSession().readObject(Employee.class);
-
-        // the first uow removes all dependencies but phones - so that employee may be deleted
+        // create a new Employee with phone
+        String firstName = "PerformDeletesFirstIgnoreUpdateTest2";
+        Employee employee = new Employee();
+        employee.setFirstName(firstName);
+        employee.addPhoneNumber(new PhoneNumber("home", "123", "1234567"));
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        Employee employeeClone = (Employee)uow.registerObject(employee);
-        Enumeration employees = employeeClone.getManagedEmployees().elements();
-        while (employees.hasMoreElements()) {
-            Employee managedEmployee = (Employee)employees.nextElement();
-            employeeClone.removeManagedEmployee(managedEmployee);
-        }
-        Enumeration projects = employeeClone.getProjects().elements();
-        while (projects.hasMoreElements()) {
-            org.eclipse.persistence.testing.models.employee.domain.Project project = 
-                (org.eclipse.persistence.testing.models.employee.domain.Project)projects.nextElement();
-            employeeClone.removeProject(project);
-            if (project.getTeamLeader() == employeeClone) {
-                project.setTeamLeader(null);
-            }
-        }
+        uow.registerObject(employee);
         uow.commit();
 
         // the second uow does the actual testing: updates the phone number and deletes the employee.
@@ -54,7 +42,7 @@ public class PerformDeletesFirstIgnoreUpdateTest2 extends PerformDeletesFirstIgn
         // would have failed because of the dependencies left.
         UnitOfWork uow2 = getSession().acquireUnitOfWork();
         uow2.setShouldPerformDeletesFirst(true);
-        employeeClone = (Employee)uow2.registerObject(employee);
+        Employee employeeClone = (Employee)uow2.registerObject(employee);
         PhoneNumber phone = (PhoneNumber)employeeClone.getPhoneNumbers().firstElement();
         // The new phone number is too long (it should be no more than 7 characters)
         // therefore is update goes through and not preceded with DELETE DatabaseException will result

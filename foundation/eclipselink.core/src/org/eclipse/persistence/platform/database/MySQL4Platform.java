@@ -372,6 +372,13 @@ public class MySQL4Platform extends DatabasePlatform {
 
     /**
      * INTERNAL:
+     */
+     protected String getCreateTempTableSqlBodyForTable(DatabaseTable table) {
+         return " LIKE " + table.getQualifiedName();
+     }
+     
+    /**
+     * INTERNAL:
      * MySQL supports temp tables for update-all, delete-all queries.
      */
     public boolean shouldAlwaysUseTempStorageForModifyAll() {
@@ -412,18 +419,19 @@ public class MySQL4Platform extends DatabasePlatform {
     }
     
     /**
-     * Used for sp calls.
-     */
-    public String getProcedureCallHeader() {
-        return "CALL ";
-    }
-    
-    /**
      * INTERNAL:
      * MySQL requires the direction at the start of the argument.
      */
     public boolean shouldPrintOutputTokenAtStart() {
         return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for stored procedure calls.
+     */
+    public String getProcedureCallHeader() {
+        return "CALL ";
     }
     
     /**
