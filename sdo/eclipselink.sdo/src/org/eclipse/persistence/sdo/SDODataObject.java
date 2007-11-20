@@ -155,17 +155,6 @@ public class SDODataObject implements DataObject {
     /**
      * INTERNAL:
      * Set the HelperContext that will be associated with this DataObject.
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * Use {@link #_setHelperContext(HelperContext)} instead
-     * @param aContext
-     */
-    public void setHelperContext(HelperContext aContext) {
-        _setHelperContext(aContext);
-    }
-
-    /**
-     * INTERNAL:
-     * Set the HelperContext that will be associated with this DataObject.
      * @param aContext
      */
     public void _setHelperContext(HelperContext aContext) {
@@ -174,17 +163,6 @@ public class SDODataObject implements DataObject {
         if (getChangeSummary() != null) {
             ((SDOChangeSummary)getChangeSummary()).setHelperContext(aHelperContext);
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Return the HelperContext associated with this DataObject.
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * Use {@link #_getHelperContext()} instead
-     * @return
-     */
-    public HelperContext getHelperContext() {
-        return _getHelperContext();
     }
 
     /**
@@ -2215,34 +2193,12 @@ public class SDODataObject implements DataObject {
     /**
      * INTERNAL:
      * Set flag created value.
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * Use {@link #_setCreated(boolean)} instead
-     * @param created   flag created's new value.
-     */
-    public void setCreated(boolean created) {
-        _setCreated(created);
-    }
-
-    /**
-     * INTERNAL:
-     * Set flag created value.
      * @param created   flag created's new value.
      */
     public void _setCreated(boolean created) {
         if (changeSummary != null) {
             ((SDOChangeSummary)changeSummary).setCreated(this, created);
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Set flag modified value.
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * Use {@link #_setModified(boolean)} instead
-     * @param modified   flag modified's new value.
-     */
-    public void setModified(boolean modified) {
-        _setModified(modified);
     }
 
     /**
@@ -2257,17 +2213,6 @@ public class SDODataObject implements DataObject {
                 updateChangeSummaryWithOriginalValues();
             }
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Set flag deleted value.
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * @param deleted   flag deleted's new value.
-     * @deprecated Use {@link #_setDeleted(boolean)} instead
-     */
-    public void setDeleted(boolean deleted) {
-        _setDeleted(deleted);
     }
 
     /**
@@ -2298,17 +2243,6 @@ public class SDODataObject implements DataObject {
                 setChangeSummaryProperty(changeSummaryProperty, csm);
             }
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Set this DataObject's ChangeSummary as passed in value.
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * @deprecated Use {@link #_setChangeSummary(ChangeSummary)} instead
-     * @param aChangeSummary    the ChangeSummary taking this DataObject as root.
-     */
-    public void setChangeSummary(ChangeSummary aChangeSummary) {
-        _setChangeSummary(aChangeSummary);
     }
 
     /**
@@ -2657,16 +2591,6 @@ public class SDODataObject implements DataObject {
 
     /**
      * INTERNAL:
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * Use {@link #_setType(Type)} instead
-     * @param aType
-     */
-    public void setType(Type aType) {
-        _setType(aType);
-    }
-
-    /**
-     * INTERNAL:
      * @param aType
      */
     public void _setType(Type aType) {
@@ -2698,18 +2622,6 @@ public class SDODataObject implements DataObject {
     /**
      * INTERNAL:
      * Pluggable Interface for substituting the default Map with a custom Map Class
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * @param currentValueStore
-     * void
-     * @deprecated Use {@link #_setCurrentValueStore(ValueStore)} instead
-     */
-    public void setCurrentValueStore(ValueStore aValueStore) {
-        _setCurrentValueStore(aValueStore);
-    }
-
-    /**
-     * INTERNAL:
-     * Pluggable Interface for substituting the default Map with a custom Map Class
      * @param currentValueStore
      * void
      */
@@ -2722,17 +2634,6 @@ public class SDODataObject implements DataObject {
 
     /**
      * INTERNAL:
-     * Map interface into the currentValueStore of this DataObject
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * Use {@link #_getCurrentValueStore()} instead
-     * @return
-     */
-    public ValueStore getCurrentValueStore() {
-        return _getCurrentValueStore();
-    }
-
-    /**
-     * INTERNAL:
      * Map interface into the currentValueStore of this DataObject.<br>
      * Note: Implementers of the {@link ValueStore ValueStore} interface require this accessor.
      * @return
@@ -2741,55 +2642,6 @@ public class SDODataObject implements DataObject {
         // Note: do not remove this function as it is the accessor into the pluggable ValueStore
         // Notification of any change to this API is required
         return currentValueStore;
-    }
-
-    /**
-     * INTERNAL:
-     * Return the current ValueStore
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 03-Feb-2007.
-     * Use {@link #_setValueStore(ValueStore)} instead
-      */
-    public void setValueStore(ValueStore anOriginalValueStore) {
-        _setValueStore(anOriginalValueStore);
-    }
-
-    /**
-     * INTERNAL:
-     * Return the current ValueStore
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * This method is replaced by the the new public setCurrentValueStore.
-      */
-    public void _setValueStore(ValueStore anOriginalValueStore) {
-        _setCurrentValueStore(anOriginalValueStore);
-    }
-
-    /**
-     * INTERNAL:
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 03-Feb-2007.
-     * Use {@link #_getValueStore()} instead
-     */
-    public ValueStore getValueStore() {
-        return _getValueStore();
-    }
-
-    /**
-     * INTERNAL:
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * This method is replaced by the new public getCurrentValueStore.
-     */
-    public ValueStore _getValueStore() {
-        return _getCurrentValueStore();
-    }
-
-    /**
-     * INTERNAL:
-     * Sets the DataObject which contains this DataObject.
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * Use {@link #_setContainer(DataObject)} instead
-     * @param aContainer the DataObject which is the container of this DataObject.
-     */
-    public void setContainer(DataObject aContainer) {
-        _setContainer(aContainer);
     }
 
     /**
@@ -2838,17 +2690,6 @@ public class SDODataObject implements DataObject {
                 }
             }
         }
-    }
-
-    /**
-     * INTERNAL:
-     * This function is implemented by SDOType.setOpen() in a mapping setGet/SetMethodName call
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * @param openContentPropertiesWithXMLRoots
-     * @deprecated Use {@link #_setOpenContentPropertiesWithXMLRoots(List)} instead
-     */
-    public void setOpenContentPropertiesWithXMLRoots(List openContentPropertiesWithXMLRoots) {
-        _setOpenContentPropertiesWithXMLRoots(openContentPropertiesWithXMLRoots);
     }
 
     /**
@@ -2911,17 +2752,6 @@ public class SDODataObject implements DataObject {
     /**
      * INTERNAL:
      * This function is implemented by SDOType.setOpen() in a mapping setGet/SetMethodName call
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * @deprecated Use {@link #_getOpenContentPropertiesWithXMLRoots()} instead
-     * @return
-     */
-    public List getOpenContentPropertiesWithXMLRoots() {
-        return _getOpenContentPropertiesWithXMLRoots();
-    }
-
-    /**
-     * INTERNAL:
-     * This function is implemented by SDOType.setOpen() in a mapping setGet/SetMethodName call
      * @return
      */
     public List _getOpenContentPropertiesWithXMLRoots() {
@@ -2965,18 +2795,6 @@ public class SDODataObject implements DataObject {
             }
         }
         return returnList;
-    }
-
-    /**
-     * INTERNAL:
-     * Returns a list of the Properties currently used in this DataObject which are not
-     * included in getType().getProperties
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * Use {@link #_getOpenContentProperties()} instead
-     * @return the List of open content Properties currently used in this DataObject.
-      */
-    public List getOpenContentProperties() {
-        return _getOpenContentProperties();
     }
 
     /**
@@ -3086,17 +2904,6 @@ public class SDODataObject implements DataObject {
     /**
      * INTERNAL:
      * Sets the name of the property on the containing DataObject which contains this DataObject as a value.
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * Use {@link #_setContainmentPropertyName(String)} instead
-     * @param aContainmentPropertyName the name of the property on the containing DataObject which has this DataObject as a value.
-     */
-    public void setContainmentPropertyName(String aContainmentPropertyName) {
-        _setContainmentPropertyName(aContainmentPropertyName);
-    }
-
-    /**
-     * INTERNAL:
-     * Sets the name of the property on the containing DataObject which contains this DataObject as a value.
      * @param aContainmentPropertyName the name of the property on the containing DataObject which has this DataObject as a value.
      */
     public void _setContainmentPropertyName(String aContainmentPropertyName) {
@@ -3107,21 +2914,9 @@ public class SDODataObject implements DataObject {
      * INTERNAL:
      * Return the name of the Property of the DataObject containing this data object
      * or null if there is no container.
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * @return the property containing this data object.
-     * @deprecated Use {@link #_getContainmentPropertyName()} instead
-     */
-    public String getContainmentPropertyName() {
-        return _getContainmentPropertyName();
-    }
-
-    /**
-     * INTERNAL:
-     * Return the name of the Property of the DataObject containing this data object
-     * or null if there is no container.     *
      * @return the property containing this data object.
      */
-    private String _getContainmentPropertyName() {
+    public String _getContainmentPropertyName() {
         return containmentPropertyName;
     }
 
@@ -3368,17 +3163,6 @@ public class SDODataObject implements DataObject {
     /**
      * INTERNAL:
      * Return an SDO Path string from root of the caller to itself
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * Use {@link #_getPath()} instead
-     * @return String
-     */
-    public String getPath() {
-        return _getPath();
-    }
-
-    /**
-     * INTERNAL:
-     * Return an SDO Path string from root of the caller to itself
      * @return String
      */
     public String _getPath() {
@@ -3562,16 +3346,6 @@ public class SDODataObject implements DataObject {
             // remove all instances of the property from the sequence
             ((SDOSequence)sequence).remove(property.getName(), property.getType().getURI(), false);
         }
-    }
-
-    /**
-     * INTERNAL:
-     * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 17-May-2007.
-     * @deprecated Use {@link #_getSdoRef()} instead
-     * @return
-     */
-    public String getSdoRef() {
-        return _getSdoRef();
     }
 
     /**
