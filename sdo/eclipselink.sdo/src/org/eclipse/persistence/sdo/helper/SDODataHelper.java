@@ -23,10 +23,12 @@ import java.util.TimeZone;
 import java.util.regex.Pattern;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
@@ -41,11 +43,13 @@ public class SDODataHelper implements DataHelper {
         // TODO: JIRA129 - default to static global context - Do Not use this convenience constructor outside of JUnit testing
         //aHelperContext = HelperProvider.getDefaultContext();
         xmlConversionManager = (XMLConversionManager)XMLConversionManager.getDefaultXMLManager().clone();
+        xmlConversionManager.setTimeZone(TimeZone.getTimeZone("GMT"));        
     }
 
     public SDODataHelper(HelperContext aContext) {
         aHelperContext = aContext;
         xmlConversionManager = (XMLConversionManager)XMLConversionManager.getDefaultXMLManager().clone();
+        xmlConversionManager.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
     /**
@@ -54,7 +58,7 @@ public class SDODataHelper implements DataHelper {
      */
     public void setTimeZone(TimeZone timeZone) {
         if (null == timeZone) {
-            xmlConversionManager.setTimeZone(TimeZone.getDefault());
+            xmlConversionManager.setTimeZone(TimeZone.getTimeZone("GMT"));
         } else {
             xmlConversionManager.setTimeZone(timeZone);
         }
@@ -705,7 +709,13 @@ public class SDODataHelper implements DataHelper {
             if (convertToClass == ClassConstants.STRING) {
                 return convertToStringValue(valueToConvert, prop.getType());
             } else {
-                return xmlConversionManager.convertObject(valueToConvert, convertToClass);
+            	SDOProperty sdoProp = (SDOProperty) prop;
+            	DatabaseMapping xmlMapping = sdoProp.getXmlMapping();
+            	if (xmlMapping != null && xmlMapping.isDirectToFieldMapping() && sdoProp.getXsdType() != null) {
+            		return xmlConversionManager.convertObject(valueToConvert, convertToClass, sdoProp.getXsdType());
+            	} else {
+            		return xmlConversionManager.convertObject(valueToConvert, convertToClass);
+            	}                   	
             }
         } catch (ConversionException e) {
             throw new IllegalArgumentException(SDOException.conversionError(e));
