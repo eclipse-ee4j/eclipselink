@@ -220,7 +220,7 @@ public class PluggableTest extends PluggableTestCases {
         assertTrue(aPhone instanceof SDODataObject);
         // verify containment
         assertEquals(TEST_EMPLOYEE_PHONE_FIELD_NAME,//
-                     ((SDODataObject)aPhone).getContainmentPropertyName());
+                     ((SDODataObject)aPhone)._getContainmentPropertyName());
         assertEquals(anEmployee, ((SDODataObject)aPhone).getContainer());
         // get back POJO from wrapped PhoneImpl
         Phone aPhonePOJO = (Phone)((POJOValueStore)((SDODataObject)aPhone)._getCurrentValueStore()).getObject();
