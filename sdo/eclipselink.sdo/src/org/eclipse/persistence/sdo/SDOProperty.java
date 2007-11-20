@@ -494,7 +494,7 @@ public class SDOProperty implements Property, Serializable {
 
         aCMapping.setXPath(xpath);
         aCMapping.setGetMethodName("getChangeSummary");
-        aCMapping.setSetMethodName("setChangeSummary");
+        aCMapping.setSetMethodName("_setChangeSummary");
         aCMapping.setReferenceClass(SDOChangeSummary.class);
         setXmlMapping(aCMapping);
 
