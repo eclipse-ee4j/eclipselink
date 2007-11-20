@@ -120,21 +120,21 @@ public class SDODataObjectGetPathTest extends SDOTestCase {
 
     // NS tests required
     public void testGetPathForRootObject() {
-        String aPath = aRoot5.getPath();
+        String aPath = aRoot5._getPath();
         assertNotNull(aPath);
         assertEquals(SDOConstants.SDO_XPATH_TO_ROOT, aPath);
     }
 
     public void testGetPathForInternalNonIsManyObject() {
         SDODataObject anItem = (SDODataObject)aRoot5.get("shipTo");
-        String aPath = anItem.getPath();
+        String aPath = anItem._getPath();
         assertNotNull(aPath);
         assertEquals("shipTo", aPath);
     }
 
     public void testGetPathForInternalIsManyObject() {
         SDODataObject anItem = (SDODataObject)aRoot5.get("items/item[2]");
-        String aPath = anItem.getPath();
+        String aPath = anItem._getPath();
         assertNotNull(aPath);
         assertEquals("items/item[2]", aPath);
     }
