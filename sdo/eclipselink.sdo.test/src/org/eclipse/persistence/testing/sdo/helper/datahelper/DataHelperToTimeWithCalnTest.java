@@ -11,6 +11,7 @@ package org.eclipse.persistence.testing.sdo.helper.datahelper;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class DataHelperToTimeWithCalnTest extends DataHelperTestCases {
     public DataHelperToTimeWithCalnTest(String name) {
@@ -27,6 +28,7 @@ public class DataHelperToTimeWithCalnTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.MINUTE, 23);
         controlCalendar.set(Calendar.SECOND, 11);
         controlCalendar.set(Calendar.MILLISECOND, 1);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         String tm = dataHelper.toTime(controlCalendar);
         this.assertEquals("12:23:11.001", tm);
     }
@@ -34,6 +36,7 @@ public class DataHelperToTimeWithCalnTest extends DataHelperTestCases {
     public void testToTimeWithDefault() {
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         String tm = dataHelper.toTime(controlCalendar);
         this.assertEquals("00:00:00.0", tm);
     }

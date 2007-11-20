@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
+
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -402,6 +404,7 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 0);
         controlCalendar.set(Calendar.DATE, 1);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date bi = controlCalendar.getTime();
 
         //dataObject.setString(property, "2001-01-01");// add it to instance list

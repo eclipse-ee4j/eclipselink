@@ -12,6 +12,8 @@ package org.eclipse.persistence.testing.sdo.helper.datahelper;
 import commonj.sdo.Type;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
+
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
@@ -29,10 +31,6 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
 
     public void testConverFromString_Date() {
         String b = "2000";
-        Calendar controlCalendar = Calendar.getInstance();
-        controlCalendar.clear();
-        controlCalendar.set(Calendar.YEAR, 2000);
-        Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate(b);
 
         this.assertEquals(aDate, (Date)dataHelper.convertFromStringValue(b, Date.class, null));
@@ -55,10 +53,6 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
 
     public void testConverFromString_Date_NoQName() {
         String b = "2000";
-        Calendar controlCalendar = Calendar.getInstance();
-        controlCalendar.clear();
-        controlCalendar.set(Calendar.YEAR, 2000);
-        Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate(b);
 
         this.assertEquals(aDate, (Date)dataHelper.convertFromStringValue(b, Date.class));
@@ -81,10 +75,6 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
 
     public void testConverFromString_DateWithType() {
         String b = "2000";
-        Calendar controlCalendar = Calendar.getInstance();
-        controlCalendar.clear();
-        controlCalendar.set(Calendar.YEAR, 2000);
-        Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate(b);
 
         SDOType d = SDOConstants.SDO_DATE;
@@ -94,10 +84,6 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
 
     public void testConverFromString_DateWithTypeNullQName() {
         String b = "2000";
-        Calendar controlCalendar = Calendar.getInstance();
-        controlCalendar.clear();
-        controlCalendar.set(Calendar.YEAR, 2000);
-        Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate(b);
 
         SDOType d = SDOConstants.SDO_DATE;
@@ -107,10 +93,6 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
 
     public void testConverFromString_DateWithTypeQName() {
         String b = "2000";
-        Calendar controlCalendar = Calendar.getInstance();
-        controlCalendar.clear();
-        controlCalendar.set(Calendar.YEAR, 2000);
-        Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate(b);
 
         SDOType d = SDOConstants.SDO_DATE;
@@ -120,10 +102,6 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
 
     public void testConverFromString_DateWithNullTypeNullQName() {
         String b = "2000";
-        Calendar controlCalendar = Calendar.getInstance();
-        controlCalendar.clear();
-        controlCalendar.set(Calendar.YEAR, 2000);
-        Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate(b);
 
         SDOType d = new SDOType(aHelperContext);
@@ -133,19 +111,17 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
 
     public void testConverFromObject_DateWithNullTypeNullQName() {
         String b = "2000";
-        Calendar controlCalendar = Calendar.getInstance();
-        controlCalendar.clear();
-        controlCalendar.set(Calendar.YEAR, 2000);
-        Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate(b);
 
         SDOType d = new SDOType(aHelperContext);
 
-        this.assertEquals("2000-01-01T00:00:00.0", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DATETIME));
+        // Because the default for SDO is to return dates in GMT, we should expect
+        // a Date containing 00:00:00 to be returned as a String containing 05:00:00
+        this.assertEquals("2000-01-01T05:00:00.0", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DATETIME));
         this.assertEquals("2000", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_YEAR));
         this.assertEquals("2000-01", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_YEARMONTH));
-        this.assertEquals("2000-01-01T00:00:00.0", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DATE));
-        this.assertEquals("00:00:00.0", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_TIME));
+        this.assertEquals("2000-01-01T05:00:00.0", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DATE));
+        this.assertEquals("05:00:00.0", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_TIME));
         this.assertEquals("----01", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DAY));
         this.assertEquals("P2000Y1M1DT0H0M0.0S", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DURATION));
         this.assertEquals("--01--", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_MONTH));
