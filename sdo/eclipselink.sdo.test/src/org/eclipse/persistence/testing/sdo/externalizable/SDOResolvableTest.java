@@ -31,7 +31,7 @@ public class SDOResolvableTest extends SDOResolvableTestCases {
     // We need to verify root behavior returns [.]
     public void testGetPathForRootObject() {
         //log("SDOResolvable.testGetPathForRootObject() UC44");
-        String aPath = ((SDODataObject)root).getPath();
+        String aPath = ((SDODataObject)root)._getPath();
         assertNotNull(aPath);
         assertEquals(SDOConstants.SDO_XPATH_TO_ROOT, aPath);
     }
