@@ -49,7 +49,7 @@ public class ChangeSummaryBeginLoggingEndLoggingIsLoggingTest extends ChangeSumm
         
             assertEquals(anOldContainer, aContainer);
             if (aContainer != null) {
-                Property pp = o.getContainer().getInstanceProperty(o.getContainmentPropertyName());
+                Property pp = o.getContainer().getInstanceProperty(o._getContainmentPropertyName());
                 assertEquals(((SDOChangeSummary)o.getChangeSummary()).getOldContainmentProperty(o), pp);
             }
         }
