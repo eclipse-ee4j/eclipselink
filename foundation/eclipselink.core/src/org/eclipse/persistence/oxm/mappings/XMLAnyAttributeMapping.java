@@ -9,7 +9,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.mappings;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import javax.xml.namespace.QName;
@@ -18,6 +20,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -35,6 +38,7 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
@@ -288,6 +292,8 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         if (field != null) {
             root = (Element)XPathEngine.getInstance().create((XMLField)getField(), root);
         }
+        List extraNamespaces = new ArrayList();
+        NamespaceResolver nr = row.getNamespaceResolver();
         for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
             Object key = cp.next(iter, session);
             if ((key != null) && key instanceof QName) {
@@ -295,11 +301,17 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
                 QName attributeName = (QName)key;
                 String namespaceURI = attributeName.getNamespaceURI();
                 String qualifiedName = attributeName.getLocalPart();
-                NamespaceResolver nr = ((XMLDescriptor)getDescriptor()).getNamespaceResolver();
+                                
                 if (nr != null) {
                     String prefix = nr.resolveNamespaceURI(attributeName.getNamespaceURI());
                     if ((prefix != null) && !prefix.equals("")) {
                         qualifiedName = prefix + ":" + qualifiedName;
+                    }else if(attributeName.getNamespaceURI() != null && !attributeName.getNamespaceURI().equals("")){
+                        String generatedPrefix = nr.generatePrefix();
+                        qualifiedName = generatedPrefix + ":" + qualifiedName;
+                        nr.put(generatedPrefix,attributeName.getNamespaceURI());
+                        extraNamespaces.add(new Namespace(generatedPrefix,attributeName.getNamespaceURI()));                  
+                        row.getNamespaceResolver().put(generatedPrefix,attributeName.getNamespaceURI());                    
                     }
                 }
                 if (namespaceURI != null) {
@@ -309,6 +321,8 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
                 }
             }
         }
+        ((XMLObjectBuilder)descriptor.getObjectBuilder()).writeExtraNamespaces(extraNamespaces, row, session);
+        ((XMLObjectBuilder)descriptor.getObjectBuilder()).removeExtraNamespacesFromNamespaceResolver(row, extraNamespaces, session);
     }
     
     /**

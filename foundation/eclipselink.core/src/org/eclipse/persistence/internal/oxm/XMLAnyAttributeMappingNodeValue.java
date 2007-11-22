@@ -8,11 +8,14 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.queries.DirectMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -50,22 +53,33 @@ public class XMLAnyAttributeMappingNodeValue extends XMLSimpleMappingNodeValue i
             return false;
         }
         XPathFragment groupingElements = marshalRecord.openStartGroupingElements(namespaceResolver);
+        List extraNamespaces = new ArrayList();
+        NamespaceResolver nr = marshalRecord.getNamespaceResolver();
         while (cp.hasNext(iter)) {
             Object key = cp.next(iter, (org.eclipse.persistence.internal.sessions.AbstractSession)session);
             if (key instanceof QName) {
                 QName name = (QName)key;
                 String value = cp.valueFromKey(key, collection).toString();
 
-                String qualifiedName = name.getLocalPart();
-                NamespaceResolver nr = ((XMLDescriptor)xmlAnyAttributeMapping.getDescriptor()).getNamespaceResolver();
+                String qualifiedName = name.getLocalPart();                                
                 if(nr != null){
                   String prefix = nr.resolveNamespaceURI(name.getNamespaceURI());
                   if ((prefix != null) && !prefix.equals("")) {
                       qualifiedName = prefix + ":" + qualifiedName;
+                  }else if(name.getNamespaceURI() != null && !name.getNamespaceURI().equals("")){
+                      String generatedPrefix = nr.generatePrefix();
+                      qualifiedName = generatedPrefix + ":" + qualifiedName;
+                      nr.put(generatedPrefix, name.getNamespaceURI());
+                      extraNamespaces.add(generatedPrefix);                  
+                      marshalRecord.attribute(XMLConstants.XMLNS_URL, generatedPrefix, XMLConstants.XMLNS + ":" + generatedPrefix, name.getNamespaceURI());
                   }
                 }
                 marshalRecord.attribute(name.getNamespaceURI(), name.getLocalPart(), qualifiedName, value);
             }
+        }                
+        
+        for(int i=0;i<extraNamespaces.size(); i++){
+            marshalRecord.getNamespaceResolver().removeNamespace((String)extraNamespaces.get(i));
         }
         marshalRecord.closeStartGroupingElements(groupingElements);
         return true;

@@ -587,7 +587,7 @@ public class XMLMarshaller {
             session = xmlContext.getSession(object);
             treeObjectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
         }
-
+        addRootDescriptorNamespacesToXMLRecord(descriptor, marshalRecord);
         if (null != rootFragment) {
             marshalRecord.startPrefixMappings(nr);
             marshalRecord.openStartElement(rootFragment, nr);
@@ -607,8 +607,7 @@ public class XMLMarshaller {
 
             marshalRecord.namespaceDeclarations(nr);
             marshalRecord.closeStartElement();
-        }
-        addRootDescriptorNamespacesToXMLRecord(descriptor, marshalRecord);
+        }        
         if (treeObjectBuilder != null) {
             treeObjectBuilder.buildRow(marshalRecord, object, (org.eclipse.persistence.internal.sessions.AbstractSession)session, this);
         } else if (isXMLRoot) {

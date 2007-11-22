@@ -453,9 +453,9 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 }
             }
 
-            if (extraNamespaces != null) {
-                removeExtraNamespacesFromNamespaceResolver(record, extraNamespaces, session);
-            }
+            
+            removeExtraNamespacesFromNamespaceResolver(record, extraNamespaces, session);
+            
         }
 
         // If this descriptor has multiple tables then we need to append the
@@ -558,10 +558,12 @@ public class XMLObjectBuilder extends ObjectBuilder {
         return returnList;
     }
 
-    protected void writeExtraNamespaces(List extraNamespaces, XMLRecord xmlRecord, AbstractSession session) {
-        if (((XMLLogin)session.getDatasourceLogin()).hasEqualNamespaceResolvers()) {
-            return;
-        } else if(xmlRecord.getDOM().getNodeType() != Node.ELEMENT_NODE) {
+    public void writeExtraNamespaces(List extraNamespaces, XMLRecord xmlRecord, AbstractSession session) {        
+        if(extraNamespaces == null){
+          return;
+        }
+        
+        if(xmlRecord.getDOM().getNodeType() != Node.ELEMENT_NODE) {
             return;
         }
 
@@ -571,10 +573,10 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
     }
 
-    protected void removeExtraNamespacesFromNamespaceResolver(XMLRecord marshalRecord, List extraNamespaces, AbstractSession session) {
-        if (((XMLLogin)session.getDatasourceLogin()).hasEqualNamespaceResolvers()) {
-            return;
-        }
+    public void removeExtraNamespacesFromNamespaceResolver(XMLRecord marshalRecord, List extraNamespaces, AbstractSession session) {       
+       if (extraNamespaces == null){
+         return;
+       }
 
         for (int i = 0; i < extraNamespaces.size(); i++) {
             Namespace nextExtraNamespace = (Namespace)extraNamespaces.get(i);
