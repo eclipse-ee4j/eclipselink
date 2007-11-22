@@ -11,21 +11,32 @@
 package org.eclipse.persistence.internal.helper;
 
 // Javse imports
+import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.Vector;
+import static java.lang.Integer.MIN_VALUE;
 
 // Java extension imports
 
 // EclipseLink imports
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.oracle.PLSQLargument;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
 
 /**
  * <b>PUBLIC</b>: Interface used to categorize arguments to Stored Procedures as either
  * 'simple' (use subclass SimpleDatabaseType) or 'complex' (use subclass ComplexDatabaseType) 
  *
- * <b>This version is 'stubbed' out until the solution to the 'order-of-out-args' issues is checked in
- *
  * @author Mike Norman - michael.norman@oracle.com
  * @since Oracle TopLink 11.x.x
  */
 public interface DatabaseType {
+
+    public static final String TARGET_SUFFIX = "_TARGET";
+    public static final String COMPAT_SUFFIX = "_COMPAT";
 
     public boolean isComplexDatabaseType();
     
@@ -35,4 +46,122 @@ public interface DatabaseType {
     
     public String getTypeName();
 
+    public int computeInIndex(PLSQLargument inArg, int newIndex,
+        ListIterator<PLSQLargument> i);
+
+    public int computeOutIndex(PLSQLargument outArg, int newIndex,
+        ListIterator<PLSQLargument> i);
+
+    public void buildInDeclare(StringBuilder sb, PLSQLargument inArg);
+    
+    public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg);
+
+    public void buildBeginBlock(StringBuilder sb, PLSQLargument arg);
+    
+    public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg);
+
+    public void translate(PLSQLargument arg, AbstractRecord translationRow,
+        AbstractRecord copyOfTranslationRow, Vector copyOfTranslationFields,
+        Vector translationRowFields, Vector translationRowValues);
+
+    public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
+        DatabaseRecord newOutputRow, Vector outputRowFields, Vector outputRowValues);
+
+    public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
+        AbstractRecord translationRow, DatabasePlatform platform);
+    
+    public enum DatabaseTypeHelper {
+        databaseTypeHelper;
+
+        public String buildTarget(PLSQLargument arg) {
+            StringBuilder sb = new StringBuilder(arg.name);
+            sb.append(TARGET_SUFFIX);
+            return sb.toString();
+        }
+
+        public String buildCompatible(PLSQLargument arg) {
+            StringBuilder sb = new StringBuilder(arg.name);
+            sb.append(COMPAT_SUFFIX);
+            return sb.toString();
+        }
+        
+        public void declareTarget(StringBuilder sb, PLSQLargument arg,
+            DatabaseType databaseType) {
+            sb.append("  ");
+            sb.append(buildTarget(arg));
+            sb.append(" ");
+            sb.append(databaseType.getTypeName());
+        }
+
+        public int computeInIndex(PLSQLargument inArg, int newIndex) {
+            inArg.inIndex = newIndex;
+            return ++newIndex;
+        }
+        
+        public int computeOutIndex(PLSQLargument outArg, int newIndex) {
+            outArg.outIndex = newIndex;
+            return ++newIndex;
+        }
+        public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg) {
+            sb.append("  :");
+            sb.append(outArg.outIndex);
+            sb.append(" := ");
+            sb.append(buildTarget(outArg));
+            sb.append(";\n");
+        }
+
+        public void translate(PLSQLargument arg, AbstractRecord translationRow,
+            AbstractRecord copyOfTranslationRow, Vector copyOfTranslationFields,
+            Vector translationRowFields, Vector translationRowValues) {
+            DatabaseField field = null;
+            for (Iterator i = copyOfTranslationFields.iterator(); i.hasNext(); ) {
+                DatabaseField f = (DatabaseField)i.next();
+                if (f.getName().equals(arg.name)) {
+                    field = f;
+                    break;
+                }
+            }
+            if (arg.length != MIN_VALUE) {
+                field.setLength(arg.length);
+            }
+            if (arg.precision != MIN_VALUE) {
+                field.setPrecision(arg.precision);
+            }
+            if (arg.scale != MIN_VALUE) {
+                field.setScale(arg.scale);
+            }
+            translationRowFields.setElementAt(field, arg.inIndex-1);
+            Object value = copyOfTranslationRow.get(field);
+            translationRowValues.setElementAt(value, arg.inIndex-1);
+        }
+
+        public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
+            DatabaseRecord newOutputRow, Vector outputRowFields, Vector outputRowValues) {
+            DatabaseField field = null;
+            for (Iterator i = outputRowFields.iterator(); i.hasNext(); ) {
+                DatabaseField f = (DatabaseField)i.next();
+                if (f.getName().equals(outArg.name)) {
+                    field = f;
+                    break;
+                }
+            }
+            Object value = outputRow.get(field);
+            newOutputRow.add(field, value);
+        }
+        
+        public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
+            AbstractRecord translationRow, DatabasePlatform platform) {
+            if (direction == IN && arg.inIndex != MIN_VALUE) {
+                sb.append(":");
+                sb.append(arg.inIndex);
+                sb.append(" => ");
+                sb.append(platform.convertToDatabaseType(translationRow.get(arg.name)));
+            }
+            if (direction == OUT && arg.outIndex != MIN_VALUE) {
+                sb.append(arg.name);
+                sb.append(" => :");
+                sb.append(arg.outIndex);
+            }
+        }
+    }
 }

@@ -537,6 +537,14 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Called by prepare method only. May be overridden.
      */
     protected void prepareInternal(AbstractSession session) {
+        prepareInternalParameters(session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Called by prepareInternal method only. May be overridden.
+     */
+    protected void prepareInternalParameters(AbstractSession session) {
         if (isCursorOutputProcedure()) {
             // 1. If there are no OUT_CURSOR parameters - change the first OUT to OUT_CURSOR;
             // 2. If there are multiple OUT_CURSOR parameters - throw Validation exception

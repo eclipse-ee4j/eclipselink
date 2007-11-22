@@ -11,6 +11,8 @@
 package org.eclipse.persistence.platform.database.jdbc;
 
 // Javse imports
+import java.util.ListIterator;
+import java.util.Vector;
 import static java.sql.Types.ARRAY;
 import static java.sql.Types.BIGINT;
 import static java.sql.Types.BINARY;
@@ -41,9 +43,17 @@ import static java.sql.Types.TIMESTAMP;
 import static java.sql.Types.TINYINT;
 import static java.sql.Types.VARBINARY;
 import static java.sql.Types.VARCHAR;
+import static java.lang.Integer.MIN_VALUE;
+
+// Java extension imports
 
 // EclipseLink imports
 import org.eclipse.persistence.internal.helper.DatabaseType;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.oracle.PLSQLargument;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
 
 /**
  * <b>PUBLIC</b>: JDBC types
@@ -73,6 +83,30 @@ public enum JDBCTypes implements JDBCType {
         LONGVARCHAR_TYPE(LONGVARCHAR, "LONGVARCHAR"),
         NULL_TYPE(NULL, "NULL"),
         NUMERIC_TYPE(NUMERIC, "NUMERIC") {
+            protected void buildInitialDeclare(StringBuilder sb, PLSQLargument arg) {
+                databaseTypeHelper.declareTarget(sb, arg, this);
+                if (arg.precision != MIN_VALUE) {
+                    sb.append("(");
+                    sb.append(arg.precision);
+                    if (arg.scale != MIN_VALUE) {
+                        sb.append(",");
+                        sb.append(arg.scale);
+                    }
+                    sb.append(")");
+                }
+            }
+            @Override
+            public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
+                buildInitialDeclare(sb, inArg);
+                sb.append(" := :");
+                sb.append(inArg.inIndex);
+                sb.append(";\n");
+            }
+            @Override
+            public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
+                buildInitialDeclare(sb, outArg);
+                sb.append(";\n");
+            }
         },
         OTHER_TYPE(OTHER, "OTHER"),
         REAL_TYPE(REAL, "REAL"),
@@ -84,6 +118,26 @@ public enum JDBCTypes implements JDBCType {
         TINYINT_TYPE(TINYINT, "TINYINT"),
         VARBINARY_TYPE(VARBINARY, "VARBINARY"),
         VARCHAR_TYPE(VARCHAR, "VARCHAR") {
+            protected void buildInitialDeclare(StringBuilder sb, PLSQLargument arg) {
+                databaseTypeHelper.declareTarget(sb, arg, this);
+                if (arg.length != MIN_VALUE) {
+                    sb.append("(");
+                    sb.append(arg.length);
+                    sb.append(")");
+                }
+            }
+            @Override
+            public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
+                buildInitialDeclare(sb, inArg);
+                sb.append(" := :");
+                sb.append(inArg.inIndex);
+                sb.append(";\n");
+            }
+            @Override
+            public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
+                buildInitialDeclare(sb, outArg);
+                sb.append(";\n");
+            }
         },
         ;
         
@@ -109,6 +163,54 @@ public enum JDBCTypes implements JDBCType {
 
         public String getTypeName() {
             return typeName;
+        }
+        
+        public int computeInIndex(PLSQLargument inArg, int newIndex,
+            ListIterator<PLSQLargument> i) {
+            return databaseTypeHelper.computeInIndex(inArg, newIndex);
+        }
+
+        public int computeOutIndex(PLSQLargument outArg, int newIndex,
+            ListIterator<PLSQLargument> i) {
+            return databaseTypeHelper.computeOutIndex(outArg, newIndex);
+        }
+
+        public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
+            databaseTypeHelper.declareTarget(sb, inArg, this);
+            sb.append(" := :");
+            sb.append(inArg.inIndex);
+            sb.append(";\n");
+        }
+
+        public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
+            databaseTypeHelper.declareTarget(sb, outArg, this);
+            sb.append(";\n");
+        }
+
+        public void buildBeginBlock(StringBuilder sb, PLSQLargument arg) {
+            // nothing to do for simple types
+        }
+
+        public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg) {
+            databaseTypeHelper.buildOutAssignment(sb, outArg);
+        }
+
+        public void translate(PLSQLargument arg, AbstractRecord translationRow,
+            AbstractRecord copyOfTranslationRow, Vector copyOfTranslationFields,
+            Vector translationRowFields, Vector translationRowValues) {
+            databaseTypeHelper.translate(arg, translationRow, copyOfTranslationRow,
+                copyOfTranslationFields, translationRowFields, translationRowValues);
+        }
+
+        public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
+            DatabaseRecord newOutputRow, Vector outputRowFields, Vector outputRowValues) {
+            databaseTypeHelper.buildOutputRow(outArg, outputRow,
+                newOutputRow, outputRowFields, outputRowValues);
+        }
+
+        public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
+            AbstractRecord translationRow, DatabasePlatform platform) {
+            databaseTypeHelper.logParameter(sb, direction, arg, translationRow, platform);
         }
 
         public static DatabaseType getDatabaseTypeForCode(int typeCode) {

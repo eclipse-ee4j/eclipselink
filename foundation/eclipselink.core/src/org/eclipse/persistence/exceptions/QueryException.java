@@ -157,6 +157,8 @@ public class QueryException extends ValidationException {
     public final static int DISTINCT_COUNT_ON_OUTER_JOINED_COMPOSITE_PK = 6145;
     public final static int QUERY_HINT_CONTAINED_INVALID_INTEGER_VALUE = 6146;
     public final static int EXPRESSION_DOES_NOT_SUPPORT_PARTAIL_ATTRIBUTE_READING = 6147;    
+    public final static int ADD_ARGS_NOT_SUPPORTED = 6148;
+    public final static int UNNAMED_ARG_NOT_SUPPORTED = 6149;
     public final static int MAP_KEY_IS_NULL = 6150;
 
     /**
@@ -1331,5 +1333,24 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(EXPRESSION_DOES_NOT_SUPPORT_PARTAIL_ATTRIBUTE_READING);
         return queryException;
     }
-    
+
+    public static QueryException addArgumentsNotSupported(String argumentType) {
+        Object[] args = { argumentType };
+
+        QueryException queryException = 
+            new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class,
+                ADD_ARGS_NOT_SUPPORTED, args));
+        queryException.setErrorCode(ADD_ARGS_NOT_SUPPORTED);
+        return queryException;
+    }
+
+    public static QueryException unnamedArgumentsNotSupported() {
+        Object[] args = { };
+
+        QueryException queryException = 
+            new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class,
+		UNNAMED_ARG_NOT_SUPPORTED, args));
+        queryException.setErrorCode(UNNAMED_ARG_NOT_SUPPORTED);
+        return queryException;
+    }
 }

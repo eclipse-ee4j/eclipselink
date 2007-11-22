@@ -10,6 +10,8 @@
 
 package org.eclipse.persistence.internal.helper;
 
+import org.eclipse.persistence.platform.database.oracle.PLSQLStoredProcedureCall;
+
 // Javse imports
 
 // EclipseLink imports
@@ -18,11 +20,15 @@ package org.eclipse.persistence.internal.helper;
  * <b>PUBLIC</b>: Marker interface for Complex Database types
  * (e.g. PL/SQL Records, PL/SQL Index tables)
  *
- * <b>This version is 'stubbed' out until the solution to the 'order-of-out-args' issues is checked in
- *
  * @author Mike Norman - michael.norman@oracle.com
  * @since Oracle TopLink 11.x.x
  */
 public interface ComplexDatabaseType extends DatabaseType {
     
+    public boolean hasCompatibleType();
+    public String getCompatibleType();
+  
+    public ComplexDatabaseType deepCopy();
+    
+    public void setCall(PLSQLStoredProcedureCall call);
 }
