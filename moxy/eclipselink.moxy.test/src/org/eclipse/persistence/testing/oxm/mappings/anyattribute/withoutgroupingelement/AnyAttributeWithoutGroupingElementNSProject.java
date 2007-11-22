@@ -18,6 +18,7 @@ import org.eclipse.persistence.oxm.mappings.*;
 public class AnyAttributeWithoutGroupingElementNSProject extends Project {
     public AnyAttributeWithoutGroupingElementNSProject() {
         this.addDescriptor(buildRootDescriptor());
+        this.addDescriptor(buildWrapperDescriptor());
     }
 
     public ClassDescriptor buildRootDescriptor() {
@@ -34,6 +35,25 @@ public class AnyAttributeWithoutGroupingElementNSProject extends Project {
         NamespaceResolver nr = new NamespaceResolver();
         nr.put("myns", "www.example.com/some-dir/some.xsd");
         //nr.put("", "www.example.com/some-other-dir/some.xsd");
+        descriptor.setNamespaceResolver(nr);
+
+        return descriptor;
+    }
+    
+      public ClassDescriptor buildWrapperDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(Wrapper.class);
+        descriptor.setDefaultRootElement("myns:wrapper");
+
+        XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
+        mapping.setReferenceClass(Root.class);
+        mapping.setAttributeName("theRoot");
+        mapping.setXPath("myns:root");
+        descriptor.addMapping(mapping);
+
+        NamespaceResolver nr = new NamespaceResolver();
+        nr.put("myns", "www.example.com/some-dir/some.xsd");
+        nr.put("ns0", "www.example.com/test.xsd");
         descriptor.setNamespaceResolver(nr);
 
         return descriptor;
