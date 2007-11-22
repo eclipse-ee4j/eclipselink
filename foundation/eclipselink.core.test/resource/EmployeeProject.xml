@@ -1109,10 +1109,10 @@
       </eclipselink:class-mapping-descriptor>
    </eclipselink:class-mapping-descriptors>
    <eclipselink:login xsi:type="eclipselink:database-login">
-      <eclipselink:platform-class>org.eclipse.persistence.platform.database.oracle.OraclePlatform</eclipselink:platform-class>
-      <eclipselink:user-name>scott</eclipselink:user-name>
-      <eclipselink:password>3E20F8982C53F4ABA825E30206EC8ADE</eclipselink:password>
-      <eclipselink:driver-class>oracle.jdbc.OracleDriver</eclipselink:driver-class>
-      <eclipselink:connection-url>jdbc:oracle:thin:@localhost:1521:orcl</eclipselink:connection-url>
+      <eclipselink:platform-class>@dbPlatform@</eclipselink:platform-class>
+      <eclipselink:user-name>@dbUser@</eclipselink:user-name>
+      <eclipselink:password>@dbPassword@</eclipselink:password>
+      <eclipselink:driver-class>@driverClass@</eclipselink:driver-class>
+      <eclipselink:connection-url>@dbURL@</eclipselink:connection-url>
    </eclipselink:login>
 </eclipselink:object-persistence>
