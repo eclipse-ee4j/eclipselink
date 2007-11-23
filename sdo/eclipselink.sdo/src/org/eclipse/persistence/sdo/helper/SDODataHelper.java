@@ -43,13 +43,15 @@ public class SDODataHelper implements DataHelper {
         // TODO: JIRA129 - default to static global context - Do Not use this convenience constructor outside of JUnit testing
         //aHelperContext = HelperProvider.getDefaultContext();
         xmlConversionManager = (XMLConversionManager)XMLConversionManager.getDefaultXMLManager().clone();
-        xmlConversionManager.setTimeZone(TimeZone.getTimeZone("GMT"));        
+        xmlConversionManager.setTimeZone(TimeZone.getTimeZone("GMT"));
+        xmlConversionManager.setTimeZoneQualified(true);
     }
 
     public SDODataHelper(HelperContext aContext) {
         aHelperContext = aContext;
         xmlConversionManager = (XMLConversionManager)XMLConversionManager.getDefaultXMLManager().clone();
         xmlConversionManager.setTimeZone(TimeZone.getTimeZone("GMT"));
+        xmlConversionManager.setTimeZoneQualified(true);        
     }
 
     /**
@@ -136,6 +138,7 @@ public class SDODataHelper implements DataHelper {
             } else {
                 throw new IllegalArgumentException(SDOException.conversionError(null));
             }
+            c.setTimeZone(TimeZone.getTimeZone("GMT"));
             return c;
         }
     }
@@ -194,8 +197,8 @@ public class SDODataHelper implements DataHelper {
         } else {
             throw new IllegalArgumentException(SDOException.conversionError(null));
         }
+        c.setTimeZone(TimeZone.getTimeZone("GMT"));
         return c;
-
     }
 
     /**
@@ -221,6 +224,7 @@ public class SDODataHelper implements DataHelper {
         }
         Calendar outPut = Calendar.getInstance();
         outPut.setTime(date);
+        outPut.setTimeZone(TimeZone.getTimeZone("GMT"));
         return toDuration(outPut);
     }
 
