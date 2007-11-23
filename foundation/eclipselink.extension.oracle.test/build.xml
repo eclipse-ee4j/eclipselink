@@ -25,7 +25,7 @@
     <target name="compile" depends="" description="compile EclipseLink core tests">  
         <mkdir dir="${eclipselink.extension.oracle.test}/${classes.dir}"/>
         <javac srcdir="${eclipselink.extension.oracle.test}/${src.dir}" 
-               destdir="${eclipselink.extension.oracle}/${classes.dir}"
+               destdir="${eclipselink.extension.oracle.test}/${classes.dir}"
                includes="org/eclipse/persistence/**, deprecated/**"
                debug="${javac.debug}" 
                optimize="${javac.optimize}"
