@@ -11,6 +11,7 @@ package org.eclipse.persistence.testing.oxm.xmlroot.complex;
 
 import java.io.InputStream;
 import junit.textui.TestRunner;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.oxm.xmlroot.Person;
@@ -26,7 +27,9 @@ public class XMLRootComplexNoNRWithPrefixTestCases extends XMLRootComplexTestCas
         super(name);
         XMLRootComplexProject project = new XMLRootComplexProject();
         ((XMLDescriptor)project.getDescriptor(Person.class)).getSchemaReference().setSchemaContext("/oxm:person");
-        ((XMLDescriptor)project.getDescriptor(Person.class)).setNamespaceResolver(null);
+
+        NamespaceResolver nr = new NamespaceResolver();
+        ((XMLDescriptor)project.getDescriptor(Person.class)).setNamespaceResolver(nr);        
         setProject(project);
     }
 

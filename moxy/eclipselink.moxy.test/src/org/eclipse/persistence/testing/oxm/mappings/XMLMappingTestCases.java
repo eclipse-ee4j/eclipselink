@@ -16,7 +16,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -164,16 +166,45 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     }
 
     public void testObjectToXMLDocument() throws Exception {
-        Document testDocument = xmlMarshaller.objectToXML(getWriteControlObject());
+        Object objectToWrite = getWriteControlObject();
+        XMLDescriptor desc = null;
+        if (objectToWrite instanceof XMLRoot) {
+            desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
+        } else {
+            desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
+        }
+       
+        int sizeBefore = getNamespaceResolverSize(desc);
+
+        Document testDocument = xmlMarshaller.objectToXML(objectToWrite);
+        
+        int sizeAfter = getNamespaceResolverSize(desc);
+        
+        assertEquals(sizeBefore, sizeAfter);
+       
+        
+
         objectToXMLDocumentTest(testDocument);
     }
 
-    
-    
-    
     public void testObjectToXMLStringWriter() throws Exception {
         StringWriter writer = new StringWriter();
-        xmlMarshaller.marshal(getWriteControlObject(), writer);
+        Object objectToWrite = getWriteControlObject();
+        XMLDescriptor desc = null;
+        if (objectToWrite instanceof XMLRoot) {
+            desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
+        } else {
+            desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
+        }
+ 
+        int sizeBefore = getNamespaceResolverSize(desc);
+
+        xmlMarshaller.marshal(objectToWrite, writer);
+        
+        int sizeAfter = getNamespaceResolverSize(desc);
+        
+        assertEquals(sizeBefore, sizeAfter);
+        
         StringReader reader = new StringReader(writer.toString());
         InputSource inputSource = new InputSource(reader);
         Document testDocument = parser.parse(inputSource);
@@ -182,10 +213,36 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
         objectToXMLDocumentTest(testDocument);
     }
+    
+    private int getNamespaceResolverSize(XMLDescriptor desc){
+       int size = -1;
+        if (desc != null) {
+            NamespaceResolver nr = desc.getNamespaceResolver();
+            if (nr != null) {
+                size = nr.getNamespaces().size();
+            }else{
+              size =0;
+            } 
+        }
+        return size;
+    }
 
     public void testObjectToContentHandler() throws Exception {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
-        xmlMarshaller.marshal(getWriteControlObject(), builder);
+        Object objectToWrite = getWriteControlObject();
+        XMLDescriptor desc = null;
+        if (objectToWrite instanceof XMLRoot) {
+            desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
+        } else {
+            desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
+        }
+        int sizeBefore = getNamespaceResolverSize(desc);
+
+        xmlMarshaller.marshal(objectToWrite, builder);
+        
+        int sizeAfter = getNamespaceResolverSize(desc);
+        
+        assertEquals(sizeBefore, sizeAfter);
 
         Document controlDocument = getWriteControlDocument();
         Document testDocument = builder.getDocument();
