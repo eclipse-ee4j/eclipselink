@@ -10,6 +10,9 @@
 package org.eclipse.persistence.testing.sdo.helper.datahelper;
 
 import commonj.sdo.Type;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -41,7 +44,8 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2000);
-
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+        
         this.assertEquals(controlCalendar, (Calendar)dataHelper.convertFromStringValue(b, Calendar.class, null));
     }
 
@@ -63,7 +67,8 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2000);
-
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+        
         this.assertEquals(controlCalendar, (Calendar)dataHelper.convertFromStringValue(b, Calendar.class));
     }
 
@@ -115,16 +120,31 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
 
         SDOType d = new SDOType(aHelperContext);
 
-        // Because the default for SDO is to return dates in GMT, we should expect
-        // a Date containing 00:00:00 to be returned as a String containing 05:00:00
-        this.assertEquals("2000-01-01T05:00:00.0", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DATETIME));
+        this.assertEquals("2000-01-01T00:00:00.0Z", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DATETIME));
         this.assertEquals("2000", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_YEAR));
         this.assertEquals("2000-01", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_YEARMONTH));
-        this.assertEquals("2000-01-01T05:00:00.0", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DATE));
-        this.assertEquals("05:00:00.0", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_TIME));
+        this.assertEquals("2000-01-01T00:00:00.0Z", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DATE));
+        this.assertEquals("00:00:00.0Z", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_TIME));
         this.assertEquals("----01", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DAY));
         this.assertEquals("P2000Y1M1DT0H0M0.0S", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DURATION));
         this.assertEquals("--01--", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_MONTH));
         this.assertEquals("--01-01", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_MONTHDAY));
+    }
+    
+    public void testConverFromObject_Date_GMTDefault() {
+    	// Original date string, will be interpreted as GMT by default
+    	String origDateString = "1999-05-31T15:55:00.000";
+    	
+    	// String converted to date -- this will be converted to VM's time zone
+    	Date aDate = dataHelper.toDate(origDateString);
+    	System.out.println("DATE: " + aDate);
+    	
+    	// Format the date back to GMT and make sure it equals the original
+    	// date string
+		DateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS");
+		f.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String dateString = f.format(aDate);
+		
+		this.assertEquals(origDateString, dateString);
     }
 }

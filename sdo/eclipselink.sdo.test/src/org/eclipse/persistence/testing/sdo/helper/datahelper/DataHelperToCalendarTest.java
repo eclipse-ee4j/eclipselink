@@ -10,6 +10,7 @@
 package org.eclipse.persistence.testing.sdo.helper.datahelper;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 public class DataHelperToCalendarTest extends DataHelperTestCases {
     public DataHelperToCalendarTest(String name) {
@@ -21,6 +22,7 @@ public class DataHelperToCalendarTest extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 4);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("2001-05");
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -29,6 +31,7 @@ public class DataHelperToCalendarTest extends DataHelperTestCases {
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2001);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("2001");
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -38,6 +41,7 @@ public class DataHelperToCalendarTest extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.MONTH, 11);
         controlCalendar.set(Calendar.DATE, 4);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("--12-04");
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -46,6 +50,7 @@ public class DataHelperToCalendarTest extends DataHelperTestCases {
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
         controlCalendar.set(Calendar.MONTH, 9);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("--10--");
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -54,6 +59,7 @@ public class DataHelperToCalendarTest extends DataHelperTestCases {
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
         controlCalendar.set(Calendar.DATE, 31);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("----31");
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -65,6 +71,7 @@ public class DataHelperToCalendarTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.MINUTE, 21);
         controlCalendar.set(Calendar.SECOND, 12);
         controlCalendar.set(Calendar.MILLISECOND, 0);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aDate = dataHelper.toCalendar("01:21:12");
         this.assertEquals(controlCalendar, aDate);
     }
@@ -75,6 +82,7 @@ public class DataHelperToCalendarTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 0);
         controlCalendar.set(Calendar.DATE, 1);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("2001-01-01");
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -89,6 +97,7 @@ public class DataHelperToCalendarTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.MINUTE, 0);
         controlCalendar.set(Calendar.SECOND, 1);
         controlCalendar.set(Calendar.MILLISECOND, 0);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("2001-01-01T00:00:01");
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -103,6 +112,7 @@ public class DataHelperToCalendarTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.MINUTE, 40);
         controlCalendar.set(Calendar.SECOND, 27);
         controlCalendar.set(Calendar.MILLISECOND, 870);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("P12Y10M2DT0H40M27.87S");
         log(controlCalendar.getTime().toString());
         log(aCalendar.getTime().toString());

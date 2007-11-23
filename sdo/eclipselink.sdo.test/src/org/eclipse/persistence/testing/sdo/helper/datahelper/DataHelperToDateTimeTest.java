@@ -32,7 +32,7 @@ public class DataHelperToDateTimeTest extends DataHelperTestCases {
         Date controlDate = controlCalendar.getTime();
         String dt = dataHelper.toDateTime(controlDate);
         log(dt);
-        this.assertEquals("2001-05-01T12:23:11.001", dt);
+        this.assertEquals("2001-05-01T12:23:11.001Z", dt);
     }
 
     public void testToDateTimeWithDefault() {
@@ -41,7 +41,7 @@ public class DataHelperToDateTimeTest extends DataHelperTestCases {
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date controlDate = controlCalendar.getTime();
         String dt = dataHelper.toDateTime(controlDate);
-        this.assertEquals("1970-01-01T00:00:00.0", dt);
+        this.assertEquals("1970-01-01T00:00:00.0Z", dt);
     }
 
     public void testToDateTimeWithNullInput() {

@@ -12,6 +12,8 @@ package org.eclipse.persistence.testing.sdo.model.dataobject;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
+
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -183,6 +185,7 @@ public class SDODataObjectGetDateConversionWithPathTest extends SDODataObjectCon
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 0);
         controlCalendar.set(Calendar.DATE, 1);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date d = controlCalendar.getTime();
 
         dataObject_a.setString(propertyPath_a_b_c, "2001-01-01");// add it to instance list

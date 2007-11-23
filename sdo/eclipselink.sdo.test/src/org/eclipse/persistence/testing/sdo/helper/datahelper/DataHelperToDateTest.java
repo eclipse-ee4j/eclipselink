@@ -11,6 +11,8 @@ package org.eclipse.persistence.testing.sdo.helper.datahelper;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
+
 import org.eclipse.persistence.testing.sdo.helper.datahelper.DataHelperTestCases;
 
 public class DataHelperToDateTest extends DataHelperTestCases {
@@ -23,6 +25,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 4);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("2001-05");
         this.assertEquals(controlDate, aDate);
@@ -32,6 +35,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2000);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));        
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("2000");
         this.assertEquals(controlDate, aDate);
@@ -42,6 +46,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.MONTH, 6);
         controlCalendar.set(Calendar.DATE, 4);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));        
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("--07-04");
         this.assertEquals(controlDate, aDate);
@@ -51,6 +56,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
         controlCalendar.set(Calendar.MONTH, 10);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));        
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("--11--");
         this.assertEquals(controlDate, aDate);
@@ -60,6 +66,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
         controlCalendar.set(Calendar.DATE, 15);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));        
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("----15");
         this.assertEquals(controlDate, aDate);
@@ -72,6 +79,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.MINUTE, 21);
         controlCalendar.set(Calendar.SECOND, 12);
         controlCalendar.set(Calendar.MILLISECOND, 37);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));        
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("01:21:12.037");
         this.assertEquals(controlDate, aDate);
@@ -83,6 +91,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 0);
         controlCalendar.set(Calendar.DATE, 1);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));        
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("2001-01-01");
         this.assertEquals(controlDate, aDate);
@@ -98,6 +107,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.MINUTE, 0);
         controlCalendar.set(Calendar.SECOND, 1);
         controlCalendar.set(Calendar.MILLISECOND, 1);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));        
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("2001-10-01T00:00:01.001");
         this.assertEquals(controlDate, aDate);
@@ -113,6 +123,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.MINUTE, 40);
         controlCalendar.set(Calendar.SECOND, 27);
         controlCalendar.set(Calendar.MILLISECOND, 87);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));        
         Date controlDate = controlCalendar.getTime();
         Date aDate = dataHelper.toDate("P12Y10M2DT0H40M27.087S");
         this.assertEquals(controlDate, aDate);

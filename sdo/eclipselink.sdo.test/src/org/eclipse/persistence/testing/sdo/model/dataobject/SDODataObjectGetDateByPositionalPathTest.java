@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
+
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -152,6 +154,7 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 0);
         controlCalendar.set(Calendar.DATE, 1);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date d = controlCalendar.getTime();
 
         dataObject_c.setString(property_c, "2001-01-01");// add it to instance list
@@ -170,6 +173,7 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 0);
         controlCalendar.set(Calendar.DATE, 1);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date d = controlCalendar.getTime();
 
         List objects = new ArrayList();

@@ -24,6 +24,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 4);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("2001-05", lc);
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -33,6 +34,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         Calendar controlCalendar = Calendar.getInstance(lc);
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2000);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("2000", lc);
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -43,6 +45,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.MONTH, 6);
         controlCalendar.set(Calendar.DATE, 4);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("--07-04", lc);
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -52,6 +55,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         Calendar controlCalendar = Calendar.getInstance(lc);
         controlCalendar.clear();
         controlCalendar.set(Calendar.MONTH, 10);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("--11--", lc);
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -61,6 +65,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         Calendar controlCalendar = Calendar.getInstance(lc);
         controlCalendar.clear();
         controlCalendar.set(Calendar.DATE, 15);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("----15", lc);
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -73,6 +78,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.set(Calendar.MINUTE, 21);
         controlCalendar.set(Calendar.SECOND, 12);
         controlCalendar.set(Calendar.MILLISECOND, 0);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("01:21:12", lc);
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -84,6 +90,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 0);
         controlCalendar.set(Calendar.DATE, 1);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("2001-01-01", lc);
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -99,6 +106,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.set(Calendar.MINUTE, 0);
         controlCalendar.set(Calendar.SECOND, 1);
         controlCalendar.set(Calendar.MILLISECOND, 0);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("2001-01-01T00:00:01", lc);
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -114,6 +122,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.set(Calendar.MINUTE, 40);
         controlCalendar.set(Calendar.SECOND, 27);
         controlCalendar.set(Calendar.MILLISECOND, 870);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("P12Y10M2DT0H40M27.87S", lc);
         this.assertEquals(controlCalendar, aCalendar);
     }
@@ -143,6 +152,7 @@ public class DataHelperToCalendarWithLocale extends DataHelperTestCases {
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 0);
         controlCalendar.set(Calendar.DATE, 1);
+        controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Calendar aCalendar = dataHelper.toCalendar("2001-01-01", lc);
         this.assertEquals(controlCalendar, aCalendar);
     }
