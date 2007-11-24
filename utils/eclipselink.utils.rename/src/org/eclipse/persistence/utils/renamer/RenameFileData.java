@@ -1,31 +1,29 @@
-package utilities;
+package org.eclipse.persistence.utils.renamer;
 
 public class RenameFileData {
-	
+
 	private String fileContentsString = null;
 	private boolean changed = false;
-	
-	public RenameFileData(String fileContentsString, boolean changed){
+
+	public RenameFileData(String fileContentsString, boolean changed) {
 		this.fileContentsString = fileContentsString;
 		this.changed = changed;
 	}
 
-	
-	public String getFileContentsString(){
+	public String getFileContentsString() {
 		return fileContentsString;
 	}
-	
-	public boolean isChanged(){
+
+	public boolean isChanged() {
 		return changed;
 	}
-	
 
-	public void setChanged(boolean changed){
+	public void setChanged(boolean changed) {
 		this.changed = changed;
 	}
-	
-	public void setFileContentsString(String contents){
+
+	public void setFileContentsString(String contents) {
 		this.fileContentsString = contents;
 	}
-	
+
 }

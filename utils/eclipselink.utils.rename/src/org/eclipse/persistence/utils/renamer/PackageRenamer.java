@@ -7,7 +7,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-package utilities;
+package org.eclipse.persistence.utils.renamer;
 
 import java.io.*;
 import java.util.*;

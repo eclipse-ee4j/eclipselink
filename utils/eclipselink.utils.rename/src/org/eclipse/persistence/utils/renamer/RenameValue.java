@@ -6,10 +6,12 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
-package utilities;
+ ******************************************************************************/
+package org.eclipse.persistence.utils.renamer;
 
 import java.util.Comparator;
+
+import org.eclipse.persistence.utils.renamer.RenameFileData;
 
 public class RenameValue {
 	private String sourceValue;
@@ -34,7 +36,7 @@ public class RenameValue {
 		int replaceLen = getReplaceValue().length();
 		String newStr = data.getFileContentsString();
 
-		int pos  = newStr.indexOf(getSourceValue());
+		int pos = newStr.indexOf(getSourceValue());
 		int lastPos = pos;
 
 		while (pos >= 0) {
@@ -51,7 +53,7 @@ public class RenameValue {
 		data.setFileContentsString(newStr);
 		return data;
 	}
-	
+
 	public String toString() {
 		return "REPLACE> " + getSourceValue() + " -> " + getReplaceValue();
 	}
