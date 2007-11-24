@@ -1,4 +1,4 @@
-package org.eclipse.persistence.utils.renamer;
+package org.eclipse.persistence.utils.rename;
 
 public class RenameFileData {
 

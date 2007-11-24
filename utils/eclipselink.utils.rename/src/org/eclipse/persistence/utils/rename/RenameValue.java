@@ -7,11 +7,9 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-package org.eclipse.persistence.utils.renamer;
+package org.eclipse.persistence.utils.rename;
 
 import java.util.Comparator;
-
-import org.eclipse.persistence.utils.renamer.RenameFileData;
 
 public class RenameValue {
 	private String sourceValue;
