@@ -50,7 +50,7 @@
          <copy todir="${eclipselink.core.test}/${classes.dir}" filtering="true" encoding="UTF-16">
             <fileset dir="${eclipselink.core.test}/${resource.dir}" includes="**/Employee_utf16.xml"/>
          </copy>
-          <copy todir="${eclipselink.core.test}/${classes.dir}" filtering="true" encoding="UTF-8">
+          <copy todir="${eclipselink.core.test}/${classes.dir}" filtering="true" encoding="Shift_JIS">
             <fileset dir="${eclipselink.core.test}/${resource.dir}" includes="**/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
          </copy>
     </target>
