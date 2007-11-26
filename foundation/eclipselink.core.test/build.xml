@@ -45,12 +45,14 @@
         <filter token="dbPlatform" value="${db.platform}"/>
         <copy todir="${eclipselink.core.test}/${classes.dir}" filtering="true">
             <fileset dir="${eclipselink.core.test}/${resource.dir}">
-                <exclude name="org/eclipse/persistence/testing/models/workbenchintegration/Employee_utf16.xml"/>
+                <exclude name="org/eclipse/persistence/testing/models/workbenchintegration/Employee_utf16.xml,
+                 org/eclipse/persistence/testing/nlstests/japanese/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
             </fileset>
          </copy>
          <copy todir="${eclipselink.core.test}/${classes.dir}" filtering="true" encoding="UTF-16">
             <fileset dir="${eclipselink.core.test}/${resource.dir}">
-                <include name="org/eclipse/persistence/testing/models/workbenchintegration/Employee_utf16.xml"/>
+                <include name="org/eclipse/persistence/testing/models/workbenchintegration/Employee_utf16.xml,
+                 org/eclipse/persistence/testing/nlstests/japanese/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
             </fileset>
          </copy>
     </target>
