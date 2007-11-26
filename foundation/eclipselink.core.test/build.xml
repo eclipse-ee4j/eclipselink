@@ -44,8 +44,36 @@
         <filter token="boolvalue" value="${eclipselink.logging.boolvalue}"/>
         <filter token="dbPlatform" value="${db.platform}"/>
         <copy todir="${eclipselink.core.test}/${classes.dir}" filtering="true">
-            <fileset dir="${eclipselink.core.test}/${resource.dir}"/>
+            <fileset dir="${eclipselink.core.test}/${resource.dir}">
+                <exclude name="org/eclipse/persistence/testing/models/workbenchintegration/Employee_utf16.xml"/>
+            </fileset>
          </copy>
+         <copy todir="${eclipselink.core.test}/${classes.dir}" filtering="true" encoding="UTF-16">
+            <fileset dir="${eclipselink.core.test}/${resource.dir}">
+                <include name="org/eclipse/persistence/testing/models/workbenchintegration/Employee_utf16.xml"/>
+            </fileset>
+         </copy>
+    </target>
+
+    <target name="test" depends="process.resource">
+        <java   classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
+             fork="true"
+             maxmemory="512m"
+             failonerror="true">
+            <jvmarg value="-Djava.security.policy=${eclipselink.core.test}/resource/java.policy.allpermissions"/>
+            <arg value="pfile=${eclipselink.core.test}/resource/automated.test.properties " />
+            <arg value="testmodel=org.eclipse.persistence.testing.tests.TestRunModel" />
+            <arg value="regressionlog=core.test.regression.log" />
+            <classpath>
+                <pathelement path="."/>
+                <pathelement path="${eclipselink.core.test}/${classes.dir}"/>
+                <path refid="compile.path"/>
+                <pathelement path="${eclipselink.core}/${resource.dir}"/>
+                <pathelement path="${eclipselink.extension.oracle}/eclipselink-extension-oracle.jar"/>
+                <pathelement path="${jdbc.driver.jar}"/>
+                <pathelement path="${tools.jar}"/>
+            </classpath>
+        </java>
     </target>
 
     <target name="clean" description="Clean the build">
