@@ -122,10 +122,10 @@ public class SDOCopyHelperDeepCopyTest extends SDOCopyEqualityHelperTestCases {
      * Results: This test will verify that the bidirectional property is left unchanged 
      * after an unset on its parent - in effect creating a nc link between 2 separate dataobject trees.
      * See SDO_Ref_BiDir_Relationships_DesignSpec.doc section 4.2.2
-     * 	    See spec 3.1.7. â€œIf other DataObjects have one-way, non-containment properties that refer to deleted DataObjects, 
-     * then these references are not modified.â€? - we retain both sides of the bidirectional link here.
-     * 	    See spec 3.1.7. â€œHowever, these properties can need changing to other values, 
-     * in order to restore closure to the data graphâ€? - the implementer will need to be aware and fix any set/reset issues 
+     * 	    See spec 3.1.7. If other DataObjects have one-way, non-containment properties that refer to deleted DataObjects, 
+     * then these references are not modified. - we retain both sides of the bidirectional link here.
+     * 	    See spec 3.1.7. However, these properties can need changing to other values, 
+     * in order to restore closure to the data graph? - the implementer will need to be aware and fix any set/reset issues 
      * - the SDO API will not attempt to remove any of these NC references for deleted objects.
      *     No code changes are required because non-equality is expected in this case. 
      *    	Leaving a bidirectional property set between two trees that do not share a common root is not an invalid state (step 2 above)
