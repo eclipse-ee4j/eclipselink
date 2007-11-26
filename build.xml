@@ -20,11 +20,11 @@
     <property name="build_number_string" value="${build_date}"/>
 
   <!-- all -->
-  <target name="all" depends="package.eclipselink.jar, build.test, package.src.jar, package.package-renamer.jar, package.installer.zip" description="build EclipseLink distribution files"/>
+  <target name="all" depends="package.eclipselink.jar, build.test, package.src.jar, package.package-renamer.jar, build.javadocs, package.javadoc.zip, package.installer.zip" description="build EclipseLink distribution files"/>
 
     <target name="build.all" depends="build.core, build.test, build.extension"/>
 
-    <target name="build.distribution" depends="package.eclipselink.jar,package.src.jar, package.package-renamer.jar, package.installer.zip"/>
+    <target name="build.distribution" depends="package.eclipselink.jar,package.src.jar, package.package-renamer.jar, package.javadoc.zip, package.installer.zip"/>
 
     <target name="build.core">
         <ant antfile="${eclipselink.core}/build.xml" target="all"/>
@@ -123,6 +123,49 @@
 	    <ant antfile="${eclipselink.moxy.test}/build.xml" target="test.jaxb.against.jar"/>
 	</target>
 
+	<target name="build.javadocs"> 
+
+		<javadoc 
+			maxmemory="384m"
+			packagenames="org.eclipse.persistence.**" 
+			destdir="${eclipselink.javadocs}"  
+			useexternalfile="yes"
+			additionalparam="-breakiterator"
+			windowtitle="${javadoc.windowTitle}"
+			> 
+			<tag name ="author" enabled="true" description="Author:" />
+			<tag name ="since" scope="all" description="Since:" />
+			<tag name ="SBGen" scope="all" description="SBGen:" />
+			<tag name ="bug" enabled="true" description="Related Bugs:" />
+			<doctitle><![CDATA[${javadoc.docTitle}]]></doctitle>
+            <header><![CDATA[${javadoc.header}]]></header>
+
+			<fileset dir="${eclipselink.core}/${src.dir}" defaultexcludes="yes"> 
+				<include name="org/eclipse/persistence/**/*.java"/> 
+				<exclude name="org/eclipse/persistence/internal/**/*.java"/> 
+			</fileset>
+			<fileset dir="${eclipselink.jpa}/${src.dir}" defaultexcludes="yes"> 
+				<include name="org/eclipse/persistence/**/*.java"/> 
+				<exclude name="org/eclipse/persistence/internal/**/*.java"/> 
+			</fileset> 
+			<fileset dir="${eclipselink.moxy}/${src.dir}" defaultexcludes="yes"> 
+				<include name="org/eclipse/persistence/**/*.java"/> 
+				<exclude name="org/eclipse/persistence/internal/**/*.java"/> 
+			</fileset> 
+			<fileset dir="${eclipselink.sdo}/${src.dir}" defaultexcludes="yes"> 
+				<include name="org/eclipse/persistence/**/*.java"/> 
+				<exclude name="org/eclipse/persistence/internal/**/*.java"/> 
+			</fileset> 		
+			<fileset dir="${eclipselink.util.rename.utility}/${src.dir}" defaultexcludes="yes"> 
+				<include name="org/eclipse/persistence/**/*.java"/> 
+				<exclude name="org/eclipse/persistence/internal/**/*.java"/> 
+			</fileset> 		
+
+		</javadoc> 
+
+	</target> 
+
+
     <!-- clean -->
   <target name="clean" description="Clean the build">
     <ant antfile="${eclipselink.core}/build.xml" target="clean"/>
@@ -143,7 +186,7 @@
         <include name="${readme-file}"/>
         <include name="${license-files}"/>
       </zipfileset>
-          
+      
       <!-- setenv and package-rename scripts -->
       <zipfileset dir="${eclipselink.core.bin}" prefix="eclipselink/bin">
         <include name="${setenv-scripts}"/>
@@ -191,6 +234,18 @@
       
     </zip>
   </target>
+
+	<!-- javadoc.zip -->
+  <target name="package.javadoc.zip" description="build EclipseLink javadoc zip">
+    <zip destfile="${eclipselink-javadoc-installer.prefix}${eclipselink-javadoc-installer.suffix}">
+      <!-- miscellaneous files -->
+      <zipfileset dir="${eclipselink.javadocs}/" prefix="eclipselink/javadocs">
+      </zipfileset>
+
+      
+    </zip>
+  </target>
+
 
     <!-- package-renamer -->
   <target name="package.package-renamer.jar" description="build Package rename jar">
