@@ -47,13 +47,13 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
  * <p><em>Input XML</em><br>
  * <code>
  * &lt;employee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;<br>
- * &nbsp;&nbsp;&lt;firstname xsi:nil=â€?trueâ€?/&gt;<br>
+ * &nbsp;&nbsp;&lt;firstname xsi:nil=true/&gt;<br>
  * &lt;/employee&gt;<br>
  * </code>
  * <p><em>Output Object State</em><br>
  * <code>
  * anEmployee.getFirstname() = null<br>
- * anEmployee.isSet(â€œfirstnameâ€?) = true<br>
+ * anEmployee.isSet(firstname) = true<br>
  * </code>
 
  * <p><b>Marshal null composite object (isSet=true) as empty node</b>: .
@@ -75,7 +75,7 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
  * <p><em>Input Object State</em><br>
  * <code>
  * aTeam.getManager() = null<br>
- * aTeam.isSet(â€œmanagerâ€?) = no effect<br>
+ * aTeam.isSet(manager) = no effect<br>
  * </code>
  * <p><em>Output XML</em><br>
  * <code>
