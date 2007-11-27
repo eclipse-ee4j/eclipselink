@@ -61,7 +61,7 @@
              maxmemory="512m"
              failonerror="true">
             <jvmarg value="-Djava.security.policy=${eclipselink.core.test}/resource/java.policy.allpermissions"/>
-            <arg value="pfile=${eclipselink.core.test}/resource/automated.test.properties " />
+            <arg value="pfile=${core.test.properties}" />
             <arg value="testmodel=org.eclipse.persistence.testing.tests.TestRunModel" />
             <arg value="regressionlog=core.test.regression.log" />
             <classpath>
