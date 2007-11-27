@@ -395,7 +395,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
         // handle "self" xpath
         if (((XMLField)getField()).isSelfField()) {
-            XMLObjectBuilder objectBuilder = (XMLObjectBuilder)this.getReferenceDescriptor().getObjectBuilder();
+            XMLObjectBuilder objectBuilder = (XMLObjectBuilder)this.getReferenceDescriptor(attributeValue.getClass(), session).getObjectBuilder();
             objectBuilder.buildIntoNestedRow(record, attributeValue, session);
         } else {
             Object fieldValue = null;

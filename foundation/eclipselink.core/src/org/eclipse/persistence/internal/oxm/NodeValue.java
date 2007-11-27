@@ -11,6 +11,7 @@ package org.eclipse.persistence.internal.oxm;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.Attributes;
@@ -140,6 +141,22 @@ public abstract class NodeValue {
       * @see org.eclipse.persistence.internal.oxm.NullCapableValue
       */
     public boolean isNullCapableValue() {
+        return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Marshal any 'self' mapped attributes.
+     * 
+     * @param xPathFragment
+     * @param marshalRecord
+     * @param object
+     * @param session
+     * @param namespaceResolver
+     * @param marshaller
+     * @return
+     */
+    public boolean marshalSelfAttributes(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
         return false;
     }
 }

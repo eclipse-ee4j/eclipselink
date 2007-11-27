@@ -12,6 +12,8 @@ package org.eclipse.persistence.testing.oxm.mappings.compositeobject;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.errortests.CompositeObjectErrorTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbyname.CompositeObjectIdentifiedByNameNoRefClassTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.identifiedbyname.CompositeObjectIdentifiedByNameTestCases;
@@ -23,7 +25,6 @@ import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.Com
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNodeNullPolicyTrueTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicyAbsentIsSetAbsentFalseIsSetFalseTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicyAbsentIsSetAbsentFalseIsSetTrueTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicyAbsentIsSetAbsentTrueTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicySetEmptyFalseIsSetFalseTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicySetEmptyFalseIsSetTrueTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicySetEmptyTrueIsSetFalseTestCases;
@@ -44,10 +45,14 @@ import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.Attribu
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.AttributeOnTargetTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.AttributesOnTargetTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.CompositeObjectSelfTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.PLSQLCallModelTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.singleelement.CompositeObjectSingleElementTestCases;
 
 public class CompositeObjectMappingTestSuite extends TestCase {
     public static Test suite() {
+        String metadataStr = System.getProperty(OXTestCase.METADATA_KEY, OXTestCase.METADATA_JAVA);
+        boolean deploymentXML = !(metadataStr.equals(OXTestCase.METADATA_JAVA)); 
+
         TestSuite suite = new TestSuite("Composite Object Mapping Test Suite");
 
         suite.addTestSuite(CompositeObjectIdentifiedByNameTestCases.class);
@@ -59,11 +64,15 @@ public class CompositeObjectMappingTestSuite extends TestCase {
         suite.addTestSuite(CompositeObjectSingleElementTestCases.class);
         suite.addTest(CompositeObjectNullTestCases.suite());
         suite.addTestSuite(CompositeObjectErrorTestCases.class);
-        suite.addTestSuite(CompositeObjectSelfTestCases.class);
         suite.addTestSuite(AttributeOnTargetTestCases.class);
         suite.addTestSuite(AttributesOnTargetTestCases.class);
         suite.addTestSuite(AttributeListOnTargetTestCases.class);
-
+        // Self mapping tests
+        suite.addTestSuite(CompositeObjectSelfTestCases.class);
+        // The following self tests are not meant to run with deployment XML
+        if (!deploymentXML) {
+            suite.addTestSuite(PLSQLCallModelTestCases.class);
+        }
         // Null Policy refactor 3
        	suite.addTestSuite(CompositeObjectNullPolicySetEmptyFalseIsSetFalseTestCases.class); 
        	suite.addTestSuite(CompositeObjectNullPolicySetEmptyFalseIsSetTrueTestCases.class); 

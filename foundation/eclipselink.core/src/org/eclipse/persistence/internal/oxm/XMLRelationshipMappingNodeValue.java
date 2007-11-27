@@ -64,6 +64,7 @@ public abstract class XMLRelationshipMappingNodeValue extends NodeValue {
         }
         TreeObjectBuilder targetObjectBuilder = (TreeObjectBuilder)xmlDescriptor.getObjectBuilder();
         unmarshalRecord.setChildRecord((UnmarshalRecord)targetObjectBuilder.createRecord());
+        unmarshalRecord.getChildRecord().setAttributes(atts);        
         unmarshalRecord.getChildRecord().setUnmarshaller(unmarshalRecord.getUnmarshaller());
         unmarshalRecord.getChildRecord().startDocument();
         unmarshalRecord.getChildRecord().startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName(), atts);

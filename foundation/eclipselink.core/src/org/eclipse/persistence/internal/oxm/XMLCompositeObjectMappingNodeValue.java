@@ -48,6 +48,32 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, null);
     }
 
+    /**
+     * Marshal any 'self' mapped attributes.
+     * 
+     * @param xPathFragment
+     * @param marshalRecord
+     * @param object
+     * @param session
+     * @param namespaceResolver
+     * @param marshaller
+     * @return
+     */
+    public boolean marshalSelfAttributes(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
+        Object objectValue = xmlCompositeObjectMapping.getAttributeValueFromObject(object);
+        if (xmlCompositeObjectMapping.getConverter() != null) {
+            Converter converter = xmlCompositeObjectMapping.getConverter();
+            if (converter instanceof XMLConverter) {
+                objectValue = ((XMLConverter)converter).convertObjectValueToDataValue(objectValue, session, marshaller);
+            } else {
+                objectValue = converter.convertObjectValueToDataValue(objectValue, session);
+            }
+        }
+        XMLDescriptor descriptor = (XMLDescriptor)session.getDescriptor(objectValue);
+        TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
+        return objectBuilder.marshalAttributes(marshalRecord, objectValue, (org.eclipse.persistence.internal.sessions.AbstractSession)session);
+    }
+    
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
         if (xmlCompositeObjectMapping.isReadOnly()) {
             return false;
@@ -78,10 +104,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         XMLDescriptor descriptor = (XMLDescriptor)session.getDescriptor(objectValue);
         TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
 
-        // bug#5035551 - if 'self' add any attributes defined on the composite to the parent
-        if (xPathFragment.isSelfFragment()) {
-            objectBuilder.marshalAttributes(marshalRecord, objectValue, (org.eclipse.persistence.internal.sessions.AbstractSession)session);
-        } else {
+        if (!xPathFragment.isSelfFragment()) {
             getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, objectValue);
         }
 

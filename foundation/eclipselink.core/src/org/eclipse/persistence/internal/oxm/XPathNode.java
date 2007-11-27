@@ -16,6 +16,7 @@ import java.util.Map;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 
 /**
@@ -263,5 +264,22 @@ public class XPathNode {
         }
         marshalRecord.closeStartElement();
         return hasValue;
+    }
+
+    /**
+     * Marshal any 'self' mapped attributes.  
+     * 
+     * @param marshalRecord
+     * @param object
+     * @param session
+     * @param namespaceResolver
+     * @param marshaller
+     * @return
+     */
+    public boolean marshalSelfAttributes(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
+        if (nodeValue == null) {
+            return false;
+        }
+        return nodeValue.marshalSelfAttributes(xPathFragment, marshalRecord, object, session, namespaceResolver, marshaller);
     }
 }

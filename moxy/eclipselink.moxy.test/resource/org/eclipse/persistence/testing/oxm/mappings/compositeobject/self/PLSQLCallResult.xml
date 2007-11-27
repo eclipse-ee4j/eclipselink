@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plsql-call id="1">
+    <arguments>
+        <argument jdbc-type="NUMERIC_TYPE">
+            <name>X</name>
+            <secondary-type plsql-type="DATE"/>
+        </argument>
+        <argument plsql-type="BOOLEAN">
+            <name>Z</name>
+            <secondary-type jdbc-type="VARCHAR_TYPE"/>
+        </argument>
+    </arguments>
+</plsql-call>

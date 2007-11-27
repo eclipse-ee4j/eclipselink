@@ -298,6 +298,10 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         return this.stringBuffer;
     }
 
+    public Attributes getAttributes() {
+        return this.attributes;
+    }
+
     public void setAttributes(Attributes attributes) {
         this.attributes = attributes;
     }
@@ -375,7 +379,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 for (int x = 0; x < selfChildrenSize; x++) {
                     selfNode = (XPathNode)xPathNode.getSelfChildren().get(x);
                     if (null != selfNode.getNodeValue()) {
-                        selfRecords.add(selfNode.getNodeValue().buildSelfRecord(this, null));
+                        selfRecords.add(selfNode.getNodeValue().buildSelfRecord(this, attributes));
                     }
                 }
             }
