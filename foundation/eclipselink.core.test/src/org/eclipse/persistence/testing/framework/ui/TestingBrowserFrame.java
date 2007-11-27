@@ -907,10 +907,6 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
      * @param args java.lang.String[]
      */
     public static void main(java.lang.String[] args) {
-	//set default jaxp properties
-	System.setProperty("javax.xml.parsers.DocumentBuilderFactory","oracle.xml.jaxp.JXDocumentBuilderFactory");
-	System.setProperty("javax.xml.parsers.SAXParserFactory","oracle.xml.jaxp.JXSAXParserFactory");
-	System.setProperty("javax.xml.transform.TransformerFactory","oracle.xml.jaxp.JXSAXTransformerFactory");
         try {
             javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
             TestingBrowserFrame aTestingBrowserFrame;

@@ -46,7 +46,7 @@
     <target name="package.eclipselink.jar" depends="build.core" description="build EclipseLink jar">
       <unjar src="${eclipselink.extension.oracle}/${eclipselink.oracle.depend.jar}" dest="${build.dir}"/>
       <filter token="VERSION" value="${release.version} ${build_number_string}"/>
-      <copy file="${eclipselink.core}/${resource.dir}/META-INF/MANIFEST.MF" tofile="${build.dir}/META-INF/MANIFEST.MF" filtering="true"/>
+      <copy file="${eclipselink.core}/${resource.dir}/META-INF/MANIFEST.MF" tofile="${build.dir}/META-INF/MANIFEST.MF" filtering="true" overwrite="true"/>
       <jar jarfile="${eclipselink.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
           <fileset dir="${eclipselink.core}/${classes.dir}">
             <include name="org/eclipse/persistence/**/*.class"/>
@@ -105,23 +105,27 @@
       </zip>
     </target>
 
-	<!-- test.jpa -->
-	<target name="test.jpa" description="run the jpa tests">
-	    <ant antfile="${eclipselink.jpa.test}/build.xml" target="test"/>
-	</target>
-	<!-- test.sdo & moxy-->
-	<target name="test.sdo" description="run the sdo tests">
-	    <ant antfile="${eclipselink.sdo.test}/build.xml" target="test.against.jar"/>
-	</target>
-	<target name="test.moxy" description="run the moxy tests">
-	    <ant antfile="${eclipselink.moxy.test}/build.xml" target="test.against.jar"/>
-	</target>
-	<target name="test.oxm" description="run the moxy (oxm) tests">
-	    <ant antfile="${eclipselink.moxy.test}/build.xml" target="test.oxm.against.jar"/>
-	</target>
-	<target name="test.jaxb" description="run the moxy (jaxb) tests">
-	    <ant antfile="${eclipselink.moxy.test}/build.xml" target="test.jaxb.against.jar"/>
-	</target>
+    <!-- test.jpa -->
+    <target name="test.core" description="run the core tests">
+        <ant antfile="${eclipselink.core.test}/build.xml" target="test"/>
+    </target>
+    <!-- test.jpa -->
+    <target name="test.jpa" description="run the jpa tests">
+        <ant antfile="${eclipselink.jpa.test}/build.xml" target="test"/>
+    </target>
+    <!-- test.sdo & moxy-->
+    <target name="test.sdo" description="run the sdo tests">
+        <ant antfile="${eclipselink.sdo.test}/build.xml" target="test.against.jar"/>
+    </target>
+    <target name="test.moxy" description="run the moxy tests">
+        <ant antfile="${eclipselink.moxy.test}/build.xml" target="test.against.jar"/>
+    </target>
+    <target name="test.oxm" description="run the moxy (oxm) tests">
+        <ant antfile="${eclipselink.moxy.test}/build.xml" target="test.oxm.against.jar"/>
+    </target>
+    <target name="test.jaxb" description="run the moxy (jaxb) tests">
+        <ant antfile="${eclipselink.moxy.test}/build.xml" target="test.jaxb.against.jar"/>
+    </target>
 
 	<target name="build.javadocs"> 
 

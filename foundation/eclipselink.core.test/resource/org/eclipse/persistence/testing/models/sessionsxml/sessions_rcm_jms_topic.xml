@@ -24,9 +24,9 @@
       </remote-command>
       <primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
       <login xsi:type="database-login">
-         <user-name>tljtest1</user-name>
- 		 <driver-class>oracle.jdbc.OracleDriver</driver-class>
-         <connection-url>jdbc:oracle:thin:@otl-ora8infmx73:1521:toplinkj</connection-url>
+         <user-name>@dbUser@</user-name>
+         <driver-class>@driverClass@</driver-class>
+         <connection-url>@dbURL@</connection-url>
          <byte-array-binding>false</byte-array-binding>
          <optimize-data-conversion>false</optimize-data-conversion>
          <trim-strings>false</trim-strings>

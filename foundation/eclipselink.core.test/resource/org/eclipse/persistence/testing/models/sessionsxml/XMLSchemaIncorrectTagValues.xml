@@ -23,7 +23,7 @@
       </logging>
       <primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
       <login xsi:type="database-login">
-         <platform-class>org.eclipse.persistence.platform.database.oracle.Oracle9Platform</platform-class>
+         <eclipselink:platform-class>@dbPlatform@</eclipselink:platform-class>
          <external-connection-pooling>boolean</external-connection-pooling>
          <external-transaction-controller>boolean</external-transaction-controller>
          <sequencing>
@@ -32,8 +32,7 @@
                <preallocation-size>int</preallocation-size>
             </default-sequence>
          </sequencing>
-         <driver-class>oracle.jdbc.OracleDriver</driver-class>
-         <connection-url>jdbc:oracle:thin:@</connection-url>
+         <driver-class>@driverClass@</driver-class>
          <bind-all-parameters>boolean</bind-all-parameters>
          <cache-all-statements>boolean</cache-all-statements>
          <byte-array-binding>boolean</byte-array-binding>
