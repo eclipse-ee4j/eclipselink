@@ -37,7 +37,7 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("UniAndBiDirectionalMappingTestSuite");
-        suite.addTest(new UniAndBiDirectionalMappingTestSuite("selfReferencingManyToManyTest"));
+        suite.addTest(new UniAndBiDirectionalMappingTestSuite("selfReferencingManyToManyCreateTest"));
         suite.addTest(new UniAndBiDirectionalMappingTestSuite("testManyToManyClearDelete"));
         
         return new TestSetup(suite) {
@@ -52,7 +52,7 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
         };
     }
      
-    public void selfReferencingManyToManyTest() throws Exception {
+    public void selfReferencingManyToManyCreateTest() throws Exception {
         EntityManager em = createEntityManager();
         
         em.getTransaction().begin();

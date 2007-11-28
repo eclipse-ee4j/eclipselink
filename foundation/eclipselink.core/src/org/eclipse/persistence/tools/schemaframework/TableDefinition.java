@@ -343,7 +343,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
         return writer;
     }
 
-
     /**
      * INTERNAL:
      * Build the foriegn key constraints.
@@ -462,11 +461,11 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * Return unique key constraint name built from the table and field name with the specified maximum length. To
-     * make the name short enough we
+     * Return unique key constraint name built from the table name and sequence 
+     * number with the specified maximum length. To make the name short enough we
      * 1. Drop the "UNQ_" prefix.
      * 2. Drop the underscore characters if any.
-     * 3. Drop the vowels from the table and field name.
+     * 3. Drop the vowels from the table name.
      * 4. Truncate the table name to zero length if necessary.
      */
     protected String buildUniqueKeyConstraintName(String tableName, int serialNumber, int maximumNameLength) {
@@ -478,13 +477,14 @@ public class TableDefinition extends DatabaseObjectDefinition {
                 // Still too long: remove the underscore characters
                 uniqueKeyName = Helper.removeAllButAlphaNumericToFit(tableName + serialNumber, maximumNameLength);
                 if (uniqueKeyName.length() > maximumNameLength) {
-                    // Still too long: remove vowels from the table name and field name.
+                    // Still too long: remove vowels from the table name
                     String onlyAlphaNumericTableName = Helper.removeAllButAlphaNumericToFit(tableName, 0);
-                    uniqueKeyName = Helper.shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, "", maximumNameLength);
+                    String serialName = String.valueOf(serialNumber);
+                    uniqueKeyName = Helper.shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, serialName, maximumNameLength);
                     if (uniqueKeyName.length() > maximumNameLength) {
-                        // Still too long: remove vowels from the table name and field name and truncate the table name.
+                        // Still too long: remove vowels from the table name and truncate the table name.
                         String shortenedTableName = Helper.removeVowels(onlyAlphaNumericTableName);
-                        uniqueKeyName = Helper.truncate(shortenedTableName, maximumNameLength - shortenedTableName.length());
+                        uniqueKeyName = Helper.truncate(shortenedTableName, maximumNameLength - serialName.length()) + serialName;
                     }
                 }
             }

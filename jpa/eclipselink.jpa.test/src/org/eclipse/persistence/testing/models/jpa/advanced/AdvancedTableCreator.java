@@ -647,18 +647,27 @@ public class AdvancedTableCreator extends TableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
-        FieldDefinition fieldNAME = new FieldDefinition();
-        fieldNAME.setName("NAME");
-        fieldNAME.setTypeName("VARCHAR2");
-        fieldNAME.setSize(100);
-        fieldNAME.setSubSize(0);
-        fieldNAME.setIsPrimaryKey(false);
-        fieldNAME.setIsIdentity(false);
-        fieldNAME.setUnique(false);
-        fieldNAME.setShouldAllowNull(true);
-        table.addField(fieldNAME);
-        
+
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("F_NAME");
+        field1.setTypeName("VARCHAR");
+        field1.setSize(40);
+        field1.setShouldAllowNull(true);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        table.addField(field1);
+    
+        FieldDefinition field2 = new FieldDefinition();
+        field2.setName("L_NAME");
+        field2.setTypeName("VARCHAR");
+        field2.setSize(40);
+        field2.setShouldAllowNull(true);
+        field2.setIsPrimaryKey(false);
+        field2.setUnique(false);
+        field2.setIsIdentity(false);
+        table.addField(field2);        
+
         return table;
     }
     
@@ -1026,17 +1035,26 @@ public class AdvancedTableCreator extends TableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
-        FieldDefinition fieldNAME = new FieldDefinition();
-        fieldNAME.setName("NAME");
-        fieldNAME.setTypeName("VARCHAR2");
-        fieldNAME.setSize(100);
-        fieldNAME.setSubSize(0);
-        fieldNAME.setIsPrimaryKey(false);
-        fieldNAME.setIsIdentity(false);
-        fieldNAME.setUnique(false);
-        fieldNAME.setShouldAllowNull(true);
-        table.addField(fieldNAME);
+
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("F_NAME");
+        field1.setTypeName("VARCHAR");
+        field1.setSize(40);
+        field1.setShouldAllowNull(true);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        table.addField(field1);
+    
+        FieldDefinition field2 = new FieldDefinition();
+        field2.setName("L_NAME");
+        field2.setTypeName("VARCHAR");
+        field2.setSize(40);
+        field2.setShouldAllowNull(true);
+        field2.setIsPrimaryKey(false);
+        field2.setUnique(false);
+        field2.setIsIdentity(false);
+        table.addField(field2);        
         
         return table;
     }

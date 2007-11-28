@@ -2068,7 +2068,13 @@ public class DatabasePlatform extends DatasourcePlatform {
             Iterator itFields = fields.iterator();
             while(itFields.hasNext()) {
                 DatabaseField field = (DatabaseField)itFields.next();
-                FieldDefinition fieldDef = new FieldDefinition(field.getName(), ConversionManager.getObjectClass(field.getType()));
+                FieldDefinition fieldDef;
+                //gfbug3307, should use columnDefinition if it was defined.
+                if( field.getColumnDefinition()!=null && field.getColumnDefinition().length() == 0){
+                   fieldDef = new FieldDefinition(field.getName(), ConversionManager.getObjectClass(field.getType()));
+                }else{
+                   fieldDef = new FieldDefinition(field.getName(), field.getColumnDefinition());
+                }
                 if(pkFields.contains(field) && shouldTempTableSpecifyPrimaryKeys()) {
                     fieldDef.setIsPrimaryKey(true);
                 }

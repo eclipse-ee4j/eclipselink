@@ -11,14 +11,12 @@
 
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeeListener;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import java.util.Vector;
 
 import javax.persistence.EntityManager;
@@ -247,6 +245,40 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         pk.add(emp.getId());
         return ((Integer)getServerSession().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(emp, pk, getServerSession())).intValue();
     }    
+    
+    // gf 2894:  merge does not trigger prePersist callbacks
+    public void testMergeCascadeTriggersPrePersist() {
+        clearCache();
+        EntityManager em = createEntityManager();
+
+        try {
+            em.getTransaction().begin();
+            // create an employee and persist it
+            Employee emp = new Employee();
+            emp.setFirstName("James");
+            emp.setLastName("Dean");
+            em.persist(emp);
+
+            // create a new project and associate to persistent employee
+            Project newProj  = new Project();
+            newProj.setName("Rebel Without a Cause");
+            emp.addProject(newProj);
+            newProj.addTeamMember(emp);
+            // merge should trigger prePersist callback on project
+            em.merge(emp);
+            // merge returns a managed copy of an unmanaged instance
+            Project managedProj = emp.getProjects().iterator().next();
+            this.assertTrue("Cascading merge to a new object should trigger prePersist callback", managedProj.pre_persist_count == 1);        
+            em.merge(emp);
+            // second merge should be ignored
+            this.assertTrue("prePersist callback should only be triggered once", managedProj.pre_persist_count == 1);        
+        } finally {
+            if (em.getTransaction().isActive()){
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
     
     public void tearDown () {
         if (m_reset) {

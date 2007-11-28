@@ -127,6 +127,25 @@ public abstract class ObjectExpression extends DataExpression {
         return queryKey;
 
     }
+    
+    /**
+     * ADVANCED:
+     * Return an expression representing traversal of a 1:many or many:many relationship.
+     * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
+     * <p>Example:
+     * <pre><blockquote>
+     *     TopLink: employee.anyOf("managedEmployees").get("firstName").equal("Bob")
+     *     Java: no direct equivalent
+     *     SQL: SELECT DISTINCT ... WHERE (t2.MGR_ID (+) = t1.ID) AND (t2.F_NAME = 'Bob')
+     * </pre></blockquote>
+     */
+    public Expression anyOfAllowingNone(String attributeName) {
+        QueryKeyExpression queryKey = newDerivedExpressionNamed(attributeName);
+        queryKey.doUseOuterJoin();
+        queryKey.doQueryToManyRelationship();
+        return queryKey;
+
+    }
 
     public QueryKeyExpression derivedExpressionNamed(String attributeName) {
         QueryKeyExpression existing = existingDerivedExpressionNamed(attributeName);

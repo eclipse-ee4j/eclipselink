@@ -91,6 +91,8 @@ public class UpdateAllQueryTestHelper {
         ReportQuery rq = new ReportQuery(uq.getReferenceClass(), uq.getExpressionBuilder());    
         rq.setSelectionCriteria(uq.getSelectionCriteria());
         rq.setShouldRetrievePrimaryKeys(true);
+        // some db platforms don't allow nulls in select clause - so add the fields with null values to the query result.
+        Vector fieldsWithNullValues = new Vector();
         Iterator itEntrySets = uq.getUpdateClauses().entrySet().iterator();
         while(itEntrySets.hasNext()) {
             Map.Entry entry = (Map.Entry)itEntrySets.next();
@@ -118,7 +120,11 @@ public class UpdateAllQueryTestHelper {
                     valueExpression = rq.getExpressionBuilder().value(value);
                 }
             }
-            rq.addAttribute(keyString, valueExpression);
+            if(value == null) {
+                fieldsWithNullValues.add(keyString);
+            } else {
+                rq.addAttribute(keyString, valueExpression);
+            }
         }
         
         UnitOfWork uow = mainSession.acquireUnitOfWork();
@@ -141,6 +147,12 @@ public class UpdateAllQueryTestHelper {
                     DatabaseField field = new DatabaseField(name);
                     Object value = reportResult.getResults().elementAt(j);
                     row.add(field, value);            
+                }
+                // some db platforms don't allow nulls in select clause - so add the fields with null values to the query result
+                for(int j=0; j < fieldsWithNullValues.size(); j++) {
+                    String name = (String)fieldsWithNullValues.elementAt(j);
+                    DatabaseField field = new DatabaseField(name);
+                    row.add(field, null);
                 }
                 rq.getDescriptor().getObjectBuilder().assignReturnRow(obj, (AbstractSession)uow, row);
             }

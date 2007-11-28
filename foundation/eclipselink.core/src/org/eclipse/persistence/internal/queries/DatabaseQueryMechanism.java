@@ -1111,12 +1111,12 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRowForUpdateWithChangeSet(writeQuery));
             
     	Boolean shouldModifyVersionField = changeSet.shouldModifyVersionField();
-        OptimisticLockingPolicy lockingPolicy = descriptor.getOptimisticLockingPolicy();
         if (!getModifyRow().isEmpty() || (shouldModifyVersionField != null) || changeSet.hasCmpPolicyForcedUpdate()) {
             // If user defined the entire row is required. Must not be built until change is known.
             if (writeQuery.isUserDefined() || writeQuery.isCallQuery()) {
                 writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRow(object, session));
             }
+            OptimisticLockingPolicy lockingPolicy = descriptor.getOptimisticLockingPolicy();
 
             // Update the write lock field if required.
             if (lockingPolicy != null) {

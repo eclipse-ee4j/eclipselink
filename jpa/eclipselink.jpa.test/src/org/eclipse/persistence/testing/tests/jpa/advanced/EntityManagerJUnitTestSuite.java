@@ -41,12 +41,14 @@ import junit.extensions.TestSetup;
 import junit.framework.*;
 
 import org.eclipse.persistence.jpa.config.CacheUsage;
+import org.eclipse.persistence.jpa.config.CascadePolicy;
 import org.eclipse.persistence.jpa.config.FlushClearCache;
 import org.eclipse.persistence.jpa.config.PessimisticLock;
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.jpa.config.EclipseLinkQueryHints;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sequencing.NativeSequence;
@@ -55,6 +57,7 @@ import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
+import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -2697,6 +2700,18 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         query.setHint(EclipseLinkQueryHints.JDBC_MAX_ROWS, new Integer(103));
         assertTrue("Max-rows not set.", olrQuery.getMaxRows() == 103); 
+
+        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.NoCascading);
+        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.NoCascading);
+        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
+        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeByMapping);
+        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.CascadeAllParts);
+        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeAllParts);
+        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.CascadePrivateParts);
+        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadePrivateParts);
+        // reset to the original state
+        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, "");
+        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeByMapping);
         
         query.setHint(EclipseLinkQueryHints.RESULT_COLLECTION_TYPE, java.util.ArrayList.class);
         assertTrue("ArrayList not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClassName().equals(java.util.ArrayList.class.getName())); 
@@ -3064,7 +3079,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } catch (Exception e){
             fail("An unexpected exception was thrown while testing serialization of ValueHolders: " + e.toString());
         }
-        
+
         // Only throw error if weaving was used.
         if (System.getProperty("TEST_NO_WEAVING") == null) {
             assertNotNull("The correct exception was not thrown while traversing an uninstantiated lazy relationship on a serialized object: " + exception, exception);
@@ -3399,11 +3414,20 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     //GlassFish Bug854  PU name doesn't exist or PU with the wrong name
     public void testCreateEntityManagerFactory2() {
         EntityManagerFactory emf = null;
-
+        PersistenceProvider provider = new PersistenceProvider();
         try{
-            emf = Persistence.createEntityManagerFactory("default123");
-        } catch (Exception e) {
-            assertTrue("The exception should be a PersistenceException", e instanceof PersistenceException);
+            try {
+                emf = provider.createEntityManagerFactory("default123", null);
+            } catch (Exception e) {
+                fail("Exception is not expected, but thrown:" + e);
+            }
+            assertNull(emf);
+            try {
+                emf = Persistence.createEntityManagerFactory("default123");
+                fail("PersistenceException is expected");
+            } catch (Exception e) {
+                assertTrue("The exception should be a PersistenceException", e instanceof PersistenceException);
+            }
         } finally{
             if (emf != null) {
                 emf.close();
@@ -3931,7 +3955,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.remove(initialManager);
         em.getTransaction().commit();
     }
-    
+
     //bug gf674 - EJBQL delete query with IS NULL in WHERE clause produces wrong sql
     public void testDeleteAllPhonesWithNullOwner() {
         EntityManager em = createEntityManager();
@@ -4035,7 +4059,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
              fail(error);
          }
      }
-    
+
     // gf1408: DeleteAll and UpdateAll queries broken on some db platforms;
     // gf1451: Complex updates to null using temporary storage do not work on Derby;
     // gf1860: TopLink provides too few values.
@@ -4790,6 +4814,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     // gf 3032
     public void testPessimisticLockHintStartsTransaction(){
+        Assert.assertFalse("Warning: DerbyPlatform does not currently support pessimistic locking",  ((Session)JUnitTestCase.getServerSession()).getPlatform().isDerby());
+        Assert.assertFalse("Warning: PostgreSQLPlatform. does not currently support pessimistic locking",  ((Session)JUnitTestCase.getServerSession()).getPlatform().isPostgreSQL());
         EntityManagerImpl em = (EntityManagerImpl)createEntityManager();
         em.getTransaction().begin();
         Query query = em.createNamedQuery("findAllEmployeesByFirstName");
@@ -5010,6 +5036,129 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         if(errorMsg.length() > 0) {
             fail(errorMsg);
+        }
+    }
+
+    public void testManagedEmployeesMassInsertUseSequencing() throws Exception {
+        internalTestManagedEmployeesMassInsertOrMerge(true, true);
+    }
+    
+    public void testManagedEmployeesMassInsertDoNotUseSequencing() throws Exception {
+        internalTestManagedEmployeesMassInsertOrMerge(true, false);
+    }
+        
+    public void testManagedEmployeesMassMergeUseSequencing() throws Exception {
+        internalTestManagedEmployeesMassInsertOrMerge(false, true);
+    }
+    
+   public void testManagedEmployeesMassMergeDoNotUseSequencing() throws Exception {
+        internalTestManagedEmployeesMassInsertOrMerge(false, false);
+    }
+    
+    // gf3152: toplink goes into a 2^n loop and comes to a halt on two cascade.
+    // before the fix this method took almost 10 minutes to complete on my local Oracle db.
+    // The test 
+    // shouldInsert == true indicate that em.persist should be used, 
+    // otherwise em.merge.
+    // shouldUseSequencing == true indicates that the pk value will be assigned by sequencing,
+    // otherwise the test generates ids and directly assignes them into the newly created objects.
+    protected void internalTestManagedEmployeesMassInsertOrMerge(boolean shouldInsert, boolean shouldUseSequencing) throws Exception {
+        // Example: nLevels == 3; nDirects = 4.
+        // First all the Employees corresponding to nLevels and nDirects values are created:
+        // There is always the single (highest ranking) topEmployee on Level_0;
+        // He/she has 4 Level_1 direct subordinates;
+        // each of those has 4 Level_2 directs, 
+        // each of those has 4 Level_3 directs.
+        // For debugging: 
+        // Employee's firstName is always his level (in "Level_2" format);
+        // Employee's lastName is his number in his level (from 0 to number of employees of this level - 1)
+        // in "Number_3" format.
+
+        // number of management levels
+        int nLevels = 2;
+        // number of direct employees each manager has
+        int nDirects = 50;        
+        // used to keep ids in case sequencing is not used
+        int id = 0;
+        EntityManager em = null;
+        if(!shouldUseSequencing) {
+            // obtain the first unused sequence number
+            Employee emp = new Employee();
+            em = createEntityManager();
+            em.getTransaction().begin();
+            em.persist(emp);
+            id = emp.getId();
+            em.getTransaction().rollback();
+            em.close();
+        }
+
+        // topEmployee - the only one on level 0.
+        Employee topEmployee = new Employee();
+        topEmployee.setFirstName("Level_0");
+        topEmployee.setLastName("Number_0");
+        if(!shouldUseSequencing) {
+            topEmployee.setId(id++);
+        }
+
+        // During each nLevel loop iterartion 
+        // this array contains direct managers for the Employees to be created -
+        // all the Employees of nLevel - 1 level.
+        ArrayList<Employee> employeesForHigherLevel = new ArrayList<Employee>(1);
+        // In the end of each nLevel loop iterartion 
+        // this array contains all Employees created during this iteration -
+        // all the Employees of nLevel level.
+        ArrayList<Employee> employeesForCurrentLevel;
+        employeesForHigherLevel.add(topEmployee);
+        // total number of employees
+        int nEmployeesTotal = 1;
+        for (int nLevel = 1; nLevel <= nLevels; nLevel++) {
+            employeesForCurrentLevel = new ArrayList<Employee>(employeesForHigherLevel.size() * nDirects);
+            Iterator<Employee> it = employeesForHigherLevel.iterator();
+            while(it.hasNext()) {
+                Employee mgr = it.next();
+                for(int nCurrent = 0; nCurrent < nDirects; nCurrent++) {
+                    Employee employee = new Employee();
+                    employee.setFirstName("Level_" + nLevel);
+                    employee.setLastName("Number_" + employeesForCurrentLevel.size());
+                    if(!shouldUseSequencing) {
+                        employee.setId(id++);
+                    }
+                    employeesForCurrentLevel.add(employee);
+                    mgr.addManagedEmployee(employee);
+                }
+            }
+            employeesForHigherLevel = employeesForCurrentLevel;
+            nEmployeesTotal = nEmployeesTotal + employeesForCurrentLevel.size();
+        }
+        
+        em = createEntityManager();
+        em.getTransaction().begin();
+        try {
+            if(shouldInsert) {
+                em.persist(topEmployee);
+            } else {
+                em.merge(topEmployee);
+            }
+            em.getTransaction().commit();
+        } finally {
+            if (em.getTransaction().isActive()){
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }            
+
+        // cleanup
+        em = createEntityManager();
+        em.getTransaction().begin();
+        try {
+            em.createQuery("DELETE FROM Employee e WHERE e.firstName LIKE 'Level_%'").executeUpdate();
+            em.getTransaction().commit();
+        } finally {
+            if (em.getTransaction().isActive()){
+                em.getTransaction().rollback();
+            }
+            ((EntityManagerImpl)em).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            em.close();
         }
     }
 

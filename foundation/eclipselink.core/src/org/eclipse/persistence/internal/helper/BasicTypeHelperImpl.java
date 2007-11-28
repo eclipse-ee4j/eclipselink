@@ -266,7 +266,7 @@ public class BasicTypeHelperImpl {
      * Returns true if type is the byte primitive type or the Byte wrapper class
      */
     public boolean isByteType(Object type) {
-        return (type == getByteType()) || (type == getCharacterClassType());
+        return (type == getByteType()) || (type == getByteClassType());
     }
 
     /**

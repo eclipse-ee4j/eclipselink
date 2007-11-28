@@ -54,6 +54,10 @@ public class InheritancePopulator {
         PopulationManager.getDefaultManager().registerObject(AAA.class, InheritanceModelExamples.bbbExample1(), "b1");
         PopulationManager.getDefaultManager().registerObject(AAA.class, InheritanceModelExamples.cccExample1(), "c1");
         PopulationManager.getDefaultManager().registerObject(AAA.class, InheritanceModelExamples.cccExample1(), "c2");
+
+        PopulationManager.getDefaultManager().registerObject(Company.class, InheritanceModelExamples.companyExample1(), "co1");
+        PopulationManager.getDefaultManager().registerObject(Company.class, InheritanceModelExamples.companyExample2(), "co2");
+        PopulationManager.getDefaultManager().registerObject(Company.class, InheritanceModelExamples.companyExample3(), "co3");
     }
     
     
@@ -63,6 +67,7 @@ public class InheritancePopulator {
         UnitOfWork unitOfWork = session.acquireUnitOfWork();        
         PopulationManager.getDefaultManager().addAllObjectsForClass(Person.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(AAA.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(Company.class, allObjects);
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
         

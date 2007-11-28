@@ -31,7 +31,7 @@ public class EntityManagerSetupExceptionResource extends ListResourceBundle {
                                            { "28010", "PersistenceUnitInfo {0} has transactionType JTA, but doesn't have jtaDataSource." },
                                            { "28011", "The session, [{0}], built for a persistence unit was not available at the time it was deployed.  This means that somehow the session was removed from the container in the middle of the deployment process." },
                                            { "28012", "Value [{0}] is of incorrect type for property [{2}], value type should be [{1}]." },
-                                           { "28013", "Attempted to deploy PersistenceUnit [{0}] for which predeploy method either had not called or had failed" },
+                                           { "28013", "Attempted to deploy PersistenceUnit [{0}] while being in the wrong state [{1}]. Close all factories for this PersistenceUnit." },
                                            { "28014", "Exception was thrown while processing property [{0}] with value [{1}]." },
                                            { "28015", "Failed to instantiate SessionLog of type [{0}] specified in [{1}] property." },
                                            { "28016", "The persistence unit with name [{0}] does not exist." },

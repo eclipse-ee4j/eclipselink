@@ -169,6 +169,7 @@ public class PropertiesHandler {
         static {
             addProp(new LoggerTypeProp());
             addProp(new LoggingLevelProp());
+            addProp(new CategoryLoggingLevelProp());
             addProp(new TargetDatabaseProp());
             addProp(new TargetServerProp());
             addProp(new CacheSizeProp());
@@ -423,6 +424,24 @@ public class PropertiesHandler {
     protected static class LoggingLevelProp extends Prop {
         LoggingLevelProp() {
             super(PersistenceUnitProperties.LOGGING_LEVEL, Level.INFO.getName());
+            valueArray = new Object[] { 
+                Level.OFF.getName(),
+                Level.SEVERE.getName(),
+                Level.OFF.getName(),
+                Level.WARNING.getName(),
+                Level.INFO.getName(),
+                Level.CONFIG.getName(),
+                Level.FINE.getName(),
+                Level.FINER.getName(),
+                Level.FINEST.getName(),
+                Level.ALL.getName()
+            };
+        }
+    }
+
+    protected static class CategoryLoggingLevelProp extends Prop {
+        CategoryLoggingLevelProp() {
+            super(PersistenceUnitProperties.CATEGORY_LOGGING_LEVEL_);
             valueArray = new Object[] { 
                 Level.OFF.getName(),
                 Level.SEVERE.getName(),

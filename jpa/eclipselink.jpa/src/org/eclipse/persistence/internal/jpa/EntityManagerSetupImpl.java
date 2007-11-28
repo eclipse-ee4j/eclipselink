@@ -722,7 +722,7 @@ public class EntityManagerSetupImpl {
                 transactionType=persistenceUnitInfo.getTransactionType();
             }
             
-            if (!isValidationOnly(predeployProperties, false) && persistenceUnitInfo != null && persistenceUnitInfo.getTransactionType() == PersistenceUnitTransactionType.JTA) {
+            if (!isValidationOnly(predeployProperties, false) && persistenceUnitInfo != null && transactionType == PersistenceUnitTransactionType.JTA) {
                 if (predeployProperties.get(PersistenceUnitProperties.JTA_DATASOURCE) == null && persistenceUnitInfo.getJtaDataSource() == null) {
                     throw new PersistenceException(EntityManagerSetupException.jtaPersistenceUnitInfoMissingJtaDataSource(persistenceUnitInfo.getPersistenceUnitName()));
                 }
@@ -789,7 +789,7 @@ public class EntityManagerSetupImpl {
             // factoryCount is not incremented only in case of a first call to preDeploy
             // in non-container mode: this call is not associated with a factory
             // but rather done by JavaSECMPInitializer.callPredeploy (typically in preMain).
-            if(state != STATE_INITIAL || this.isInContainerMode()) {
+            if((state != STATE_INITIAL && state != STATE_UNDEPLOYED) || this.isInContainerMode()) {
                 factoryCount++;
             }
             state = STATE_PREDEPLOYED;
@@ -1162,6 +1162,18 @@ public class EntityManagerSetupImpl {
         if (logLevelString != null) {
             log.setLevel(AbstractSessionLog.translateStringToLoggingLevel(logLevelString));
         }
+        // category-specific logging level
+        Map categoryLogLevelMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.CATEGORY_LOGGING_LEVEL_, m, session);
+        if(!categoryLogLevelMap.isEmpty()) {
+            Iterator it = categoryLogLevelMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry entry = (Map.Entry)it.next();
+                String category = (String)entry.getKey();
+                String value = (String)entry.getValue();
+                log.setLevel(AbstractSessionLog.translateStringToLoggingLevel(value), category);
+            }
+        }
+        
         String tsString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.LOGGING_TIMESTAMP, m, session);
         if (tsString != null) {
             log.setShouldPrintDate(Boolean.parseBoolean(tsString));

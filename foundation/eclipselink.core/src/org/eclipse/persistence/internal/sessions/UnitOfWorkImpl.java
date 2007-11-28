@@ -711,7 +711,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         builder.populateAttributesForClone(original, clone, this);
         // Must reregister in both new objects.
-        registerNewObjectClone(clone, original);
+        registerNewObjectClone(clone, original, descriptor);
 
         //Build backup clone for DeferredChangeDetectionPolicy or ObjectChangeTrackingPolicy,
         //but not for AttributeChangeTrackingPolicy
@@ -2049,7 +2049,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         return deletedObjects;
     }
 
-    protected boolean hasDeletedObjects() {
+    /**
+     * INTERNAL:
+     * The deleted objects stores any objects removed during the unit of work.
+     * On commit they will all be removed from the database.
+     */
+    public boolean hasDeletedObjects() {
         return ((deletedObjects != null) && !deletedObjects.isEmpty());
     }
 
@@ -3829,7 +3834,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 getCloneMapping().put(implementation, backupClone);
 
                 // Check if the new objects should be cached.
-                registerNewObjectClone(implementation, original); //this method calls registerNewObjectInIdentityMap
+                registerNewObjectClone(implementation, original, descriptor); //this method calls registerNewObjectInIdentityMap
             }
         } finally {
             endOperationProfile(SessionProfiler.Register);
@@ -3950,13 +3955,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         
         logDebugMessage(newObject, "register_new_for_persist");
         
-        if (descriptor.getEventManager().hasAnyEventListeners()) {
-            DescriptorEvent event = new DescriptorEvent(newObject);
-            event.setEventCode(DescriptorEventManager.PrePersistEvent);
-            event.setSession(this);
-            descriptor.getEventManager().executeEvent(event);
-        }          
-        
         ObjectBuilder builder = descriptor.getObjectBuilder();
         Object original = builder.buildNewInstance();
 
@@ -3965,7 +3963,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         assignSequenceNumber(newObject);
 
         // Check if the new objects should be cached.
-        registerNewObjectClone(newObject, original); //this method calls registerNewObjectInIdentityMap
+        registerNewObjectClone(newObject, original, descriptor); //this method calls registerNewObjectInIdentityMap
     }
     
     /**
@@ -3974,12 +3972,20 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * The user must edit the working copy and the original is used to merge into the parent.
      * This mapping is kept both ways because lookup is required in both directions.
      */
-    protected void registerNewObjectClone(Object clone, Object original) {
+    protected void registerNewObjectClone(Object clone, Object original, ClassDescriptor descriptor) {
         // Check if the new objects should be cached.
         registerNewObjectInIdentityMap(clone, original);
 
         getNewObjectsCloneToOriginal().put(clone, original);
         getNewObjectsOriginalToClone().put(original, clone);
+        
+        // run prePersist callbacks if any
+        if (descriptor.getEventManager().hasAnyEventListeners()) {
+            DescriptorEvent event = new DescriptorEvent(clone);
+            event.setEventCode(DescriptorEventManager.PrePersistEvent);
+            event.setSession(this);
+            descriptor.getEventManager().executeEvent(event);
+        }  
     }
 
     /**
@@ -4097,9 +4103,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * Register a new object from a nested unit of work into its parent.
      */
-    public void registerOriginalNewObjectFromNestedUnitOfWork(Object originalObject, Object backupClone, Object newInstance) {
+    public void registerOriginalNewObjectFromNestedUnitOfWork(Object originalObject, Object backupClone, Object newInstance, ClassDescriptor descriptor) {
         getCloneMapping().put(originalObject, backupClone);
-        registerNewObjectClone(originalObject, newInstance);
+        registerNewObjectClone(originalObject, newInstance, descriptor);
     }
 
     /**

@@ -130,6 +130,15 @@ public class PersistenceUnitProperties {
      * default value is INFO.
      */
     public static final String LOGGING_LEVEL = "eclipselink.logging.level";
+
+    /**
+     * Category-specific logging level prefix
+     * Property names formed out of this prefix by appending a category name
+     * e.g.) eclipselink.logging.level.sql
+     * Valid categories are defined in SessionLog
+     */
+    public static final String CATEGORY_LOGGING_LEVEL_ = "eclipselink.logging.level.";
+    
     /**
      * By default ("true") the timestamp is always logged.
      * This can be turned off ("false").

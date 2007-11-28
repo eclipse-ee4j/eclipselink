@@ -38,11 +38,13 @@ import javax.persistence.RollbackException;
 import junit.framework.*;
 
 import org.eclipse.persistence.jpa.config.CacheUsage;
+import org.eclipse.persistence.jpa.config.CascadePolicy;
 import org.eclipse.persistence.jpa.config.PessimisticLock;
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.jpa.config.EclipseLinkQueryHints;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -422,7 +424,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             } else {
                 fail("Failed to flush to database");
             }
-        }        
+        }
     }
 
     public void testFlushModeOnUpdateQuery() {
@@ -2302,12 +2304,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // set boolean true
         query.setHint(EclipseLinkQueryHints.REFRESH, true);
         assertTrue("Refresh not set.", olrQuery.shouldRefreshIdentityMapResult());
+        assertTrue("CascadeByMapping not set.", olrQuery.shouldCascadeByMapping()); // check if cascade refresh is enabled 
         // set "false"
         query.setHint(EclipseLinkQueryHints.REFRESH, "false");
         assertFalse("Refresh not set.", olrQuery.shouldRefreshIdentityMapResult());
         // set Boolean.TRUE
         query.setHint(EclipseLinkQueryHints.REFRESH, Boolean.TRUE);
         assertTrue("Refresh not set.", olrQuery.shouldRefreshIdentityMapResult());
+        assertTrue("CascadeByMapping not set.", olrQuery.shouldCascadeByMapping()); // check if cascade refresh is enabled 
         // reset to original state
         query.setHint(EclipseLinkQueryHints.REFRESH, "");
         assertFalse("Refresh not set.", olrQuery.shouldRefreshIdentityMapResult());
@@ -2329,6 +2333,17 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         query.setHint(EclipseLinkQueryHints.JDBC_MAX_ROWS, new Integer(103));
         assertTrue("Max-rows not set.", olrQuery.getMaxRows() == 103); 
+        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.NoCascading);
+        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.NoCascading);
+        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
+        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeByMapping);
+        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.CascadeAllParts);
+        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeAllParts);
+        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.CascadePrivateParts);
+        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadePrivateParts);
+        // reset to the original state
+        query.setHint(EclipseLinkQueryHints.REFRESH_CASCADE, "");
+        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeByMapping);
         
         query.setHint(EclipseLinkQueryHints.RESULT_COLLECTION_TYPE, java.util.ArrayList.class);
         assertTrue("ArrayList not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClassName().equals(java.util.ArrayList.class.getName())); 
@@ -2707,7 +2722,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             sequence.onDisconnect(ss.getPlatform());
             // drop sequence
             String dropStr = def.buildDeletionWriter(ss, new StringWriter()).toString();
-	        beginTransaction(em);
+            beginTransaction(em);
             em.createNativeQuery(dropStr).executeUpdate();
             commitTransaction(em);
         }
@@ -4218,7 +4233,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         beginTransaction(em);
         try {
-        Employee emp = new Employee();
+            Employee emp = new Employee();
             emp.setFirstName("Melvin");
             emp.setLastName("Malone");
             em.persist(emp);
@@ -4242,7 +4257,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         descriptor.getQueryManager().removeQuery("findEmployees");
     }
-    
+
     // GF 2621
     public void testDoubleMerge(){
         EntityManager em = createEntityManager("fieldaccess");

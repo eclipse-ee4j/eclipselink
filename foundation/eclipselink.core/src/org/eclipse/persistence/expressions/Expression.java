@@ -1202,7 +1202,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that compares if the receiver's value is equal to the other value.
      * This is equivalent to the SQL "=" operator and Java "equals" method.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("firstName").equal("Bob")
      *     Java: employee.getFirstName().equals("Bob")
      *     SQL: F_NAME = 'Bob'
@@ -1220,7 +1220,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * is not used elsewhere, both will be translated to the same table.  This can
      * generate SQL with one less join for most exists subqueries.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("manager").equal(employee)
      *     Java: employee.getManager().equals(employee)
      *     SQL (optimized): EMP_ID = MANAGER_ID
@@ -1268,7 +1268,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that compares if the receiver's value is equal to the other value, ignoring case.
      * This is equivalent to the Java "equalsIgnoreCase" method.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("firstName").equalsIgnoreCase("Bob")
      *     Java: employee.getFirstName().equalsIgnoreCase("Bob")
      *     SQL: UPPER(F_NAME) = 'BOB'
@@ -1283,7 +1283,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that compares if the receiver's value is equal to the other value, ignoring case.
      * This is equivalent to the Java "equalsIgnoreCase" method.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("firstName").equalsIgnoreCase("Bob")
      *     Java: employee.getFirstName().equalsIgnoreCase("Bob")
      *     SQL: UPPER(F_NAME) = 'BOB'
@@ -1299,7 +1299,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * A sub query using a report query to define a subselect within another queries expression or select's where clause.
      * The sub query (the report query) will use its own expression builder be can reference expressions from the base expression builder.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * ExpressionBuilder builder = new ExpressionBuilder();
      * ReportQuery subQuery = new ReportQuery(Employee.class, new ExpressionBuilder());
      * subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().get("name").equal(builder.get("name")));
@@ -1369,7 +1369,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that wraps the attribute or query key name.
      * This method is used to construct user-defined queries containing joins.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *  builder.get("address").get("city").equal("Ottawa");
      * </blockquote></pre>
      */
@@ -1391,7 +1391,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * the relationship to be null if there is no correspondingn relationship in the database.
      * Implemented via an outer join in the database.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *  builder.getAllowingNull("address").get("city").equal("Ottawa");
      * </blockquote></pre>
      */
@@ -1495,7 +1495,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * The operator must be defined in ExpressionOperator to be able to reference it.
      * @see ExpressionOperator
      * <p> Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *  builder.get("name").getFunction(MyFunctions.FOO_BAR).greaterThan(100);
      * </blockquote></pre>
      */
@@ -1510,7 +1510,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * The operator must be defined in ExpressionOperator to be able to reference it.
      * @see ExpressionOperator
      * <p> Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *    Vector arguments = new Vector();
      *    arguments.addElement("blee");
      *  builder.get("name").getFunction(MyFunctions.FOO_BAR, arguments).greaterThan(100);
@@ -1526,7 +1526,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return a user defined function accepting the argument.
      * The function is assumed to be a normal prefix function and will print like, UPPER(base).
      * <p> Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *  builder.get("firstName").getFunction("UPPER");
      * </blockquote></pre>
      */
@@ -1646,7 +1646,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is used internally in TopLink, or to construct queries involving
      * fields and/or tables that are not mapped.
      * <p> Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *  builder.getTable("PROJ_EMP").getField("TYPE").equal("S");
      * </blockquote></pre>
      */
@@ -1660,7 +1660,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is used internally in TopLink, or to construct queries involving
      * fields and/or tables that are not mapped.
      * <p> Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *  builder.getTable(linkTable).getField("TYPE").equal("S");
      * </blockquote></pre>
      */
@@ -1892,11 +1892,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function  return the a specific value if item returned from the
      * query is null.  Equivalent of the oracle NVL function
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * TopLink: employee.get("name").ifNull("no-name")
      * Java: NA
      * SQL: NVL(name, 'no-name')
-     * </blockquote></pre> *
+     * </blockquote></pre>
      */
     public Expression ifNull(Object nullValue) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Nvl);
@@ -2043,7 +2043,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that checks if the receivers value is contained in the collection.
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("age").in(agesVector)
      *     Java: agesVector.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
@@ -2052,7 +2052,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression in(Collection theObjects) {
         return in(new CollectionExpression(theObjects, this));
     }
-    
+
     public Expression in(Expression arguments) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.In);
         return anOperator.expressionFor(this, arguments);
@@ -2098,7 +2098,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * being empty.
      * Equivalent to <code>size(attributeName).equal(0)</code>
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.isEmpty("phoneNumbers")
      *     Java: employee.getPhoneNumbers().size() == 0
      *     SQL: SELECT ... FROM EMP t0 WHERE (
@@ -2451,7 +2451,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * The character "%" means any sequence of characters and the character "_" mean any character.
      * i.e. "B%" == "Bob", "B_B" == "BOB"
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("firstName").like("B%")
      *     Java: NA
      *     SQL: F_NAME LIKE 'B%'
@@ -2470,7 +2470,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * The escape sequence specifies a set of characters the may be used to indicate that
      * an one of the wildcard characters should be interpretted literally.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("firstName").like("B\_SMITH", "\")
      *     Java: NA
      *     SQL: F_NAME LIKE 'B\_SMITH ESCAPE '\''
@@ -2491,7 +2491,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * The character "%" means any sequence of characters and the character "_" mean any character.
      * i.e. "B%" == "Bob", "B_B" == "BOB"
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("firstName").like("B%")
      *     Java: NA
      *     SQL: F_NAME LIKE 'B%'
@@ -2511,7 +2511,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * The escape sequence specifies a set of characters the may be used to indicate that
      * an one of the wildcard characters should be interpretted literally.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("firstName").like("B\_SMITH", "\")
      *     Java: NA
      *     SQL: F_NAME LIKE 'B\_SMITH ESCAPE '\''
@@ -2530,7 +2530,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that compares if the receivers value is like the other value, ignoring case.
      * This is a case in-sensitive like.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("firstName").likeIgnoreCase("%Bob%")
      *     Java: none
      *     SQL: UPPER(F_NAME) LIKE '%BOB%'
@@ -2553,7 +2553,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Function, returns the position of <code>str</code> in <code>this</code>
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * TopLink: employee.get("firstName").locate("ob")
      * Java: employee.getFirstName().indexOf("ob") + 1
      * SQL: LOCATE('ob', t0.F_NAME)
@@ -2575,7 +2575,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function, returns the position of <code>str</code> in <code>this</code>,
      * starting the search at <code>fromIndex</code>.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * TopLink: employee.get("firstName").locate("ob", 1)
      * Java: employee.getFirstName().indexOf("ob", 1) + 1
      * SQL: LOCATE('ob', t0.F_NAME, 1)
@@ -2594,7 +2594,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function, returns the position of <code>str</code> in <code>this</code>,
      * starting the search at <code>fromIndex</code>.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * TopLink: employee.get("firstName").locate("ob", 1)
      * Java: employee.getFirstName().indexOf("ob", 1) + 1
      * SQL: LOCATE('ob', t0.F_NAME, 1)
@@ -2641,7 +2641,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * funcation return a date converted to a new timezone. Equivalent of the Oracle NEW_TIME function
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * TopLink: employee.get("date").newTime("EST", "PST")
      * Java: NA
      * SQL: NEW_TIME(date, 'EST', 'PST')
@@ -2673,7 +2673,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * negation of the first:
      * <p>
      * AnyOf Example: Employees with a '613' area code phone number.
-     * <blockquote><pre>
+     * <pre><blockquote>
      * ReadAllQuery query = new ReadAllQuery(Employee.class);
      * ExpressionBuilder employee = new ExpressionBuilder();
      * Expression exp = employee.anyOf("phoneNumbers").get("areaCode").equal("613");
@@ -2698,7 +2698,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * <p>
      * This method saves you from writing the sub query yourself.  The above is
      * equivalent to the following expression:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * ExpressionBuilder employee = new ExpressionBuilder();
      * ExpressionBuilder phone = new ExpressionBuilder();
      * ReportQuery subQuery = new ReportQuery(Phone.class, phone);
@@ -2738,7 +2738,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that is the boolean logical negation of the expression.
      * This is equivalent to the SQL "NOT" operator and the Java "!" operator.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("age").equal(24).not()
      *     Java: (! (employee.getAge() == 24))
      *     SQL: NOT (AGE = 24)
@@ -2844,7 +2844,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * not being empty.
      * Equivalent to <code>size(attributeName).greaterThan(0)</code>
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.notEmpty("phoneNumbers")
      *     Java: employee.getPhoneNumbers().size() > 0
      *     SQL: SELECT ... FROM EMP t0 WHERE (
@@ -2976,7 +2976,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * A sub query using a report query to define a subselect within another queries expression or select's where clause.
      * The sub query (the report query) will use its own expression builder be can reference expressions from the base expression builder.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * ExpressionBuilder builder = new ExpressionBuilder();
      * ReportQuery subQuery = new ReportQuery(Employee.class, new ExpressionBuilder());
      * subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().get("name").equal(builder.get("name")));
@@ -3134,7 +3134,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * The collection can be a collection of constants or expressions.
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("age").in(agesVector)
      *     Java: agesVector.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
@@ -3174,7 +3174,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression representing a comparison to null
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("age").notNull()
      *     Java: employee.getAge() != null
      *     SQL: AGE IS NOT NULL
@@ -3190,7 +3190,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that is the boolean logical combination of both expressions.
      * This is equivalent to the SQL "OR" operator and the Java "||" operator.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("firstName").equal("Bob").OR(employee.get("lastName").equal("Smith"))
      *     Java: (employee.getFirstName().equals("Bob")) || (employee.getLastName().equals("Smith"))
      *     SQL: F_NAME = 'Bob' OR L_NAME = 'Smith'
@@ -3233,7 +3233,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Inserts the SQL as is directly into the expression.
      * The sql will be printed immediately after (postfixed to) the sql for
      * <b>this</b>.
-      * Warning: Allowing an unverified SQL string to be passed into this
+     * Warning: Allowing an unverified SQL string to be passed into this
      * method makes your application vulnerable to SQL injection attacks.
      */
     public Expression postfixSQL(String sqlString) {
@@ -3295,7 +3295,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This expression is built on a different base than the one we want. Rebuild it and
      * return the root of the new tree
      * If receiver is a complex expression, use cloneUsing(newBase) instead.
-     * @see #cloneUsing(Expression)
+     * @see #cloneUsing(Expression newBase)
      */
     public abstract Expression rebuildOn(Expression newBase);
 
@@ -3332,7 +3332,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * return the result of this query repeated a given number of times.
      * Equivalent of the Sybase REPLICATE function
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * TopLink: employee.get("name").replicate(2)
      * Java: NA
      * SQL: REPLICATE(name, 2)
@@ -3347,7 +3347,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * return the result of this query repeated a given number of times.
      * Equivalent of the Sybase REPLICATE function
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * TopLink: employee.get("name").replicate(2)
      * Java: NA
      * SQL: REPLICATE(name, 2)
@@ -3369,7 +3369,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function return the reverse of the query result. Equivalent of the
      * Sybase REVERSE function
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * TopLink: employee.get("name").reverse()
      * Java: NA
      * SQL: REVERSE(name)
@@ -3384,7 +3384,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function return a given number of characters starting at the
      * right of a string. Equivalent to the Sybase RIGHT function
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * TopLink: employee.get("name").right(2)
      * Java: NA
      * SQL: RIGHT(name, 2)
@@ -3399,7 +3399,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function return a given number of characters starting at the
      * right of a string. Equivalent to the Sybase RIGHT function
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * TopLink: employee.get("name").right(2)
      * Java: NA
      * SQL: RIGHT(name, 2)
@@ -3501,7 +3501,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC: A logical expression for the size of collection <code>attributeName</code>.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.size("phoneNumbers")
      *     Java: employee.getPhoneNumbers().size()
      *     SQL: SELECT ... FROM EMP t0 WHERE  ...
@@ -3533,7 +3533,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * A sub query using a report query to define a subselect within another queries expression or select's where clause.
      * The sub query (the report query) will use its own expression builder be can reference expressions from the base expression builder.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * ExpressionBuilder builder = new ExpressionBuilder();
      * ReportQuery subQuery = new ReportQuery(Employee.class, new ExpressionBuilder());
      * subQuery.addMaximum("salary");
@@ -3595,7 +3595,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that represents the receiver value converted to a character string.
      * This is equivalent to the SQL "TO_CHAR" operator and Java "toString" method.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("salary").toChar().equal("100000")
      *     Java: employee.getSalary().toString().equals("100000")
      *     SQL: TO_CHAR(SALARY) = '100000'
@@ -3612,7 +3612,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * with the database formating options (i.e. 'year', 'yyyy', 'day', etc.).
      * This is equivalent to the SQL "TO_CHAR" operator and Java Date API.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("startDate").toChar("day").equal("monday")
      *     Java: employee.getStartDate().getDay().equals("monday")
      *     SQL: TO_CHAR(START_DATE, 'day') = 'monday'
@@ -3629,7 +3629,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "LOWER" operator and Java "toLowerCase" method.
      * This is only allowed for String attribute values.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("firstName").toLowerCase().equal("bob")
      *     Java: employee.getFirstName().toLowerCase().equals("bob")
      *     SQL: LOWER(F_NAME) = 'bob'
@@ -3686,7 +3686,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "UPPER" operator and Java "toUpperCase" method.
      * This is only allowed for String attribute values.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("firstName").toUpperCase().equal("BOB")
      *     Java: employee.getFirstName().toUpperCase().equals("BOB")
      *     SQL: UPPER(F_NAME) = 'BOB'
@@ -3800,7 +3800,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * return the date truncated to the indicated datePart. Equivalent
      * to the Sybase TRUNC function for dates
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * TopLink: employee.get("date").truncDate(year)
      * Java: NA
      * SQL: TRUNC(date, year)
@@ -3870,7 +3870,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * reportQuery.addItem("a constant", builder.value("a constant"));
      * </blockquote></pre>
      */
@@ -3882,7 +3882,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * reportQuery.addItem("a constant", builder.value("a constant"));
      * </blockquote></pre>
      */
@@ -3894,7 +3894,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * reportQuery.addItem("a constant", builder.value("a constant"));
      * </blockquote></pre>
      */
@@ -3906,7 +3906,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * reportQuery.addItem("a constant", builder.value("a constant"));
      * </blockquote></pre>
      */
@@ -3918,7 +3918,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * reportQuery.addItem("a constant", builder.value("a constant"));
      * </blockquote></pre>
      */
@@ -3930,7 +3930,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * reportQuery.addItem("a constant", builder.value("a constant"));
      * </blockquote></pre>
      */
@@ -3942,7 +3942,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * reportQuery.addItem("a constant", builder.value("a constant"));
      * </blockquote></pre>
      */
@@ -3954,7 +3954,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * reportQuery.addItem("a constant", builder.value("a constant"));
      * </blockquote></pre>
      */
@@ -3966,7 +3966,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * reportQuery.addItem("a constant", builder.value("a constant"));
      * </blockquote></pre>
      */
@@ -3980,7 +3980,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * A literal is a specific SQL syntax string that will be printed as is without quotes in the SQL.
      * It can be useful for printing database key words or global variables.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      * reportQuery.addItem("currentTime", builder.literal("SYSDATE"));
      * </blockquote></pre>
      */
@@ -4216,7 +4216,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that checks if the receivers value is contained in the collection.
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("age").in(agesVector)
      *     Java: agesVector.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
@@ -4378,7 +4378,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that checks if the receivers value is contained in the collection.
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("age").in(agesVector)
      *     Java: agesVector.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
@@ -4540,7 +4540,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that checks if the receivers value is contained in the collection.
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
-     * <blockquote><pre>
+     * <pre><blockquote>
      *     TopLink: employee.get("age").in(agesVector)
      *     Java: agesVector.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)

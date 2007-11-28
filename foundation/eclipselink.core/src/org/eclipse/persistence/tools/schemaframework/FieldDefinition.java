@@ -290,7 +290,6 @@ public class FieldDefinition implements Serializable, Cloneable {
         return typeDefinition;
     }
 
-
     /**
      * PUBLIC:
      * Answer whether the receiver is an identity field.
@@ -425,7 +424,7 @@ public class FieldDefinition implements Serializable, Cloneable {
     public void setTypeDefinition(String typeDefinition) {
         this.typeDefinition = typeDefinition;
     }
-    
+
     /**
      * PUBLIC:
      * Set whether the receiver is a unique constraint field.

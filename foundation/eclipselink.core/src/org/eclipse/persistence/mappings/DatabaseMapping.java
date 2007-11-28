@@ -408,7 +408,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Return the name of the attribute set in the mapping. 
      */
     public String getAttributeName() {
-    	// The attribute name on the attributeAccessor will allways override any attribute already set
+    	// The attribute name on the attributeAccessor will always override any attribute already set
     	// Use the attributeAccessor attribute over the current attribute name
         if (attributeName == null) {
             attributeName = getAttributeAccessor().getAttributeName();

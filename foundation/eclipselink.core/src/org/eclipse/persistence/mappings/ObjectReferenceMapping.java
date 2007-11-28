@@ -812,7 +812,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Initialize the state of mapping.
      */
     public void preInitialize(AbstractSession session) throws DescriptorException {
-		super.preInitialize(session);
+        super.preInitialize(session);
 		//Bug#4251902 Make Proxy Indirection writable and readable to deployment xml.  If ProxyIndirectionPolicy does not
 		//have any targetInterfaces, build a new set.
         if ((getIndirectionPolicy() instanceof ProxyIndirectionPolicy) && !((ProxyIndirectionPolicy)getIndirectionPolicy()).hasTargetInterfaces()) {

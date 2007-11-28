@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -44,11 +46,22 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
     protected String fileName;
 
     /**
+     * Represents the Map that stores log levels per the name space strings.
+     * The keys are category names. The values are log levels.
+     */
+    private Map<String, Integer> categoryLogLevelMap = new HashMap();
+
+    /**
      * PUBLIC:
      * Create a new default session log.
      */
     public DefaultSessionLog() {
         super();
+        this.level = INFO;
+        for (int i = 0; i < loggerCatagories.length; i++) {
+            String loggerCategory = loggerCatagories[i]; 
+            categoryLogLevelMap.put(loggerCategory, null);
+        }
     }
 
     /**
@@ -58,6 +71,29 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
     public DefaultSessionLog(Writer writer) {
         this();
         this.initialize(writer);
+    }
+
+    @Override
+    public void setLevel(int level, String category) {
+        if(category == null) {
+            this.level = level;
+        } else if(categoryLogLevelMap.containsKey(category)) {
+            categoryLogLevelMap.put(category, level);
+        }
+    }
+
+    /**
+     * PUBLIC:
+     * <p>
+     * Check if a message of the given level would actually be logged by the logger
+     * with name space built from the given session and category.
+     * </p><p>
+     * @return true if the given message level will be logged for the given category
+     * </p>
+     */
+    @Override
+    public boolean shouldLog(int level, String category) {
+        return (getLevel(category) <= level);
     }
 
     /**
@@ -82,7 +118,7 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
      * This writes the log entries information to a writer such as System.out or a file.
      */
     public void log(SessionLogEntry entry) {
-        if (!shouldLog(entry.getLevel())) {
+        if (!shouldLog(entry.getLevel(), entry.getNameSpace())) {
             return;
         }
 

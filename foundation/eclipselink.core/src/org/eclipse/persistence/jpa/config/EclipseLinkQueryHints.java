@@ -117,5 +117,9 @@ public class EclipseLinkQueryHints {
      * <p>e.g. java.util.ArrayList
      */
     public static final String RESULT_COLLECTION_TYPE = "eclipselink.result-collection-type";
-
+    
+    /**
+     * Valid values are all declared in CascadePolicy class.
+     */
+    public static final String REFRESH_CASCADE = "toplink.refresh.cascade";
 }

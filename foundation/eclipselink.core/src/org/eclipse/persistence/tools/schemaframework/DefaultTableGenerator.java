@@ -792,7 +792,7 @@ public class DefaultTableGenerator {
         UniqueKeyConstraint uniqueKeyConstraint;
         int serialNumber = 0;
         for (String[] uniqueConstraint : uniqueConstraints) {
-            if(uniqueConstraint.length == 0) continue;
+            if(uniqueConstraint == null || uniqueConstraint.length == 0) continue;
             uniqueKeyConstraint = sourceTableDef.buildUniqueKeyConstraint(uniqueConstraint, serialNumber++, databasePlatform);
             sourceTableDef.addUniqueKeyConstraint(uniqueKeyConstraint);
         }

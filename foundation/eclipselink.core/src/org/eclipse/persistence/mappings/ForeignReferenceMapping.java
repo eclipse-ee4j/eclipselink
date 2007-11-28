@@ -217,28 +217,28 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Convert all the class-name-based settings in this mapping to actual class-based
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
-        
+
         // DirectCollection mappings don't require a reference class.
         if (getReferenceClassName() != null) {
-	        Class referenceClass = null;
-	        try{
-	            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-	                try {
-	                    referenceClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getReferenceClassName(), true, classLoader));
-	                } catch (PrivilegedActionException exception) {
-	                    throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
-	                }
-	            } else {
-	                referenceClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getReferenceClassName(), true, classLoader);
-	            } 
-	        } catch (ClassNotFoundException exc){
-	            throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exc);
-	        }
-	        setReferenceClass(referenceClass);
+            Class referenceClass = null;
+            try{
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        referenceClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getReferenceClassName(), true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
+                    }
+                } else {
+                    referenceClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getReferenceClassName(), true, classLoader);
+                }
+            } catch (ClassNotFoundException exc){
+                throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exc);
+            }
+            setReferenceClass(referenceClass);
         }
     }
 

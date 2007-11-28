@@ -26,6 +26,12 @@ public class RelationshipsTableManager extends TableCreator {
         //addTableDefinition(buildCMP3_ORDER_SEQTable());
         addTableDefinition(buildCMP3_SALESPERSONTable());
         addTableDefinition(buildCUSTOMER_CUSTOMERTable());
+        addTableDefinition(buildCMP3_ENTITYATable());
+        addTableDefinition(buildCMP3_ENTITYBTable());
+        addTableDefinition(buildCMP3_ENTITYA_ENTITYBTable());
+        addTableDefinition(buildCMP3_ENTITYCTable());
+        addTableDefinition(buildCMP3_ENTITYDTable());
+        addTableDefinition(buildCMP3_UNIDIR_ENTITYC_ENTITYDTable());
     }
         
     public static TableCreator getCreator(){
@@ -358,6 +364,186 @@ public class RelationshipsTableManager extends TableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_CUSTOMER.CUST_ID");
+        table.addField(field1);
+
+        return table;
+    }
+
+    public static TableDefinition buildCMP3_ENTITYATable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_ENTITYA");        
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+    
+    public static TableDefinition buildCMP3_ENTITYBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_ENTITYB");        
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+    
+    public static TableDefinition buildCMP3_ENTITYA_ENTITYBTable() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("CMP3_ENTITYA_ENTITYB");
+
+        // SECTION: FIELD
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ENTITYA_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("CMP3_ENTITYA.ID");
+        table.addField(field);
+    
+        // SECTION: FIELD
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("ENTITYB_ID");
+        field1.setTypeName("NUMERIC");
+        field1.setSize(15);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(true);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        field1.setForeignKeyFieldName("CMP3_ENTITYB.ID");
+        table.addField(field1);
+
+        return table;
+    }
+    
+    public static TableDefinition buildCMP3_ENTITYCTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_ENTITYC");        
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+    
+    public static TableDefinition buildCMP3_ENTITYDTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_ENTITYD");        
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+    
+    public static TableDefinition buildCMP3_UNIDIR_ENTITYC_ENTITYDTable() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("CMP3_UNIDIR_ENTITYC_ENTITYD");
+
+        // SECTION: FIELD
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ENTITYC_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("CMP3_ENTITYC.ID");
+        table.addField(field);
+    
+        // SECTION: FIELD
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("ENTITYD_ID");
+        field1.setTypeName("NUMERIC");
+        field1.setSize(15);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(true);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        field1.setForeignKeyFieldName("CMP3_ENTITYD.ID");
         table.addField(field1);
 
         return table;

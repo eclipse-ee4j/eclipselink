@@ -1823,17 +1823,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 throw DescriptorException.missingMappingForField(field, getDescriptor());
             }
 
-            // GF#1153 
-            // If this entity is a child entity with JOINED inheritance strategy and Embedded Id,
-            // getting value with the primary key field of child table won't succeed 
-            // for AggregateObjectMapping which only knows fields of root entity's table.
-            // Therefore we use the primary key field of the root entity.
-            if(getDescriptor().isChildDescriptor() && mapping.isAggregateObjectMapping()){
-                DatabaseField primaryKeyField = (DatabaseField) getPrimaryKeyFieldsBySecondaryField().get(field);
-                if(primaryKeyField != null) {
-                    field = primaryKeyField;
-                }
-            }
             return mapping.valueFromObject(domainObject, field, session);
         }
     }
@@ -2015,17 +2004,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     protected Vector<DatabaseMapping> getNonPrimaryKeyMappings() {
         return nonPrimaryKeyMappings;
-    }
-
-    /**
-     * INTERNAL:
-     * Return the secondary key field to primary key field map.
-     */
-    public Map getPrimaryKeyFieldsBySecondaryField() {
-        if(primaryKeyFieldsBySecondaryField == null) {
-            primaryKeyFieldsBySecondaryField = new HashMap();
-        }
-        return primaryKeyFieldsBySecondaryField;
     }
 
     /**
@@ -2222,9 +2200,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
         this.getPrimaryKeyMappings().clear();
         this.getNonPrimaryKeyMappings().clear();
-        if (getDescriptor().hasMultipleTables()) {
-            this.getPrimaryKeyFieldsBySecondaryField().clear();
-        }
 
         // This must be before because the scondary table primary key fields are registered after
         for (Iterator fields = getMappingsByField().keySet().iterator(); fields.hasNext();) {

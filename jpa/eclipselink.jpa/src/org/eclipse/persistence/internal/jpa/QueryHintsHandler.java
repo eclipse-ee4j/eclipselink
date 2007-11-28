@@ -145,6 +145,7 @@ public class QueryHintsHandler {
             addHint(new QueryTypeHint());
             addHint(new PessimisticLockHint());
             addHint(new RefreshHint());
+            addHint(new CascadePolicyHint());
             addHint(new BatchHint());
             addHint(new FetchHint());
             addHint(new ReturnSharedHint());
@@ -311,6 +312,28 @@ public class QueryHintsHandler {
                     newQuery.copyFromQuery(query);
                     return newQuery;
                 }
+            }
+            return query;
+        }
+    }
+
+    protected static class CascadePolicyHint extends Hint {
+        CascadePolicyHint() {
+            super(EclipseLinkQueryHints.REFRESH_CASCADE, CascadePolicy.DEFAULT);
+            valueArray = new Object[][] {
+                {CascadePolicy.NoCascading, DatabaseQuery.NoCascading},
+                {CascadePolicy.CascadePrivateParts, DatabaseQuery.CascadePrivateParts},
+                {CascadePolicy.CascadeAllParts, DatabaseQuery.CascadeAllParts},
+                {CascadePolicy.CascadeByMapping, DatabaseQuery.CascadeByMapping}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query) {
+            // this time cascade policy make sense only for read query with refresh option
+            // However cascade policy is generic property for DatabaseQuery, 
+            // therefore can have a meaning for other types of query in the future. 
+            if (query.isObjectLevelReadQuery()) {
+                query.setCascadePolicy((Integer)valueToApply);
             }
             return query;
         }

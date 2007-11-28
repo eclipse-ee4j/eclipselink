@@ -249,6 +249,7 @@ public class SQLSelectStatement extends SQLStatement {
         boolean firstTable = true;
         boolean requiresEscape = false;//checks if the jdbc closing escape syntax is needed
 
+        OuterJoinExpressionHolders outerJoinExpressionHolders = new OuterJoinExpressionHolders();
         for (int index = 0; index < getOuterJoinExpressions().size(); index++) {
             QueryKeyExpression outerExpression = (QueryKeyExpression)getOuterJoinExpressions().elementAt(index);
 
@@ -282,6 +283,20 @@ public class SQLSelectStatement extends SQLStatement {
                 sourceAlias = exp.aliasForTable(sourceTable);
                 targetAlias = exp.aliasForTable(targetTable);
             }
+
+            outerJoinExpressionHolders.add(
+                new OuterJoinExpressionHolder(outerExpression, index, targetTable, 
+                                              sourceTable, targetAlias, sourceAlias));
+        }
+        
+        for (Iterator i = outerJoinExpressionHolders.linearize().iterator(); i.hasNext();) {
+            OuterJoinExpressionHolder holder = (OuterJoinExpressionHolder)i.next();
+            QueryKeyExpression outerExpression = holder.joinExpression;
+            int index = holder.index;
+            DatabaseTable targetTable = holder.targetTable;
+            DatabaseTable sourceTable = holder.sourceTable;
+            DatabaseTable sourceAlias = holder.sourceAlias;
+            DatabaseTable targetAlias = holder.targetAlias;
 
             if (!outerJoinedAliases.contains(targetAlias)) {
                 if (!outerJoinedAliases.contains(sourceAlias)) {
@@ -341,9 +356,12 @@ public class SQLSelectStatement extends SQLStatement {
                     writer.write(relationAlias.getQualifiedName());
                     
                     Vector tablesInOrder = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
-                    tablesInOrder.add(sourceTable);
-                    tablesInOrder.add(relationTable);
-                    tablesInOrder.add(targetTable);
+                    // glassfish issue 2440: store aliases instead of tables
+                    // in the tablesInOrder. This allows to distinguish source
+                    // and target table in case of an self referencing relationship.
+                    tablesInOrder.add(sourceAlias);
+                    tablesInOrder.add(relationAlias);
+                    tablesInOrder.add(targetAlias);
                     TreeMap indexToExpressionMap = new TreeMap();
                     mapTableIndexToExpression((Expression)getOuterJoinedMappingCriteria().elementAt(index), indexToExpressionMap, tablesInOrder);
                     Expression sourceToRelationJoin = (Expression)indexToExpressionMap.get(new Integer(1));
@@ -1174,7 +1192,7 @@ public class SQLSelectStatement extends SQLStatement {
 
         // Some queries are not on objects but for data, thus no descriptor.
         if (!builder.doesNotRepresentAnObjectInTheQuery()) {
-            if ((descriptor != null)) {
+            if (descriptor != null) {
                 Class queryClass = builder.getQueryClass();
                 // GF 2333 Only change the descriptor class if it is not set, or if this is an inheritance query
                 if ((queryClass == null) || descriptor.isChildDescriptor()) {
@@ -1789,16 +1807,17 @@ public class SQLSelectStatement extends SQLStatement {
      *     Note that tablesInOrder must contain all tables used by expression
      */
     protected static SortedSet mapTableIndexToExpression(Expression expression, SortedMap map, Vector tablesInOrder) {
+        // glassfish issue 2440: 
+        // - Use DataExpression.getAliasedField instead of getField. This
+        // allows to distinguish source and target tables in case of a self
+        // referencing relationship.
+        // - Removed the block handling ParameterExpressions, because it is
+        // not possible to get into that method with a ParameterExpression.
         TreeSet tables = new TreeSet();
         if(expression instanceof DataExpression) {
             DataExpression de = (DataExpression)expression;
-            if(de.getField() != null) {
-                tables.add(new Integer(tablesInOrder.indexOf(de.getField().getTable())));
-            }
-        } else if(expression instanceof ParameterExpression) {
-            ParameterExpression pe = (ParameterExpression)expression;
-            if(pe.getField() != null) {
-                tables.add(new Integer(tablesInOrder.indexOf(pe.getField().getTable())));
+            if(de.getAliasedField() != null) {
+                tables.add(new Integer(tablesInOrder.indexOf(de.getAliasedField().getTable())));
             }
         } else if(expression instanceof CompoundExpression) {
             CompoundExpression ce = (CompoundExpression)expression;
@@ -1849,5 +1868,129 @@ public class SQLSelectStatement extends SQLStatement {
             map.put(tablesInOrder.elementAt(index), entry.getValue());
         }
         return map;
+    }
+
+    // Outer join support methods / classes
+        
+    /**
+     * This class manages outer join expressions. It stores them per source
+     * aliases, resolves nested joins and provides a method retuning a list of
+     * outer join expressions in the correct order for code generation.
+     */
+    static class OuterJoinExpressionHolders {
+        
+        /** 
+         * key: sourceAlias name 
+         * value: list of OuterJoinExpressionHolder instances
+         */
+        Map sourceAlias2HoldersMap = new HashMap();
+
+        /** 
+         * Adds the specified outer join expression holder to the 
+         * internal map. 
+         */ 
+        void add(OuterJoinExpressionHolder holder) {
+            Object key = holder.sourceAlias.getName();
+            List holders = (List)sourceAlias2HoldersMap.get(key);
+            if (holders == null) {
+                holders = new ArrayList();
+                sourceAlias2HoldersMap.put(key, holders);
+            }
+            holders.add(holder);
+        }
+        
+        /** 
+         * Returns a list of OuterJoinExpressionHolder instances in the correct order.
+         */
+        List linearize() {
+            // Handle nested joins:
+            // Iterate the lists of OuterJoinExpressionHolder instances stored as
+            // values in the map. For each OuterJoinExpressionHolder check whether
+            // the target alias has an entry in the map. If so, this is a
+            // nested join. Get the list of OuterJoinExpressionHolder instance from
+            // the map and store it as nested joins in the current
+            // OuterJoinExpressionHolder instance being processed.
+            List remove = new ArrayList();
+            for (Iterator i = sourceAlias2HoldersMap.values().iterator(); 
+                 i.hasNext(); ) {
+                List holders = (List)i.next();
+                for (Iterator j = holders.iterator(); j.hasNext();) {
+                    OuterJoinExpressionHolder holder = (OuterJoinExpressionHolder)j.next();
+                    Object key = holder.targetAlias.getName();
+                    List nested = (List)sourceAlias2HoldersMap.get(key);
+                    if (nested != null) {
+                        remove.add(key);
+                        holder.nested = nested;
+                    }
+                }
+            }
+
+            // Remove the entries from the map that are handled as nested joins.
+            for (Iterator r = remove.iterator(); r.hasNext();) {
+                sourceAlias2HoldersMap.remove(r.next());
+            }
+        
+            // Linearize the map:
+            // Iterate the remaining lists of OuterJoinExpressionHolder instances
+            // stored as values in the map. Add the OuterJoinExpressionHolder to the
+            // result list plus its nested joins in depth first order.
+            List outerJoinExprHolders = new ArrayList();
+            for (Iterator i = sourceAlias2HoldersMap.values().iterator(); 
+                 i.hasNext();) {
+                List holders = (List)i.next();
+                addHolders(outerJoinExprHolders, holders);
+            }
+            
+            return outerJoinExprHolders;
+        }
+
+        /**
+         * Add all elements from the specified holders list to the specified
+         * result list. If a holder has nested join add them to the result
+         * list before processing its sibling (depth first order). 
+         */
+        void addHolders(List result, List holders) {
+            if ((holders == null) || holders.isEmpty()) {
+                // nothing to be done
+                return;
+            }
+            for (Iterator i = holders.iterator(); i.hasNext();) {
+                OuterJoinExpressionHolder holder = (OuterJoinExpressionHolder)i.next();
+                // add current holder
+                result.add(holder);
+                // add nested holders, if any
+                addHolders(result, holder.nested);
+            }
+        }
+    }
+    
+
+    /**
+     * Holder class storing a QueryKeyExpression representing an outer join
+     * plus some data calculated by method appendFromClauseForOuterJoin.
+     */
+    static class OuterJoinExpressionHolder
+    {
+        final QueryKeyExpression joinExpression;
+        final int index;
+        final DatabaseTable targetTable;
+        final DatabaseTable sourceTable;
+        final DatabaseTable targetAlias;
+        final DatabaseTable sourceAlias;
+        List nested;
+        
+        public OuterJoinExpressionHolder(QueryKeyExpression joinExpression, 
+                                         int index,
+                                         DatabaseTable targetTable, 
+                                         DatabaseTable sourceTable,
+                                         DatabaseTable targetAlias, 
+                                         DatabaseTable sourceAlias) {
+            this.joinExpression = joinExpression;
+            this.index = index;
+            this.targetTable = targetTable;
+            this.sourceTable = sourceTable;
+            this.targetAlias = targetAlias;
+            this.sourceAlias = sourceAlias;
+        }
     }
 }

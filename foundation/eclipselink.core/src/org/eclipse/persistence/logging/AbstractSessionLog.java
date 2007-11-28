@@ -213,8 +213,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * PUBLIC:
      * <p>
-     * Return the log level.  Category is only needed in JavaLog
-     * to extract name space for the Logger which the log level belongs to.
+     * Return the log level for the category name space.
      * </p><p>
      *
      * @return the log level
@@ -242,8 +241,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * PUBLIC:
      * <p>
-     * Set the log level.  Category is only needed in JavaLog
-     * to extract name space for the Logger which the log level belongs to.
+     * Set the log level for the category name space.
      * </p><p>
      *
      * @param level     the new log level
@@ -273,9 +271,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * PUBLIC:
      * <p>
-     * Check if a message of the given level would actually be logged.  Category
-     * is only needed in JavaLog to extract name space for the Logger which the log
-     * level belongs to.  !isOff() is checked to screen out the possibility when both
+     * Check if a message of the given level would actually be logged for the category name space.
+     * !isOff() is checked to screen out the possibility when both
      * log level and log request level are set to OFF.
      * </p><p>
      *

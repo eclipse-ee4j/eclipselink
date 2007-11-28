@@ -132,6 +132,10 @@ public class JavaLog extends AbstractSessionLog {
      */
     public void setLevel(final int level, String category) {
         final Logger logger = getLogger(category);
+        if (logger == null) {
+            return;
+        }
+        
         AccessController.doPrivileged(new PrivilegedAction() {
             public Object run() {
                 logger.setLevel(getJavaLevel(level));

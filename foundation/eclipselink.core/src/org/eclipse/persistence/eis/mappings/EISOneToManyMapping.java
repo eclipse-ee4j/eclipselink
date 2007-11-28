@@ -454,6 +454,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * INTERNAL:
      * Delete the reference objects.
      */
+    @Override
     public void postDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (!isForeignKeyRelationship()) {
             return;

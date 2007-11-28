@@ -271,7 +271,7 @@ public class ExpressionBuilder extends ObjectExpression {
                 }
             }
 
-            if(isUsingOuterJoinForMultitableInheritance() && getSession().getPlatform().shouldPrintOuterJoinInWhereClause()) {
+            if (isUsingOuterJoinForMultitableInheritance() && getSession().getPlatform().shouldPrintOuterJoinInWhereClause()) {
                 Expression childrenCriteria = getDescriptor().getInheritancePolicy().getChildrenJoinExpression();
                 childrenCriteria = this.twist(childrenCriteria, this);
                 childrenCriteria.convertToUseOuterJoin();

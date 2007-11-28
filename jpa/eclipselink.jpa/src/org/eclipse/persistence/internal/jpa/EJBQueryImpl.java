@@ -414,6 +414,10 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
             if (!(getDatabaseQuery() instanceof ModifyQuery)){
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_execute_update"));
             }
+            
+            // need to throw TransactionRequiredException if there is no active transaction
+            entityManager.checkForTransaction(true);
+            
             //fix for bug:4288845, did not add the parameters to the query
             Vector parameterValues = processParameters();
             if(isFlushModeAUTO()) {

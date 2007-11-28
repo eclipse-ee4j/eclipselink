@@ -178,7 +178,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * Add the descriptor to the session.
      * All persistent classes must have a descriptor registered for them with the session.
      * It is best to add the descriptors before login, if added after login the order in which
-     * descriptors are added is dependant on inheritice and references unless the addDescriptors
+     * descriptors are added is dependant on inheritance and references unless the addDescriptors
      * method is used.
      *
      * @see #addDescriptors(Vector)

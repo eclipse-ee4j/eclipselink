@@ -346,7 +346,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                 // backup
                 getCloneMapping().put(newObject, backupAndOriginal[0]);
                 // original
-                registerNewObjectClone(newObject, backupAndOriginal[1]);
+                registerNewObjectClone(newObject, backupAndOriginal[1], descriptor);
 
                 // Check if the new objects should be cached.
                 registerNewObjectInIdentityMap(newObject, newObject);

@@ -97,6 +97,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLValidationTestSuite("illegalArgumentExceptionTest"));
         suite.addTest(new JUnitJPQLValidationTestSuite("createNamedQueryThrowsIllegalArgumentExceptionTest"));
         suite.addTest(new JUnitJPQLValidationTestSuite("flushTxExceptionTest"));
+        suite.addTest(new JUnitJPQLValidationTestSuite("testExecuteUpdateTxException"));
         suite.addTest(new JUnitJPQLValidationTestSuite("noResultExceptionTest"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testGetSingleResultOnUpdate"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testGetSingleResultOnDelete"));
@@ -959,6 +960,33 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
     }
     
+    public void testExecuteUpdateTxException()
+    {
+        boolean testPass=false;
+        String ejbqlString = "DELETE FROM Employee e WHERE e.lastName=\"doesNotExist\"";
+        
+        EntityManager em = createEntityManager();
+        try 
+        {
+            Object result = em.createQuery(ejbqlString).executeUpdate();
+            
+            //rollback for clean-up if above call does not fail, otherwise this may affect other tests
+            if(!em.getTransaction().isActive()){
+                em.getTransaction().begin();
+            }
+            em.getTransaction().rollback();
+        }
+        catch (TransactionRequiredException e)
+        {                   
+            testPass = true;
+        }
+        finally
+        {
+            em.close();
+        }
+        Assert.assertTrue("TransactionRequiredException is expected", testPass);
+    }
+
     public void createNamedQueryThrowsIllegalArgumentExceptionTest() 
     {
         try 

@@ -228,7 +228,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
 
             // Expression may not have been initialized.
             objectExpression.getBuilder().setSession(session.getRootSession(null));
-            objectExpression.getBuilder().setQueryClass(getDescriptor().getJavaClass());            
+            if (objectExpression.getBuilder().getQueryClass() == null){
+                objectExpression.getBuilder().setQueryClass(descriptor.getJavaClass());
+            }
             
             // PERF: Cache join attribute names.
             ObjectExpression baseExpression = objectExpression;
@@ -739,8 +741,10 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
 
                 // Expression may not have been initialized.
                 joinedAttribute.getBuilder().setSession(session.getRootSession(null));
-                joinedAttribute.getBuilder().setQueryClass(getDescriptor().getJavaClass());
-
+                if (joinedAttribute.getBuilder().getQueryClass() == null){
+                    joinedAttribute.getBuilder().setQueryClass(descriptor.getJavaClass());
+                }
+                
                 ClassDescriptor nestedDescriptor = joinedAttribute.getDescriptor();
 
                 // expression may not be valid, no descriptor, validation occurs later.

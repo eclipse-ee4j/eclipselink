@@ -667,7 +667,7 @@ public class MergeManager {
             // Can use a new instance as backup and original.
             Object backupClone = objectBuilder.buildNewInstance();
             Object newInstance = objectBuilder.buildNewInstance();
-            ((UnitOfWorkImpl)parent).registerOriginalNewObjectFromNestedUnitOfWork(original, backupClone, newInstance);
+            ((UnitOfWorkImpl)parent).registerOriginalNewObjectFromNestedUnitOfWork(original, backupClone, newInstance, descriptor);
         }
 
         if (!unitOfWork.isNestedUnitOfWork()) {
@@ -724,7 +724,7 @@ public class MergeManager {
             // Can use a new instance as backup and original.
             Object backupClone = descriptor.getObjectBuilder().buildNewInstance();
             Object newInstance = descriptor.getObjectBuilder().buildNewInstance();
-            ((UnitOfWorkImpl)unitOfWork.getParent()).registerOriginalNewObjectFromNestedUnitOfWork(original, backupClone, newInstance);
+            ((UnitOfWorkImpl)unitOfWork.getParent()).registerOriginalNewObjectFromNestedUnitOfWork(original, backupClone, newInstance, descriptor);
         }
 
         Vector primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, unitOfWork);

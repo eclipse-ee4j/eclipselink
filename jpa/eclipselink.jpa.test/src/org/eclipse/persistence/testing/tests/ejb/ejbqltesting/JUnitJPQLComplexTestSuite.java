@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -26,6 +27,7 @@ import junit.framework.TestSuite;
 
 import javax.persistence.Query;
 
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 
@@ -38,6 +40,8 @@ import org.eclipse.persistence.queries.ReportQuery;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Man;
+import org.eclipse.persistence.testing.models.jpa.advanced.PartnerLinkPopulator;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
@@ -109,7 +113,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexUnusedVariableTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexJoinTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexMultipleJoinOfSameRelationship"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexMultipleLeftOuterJoinOfSameRelationship"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexFetchJoinTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexOneToOneFetchJoinTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexSelectRelationshipTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexConstructorVariableTest"));
@@ -125,6 +131,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNavigatingEmbedded"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNavigatingTwoLevelOfEmbeddeds"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNamedQueryResultPropertiesTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexOuterJoinQuery"));
 	/* Removed because this functionality requires implementation in ReportQuery
         suite.addTest(new JUnitJPQLComplexTestSuite("complexInheritanceTest"));
 	
@@ -148,6 +155,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 
                 //create a new EmployeePopulator
                 EmployeePopulator employeePopulator = new EmployeePopulator();
+
+                //create a new PartnerLinkPopulator
+                PartnerLinkPopulator partnerLinkPopulator = new PartnerLinkPopulator();
                 
                 new AdvancedTableCreator().replaceTables(session);
                 
@@ -162,6 +172,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 
                 //Persist the examples in the database
                 employeePopulator.persistExample(session);       
+
+                //Populate the tables
+                partnerLinkPopulator.buildExamples();
+                
+                //Persist the examples in the database
+                partnerLinkPopulator.persistExample(session);       
             }            
         };    
   }
@@ -169,7 +185,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexABSTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
          
         Employee emp1 = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
 	    Employee emp2 = (Employee)em.getActiveSession().readAllObjects(Employee.class).lastElement();
@@ -193,7 +209,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexABSWithParameterTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
 
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
         clearCache();
@@ -213,7 +229,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void compexInTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
          
         Employee emp1 = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
 	    Employee emp2 = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(1);
@@ -246,7 +262,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexLengthTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();          
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();          
         
         Assert.assertFalse("Warning SQL doesnot support LENGTH function",  ((Session) JUnitTestCase.getServerSession()).getPlatform().isSQLServer());
         
@@ -266,7 +282,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexLikeTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();          
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();          
         
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
         
@@ -293,7 +309,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexNotInTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
          
         Employee emp1 = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
         Employee emp2 = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(1);
@@ -329,7 +345,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexNotLikeTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
         
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
         
@@ -358,7 +374,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexParameterTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
         
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
                 
@@ -398,7 +414,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexReverseAbsTest()
     {
-       org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+       JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
          
         Employee emp1 = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
 	    Employee emp2 = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(1);
@@ -423,7 +439,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void complexReverseLengthTest()
     {
         
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();          
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();          
         
         Assert.assertFalse("Warning SQL doesnot support LENGTH function",  ((Session) JUnitTestCase.getServerSession()).getPlatform().isSQLServer());
         
@@ -444,7 +460,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexReverseParameterTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();          
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();          
         
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
         
@@ -485,7 +501,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexReverseSqrtTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
          
         ReadAllQuery raq = new ReadAllQuery();
         ExpressionBuilder expbldr = new ExpressionBuilder();
@@ -519,7 +535,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexSqrtTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
          
         ReadAllQuery raq = new ReadAllQuery();
         ExpressionBuilder expbldr = new ExpressionBuilder();
@@ -552,7 +568,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexStringInTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
          
         Employee emp1 = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
 	    Employee emp2 = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(1);
@@ -586,7 +602,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexStringNotInTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
          
         Employee emp1 = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
 	    Employee emp2 = (Employee)em.getActiveSession().readAllObjects(Employee.class).elementAt(1);
@@ -624,7 +640,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexSubstringTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
          
         Employee expectedResult = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
         
@@ -649,7 +665,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexLocateTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
         String jpql = "SELECT e FROM Employee e WHERE e.firstName = 'Emanual' AND e.lastName = 'Smith'";
         Employee expectedResult = (Employee)em.createQuery(jpql).getSingleResult();
 
@@ -664,7 +680,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexNestedOneToManyUsingInClause()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
          
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
         
@@ -693,7 +709,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexUnusedVariableTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
          
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
         ReportQuery reportQuery = new ReportQuery();
@@ -717,7 +733,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexJoinTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
         Collection emps = em.getActiveSession().readAllObjects(Employee.class);
         Employee empWithManager = null;
         Employee empWithOutManager = null;
@@ -767,9 +783,22 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
      */
     public void complexMultipleJoinOfSameRelationship()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = 
-            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
         String jpql = "SELECT p1, p2 FROM Employee emp JOIN emp.phoneNumbers p1 JOIN emp.phoneNumbers p2 " +
+                      "WHERE p1.type = 'Pager' AND p2.areaCode = '613'";
+        Query query = em.createQuery(jpql);
+        Object[] result = (Object[]) query.getSingleResult();
+        Assert.assertTrue("Complex multiple JOIN of same relationship test failed", 
+                          (result[0] != result[1]));
+    }
+    
+    /**
+     * glassfish issue 3580
+     */
+    public void complexMultipleLeftOuterJoinOfSameRelationship()
+    {
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
+        String jpql = "SELECT p1, p2 FROM Employee emp LEFT JOIN emp.phoneNumbers p1 LEFT JOIN emp.phoneNumbers p2 " +
                       "WHERE p1.type = 'Pager' AND p2.areaCode = '613'";
         Query query = em.createQuery(jpql);
         Object[] result = (Object[]) query.getSingleResult();
@@ -779,7 +808,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexFetchJoinTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
          
         Employee emp = (Employee)em.getServerSession().readAllObjects(Employee.class).firstElement();
         ReportQuery reportQuery = new ReportQuery();
@@ -801,10 +830,38 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Assert.assertTrue("Complex Fetch Join test failed", comparer.compareObjects(result, expectedResult));              
             
     }
-    
+
+    /**
+     * Testing glassfish issue 2881
+     */    
+    public void complexOneToOneFetchJoinTest()
+    {
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
+        
+        List<Man> allMen = em.getServerSession().readAllObjects(Man.class);
+        List<Integer> allMenIds = new ArrayList(allMen.size());
+        for (Man man : allMen) {
+            allMenIds.add((man != null) ? man.getId() : null);
+        }
+        Collections.sort(allMenIds);
+        clearCache();
+        
+    	String ejbqlString = "SELECT m FROM Man m LEFT JOIN FETCH m.partnerLink";
+        List<Man> result = (List) em.createQuery(ejbqlString).getResultList();
+        List<Integer> ids = new ArrayList(result.size());
+        for (Man man : result) {
+            ids.add((man != null) ? man.getId() : null);
+        }
+        Collections.sort(ids);
+
+        // compare ids, because comparer does not know class Man
+        Assert.assertEquals("Complex OneToOne Fetch Join test failed", 
+                            allMenIds, ids);
+    }
+
     public void complexSelectRelationshipTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager(); 
+        JpaEntityManager em = (JpaEntityManager) createEntityManager(); 
         
         Collection emps = em.getActiveSession().readAllObjects(Employee.class);
         Employee empWithManager = null;
@@ -846,7 +903,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexConstructorTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager(); 
+        JpaEntityManager em = (JpaEntityManager) createEntityManager(); 
         
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
 
@@ -862,7 +919,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexConstructorVariableTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager(); 
+        JpaEntityManager em = (JpaEntityManager) createEntityManager(); 
         
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
 
@@ -878,7 +935,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexConstructorRelationshipTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager(); 
+        JpaEntityManager em = (JpaEntityManager) createEntityManager(); 
         
         Collection emps = em.getActiveSession().readAllObjects(Employee.class);
         Employee empWithManager = null;
@@ -926,7 +983,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexConstructorAggregatesTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager(); 
+        JpaEntityManager em = (JpaEntityManager) createEntityManager(); 
 
         Collection emps = em.getActiveSession().readAllObjects(Employee.class);
         Employee emp = null;
@@ -964,8 +1021,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexConstructorCountOnJoinedVariableTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = 
-            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager(); 
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
 
         // find all employees with managed employees
         Collection emps = em.getActiveSession().readAllObjects(Employee.class);
@@ -991,7 +1047,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexResultPropertiesTest() 
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
 
         String ejbql = "SELECT e FROM Employee e ORDER BY e.id";
         Query query = em.createQuery(ejbql);
@@ -1030,7 +1086,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void complexNamedQueryResultPropertiesTest() 
     {
         //This new added test case is for glassFish bug 2689 
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
         
         Query query = em.createNamedQuery("findAllEmployeesOrderById");
         List allEmps = query.getResultList();
@@ -1084,7 +1140,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexInSubqueryTest() 
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
 
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.dontMaintainCache();
@@ -1102,7 +1158,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexExistsTest() 
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
         
         Collection allEmps = em.getActiveSession().readAllObjects(Employee.class);
         List expectedResult = new ArrayList();
@@ -1124,7 +1180,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexNotExistsTest() 
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
         
         Collection allEmps = em.getActiveSession().readAllObjects(Employee.class);
         List expectedResult = new ArrayList();
@@ -1146,8 +1202,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexMemberOfTest() 
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = 
-            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
         
         Collection allEmps = em.getActiveSession().readAllObjects(Employee.class);
 
@@ -1177,8 +1232,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexNotMemberOfTest() 
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = 
-            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
         
         Collection allEmps = em.getActiveSession().readAllObjects(Employee.class);
         List expectedResult = new ArrayList();
@@ -1190,7 +1244,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void complexInheritanceTest()
     {
     
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
         
         ((AbstractSession) em.getActiveSession()).addAlias("ProjectBaseClass", getServerSession().getDescriptor(Project.class));
         
@@ -1216,7 +1270,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     
     public void complexInheritanceUsingNamedQueryTest()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();                  
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();                  
         
         Project expectedResult = (Project)em.getActiveSession().readAllObjects(Project.class).firstElement();
 	    
@@ -1258,8 +1312,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexNavigatingEmbedded ()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = 
-            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager(); 
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
     	String jpqlString = "SELECT e.formerEmployment.formerCompany FROM Employee e WHERE e.formerEmployment.formerCompany = 'Former company'";
         Query query = em.createQuery(jpqlString);
         List result = query.getResultList();
@@ -1271,8 +1324,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     public void complexNavigatingTwoLevelOfEmbeddeds ()
     {
-        org.eclipse.persistence.jpa.JpaEntityManager em = 
-            (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager(); 
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
     	String jpqlString = "SELECT emp.formerEmployment.period.startDate FROM Employee emp";
         Query query = em.createQuery(jpqlString);
         List result = query.getResultList();
@@ -1281,7 +1333,75 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         cal.set(1990, 1, 1, 0, 0, 0);
         cal.set(Calendar.MILLISECOND, 0);
         Date expected = new Date(cal.getTime().getTime());
-        Assert.assertTrue("Complex navigation of two level of embeededs in the select clause failed", result.contains(expected));
+        Assert.assertTrue("Complex navigation of two level of embeddeds in the select clause failed", result.contains(expected));
+    }
+
+    /**
+     * Test glassfish issue 3041.
+     */
+    public void complexOuterJoinQuery()
+    {
+        JpaEntityManager em = (JpaEntityManager) createEntityManager();
+
+        // JPQL query using one INNER JOIN and three OUTER JOINs
+
+        String jpql = 
+            "SELECT t3.firstName, t2.number, t4.firstName, t1.name " + 
+            "FROM Employee t0 " +
+            "INNER JOIN t0.projects t1 " +
+            "LEFT OUTER JOIN t0.phoneNumbers t2 " + 
+            "LEFT OUTER JOIN t1.teamLeader t3 " + 
+            "LEFT OUTER JOIN t1.teamMembers t4 " + 
+            "WHERE t0.firstName = 'Nancy' AND t0.lastName = 'White' " + 
+            "ORDER BY t4.firstName ASC ";
+        Query q = em.createQuery(jpql);
+        List<Object[]> result = q.getResultList();
+        
+        // check expected result
+        // {[null, "5551234", "Marcus", "Swirly Dirly"],
+        //  [null, "5551234", "Nancy", "Swirly Dirly"]}
+        Assert.assertEquals("Complex outer join query (1): unexpected result size", 2, result.size());
+        Object[] result0 = result.get(0);
+        Assert.assertNull  ("Complex outer join query (1): unexpected result value (0, 0):", result0[0]);
+        Assert.assertEquals("Complex outer join query (1): unexpected result value (0, 1):", result0[1], "5551234");
+        Assert.assertEquals("Complex outer join query (1): unexpected result value (0, 2):", result0[2], "Marcus");
+        Assert.assertEquals("Complex outer join query (1): unexpected result value (0, 3):", result0[3], "Swirly Dirly");
+        Object[] result1 = result.get(1);
+        Assert.assertNull  ("Complex outer join query (1): unexpected result value (1, 0):", result1[0]);
+        Assert.assertEquals("Complex outer join query (1): unexpected result value (1, 1):", result1[1], "5551234");
+        Assert.assertEquals("Complex outer join query (1): unexpected result value (1, 2):", result1[2], "Nancy");
+        Assert.assertEquals("Complex outer join query (1): unexpected result value (1, 3):", result1[3], "Swirly Dirly");
+
+
+        // JPQL query using only OUTER JOINs
+
+        jpql = 
+            "SELECT t3.firstName, t2.number, t4.firstName, t1.name " + 
+            "FROM Employee t0 " +
+            "LEFT OUTER JOIN t0.projects t1 " +
+            "LEFT OUTER JOIN t0.phoneNumbers t2 " + 
+            "LEFT OUTER JOIN t1.teamLeader t3 " + 
+            "LEFT OUTER JOIN t1.teamMembers t4 " +
+            "WHERE t0.firstName = 'Jill' AND t0.lastName = 'May' " +
+            "ORDER BY t2.number ASC ";
+        q = em.createQuery(jpql);
+        result = q.getResultList();
+
+        // check expected result
+        // {[null, 2255943, null, null]
+        //  [null, 2258812, null, null]}
+        Assert.assertEquals("Complex outer join query (2): unexpected result size", 2, result.size());
+        result0 = result.get(0);
+        Assert.assertNull  ("Complex outer join query (2): unexpected result value (0, 0):", result0[0]);
+        Assert.assertEquals("Complex outer join query (2): unexpected result value (0, 1):", result0[1], "2255943");
+        Assert.assertNull  ("Complex outer join query (2): unexpected result value (0, 2):", result0[2]);
+        Assert.assertNull  ("Complex outer join query (2): unexpected result value (0, 3):", result0[3]);
+        result1 = result.get(1);
+        Assert.assertNull  ("Complex outer join query (2): unexpected result value (1, 0):", result1[0]);
+        Assert.assertEquals("Complex outer join query (2): unexpected result value (1, 1):", result1[1], "2258812");
+        Assert.assertNull  ("Complex outer join query (2): unexpected result value (1, 2):", result1[2]);
+        Assert.assertNull  ("Complex outer join query (2): unexpected result value (1, 3):", result1[3]);
+                
     }
 
     // Helper methods and classes for constructor query test cases

@@ -18,8 +18,9 @@ import static javax.persistence.FetchType.*;
 @Entity
 public class Man {
     private int id;
+    private String firstName;
+    private String lastName;
     private PartnerLink partnerLink;
-    private String name;
 
 	public Man() {}
     
@@ -28,10 +29,24 @@ public class Man {
 	public int getId() { 
         return id; 
     }
+
+    @Column(name="F_NAME")
+    public String getFirstName() { 
+        return firstName; 
+    }
     
-	public String getName(){
-		return name;
-	}
+    public void setFirstName(String name) { 
+        this.firstName = name; 
+    }
+
+    @Column(name="L_NAME")
+    public String getLastName() { 
+        return lastName; 
+    }
+    
+    public void setLastName(String name) { 
+        this.lastName = name; 
+    }
     
     @OneToOne(mappedBy="man")
 	public PartnerLink getPartnerLink() { 
@@ -42,10 +57,6 @@ public class Man {
         this.id = id; 
     }
     
-	public void setName(String name){
-		this.name = name;
-	}
-	
     public void setPartnerLink(PartnerLink partnerLink) { 
         this.partnerLink = partnerLink; 
     }

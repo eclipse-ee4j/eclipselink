@@ -195,7 +195,7 @@ public class InterfacePolicy implements Serializable {
             Class javaClass = descriptor.getJavaClass();
             concreteQuery.setReferenceClass(javaClass);
             concreteQuery.setDescriptor(descriptor);
-            object = query.getSession().executeQuery(concreteQuery);
+            object = query.getSession().executeQuery(concreteQuery, concreteQuery.getTranslationRow());
         }
 
         return object;
