@@ -64,7 +64,7 @@
             <arg value="pfile=${core.test.properties}" />
             <arg value="testmodel=org.eclipse.persistence.testing.tests.TestRunModel" />
             <arg value="regressionlog=${core.test.regression.log}" />
-            <arg value="sessionLog=${core.test.session.log}" />
+
             <classpath>
                 <pathelement path="."/>
                 <pathelement path="${eclipselink.core.test}/${classes.dir}"/>
