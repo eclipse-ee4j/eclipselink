@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="my.uri2" xmlns="my.uri2" elementFormDefault="qualified" sdoJava:package="defaultPackage" xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="addressURI">
+<xsd:schema targetNamespace="my.uri2" xmlns="my.uri2" elementFormDefault="qualified" sdoJava:package="uri2.my" xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="addressURI">
    <xsd:import namespace="commonj.sdo"/>
    <xsd:import schemaLocation="ImportBug6311853Address.xsd" namespace="addressURI"/>
    <xsd:import namespace="commonj.sdo/java"/>
