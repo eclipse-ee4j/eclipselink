@@ -19,6 +19,7 @@ import javax.xml.transform.Source;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
+import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.schema.model.Annotation;
@@ -975,18 +976,21 @@ public class SDOTypesGenerator extends SchemaParser {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Initialize this SchemaParser by configuring the package name based on the targetNamespace.
+     */
     public void initialize() {
-        if (packageName == null) {
+        if (null == packageName) {
             String packageValue = (String)rootSchema.getAttributesMap().get(SDOConstants.SDOJAVA_PACKAGE_QNAME);
-            if (packageValue != null) {
-                packageName = packageValue + SDOConstants.JAVA_PACKAGE_NAME_SEPARATOR;
-            } else if ((rootSchema.getTargetNamespace() == null) || rootSchema.getTargetNamespace().equals("")) {
-                packageName = SDOConstants.JAVA_TYPEGENERATION_NO_NAMESPACE +//
-                              SDOConstants.JAVA_PACKAGE_NAME_SEPARATOR;
+            if (null != packageValue) {
+                packageName = packageValue;
+            } else if ((null == rootSchema.getTargetNamespace()) || rootSchema.getTargetNamespace().equals(SDOConstants.EMPTY_STRING)) {
+                packageName = SDOConstants.JAVA_TYPEGENERATION_NO_NAMESPACE;
             } else {
-                packageName = SDOConstants.JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME +//
-                              SDOConstants.JAVA_PACKAGE_NAME_SEPARATOR;
+            	packageName = SDOUtil.getPackageNameFromURI(rootSchema.getTargetNamespace());            	
             }
+            packageName += SDOConstants.JAVA_PACKAGE_NAME_SEPARATOR;
         }
     }
 

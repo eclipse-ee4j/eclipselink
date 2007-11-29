@@ -234,7 +234,7 @@ public class SDOConstants {
     public static final SDOProperty XMLELEMENT_PROPERTY = new SDOProperty(globalHelperContext, XMLELEMENT_PROPERTY_NAME);
     
     /** Strings and QNames for annotations defined in the commonj.sdo/XML namespace*/
-    public static final String SDOJAVA_PACKAGE = "package";
+    private static final String SDOJAVA_PACKAGE = "package";
     public static final String SDOJAVA_INSTANCECLASS = "instanceClass";
     public static final String SDOJAVA_EXTENDEDINSTANCECLASS = "extendedInstanceClass";
     public static final String SDOJAVA_NESTEDINTERFACES = "nestedInterfaces";

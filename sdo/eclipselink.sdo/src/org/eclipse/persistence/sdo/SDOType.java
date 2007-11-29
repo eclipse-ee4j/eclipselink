@@ -773,8 +773,12 @@ public class SDOType implements Type, Serializable {
         String instanceClassName = getInstanceClassName();
         if (null == instanceClassName) {
             if (null == packageName) {
-                packageName = SDOConstants.JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME +//
-                              SDOConstants.JAVA_PACKAGE_NAME_SEPARATOR;
+            	String uri = getURI();
+            	if(null == uri) {
+            		packageName = SDOUtil.getDefaultPackageName() + SDOConstants.JAVA_PACKAGE_NAME_SEPARATOR;
+            	} else {
+            		packageName = SDOUtil.getPackageNameFromURI(uri) + SDOConstants.JAVA_PACKAGE_NAME_SEPARATOR;
+            	}
             }
 
             // Verify and fix any Class name that does not conform to conventions
@@ -788,7 +792,8 @@ public class SDOType implements Type, Serializable {
             setInstanceClassName(fullClassName.toString());
         }
         AbstractSessionLog.getLog().log(AbstractSessionLog.FINER,//
-                                        "sdo_type_generation_processing_type", new Object[] { Helper.getShortClassName(getClass()), getInstanceClassName() });
+                                        "sdo_type_generation_processing_type", //
+                                        new Object[] { Helper.getShortClassName(getClass()), getInstanceClassName() });
 
         buildXmlDescriptor(namespaceResolvers).setJavaClassName(getImplClassName());
         // load classes by classloader by getting the current instance class

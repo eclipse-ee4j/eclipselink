@@ -9,7 +9,10 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.sdo.helper.extension;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -19,10 +22,17 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
  * <p><b>Responsibilities</b>:
  * <ul>
  * <li> JAXB 1.0 Name Mangling algorithm functions are provided to support generation of valid class/method names..
+ * <li> JSR-222 JAXB 2.0 Java Package Name generation algorithm function follows https://jaxb.dev.java.net/spec-download.html
+ * in section D.5.1 "Mapping from a Namespace URI"
  * </ul>
  */
 public class SDOUtil {
 
+    /** Valid hexadecimal digits */
+	private static final String HEXADECIMAL_DIGITS = "0123456789abcdefABCDEF";
+	/** Warning string to signify that the input to the package generator may not be a valid URI */
+	private static final String INVALID_URI_WARNING = "SDOUtil: The URI [{0}] used for java package name generation is invalid - generating [{1}].";
+	
 	/**
 	 * INTERNAL: 
 	 * Search Java reserved name arrays and report (but don't fix) any naming collisions
@@ -56,12 +66,283 @@ public class SDOUtil {
     }
     
 
-	/*
-     * The following JAXB 1.0 functions are originally from the XDK XMLUtil.java class. 
-     * Used here instead of creating a direct dependency.
-     */
     /** allow _ underscores in class/function names */
     private static boolean asWordSeparator = false;
+
+	/**
+	 * INTERNAL:
+	 * Get default package name when no targetNamespace URI exists.<br>
+	 * This function follows the JSR-222 JAXB 2.0 algorithm from https://jaxb.dev.java.net/spec-download.html<br>
+	 * @return default Java package name String
+	 */
+	public static String getDefaultPackageName() {
+		return getPackageNameFromURI(SDOConstants.EMPTY_STRING);
+	}
+	
+	/**
+	 * INTERNAL:
+	 * Get default package name from a namespace URI.<br>
+	 * This function follows the JSR-222 JAXB 2.0 algorithm from https://jaxb.dev.java.net/spec-download.html.<br>
+	 * @param uriString - a namespace URL or URN
+	 * @return Java package name String
+	 * @exclude
+	 */
+	public static String getPackageNameFromURI(String uriString) {
+		String strToken;
+		String prefix;
+		int position = 0;
+		StringBuffer pkgName = new StringBuffer();
+		if (null == uriString || uriString.equals(SDOConstants.EMPTY_STRING)) {
+            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, INVALID_URI_WARNING,//
+                    new Object[] { uriString, SDOConstants.JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME }, false);
+			return SDOConstants.JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME;
+		}
+
+		/**
+		 * Step 1: (Remove the schema and ":" part)
+		 * An XML namespace is represented by a URI. Since XML Namespace will be
+		 * 	mapped to a Java package, it is necessary to specify a default mapping from a
+		 * 	URI to a Java package name. The URI format is described in [RFC2396].
+		 * 	The following steps describe how to map a URI to a Java package name. The
+		 * 	example URI, http://example.org/go/file.xsd, is used to
+		 * 	illustrate each step.
+		 * 	1. Remove the scheme and ":" part from the beginning of the URI, if present.
+		 * Since there is no formal syntax to identify the optional URI scheme, restrict
+		 * 	the schemes to be removed to case insensitive checks for schemes
+		 * 	"http" and "urn".
+		 * 	//example.org/go/file.xsd
+		 */
+		// Remove only urn: and http: schemes - retain ftp, file, gopher, mail, news, telnet		
+		URI uri;
+		String originalUriString = uriString;
+		String schemePrefix;
+		// Save error state so that we can emit a warning after the URI has been processed
+		boolean invalidOriginalFormat = false;
+		// Save whether we are a supported urn or http scheme
+		boolean isValidScheme = false;
+		try {
+			// Creating a URI object and catching a syntax exception may be a performance hit 
+			uri = new URI(uriString);
+			schemePrefix = uri.getScheme();			
+			// Remove http or urn schemes for valid URI's
+			if(null != schemePrefix && (schemePrefix.equalsIgnoreCase("http") || schemePrefix.equalsIgnoreCase("urn"))) {
+				uriString = uri.getSchemeSpecificPart();
+				isValidScheme = true;
+			}
+		} catch (NullPointerException npe) {			
+            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, INVALID_URI_WARNING,//
+                    new Object[] { "null", SDOConstants.JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME }, false);
+			return SDOConstants.JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME;
+		} catch (URISyntaxException use) {
+			// Warn that the URI is invalid, but process the string into a valid package anyway
+			invalidOriginalFormat = true;
+			// Remove http or urn schemes for invalid URI's
+			if (uriString.length() > 4) {
+				prefix = uriString.substring(0, 4);
+				if (prefix.equalsIgnoreCase("urn:")) {
+					uriString = uriString.substring(4);
+					isValidScheme = true;
+				} else {
+					prefix = uriString.substring(0, 5);
+					if (prefix.equalsIgnoreCase("http:")) {						
+						uriString = uriString.substring(5);
+						isValidScheme = true;
+					}
+				}
+			}
+		} finally {
+			/**
+			 * Step 2: remove trailing file type, one of .?? or .??? or .html.
+			 * //example.org/go/file
+			 * Note: The trailing host fragment will be removed for non http|urn schemes such as file:.
+			 */
+			int potentialPathSepIndex = uriString.lastIndexOf('/'); // Don't handle ? param separator on purpose
+			int potentialHostSepIndex = uriString.indexOf('/'); 
+			int potentialFileExtIndex = uriString.lastIndexOf('.');			
+			/**
+			 * When to remove the last .ext or trailing host fragment.
+			 * Valid scheme	|  has file ext	= remove/keep last {.[^.]+} fragment
+			 * 0 | 0 Remove host prefix			ie: file://site.com -> file.site
+			 * 0 | 1 Remove file ext				ie: file://site.com/file.xsd -> file.com.site
+			 * 1 | 0 Don't remove host prefix	ie: urn://site.com -> com.site
+			 * 1 | 1 Remove file ext				ie: urn://site.com/file.xsd -> com.site
+			 */
+			// Don't Remove trailing host fragment for http|urn schemes
+			if((!isValidScheme && potentialFileExtIndex != -1) || //
+				((potentialFileExtIndex != -1 && potentialPathSepIndex != -1 && //
+				potentialHostSepIndex != -1 && (potentialPathSepIndex - potentialHostSepIndex) > 1))) { // -1's are handled
+				String extension = uriString.substring(potentialFileExtIndex);				
+				if (extension.length() == 3 || extension.length() == 4	|| extension.equalsIgnoreCase(".html")) {					
+					uriString = uriString.substring(0, potentialFileExtIndex);
+				}
+			}
+
+			/**
+			 * Step 3: (split string into word list) 3. Parse the remaining
+			 * String into a list of strings using / and : as separators
+			 * Treat consecutive separators as a single separator.
+			 * {"example.org", "go", "file" }
+			 */
+			StringTokenizer aTokenizer = new StringTokenizer(uriString, "/:");
+			int length = aTokenizer.countTokens();
+			if (length == 0) {
+				return SDOConstants.JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME;
+			}
+
+			/**
+			 * Step 4: (unescape each escape sequence octet) 4. For each string
+			 * in the list produced by previous step, unescape each escape
+			 * sequence octet. {"example.org", "go", "file" } Generating a
+			 * Java package name 4/19/06 JAXB 2.0 - Final Release 341
+			 */
+			ArrayList<String> strings = new ArrayList<String>(length);
+			while (aTokenizer.hasMoreTokens()) {
+				strToken = aTokenizer.nextToken();
+				strings.add(decodeUriHexadecimalEscapeSequence(strToken));
+			}
+
+			/**
+			 * Step 5: replace [-] with [.] if the scheme is a URN 5. If the
+			 * scheme is a urn, replace all dashes, -, occurring in the
+			 * first component with [.].2
+			 */
+
+			/**
+			 * Step 6: Apply algorithm described in Section 7.7 Unique Package
+			 * Names in [JLS] to derive a unique package name from the
+			 * potential internet domain name contained within the first
+			 * component. The internet domain name is reversed, component by
+			 * component. Note that a leading www. is not considered part of
+			 * an internet domain name and must be dropped. If the first
+			 * component does not contain either one of the top-level domain
+			 * names, for example, com, gov, net, org, edu, or one of the
+			 * English two-letter codes identifying countries as specified in
+			 * ISO Standard 3166, 1981, this step must be skipped. {org,
+			 * example, go, file}
+			 */
+			strToken = strings.remove(0).toLowerCase();
+			// Reuse the Tokenizer - tokenize on package separator
+			aTokenizer = new StringTokenizer(strToken, ".");
+			// Check for URI's that are composed only of metacharacter package separators
+			if(aTokenizer.countTokens() < 1) {
+	            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, INVALID_URI_WARNING,//
+	                    new Object[] { uriString, SDOConstants.JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME }, false);
+				return SDOConstants.JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME;
+			} else {
+				while (aTokenizer.hasMoreTokens()) {
+					strToken = aTokenizer.nextToken();
+					if (!strToken.equals("www")) {
+						strings.add(0, strToken);
+					}
+				}
+			}
+
+			/**
+			 * Step 7: (convert each string to be all lower case) 7. For each
+			 * string in the list, convert each string to be all lower case.
+			 * {org, example, go, file }
+			 */
+			position = 0;
+			for (String aString : strings) {
+				strings.set(position++, aString.toLowerCase());
+			}
+
+			/**
+			 * Step 8: (convert each string to a valid identifier) 8. For each
+			 * string remaining, the following conventions are adopted from
+			 * [JLS] Section 7.7, Unique Package Names. Follow step 8a-c
+			 * below.
+			 */
+			position = 0;
+			for (String aString : strings) {
+				StringBuffer buffer = new StringBuffer();
+
+				/**
+				 * Step 8a: If the string component contains a hyphen, or any other
+				 * special character not allowed in an identifier, convert it
+				 * into an underscore.
+				 */
+				for (int j = 0; j < aString.length(); j++) {
+					char charToken = aString.charAt(j);
+					if (Character.isJavaIdentifierPart(charToken)) {
+						buffer.append(charToken);
+					} else {
+						buffer.append('_');
+					}
+				}
+
+				/**
+				 * Step 8b:
+				 * From the Java Language Specification section 7.7 b. If any of
+				 * the resulting package name components are keywords then
+				 * append underscore to them.
+				 * We are not performing this step here - and are allowing all java reserved keywords to pass
+				 * See the enum com.sun.tools.javac.parser.Token for a list of keywords 
+				 */
+
+				/**
+				 * Step 8c: If any of the resulting package name components start with
+				 * a digit, or any other character that is not allowed as an
+				 * initial character of an identifier, have an underscore
+				 * prefixed to the component. {org, example, go, file }
+				 */
+				if (!Character.isJavaIdentifierStart(buffer.charAt(0))) {
+					buffer.insert(0, '_');
+				}
+				if (position++ != 0) {
+					buffer.insert(0, '.');
+				}
+
+				pkgName.append(buffer.toString());
+			}
+			if(invalidOriginalFormat) {
+	            AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST,//
+	            		INVALID_URI_WARNING, new Object[] { originalUriString, pkgName }, false);
+			}			
+		}
+		return pkgName.toString();
+	}
+
+	/**
+	 * INTERNAL:
+	 * Decode Hexadecimal "%hh" escape sequences in a URI.
+	 * All escape codes must be valid 2 digit sequences.
+	 * 
+	 * @param s - URI component
+	 * @return URI component with escape sequence decoded into a 
+	 */
+	private static String decodeUriHexadecimalEscapeSequence(String uri) {
+		// This function is used by the Java Package Name generation algorithm that implements JAXB 2.0 D.5.1
+		StringBuffer sb = new StringBuffer(uri.length());
+		for (int index = 0; index < uri.length(); index++) {
+			char c = uri.charAt(index);
+			// Escape sequence found - get the hex value and convert
+			if (c == '%') {
+				if (((index + 2) < uri.length()) && //
+					HEXADECIMAL_DIGITS.indexOf(uri.charAt(index + 1)) >= 0 &&//
+					HEXADECIMAL_DIGITS.indexOf(uri.charAt(index + 2)) >= 0) {
+					// Look ahead 2 digits
+					String g = uri.substring(index + 1, index + 3);
+					// Convert base 16 to base 10 to char and append
+					sb.append((char)Integer.parseInt(g, 16));
+					/**
+					 * Increase the index by 2 - so we skip the 2 digit hex code after the %
+					 * See JAXB 2.0 spec p.348 section D.5.1.4
+					 * "For each string in the list produced by step 3.  Unescape each escape sequence octet.
+					 * IE: North%20America should be "North America" and later in step 8 
+					 * "north_america" not "north_20america"
+					 */
+					index+=2;					
+				} else {
+					sb.append(c);
+				}
+			} else {
+				sb.append(c);
+			}
+		}
+		return (sb.toString());
+	}
+
     
     /**
      * INTERNAL:
