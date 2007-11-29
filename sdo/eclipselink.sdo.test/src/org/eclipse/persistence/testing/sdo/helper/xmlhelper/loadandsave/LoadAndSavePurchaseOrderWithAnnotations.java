@@ -24,6 +24,14 @@ import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 
 public class LoadAndSavePurchaseOrderWithAnnotations extends LoadAndSaveTestCases {
+	/** 
+	 * Since there is no targetNamespace defined in the schema and we use the sdoJava:package annotations on the XSD, 
+	 * We must also set the URI on any programmatically defined types in registerTypes() for no-schema-load test cases 
+	 */
+	private static final String CUSTOM_JAVA_PACKAGE_DIR = "com/example/myPackage";
+	/** This URI must match what is set for sdoJava:package in the XSD */
+	private static final String CUSTOM_JAVA_PACKAGE_URI = "com.example.myPackage"; 
+	
     public LoadAndSavePurchaseOrderWithAnnotations(String name) {
         super(name);
     }
@@ -57,16 +65,16 @@ public class LoadAndSavePurchaseOrderWithAnnotations extends LoadAndSaveTestCase
         return "purchaseOrder";
     }
 
-    protected List getPackages() {
-        List packages = new ArrayList();
-        packages.add("com/example/myPackage");
-        return packages;
-    }
-
     protected String getRootInterfaceName() {
         return "PurchaseOrder";
     }
 
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();
+        packages.add(CUSTOM_JAVA_PACKAGE_DIR);
+        return packages;
+    }
+    
     protected void verifyAfterLoad(XMLDocument doc) {
         super.verifyAfterLoad(doc);
         DataObject rootObject = doc.getRootObject();

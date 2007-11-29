@@ -80,6 +80,14 @@ public class LoadAndSaveWithImportsTestCases extends LoadAndSaveTestCases {
         return "SOAOrderBookingProcessRequest";
     }
     
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();       
+        packages.add("com/globalcompany/ns/orderbooking");
+        packages.add("com/globalcompany/ns/order");
+        return packages;
+    }
+    
     protected void generateClasses(String tmpDirName) throws Exception{
             
         URL url = new URL(getSchemaLocation() + getSchemaName());

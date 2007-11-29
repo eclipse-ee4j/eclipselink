@@ -59,11 +59,11 @@ public class IDREFTestCases extends XSDHelperDefineAndGenerateTestCases {
     */
     public List getControlTypes() {
         List types = new ArrayList();
-        String uri = "http://www.example.org";
+        String uri = NON_DEFAULT_URI;
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type yearMonthDayType = typeHelper.getType("commonj.sdo", "YearMonthDay");
         Type decimalType = typeHelper.getType("commonj.sdo", "Decimal");
-        String javaPackage = "defaultPackage";
+        String javaPackage = NON_DEFAULT_JAVA_PACKAGE_NAME;
 
         SDOType POtype = new SDOType(uri, "PurchaseOrder");
         POtype.setDataType(false);

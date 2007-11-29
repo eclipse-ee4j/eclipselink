@@ -18,6 +18,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.testing.sdo.util.CompileUtil;
@@ -84,10 +86,12 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
         compareXML(getControlWriteFileName(), writer.toString());
     }
 
-    //first package should be the package that contains the class for the get root interface name class
-    protected List getPackages() {
-        List packages = new ArrayList();
-        packages.add("defaultPackage");
+    // First package should be the package that contains the class for the get root interface name class
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();
+        // Override this function if your targetNamespace is defined or you use the sdoJava:package annotation
+        packages.add(SDOConstants.JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME);
         return packages;
     }
 
@@ -99,26 +103,28 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
         classGenerator.generate(reader, tmpDirName);
     }
 
-    public void compileFiles(String dirName, List packages) throws Exception {
-        List allFilesInAllPackages = new ArrayList();
+    public void compileFiles(String dirName, List<String> packages) throws Exception {
+        List<String> allFilesInAllPackages = new ArrayList<String>();
 
         for (int i = 0; i < packages.size(); i++) {
-            String nextPackage = (String)packages.get(i);
+            String nextPackage = packages.get(i);
             nextPackage = dirName + nextPackage;
 
             File f = new File(nextPackage);
-
             File[] filesInDir = f.listFiles();
 
             for (int j = 0; j < filesInDir.length; j++) {
                 File nextFile = filesInDir[j];
-                String fullName = nextFile.getAbsolutePath();
-                nextFile.deleteOnExit();
-                allFilesInAllPackages.add(fullName);
-
-                String fullClassName = fullName.replace(".java", ".class");
-                File nextClassFile = new File(fullClassName);
-                nextClassFile.deleteOnExit();
+                // Do not add [directories] that contain subpackages with classes
+                if(!nextFile.isDirectory()) {
+                	String fullName = nextFile.getAbsolutePath();
+                	nextFile.deleteOnExit();
+                	allFilesInAllPackages.add(fullName);
+                	
+                	String fullClassName = fullName.replace(".java", ".class");
+                	File nextClassFile = new File(fullClassName);
+                	nextClassFile.deleteOnExit();
+                }
             }
         }
         Object[] fileArray = allFilesInAllPackages.toArray();

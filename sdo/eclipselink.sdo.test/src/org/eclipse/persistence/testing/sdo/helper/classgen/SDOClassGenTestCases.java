@@ -10,13 +10,12 @@
 package org.eclipse.persistence.testing.sdo.helper.classgen;
 
 import java.io.File;
-import java.io.PrintWriter;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.helper.ClassBuffer;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.SDOXMLHelperTestCases;
@@ -25,6 +24,8 @@ import org.eclipse.persistence.testing.sdo.util.CompileUtil;
 public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
     protected SDOClassGenerator classGenerator;
     protected String xsdString;
+    /** Cache the packageNames ArrayList for memory performance improvement, fileNames should be optimized as well*/
+    protected List<String> packageNames;
 
     public SDOClassGenTestCases(String name) {
         super(name);
@@ -40,18 +41,21 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
     }
     
     public void tearDown() throws Exception{      
+        List<String> packages = getPackages();
         for (int i = 0; i < getFileNamesToCompile().size(); i++) {
-            String nextFileName = (String)getFileNamesToCompile().get(i);
-            String fullJavaName = getControlSourceFolder() + "/" + getPackageDir() + nextFileName;
-            fullJavaName = fullJavaName.replace(".java", ".class");
-            File f = new File(fullJavaName);
+            String nextFileName = getFileNamesToCompile().get(i);
+            String nextPackageDir = packages.get(i);
+            StringBuffer fullJavaName = new StringBuffer(getControlSourceFolder());
+            fullJavaName.append("/");
+            fullJavaName.append(nextPackageDir);
+            fullJavaName.append("/");
+            fullJavaName.append(nextFileName);            
+            File f = new File(fullJavaName.toString().replace(".java", ".class"));
             if(f.exists()){
               f.delete();
             }            
         }
     }
-
-  
 
     protected abstract String getSourceFolder();
 
@@ -59,15 +63,15 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
 
     protected abstract String getSchemaName();
 
-    protected abstract List getControlFileNames();
+    protected abstract List<String> getControlFileNames();
 
-    protected HashMap getGeneratedFiles(Map generatedBuffers) {
-        HashMap generatedFiles = new HashMap();
+    protected HashMap<String, String> getGeneratedFiles(Map<Object, ClassBuffer> generatedBuffers) {
+        HashMap<String, String> generatedFiles = new HashMap<String, String>();
 
-        Iterator keysIter = generatedBuffers.keySet().iterator();
+        Iterator<Object> keysIter = generatedBuffers.keySet().iterator();
         while (keysIter.hasNext()) {
             Object nextKey = keysIter.next();
-            ClassBuffer next = (ClassBuffer)generatedBuffers.get(nextKey);
+            ClassBuffer next = generatedBuffers.get(nextKey);
             generatedFiles.put(next.getInterfaceName() + ".java", next.getInterfaceBuffer().toString());
             generatedFiles.put(next.getClassName() + ".java", next.getClassBuffer().toString());
         }
@@ -75,29 +79,44 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
         return generatedFiles;
     }
 
-    protected HashMap getControlFiles() {
-        HashMap controlFiles = new HashMap();
-        List controlFileNames = getControlFileNames();
+    protected HashMap<String, String> getControlFiles() {
+        HashMap<String, String> controlFiles = new HashMap<String, String>();
+        List<String> controlFileNames = getControlFileNames();
+        List<String> packages = getPackages();
         for (int i = 0; i < controlFileNames.size(); i++) {
-            String nextFileName = (String)controlFileNames.get(i);
-            String fullName = getControlSourceFolder() + "/" + getPackageDir() + nextFileName;
-            String classContents = getSchema(fullName);
+            String nextFileName = controlFileNames.get(i);
+            String nextPackageDir = packages.get(i);
+            StringBuffer fullName = new StringBuffer(getControlSourceFolder());
+            fullName.append("/");
+            fullName.append(nextPackageDir);
+            fullName.append("/");
+            fullName.append(nextFileName);
+            String classContents = getSchema(fullName.toString());
             controlFiles.put(nextFileName, classContents);
         }
         return controlFiles;
     }
 
-    protected String getPackageDir() {
-        return "defaultPackage/";
-    }    
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+    	if(null != packageNames && packageNames.size() > 0) {
+    		return packageNames;
+    	} else {
+    		packageNames = new ArrayList<String>();
+    		for(int i = 0;i < getControlFileNames().size();i++) {
+    			packageNames.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
+    		}
+    	}
+        return packageNames;
+    }
 
-    protected void compareFiles(HashMap controlFiles, HashMap generatedFiles) {
+    protected void compareFiles(HashMap<String, String> controlFiles, HashMap<String, String> generatedFiles) {
         assertEquals(controlFiles.size(), generatedFiles.size());
-        Iterator keysIter = controlFiles.keySet().iterator();
+        Iterator<String> keysIter = controlFiles.keySet().iterator();
         while (keysIter.hasNext()) {
-            String nextKey = (String)keysIter.next();
-            String nextControlValue = (String)controlFiles.get(nextKey);
-            String nextGeneratedValue = (String)generatedFiles.get(nextKey);
+            String nextKey = keysIter.next();
+            String nextControlValue = controlFiles.get(nextKey);
+            String nextGeneratedValue = generatedFiles.get(nextKey);
             assertNotNull(nextControlValue);
             assertNotNull(nextGeneratedValue);
             // convert ignoreCRLF
@@ -105,23 +124,27 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
         }
     }
     
-    protected List getFileNamesToCompile(){ 
+    protected List<String> getFileNamesToCompile(){ 
         return getControlFileNames();    
     }
     
     public void compileFiles(){
     	Object[] javaFiles = new Object[getFileNamesToCompile().size()];
-
+        List<String> packages = getPackages();
         for (int i = 0; i < getFileNamesToCompile().size(); i++) {
-            String nextFileName = (String) getFileNamesToCompile().get(i);
-            String fullName = getControlSourceFolder() + "/" + getPackageDir() + nextFileName;
-            javaFiles[i] = fullName;
+            String nextFileName = getFileNamesToCompile().get(i);
+            String nextPackageDir = packages.get(i);
+            StringBuffer fullName = new StringBuffer(getControlSourceFolder());
+            fullName.append("/");
+            fullName.append(nextPackageDir);
+            fullName.append("/");
+            fullName.append(nextFileName);
+            javaFiles[i] = fullName.toString();
         }
 
         int returnVal = CompileUtil.instance().compile(classgenCompilePath, javaFiles);
         assertEquals(0, returnVal);
     }
-
     
     // The following test case is out of scope for ClassGenElements - we let it fail with a NPE that generates an empty xsdString for this suite
     public void testClassGen() throws Exception {

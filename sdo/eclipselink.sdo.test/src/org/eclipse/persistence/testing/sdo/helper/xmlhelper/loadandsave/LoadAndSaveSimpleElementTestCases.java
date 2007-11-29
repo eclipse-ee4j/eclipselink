@@ -9,6 +9,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import junit.textui.TestRunner;
@@ -32,7 +35,7 @@ public class LoadAndSaveSimpleElementTestCases extends LoadAndSaveTestCases {
     }
 
     protected String getControlRootURI() {
-        return "http://www.example.org";
+        return NON_DEFAULT_URI;
     }
 
     protected String getControlRootName() {
@@ -43,6 +46,13 @@ public class LoadAndSaveSimpleElementTestCases extends LoadAndSaveTestCases {
         return "CustomerType";
     }
 
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();       
+        packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
+        return packages;
+    }
+    
     public void registerTypes() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
 

@@ -118,6 +118,13 @@ public class LoadAndSaveAttributeGroupTestCases extends LoadAndSaveTestCases {
         return "Wrapper";
     }
 
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();       
+        packages.add("org/xmlsoap/schemas/soap/encoding");
+        return packages;
+    }
+    
     public void registerTypes() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
 

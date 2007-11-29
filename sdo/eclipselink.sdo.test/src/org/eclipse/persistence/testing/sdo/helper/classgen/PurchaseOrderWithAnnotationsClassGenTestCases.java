@@ -24,10 +24,19 @@ public class PurchaseOrderWithAnnotationsClassGenTestCases extends SDOClassGenTe
         TestRunner.main(arguments);
     }  
 
-    protected String getPackageDir() {
-        return "com/example/myPackage/";
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+    	if(null != packageNames && packageNames.size() > 0) {
+    		return packageNames;
+    	} else {
+    		packageNames = new ArrayList<String>();
+    		for(int i = 0;i < getFileNamesToCompile().size();i++) {
+    			packageNames.add("com/example/myPackage");
+    		}
+    	}
+        return packageNames;
     }
-
+    
     protected String getSchemaName() {
         return "./org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithAnnotations.xsd";
     }

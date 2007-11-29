@@ -44,7 +44,7 @@ public class LoadAndSavePurchaseOrderComplexDefaultNSTestCases extends LoadAndSa
     }
 
     protected String getControlRootURI() {
-        return "http://www.example.org";
+        return NON_DEFAULT_URI;
     }
 
     protected String getControlRootName() {
@@ -55,6 +55,13 @@ public class LoadAndSavePurchaseOrderComplexDefaultNSTestCases extends LoadAndSa
         return "PurchaseOrderType";
     }
 
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();       
+        packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
+        return packages;
+    }
+    
     protected void registerTypes() {
         Type intType = typeHelper.getType("commonj.sdo", "Int");
         Type stringType = typeHelper.getType("commonj.sdo", "String");

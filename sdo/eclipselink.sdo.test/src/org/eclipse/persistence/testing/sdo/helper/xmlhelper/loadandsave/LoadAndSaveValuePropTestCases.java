@@ -14,6 +14,7 @@ import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.XMLDocument;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -69,6 +70,13 @@ public class LoadAndSaveValuePropTestCases extends LoadAndSaveTestCases {
         return "CustomerType";
     }
 
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();       
+        packages.add("customer_example");
+        return packages;
+    }
+    
     protected void registerTypes() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type dateType = typeHelper.getType("commonj.sdo", "String");

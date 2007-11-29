@@ -52,7 +52,7 @@ public class LoadAndSaveMimeTypeOnXSDTestCases extends LoadAndSaveTestCases {
     }
 
     protected String getControlRootURI() {
-        return "http://www.example.org";
+        return NON_DEFAULT_URI;
     }
 
     protected String getControlRootName() {

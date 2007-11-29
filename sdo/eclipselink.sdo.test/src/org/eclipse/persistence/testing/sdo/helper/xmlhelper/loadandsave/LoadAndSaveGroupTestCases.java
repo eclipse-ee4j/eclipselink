@@ -9,6 +9,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import commonj.sdo.helper.XMLDocument;
@@ -57,6 +60,13 @@ public class LoadAndSaveGroupTestCases extends LoadAndSaveTestCases {
         return "AAA";
     }
 
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();       
+        packages.add("theuri");
+        return packages;
+    }
+    
     public void registerTypes() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
 

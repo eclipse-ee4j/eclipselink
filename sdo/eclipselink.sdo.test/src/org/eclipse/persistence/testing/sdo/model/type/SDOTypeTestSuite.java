@@ -29,6 +29,8 @@ public class SDOTypeTestSuite {
 
         suite.addTest(new TestSuite(SDOTypeInstanceClassTestCases.class));
         suite.addTest(new TestSuite(AddBaseTypeTestCases.class));
+        // Unit test the packageName generation during Type generation
+        suite.addTest(new TestSuite(DefaultPackageFromTypeGenerationTestCases.class));        
         return suite;
     }
 }

@@ -35,11 +35,11 @@ public class DefineWithIncludesTestCases extends XSDHelperDefineTestCases {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
     }
 
-    public List getControlTypes() {
-        List types = new ArrayList();
+    public List<Type> getControlTypes() {
+        List<Type> types = new ArrayList<Type>();
         String uri = "my.uri";
 
-        String javaPackage = "defaultPackage";
+        String javaPackage = "my";
 
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type intType = typeHelper.getType("commonj.sdo", "Int");

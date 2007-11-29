@@ -32,7 +32,7 @@ public class ClassGenWithImportsTestCases extends SDOClassGenTestCases {
             //URL rootURL = rootDir.toURL();
             //TODO: do we need to define types before generating classes???                
             String schemaLocation = FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
-            java.util.List types = xsdHelper.define(new StringReader(xsdString), schemaLocation);         
+            xsdHelper.define(new StringReader(xsdString), schemaLocation);         
         } catch (Exception e) {
             e.printStackTrace();
             fail("failed during setup");
@@ -48,6 +48,20 @@ public class ClassGenWithImportsTestCases extends SDOClassGenTestCases {
         return "./srcImports";
     }
 
+    /**
+     * Override the default package dir.
+     * There are two packages [my] and [uri2.my]
+     */
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();       
+        packages.add("my");
+        packages.add("my");
+        packages.add("uri2/my");
+        packages.add("uri2/my");        
+        return packages;
+    }
+    
     public void testClassGen() throws Exception {
         StringReader reader = new StringReader(xsdString);
         org.eclipse.persistence.sdo.helper.DefaultSchemaResolver schemaResolver = new org.eclipse.persistence.sdo.helper.DefaultSchemaResolver();
@@ -65,8 +79,8 @@ public class ClassGenWithImportsTestCases extends SDOClassGenTestCases {
         return "./org/eclipse/persistence/testing/sdo/helper/classgen/srcImports";
     }
 
-    protected List getControlFileNames() {
-        ArrayList list = new ArrayList();
+    protected List<String> getControlFileNames() {
+        ArrayList<String> list = new ArrayList<String>();
         list.add("PurchaseOrder.java");
         list.add("PurchaseOrderImpl.java");
         list.add("USAddress.java");

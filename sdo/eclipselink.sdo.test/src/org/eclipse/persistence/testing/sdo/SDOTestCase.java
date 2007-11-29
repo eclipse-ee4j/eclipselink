@@ -75,8 +75,11 @@ public class SDOTestCase extends junit.framework.TestCase {
     private XMLComparer xmlComparer;
 
     protected static final String USER_DIR = System.getProperty("user.dir").replace('\\', '/');
-    protected static final String FILE_PROTOCOL = USER_DIR.startsWith("/")? "file:" : "file:/";
+    protected static final String FILE_PROTOCOL = USER_DIR.startsWith("/")? "file:" : "file:/";    
     protected static final String HTTP_PROTOCOL = "http://";
+    protected static final String NON_DEFAULT_JAVA_PACKAGE_DIR = "org/example";  
+    protected static final String NON_DEFAULT_JAVA_PACKAGE_NAME = "org.example";
+    protected static final String NON_DEFAULT_URI = "http://www.example.org";
     
     public SDOTestCase(String name) {
         super(name);
@@ -934,11 +937,12 @@ public class SDOTestCase extends junit.framework.TestCase {
     public void assertStringsEqual(String controlString, String generatedString) {
         String controlString2 = removeCRLFfromString(controlString);
         String generatedString2 = removeCRLFfromString(generatedString);
-        if (ignoreCRLF) {
+        // Allow Windows generated java code to pass comparison as well as Linux generated ones
+//        if (ignoreCRLF) {
             assertEquals(controlString2, generatedString2);
-        } else {
-            assertEquals(controlString, generatedString);
-        }
+//        } else {
+//            assertEquals(controlString, generatedString);
+//        }
     }
 
     protected void removeEmptyTextNodes(Node node) {

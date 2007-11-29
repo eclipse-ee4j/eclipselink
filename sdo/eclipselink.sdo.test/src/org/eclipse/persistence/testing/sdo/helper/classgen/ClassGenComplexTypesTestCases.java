@@ -9,20 +9,19 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.sdo.helper.classgen;
 
-import commonj.sdo.helper.XSDHelper;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import junit.textui.TestRunner;
+
+import org.eclipse.persistence.sdo.helper.ClassBuffer;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
-import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
 public class ClassGenComplexTypesTestCases extends SDOClassGenTestCases {
-    private SDOClassGenerator classGenerator;
     private String srcFolder;
     private String controlSourceFolder;
-    private List controlFileNames;
+    private List<String> controlFileNames;
 
     public ClassGenComplexTypesTestCases(String name) {
         super(name);
@@ -36,7 +35,7 @@ public class ClassGenComplexTypesTestCases extends SDOClassGenTestCases {
     public void setUp() {
         super.setUp();
         classGenerator = new SDOClassGenerator(aHelperContext);
-        controlFileNames = new ArrayList();
+        controlFileNames = new ArrayList<String>();
     }
 
     public void testComplexTypeWithEmptyContent() {
@@ -206,16 +205,16 @@ public class ClassGenComplexTypesTestCases extends SDOClassGenTestCases {
         return "complextypes";
     }
 
-    protected List getControlFileNames() {
+    protected List<String> getControlFileNames() {
         return controlFileNames;
     }
 
     private void runClassGenTest(String xsdSchemaName, int expectedNumFiles) {
         String xsdSchema = getSchema(xsdSchemaName);
-        List types = xsdHelper.define(xsdSchema);
+        xsdHelper.define(xsdSchema);
 
         StringReader reader = new StringReader(xsdSchema);
-        Map generatedMap = classGenerator.generate(reader, srcFolder);
+        Map<Object, ClassBuffer> generatedMap = classGenerator.generate(reader, srcFolder);
 
         int numGenerated = classGenerator.getGeneratedBuffers().size();
         assertEquals(expectedNumFiles, numGenerated);

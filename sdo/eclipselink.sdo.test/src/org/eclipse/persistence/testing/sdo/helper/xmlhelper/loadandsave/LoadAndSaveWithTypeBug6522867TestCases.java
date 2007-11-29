@@ -49,13 +49,20 @@ public class LoadAndSaveWithTypeBug6522867TestCases extends LoadAndSaveWithOptio
     }
 
     protected String getControlRootURI() {        
-        return "http://www.example.org";
+        return NON_DEFAULT_URI;
     }
 
     protected String getControlRootName() {
         return "items";
     }
 
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();       
+        packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
+        return packages;
+    }    
+    
     protected Object getOptions() {   
         Type theType = typeHelper.getType("http://www.example.org", "Items");
         

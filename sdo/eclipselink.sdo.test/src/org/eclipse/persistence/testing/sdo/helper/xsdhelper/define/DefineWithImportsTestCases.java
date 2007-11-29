@@ -39,14 +39,14 @@ public class DefineWithImportsTestCases extends XSDHelperDefineTestCases {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
     }
 
-    public List getControlTypes() {
-        List types = new ArrayList();
+    public List<Type> getControlTypes() {
+        List<Type> types = new ArrayList<Type>();
         String uri = "my.uri";
         String uri2 = "my.uri2";
         String uri3 = "my.uri3";
         String uri4 = "my.uri4";
 
-        String javaPackage = "defaultPackage";
+        String javaPackage = "my";
 
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type intType = typeHelper.getType("commonj.sdo", "Int");
@@ -58,7 +58,7 @@ public class DefineWithImportsTestCases extends XSDHelperDefineTestCases {
         USaddrType.setXsd(true);
         USaddrType.setXsdLocalName("USAddress");
         USaddrType.setDataType(false);
-        USaddrType.setInstanceClassName(javaPackage + "." + "USAddress");
+        USaddrType.setInstanceClassName("uri2.my." + "USAddress");
 
         SDOProperty streetProp = new SDOProperty(aHelperContext);
         streetProp.setName("street");

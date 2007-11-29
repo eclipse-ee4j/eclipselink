@@ -37,19 +37,18 @@ public class DefineAndGenerateSequencesTestCases extends XSDHelperDefineAndGener
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/complextypes/ComplexTypeWithMultipleOpenContentGenerated.xsd";
     }
     
-    public List getTypesToGenerateFrom ()
-    {
-      return getControlTypes();
+    public List<Type> getTypesToGenerateFrom () {
+    	return getControlTypes();
     }
 
-    public List getControlTypes() {
-        List types = new ArrayList();
+    public List<Type> getControlTypes() {
+        List<Type> types = new ArrayList<Type>();
         ((SDOTypeHelper)typeHelper).reset();
         //String xsdSchema = getSchema("org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/complextypes/ComplexTypeWithMultipleOpenContent.xsd");
         //List types = xsdHelper.define(xsdSchema);
         
         DataObject myTestType2DO = dataFactory.create("commonj.sdo", "Type");
-        myTestType2DO.set("uri", "http://www.example.org");
+        myTestType2DO.set("uri", NON_DEFAULT_URI);
         myTestType2DO.set("name", "myTestType2");        
         myTestType2DO.set("open", true);        
         myTestType2DO.set("sequenced", true);        
@@ -60,7 +59,7 @@ public class DefineAndGenerateSequencesTestCases extends XSDHelperDefineAndGener
         
         
         DataObject myTestType5DO = dataFactory.create("commonj.sdo", "Type");
-        myTestType5DO.set("uri", "http://www.example.org");
+        myTestType5DO.set("uri", NON_DEFAULT_URI);
         myTestType5DO.set("name", "myTestType5");
         myTestType5DO.set("sequenced", true);
         myTestType5DO.set("open", true);
@@ -77,7 +76,7 @@ public class DefineAndGenerateSequencesTestCases extends XSDHelperDefineAndGener
         ((SDOProperty)myTestType5.getProperty("test2")).setXsdLocalName("test2");
         
         DataObject myTestType3DO = dataFactory.create("commonj.sdo", "Type");
-        myTestType3DO.set("uri", "http://www.example.org");
+        myTestType3DO.set("uri", NON_DEFAULT_URI);
         myTestType3DO.set("name", "myTestType3");        
         myTestType3DO.set("open", true);        
         Type myTestType3 = typeHelper.define(myTestType3DO);
@@ -85,7 +84,7 @@ public class DefineAndGenerateSequencesTestCases extends XSDHelperDefineAndGener
         ((SDOType)myTestType3).setXsdLocalName("myTestType3");
         
         DataObject myTestTypeDO = dataFactory.create("commonj.sdo", "Type");
-        myTestTypeDO.set("uri", "http://www.example.org");
+        myTestTypeDO.set("uri", NON_DEFAULT_URI);
         myTestTypeDO.set("name", "myTestType");        
         myTestTypeDO.set("open", true);        
         Type myTestType = typeHelper.define(myTestTypeDO);
@@ -93,7 +92,7 @@ public class DefineAndGenerateSequencesTestCases extends XSDHelperDefineAndGener
         ((SDOType)myTestType).setXsdLocalName("myTestType");
         
         DataObject myTestType4DO = dataFactory.create("commonj.sdo", "Type");
-        myTestType4DO.set("uri", "http://www.example.org");
+        myTestType4DO.set("uri", NON_DEFAULT_URI);
         myTestType4DO.set("name", "myTestType4");                
         myTestType4DO.set("sequenced", true);
         myTestType4DO.set("open", true);
@@ -116,9 +115,6 @@ public class DefineAndGenerateSequencesTestCases extends XSDHelperDefineAndGener
         types.add(myTestType);
         types.add(myTestType5);
         types.add(myTestType3);
-        
-                
-    
         
         return types;
     }

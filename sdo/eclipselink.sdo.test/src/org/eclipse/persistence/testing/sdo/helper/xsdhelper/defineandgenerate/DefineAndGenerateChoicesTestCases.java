@@ -52,7 +52,7 @@ public class DefineAndGenerateChoicesTestCases extends XSDHelperDefineAndGenerat
         /*
         DataObject purchaseOrderTypeType = dataFactory.create("commonj.sdo", "Type");
         SDOProperty prop = (SDOProperty)purchaseOrderTypeType.getType().getProperty("uri");
-        purchaseOrderTypeType.set(prop, "http://www.example.org");
+        purchaseOrderTypeType.set(prop, NON_DEFAULT_URI);
         prop = (SDOProperty)purchaseOrderTypeType.getType().getProperty("name");
         purchaseOrderTypeType.set(prop, "PurchaseOrderType");
         DataObject shipToProp = addProperty(purchaseOrderTypeType, "shipTo", addressType, true, false, true);
@@ -62,8 +62,8 @@ public class DefineAndGenerateChoicesTestCases extends XSDHelperDefineAndGenerat
         addProperty(purchaseOrderTypeType, "poId", stringType);
         Type POType =  typeHelper.define(purchaseOrderTypeType);
         */
-        SDOType POType = new SDOType("http://www.example.org", "PurchaseOrderType");
-        POType.setInstanceClassName("defaultPackage.PurchaseOrderType");
+        SDOType POType = new SDOType(NON_DEFAULT_URI, "PurchaseOrderType");
+        POType.setInstanceClassName("org.example.PurchaseOrderType");
         SDOProperty shipToProp = new SDOProperty(getHelperContext());
         shipToProp.setName("shipTo");
         shipToProp.setType(addressType);
@@ -101,9 +101,9 @@ public class DefineAndGenerateChoicesTestCases extends XSDHelperDefineAndGenerat
         types.add(addressType);
 
         /*        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
-                propDO.set("name", "http://www.example.org");
+                propDO.set("name", NON_DEFAULT_URI);
                 propDO.set("type", POType);
-                typeHelper.defineOpenContentProperty("http://www.example.org", propDO);
+                typeHelper.defineOpenContentProperty(NON_DEFAULT_URI, propDO);
           */
         return types;
     }
@@ -113,7 +113,7 @@ public class DefineAndGenerateChoicesTestCases extends XSDHelperDefineAndGenerat
 
         /*DataObject addressType = dataFactory.create("commonj.sdo", "Type");
         SDOProperty prop = (SDOProperty)addressType.getType().getProperty("uri");
-        addressType.set(prop, "http://www.example.org");
+        addressType.set(prop, NON_DEFAULT_URI);
         prop = (SDOProperty)addressType.getType().getProperty("name");
         addressType.set(prop, "AddressType");
         addProperty(addressType, "name", stringType, false, false, true);
@@ -139,8 +139,8 @@ public class DefineAndGenerateChoicesTestCases extends XSDHelperDefineAndGenerat
 
         Type addressSDOType = typeHelper.define(addressType);
         */
-        SDOType addressSDOType = new SDOType("http://www.example.org", "AddressType");
-        addressSDOType.setInstanceClassName("defaultPackage.AddressType");
+        SDOType addressSDOType = new SDOType(NON_DEFAULT_URI, "AddressType");
+        addressSDOType.setInstanceClassName("org.example.AddressType");
         SDOProperty nameProp = new SDOProperty(getHelperContext());
         nameProp.setName("name");
         nameProp.setType(SDOConstants.SDO_STRING);
@@ -264,7 +264,7 @@ public class DefineAndGenerateChoicesTestCases extends XSDHelperDefineAndGenerat
     protected void compareGeneratedTypes(List controlTypes, List generatedTypes) {
         super.compareGeneratedTypes(controlTypes, generatedTypes);
         //also check order
-        Type addressType = typeHelper.getType("http://www.example.org", "AddressType");
+        Type addressType = typeHelper.getType(NON_DEFAULT_URI, "AddressType");
         assertEquals(16, addressType.getDeclaredProperties().size());
         assertEquals("name", ((Property)addressType.getDeclaredProperties().get(0)).getName());
         assertEquals("street", ((Property)addressType.getDeclaredProperties().get(1)).getName());

@@ -36,12 +36,12 @@ public class DefineAndGenerateNameCollisionsTestCases extends XSDHelperDefineAnd
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/NameCollisionsGenerated.xsd";
     }
 
-    public List getTypesToGenerateFrom() {
+    public List<Type> getTypesToGenerateFrom() {
         return getControlTypes();
     }
 
-    public List getControlTypes() {
-        List types = new ArrayList();
+    public List<Type> getControlTypes() {
+        List<Type> types = new ArrayList<Type>();
         ((SDOTypeHelper)typeHelper).reset();        
 
         DataObject phoneTypeDO = dataFactory.create("commonj.sdo", "Type");

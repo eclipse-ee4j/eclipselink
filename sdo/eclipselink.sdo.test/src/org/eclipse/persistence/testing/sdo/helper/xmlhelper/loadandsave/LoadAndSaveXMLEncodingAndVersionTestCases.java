@@ -2,6 +2,8 @@
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -32,9 +34,16 @@ public class LoadAndSaveXMLEncodingAndVersionTestCases extends LoadAndSaveTestCa
     }
 
     protected String getControlRootURI() {
-        return "http://www.example.org";
+        return NON_DEFAULT_URI;
     }
 
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();       
+        packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
+        return packages;
+    }
+    
     protected String getControlDataObjectFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/simpleElement.xml");
     }

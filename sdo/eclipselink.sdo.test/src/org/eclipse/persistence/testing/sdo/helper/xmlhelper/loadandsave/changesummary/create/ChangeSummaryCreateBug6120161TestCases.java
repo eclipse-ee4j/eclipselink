@@ -64,12 +64,11 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
         return "ProcessCSDeptElement";
     }
 
-    protected List getPackages() {
-        List packages = new ArrayList();
-        packages.add("defaultPackage");
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();
+        packages.add("com/example/app");
         packages.add("dept");
-        packages.add("com/mypackage");      
-
+        packages.add("com/mypackage");
         return packages;
     }
 
@@ -83,7 +82,6 @@ public class ChangeSummaryCreateBug6120161TestCases extends LoadAndSaveTestCases
         FileCodeWriter cw = new FileCodeWriter();
         cw.setSourceDir(tmpDirName);
         classGenerator.generate(reader, cw, sr, true);
-
     }
 
     protected void verifyAfterLoad(XMLDocument doc) {

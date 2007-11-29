@@ -9,8 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.changesummary;
 
-import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.changesummary.modify.ChangeSummaryLoadAndSaveModifyTestSuite;
-import org.eclipse.persistence.testing.sdo.helper.xmlhelper.save.SDOXMLHelperSaveTestSuite;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -25,18 +23,18 @@ public class ChangeSummaryLoadAndSaveTestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite("All XMLHelper ChangeSummary Tests");
 
-        //logging cs on child
+        // Logging CS on child
         suite.addTest(new TestSuite(ChangeSummaryChildLoggingOffLoadAndSaveTestCases.class));
         suite.addTest(new TestSuite(ChangeSummaryChildLoggingOnLoadAndSaveTestCases.class));
-        //logging cs on root
+        // Logging CS on root
         suite.addTest(new TestSuite(ChangeSummaryRootLoggingOffLoadAndSaveTestCases.class));
         suite.addTest(new TestSuite(ChangeSummaryRootLoggingOnLoadAndSaveTestCases.class));
-        //create cs on root
+        // Create CS on root
         suite.addTest(new TestSuite(ChangeSummaryRootSimpleCreateTestCases.class));
         suite.addTest(new TestSuite(ChangeSummaryRootSimpleCreateNestedTestCases.class));
         suite.addTest(new TestSuite(ChangeSummaryRootSimpleCreateManyTestCases.class));
         suite.addTest(new TestSuite(ChangeSummaryRootCreateInvalidTestCases.class));        
-        //create cs on child
+        // Create CS on child
         suite.addTest(new TestSuite(ChangeSummaryChildCreateSimpleNestedManyTestCases.class));        
 
         return suite;

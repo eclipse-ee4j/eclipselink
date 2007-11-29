@@ -36,15 +36,15 @@ public class DefineAndGenerateNillableTestCases extends XSDHelperDefineAndGenera
         return "org/eclipse/persistence/testing/sdo/schemas/CustomerWithNillableGenerated.xsd";
     }
 
-    public List getControlTypes() {
+    public List<Type> getControlTypes() {
         List<Type> types = new ArrayList<Type>();
-        String uri = "http://www.example.org";
+        String uri = NON_DEFAULT_URI;
 
         Type intType = typeHelper.getType("commonj.sdo", "Int");
 
         //DataObject customerTypeDO = defineType(uri, "CustomerType");        
         SDOType customerSDOType = new SDOType(uri, "CustomerType");
-        customerSDOType.setInstanceClassName("defaultPackage.CustomerType");
+        customerSDOType.setInstanceClassName(NON_DEFAULT_JAVA_PACKAGE_NAME + ".CustomerType");
         SDOProperty prop = new SDOProperty(aHelperContext);
         prop.setName("myAttr");
         prop.setType(intType);

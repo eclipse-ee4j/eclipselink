@@ -46,7 +46,7 @@ public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperD
         //String xsdSchema = getSchema("org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderComplexSequenced.xsd");
         //List types = xsdHelper.define(xsdSchema);
         DataObject addressTypeDO = dataFactory.create("commonj.sdo", "Type");
-        addressTypeDO.set("uri", "http://www.example.org");
+        addressTypeDO.set("uri", NON_DEFAULT_URI);
         addressTypeDO.set("name", "AddressType");
         addressTypeDO.set("sequenced", true);
 
@@ -63,7 +63,7 @@ public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperD
         ((SDOProperty)addressType.getProperty("city")).setXsdLocalName("city");
         //-----------------
         DataObject usAddressTypeDO = dataFactory.create("commonj.sdo", "Type");
-        usAddressTypeDO.set("uri", "http://www.example.org");
+        usAddressTypeDO.set("uri", NON_DEFAULT_URI);
         usAddressTypeDO.set("name", "usAddressType");
         usAddressTypeDO.set("sequenced", true);
         List<Type> baseTypes = new ArrayList<Type>();
@@ -78,7 +78,7 @@ public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperD
         ((SDOProperty)usAddressType.getProperty("state")).setXsdLocalName("state");
         //-----------------
         DataObject cdnAddressTypeDO = dataFactory.create("commonj.sdo", "Type");
-        cdnAddressTypeDO.set("uri", "http://www.example.org");
+        cdnAddressTypeDO.set("uri", NON_DEFAULT_URI);
         cdnAddressTypeDO.set("name", "cdnAddressType");
         cdnAddressTypeDO.set("sequenced", true);
         baseTypes = new ArrayList<Type>(); // reset
@@ -96,7 +96,7 @@ public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperD
 
         //-----------------
         DataObject cdnAddressMailingTypeDO = dataFactory.create("commonj.sdo", "Type");
-        cdnAddressMailingTypeDO.set("uri", "http://www.example.org");
+        cdnAddressMailingTypeDO.set("uri", NON_DEFAULT_URI);
         cdnAddressMailingTypeDO.set("name", "cdnAddressMailingType");
         cdnAddressMailingTypeDO.set("sequenced", true);
         baseTypes = new ArrayList<Type>(); // reset
@@ -112,7 +112,7 @@ public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperD
 
         //-----------------
         DataObject itemTypeDO = dataFactory.create("commonj.sdo", "Type");
-        itemTypeDO.set("uri", "http://www.example.org");
+        itemTypeDO.set("uri", NON_DEFAULT_URI);
         itemTypeDO.set("name", "LineItemType");
 
         DataObject prodcutNameProp = addProperty(itemTypeDO, "productName", SDOConstants.SDO_STRING);
@@ -138,7 +138,7 @@ public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperD
         ((SDOProperty)itemType.getProperty("comment")).setXsdLocalName("comment");
         //-----------------        
         DataObject itemsTypeDO = dataFactory.create("commonj.sdo", "Type");
-        itemsTypeDO.set("uri", "http://www.example.org");
+        itemsTypeDO.set("uri", NON_DEFAULT_URI);
         itemsTypeDO.set("name", "Items");        
         itemsTypeDO.set("sequenced", true);
 
@@ -149,7 +149,7 @@ public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperD
         ((SDOProperty)itemsType.getProperty("item")).setXsdLocalName("item");
         //-----------------
         DataObject poTypeDO = dataFactory.create("commonj.sdo", "Type");
-        poTypeDO.set("uri", "http://www.example.org");
+        poTypeDO.set("uri", NON_DEFAULT_URI);
         poTypeDO.set("name", "PurchaseOrderType");
 
         //DataObject csProp = addProperty(poTypeDO, "myCS", SDOConstants.SDO_CHANGESUMMARY, true, false, true);
@@ -170,7 +170,7 @@ public class DefineAndGenerateSequencesPurchaseOrderTestCases extends XSDHelperD
       
        //-----------------
         DataObject companyTypeDO = dataFactory.create("commonj.sdo", "Type");
-        companyTypeDO.set("uri", "http://www.example.org");
+        companyTypeDO.set("uri", NON_DEFAULT_URI);
         companyTypeDO.set("name", "CompanyType");
 
         DataObject csProp = addProperty(companyTypeDO, "myCS", SDOConstants.SDO_CHANGESUMMARY, true, false, true);

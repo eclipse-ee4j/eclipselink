@@ -16,12 +16,14 @@ import commonj.sdo.helper.XMLDocument;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaResolver;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
@@ -65,6 +67,20 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
         return "./org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithInstanceClass.xsd";
     }
 
+    protected String getRootInterfaceName() {
+        return "SOAOrderBookingProcessRequest";
+    }
+
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();
+        // Note the first package at index 0 must contain the getRootInterfaceName()
+        packages.add("com/globalcompany/ns/orderbooking");        
+        packages.add("com/globalcompany/ns/order");
+        packages.add("com/globalcompany/ns/orderbooking/rules");        
+        return packages;
+    }
+    
     public void testLoadFromAndSaveAfterDefineMultipleSchemas() throws Exception {
         try {
             List types = defineTypes();
@@ -74,6 +90,7 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
             verifyAfterLoad(document);
             String s = xmlHelper.save(document.getRootObject(), getControlRootURI(), getControlRootName());
             compareXML(getControlDataObjectFileName(), s);
+            verifyPackageNameGeneratedFromURI("http://www.globalcompany.com/ns/OrderBooking/rules", "approve");
         } catch (IllegalArgumentException iae) {
             // #  6067502 22-MAY-07 TOPLINK 4 15 N 1339 SDO 11.1.1.0.0 NO RELEASE
             // SDO: JAVA CODE GENERATION REQUIRES SDO RESERVED WORD NAME COLLISION HANDLING
@@ -95,13 +112,10 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
         classGenerator.generate(ss, tmpDirName, schemaResolver);
     }
 
-    protected String getRootInterfaceName() {
-        return "SOAOrderBookingProcessRequest";
-    }
 
     protected List defineTypes() {
         try {
-            String location = getSchemaLocation() + getSchemaName();
+            //String location = getSchemaLocation() + getSchemaName();
 
             //FileInputStream fis = new FileInputStream(location);
             URL url = new URL(getSchemaLocation() + getSchemaName());
@@ -126,6 +140,15 @@ public class LoadAndSaveOrderBookingTestCases extends LoadAndSaveTestCases {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xmlhelper/orderbooking/";
     }
 
+    public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
+    	super.testNoSchemaLoadFromInputStreamSaveDataObjectToString();
+        Type aType = typeHelper.getType("http://www.globalcompany.com/ns/OrderBooking/rules", "approve");
+        String className = ((SDOType)aType).getInstanceClassName();
+        assertNotNull(className);
+        String mangledClassName = getFullClassPackageName(aType);
+        assertEquals(mangledClassName, className);
+    }
+    
     public void registerTypes() {
         Type intType = typeHelper.getType("commonj.sdo", "Int");
         Type stringType = typeHelper.getType("commonj.sdo", "String");

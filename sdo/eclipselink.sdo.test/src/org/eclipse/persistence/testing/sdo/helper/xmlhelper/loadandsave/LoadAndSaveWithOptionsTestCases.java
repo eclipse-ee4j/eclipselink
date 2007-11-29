@@ -9,6 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
+import commonj.sdo.Type;
 import commonj.sdo.helper.XMLDocument;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -16,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,7 +26,10 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.SDOXMLHelperTestCases;
+import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
+import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -63,6 +68,28 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
         return getControlFileName();
     }
 
+    public String getFullClassPackageName(Type aType) {
+    	StringBuffer className = new StringBuffer(SDOUtil.getPackageNameFromURI(aType.getURI()));
+        className.append(SDOConstants.JAVA_PACKAGE_NAME_SEPARATOR);
+    	className.append(aType.getName().substring(0,1).toUpperCase());
+    	className.append(aType.getName().substring(1));
+        return className.toString();
+    }
+
+    public void verifyPackageNameGeneratedFromURI(String uri, String typeName) {
+        Type aType = typeHelper.getType(uri, typeName);
+        String className = ((SDOType)aType).getInstanceClassName();
+        String mangledClassName = getFullClassPackageName(aType); 
+        assertEquals(mangledClassName, className);
+    }    
+
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();       
+        packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
+        return packages;
+    }    
+    
     public void testLoadFromInputStreamSaveDocumentToOutputStream() throws Exception {
         defineTypes();
 

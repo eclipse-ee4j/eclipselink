@@ -23,7 +23,7 @@ public class ListTestCases extends SDOClassGenTestCases {
     public void setUp() {
         super.setUp();  
         //TODO: do we need to define types before generating classes???
-        java.util.List types = xsdHelper.define(xsdString);        
+        xsdHelper.define(xsdString);        
     }
     
     public static void main(String[] args) {

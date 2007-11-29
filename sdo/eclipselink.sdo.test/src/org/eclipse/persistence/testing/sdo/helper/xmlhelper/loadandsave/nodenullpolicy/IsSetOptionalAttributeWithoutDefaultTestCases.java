@@ -1,6 +1,7 @@
 /* Copyright (c) 2007, Oracle. All rights reserved. */
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenullpolicy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -44,7 +45,7 @@ public abstract class IsSetOptionalAttributeWithoutDefaultTestCases extends Load
     }
 
     protected String getControlRootURI() {
-        return "http://www.example.org";
+        return NON_DEFAULT_URI;
     }
 
     protected String getControlRootName() {
@@ -53,6 +54,13 @@ public abstract class IsSetOptionalAttributeWithoutDefaultTestCases extends Load
 
     protected String getRootInterfaceName() {
         return "EmployeeType";
+    }
+    
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();       
+        packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
+        return packages;
     }
     
     protected void verifyAfterLoad(XMLDocument doc) {

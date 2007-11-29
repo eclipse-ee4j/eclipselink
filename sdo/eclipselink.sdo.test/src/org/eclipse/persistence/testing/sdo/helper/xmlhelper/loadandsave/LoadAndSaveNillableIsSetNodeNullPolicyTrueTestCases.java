@@ -12,6 +12,8 @@ package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import commonj.sdo.helper.XMLDocument;
+
+import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -46,7 +48,7 @@ public class LoadAndSaveNillableIsSetNodeNullPolicyTrueTestCases extends LoadAnd
     }
 
     protected String getControlRootURI() {
-        return "http://www.example.org";
+        return NON_DEFAULT_URI;
     }
 
     protected String getControlRootName() {
@@ -56,6 +58,13 @@ public class LoadAndSaveNillableIsSetNodeNullPolicyTrueTestCases extends LoadAnd
      protected String getRootInterfaceName() {
         return "EmployeeType";
     }
+
+     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+     protected List<String> getPackages() {
+         List<String> packages = new ArrayList<String>();       
+         packages.add(NON_DEFAULT_JAVA_PACKAGE_DIR);
+         return packages;
+     }
 
     protected void verifyAfterLoad(XMLDocument doc) {
         super.verifyAfterLoad(doc);

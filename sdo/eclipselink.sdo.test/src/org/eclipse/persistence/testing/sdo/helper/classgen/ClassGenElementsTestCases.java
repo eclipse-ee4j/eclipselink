@@ -11,21 +11,15 @@ package org.eclipse.persistence.testing.sdo.helper.classgen;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import junit.textui.TestRunner;
-import org.eclipse.persistence.sdo.helper.ClassBuffer;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
-import org.eclipse.persistence.testing.sdo.SDOTestCase;
 import org.eclipse.persistence.exceptions.SDOException;
 
 public class ClassGenElementsTestCases extends SDOClassGenTestCases {
-    private SDOClassGenerator classGenerator;
     private String srcFolder;
     private String controlSourceFolder;
-    private List controlFileNames;
+    private List<String> controlFileNames;
 
     public ClassGenElementsTestCases(String name) {
         super(name);
@@ -40,7 +34,7 @@ public class ClassGenElementsTestCases extends SDOClassGenTestCases {
         // schemaGen in the super will fail schema load  with a NPE that generates an empty xsdString for this suite - normal
     	super.setUp();
         classGenerator = new SDOClassGenerator(aHelperContext);
-        controlFileNames = new ArrayList();
+        controlFileNames = new ArrayList<String>();
     }
 
     public void testElementWithName() {
@@ -239,13 +233,13 @@ public class ClassGenElementsTestCases extends SDOClassGenTestCases {
         return controlSourceFolder;
     }
 
-    protected List getControlFileNames() {
+    protected List<String> getControlFileNames() {
         return controlFileNames;
     }
 
     private void runClassGenTest(String xsdSchemaName, int expectedNumFiles) {
         String xsdSchema = getSchema(xsdSchemaName);
-        List types = xsdHelper.define(xsdSchema);
+        xsdHelper.define(xsdSchema);
 
         StringReader reader = new StringReader(xsdSchema);
         classGenerator.generate(reader, srcFolder);

@@ -33,12 +33,12 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
 
     public List getControlTypes() {
         java.util.List types = new ArrayList();
-        String uri = "http://www.example.org";
+        String uri = NON_DEFAULT_URI;
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type intType = typeHelper.getType("commonj.sdo", "Int");
         Type yearMonthDayType = typeHelper.getType("commonj.sdo", "YearMonthDay");
         Type floatType = typeHelper.getType("commonj.sdo", "Float");
-        String javaPackage = "defaultPackage";
+        String javaPackage = NON_DEFAULT_JAVA_PACKAGE_NAME;
 
         /****ADDRESS TYPE*****/
 

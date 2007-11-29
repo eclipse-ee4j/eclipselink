@@ -55,13 +55,13 @@ public class ChangeSummaryCreateBug6346754TestCases extends LoadAndSaveTestCases
         return "ProcessData";
     }
 
-    protected List getPackages() {
-        List packages = new ArrayList();
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();       
         packages.add("mypackage/process");
-        packages.add("defaultPackage");
+        packages.add("com/example/supplier/service");
         packages.add("mypackage/address");
         packages.add("mypackage/supplier");        
-        
         return packages;
     }
 
