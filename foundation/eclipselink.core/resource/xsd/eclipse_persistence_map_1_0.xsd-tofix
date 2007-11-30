@@ -341,28 +341,6 @@
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:complexType name="sdk-login">
-        <xsd:annotation>
-            <xsd:documentation>
-                The connection and configuration information.
-            </xsd:documentation>
-        </xsd:annotation>
-        <xsd:complexContent>
-            <xsd:extension base="datasource-login">
-                <xsd:sequence>
-                    <xsd:element name="accessor-class" type="xsd:string"
-                        minOccurs="0">
-                        <xsd:annotation>
-                            <xsd:documentation>
-                                The fully qualified name of the SDK
-                                accessor subclass.
-                            </xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                </xsd:sequence>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
 
     <xsd:complexType name="xml-login">
         <xsd:annotation>
@@ -6055,43 +6033,6 @@
         </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="sequence" />
-        </xsd:complexContent>
-    </xsd:complexType>
-    <xsd:complexType name="xml-sequence">
-        <xsd:annotation>
-            <xsd:documentation>Xml sequence</xsd:documentation>
-        </xsd:annotation>
-        <xsd:complexContent>
-            <xsd:extension base="sequence">
-                <xsd:sequence>
-                    <xsd:element name="root-element" type="xsd:string"
-                        default="SEQUENCE" minOccurs="0">
-                        <xsd:annotation>
-                            <xsd:documentation>
-                                Define the name of the sequence table.
-                            </xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                    <xsd:element name="name-element" type="xsd:string"
-                        default="SEQ_NAME" minOccurs="0">
-                        <xsd:annotation>
-                            <xsd:documentation>
-                                Define the name of the sequence name
-                                field in the sequence table.
-                            </xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                    <xsd:element name="counter-element"
-                        type="xsd:string" default="SEQ_COUNT" minOccurs="0">
-                        <xsd:annotation>
-                            <xsd:documentation>
-                                Define the name of the sequence counter
-                                field in the sequence table.
-                            </xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                </xsd:sequence>
-            </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
     <xsd:complexType name="fetch-groups">

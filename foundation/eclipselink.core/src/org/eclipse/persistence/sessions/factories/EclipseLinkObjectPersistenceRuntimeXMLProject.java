@@ -225,13 +225,6 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.queries.SortedCollectionContainerPolicy;
 
-import deprecated.sdk.SDKAggregateCollectionMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
-import deprecated.sdk.SDKDescriptor;
-import deprecated.sdk.SDKDirectCollectionMapping;
-import deprecated.sdk.SDKLogin;
-import deprecated.xml.XMLSequence;
-
 /**
  * INTERNAL: Define the EclipseLInk OX project and descriptor information to
  * read an EclipseLInk project from an XML file. Note any changes must be
@@ -247,11 +240,9 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildClassDescriptorDescriptor());
         addDescriptor(buildRelationalDescriptorDescriptor());
         addDescriptor(buildObjectRelationalDescriptorDescriptor());
-        addDescriptor(buildSDKDescriptorDescriptor());
 
         addDescriptor(buildDatasourceLoginDescriptor());
         addDescriptor(buildDatabaseLoginDescriptor());
-        addDescriptor(buildSDKLoginDescriptor());
 
         addDescriptor(buildInheritancePolicyDescriptor());
         addDescriptor(buildInterfacePolicyDescriptor());
@@ -343,9 +334,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
 
         addDescriptor(buildAggregateMappingDescriptor());
         addDescriptor(buildAggregateObjectMappingDescriptor());
-        addDescriptor(buildSDKAggregateObjectMappingDescriptor());
         addDescriptor(buildStructureMappingDescriptor());
-        addDescriptor(buildSDKAggregateCollectionMappingDescriptor());
         addDescriptor(buildObjectArrayMappingDescriptor());
 
         addDescriptor(buildForeignReferenceMappingDescriptor());
@@ -362,7 +351,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildVariableOneToOneMappingDescriptor());
 
         addDescriptor(buildAbstractCompositeDirectCollectionMappingDescriptor());
-        addDescriptor(buildSDKDirectCollectionMappingDescriptor());
         addDescriptor(buildXMLCompositeDirectCollectionMappingDescriptor());
         addDescriptor(buildArrayMappingDescriptor());
 
@@ -422,7 +410,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildTableSequenceDescriptor());
         addDescriptor(buildUnaryTableSequenceDescriptor());
         addDescriptor(buildXMLFileSequenceDescriptor());
-        addDescriptor(buildXMLSequenceDescriptor());
         // change policy
         addDescriptor(buildChangePolicyDescriptor());
         addDescriptor(buildDeferredChangeDetectionPolicyDescriptor());
@@ -705,7 +692,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
                 .setJavaClass(org.eclipse.persistence.mappings.structures.ArrayMapping.class);
 
         descriptor.getInheritancePolicy().setParentClass(
-                SDKDirectCollectionMapping.class);
+                AbstractCompositeDirectCollectionMapping.class);
 
         return descriptor;
     }
@@ -842,8 +829,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
                 DatabaseLogin.class, "eclipselink:database-login");
         descriptor.getInheritancePolicy().addClassIndicator(EISLogin.class,
                 "eclipselink:eis-login");
-        descriptor.getInheritancePolicy().addClassIndicator(SDKLogin.class,
-                "eclipselink:sdk-login");
         descriptor.getInheritancePolicy().addClassIndicator(
                 org.eclipse.persistence.oxm.XMLLogin.class,
                 "eclipselink:xml-login");
@@ -1204,22 +1189,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         expiryTimeField.setIsTypedTextField(true);
         expiryMinuteMapping.setField(expiryTimeField);
         descriptor.addMapping(expiryMinuteMapping);
-
-        return descriptor;
-    }
-
-    protected ClassDescriptor buildSDKLoginDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(SDKLogin.class);
-
-        descriptor.getInheritancePolicy().setParentClass(DatasourceLogin.class);
-
-        XMLDirectMapping accessorClassMapping = new XMLDirectMapping();
-        accessorClassMapping.setAttributeName("accessorClass");
-        accessorClassMapping.setGetMethodName("getAccessorClass");
-        accessorClassMapping.setSetMethodName("setAccessorClass");
-        accessorClassMapping.setXPath("eclipselink:accessor-class/text()");
-        descriptor.addMapping(accessorClassMapping);
 
         return descriptor;
     }
@@ -2450,15 +2419,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
                 "eclipselink:array-mapping");
         descriptor.getInheritancePolicy().addClassIndicator(
                 ObjectArrayMapping.class, "eclipselink:object-array-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(
-                SDKDirectCollectionMapping.class,
-                "eclipselink:sdk-composite-direct-collection-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(
-                SDKAggregateCollectionMapping.class,
-                "eclipselink:sdk-composite-collection-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(
-                SDKAggregateObjectMapping.class,
-                "eclipselink:sdk-composite-mapping");
         DirectToXMLTypeMappingHelper.getInstance()
                 .addClassIndicator(descriptor);
         descriptor.getInheritancePolicy().addClassIndicator(
@@ -2617,9 +2577,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.getInheritancePolicy()
                 .addClassIndicator(EISDescriptor.class,
                         "eclipselink:eis-class-mapping-descriptor");
-        descriptor.getInheritancePolicy()
-                .addClassIndicator(SDKDescriptor.class,
-                        "eclipselink:sdk-class-mapping-descriptor");
         descriptor.getInheritancePolicy()
                 .addClassIndicator(XMLDescriptor.class,
                         "eclipselink:xml-class-mapping-descriptor");
@@ -5160,16 +5117,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildSDKAggregateCollectionMappingDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(SDKAggregateCollectionMapping.class);
-
-        descriptor.getInheritancePolicy().setParentClass(
-                AbstractCompositeCollectionMapping.class);
-
-        return descriptor;
-    }
-
     protected ClassDescriptor buildXMLCompositeCollectionMappingDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(XMLCompositeCollectionMapping.class);
@@ -5265,15 +5212,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildSDKAggregateObjectMappingDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(SDKAggregateObjectMapping.class);
-
-        descriptor.getInheritancePolicy().setParentClass(
-                AbstractCompositeObjectMapping.class);
-        return descriptor;
-    }
-
     protected ClassDescriptor buildXMLCompositeObjectMappingDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(XMLCompositeObjectMapping.class);
@@ -5293,21 +5231,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildSDKDescriptorDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(SDKDescriptor.class);
-
-        descriptor.getInheritancePolicy().setParentClass(ClassDescriptor.class);
-
-        XMLDirectMapping structureMapping = new XMLDirectMapping();
-        structureMapping.setAttributeName("dataTypeName");
-        structureMapping.setGetMethodName("getDataTypeName");
-        structureMapping.setSetMethodName("setDataTypeName");
-        structureMapping.setXPath("eclipselink:datatype/text()");
-        descriptor.addMapping(structureMapping);
-
-        return descriptor;
-    }
 
     protected ClassDescriptor buildDatabaseTableDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -5391,14 +5314,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildSDKDirectCollectionMappingDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(SDKDirectCollectionMapping.class);
-
-        descriptor.getInheritancePolicy().setParentClass(
-                AbstractCompositeDirectCollectionMapping.class);
-        return descriptor;
-    }
 
     protected ClassDescriptor buildXMLCompositeDirectCollectionMappingDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -5889,7 +5804,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setJavaClass(XMLCompositeObjectMapping.class);
         descriptor.descriptorIsAggregate();
         descriptor.getInheritancePolicy().setParentClass(
-                SDKAggregateObjectMapping.class);
+                AbstractCompositeObjectMapping.class);
 
         return descriptor;
     }
@@ -5900,7 +5815,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setJavaClass(XMLCompositeCollectionMapping.class);
         descriptor.descriptorIsAggregate();
         descriptor.getInheritancePolicy().setParentClass(
-                SDKAggregateCollectionMapping.class);
+                AbstractCompositeCollectionMapping.class);
 
         return descriptor;
     }
@@ -6350,8 +6265,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
                 UnaryTableSequence.class, "eclipselink:unary-table-sequence");
         descriptor.getInheritancePolicy().addClassIndicator(
                 XMLFileSequence.class, "eclipselink:xmlfile-sequence");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLSequence.class,
-                "eclipselink:xml-sequence");
 
         XMLDirectMapping nameMapping = new XMLDirectMapping();
         nameMapping.setAttributeName("name");
@@ -6453,38 +6366,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildXMLSequenceDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(XMLSequence.class);
-
-        descriptor.getInheritancePolicy().setParentClass(Sequence.class);
-
-        XMLDirectMapping rootElementNameMapping = new XMLDirectMapping();
-        rootElementNameMapping.setAttributeName("rootElementName");
-        rootElementNameMapping.setGetMethodName("getRootElementName");
-        rootElementNameMapping.setSetMethodName("setRootElementName");
-        rootElementNameMapping.setXPath("eclipselink:root-element/text()");
-        rootElementNameMapping.setNullValue("SEQUENCE");
-        descriptor.addMapping(rootElementNameMapping);
-
-        XMLDirectMapping nameFieldNameMapping = new XMLDirectMapping();
-        nameFieldNameMapping.setAttributeName("nameFieldName");
-        nameFieldNameMapping.setGetMethodName("getNameFieldName");
-        nameFieldNameMapping.setSetMethodName("setNameFieldName");
-        nameFieldNameMapping.setXPath("eclipselink:name-element/text()");
-        nameFieldNameMapping.setNullValue("SEQ_NAME");
-        descriptor.addMapping(nameFieldNameMapping);
-
-        XMLDirectMapping counterFieldNameMapping = new XMLDirectMapping();
-        counterFieldNameMapping.setAttributeName("counterFieldName");
-        counterFieldNameMapping.setGetMethodName("getCounterFieldName");
-        counterFieldNameMapping.setSetMethodName("setCounterFieldName");
-        counterFieldNameMapping.setXPath("eclipselink:counter-element/text()");
-        counterFieldNameMapping.setNullValue("SEQ_COUNT");
-        descriptor.addMapping(counterFieldNameMapping);
-
-        return descriptor;
-    }
 
     protected ClassDescriptor buildFetchGroupManagerDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();

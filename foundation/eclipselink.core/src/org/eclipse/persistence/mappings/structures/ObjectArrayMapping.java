@@ -10,7 +10,16 @@
 package org.eclipse.persistence.mappings.structures;
 
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
+import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
  * <p><b>Purpose:</b>
@@ -28,7 +37,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  *
  * @see ArrayMapping
  */
-public class ObjectArrayMapping extends deprecated.sdk.SDKAggregateCollectionMapping {
+public class ObjectArrayMapping extends AbstractCompositeCollectionMapping  implements ArrayCollectionMapping{
 
     /** Arrays require a structure name, this is the ADT defined for the VARRAY. */
     protected String structureName;
@@ -70,4 +79,76 @@ public class ObjectArrayMapping extends deprecated.sdk.SDKAggregateCollectionMap
     public void setStructureName(String structureName) {
         this.structureName = structureName;
     }
+    
+    protected Object buildCompositeObject(ClassDescriptor descriptor, AbstractRecord nestedRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager) {
+        Object element = descriptor.getObjectBuilder().buildNewInstance();
+        descriptor.getObjectBuilder().buildAttributesIntoObject(element, nestedRow, query, joinManager, false);
+        return element;
+    }
+
+    protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord parentRow) {
+        return this.getObjectBuilder(attributeValue, session).buildRow(attributeValue, session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Build and return the change record that results
+     * from comparing the two aggregate collection attributes.
+     */
+    public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
+        // Fixed to match build-update-row.
+        if (session.isClassReadOnly(this.getReferenceClass())) {
+            return null;
+        }
+        return (new ArrayCollectionMappingHelper(this)).compareForChange(clone, backup, owner, session);
+    }
+
+    /**
+     * INTERNAL:
+     * Compare the attributes belonging to this mapping for the objects.
+     */
+    public boolean compareObjects(Object object1, Object object2, AbstractSession session) {
+        return (new ArrayCollectionMappingHelper(this)).compareObjects(object1, object2, session);
+    }
+
+    /**
+     * INTERNAL:
+     * Merge changes from the source to the target object.
+     */
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+        (new ArrayCollectionMappingHelper(this)).mergeChangesIntoObject(target, changeRecord, source, mergeManager);
+    }
+
+    /**
+     * INTERNAL:
+     * Merge changes from the source to the target object.
+     * Simply replace the entire target collection.
+     */
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+        //Helper.toDo("bjv: need to figure out how to handle read-only elements...");
+        if (mergeManager.getSession().isClassReadOnly(this.getReferenceClass())) {
+            return;
+        }
+
+        (new ArrayCollectionMappingHelper(this)).mergeIntoObject(target, isTargetUnInitialized, source, mergeManager);
+    }
+
+    /**
+     * ADVANCED:
+     * This method is used to have an object add to a collection once the changeSet is applied
+     * The referenceKey parameter should only be used for direct Maps.
+     */
+    public void simpleAddToCollectionChangeRecord(Object referenceKey, Object changeSetToAdd, ObjectChangeSet changeSet, AbstractSession session) {
+        (new ArrayCollectionMappingHelper(this)).simpleAddToCollectionChangeRecord(referenceKey, changeSetToAdd, changeSet, session);
+    }
+
+    /**
+     * ADVANCED:
+     * This method is used to have an object removed from a collection once the changeSet is applied
+     * The referenceKey parameter should only be used for direct Maps.
+     */
+    public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
+        (new ArrayCollectionMappingHelper(this)).simpleRemoveFromCollectionChangeRecord(referenceKey, changeSetToRemove, changeSet, session);
+    }
+    
 }

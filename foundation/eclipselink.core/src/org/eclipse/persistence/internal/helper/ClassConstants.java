@@ -62,8 +62,6 @@ public class ClassConstants {
     public static final Class SessionsSession_Class = org.eclipse.persistence.sessions.Session.class;
     public static final Class ScrollableCursor_Class = org.eclipse.persistence.queries.ScrollableCursor.class;
     public static final Class ValueHolderInterface_Class = org.eclipse.persistence.indirection.ValueHolderInterface.class;
-    public static final Class XMLAccessor_Class = deprecated.xml.XMLAccessor.class;
-    public static final Class XMLFileAccessor_Class = deprecated.xml.XMLFileAccessor.class;
     public static final Class CollectionChangeEvent_Class = org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent.class;
     public static final Class MapChangeEvent_Class = org.eclipse.persistence.descriptors.changetracking.MapChangeEvent.class;
     public static final Class ChangeTracker_Class = org.eclipse.persistence.descriptors.changetracking.ChangeTracker.class;
@@ -78,9 +76,6 @@ public class ClassConstants {
     public static final Class SoftCacheWeakIdentityMap_Class = org.eclipse.persistence.internal.identitymaps.SoftCacheWeakIdentityMap.class;
     public static final Class SoftIdentityMap_Class = org.eclipse.persistence.internal.identitymaps.SoftIdentityMap.class;
     public static final Class WeakIdentityMap_Class = org.eclipse.persistence.internal.identitymaps.WeakIdentityMap.class;
-
-    // SDK Classes
-    public static final Class SdkAccessor_Class = deprecated.sdk.SDKAccessor.class;
 
     //fetch group class
     public static final Class FetchGroupTracker_class = org.eclipse.persistence.queries.FetchGroupTracker.class;

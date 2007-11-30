@@ -11,6 +11,12 @@ package org.eclipse.persistence.mappings.structures;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
+import org.eclipse.persistence.eis.mappings.EISCompositeDirectCollectionMapping;
+
 
 /**
  * <p><b>Purpose:</b>
@@ -22,7 +28,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @see NestedTableMapping
  * @see ReferenceMapping
  */
-public class ArrayMapping extends deprecated.sdk.SDKDirectCollectionMapping {
+public class ArrayMapping extends AbstractCompositeDirectCollectionMapping implements ArrayCollectionMapping{
 
     /**
      * Default constructor.
@@ -30,7 +36,16 @@ public class ArrayMapping extends deprecated.sdk.SDKDirectCollectionMapping {
     public ArrayMapping() {
         super();
     }
-
+    
+    /**
+     * PUBLIC:
+     * Set the name of the field that holds the nested collection.
+     */
+    public void setFieldName(String fieldName) {
+        this.setField(new ObjectRelationalDatabaseField(fieldName));
+    }
+    
+    
     /**
      * PUBLIC:
      * Return the name of the structure.
@@ -40,6 +55,37 @@ public class ArrayMapping extends deprecated.sdk.SDKDirectCollectionMapping {
         return this.getElementDataTypeName();
     }
 
+    /**
+     * PUBLIC:
+     * Set the name of the structure.
+     * This is the name of the user-defined data type as defined on the database.
+     */
+    public void setStructureName(String structureName) {
+        this.setElementDataTypeName(structureName);
+    }
+    
+    
+    /**
+     * PUBLIC:
+     * Return the "data type" associated with each element
+     * in the nested collection.
+     * Depending on the data store, this could be optional.
+     */
+    public String getElementDataTypeName() {
+        return elementDataTypeName;
+    }
+
+    /**
+     * PUBLIC:
+     * Set the "data type" associated with each element
+     * in the nested collection.
+     * Depending on the data store, this could be optional.
+     */
+    public void setElementDataTypeName(String elementDataTypeName) {
+        this.elementDataTypeName = elementDataTypeName;
+    }
+    
+    
     /**
      * INTERNAL:
      * Initialize the mapping.
@@ -55,21 +101,57 @@ public class ArrayMapping extends deprecated.sdk.SDKDirectCollectionMapping {
         field.setSqlType(java.sql.Types.ARRAY);
         field.setSqlTypeName(getStructureName());
     }
-
+    
     /**
-     * PUBLIC:
-     * Set the name of the field that holds the nested collection.
+     * INTERNAL:
+     * Build and return the change record that results
+     * from comparing the two direct collection attributes.
      */
-    public void setFieldName(String fieldName) {
-        this.setField(new ObjectRelationalDatabaseField(fieldName));
+    public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
+        return (new ArrayCollectionMappingHelper(this)).compareForChange(clone, backup, owner, session);
     }
 
     /**
-     * PUBLIC:
-     * Set the name of the structure.
-     * This is the name of the user-defined data type as defined on the database.
+     * INTERNAL:
+     * Compare the attributes belonging to this mapping for the objects.
      */
-    public void setStructureName(String structureName) {
-        this.setElementDataTypeName(structureName);
+    public boolean compareObjects(Object object1, Object object2, AbstractSession session) {
+        return (new ArrayCollectionMappingHelper(this)).compareObjects(object1, object2, session);
     }
+
+    /**
+     * INTERNAL:
+     * Merge changes from the source to the target object.
+     */
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+        (new ArrayCollectionMappingHelper(this)).mergeChangesIntoObject(target, changeRecord, source, mergeManager);
+    }
+
+    /**
+     * INTERNAL:
+     * Merge changes from the source to the target object.
+     * Simply replace the entire target collection.
+     */
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager) {
+        (new ArrayCollectionMappingHelper(this)).mergeIntoObject(target, isTargetUnInitialized, source, mergeManager);
+    }
+
+    /**
+     * ADVANCED:
+     * This method is used to have an object add to a collection once the changeSet is applied
+     * The referenceKey parameter should only be used for direct Maps.
+     */
+    public void simpleAddToCollectionChangeRecord(Object referenceKey, Object changeSetToAdd, ObjectChangeSet changeSet, AbstractSession session) {
+        (new ArrayCollectionMappingHelper(this)).simpleAddToCollectionChangeRecord(referenceKey, changeSetToAdd, changeSet, session);
+    }
+
+    /**
+     * ADVANCED:
+     * This method is used to have an object removed from a collection once the changeSet is applied
+     * The referenceKey parameter should only be used for direct Maps.
+     */
+    public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
+        (new ArrayCollectionMappingHelper(this)).simpleRemoveFromCollectionChangeRecord(referenceKey, changeSetToRemove, changeSet, session);
+    }
+
 }

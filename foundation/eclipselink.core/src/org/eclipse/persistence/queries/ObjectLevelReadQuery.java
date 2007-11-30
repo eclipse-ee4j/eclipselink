@@ -1245,22 +1245,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     }
 
     /**
-     * INTERNAL:
-     * Used by TopLink to persist the expression into XML.  Will convert to
-     * deprecated.workbench.expressions.* types.
-     * Please note that this feature should be revisted for future releases.
-     */
-    public deprecated.workbench.expressions.ExpressionRepresentation getSelectionCriteriaForPersistence() {
-        Expression expression = this.getSelectionCriteria();
-        deprecated.workbench.expressions.ExpressionRepresentation result = null;
-        if (expression != null) {
-            // CR#... this was calling compound, but need to call either compound or basic.
-            result = deprecated.workbench.expressions.ExpressionRepresentation.convertFromRuntime(expression);
-        }
-        return result;
-    }
-
-    /**
      * PUBLIC:
      * Answers if the domain objects are to be read as of a past time.
      * @see #getAsOfClause
@@ -2066,20 +2050,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         referenceClassName = aClass;
     }
 
-    /**
-     * INTERNAL:
-     * Used by TopLink to set the expression from XML.  Will convert from
-     * deprecated.workbench.expressions.* types to Runtime Expressions.
-     * Please note that this feature should be revisted for future releases.
-     */
-    public void setSelectionCriteriaFromPersistence(deprecated.workbench.expressions.ExpressionRepresentation representation) {
-        Expression expression = null;
-        if (representation != null) {
-            expression = representation.convertToRuntime(getExpressionBuilder());
-            // only set the expression if it exists, otherwise we may be overwriting SQL strings
-            setSelectionCriteria(expression);
-        }
-    }
 
     public void setSelectionCriteria(Expression expression) {
         super.setSelectionCriteria(expression);

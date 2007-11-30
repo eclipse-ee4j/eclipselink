@@ -24,8 +24,6 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.internal.sessions.factories.*;
-import deprecated.xml.XMLFileLogin;
-import deprecated.xml.XMLReadCall;
 
 /**
  * <p><b>Purpose</b>: Allow for a TopLink Mapping Workbench generated deployment XML project file to be read.
@@ -93,7 +91,7 @@ public class XMLProjectReader {
      * Read the TopLink project deployment XML from the reader on the file.
      * Note the class loader must be able to resolve the domain classes.
      * Note the file must be the deployment XML, not the Mapping Workbench project file.
-     * This API supports the 10g (9.0.4) (currently), 10g (10.0.3), 11g (11.1.1) formats.
+     * This API supports 10g (10.0.3), 11g (11.1.1) formats.
      */
     public static Project read(Reader reader, ClassLoader classLoader) {
         // Since a reader is pass and it can only be streamed once (mark does not work)
@@ -119,42 +117,29 @@ public class XMLProjectReader {
             try {
                 document = parser.parse(new StringReader(writer.toString()));
             } catch (Exception parseException) {
-            	// If the parse fails, it may be because the format was 11.1.1
-            	try{
+                // If the parse fails, it may be because the format was 11.1.1
+                try{
                     if (shouldUseSchemaValidation()) {
-                    	schema = TOPLINK_SCHEMA;
+                        schema = TOPLINK_SCHEMA;
                     }
-            		parser = createXMLParser(xmlPlatform, true, false, schema);
+                    parser = createXMLParser(xmlPlatform, true, false, schema);
                     document = parser.parse(new StringReader(writer.toString()));
-            	} catch (Exception toplinkParseException){
-                    // If the parse validation fails, it may be because the format was 904.
-                    try {
-                    	parser = createXMLParser(xmlPlatform, false, false, null);
-                        document = parser.parse(new StringReader(writer.toString()));
-                    } catch (Exception exception904) {
-                        // Assume was in OPM format, just not valid, through original exception.
-                        throw parseException;
-                    }
+                } catch (Exception toplinkParseException){
+                    // If the parse validation fails, it may be because the format was 904 which is
+                    // not support in eclipselink, just not valid, through original exception.
+                    throw parseException;
             	}
 
-                // If not in 904 format was invalid OPM, throw old exception.
-                if (!document.getDocumentElement().getTagName().equals("project")) {
-                    String version = document.getDocumentElement().getAttribute("version");
-                    // If 10.1.3 format use old format read.
-                    if ((version == null) || (version.indexOf("1.0") == -1)) {
-                        throw parseException;
-                    }
+                String version = document.getDocumentElement().getAttribute("version");
+                // If 10.1.3 format use old format read.
+                if ((version == null) || (version.indexOf("1.0") == -1)) {
+                    throw parseException;
                 }
             }
         } catch (Exception exception) {
             throw XMLMarshalException.unmarshalException(exception);
         }
-        
-        // If 9.0.4 format use old format read.
-        if (document.getDocumentElement().getTagName().equals("project")) {
-            return read904Format(new StringReader(writer.toString()), classLoader);
-        }
-        
+
         String version = document.getDocumentElement().getAttribute("version");
         // If 10.1.3 format use old format read.
         if ((version != null) && (version.indexOf("10.1.3") != -1)) {
@@ -240,29 +225,6 @@ public class XMLProjectReader {
         }
     }
 
-    /**
-     * INTERNAL:
-     * Read the TopLink 9.0.4 deployment XML format.
-     */
-    public static Project read904Format(Reader reader, ClassLoader classLoader) {
-        XMLFileLogin login = new XMLFileLogin();
-        if (classLoader != null) {
-            login.getDatasourcePlatform().getConversionManager().setLoader(classLoader);
-        }
-        DescriptorXMLProject project = new DescriptorXMLProject();
-        project.setLogin(login);
-
-        DatabaseSession session = project.createDatabaseSession();
-        session.dontLogMessages();
-        session.getEventManager().addListener(new MissingDescriptorListener());
-        session.login();
-
-        XMLReadCall call = new XMLReadCall();
-        call.setReader(reader);
-        ReadObjectQuery query = new ReadObjectQuery(Project.class, call);
-
-        return (Project)session.executeQuery(query);
-    }
     /**
      * INTERNAL:
      * Read the TopLink 10.1.3 deployment XML format.

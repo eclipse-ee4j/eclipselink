@@ -11,6 +11,12 @@ package org.eclipse.persistence.mappings.structures;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
+
 
 /**
  * <p><b>Purpose:</b>
@@ -19,7 +25,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * array, or a reference to another structure.
  * The mapping is similar to an AggregateObjectMapping, as multiple objects are stored in a single table.
  */
-public class StructureMapping extends deprecated.sdk.SDKAggregateObjectMapping {
+public class StructureMapping extends AbstractCompositeObjectMapping {
 
     /**
      * Default constructor.
@@ -63,4 +69,16 @@ public class StructureMapping extends deprecated.sdk.SDKAggregateObjectMapping {
     public void setFieldName(String fieldName) {
         this.setField(new ObjectRelationalDatabaseField(fieldName));
     }
+    
+    protected Object buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord Record) {
+        AbstractRecord nestedRow = this.getObjectBuilder(attributeValue, session).buildRow(attributeValue, session);
+        return this.getReferenceDescriptor(attributeValue, session).buildFieldValueFromNestedRow(nestedRow, session);
+    }
+    
+    protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager) {
+        Object aggregateObject = objectBuilder.buildNewInstance();
+        objectBuilder.buildAttributesIntoObject(aggregateObject, nestedRow, query, joinManager, false);
+        return aggregateObject;
+    }
+
 }

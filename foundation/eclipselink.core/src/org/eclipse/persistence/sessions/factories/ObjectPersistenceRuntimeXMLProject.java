@@ -187,11 +187,6 @@ import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.mappings.querykeys.OneToManyQueryKey;
 import org.eclipse.persistence.mappings.querykeys.OneToOneQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
-import deprecated.sdk.SDKAggregateCollectionMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
-import deprecated.sdk.SDKDescriptor;
-import deprecated.sdk.SDKDirectCollectionMapping;
-import deprecated.sdk.SDKLogin;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -201,7 +196,6 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
-import deprecated.xml.XMLSequence;
 
 import javax.xml.namespace.QName;
 
@@ -221,11 +215,9 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildClassDescriptorDescriptor());
         addDescriptor(buildRelationalDescriptorDescriptor());
         addDescriptor(buildObjectRelationalDataTypeDescriptorDescriptor());
-        addDescriptor(buildSDKDescriptorDescriptor());
 
         addDescriptor(buildDatasourceLoginDescriptor());
         addDescriptor(buildDatabaseLoginDescriptor());
-        addDescriptor(buildSDKLoginDescriptor());
 
         addDescriptor(buildInheritancePolicyDescriptor());
         addDescriptor(buildInterfacePolicyDescriptor());
@@ -317,9 +309,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         addDescriptor(buildAggregateMappingDescriptor());
         addDescriptor(buildAggregateObjectMappingDescriptor());
-        addDescriptor(buildSDKAggregateObjectMappingDescriptor());
         addDescriptor(buildStructureMappingDescriptor());
-        addDescriptor(buildSDKAggregateCollectionMappingDescriptor());
         addDescriptor(buildObjectArrayMappingDescriptor());
 
         addDescriptor(buildForeignReferenceMappingDescriptor());
@@ -336,7 +326,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildVariableOneToOneMappingDescriptor());
 
         addDescriptor(buildAbstractCompositeDirectCollectionMappingDescriptor());
-        addDescriptor(buildSDKDirectCollectionMappingDescriptor());
         addDescriptor(buildXMLCompositeDirectCollectionMappingDescriptor());
         addDescriptor(buildArrayMappingDescriptor());
 
@@ -396,7 +385,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildTableSequenceDescriptor());
         addDescriptor(buildUnaryTableSequenceDescriptor());
         addDescriptor(buildXMLFileSequenceDescriptor());
-        addDescriptor(buildXMLSequenceDescriptor());
         // change policy
         addDescriptor(buildChangePolicyDescriptor());
         addDescriptor(buildDeferredChangeDetectionPolicyDescriptor());
@@ -700,7 +688,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
         descriptor.getInheritancePolicy().addClassIndicator(DatabaseLogin.class, "toplink:database-login");
         descriptor.getInheritancePolicy().addClassIndicator(EISLogin.class, "toplink:eis-login");
-        descriptor.getInheritancePolicy().addClassIndicator(SDKLogin.class, "toplink:sdk-login");
         descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.oxm.XMLLogin.class, "toplink:xml-login");
 
         XMLDirectMapping platformMapping = new XMLDirectMapping();
@@ -964,21 +951,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildSDKLoginDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(SDKLogin.class);
-
-        descriptor.getInheritancePolicy().setParentClass(DatasourceLogin.class);
-
-        XMLDirectMapping accessorClassMapping = new XMLDirectMapping();
-        accessorClassMapping.setAttributeName("accessorClass");
-        accessorClassMapping.setGetMethodName("getAccessorClass");
-        accessorClassMapping.setSetMethodName("setAccessorClass");
-        accessorClassMapping.setXPath("toplink:accessor-class/text()");
-        descriptor.addMapping(accessorClassMapping);
-
-        return descriptor;
-    }
 
     protected ClassDescriptor buildExpressionDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -1961,9 +1933,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.getInheritancePolicy().addClassIndicator(ReferenceMapping.class, "toplink:reference-mapping");
         descriptor.getInheritancePolicy().addClassIndicator(ArrayMapping.class, "toplink:array-mapping");
         descriptor.getInheritancePolicy().addClassIndicator(ObjectArrayMapping.class, "toplink:object-array-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(SDKDirectCollectionMapping.class, "toplink:sdk-composite-direct-collection-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(SDKAggregateCollectionMapping.class, "toplink:sdk-composite-collection-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(SDKAggregateObjectMapping.class, "toplink:sdk-composite-mapping");
         DirectToXMLTypeMappingHelper.getInstance().addClassIndicator(descriptor);
         descriptor.getInheritancePolicy().addClassIndicator(AbstractTransformationMapping.class, "toplink:abstract-transformation-mapping");
         descriptor.getInheritancePolicy().addClassIndicator(AbstractCompositeDirectCollectionMapping.class, "toplink:abstract-composite-direct-collection-mapping");
@@ -2060,7 +2029,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.getInheritancePolicy().addClassIndicator(RelationalDescriptor.class, "toplink:relational-class-mapping-descriptor");
         descriptor.getInheritancePolicy().addClassIndicator(ObjectRelationalDataTypeDescriptor.class, "toplink:object-relational-class-mapping-descriptor");
         descriptor.getInheritancePolicy().addClassIndicator(EISDescriptor.class, "toplink:eis-class-mapping-descriptor");
-        descriptor.getInheritancePolicy().addClassIndicator(SDKDescriptor.class, "toplink:sdk-class-mapping-descriptor");
         descriptor.getInheritancePolicy().addClassIndicator(XMLDescriptor.class, "toplink:xml-class-mapping-descriptor");
         descriptor.getInheritancePolicy().addClassIndicator(ClassDescriptor.class, "toplink:class-mapping-descriptor");
 
@@ -4167,15 +4135,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildSDKAggregateCollectionMappingDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(SDKAggregateCollectionMapping.class);
-
-        descriptor.getInheritancePolicy().setParentClass(AbstractCompositeCollectionMapping.class);
-
-        return descriptor;
-    }
-
     protected ClassDescriptor buildXMLCompositeCollectionMappingDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(XMLCompositeCollectionMapping.class);
@@ -4243,35 +4202,11 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildSDKAggregateObjectMappingDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(SDKAggregateObjectMapping.class);
-
-        descriptor.getInheritancePolicy().setParentClass(AbstractCompositeObjectMapping.class);
-        return descriptor;
-    }
-
     protected ClassDescriptor buildXMLCompositeObjectMappingDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(XMLCompositeObjectMapping.class);
 
         descriptor.getInheritancePolicy().setParentClass(AbstractCompositeObjectMapping.class);
-        return descriptor;
-    }
-
-    protected ClassDescriptor buildSDKDescriptorDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(SDKDescriptor.class);
-
-        descriptor.getInheritancePolicy().setParentClass(ClassDescriptor.class);
-
-        XMLDirectMapping structureMapping = new XMLDirectMapping();
-        structureMapping.setAttributeName("dataTypeName");
-        structureMapping.setGetMethodName("getDataTypeName");
-        structureMapping.setSetMethodName("setDataTypeName");
-        structureMapping.setXPath("toplink:datatype/text()");
-        descriptor.addMapping(structureMapping);
-
         return descriptor;
     }
 
@@ -4349,14 +4284,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         containerPolicyMapping.setXPath("toplink:container");
         descriptor.addMapping(containerPolicyMapping);
 
-        return descriptor;
-    }
-
-    protected ClassDescriptor buildSDKDirectCollectionMappingDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(SDKDirectCollectionMapping.class);
-
-        descriptor.getInheritancePolicy().setParentClass(AbstractCompositeDirectCollectionMapping.class);
         return descriptor;
     }
 
@@ -4774,7 +4701,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         descriptor.setJavaClass(XMLCompositeObjectMapping.class);
         descriptor.descriptorIsAggregate();
-        descriptor.getInheritancePolicy().setParentClass(SDKAggregateObjectMapping.class);
+        descriptor.getInheritancePolicy().setParentClass(AbstractCompositeObjectMapping.class);
 
         return descriptor;
     }
@@ -4784,7 +4711,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         descriptor.setJavaClass(XMLCompositeCollectionMapping.class);
         descriptor.descriptorIsAggregate();
-        descriptor.getInheritancePolicy().setParentClass(SDKAggregateCollectionMapping.class);
+        descriptor.getInheritancePolicy().setParentClass(AbstractCompositeCollectionMapping.class);
 
         return descriptor;
     }
@@ -5144,7 +5071,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.getInheritancePolicy().addClassIndicator(TableSequence.class, "toplink:table-sequence");
         descriptor.getInheritancePolicy().addClassIndicator(UnaryTableSequence.class, "toplink:unary-table-sequence");
         descriptor.getInheritancePolicy().addClassIndicator(XMLFileSequence.class, "toplink:xmlfile-sequence");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLSequence.class, "toplink:xml-sequence");
 
         XMLDirectMapping nameMapping = new XMLDirectMapping();
         nameMapping.setAttributeName("name");
@@ -5244,38 +5170,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildXMLSequenceDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(XMLSequence.class);
-
-        descriptor.getInheritancePolicy().setParentClass(Sequence.class);
-
-        XMLDirectMapping rootElementNameMapping = new XMLDirectMapping();
-        rootElementNameMapping.setAttributeName("rootElementName");
-        rootElementNameMapping.setGetMethodName("getRootElementName");
-        rootElementNameMapping.setSetMethodName("setRootElementName");
-        rootElementNameMapping.setXPath("toplink:root-element/text()");
-        rootElementNameMapping.setNullValue("SEQUENCE");
-        descriptor.addMapping(rootElementNameMapping);
-
-        XMLDirectMapping nameFieldNameMapping = new XMLDirectMapping();
-        nameFieldNameMapping.setAttributeName("nameFieldName");
-        nameFieldNameMapping.setGetMethodName("getNameFieldName");
-        nameFieldNameMapping.setSetMethodName("setNameFieldName");
-        nameFieldNameMapping.setXPath("toplink:name-element/text()");
-        nameFieldNameMapping.setNullValue("SEQ_NAME");
-        descriptor.addMapping(nameFieldNameMapping);
-
-        XMLDirectMapping counterFieldNameMapping = new XMLDirectMapping();
-        counterFieldNameMapping.setAttributeName("counterFieldName");
-        counterFieldNameMapping.setGetMethodName("getCounterFieldName");
-        counterFieldNameMapping.setSetMethodName("setCounterFieldName");
-        counterFieldNameMapping.setXPath("toplink:counter-element/text()");
-        counterFieldNameMapping.setNullValue("SEQ_COUNT");
-        descriptor.addMapping(counterFieldNameMapping);
-
-        return descriptor;
-    }
 
     protected ClassDescriptor buildFetchGroupManagerDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();

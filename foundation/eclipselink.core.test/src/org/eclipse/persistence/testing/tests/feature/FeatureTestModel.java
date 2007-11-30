@@ -98,7 +98,6 @@ public class FeatureTestModel extends TestModel {
         addTest(getCustomSequenceTestSuite());
         addTest(getSequenceTestSuite());
         addTest(getCopyingTestSuite());
-        addTest(getRuntimeServicesSuite());
         addTest(new QueryOptionTestSuite());
         addTest(new QueryRepreparationTestSuite());
         addTest(getDatabaseLoginCodeCoverageTestSuite());
@@ -128,14 +127,6 @@ public class FeatureTestModel extends TestModel {
     }
     // CR3855
 
-    public static TestSuite getRuntimeServicesSuite() {
-        TestSuite suite;
-        suite = new TestSuite();
-        suite.setName("RuntimeServicesSuite");
-        suite.setDescription("This tests runtime services.");
-        suite.addTest(new RuntimeServicesTest());
-        return suite;
-    }
 
     public static TestSuite getDatabaseLoginCodeCoverageTestSuite() {
         TestSuite suite;
