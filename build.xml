@@ -18,6 +18,7 @@
     </condition>
     <property name="build_number" value="SNAPSHOT"/>
     <property name="build_number_string" value="${build_date}"/>
+    <property name="installer_id" value="${build_number_string}"/>
 
   <!-- all -->
   <target name="all" depends="package.eclipselink.jar, build.test, package.src.jar, package.package-renamer.jar, build.javadocs, package.javadoc.zip, package.installer.zip" description="build EclipseLink distribution files"/>
@@ -128,21 +129,21 @@
     </target>
 
 	<target name="build.javadocs"> 
-
+		<property name="javadoc.title" value="${javadoc.prefixTitle}${installer_id} ${javadoc.postfixTitle} - Incubation"/>
 		<javadoc 
 			maxmemory="384m"
 			packagenames="org.eclipse.persistence.**" 
 			destdir="${eclipselink.javadocs}"  
 			useexternalfile="yes"
 			additionalparam="-breakiterator"
-			windowtitle="${javadoc.windowTitle}"
+			windowtitle="${javadoc.title}"
 			> 
 			<tag name ="author" enabled="true" description="Author:" />
 			<tag name ="since" scope="all" description="Since:" />
 			<tag name ="SBGen" scope="all" description="SBGen:" />
 			<tag name ="bug" enabled="true" description="Related Bugs:" />
-			<doctitle><![CDATA[${javadoc.docTitle}]]></doctitle>
-            <header><![CDATA[${javadoc.header}]]></header>
+			<doctitle><![CDATA[${javadoc.title}]]></doctitle>
+            <header><![CDATA[${javadoc.title}]]></header>
 
 			<fileset dir="${eclipselink.core}/${src.dir}" defaultexcludes="yes"> 
 				<include name="org/eclipse/persistence/**/*.java"/> 
@@ -189,6 +190,7 @@
         <include name="${about-file}"/>
         <include name="${readme-file}"/>
         <include name="${license-files}"/>
+		<include name="${eclipselink-javadoc-installer.prefix}${eclipselink-javadoc-installer.suffix}"/>
       </zipfileset>
       
       <!-- setenv and package-rename scripts -->
