@@ -43,14 +43,14 @@
         <filter token="loglevel" value="${eclipselink.log.level}"/>
         <filter token="boolvalue" value="${eclipselink.logging.boolvalue}"/>
         <filter token="dbPlatform" value="${db.platform}"/>
-        <copy todir="${eclipselink.core.test}/${classes.dir}" filtering="true">
+        <copy todir="${eclipselink.core.test}/${run.dir}" filtering="true">
             <fileset dir="${eclipselink.core.test}/${resource.dir}"
                 excludes="**/Employee_utf16.xml, **/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
          </copy>
-         <copy todir="${eclipselink.core.test}/${classes.dir}" filtering="true" encoding="UTF-16">
+         <copy todir="${eclipselink.core.test}/${run.dir}" filtering="true" encoding="UTF-16">
             <fileset dir="${eclipselink.core.test}/${resource.dir}" includes="**/Employee_utf16.xml"/>
          </copy>
-          <copy todir="${eclipselink.core.test}/${classes.dir}" filtering="true" encoding="Shift_JIS">
+          <copy todir="${eclipselink.core.test}/${run.dir}" filtering="true" encoding="Shift_JIS">
             <fileset dir="${eclipselink.core.test}/${resource.dir}" includes="**/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
          </copy>
     </target>
@@ -59,7 +59,8 @@
         <java   classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
              fork="true"
              maxmemory="512m"
-             failonerror="true">
+             failonerror="true"
+             dir="${run.dir}">
             <jvmarg value="-Djava.security.policy=${eclipselink.core.test}/resource/java.policy.allpermissions"/>
             <arg value="pfile=${core.test.properties}" />
             <arg value="testmodel=org.eclipse.persistence.testing.tests.TestRunModel" />
@@ -68,6 +69,7 @@
             <classpath>
                 <pathelement path="."/>
                 <pathelement path="${eclipselink.core.test}/${classes.dir}"/>
+                <pathelement path="${eclipselink.core.test}/${run.dir}"/>
                 <path refid="compile.path"/>
                 <pathelement path="${eclipselink.core}/${resource.dir}"/>
                 <pathelement path="${eclipselink.extension.oracle}/eclipselink-extension-oracle.jar"/>

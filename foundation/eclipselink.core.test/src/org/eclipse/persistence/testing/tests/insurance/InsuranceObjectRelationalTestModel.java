@@ -26,13 +26,13 @@ public class InsuranceObjectRelationalTestModel extends org.eclipse.persistence.
         // Must logout to reset type information.
         getDatabaseSession().logout();
         getDatabaseSession().login();
-        if (getSession().getPlatform().isOracle()) {
+        if (getSession().getPlatform().isOracle9()) {
             addRequiredSystem(new InsuranceORSystem());
         }
     }
 
     public void addTests() {
-        if (getSession().getPlatform() instanceof OraclePlatform) {
+        if (getSession().getPlatform().isOracle9()) {
             super.addTests();
             addTest(getNestedTablesReadObjectTestSuite());
             addTest(getObjectArrayUpdateTestSuite());

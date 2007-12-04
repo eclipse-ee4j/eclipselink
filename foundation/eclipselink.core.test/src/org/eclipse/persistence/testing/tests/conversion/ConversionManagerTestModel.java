@@ -280,7 +280,7 @@ public class ConversionManagerTestModel extends TestModel {
         } catch (Exception e){
             getSession().logMessage("Unable to load Oracle-specific conversion tests.  This usually occurs when the tests were compiled " +
                     " on a non-Oracle environment. If you are not running on Oracle, this is not a problem.");
-            if (getSession().getPlatform().isOracle()){
+            if (getSession().getPlatform().isOracle9()){
                 throw new TestProblemException("Could not load: Oracle-specific conversion tests", e);
             }
         }

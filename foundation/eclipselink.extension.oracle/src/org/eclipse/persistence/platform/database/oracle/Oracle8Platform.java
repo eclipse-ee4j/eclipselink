@@ -33,8 +33,9 @@ import org.eclipse.persistence.queries.Call;
  * Supports certain new Oracle 8 data types, and usage of certain Oracle JDBC specific APIs.
  * <p> Supports Oracle thin JDBC driver LOB >4k binding workaround.
  * <p> Creates BLOB and CLOB type for byte[] and char[] for table creation.
+ * <p> Supports object-relational data-type creation.
  */
-public class Oracle8Platform extends org.eclipse.persistence.platform.database.oracle.OraclePlatform {
+public class Oracle8Platform extends OraclePlatform {
 
     /** Locator is required for Oracle thin driver to write LOB value exceeds the limits */
     protected boolean usesLocatorForLOBWrite = true;
@@ -87,13 +88,13 @@ public class Oracle8Platform extends org.eclipse.persistence.platform.database.o
     }
 
     /**
-     *  INTERNAL
-     *    Used by SQLCall.translate(..)
-     *  Typically there is no field translation (and this is default implementation).
-     *  However on different platforms (Oracle) there are cases such that the values for
-     *  binding and appending may be different (BLOB, CLOB).
-     *  In these special cases the method returns a wrapper object
-     *  which knows whether it should be bound or appended and knows how to do that.
+     * INTERNAL
+     * Used by SQLCall.translate(..)
+     * Typically there is no field translation (and this is default implementation).
+     * However on different platforms (Oracle) there are cases such that the values for
+     * binding and appending may be different (BLOB, CLOB).
+     * In these special cases the method returns a wrapper object
+     * which knows whether it should be bound or appended and knows how to do that.
      */
     public Object getCustomModifyValueForCall(Call call, Object value, DatabaseField field, boolean shouldBind) {
         Class type = field.getType();
@@ -126,13 +127,13 @@ public class Oracle8Platform extends org.eclipse.persistence.platform.database.o
     }
 
     /**
-     *  INTERNAL
-     *    Used by SQLCall.appendModify(..)
-     *  If the field should be passed to customModifyInDatabaseCall, retun true,
-     *  otherwise false.
-     *  Methods shouldCustomModifyInDatabaseCall and customModifyInDatabaseCall should be
-     *  kept in sync: shouldCustomModifyInDatabaseCall should return true if and only if the field
-     *  is handled by customModifyInDatabaseCall.
+     * INTERNAL
+     * Used by SQLCall.appendModify(..)
+     * If the field should be passed to customModifyInDatabaseCall, retun true,
+     * otherwise false.
+     * Methods shouldCustomModifyInDatabaseCall and customModifyInDatabaseCall should be
+     * kept in sync: shouldCustomModifyInDatabaseCall should return true if and only if the field
+     * is handled by customModifyInDatabaseCall.
      */
     public boolean shouldUseCustomModifyForCall(DatabaseField field) {
         if (shouldUseLocatorForLOBWrite()) {
@@ -217,11 +218,11 @@ public class Oracle8Platform extends org.eclipse.persistence.platform.database.o
     }
 
     /**
-    * PUBLIC:
-    * Set the BLOB/CLOB value limits on thin driver. The default value is 0.
-    * If usesLocatorForLOBWrite is true, locator will be used in case the
-    * lob's size is larger than lobValueLimit.
-    */
+     * PUBLIC:
+     * Set the BLOB/CLOB value limits on thin driver. The default value is 0.
+     * If usesLocatorForLOBWrite is true, locator will be used in case the
+     * lob's size is larger than lobValueLimit.
+     */
     public void setLobValueLimits(int lobValueLimits) {
         this.lobValueLimits = lobValueLimits;
     }

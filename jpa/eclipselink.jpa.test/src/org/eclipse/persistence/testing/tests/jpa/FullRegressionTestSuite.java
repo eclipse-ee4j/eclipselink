@@ -172,14 +172,13 @@ public class FullRegressionTestSuite extends TestSuite{
         // Lob model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.lob.LobJUnitTestCase.suite());
 
-        try{
+        try {
 	        Class structConverterClass = Class.forName("org.eclipse.persistence.testing.tests.jpa.structconverter.StructConverterTestSuite");
 	        Test testCase = (Test)(structConverterClass.getMethod("suite", (Class[])null).invoke(null, (Object[])null));
 	        fullSuite.addTest(testCase);
         } catch (Exception e){
-        	// TODO print a proper warning
-        	// this will usually happen if the Oracle-specific tests are not on the classpath
-        	e.printStackTrace();
+        	// This will usually happen if the Oracle-specific tests are not on the class-path.
+        	System.out.println("WARNING: " + e + " - StructConverterTestSuite not found, most likely because Oracle specific component is not on the classpath.");
         }
         
         return fullSuite;

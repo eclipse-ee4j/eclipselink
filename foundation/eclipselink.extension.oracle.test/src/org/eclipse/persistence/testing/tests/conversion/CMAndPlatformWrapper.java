@@ -28,7 +28,7 @@ public class CMAndPlatformWrapper {
         } else if (wrappedObj instanceof Oracle9Platform) {
             return ((Oracle9Platform)wrappedObj).getDataTypesConvertedFrom(aClass);
         }
-        return null;
+        return new Vector();
     }
 
     public Vector getDataTypesConvertedTo(Class aClass) {
@@ -37,7 +37,7 @@ public class CMAndPlatformWrapper {
         } else if (wrappedObj instanceof Oracle9Platform) {
             return ((Oracle9Platform)wrappedObj).getDataTypesConvertedTo(aClass);
         }
-        return null;
+        return new Vector();
     }
 
     public Object convertObject(Object object, Class aClass) {

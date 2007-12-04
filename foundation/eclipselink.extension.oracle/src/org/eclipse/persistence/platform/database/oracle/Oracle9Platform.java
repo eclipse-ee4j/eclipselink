@@ -61,7 +61,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * <p> Supports binding NCHAR, NVARCHAR, NCLOB types as required by Oracle JDBC drivers.
  * <p> Supports Oracle JDBC TIMESTAMP, TIMESTAMPTZ, TIMESTAMPLTZ types.
  */
-public class Oracle9Platform extends org.eclipse.persistence.platform.database.oracle.Oracle8Platform {
+public class Oracle9Platform extends Oracle8Platform {
 
     public static final Class NCHAR = NCharacter.class;
     public static final Class NSTRING = NString.class;
@@ -164,13 +164,13 @@ public class Oracle9Platform extends org.eclipse.persistence.platform.database.o
     }
 
     /**
-     *  INTERNAL
-     *    Used by SQLCall.appendModify(..)
-     *  If the field should be passed to customModifyInDatabaseCall, retun true,
-     *  otherwise false.
-     *  Methods shouldCustomModifyInDatabaseCall and customModifyInDatabaseCall should be
-     *  kept in sync: shouldCustomModifyInDatabaseCall should return true if and only if the field
-     *  is handled by customModifyInDatabaseCall.
+     * INTERNAL
+     * Used by SQLCall.appendModify(..)
+     * If the field should be passed to customModifyInDatabaseCall, retun true,
+     * otherwise false.
+     * Methods shouldCustomModifyInDatabaseCall and customModifyInDatabaseCall should be
+     * kept in sync: shouldCustomModifyInDatabaseCall should return true if and only if the field
+     * is handled by customModifyInDatabaseCall.
      */
     public boolean shouldUseCustomModifyForCall(DatabaseField field) {
         Class type = field.getType();
@@ -229,7 +229,7 @@ public class Oracle9Platform extends org.eclipse.persistence.platform.database.o
 
     /**
      * INTERNAL:
-     * Allow for conversion from the Oralce type to the Java type.
+     * Allow for conversion from the Oracle type to the Java type.
      */
     public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException, DatabaseException {
         if ((javaClass == null) || ((sourceObject != null) && (sourceObject.getClass() == javaClass))) {
@@ -470,11 +470,11 @@ public class Oracle9Platform extends org.eclipse.persistence.platform.database.o
     }
     
     /**
-     *  INTERNAL:
-     *  Used by SQLCall.translate(..)
-     *  The binding *must* be performed (NCHAR, NSTRING, NCLOB).
-     *  In these special cases the method returns a wrapper object
-     *  which knows whether it should be bound or appended and knows how to do that.
+     * INTERNAL:
+     * Used by SQLCall.translate(..)
+     * The binding *must* be performed (NCHAR, NSTRING, NCLOB).
+     * In these special cases the method returns a wrapper object
+     * which knows whether it should be bound or appended and knows how to do that.
      */
     public Object getCustomModifyValueForCall(Call call, Object value, DatabaseField field, boolean shouldBind) {
         Class type = field.getType();
@@ -610,14 +610,14 @@ public class Oracle9Platform extends org.eclipse.persistence.platform.database.o
         }
     }
     
-     /**
-      * INTERNAL: This gets called on each iteration to add parameters to the batch
-      * Needs to be implemented so that it returns the number of rows successfully modified
-      * by this statement for optimistic locking purposes (if useNativeBatchWriting is enabled, and 
-      * the call uses optimistic locking).  Is used with parameterized SQL 
-      * 
-      * @return - number of rows modified/deleted by this statement if it was executed (0 if it wasn't)
-      */
+    /**
+     * INTERNAL: This gets called on each iteration to add parameters to the batch
+     * Needs to be implemented so that it returns the number of rows successfully modified
+     * by this statement for optimistic locking purposes (if useNativeBatchWriting is enabled, and 
+     * the call uses optimistic locking).  Is used with parameterized SQL 
+     * 
+     * @return - number of rows modified/deleted by this statement if it was executed (0 if it wasn't)
+     */
     public int addBatch(PreparedStatement statement) throws java.sql.SQLException {
         if (usesNativeBatchWriting()){
             return statement.executeUpdate(); 
@@ -626,12 +626,12 @@ public class Oracle9Platform extends org.eclipse.persistence.platform.database.o
         }
     }
     
-     /**
-      * INTERNAL: Allows setting the batch size on the statement
-      *  Is used with parameterized SQL, and should only be passed in prepared statements
-      * 
-      * @return - statement to be used for batch writing
-      */
+    /**
+     * INTERNAL: Allows setting the batch size on the statement
+     * Is used with parameterized SQL, and should only be passed in prepared statements
+     * 
+     * @return - statement to be used for batch writing
+     */
     public Statement prepareBatchStatement(Statement statement) throws java.sql.SQLException {
         if (usesNativeBatchWriting()){
             //add max statement setting
@@ -694,5 +694,13 @@ public class Oracle9Platform extends org.eclipse.persistence.platform.database.o
         }else{
             return super.unwrapOracleConnection(connection);
         }
+    }
+    
+    /**
+     * PUBLIC:
+     * Return is this is the Oracle 9 platform. 
+     */
+    public boolean isOracle9() {
+	   return true;
     }
 }

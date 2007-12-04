@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database.oracle;
 
-// javase imports
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -20,7 +19,6 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Vector;
 
-// EclipseLink imports
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
@@ -37,12 +35,12 @@ import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
- *    <p><b>Purpose</b>: Provides Oracle specific behaviour.
- *    <p><b>Responsibilities</b>:<ul>
- *    <li> Native SQL for byte[], Date, Time, & Timestamp.
- *    <li> Native sequencing named sequences.
- *    <li> Native SQL/ROWNUM support for MaxRows and FirstResult filtering.
- *    </ul>
+ * <p><b>Purpose</b>: Provides Oracle specific behavior.
+ * <p><b>Responsibilities</b>:<ul>
+ * <li> Native SQL for byte[], Date, Time, & Timestamp.
+ * <li> Native sequencing named sequences.
+ * <li> Native SQL/ROWNUM support for MaxRows and FirstResult filtering.
+ * </ul>
  *
  * @since TOPLink/Java 1.0
  */
@@ -50,18 +48,18 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     /** 
      * Oracle's Rownum can be used to limit results and for pagination, 
-     *   using the query's maxRows and FirstResult settings
+     * using the query's maxRows and FirstResult settings
      */ 
     protected boolean useRownumFiltering = true;
     
     /** 
      * Advanced attribute indicating whether identity is supported,
-     *   see comment to setSupportsIdentity method.
+     * see comment to setSupportsIdentity method.
      */ 
     protected boolean supportsIdentity;
 
     /**
-     * Used for sp defs.
+     * Used for stored procedure definitions.
      */
     public boolean allowsSizeInProcedureArguments() {
         return false;
@@ -69,8 +67,8 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     /**
      * INTERNAL:
-     *    If using native SQL then print a byte[] literally as a hex string otherwise use ODBC format
-     *    as provided in DatabasePlatform.
+     * If using native SQL then print a byte[] literally as a hex string otherwise use ODBC format
+     * as provided in DatabasePlatform.
      */
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         if (usesNativeSQL()) {
@@ -84,8 +82,8 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     /**
      * INTERNAL:
-     *    Appends an Oracle specific date if usesNativeSQL is true otherwise use the ODBC format.
-     *    Native FORMAT: to_date('1997-11-06','yyyy-mm-dd')
+     * Appends an Oracle specific date if usesNativeSQL is true otherwise use the ODBC format.
+     * Native FORMAT: to_date('1997-11-06','yyyy-mm-dd')
      */
     protected void appendDate(java.sql.Date date, Writer writer) throws IOException {
         if (usesNativeSQL()) {
@@ -114,8 +112,8 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     /**
      * INTERNAL:
-     *    Appends an Oracle specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
-     *    Native Format: to_date ('1997-11-06 10:35:45.0' , 'yyyy-mm-dd hh:mm:ss.n')
+     * Appends an Oracle specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
+     * Native Format: to_date ('1997-11-06 10:35:45.0' , 'yyyy-mm-dd hh:mm:ss.n')
      */
     protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
         if (usesNativeSQL()) {
@@ -129,8 +127,8 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     /**
      * INTERNAL:
-     *    Appends an Oracle specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
-     *    Native Format: to_date ('1997-11-06 10:35:45.0' , 'yyyy-mm-dd hh:mm:ss.n')
+     * Appends an Oracle specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
+     * Native Format: to_date ('1997-11-06 10:35:45.0' , 'yyyy-mm-dd hh:mm:ss.n')
      */
     protected void appendCalendar(Calendar calendar, Writer writer) throws IOException {
         if (usesNativeSQL()) {
@@ -172,12 +170,12 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR2", 255));
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
 
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("LONG RAW", false));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("LONG", false));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("LONG RAW", false));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("LONG", false)); 
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("LONG RAW", false));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("LONG", false));         
+        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", false));
+        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", false));
+        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BLOB", false));
+        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("CLOB", false)); 
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB", false));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB", false));         
 
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIMESTAMP", false));
@@ -430,7 +428,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
         values.put(Integer.class, new Integer(Integer.MAX_VALUE));
         values.put(Long.class, new Long(Long.MAX_VALUE));
-        values.put(Double.class, new Double((double)9.9999E125));
+        values.put(Double.class, new Double(9.9999E125));
         values.put(Short.class, new Short(Short.MAX_VALUE));
         values.put(Byte.class, new Byte(Byte.MAX_VALUE));
         values.put(Float.class, new Float(Float.MAX_VALUE));
@@ -449,7 +447,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
         values.put(Integer.class, new Integer(Integer.MIN_VALUE));
         values.put(Long.class, new Long(Long.MIN_VALUE));
-        values.put(Double.class, new Double((double)-1E-129));
+        values.put(Double.class, new Double(-1E-129));
         values.put(Short.class, new Short(Short.MIN_VALUE));
         values.put(Byte.class, new Byte(Byte.MIN_VALUE));
         values.put(Float.class, new Float(Float.MIN_VALUE));
@@ -460,9 +458,9 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     /**
      * INTERNAL:
-     *    Produce a DataReadQuery which updates(!) the sequence number in the db
-     *  and returns it. Currently implemented on Oracle only.
-     *    @param sequenceName        Name known by Oracle to be a defined sequence
+     * Produce a DataReadQuery which updates(!) the sequence number in the db
+     * and returns it. Currently implemented on Oracle only.
+     * @param sequenceName Name known by Oracle to be a defined sequence
      */
     public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
         return new ValueReadQuery("SELECT " + getQualifiedSequenceName(seqName) + ".NEXTVAL FROM DUAL");
@@ -470,16 +468,16 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     /**
      * INTERNAL:
-     *  Though Oracle doesn't support identity it could be immitated,
-     *  see comment to setSupportsIdentity method.
-     *  @param sequenceName        Name known by Oracle to be a defined sequence
+     * Though Oracle doesn't support identity it could be immitated,
+     * see comment to setSupportsIdentity method.
+     * @param sequenceName Name known by Oracle to be a defined sequence
      */
     public ValueReadQuery buildSelectQueryForIdentity(String seqName, Integer size) {
         return new ValueReadQuery("SELECT " + getQualifiedSequenceName(seqName) + ".CURRVAL FROM DUAL");
     }
 
     /**
-     *  Prepend sequence name with table qualifier (if any)
+     * Prepend sequence name with table qualifier (if any)
      */
     protected String getQualifiedSequenceName(String seqName) {
         if (getTableQualifier().equals("")) {
@@ -490,7 +488,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     *  Create the outer join operator for this platform
+     * Create the outer join operator for this platform
      */
     protected ExpressionOperator operatorOuterJoin() {
         ExpressionOperator result = new ExpressionOperator();
@@ -591,53 +589,54 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     *  INTERNAL:
-     *  Indicates whether the platform supports sequence objects.
-     *  This method is to be used *ONLY* by sequencing classes
+     * INTERNAL:
+     * Indicates whether the platform supports sequence objects.
+     * This method is to be used *ONLY* by sequencing classes
      */
     public boolean supportsSequenceObjects() {
         return true;
     }
 
     /**
-     *  INTERNAL:
-     *  Indicates whether the platform supports identity.
-     *  This method is to be used *ONLY* by sequencing classes
+     * INTERNAL:
+     * Indicates whether the platform supports identity.
+     * This method is to be used *ONLY* by sequencing classes
      */
     public boolean supportsIdentity() {
         return supportsIdentity;
     }
 
     /**
-     *  ADVANCED:
-     *  Oracle db doesn't support identity.
-     *  However it's possible to get identity-like behaviour
-     *  using sequence in an insert trigger - that's the only 
-     *  case when supportsIdentity should be set to true:
-     *  in this case all the sequences that have shouldAcquireValueAfterInsert
-     *  set to true will keep this setting (it would've been reversed in case
-     *  identity is not supported).
-     *  Note that with supportsIdentity==true attempt to create tables that have
-     *  identity fields will fail - Oracle doesn't support identity.
-     *  Therefore if there's table creation reqiured it should be done
-     *  with supportsIdentity==false, then set the flag to true and reset sequencing
-     *  (or logout and login the session).
+     * ADVANCED:
+     * Oracle db doesn't support identity.
+     * However it's possible to get identity-like behaviour
+     * using sequence in an insert trigger - that's the only 
+     * case when supportsIdentity should be set to true:
+     * in this case all the sequences that have shouldAcquireValueAfterInsert
+     * set to true will keep this setting (it would've been reversed in case
+     * identity is not supported).
+     * Note that with supportsIdentity==true attempt to create tables that have
+     * identity fields will fail - Oracle doesn't support identity.
+     * Therefore if there's table creation reqiured it should be done
+     * with supportsIdentity==false, then set the flag to true and reset sequencing
+     * (or logout and login the session).
      */
     public void setSupportsIdentity(boolean supportsIdentity) {
         this.supportsIdentity = supportsIdentity;
     }
 
     /**
-     *  INTERNAL
+     * INTERNAL:
+     * Return if database stored functions are supported.
      */
     public boolean supportsStoredFunctions() {
         return true;
     }
 
     /**
-      * Returns true if the database supports SQL syntax not to wait on a SELECT..FOR UPADTE
-      * (i.e. In Oracle adding NOWAIT to the end will accomplish this)
-      */
+     * Returns true if the database supports SQL syntax not to wait on a SELECT..FOR UPADTE
+     * (i.e. In Oracle adding NOWAIT to the end will accomplish this)
+     */
     public boolean supportsSelectForUpdateNoWait() {
         return true;
     }
@@ -680,6 +679,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     private static final String END_FROM = ") a ";
     private static final String MAX_ROW = "WHERE ROWNUM <= ";
     private static final String MIN_ROW = ") WHERE rnum > ";
+    
     /**
      * INTERNAL:
      * Print the SQL representation of the statement on a stream, storing the fields
@@ -697,7 +697,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         if ( !(this.shouldUseRownumFiltering()) || ( !(max>0) && !(firstRow>0) ) ){
             super.printSQLSelectStatement(call, printer,statement);
             return;
-        }else if ( max > 0 ){
+        } else if ( max > 0 ){
             statement.setUseUniqueFieldAliases(true);
             printer.printString(SELECT);
             printer.printString(HINT);
@@ -709,7 +709,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             printer.printParameter(DatabaseCall.MAXROW_FIELD);
             printer.printString(MIN_ROW);
             printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
-        }else {// firstRow>0
+        } else {// firstRow>0
             statement.setUseUniqueFieldAliases(true);
             printer.printString(SELECT);
             printer.printString(FROM);

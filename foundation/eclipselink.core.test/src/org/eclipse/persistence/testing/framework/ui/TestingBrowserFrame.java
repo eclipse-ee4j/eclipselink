@@ -907,7 +907,7 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
      * @param args java.lang.String[]
      */
     public static void main(java.lang.String[] args) {
-        try {
+    try {
             javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
             TestingBrowserFrame aTestingBrowserFrame;
             aTestingBrowserFrame = new TestingBrowserFrame();
@@ -919,72 +919,42 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
         }
     }
 
-    /**
-     *
-     */
     public void testingBrowserPanel1KillTest() {
         getTestingBrowserPanel1().killTest();
     }
 
-    /**
-     *
-     */
     public void testingBrowserPanel1LogTestResults() {
         getTestingBrowserPanel1().logTestResults();
     }
 
-    /**
-     *
-     */
     public void testingBrowserPanel1QueryLoadBuild() {
         getTestingBrowserPanel1().queryLoadBuild();
     }
 
-    /**
-     *
-     */
     public void testingBrowserPanel1RefreshModels() {
         getTestingBrowserPanel1().refreshModels();
     }
 
-    /**
-     *
-     */
     public void testingBrowserPanel1RefreshTests() {
         getTestingBrowserPanel1().refreshTests();
     }
 
-    /**
-     *
-     */
     public void testingBrowserPanel1ResetTest() {
         getTestingBrowserPanel1().resetTest();
     }
 
-    /**
-     *
-     */
     public void testingBrowserPanel1RunTest() {
         getTestingBrowserPanel1().runTest();
     }
 
-    /**
-     *
-     */
     public void testingBrowserPanel1SaveLoadBuild() {
         getTestingBrowserPanel1().saveLoadBuild();
     }
 
-    /**
-     *
-     */
     public void testingBrowserPanel1SetupTest() {
         getTestingBrowserPanel1().setupTest();
     }
 
-    /**
-     *
-     */
     public void testingBrowserPanel1StopTest() {
         getTestingBrowserPanel1().stopTest();
     }

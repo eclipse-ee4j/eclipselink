@@ -3025,9 +3025,9 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
         getDriverChoice().addItem("sun.jdbc.odbc.JdbcOdbcDriver");
 
         getPlatformChoice().removeAllItems();
-        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
-        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.oracle.OraclePlatform");
+        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.oracle.Oracle8Platform");
+        getPlatformChoice().addItem("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.DB2Platform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.SybasePlatform");
         getPlatformChoice().addItem("org.eclipse.persistence.platform.database.SQLServerPlatform");

@@ -49,7 +49,7 @@ public class XMLProjectWriterTestModel extends TestModel {
         addRequiredSystem(new DirectMapMappingMWIntergrationSystem());
         addRequiredSystem(new CMWorkbenchIntegrationSystem());
         addRequiredSystem(new ProxyIndirectionMWIntegrationSystem());
-        if(this.getSession().getPlatform().isOracle()) {
+        if(this.getSession().getPlatform().isOracle9()) {
         	addRequiredSystem(new InsuranceORWorkbenchIntegrationSystem());
         }
         addRequiredSystem(new MappingModelWorkbenchIntegrationSystem());
@@ -151,7 +151,7 @@ public class XMLProjectWriterTestModel extends TestModel {
         //Insurance model test
         class TestSuiteOracleOnly extends TestSuite {
             public void setup() {
-                if(!getSession().getPlatform().isOracle()) {
+                if(!getSession().getPlatform().isOracle9()) {
                     throw new TestWarningException("This test suite is intended for Oracle databases only.");
                 }
             }

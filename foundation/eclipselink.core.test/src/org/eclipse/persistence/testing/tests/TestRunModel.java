@@ -239,7 +239,14 @@ public class TestRunModel extends TestModel {
         }
         return model;
     }
-
+    
+    /**
+     * Return the JUnit suite to allow JUnit runner to find it.
+     */
+    public static junit.framework.TestSuite suite() {
+        return buildLRGTestModel();
+    }
+    
     public static TestRunModel buildLRGTestModel() {
         TestRunModel model = new TestRunModel();
         model.setName("LRGTestModel");

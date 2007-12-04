@@ -70,7 +70,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  * DatabasePlatform is private to TopLink. It encapsulates behavior specific to a database platform
  * (eg. Oracle, Sybase, DBase), and provides protocol for TopLink to access this behavior. The behavior categories
  * which require platform specific handling are SQL generation and sequence behavior. While database platform
- * currently provides sequence number retrieval behaviour, this will move to a sequence manager (when it is
+ * currently provides sequence number retrieval behavior, this will move to a sequence manager (when it is
  * implemented).
  *
  * @see AccessPlatform
@@ -86,7 +86,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /** Holds a hashtable of values used to map JAVA types to database types for table creation */
     protected transient Hashtable fieldTypes;
 
-    /** Indicates that native SQL should be used for literal values instead of ODBC esacpe format
+    /** Indicates that native SQL should be used for literal values instead of ODBC escape format
     Only used with Oracle, Sybase & DB2 */
     protected boolean usesNativeSQL;
 
@@ -195,7 +195,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * INTERNAL:
      * Get the map of TypeConverters
-     * This map indexs StructConverters by the Java Class they are meant to
+     * This map indexes StructConverters by the Java Class they are meant to
      * convert
      */
     public Map<Class, StructConverter> getTypeConverters() {
@@ -238,7 +238,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Used for sp defs.
+     * Used for stored procedure definitions.
      */
     public boolean allowsSizeInProcedureArguments() {
         return true;
@@ -256,8 +256,8 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     *    Append the ByteArray in ODBC literal format ({b hexString}).
-     *    This limits the amount of Binary data by the length of the SQL. Binding should increase this limit.
+     * Append the ByteArray in ODBC literal format ({b hexString}).
+     * This limits the amount of Binary data by the length of the SQL. Binding should increase this limit.
      */
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         writer.write("{b '");
@@ -284,7 +284,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * INTERNAL
+     * INTERNAL:
      * In case shouldBindLiterals is true, instead of null value a DatabaseField
      * value may be passed (so that it's type could be used for binding null).
      */
@@ -300,7 +300,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
     
     /**
-     * INTERNAL
+     * INTERNAL:
      * Override this method in case the platform needs to do something special for binding literals.
      * Note that instead of null value a DatabaseField
      * value may be passed (so that it's type could be used for binding null).
@@ -439,7 +439,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     *  Used by JDBC drivers that do not support autocommit so simulate an autocommit.
+     * Used by JDBC drivers that do not support autocommit so simulate an autocommit.
      */
     public void autoCommit(DatabaseAccessor accessor) throws SQLException {
         if (!supportsAutoCommit()) {
@@ -448,8 +448,8 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     *  Used for jdbc drivers which do not support autocommit to explicitly begin a transaction
-     *  This method is a no-op for databases which implement autocommit as expected.
+     * Used for jdbc drivers which do not support autocommit to explicitly begin a transaction
+     * This method is a no-op for databases which implement autocommit as expected.
      */
     public void beginTransaction(DatabaseAccessor accessor) throws SQLException {
         if (!supportsAutoCommit()) {
@@ -580,7 +580,6 @@ public class DatabasePlatform extends DatasourcePlatform {
         int indexFirst = call.getFirstParameterIndexForCallString();
         for (int index = indexFirst; index < call.getParameters().size(); index++) {
             String name = (String)call.getProcedureArgumentNames().elementAt(index);
-            Object parameter = call.getParameters().elementAt(index);
             Integer parameterType = (Integer)call.getParameterTypes().elementAt(index);
             if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
                 writer.write(getProcedureArgumentString());
@@ -1671,7 +1670,7 @@ public class DatabasePlatform extends DatasourcePlatform {
                 //assumes a vector
                 if (dbCall.areManyRowsReturned()) {
                     Vector tempResult = new Vector();
-                    ((Vector)tempResult).add(result);
+                    tempResult.add(result);
                     result = tempResult;
                 }
             }
@@ -1704,8 +1703,7 @@ public class DatabasePlatform extends DatasourcePlatform {
 
         for (int index = 0, l = parameters.size(); index < l; index++) {
             Object parameter = parameters.get(index);
-            setParameterValueInDatabaseCall(parameter, (PreparedStatement)statement, index+1,
-                session);
+            setParameterValueInDatabaseCall(parameter, statement, index+1, session);
         }
         
     }

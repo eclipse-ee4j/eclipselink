@@ -589,7 +589,7 @@
       </eclipselink:class-mapping-descriptor>
    </eclipselink:class-mapping-descriptors>
    <eclipselink:login xsi:type="eclipselink:database-login">
-      <eclipselink:platform-class>org.eclipse.persistence.platform.database.oracle.Oracle10Platform</eclipselink:platform-class>
+      <eclipselink:platform-class>org.eclipse.persistence.platform.database.oracle.OraclePlatform</eclipselink:platform-class>
       <eclipselink:user-name>jsutherl</eclipselink:user-name>
       <eclipselink:driver-class>oracle.jdbc.OracleDriver</eclipselink:driver-class>
       <eclipselink:connection-url>jdbc:oracle:thin:@tlsvrdb3.ca.oracle.com:1521:toplink</eclipselink:connection-url>

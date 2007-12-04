@@ -257,7 +257,11 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
         if (executor == null) {
             executor = TestExecutor.getDefaultExecutor();
         }
-        execute(executor);
+        try {
+        	execute(executor);
+        } catch (TestWarningException exception) {
+        	System.out.println("WARNING: " + exception);
+        }
     }
 
     /**

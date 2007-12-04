@@ -16,7 +16,6 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sessions.DatabaseSession;
 
 /**
  * Platform is private to TopLink. It encapsulates behavior specific to a datasource platform
@@ -119,6 +118,8 @@ public interface Platform extends Serializable, Cloneable {
     public boolean isODBC();
 
     public boolean isOracle();
+    
+    public boolean isOracle9();
 
     public boolean isPointBase();
 

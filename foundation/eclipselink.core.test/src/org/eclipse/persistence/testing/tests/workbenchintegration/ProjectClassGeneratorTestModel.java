@@ -49,7 +49,7 @@ public class ProjectClassGeneratorTestModel extends XMLProjectWriterTestModel {
         addRequiredSystem(new DirectMapMappingMWIntergrationSubSystem());
         addRequiredSystem(new CMWorkbenchIntegrationSubSystem());
         addRequiredSystem(new ProxyIndirectionMWIntegrationSubSystem());
-        if(this.getSession().getPlatform().isOracle()) {
+        if(this.getSession().getPlatform().isOracle9()) {
             addRequiredSystem(new InsuranceORWorkbenchIntegrationSystem()); // Note: not a sub system
         }
         addRequiredSystem(new MappingModelWorkbenchIntegrationSubSystem());

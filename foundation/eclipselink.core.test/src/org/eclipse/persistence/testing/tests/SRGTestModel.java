@@ -12,6 +12,7 @@ package org.eclipse.persistence.testing.tests;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.tests.employee.EmployeeBasicTestModel;
 import org.eclipse.persistence.testing.tests.inheritance.InheritanceTestModel;
+import org.eclipse.persistence.testing.tests.insurance.InsuranceBasicTestModel;
 
 public class SRGTestModel extends TestModel {
     public SRGTestModel() {
@@ -24,5 +25,14 @@ public class SRGTestModel extends TestModel {
         addTest(new org.eclipse.persistence.testing.tests.aggregate.AggregateTestModel(isSRG));
         addTest(new InheritanceTestModel(isSRG));
         addTest(new org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLTestModel(isSRG));
+    }
+    
+    /**
+     * Return the JUnit suite to allow JUnit runner to find it.
+     * Unfortunately JUnit only allows suite methods to be static,
+     * so it is not possible to generically do this.
+     */
+    public static junit.framework.TestSuite suite() {
+        return new SRGTestModel();
     }
 }

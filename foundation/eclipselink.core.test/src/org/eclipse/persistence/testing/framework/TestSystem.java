@@ -109,23 +109,23 @@ public class TestSystem {
      * This file (twork directory) must be on the classpath.
      */
     public void loadLoginFromProperties() {
-        URL url = Thread.currentThread().getContextClassLoader().getResource("titl.properties");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("test.properties");
         if (url == null) {
-            throw new TestErrorException("titl.properties must be on your classpath to run this test.");
+            throw new TestErrorException("test.properties must be on your classpath to run this test.");
         }
         Properties properties = new Properties();
         try {
             properties.load(url.openStream());
         } catch (java.io.IOException exception) {
-            throw new TestErrorException("Error loading titl.properties.", exception);
+            throw new TestErrorException("Error loading test.properties.", exception);
         }
         login = new DatabaseLogin();
-        login.setDriverClassName((String)properties.get("login.driverClass"));
-        login.setConnectionString((String)properties.get("login.databaseURL"));
-        login.setUserName((String)properties.get("login.username"));
+        login.setDriverClassName((String)properties.get("db.driver"));
+        login.setConnectionString((String)properties.get("db.url"));
+        login.setUserName((String)properties.get("db.user"));
         // This avoids encrypting the password, as some tests require it non-encrypted.
-        login.setEncryptedPassword((String)properties.get("login.password"));
-        login.setPlatformClassName((String)properties.get("login.databaseplatform"));
+        login.setEncryptedPassword((String)properties.get("db.pwd"));
+        login.setPlatformClassName((String)properties.get("db.platform"));
     }
 
     /**
@@ -299,7 +299,7 @@ public class TestSystem {
         login.setUserName(userName);
         //set the encrypted password will enable toplink to use the plain text password as is
         login.setEncryptedPassword("password");
-        login.setDatabaseURL("//tlsvrdb3.ca.oracle.com/"+userName);
+        login.setDatabaseURL("//tlsvrdb4.ca.oracle.com/"+userName);
         login.useByteArrayBinding();
         setLogin(login);
     }

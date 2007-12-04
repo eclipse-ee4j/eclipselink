@@ -47,8 +47,8 @@ public class StoredProcedureObjectRelationalParameters extends TestCase{
     
     public void setup() {
         // right now only the stored procedure is set up in Oracle
-        if (!(getSession().getPlatform().isOracle())) {
-            throw new TestWarningException("This test can only be run in Oracle");
+        if (!(getSession().getPlatform().isOracle9())) {
+            throw new TestWarningException("This test can only be run in Oracle9");
         }
         try {
             getSession().executeNonSelectingSQL("Delete from PolicyHolders where (ssn = "+policyHolderIdToUse+" )");

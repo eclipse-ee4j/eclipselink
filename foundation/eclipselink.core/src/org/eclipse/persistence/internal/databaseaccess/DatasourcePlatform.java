@@ -17,7 +17,6 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.sequencing.*;
-import org.eclipse.persistence.sessions.DatabaseSession;
 
 /**
  * DatasourcePlatform is private to TopLink. It encapsulates behavior specific to a datasource platform
@@ -395,6 +394,10 @@ public class DatasourcePlatform implements Platform {
     }
 
     public boolean isOracle() {
+        return false;
+    }
+
+    public boolean isOracle9() {
         return false;
     }
 

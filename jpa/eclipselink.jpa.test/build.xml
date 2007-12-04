@@ -1,4 +1,4 @@
-<project name="Eclipse Persistence Services Testing" default="package" basedir=".">
+<project name="Eclipse Persistence Services Testing" default="all" basedir=".">
 
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
@@ -6,28 +6,47 @@
 
     <property name="test.properties" location="${eclipselink.jpa.test}/test.properties"/>
     <property file="${test.properties}"/>
-	
+
     <property name="test.class" value="org.eclipse.persistence.testing.tests.jpa.FullRegressionTestSuite"/>
     <property name="eclipselink.logging.level" value="INFO"/>
-	
+
+    <available file="${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
+
+    <target name="config-trunk" if="is.trunk">
+        <path id="compile.path">
+            <pathelement path="${eclipselink.core.trunk}/${classes.dir}"/>
+            <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
+            <pathelement path="${eclipselink.core.test.trunk}/${classes.dir}"/>
+            <fileset
+                dir="${eclipselink.core.lib.trunk}"
+                includes="${eclipselink.core.depend}"/>
+            <pathelement path="${eclipselink.jar}"/>
+            <pathelement path="${junit.lib}"/>
+            <pathelement path="${eclipselink.core.lib.trunk}/eclipselink-antlr.jar"/>
+            <pathelement path="${eclipselink.core.lib.trunk}/eclipselink-asm.jar"/>
+        </path>
+    </target>
+
+    <target name="config-flat" unless="is.trunk">
+        <path id="compile.path">
+            <pathelement path="${eclipselink.core}/${classes.dir}"/>
+            <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
+            <pathelement path="${eclipselink.core.test}/${classes.dir}"/>
+            <fileset
+                dir="${eclipselink.core.lib}"
+                includes="${eclipselink.core.depend}"/>
+            <pathelement path="${eclipselink.jar}"/>
+            <pathelement path="${junit.lib}"/>
+            <pathelement path="${eclipselink.core.lib}/eclipselink-antlr.jar"/>
+            <pathelement path="${eclipselink.core.lib}/eclipselink-asm.jar"/>
+        </path>
+    </target>
+
     <!-- all -->
     <target name="all" depends="clean, init, compile, package" description="build EclipseLink testing jars"/>
 
-    <path id="compile.path">
-        <pathelement path="${eclipselink.core}/${classes.dir}"/>
-        <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
-        <pathelement path="${eclipselink.core.test}/${classes.dir}"/>
-        <fileset
-            dir="${eclipselink.core.lib}"
-            includes="${eclipselink.core.depend}"/>
-        <pathelement path="${eclipselink.jar}"/>
-        <pathelement path="${junit.lib}"/>
-        <pathelement path="${eclipselink.core.lib}/eclipselink-antlr.jar"/>
-        <pathelement path="${eclipselink.core.lib}/eclipselink-asm.jar"/>
-    </path>
-	
     <path id="run.classpath">
-    	<pathelement path="${jdbc.driver.jar}"/>
+        <pathelement path="${jdbc.driver.jar}"/>
         <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
         <pathelement path="${eclipselink.jpa.test}/${eclipselink-annotation-model}.jar"/>
         <pathelement path="${eclipselink.jpa.test}/${eclipselink-ddl-generation-model}.jar"/>
@@ -52,7 +71,7 @@
     </target>
 
     <!-- compile --> 
-    <target name="compile" depends="init" description="compile EclipseLink tesing">  
+    <target name="compile" depends="init, config-trunk, config-flat" description="compile EclipseLink tesing">  
         <javac srcdir="${eclipselink.jpa.test}/${src.dir}" 
                destdir="${eclipselink.jpa.test}/${classes.dir}"
                includes="org/eclipse/persistence/testing/**"
@@ -66,13 +85,13 @@
             </classpath>
         </javac>
     </target>
-	
+
     <target name="package" depends="package.annotation, package.ddl, package.xml-only, package.xml-merge, package.validation-failed, package.jpa-advanced-field-access, package.jpa-advanced-properties" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/framework/**/*.class,
                         org/eclipse/persistence/testing/tests/**/*.class"/>
-      </jar>
+        </jar>
     </target>
 
     <target name="package.annotation" depends="">
@@ -186,7 +205,6 @@
         </jar>
     </target>
 
-
     <target name="test" depends="package">
         <echo>Running test with ${test.properties} on ${db.url}</echo>
         <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="256m">
@@ -202,10 +220,8 @@
             </test>
         </junit>
         <fail message="Some of the junit tests failed.  See the ${result.file} file for details." if="junit.failed"/>
-
     </target>
-	
-	
+
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"/>

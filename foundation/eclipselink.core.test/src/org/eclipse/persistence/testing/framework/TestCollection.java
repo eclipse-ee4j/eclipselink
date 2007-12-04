@@ -259,6 +259,17 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     public Vector getTests() {
         return tests;
     }
+    
+    /**
+     * Counts the number of test cases that will be run by this test.
+     * If the tests have not been added yet just return 1.
+     */
+    public int countTestCases() {
+        if (getTests().isEmpty()) {
+            return 1;
+        }
+        return super.countTestCases();
+    }
 
     /**
      * Returns the number of tests in this suite
@@ -297,7 +308,11 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
             }
             execute(executor);
         } catch (Throwable exception) {
-            result.addError(this, exception);
+            if (exception instanceof TestWarningException) {
+                    System.out.println("WARNING: " + exception);
+            } else {
+                result.addError(this, exception);
+            }
         }
     }
 
