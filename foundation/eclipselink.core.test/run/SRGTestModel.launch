@@ -36,6 +36,6 @@
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.eclipse.persistence.testing.tests.SRGTestModel"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="eclipselink.core.test"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx512M&#13;&#10;-Djava.security.manager&#13;&#10;-Djava.security.policy==${workspace_loc:eclipselink.core.test}/resource/java.policy.allpermissions&#13;&#10;-javaagent:${workspace_loc:eclipselink.core.test}/../../eclipselink.jar"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx512M&#13;&#10;-Djava.security.manager&#13;&#10;-Djava.security.policy==${workspace_loc:eclipselink.core.test}/resource/java.policy.allpermissions"/>
 <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:eclipselink.core.test/run}"/>
 </launchConfiguration>
