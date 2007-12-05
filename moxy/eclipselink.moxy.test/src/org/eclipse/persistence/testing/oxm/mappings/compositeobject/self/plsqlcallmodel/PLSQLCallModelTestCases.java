@@ -1,5 +1,9 @@
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel;
 
+import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.JDBCTypes.DATE_TYPE;
+import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.JDBCTypes.NUMERIC_TYPE;
+import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.JDBCTypes.VARCHAR_TYPE;
+import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.OraclePLSQLTypes.PLSQLBoolean;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class PLSQLCallModelTestCases extends XMLMappingTestCases {
@@ -12,21 +16,30 @@ public class PLSQLCallModelTestCases extends XMLMappingTestCases {
     }
 
     protected Object getControlObject() {
-        JDBCObject numericType = new JDBCObject("NUMERIC_TYPE");
-        PLSQLObject booleanType = new PLSQLObject("BOOLEAN");
+        PLSQLrecord r1 = new PLSQLrecord();
+        r1.setRecordName("EMPLOYEE RECORD");
+        r1.setTypeName("emp%ROWTYPE");
+        r1.addField("EMPNO", NUMERIC_TYPE, 4, 0);
+        r1.addField("ENAME", VARCHAR_TYPE, 10);
+        r1.addField("JOB", VARCHAR_TYPE, 9);
+        r1.addField("MGR", NUMERIC_TYPE, 4, 0);
+        r1.addField("HIREDATE", DATE_TYPE);
+        r1.addField("SAL", NUMERIC_TYPE, 7, 2);
+        r1.addField("COMM", NUMERIC_TYPE, 7, 2);
+        r1.addField("DEPTNO", NUMERIC_TYPE, 2, 0);
 
-        JDBCObject secondaryType1 = new JDBCObject("VARCHAR_TYPE");
-        PLSQLObject secondaryType2 = new PLSQLObject("DATE");
+        // PROCEDURE REC_TEST(Z IN EMP%ROWTYPE)
+        PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
+        call.setProcedureName("REC_TEST");
+        call.addNamedArgument("Z", r1);
+        call.addNamedArgument("AA", VARCHAR_TYPE, 40);
+        call.addNamedArgument("BB", PLSQLBoolean);
         
-        PLSQLCall call = new PLSQLCall();
-        call.id = 1;
-        call.arguments.add(new PLSQLargument("X", numericType, secondaryType2));
-        call.arguments.add(new PLSQLargument("Z", booleanType, secondaryType1));
         return call;
     }
 
     public static void main(String[] args) {
-        String[] arguments = { "-c", "oracle.toplink.testing.ox.mappings.compositeobject.self.plsqlcallmodel.PLSQLCallModelTestCases" };
+        String[] arguments = { "-c", "org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.PLSQLCallModelTestCases" };
         junit.textui.TestRunner.main(arguments);
     }
 }

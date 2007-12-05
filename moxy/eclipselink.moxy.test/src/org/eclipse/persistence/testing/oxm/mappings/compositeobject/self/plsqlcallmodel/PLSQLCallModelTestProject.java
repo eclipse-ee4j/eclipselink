@@ -1,146 +1,257 @@
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel;
 
-import javax.xml.namespace.QName;
+import static java.lang.Integer.MIN_VALUE;
 
 import org.xml.sax.Attributes;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.ClassExtractor;
+import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+//import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
+import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.PLSQLargument.IN;
+import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.PLSQLargument.INOUT;
+import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.PLSQLargument.OUT;
 
+@SuppressWarnings("serial")
 public class PLSQLCallModelTestProject extends Project {
+
     public PLSQLCallModelTestProject() {
-        super();
-        addDescriptor(getPLSQLCallDescriptor());
-        addDescriptor(getPLSQLArgumentDescriptor());
-        addDescriptor(getBaseObjectDescriptor());
-        addDescriptor(getJDBCObjectDescriptor());
-        addDescriptor(getPLSQLObjectDescriptor());
-        addDescriptor(getPLSQLComplexDescriptor());
-    }
-    
-    public XMLDescriptor getPLSQLCallDescriptor() {
-        XMLDescriptor plsqlCallDescriptor = new XMLDescriptor();
-        plsqlCallDescriptor.setJavaClass(PLSQLCall.class);
-        plsqlCallDescriptor.descriptorIsAggregate();
-        plsqlCallDescriptor.setDefaultRootElement("plsql-call");
-        XMLDirectMapping idMapping = new XMLDirectMapping();
-        idMapping.setAttributeName("id");
-        idMapping.setXPath("@id");
-        plsqlCallDescriptor.addMapping(idMapping);
-        XMLCompositeCollectionMapping argumentsMapping = new XMLCompositeCollectionMapping();
-        argumentsMapping.setAttributeName("arguments");
-        argumentsMapping.setXPath("arguments/argument");
-        argumentsMapping.setReferenceClass(PLSQLargument.class);
-        plsqlCallDescriptor.addMapping(argumentsMapping);
-        return plsqlCallDescriptor;
-    }
-    
-    public XMLDescriptor getPLSQLArgumentDescriptor() {
-        XMLDescriptor plsqlArgumentDescriptor = new XMLDescriptor();
-        plsqlArgumentDescriptor.setJavaClass(PLSQLargument.class);
-        plsqlArgumentDescriptor.descriptorIsAggregate();
-        XMLDirectMapping nameMapping = new XMLDirectMapping();
-        nameMapping.setAttributeName("name");
-        nameMapping.setXPath("name/text()");
-        plsqlArgumentDescriptor.addMapping(nameMapping);
-        XMLCompositeObjectMapping databaseTypeMapping = new XMLCompositeObjectMapping();
-        databaseTypeMapping.setAttributeName("type");
-        databaseTypeMapping.setReferenceClass(BaseObject.class);
-        databaseTypeMapping.setXPath(".");
-        plsqlArgumentDescriptor.addMapping(databaseTypeMapping);
-        XMLCompositeObjectMapping databaseType2Mapping = new XMLCompositeObjectMapping();
-        databaseType2Mapping.setAttributeName("secondarytype");
-        databaseType2Mapping.setReferenceClass(BaseObject.class);
-        databaseType2Mapping.setXPath("secondary-type");
-        plsqlArgumentDescriptor.addMapping(databaseType2Mapping);
+        setName("PLSQLDeploymentProject");
+
+        addDescriptor(buildDatabaseTypeWrapperDescriptor());
+        addDescriptor(buildJDBCTypeWrapperDescriptor());
+        addDescriptor(buildSimplePLSQLTypeWrapperDescriptor());
+        addDescriptor(buildComplexPLSQLTypeWrapperDescriptor());
+        addDescriptor(buildPLSQLargumentDescriptor());
+        addDescriptor(buildPLSQLStoredProcedureCallDescriptor());
+        addDescriptor(buildPLSQLrecordDescriptor());
         
-        return plsqlArgumentDescriptor;
+        setDatasourceLogin(new XMLLogin(new DOMPlatform()));
     }
 
-    public XMLDescriptor getBaseObjectDescriptor() {
-        XMLDescriptor baseObjectDescriptor = new XMLDescriptor();
-        baseObjectDescriptor.setJavaClass(BaseObject.class);
-        baseObjectDescriptor.descriptorIsAggregate();
-        baseObjectDescriptor.setDefaultRootElement("type");
-        baseObjectDescriptor.getInheritancePolicy().setClassExtractor(new ClassExtractor() {
-            public Class<?> extractClassFromRow(Record databaseRow, Session session) {
-                if (databaseRow instanceof UnmarshalRecord) {
-                    UnmarshalRecord urec = (UnmarshalRecord) databaseRow;
-                    Attributes atts = urec.getAttributes();
-                    for (int i=0; i<atts.getLength(); i++) {
-                        String qName = atts.getQName(i);
-                        if (qName.equals("plsql-type")) {
-                            return PLSQLObject.class;
-                        }
-                        if (qName.equals("plsql-record")) {
-                            return ComplexPLSQLObject.class;
-                        }
-                        return JDBCObject.class;
-                    }
-                }
-                DOMRecord drec = (DOMRecord) databaseRow;
-                if (drec.get(new XMLField("@plsql-type")) != null) {
-                    return PLSQLObject.class;
-                }
-                if (drec.get(new XMLField("@plsql-record")) != null) {
-                    return ComplexPLSQLObject.class;
-                }
-                return JDBCObject.class;
-            }
-        });
-        return baseObjectDescriptor;
+    private ClassDescriptor buildComplexPLSQLTypeWrapperDescriptor() {
+
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(ComplexPLSQLTypeWrapper.class);
+        descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
+        descriptor.descriptorIsAggregate();
+
+        XMLCompositeObjectMapping wrappedDatabaseTypeMapping = new XMLCompositeObjectMapping();
+        wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
+        wrappedDatabaseTypeMapping.setXPath(".");
+        wrappedDatabaseTypeMapping.setReferenceClass(PLSQLrecord.class);
+        descriptor.addMapping(wrappedDatabaseTypeMapping);
+
+        return descriptor;
     }
 
-    public XMLDescriptor getJDBCObjectDescriptor() {
-        XMLDescriptor jdbcObjectDescriptor = new XMLDescriptor();
-        jdbcObjectDescriptor.setJavaClass(JDBCObject.class);
-        jdbcObjectDescriptor.descriptorIsAggregate();
-        jdbcObjectDescriptor.getInheritancePolicy().setParentClass(BaseObject.class);
-        jdbcObjectDescriptor.setDefaultRootElementType(new QName("jdbc"));
-        XMLDirectMapping typeMapping = new XMLDirectMapping();
-        typeMapping.setAttributeName("name");
-        typeMapping.setXPath("@jdbc-type");
-        jdbcObjectDescriptor.addMapping(typeMapping);
-        return jdbcObjectDescriptor;
+    private ClassDescriptor buildSimplePLSQLTypeWrapperDescriptor() {
+
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(SimplePLSQLTypeWrapper.class);
+        descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
+        descriptor.descriptorIsAggregate();
+
+        XMLDirectMapping wrappedDatabaseTypeMapping = new XMLDirectMapping();
+        wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
+        wrappedDatabaseTypeMapping.setXPath("@plsql-type");
+        EnumTypeConverter oraclePLSQLTypesEnumTypeConverter = new EnumTypeConverter(
+        wrappedDatabaseTypeMapping, OraclePLSQLTypes.class, false);
+        wrappedDatabaseTypeMapping.setConverter(oraclePLSQLTypesEnumTypeConverter);
+        descriptor.addMapping(wrappedDatabaseTypeMapping);
+
+        return descriptor;
     }
 
-    public XMLDescriptor getPLSQLObjectDescriptor() {
-        XMLDescriptor plsqlObjectDescriptor = new XMLDescriptor();
-        plsqlObjectDescriptor.setJavaClass(PLSQLObject.class);
-        plsqlObjectDescriptor.descriptorIsAggregate();
-        plsqlObjectDescriptor.getInheritancePolicy().setParentClass(BaseObject.class);
-        plsqlObjectDescriptor.setDefaultRootElementType(new QName("plsql"));
-        XMLDirectMapping typeMapping2 = new XMLDirectMapping();
-        typeMapping2.setAttributeName("name");
-        typeMapping2.setXPath("@plsql-type");
-        plsqlObjectDescriptor.addMapping(typeMapping2);
-        return plsqlObjectDescriptor;
+    private ClassDescriptor buildJDBCTypeWrapperDescriptor() {
+
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(JDBCTypeWrapper.class);
+        descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
+        descriptor.descriptorIsAggregate();
+
+        XMLDirectMapping wrappedDatabaseTypeMapping = new XMLDirectMapping();
+        wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
+        wrappedDatabaseTypeMapping.setXPath("@jdbc-type");
+        EnumTypeConverter jdbcTypesEnumTypeConverter = new EnumTypeConverter(
+        wrappedDatabaseTypeMapping, JDBCTypes.class, false);
+        wrappedDatabaseTypeMapping.setConverter(jdbcTypesEnumTypeConverter);
+        descriptor.addMapping(wrappedDatabaseTypeMapping);
+
+        return descriptor;
     }
 
-    public XMLDescriptor getPLSQLComplexDescriptor() {
-        XMLDescriptor plsqlComplexDescriptor = new XMLDescriptor();
-        plsqlComplexDescriptor.setJavaClass(ComplexPLSQLObject.class);
-        plsqlComplexDescriptor.descriptorIsAggregate();
-        plsqlComplexDescriptor.getInheritancePolicy().setParentClass(BaseObject.class);
-        plsqlComplexDescriptor.setDefaultRootElementType(new QName("plsql-record"));
-        XMLDirectMapping nameMapping2 = new XMLDirectMapping();
-        nameMapping2.setAttributeName("name");
-        nameMapping2.setXPath("@plsql-record");
-        plsqlComplexDescriptor.addMapping(nameMapping2);
+    protected ClassDescriptor buildPLSQLrecordDescriptor() {
+
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(PLSQLrecord.class);
+        descriptor.descriptorIsAggregate();
+
+        XMLDirectMapping nameMapping = new XMLDirectMapping();
+        nameMapping.setAttributeName("recordName");
+        nameMapping.setXPath("@plsql-record");
+        descriptor.addMapping(nameMapping);
+
+        XMLDirectMapping typeNameMapping = new XMLDirectMapping();
+        typeNameMapping.setAttributeName("typeName");
+        typeNameMapping.setXPath("type-name/text()");
+        descriptor.addMapping(typeNameMapping);
+
+        XMLDirectMapping compatibleTypeMapping = new XMLDirectMapping();
+        compatibleTypeMapping.setAttributeName("compatibleType");
+        compatibleTypeMapping.setXPath("compatible-type/text()");
+        descriptor.addMapping(compatibleTypeMapping);
+
         XMLCompositeCollectionMapping fieldsMapping = new XMLCompositeCollectionMapping();
         fieldsMapping.setAttributeName("fields");
         fieldsMapping.setReferenceClass(PLSQLargument.class);
         fieldsMapping.setXPath("fields/field");
-        plsqlComplexDescriptor.addMapping(fieldsMapping);
-        return plsqlComplexDescriptor;
+        descriptor.addMapping(fieldsMapping);
+
+        return descriptor;
+    }
+
+    public static final String PLSQL_RECORD_INDICATOR = "plsql-record";
+    public static final String PLSQL_TYPE_INDICATOR = "plsql-type";
+    public static final String JDBC_TYPE_INDICATOR = "jdbc-type";
+    protected ClassDescriptor buildDatabaseTypeWrapperDescriptor() {
+
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(DatabaseTypeWrapper.class);
+        descriptor.getInheritancePolicy().setClassExtractor(new ClassExtractor() {
+            @Override
+            public Class<?> extractClassFromRow(Record databaseRow, Session session) {
+                if (databaseRow instanceof UnmarshalRecord) {
+                    UnmarshalRecord unmarshalRecord = (UnmarshalRecord)databaseRow;
+                    Attributes attributes = unmarshalRecord.getAttributes();
+                    for (int i = 0, l = attributes.getLength(); i < l; i++) {
+                        String qName = attributes.getQName(i);
+                        if (PLSQL_RECORD_INDICATOR.equals(qName)) {
+                            return ComplexPLSQLTypeWrapper.class;
+                        }
+                        if (PLSQL_TYPE_INDICATOR.equals(qName)) {
+                            return SimplePLSQLTypeWrapper.class;
+                        }
+                        return JDBCTypeWrapper.class;
+                    }
+                }
+                Class<?> clz = null;
+                DOMRecord domRecord = (DOMRecord)databaseRow;
+                Object o = domRecord.get("@" + PLSQL_RECORD_INDICATOR);
+                if (o != null) {
+                    clz = ComplexPLSQLTypeWrapper.class;
+                }
+                else {
+                    o = domRecord.get("@" + PLSQL_TYPE_INDICATOR);
+                    if (o != null) {
+                        clz = SimplePLSQLTypeWrapper.class; 
+                    }
+                    else {
+                        o = domRecord.get("@" + JDBC_TYPE_INDICATOR);
+                        if (o != null) {
+                            clz = JDBCTypeWrapper.class;
+                        }
+                    }
+                }
+                return clz;
+            }
+        });
+        descriptor.descriptorIsAggregate();
+
+        return descriptor;
+    }
+
+    protected ClassDescriptor buildPLSQLargumentDescriptor() {
+
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(PLSQLargument.class);
+        descriptor.descriptorIsAggregate();
+
+        XMLDirectMapping nameMapping = new XMLDirectMapping();
+        nameMapping.setAttributeName("name");
+        nameMapping.setXPath("name/text()");
+        descriptor.addMapping(nameMapping);
+
+        XMLDirectMapping indexMapping = new XMLDirectMapping();
+        indexMapping.setAttributeName("index");
+        indexMapping.setXPath("index/text()");
+        indexMapping.setNullValue(-1);
+        descriptor.addMapping(indexMapping);
+
+        XMLDirectMapping directionMapping = new XMLDirectMapping();
+        directionMapping.setAttributeName("direction");
+        directionMapping.setXPath("direction/text()");
+        ObjectTypeConverter directionConverter = new ObjectTypeConverter();
+        directionConverter.addConversionValue("IN", IN);
+        directionConverter.addConversionValue("INOUT", INOUT);
+        directionConverter.addConversionValue("OUT", OUT);
+        directionMapping.setConverter(directionConverter);
+        directionMapping.setNullValue(IN);
+        descriptor.addMapping(directionMapping);
+
+        XMLDirectMapping lengthMapping = new XMLDirectMapping();
+        lengthMapping.setAttributeName("length");
+        lengthMapping.setXPath("length/text()");
+        lengthMapping.setNullValue(255);
+        descriptor.addMapping(lengthMapping);
+
+        XMLDirectMapping precisionMapping = new XMLDirectMapping();
+        precisionMapping.setAttributeName("precision");
+        precisionMapping.setXPath("precision/text()");
+        precisionMapping.setNullValue(MIN_VALUE);
+        descriptor.addMapping(precisionMapping);
+
+        XMLDirectMapping scaleMapping = new XMLDirectMapping();
+        scaleMapping.setAttributeName("scale");
+        scaleMapping.setXPath("scale/text()");
+        scaleMapping.setNullValue(MIN_VALUE);
+        descriptor.addMapping(scaleMapping);
+
+        XMLDirectMapping cursorOutputMapping = new XMLDirectMapping();
+        cursorOutputMapping.setAttributeName("cursorOutput");
+        cursorOutputMapping.setXPath("@cursorOutput");
+        cursorOutputMapping.setNullValue(Boolean.FALSE);
+        descriptor.addMapping(cursorOutputMapping);
+
+        XMLCompositeObjectMapping databaseTypeMapping = new XMLCompositeObjectMapping();
+        databaseTypeMapping.setAttributeName("databaseTypeWrapper");
+        databaseTypeMapping.setReferenceClass(DatabaseTypeWrapper.class);
+        databaseTypeMapping.setXPath(".");
+        descriptor.addMapping(databaseTypeMapping);
+
+        return descriptor;
+    }
+
+    protected XMLDescriptor buildPLSQLStoredProcedureCallDescriptor() {
+
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(PLSQLStoredProcedureCall.class);
+        descriptor.setDefaultRootElement("plsql-stored-procedure-call");
+        descriptor.descriptorIsAggregate();
+
+        XMLDirectMapping procedureNameMapping = new XMLDirectMapping();
+        procedureNameMapping.setAttributeName("procedureName");
+        procedureNameMapping.setXPath("procedure-name/text()");
+        descriptor.addMapping(procedureNameMapping);
+
+        XMLCompositeCollectionMapping argumentsMapping = new XMLCompositeCollectionMapping();
+        argumentsMapping.setAttributeName("arguments");
+        argumentsMapping.setXPath("arguments/argument");
+        argumentsMapping.setReferenceClass(PLSQLargument.class);
+        descriptor.addMapping(argumentsMapping);
+
+        return descriptor;
     }
 }

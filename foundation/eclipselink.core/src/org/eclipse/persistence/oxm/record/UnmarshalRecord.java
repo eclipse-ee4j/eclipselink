@@ -99,6 +99,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     private String version;
     private String schemaLocation;
     private String noNamespaceSchemaLocation;
+    private boolean isSelfRecord;
 
     public UnmarshalRecord(TreeObjectBuilder treeObjectBuilder) {
         super();
@@ -115,6 +116,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             }
         }
         fragmentBuilder = new SAXFragmentBuilder(this);
+        isSelfRecord = false;
     }
 
     public String getLocalName() {
@@ -395,7 +397,12 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
     public void endDocument() throws SAXException {
         Object object = this.getCurrentObject();
-
+        if (null != selfRecords) {
+            int selfRecordsSize = selfRecords.size();
+            for (int x = 0; x < selfRecordsSize; x++) {
+                ((UnmarshalRecord)selfRecords.get(x)).endDocument();
+            }
+        }
         try {
             // PROCESS COLLECTION MAPPINGS
             if (null != containersMap) {
@@ -496,14 +503,9 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
         try {
             if (null != selfRecords) {
-                XPathNode selfXPathNode = null;
                 int selfRecordsSize = selfRecords.size();
                 for (int x = 0; x < selfRecordsSize; x++) {
-                    UnmarshalRecord selfRecord = (UnmarshalRecord)selfRecords.get(x);
-                    selfXPathNode = selfRecord.getNonAttributeXPathNode(namespaceURI, localName, qName);
-                    if (null != selfXPathNode) {
-                        selfRecord.startElement(namespaceURI, localName, qName, atts);
-                    }
+                    ((UnmarshalRecord)selfRecords.get(x)).startElement(namespaceURI, localName, qName, atts);
                 }
             }
 
@@ -600,7 +602,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public void startUnmappedElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        if ((null != selfRecords) || (null == xmlReader)) {
+        if ((null != selfRecords) || (null == xmlReader) || isSelfRecord()) {
             return;
         }
         Class unmappedContentHandlerClass = unmarshaller.getUnmappedContentHandlerClass();
@@ -657,10 +659,15 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
             typeQName = null;
             levelIndex--;
-            if ((0 == levelIndex) && (null != getParentRecord())) {
+            if ((0 == levelIndex) && (null != getParentRecord()) && !isSelfRecord()) {
                 endDocument();
-                getParentRecord().endElement(namespaceURI, localName, qName);
-                xmlReader.setContentHandler(getParentRecord());
+                // don't endElement on, or pass control to, a 'self' parent
+                UnmarshalRecord pRec = getParentRecord();
+                while (pRec.isSelfRecord()) {
+                    pRec = pRec.getParentRecord();
+                }
+                pRec.endElement(namespaceURI, localName, qName);
+                xmlReader.setContentHandler(pRec);
             }
         } catch (EclipseLinkException e) {
             if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
@@ -878,5 +885,25 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public void endDTD() {
+    }
+
+    /**
+     * Sets the flag which indicates if this UnmarshalRecord 
+     * represents a 'self' record
+     * 
+     * @param isSelfRecord true if this record represents 
+     * 'self', false otherwise
+     */
+    public void setSelfRecord(boolean isSelfRecord) { 
+    	this.isSelfRecord = isSelfRecord; 
+    }
+    
+    /**
+     * Indicates if this UnmarshalRecord represents a 'self' record
+     * 
+     * @return true if this record represents 'self', false otherwise
+     */
+    public boolean isSelfRecord() { 
+    	return isSelfRecord; 
     }
 }

@@ -56,7 +56,7 @@ public abstract class OXTestCase extends XMLTestCase {
     public static final String PLATFORM_SAX = "SAX";
     public static final String METADATA_KEY = "metadataType";
     public static final String METADATA_JAVA = "JAVA";
-    public static final String METADATA_TOPLINK = "TOPLINK";
+    public static final String METADATA_TOPLINK = "XML_TOPLINK";
     public static final String METADATA_XML_ECLIPSELINK = "XML_ECLIPSELINK";
     
     public OXTestCase(String name) {

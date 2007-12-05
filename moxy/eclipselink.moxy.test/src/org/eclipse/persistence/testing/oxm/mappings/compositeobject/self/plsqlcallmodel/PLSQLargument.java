@@ -1,37 +1,97 @@
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel;
 
-public class PLSQLargument extends BaseObject {
-    public BaseObject type;
-    public BaseObject secondarytype;
+import static java.lang.Integer.MIN_VALUE;
+
+public class PLSQLargument{
+
+    public static final Integer IN = Integer.valueOf(1);
+    public static final Integer OUT = Integer.valueOf(2);
+    public static final Integer INOUT = Integer.valueOf(3);
+    
+    public String name;
+    public int index = MIN_VALUE;
+    public int direction = IN;
+    public int length = 255;          //default from the EJB 3.0 spec.
+    public int precision = MIN_VALUE;
+    public int scale = MIN_VALUE;
+    public boolean cursorOutput = false;
+    public DatabaseTypeWrapper databaseTypeWrapper;
 
     public PLSQLargument() {
-        super();
     }
 
-    public PLSQLargument(String name, BaseObject type, BaseObject secondarytype) {
-        super(name);
-        this.type = type;
-        this.secondarytype = secondarytype;
-    }
-
-    public String toString() {
-        return "PLSQLargument(name="+name+", type="+type+", secondary type="+secondarytype+")";
+    public PLSQLargument(String name, DatabaseType databaseType) {
+        this(name, -1, IN, databaseType);
     }
     
+    public PLSQLargument(String name, int index, int direction, DatabaseType databaseType) {
+        this.name = name;
+        this.index = index;
+        this.direction = direction;
+        if (!databaseType.isComplexDatabaseType() && databaseType.isJDBCType()) {
+            databaseTypeWrapper = new JDBCTypeWrapper(databaseType);
+        }
+        else if (!databaseType.isComplexDatabaseType() && !databaseType.isJDBCType()) {
+            databaseTypeWrapper = new SimplePLSQLTypeWrapper(databaseType);
+        }
+        else if (databaseType.isComplexDatabaseType()) {
+            databaseTypeWrapper = new ComplexPLSQLTypeWrapper(databaseType);
+        }
+    }
+    
+    public PLSQLargument(String name, int index, int direction, DatabaseType databaseType,
+        int length) {
+        this(name, index, direction, databaseType);
+        this.length = length;
+    }
+    
+    public PLSQLargument(String name, int index, int direction, DatabaseType databaseType,
+        int precision, int scale) {
+        this(name, index, direction, databaseType);
+        this.precision = precision;
+        this.scale = scale;
+    }
+
+    public void useNamedCursorOutputAsResultSet() {
+        cursorOutput = true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(name);
+        sb.append('{');
+        if (direction == IN) {
+            sb.append("IN");
+        }
+        else if (direction == INOUT) {
+            sb.append("INOUT");
+        }
+        else if (direction == OUT) {
+            sb.append("OUT");
+        }
+        sb.append(',');
+        sb.append(index);
+        sb.append('}');
+        return sb.toString();
+    } 
+
     public boolean equals(Object obj) {
-        PLSQLargument argObj;
+        PLSQLargument pArg = null;
         try {
-            argObj = (PLSQLargument) obj;
-        } catch (Exception x) {
+            pArg = (PLSQLargument) obj;
+        } catch (ClassCastException ccex) {
             return false;
         }
-        if (!argObj.name.equals(this.name)) {
+        if (!pArg.name.equals(this.name)) {
             return false;
         }
-        if (!argObj.type.equals(this.type)) {
+        if (pArg.direction != this.direction) {
             return false;
         }
-        if (!argObj.secondarytype.equals(this.secondarytype)) {
+        if (pArg.index != this.index) {
+            return false;
+        }
+        if (!pArg.databaseTypeWrapper.equals(this.databaseTypeWrapper)) {
             return false;
         }
         return true;

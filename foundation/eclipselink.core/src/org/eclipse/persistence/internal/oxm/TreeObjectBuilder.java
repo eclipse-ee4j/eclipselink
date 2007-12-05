@@ -247,16 +247,6 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     }
 
     public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, XMLMarshaller marshaller) {
-       if (rootXPathNode.getSelfChildren() != null) {
-            XPathNode childNode;
-            NamespaceResolver namespaceResolver;
-            for (int x = 0; x < rootXPathNode.getSelfChildren().size(); x++) {
-                childNode = (XPathNode)rootXPathNode.getSelfChildren().get(x);
-                namespaceResolver = ((XMLDescriptor)this.getDescriptor()).getNamespaceResolver();
-                childNode.marshalSelfAttributes((MarshalRecord)record, object, session, namespaceResolver, marshaller);
-            }
-        }
-        
         if (null == getRootXPathNode().getNonAttributeChildren()) {
             return record;
         }
@@ -289,6 +279,16 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             namespaceResolver = ((XMLDescriptor)this.getDescriptor()).getNamespaceResolver();
             hasValue = rootXPathNode.getAnyAttributeNode().marshal(marshalRecord, object, session, namespaceResolver) || hasValue;
         }
+        
+        if (rootXPathNode.getSelfChildren() != null) {
+            XPathNode childNode;
+            for (int x = 0; x < rootXPathNode.getSelfChildren().size(); x++) {
+                childNode = (XPathNode)rootXPathNode.getSelfChildren().get(x);
+                namespaceResolver = ((XMLDescriptor)this.getDescriptor()).getNamespaceResolver();
+                childNode.marshalSelfAttributes(marshalRecord, object, session, namespaceResolver, marshalRecord.getMarshaller());
+            }
+        }
+        
         return hasValue;
     }
 

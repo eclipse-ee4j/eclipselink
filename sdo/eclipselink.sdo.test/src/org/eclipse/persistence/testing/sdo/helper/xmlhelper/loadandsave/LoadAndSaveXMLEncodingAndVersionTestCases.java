@@ -15,7 +15,7 @@ import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 
 public class LoadAndSaveXMLEncodingAndVersionTestCases extends LoadAndSaveTestCases {
-    private static String VERSION = "1.0";
+    static String VERSION = "1.0";
     private static String ENCODING = "windows-1252";
     public LoadAndSaveXMLEncodingAndVersionTestCases(String name) {
         super(name);

@@ -38,12 +38,15 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
         byte[] bytes = new byte[inputStream.available()];
         inputStream.read(bytes);
         XMLDocument document = xmlHelper.load(new String(bytes));
-        verifyAfterLoad(document);
+        // Don't call verifyAfterLoad(document) here as encoding info is not supported by all parsers
+        // Simply verify that the version is correct
+        assertTrue(document.getXMLVersion().equals(LoadAndSaveXMLEncodingAndVersionTestCases.VERSION));
 
         StringWriter writer = new StringWriter();
         xmlHelper.save(document, writer, null);
-        compareXML(getControlWriteFileName(), writer.toString());
-
+        // Encoding does not apply to this test, so compare to simpleElement.xml, 
+        // not simpleElementEncoding.xml
+        compareXML(getControlDataObjectFileName(), writer.toString());
     }
 
     public void testClassGenerationLoadAndSave() throws Exception {
