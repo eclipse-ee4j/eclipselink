@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Calendar;
 import java.util.Hashtable;
@@ -58,7 +59,12 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */ 
     protected boolean supportsIdentity;
 
-    /**
+    public OraclePlatform(){
+    	super();
+    	this.pingSQL = "SELECT 1 FROM DUAL";
+    }
+    
+    /*
      * Used for stored procedure definitions.
      */
     public boolean allowsSizeInProcedureArguments() {
@@ -769,4 +775,32 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public boolean isAlterSequenceObjectSupported() {
         return true;
     }
+
+    /**
+     * INTERNAL:
+     * A call to this method will perform a platform based check on the connection and exception
+     * error code to dermine if the connection is still valid or if a communication error has occurred.
+     * If a communication error has occurred then the query may be retried.
+     * If this platform is unable to determine if the error was communication based it will return
+     * false forcing the error to be thrown to the user.
+     */
+    
+    public boolean wasFailureCommunicationBased(SQLException exception, Connection connection, AbstractSession sessionForProfile){
+        if (exception != null){
+            if (exception.getErrorCode() == 17410){
+                return true;
+            }
+            if (exception.getErrorCode() == 17002){
+        	      return true;
+            }
+            if (exception.getErrorCode() == 2399){
+                return true;
+            }
+            if (exception.getErrorCode() == 2396){
+                return true;
+            }
+        }
+        return super.wasFailureCommunicationBased(exception, connection, sessionForProfile);
+    }
+
 }

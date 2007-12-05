@@ -21,7 +21,6 @@ import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sessions.*;
 
 /**
  * <p>
@@ -67,6 +66,28 @@ public class DatabaseLogin extends DatasourceLogin {
     /**The names of the TopLink SDK XML Support JAR files*/
     public static java.lang.String[] xmlParserJARFileNames;
 
+    /** Stores the value for the number of time TopLink will attempt to reconnect the connection on a comm failure
+     *  in the case TopLink is attempting to retry a query.  TopLink will retry a read query outside of a transaction
+     *  if TopLink can determine that a communication error occured with the database.  
+     */
+    protected int queryRetryAttemptCount;
+    
+    /** Stores the number of milliseconds that TopLink will wait between attempts to reconnect a DatabaseConnection
+     *  in the case TopLink is attempting to retry a query.  TopLink will retry a read query outside of a transaction
+     *  if TopLink can determine that a communication error occured with the database.
+     */
+    protected int delayBetweenConnectionAttempts;
+    
+    /**
+     * This value defaults to true and on an SQL Exception TopLink will ping the database to determine
+     * if the connection used can continue to be used for queries.  This should have no impact on applications
+     * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
+     * If that is the case and the application is experiencing a performance impact from the health check then
+     * this feature can be turned off. Turning this feature off will prevent TopLink from being able to
+     * retry queries in the case of database failure. 
+     */
+    protected boolean connectionHealthValidatedOnError;
+    
     /**
      * PUBLIC:
      * Create a new login.
@@ -82,6 +103,9 @@ public class DatabaseLogin extends DatasourceLogin {
     public DatabaseLogin(DatabasePlatform databasePlatform) {
         super(databasePlatform);
         this.useDefaultDriverConnect();
+        this.delayBetweenConnectionAttempts = 5000;
+        this.queryRetryAttemptCount = 3;
+        this.connectionHealthValidatedOnError = true;
     }
 
     /**
@@ -345,6 +369,17 @@ public class DatabaseLogin extends DatasourceLogin {
     }
 
     /**
+     * PUBLIC:
+     * TopLink will attempt to test a connection if it encounters an exception on the connection
+     * when executing SQL.  This attribute represents the SQL query that will be executed by TopLink.
+     * By default TopLink uses a query that should be correct for the specified platform but users
+     * may need or want to override that query.
+     */
+    public String getPingSQL(){
+        return getPlatform().getPingSQL();
+    }
+    
+    /**
      * OBSOLETE:
      * Return the name of the column in the TopLink sequence table
      * that holds the current value for a given sequence (e.g. "SEQ_COUNT").
@@ -375,6 +410,18 @@ public class DatabaseLogin extends DatasourceLogin {
     //CR#2407  This method is added to include table qualifier. 
     public String getQualifiedSequenceTableName() {
         return getPlatform().getQualifiedSequenceTableName();
+    }
+
+    /**
+     * PUBLIC:
+     * Return the number of attempts TopLink should make to re-connect to a database and re-execute 
+     * a query after a query has failed because of a communication issue.
+     * TopLink will only attempt to reconnect when TopLink can determine that a communication failure occurred
+     * on a read query executed outside of a transaction.  By default TopLink will attempt to retry the
+     * query 3 times, by setting this value to 0 TopLink will not retry queries.
+     */
+    public int getQueryRetryAttemptCount() {
+        return queryRetryAttemptCount;
     }
 
     /**
@@ -750,6 +797,29 @@ public class DatabaseLogin extends DatasourceLogin {
      */
     public void setODBCDataSourceName(String dataSourceName) {
         setDatabaseURL(dataSourceName);
+    }
+
+    /**
+     * PUBLIC:
+     * TopLink will attempt to test a connection if it encounters an exception on the connection
+     * when executing SQL.  This attribute represents the SQL query that will be executed by TopLink.
+     * By default TopLink uses a query that should be correct for the specified platform but users
+     * may need or want to override that query.
+     */
+    public void setPingSQL(String pingSQL){
+        getPlatform().setPingSQL(pingSQL);
+    }
+    
+    /**
+     * PUBLIC:
+     * Set the number of attempts TopLink should make to re-connect to a database and re-execute 
+     * a query after a query has failed because of a communication issue.
+     * TopLink will only attempt to reconnect when TopLink can determine that a communication failure occurred
+     * on a read query executed outside of a transaction.  By default TopLink will attempt to retry the
+     * query 3 times, by setting this value to 0 TopLink will not retry queries.
+     */
+    public void setQueryRetryAttemptCount(int queryRetryAttemptCount) {
+        this.queryRetryAttemptCount = queryRetryAttemptCount;
     }
 
     /**
@@ -1785,5 +1855,51 @@ public class DatabaseLogin extends DatasourceLogin {
     public void useWebLogicThinDriver() {
         setDriverClassName("weblogic.jdbc.t3.Driver");
         setDriverURLHeader("jdbc:weblogic:t3:");
+    }
+    /** 
+     * PUBLIC:
+     * Returns the number of milliseconds that TopLink will wait between attempts to reconnect a DatabaseConnection
+     * in the case TopLink is attempting to retry a query, the default is 5000.  TopLink will retry a read query outside of a transaction
+     * if TopLink can determine that a communication error occured with the database.
+     */
+    public int getDelayBetweenConnectionAttempts() {
+        return delayBetweenConnectionAttempts;
+    }
+
+    /** 
+     * PUBLIC:
+     * Stores the number of milliseconds that TopLink will wait between attempts to reconnect a DatabaseConnection
+     * in the case TopLink is attempting to retry a query.  TopLink will retry a read query outside of a transaction
+     * if TopLink can determine that a communication error occured with the database.
+     */
+    public void setDelayBetweenConnectionAttempts(int delayBetweenConnectionAttempts) {
+        this.delayBetweenConnectionAttempts = delayBetweenConnectionAttempts;
+    }
+
+    /**
+     * PUBLIC:
+     * This value defaults to true if 'ping SQL' is available on the platform.
+     * On an SQL Exception TopLink will ping the database to determine
+     * if the connection used can continue to be used for queries.  This should have no impact on applications
+     * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
+     * If that is the case and the application is experiencing a performance impact from the health check then
+     * this feature can be turned off. Turning this feature off will prevent TopLink from being able to
+     * retry queries in the case of database failure. 
+     */
+    public boolean isConnectionHealthValidatedOnError() {
+        return connectionHealthValidatedOnError && getPingSQL() != null;
+    }
+
+    /**
+     * PUBLIC:
+     * This value defaults to true and on an SQL Exception TopLink will ping the database to determine
+     * if the connection used can continue to be used for queries.  This should have no impact on applications
+     * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
+     * If that is the case and the application is experiencing a performance impact from the health check then
+     * this feature can be turned off. Turning this feature off will prevent TopLink from being able to
+     * retry queries in the case of database failure. 
+     */
+    public void setConnectionHealthValidatedOnError(boolean isConnectionHealthValidatedOnError) {
+        this.connectionHealthValidatedOnError = isConnectionHealthValidatedOnError;
     }
 }

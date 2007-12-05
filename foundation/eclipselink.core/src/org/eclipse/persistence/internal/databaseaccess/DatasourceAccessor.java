@@ -78,6 +78,13 @@ public abstract class DatasourceAccessor implements Accessor {
     /** Keep track of whether the accessor is "connected". */
     protected boolean isConnected;
 
+    /**
+     *  This attribute is used to determine if the connection should be returned to the pool or
+     *  removed from the pool and closed.  It will be set to false if an exception occurs durring
+     *  Call execution.
+     */
+    protected boolean isValid;
+
     /** PERF: Cache platform to avoid gets (small but can add up). */
     /** This is also required to ensure all accessors for a session are using the same platform. */
     protected DatasourcePlatform platform;
@@ -89,6 +96,7 @@ public abstract class DatasourceAccessor implements Accessor {
         this.isInTransaction = false;
         this.callCount = 0;
         this.isConnected = false;
+        this.isValid = true;
     }
 
     /**
@@ -124,12 +132,29 @@ public abstract class DatasourceAccessor implements Accessor {
     }
 
     /**
+     * This should be set to false if a communication failure occurred durring a call execution.  
+     * In the case of an invalid accessor the Accessor will not be returned to the pool.
+     */
+    public void setIsValid(boolean isValid){
+        this.isValid = isValid;
+    }
+    
+    /**
      * Return the transaction status of the receiver.
      */
     public boolean isInTransaction() {
         return isInTransaction;
     }
 
+    /**
+     * Returns true if this Accessor can continue to be used.  This will be false if a communication
+     * failure occurred durring a call execution.  In the case of an invalid accessor the Accessor
+     * will not be returned to the pool.
+     */
+    public boolean isValid(){
+        return this.isValid;
+    }
+    
     /**
      * Return true if some external connection pool is in use.
      */
@@ -450,6 +475,7 @@ public abstract class DatasourceAccessor implements Accessor {
         }
         reconnect(session);
         setIsInTransaction(false);
+        this.isValid = true;
         session.getEventManager().postConnect(this);
     }
 

@@ -116,6 +116,7 @@ public class TestRunModel extends TestModel {
             tests.addElement("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionTypeTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionCustomSQLTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionInsuranceObjectRelationalTestModel");
+            tests.addElement("org.eclipse.persistence.testing.tests.failover.FailoverTestModel");
         }
 
         // ** All new tests should be in light, unless they require specific db/config support

@@ -315,6 +315,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "ox_lowering_session_logging_from_default_info_to_warning", " {0} Lowering session logging from default INFO to WARNING level."},
         
         { "cannot_get_server_name_and_version", "Cannot get server name and version because of the following exception.  {0}"},
+        { "communication_failure_attempting_query_retry", "Communication failure detected when attempting to perform read query outside of a transaction. Attempting to retry query."},
+        { "communication_failure_attempting_begintransaction_retry", "Communication failure detected when attempting to create transaction on database.  Attempting to retry begin transaction."},
 
         
         
@@ -542,7 +544,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "ox_turn_global_logging_off.MSGID", "TOP-50199"},
         { "ox_lowering_global_logging_from_default_info_to_warning.MSGID", "TOP-50200"},
         { "ox_turn_session_logging_off.MSGID", "TOP-50201"},
-        { "ox_lowering_session_logging_from_default_info_to_warning.MSGID", "TOP-50202"}
+        { "ox_lowering_session_logging_from_default_info_to_warning.MSGID", "TOP-50202"},
+        { "communication_failure_attempting_query_retry.MSGID", "TOP-50203"},
+        { "communication_failure_attempting_begintransaction_retry.MSGID","TOP-50204"}
     }; 
      
     /**

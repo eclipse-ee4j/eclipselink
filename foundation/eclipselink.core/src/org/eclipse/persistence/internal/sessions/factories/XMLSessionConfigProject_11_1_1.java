@@ -12,6 +12,7 @@ package org.eclipse.persistence.internal.sessions.factories;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.oc4j.Oc4j_11_1_1_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.SunAS9PlatformConfig;
@@ -54,6 +55,39 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
 
         XMLDirectMapping bindAllParametersMapping = (XMLDirectMapping)descriptor.getMappingForAttributeName("m_bindAllParameters");
         bindAllParametersMapping.setNullValue(new Boolean(BIND_ALL_PARAMETERS_DEFAULT));
+
+        XMLDirectMapping validateConnectionHealthOnErrorMapping = new XMLDirectMapping();
+        validateConnectionHealthOnErrorMapping.setAttributeName("connectionHealthValidatedOnError");
+        validateConnectionHealthOnErrorMapping.setGetMethodName("isConnectionHealthValidatedOnError");
+        validateConnectionHealthOnErrorMapping.setSetMethodName("setConnectionHealthValidatedOnError");
+        validateConnectionHealthOnErrorMapping.setXPath("toplink:connection-health-validated-on-error/text()");
+        validateConnectionHealthOnErrorMapping.setNullPolicy(new NullPolicy(null, false, false, false));
+        validateConnectionHealthOnErrorMapping.setNullValue(true);
+        descriptor.addMapping(validateConnectionHealthOnErrorMapping);
+
+        XMLDirectMapping delayBetweenReconnectAttempts = new XMLDirectMapping();
+        delayBetweenReconnectAttempts.setAttributeName("delayBetweenConnectionAttempts");
+        delayBetweenReconnectAttempts.setGetMethodName("getDelayBetweenConnectionAttempts");
+        delayBetweenReconnectAttempts.setSetMethodName("setDelayBetweenConnectionAttempts");
+        delayBetweenReconnectAttempts.setXPath("toplink:delay-between-reconnect-attempts/text()");
+        delayBetweenReconnectAttempts.setNullPolicy(new NullPolicy(null, false, false, false));
+        descriptor.addMapping(delayBetweenReconnectAttempts);
+
+        XMLDirectMapping queryRetryAttemptCount = new XMLDirectMapping();
+        queryRetryAttemptCount.setAttributeName("queryRetryAttemptCount");
+        queryRetryAttemptCount.setGetMethodName("getQueryRetryAttemptCount");
+        queryRetryAttemptCount.setSetMethodName("setQueryRetryAttemptCount");
+        queryRetryAttemptCount.setXPath("toplink:query-retry-attempt-count/text()");
+        queryRetryAttemptCount.setNullPolicy(new NullPolicy(null, false, false, false));
+        descriptor.addMapping(queryRetryAttemptCount);
+
+        XMLDirectMapping pingSQLMapping = new XMLDirectMapping();
+        pingSQLMapping.setAttributeName("pingSQL");
+        pingSQLMapping.setGetMethodName("getPingSQL");
+        pingSQLMapping.setSetMethodName("setPingSQL");
+        pingSQLMapping.setXPath("toplink:ping-sql/text()");
+        pingSQLMapping.setNullPolicy(new NullPolicy(null, false, false, false));
+        descriptor.addMapping(pingSQLMapping);
 
         return descriptor;
     }

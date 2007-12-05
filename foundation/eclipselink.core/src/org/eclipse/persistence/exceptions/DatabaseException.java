@@ -28,6 +28,8 @@ public class DatabaseException extends EclipseLinkException {
     protected transient DatabaseQuery query;
     protected transient AbstractRecord queryArguments;
     protected transient Accessor accessor;
+    protected boolean isCommunicationFailure;
+
     public static final int SQL_EXCEPTION = 4002;
     public static final int CONFIGURATION_ERROR_CLASS_NOT_FOUND = 4003;
     public static final int DATABASE_ACCESSOR_NOT_CONNECTED = 4005;
@@ -294,23 +296,25 @@ public class DatabaseException extends EclipseLinkException {
         if (session == null) {
             return sqlException(exception);
         } else {
-            return sqlException(exception, session.getAccessor(), session);
+            return sqlException(exception, session.getAccessor(), session, false);
         }
     }
     
-    public static DatabaseException sqlException(SQLException exception, Accessor accessor, AbstractSession session) {
+    public static DatabaseException sqlException(SQLException exception, Accessor accessor, AbstractSession session, boolean isCommunicationFailure) {
         DatabaseException databaseException = new DatabaseException(exception);
         databaseException.setErrorCode(SQL_EXCEPTION);
         databaseException.setAccessor(accessor);
         databaseException.setSession(session);
+        databaseException.setCommunicationFailure(isCommunicationFailure);
         return databaseException;
     }
 
-    public static DatabaseException sqlException(SQLException exception, Call call, Accessor accessor, AbstractSession session) {
+    public static DatabaseException sqlException(SQLException exception, Call call, Accessor accessor, AbstractSession session, boolean isCommunicationFailure) {
         DatabaseException databaseException = new DatabaseException(exception);
         databaseException.setErrorCode(SQL_EXCEPTION);
         databaseException.setAccessor(accessor);
         databaseException.setCall(call);
+        databaseException.setCommunicationFailure(isCommunicationFailure);
         return databaseException;
     }
 
@@ -338,4 +342,13 @@ public class DatabaseException extends EclipseLinkException {
         databaseException.setErrorCode(ERROR_RETRIEVE_DB_METADATA_THROUGH_JDBC_CONNECTION);
         return databaseException;
     }
+
+	public boolean isCommunicationFailure() {
+		return isCommunicationFailure;
+	}
+
+	public void setCommunicationFailure(boolean isCommunicationFailure) {
+		this.isCommunicationFailure = isCommunicationFailure;
+	}
+
 }

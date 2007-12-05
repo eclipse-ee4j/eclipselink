@@ -64,7 +64,9 @@ public class ScrollableCursor extends Cursor implements ListIterator {
                 return absolute(size() + rows);
             }
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession());
+            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
         }
     }
 
@@ -86,7 +88,9 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             getResultSet().afterLast();
             setPosition(size() + 1);
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession());
+            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
         }
     }
 
@@ -100,7 +104,9 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             getResultSet().beforeFirst();
             setPosition(0);
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession());
+            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
         }
     }
 
@@ -137,7 +143,9 @@ public class ScrollableCursor extends Cursor implements ListIterator {
                 return getResultSet().first();
             }
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession());
+            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
         }
     }
 
@@ -159,7 +167,9 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             currentPos = getResultSet().getRow();
             getResultSet().last();
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession());
+            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
         }
 
         int size = 0;
@@ -173,7 +183,9 @@ public class ScrollableCursor extends Cursor implements ListIterator {
                 getResultSet().absolute(currentPos);
             }
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession());
+            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
         }
 
         return size;
@@ -214,7 +226,9 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             }
             return position;
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession());
+            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
         }
     }
 
@@ -277,7 +291,9 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             }
             return getResultSet().isAfterLast();
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession());
+            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
         }
     }
 
@@ -306,7 +322,9 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             }
             return getResultSet().isFirst();
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession());
+            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
         }
     }
 
@@ -326,10 +344,14 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             try {
                 return getResultSet().getRow() == getCursorSize();
             } catch (SQLException ex2) {
-                throw DatabaseException.sqlException(ex2, getAccessor(), getSession());
+                DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), ex2, null);
+                if (commException != null) throw commException;
+                throw DatabaseException.sqlException(ex2, getAccessor(), getSession(), false);
             }
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession());
+            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
         }
     }
 
@@ -353,7 +375,9 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             }
             return isLast;
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession());
+            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
         }
     }
 
@@ -491,7 +515,9 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             }
             return suceeded;
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, getAccessor(), getSession());
+            DatabaseException commException = getAccessor().processExceptionForCommError(getSession(), exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, getAccessor(), getSession(), false);
         }
     }
 

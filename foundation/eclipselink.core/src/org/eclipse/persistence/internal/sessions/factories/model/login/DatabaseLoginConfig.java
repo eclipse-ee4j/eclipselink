@@ -33,6 +33,11 @@ public class DatabaseLoginConfig extends LoginConfig {
     private Integer m_lookupType;
     private StructConverterConfig m_structConverterConfig;
 
+    private Boolean m_validateConnectionHealthOnError;
+    private Integer m_delayBetweenConnectionAttempts;
+    private Integer m_queryRetryAttemptCount;
+    private String pingSQL;
+
     public DatabaseLoginConfig() {
         super();
     }
@@ -218,5 +223,36 @@ public class DatabaseLoginConfig extends LoginConfig {
 
     public StructConverterConfig getStructConverterConfig() {
         return m_structConverterConfig;
+    }
+    public Integer getDelayBetweenConnectionAttempts() {
+        return m_delayBetweenConnectionAttempts;
+    }
+
+    public void setDelayBetweenConnectionAttempts(Integer betweenConnectionAttempts) {
+        m_delayBetweenConnectionAttempts = betweenConnectionAttempts;
+    }
+
+    public Integer getQueryRetryAttemptCount() {
+        return m_queryRetryAttemptCount;
+    }
+
+    public void setQueryRetryAttemptCount(Integer retryAttemptCount) {
+        m_queryRetryAttemptCount = retryAttemptCount;
+    }
+
+    public Boolean isConnectionHealthValidatedOnError() {
+        return m_validateConnectionHealthOnError;
+    }
+
+    public void setConnectionHealthValidatedOnError(Boolean connectionHealthOnError) {
+        m_validateConnectionHealthOnError = connectionHealthOnError;
+    }
+
+    public String getPingSQL() {
+        return pingSQL;
+    }
+
+    public void setPingSQL(String pingSQL) {
+        this.pingSQL = pingSQL;
     }
 }

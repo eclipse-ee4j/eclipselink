@@ -188,7 +188,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 getPlatform().beginTransaction(this);
             }
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, this, session);
+            DatabaseException commException = processExceptionForCommError(session, exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, this, session, false);
         }
     }
 
@@ -216,7 +218,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
         try {
             return call.buildOutputRow(statement);
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, call, this, session);
+            DatabaseException commException = processExceptionForCommError(session, exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, this, session, false);
         }
     }
 
@@ -240,7 +244,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 sortedFields = sortFields(fields, columnNames);
             }
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, this, session);
+            DatabaseException commException = processExceptionForCommError(session, exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, this, session, false);
         }
         return sortedFields;
     }
@@ -252,7 +258,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     protected void connectInternal(Login login, AbstractSession session) throws DatabaseException {
         super.connectInternal(login, session);
-        checkTransactionIsolation();
+        checkTransactionIsolation(session);
     }
 
     /**
@@ -261,12 +267,14 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * be done outside of a transaction.
      * Exceptions are caught and re-thrown as TopLink exceptions.
      */
-    protected void checkTransactionIsolation() throws DatabaseException {
+    protected void checkTransactionIsolation(AbstractSession session) throws DatabaseException {
         if ((!isInTransaction()) && (getLogin() != null) && (((DatabaseLogin)getLogin()).getTransactionIsolation() != -1)) {
             try {
                 getConnection().setTransactionIsolation(((DatabaseLogin)getLogin()).getTransactionIsolation());
             } catch (java.sql.SQLException sqlEx) {
-                throw DatabaseException.sqlException(sqlEx, this, null);
+                DatabaseException commException = processExceptionForCommError(session, sqlEx, null);
+                if (commException != null) throw commException;
+                throw DatabaseException.sqlException(sqlEx, this, session, false);
             }
         }
     }
@@ -317,11 +325,13 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Close the result set of the cursored stream.
      */
-    public void closeCursor(ResultSet resultSet) throws DatabaseException {
+    public void closeCursor(ResultSet resultSet, AbstractSession session) throws DatabaseException {
         try {
             resultSet.close();
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, this, null);
+            DatabaseException commException = processExceptionForCommError(session, exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, this, session, false);
         }
     }
 
@@ -389,7 +399,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 getPlatform().commitTransaction(this);
             }
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, this, session);
+            DatabaseException commException = processExceptionForCommError(session, exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, this, session, false);
         }
     }
 
@@ -406,7 +418,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 return null;
             }
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, this, session);
+            DatabaseException commException = processExceptionForCommError(session, exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, this, session, false);
         }
     }
 
@@ -423,7 +437,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 return null;
             }
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, this, session);
+            DatabaseException commException = processExceptionForCommError(session, exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, this, session, false);
         }
     }
 
@@ -434,7 +450,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         try {
             getConnection().close();
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, this, null);
+            throw DatabaseException.sqlException(exception, this, null, false);
         }
     }
 
@@ -477,7 +493,11 @@ public class DatabaseAccessor extends DatasourceAccessor {
         try {
             closeStatement(statement, session, null);
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, this, session);
+            //With an external connection pool the connection may be null after this call, if it is we will
+            //be unable to determine if it is a connection based exception so treat it as if it wasn't.
+            DatabaseException commException = processExceptionForCommError(session, exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, this, session, false);
         }
     }
 
@@ -626,11 +646,20 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 }
             }
         } catch (SQLException exception) {
+            //If this is a connection from an external pool then closeStatement will close the connection.
+            //we must test the connection before that happens.
+            RuntimeException exceptionToThrow = processExceptionForCommError(session, exception, dbCall);
+            
             try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 closeStatement(statement, session, dbCall);
             } catch (Exception closeException) {
             }
-            throw DatabaseException.sqlException(exception, dbCall, this, session);
+            if (exceptionToThrow == null){
+                //not a comm failure :
+                throw DatabaseException.sqlException(exception, dbCall, this, session, false);
+            }
+            throw exceptionToThrow;
+            
         } catch (RuntimeException exception) {
             try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 closeStatement(statement, session, dbCall);
@@ -642,12 +671,16 @@ public class DatabaseAccessor extends DatasourceAccessor {
             throw exception;
         }
 
-        // This is in seperate try block to ensure that the real exception is not masked by the close exception.
+        // This is in separate try block to ensure that the real exception is not masked by the close exception.
         try {
             // Allow for caching of statement, forced closes are not cache as they failed execution so are most likely bad.
             releaseStatement(statement, dbCall.getSQLString(), dbCall, session);
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, this, session);
+            //With an external connection pool the connection may be null after this call, if it is we will
+            //be unable to determine if it is a connection based exception so treat it as if it wasn't.
+            DatabaseException commException = processExceptionForCommError(session, exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, this, session, false);
         }
 
         return result;
@@ -665,13 +698,19 @@ public class DatabaseAccessor extends DatasourceAccessor {
                         results.addElement(fetchRow(dbCall.getFields(), resultSet, metaData, session));
                         hasNext = resultSet.next();
                     }
-                    resultSet.close();// This must be closed incase the statement is cached and not closed.
+                    resultSet.close();// This must be closed in case the statement is cached and not closed.
                 } catch (SQLException exception) {
+                    //If this is a connection from an external pool then closeStatement will close the connection.
+                    //we must test the connection before that happens.
+                    RuntimeException exceptionToThrow = processExceptionForCommError(session, exception, dbCall);
                     try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                         closeStatement(statement, session, dbCall);
                     } catch (Exception closeException) {
                     }
-                    results.throwException(DatabaseException.sqlException(exception, dbCall, DatabaseAccessor.this, session));
+                    if (exceptionToThrow == null){
+                        results.throwException(DatabaseException.sqlException(exception, dbCall, DatabaseAccessor.this, session, false));
+                    }
+                    results.throwException(exceptionToThrow);
                 } catch (RuntimeException exception) {
                     try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                         closeStatement(statement, session, dbCall);
@@ -690,7 +729,11 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     // Allow for caching of statement, forced closes are not cache as they failed execution so are most likely bad.
                     DatabaseAccessor.this.releaseStatement(statement, dbCall.getSQLString(), dbCall, session);
                 } catch (SQLException exception) {
-                    results.throwException(DatabaseException.sqlException(exception, DatabaseAccessor.this, session));
+                    //With an external connection pool the connection may be null after this call, if it is we will
+                    //be unable to determine if it is a connection based exception so treat it as if it wasn't.
+                    DatabaseException commException = processExceptionForCommError(session, exception, dbCall);
+                    if (commException != null) results.throwException(commException);
+                    results.throwException(DatabaseException.sqlException(exception, DatabaseAccessor.this, session, false));
                 }
                 results.setIsComplete(true);
             }
@@ -722,7 +765,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
         } catch (SQLException exception) {
             if (!getPlatform().shouldIgnoreException(exception)) {
-                throw DatabaseException.sqlException(exception, this, session);
+                DatabaseException commException = processExceptionForCommError(session, exception, call);
+                if (commException != null) throw commException;
+                throw DatabaseException.sqlException(exception, this, session, false);
             }
         } finally {
             if (call != null) {
@@ -744,12 +789,20 @@ public class DatabaseAccessor extends DatasourceAccessor {
             //bug 4241441: executeBatch moved to the platform, and result returned to batch mechanism
             returnValue = this.getPlatform().executeBatch(statement, isStatementPrepared);
         } catch (SQLException exception) {
+            //If this is a connection from an external pool then closeStatement will close the connection.
+            //we must test the connection before that happens.
+            RuntimeException exceptionToThrow = null;
+            
+            DatabaseException commException = processExceptionForCommError(session, exception, dbCall);
+            if (commException != null) throw commException;
             try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 closeStatement(statement, session, dbCall);
             } catch (SQLException closeException) {
             }
-
-            throw DatabaseException.sqlException(exception, this, session);
+            if (exceptionToThrow == null){
+                throw DatabaseException.sqlException(exception, this, session, false);
+            }
+            throw exceptionToThrow;
         } catch (RuntimeException exception) {
             try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 closeStatement(statement, session, dbCall);
@@ -759,7 +812,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             throw exception;
         }
 
-        // This is in seperate try block to ensure that the real exception is not masked by the close exception.
+        // This is in separate try block to ensure that the real exception is not masked by the close exception.
         try {
             // if we are called from the ParameterizedBatchWritingMechanism then dbCall will not be null
             //and we should try an release the statement
@@ -769,7 +822,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 closeStatement(statement, session, dbCall);
             }
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, this, session);
+            DatabaseException commException = processExceptionForCommError(session, exception, dbCall);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, this, session, false);
         }
         return returnValue;
     }
@@ -927,9 +982,10 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 }
             } catch (SQLException closeException) {
             }
-
+            DatabaseException commException = processExceptionForCommError(session, sqlException, null);
+            if (commException != null) throw commException;
             // Ensure that real exception is thrown.			
-            throw DatabaseException.sqlException(sqlException, this, session);
+            throw DatabaseException.sqlException(sqlException, this, session, false);
         } finally {
             decrementCallCount();
         }
@@ -1062,7 +1118,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 value = null;
             }
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, this, session);
+            DatabaseException commException = processExceptionForCommError(session, exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, this, session, false);
         }
 
         return value;
@@ -1195,9 +1253,10 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 }
             } catch (SQLException closeException) {
             }
-
+            DatabaseException commException = processExceptionForCommError(session, sqlException, null);
+            if (commException != null) throw commException;
             // Ensure that real exception is thrown.			
-            throw DatabaseException.sqlException(sqlException, this, session);
+            throw DatabaseException.sqlException(sqlException, this, session, false);
         } finally {
             decrementCallCount();
         }
@@ -1211,7 +1270,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         try {
             return !getConnection().isClosed();
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, this, null);
+            throw DatabaseException.sqlException(exception, this, null, false);
         }
     }
 
@@ -1299,6 +1358,23 @@ public class DatabaseAccessor extends DatasourceAccessor {
     }
 
     /**
+     * This method is used to process an SQL exception and determine if the exception
+     * should be passed on for further processing.
+     * If the Exception was communication based then a DatabaseException will be return.
+     * If the method did not process the message of it was not a comm failure then null 
+     * will be returned.
+     */
+    public DatabaseException processExceptionForCommError(AbstractSession session, SQLException exception, Call call){
+        if (session.getLogin().isConnectionHealthValidatedOnError() && (call == null || ((DatabaseCall)call).getQueryTimeout() == 0) && this.getConnection() != null && session.getServerPlatform().wasFailureCommunicationBased(exception, this, session)){
+            this.setIsValid(false);
+            //store exception for later as we must close the statement.
+            return DatabaseException.sqlException(exception, call, this, session, true);
+        }else {
+            return null;
+        }
+    }
+
+    /**
      * Attempt to save some of the cost associated with getting a fresh connection.
      * Assume the DatabaseDriver has been cached, if appropriate.
      * Note: Connections that are participating in transactions will not be refreshd.^M
@@ -1375,7 +1451,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * it is used to determine whether the connection needs to be closed when using external connection pool.
      * The connection with a externalConnectionPool used by synchronized UOW should leave open until 
      * afterCompletion call back; the connection with a externalConnectionPool used by other type of session 
-     * should be closed after transaction was finised.
+     * should be closed after transaction was finished.
      * Rollback a transaction on the database. This means toggling the auto-commit option.
      */
     public void rollbackTransaction(AbstractSession session,AbstractSession callingSession) throws DatabaseException {
@@ -1396,7 +1472,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 getPlatform().rollbackTransaction(this);
             }
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception, this, session);
+            DatabaseException commException = processExceptionForCommError(session, exception, null);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, this, session, false);
         }
     }
 

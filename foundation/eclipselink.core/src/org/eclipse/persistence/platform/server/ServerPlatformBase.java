@@ -11,8 +11,10 @@ package org.eclipse.persistence.platform.server;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.sql.SQLException;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
@@ -21,6 +23,7 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 
 /**
@@ -454,6 +457,19 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      */
     public boolean shouldUseDriverManager() {
         return true;
+    }
+
+    /**
+     * INTERNAL:
+     * A call to this method will perform a platform based check on the connection and exception
+     * error code to determine if the connection is still valid or if a communication error has occurred.
+     * If a communication error has occurred then the query may be retried.
+     * If this platform is unable to determine if the error was communication based it will return
+     * false forcing the error to be thrown to the user.
+     */
+    
+    public boolean wasFailureCommunicationBased(SQLException exception, Accessor connection, AbstractSession sessionForProfile){
+        return getDatabaseSession().getPlatform().wasFailureCommunicationBased(exception, connection.getConnection(), sessionForProfile);
     }
 
 }

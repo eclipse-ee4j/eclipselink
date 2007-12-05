@@ -32,6 +32,11 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  */
 public class MySQL4Platform extends DatabasePlatform {
 
+    public MySQL4Platform(){
+        super();
+        this.pingSQL = "SELECT 1";
+    }
+    
     /**
      * Appends an MySQL specific date if usesNativeSQL is true otherwise use the ODBC format.
      * Native FORMAT: 'YYYY-MM-DD'

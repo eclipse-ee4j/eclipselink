@@ -15,7 +15,6 @@ import java.io.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.helper.linkedlist.LinkedNode;
 import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
@@ -29,7 +28,6 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.SessionProfiler;
@@ -1056,6 +1054,20 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         //CR#2272
         log(SessionLog.FINEST, SessionLog.QUERY, "execute_query", query);
 
+        //Make a call to the internal method with a retry count of 0.  This will
+        //initiate a retry call stack if required and supported.  The seperation between the 
+        //calling stack and the target method is made because the target method may call itself 
+        //recursively.
+        return this.executeQuery(query, row, 0);
+    }
+
+        /**
+     * INTERNAL:
+     * Return the results from executing the database query.
+     * the arguments should be a database row with raw data values.
+     */
+    public Object executeQuery(DatabaseQuery query, AbstractRecord row, int retryCount) throws DatabaseException {
+
         try {
             getEventManager().preExecuteQuery(query);
             Object result;
@@ -1088,6 +1100,42 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                 }
                 if (databaseException.getSession() == null) {
                     databaseException.setSession(this);
+                }
+                //if this query is a read query outside of a transaction then we may be able to retry the query
+                if (!this.isInTransaction() && query.isReadQuery() ){
+                    //was the failure communication based?  (ie timeout)
+                    if (databaseException.isCommunicationFailure()){
+                        this.log(SessionLog.INFO, "communication_failure_attempting_query_retry", (Object[])null, null);
+                        //retry
+                        while (retryCount < getLogin().getQueryRetryAttemptCount()){
+                            try{
+                                // attempt to reconnect for a certain number of times.
+                                // servers may take some time to recover.
+                                ++retryCount;
+                                try{
+                                    if (this.isDatabaseSession()){
+                                        //if database session then re-establish connection
+                                        //else the session will just get a new connection from the pool
+                                        databaseException.getAccessor().reestablishConnection(this);
+                                    }
+                                    try{
+                                        //passing the retry count will prevent a runaway retry where
+                                        // we can acquire connections but are unable to execute any queries
+                                        return executeQuery(query, row, retryCount);
+                                    }catch (DatabaseException ex){
+                                        //replace original exception with last exception thrown
+                                        //this exception could be a data based exception as apposed
+                                        //to a connection exception that needs to go back to the customer.
+                                        exception = ex;
+                                    }
+                                }catch (DatabaseException ex){
+                                    Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());  //lets give the failover time to recover.
+                                }
+                            }catch (InterruptedException ex){
+                                //Ignore interrupted exception.
+                            }
+                        }
+                    }
                 }
             }
             return handleException(exception);

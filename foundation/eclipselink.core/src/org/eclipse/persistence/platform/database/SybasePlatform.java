@@ -40,6 +40,11 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     // that the API that accepts a string is called so we have a collection of strings to use.
     protected Map typeStrings;
 
+    public SybasePlatform(){
+        super();
+        this.pingSQL = "SELECT 1";
+    }
+    
     protected Map getTypeStrings() {
         if (typeStrings == null) {
             initializeTypeStrings();

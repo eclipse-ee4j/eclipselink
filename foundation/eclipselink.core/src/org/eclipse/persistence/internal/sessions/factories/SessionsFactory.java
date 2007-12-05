@@ -478,6 +478,19 @@ public class SessionsFactory {
 
         processStructConverterConfig(databaseLoginConfig.getStructConverterConfig(), databaseLogin);
         
+        if (databaseLoginConfig.isConnectionHealthValidatedOnError() != null){
+            databaseLogin.setConnectionHealthValidatedOnError(databaseLoginConfig.isConnectionHealthValidatedOnError());
+        }
+        if (databaseLoginConfig.getQueryRetryAttemptCount() != null){
+            databaseLogin.setQueryRetryAttemptCount(databaseLoginConfig.getQueryRetryAttemptCount());
+        }
+        if (databaseLoginConfig.getDelayBetweenConnectionAttempts() != null){
+            databaseLogin.setDelayBetweenConnectionAttempts(databaseLoginConfig.getDelayBetweenConnectionAttempts());
+        }
+        if (databaseLoginConfig.getPingSQL() != null){
+            databaseLogin.setPingSQL(databaseLoginConfig.getPingSQL());
+        }
+        
         // Finally, return the newly created DatabaseLogin
         return databaseLogin;
     }

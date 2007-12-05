@@ -159,11 +159,17 @@ public class DynamicSQLBatchWritingMechanism implements BatchWritingMechanism {
                 session.endOperationProfile(SessionProfiler.SQL_PREPARE, null, SessionProfiler.ALL);
             }
         } catch (SQLException exception) {
+            //If this is a connection from an external pool then closeStatement will close the connection.
+            //we must test the connection before that happens.
+            DatabaseException exceptionToThrow = this.databaseAccessor.processExceptionForCommError(session, exception, null);
             try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 this.databaseAccessor.closeStatement(statement, session, null);
             } catch (SQLException closeException) {
             }
-            throw DatabaseException.sqlException(exception, this.databaseAccessor, session);
+            if (exceptionToThrow == null){
+                throw DatabaseException.sqlException(exception, this.databaseAccessor, session, false);
+            }
+            throw exceptionToThrow;
         } catch (RuntimeException exception) {
             try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 this.databaseAccessor.closeStatement(statement, session, null);
@@ -193,11 +199,17 @@ public class DynamicSQLBatchWritingMechanism implements BatchWritingMechanism {
                 session.endOperationProfile(SessionProfiler.SQL_PREPARE, null, SessionProfiler.ALL);
             }
         } catch (SQLException exception) {
+            //If this is a connection from an external pool then closeStatement will close the connection.
+            //we must test the connection before that happens.
+            RuntimeException exceptionToThrow = this.databaseAccessor.processExceptionForCommError(session, exception, null);
             try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 this.databaseAccessor.closeStatement(statement, session, null);
             } catch (SQLException closeException) {
             }
-            throw DatabaseException.sqlException(exception, this.databaseAccessor, session);
+            if (exceptionToThrow == null){
+                throw DatabaseException.sqlException(exception, this.databaseAccessor, session, false);
+            }
+            throw exceptionToThrow;
         } catch (RuntimeException exception) {
             try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 this.databaseAccessor.closeStatement(statement, session, null);

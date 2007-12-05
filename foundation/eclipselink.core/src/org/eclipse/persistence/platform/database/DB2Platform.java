@@ -33,6 +33,11 @@ import org.eclipse.persistence.queries.*;
  */
 public class DB2Platform extends org.eclipse.persistence.platform.database.DatabasePlatform {
 
+    public DB2Platform(){
+        super();
+        this.pingSQL = "VALUES(1)";
+    }
+
     /**
      * Append a byte[] in native DB@ format BLOB(hexString) if usesNativeSQL(),
      * otherwise use ODBC format from DatabasePLatform.

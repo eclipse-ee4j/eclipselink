@@ -57,6 +57,7 @@ public class DMSLocalizationResource extends ListResourceBundle {
                                            { "session_event", "Time spent on execute SessionEvent" },
                                            { "jts_aftercompletion", "Time spent on JTS afterCompletion(Object status) method" },
                                            { "jts_beforecompletion", "Time spent on JTS beforeCompletion() method" },
+                                           { "connection_ping", "Time spent testing database connetion to determine if it can be used."}
     };
 
     /**

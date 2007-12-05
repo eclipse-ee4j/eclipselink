@@ -49,6 +49,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.platform.database.AccessPlatform;
 import org.eclipse.persistence.platform.database.DB2Platform;
@@ -157,6 +158,11 @@ public class DatabasePlatform extends DatasourcePlatform {
 	public static int DEFAULT_MAX_BATCH_WRITING_SIZE = 32000;
 	public static int DEFAULT_PARAMETERIZED_MAX_BATCH_WRITING_SIZE = 100;
     
+    /** This attribute will store the SQL query that will be used to 'ping' the database
+     * connection in order to check the health of a connection.
+     */
+    protected String pingSQL;
+
     /** The following two maps, provide two ways of looking up StructConverters. 
      * They can be looked up by java Class or by Struct type
      */
@@ -1010,6 +1016,14 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * Used for determining if an SQL exception was communication based. This SQL should be
+     * as effecient as possible and ensure a round trip to the database.
+     */
+    public String getPingSQL(){
+        return pingSQL;
+    }
+    
+    /**
      * Used for sp calls.
      */
     public String getProcedureArgumentSetter() {
@@ -1709,6 +1723,14 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
     
     /**
+     * Used for determining if an SQL exception was communication based. This SQL should be
+     * as effecient as possible and ensure a round trip to the database.
+     */
+    public void setPingSQL(String pingSQL) {
+        this.pingSQL = pingSQL;
+    }
+
+    /**
      *  INTERNAL
      *  handle complex parameter values if necessary
      */
@@ -2183,6 +2205,39 @@ public class DatabasePlatform extends DatasourcePlatform {
         writeJoinWhereClause(writer, null, targetTableName, pkFields, targetPkFields);
         writer.write(")");
     }          
+
+     public boolean wasFailureCommunicationBased(SQLException exception, Connection connection, AbstractSession sessionForProfile){
+         if (connection == null || this.pingSQL == null){
+             //Without a connection we are  unable to determine what caused the error so return false.
+             //The only case where connection will be null should be External Connection Pooling so
+             //returning false is ok as there is no connection management requirement
+        	 
+        	 //If there is no ping sql then we can not perform the ping.
+             return false;
+         }
+         PreparedStatement statement = null;
+         try{
+             sessionForProfile.startOperationProfile(SessionProfiler.ConnectionPing);
+             if (sessionForProfile.shouldLog(SessionLog.FINE, SessionLog.SQL)) {// Avoid printing if no logging required.
+            	 sessionForProfile.log(SessionLog.FINE, SessionLog.SQL, getPingSQL(), (Object[])null, null, false);
+             }
+             statement = connection.prepareStatement(getPingSQL());
+             ResultSet result = statement.executeQuery();
+             result.close();
+             statement.close();
+         }catch (SQLException ex){
+             try{
+                 //try to close statement again in case the query or result.close() caused an exception.
+                 statement.close();
+             }catch (SQLException exception2){
+                 //ignore;
+             }
+             return true;
+         }finally{
+             sessionForProfile.endOperationProfile(SessionProfiler.ConnectionPing);
+         }
+         return false;
+     }
 
     /**
      * INTERNAL:

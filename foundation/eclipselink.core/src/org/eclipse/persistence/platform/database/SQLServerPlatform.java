@@ -29,6 +29,12 @@ import org.eclipse.persistence.queries.*;
  * @since TOPLink/Java 1.0
  */
 public class SQLServerPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+
+    public SQLServerPlatform(){
+        super();
+        this.pingSQL = "SELECT 1";
+    }
+    
     /**
      * If using native SQL then print a byte[] as '0xFF...'
      */

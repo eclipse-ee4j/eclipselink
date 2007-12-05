@@ -50,6 +50,19 @@ public class ReadConnectionPool extends ConnectionPool {
         int size = this.connectionsAvailable.size();
         for (int index = 0; index < size; index++) {
             Accessor connection = (Accessor)connectionsAvailable.get(index);
+            //if the pool has encountered a connection failure on one of the accessors lets test the others.
+            if (this.checkConnections){
+                if (this.getOwner().getLogin().isConnectionHealthValidatedOnError() && this.getOwner().getServerPlatform().wasFailureCommunicationBased(null, connection, this.getOwner())){
+                    connectionsAvailable.remove(index);
+                    //reset index as we just removed a connection and should check at the same index again
+                    --index;
+                    //reset size as there are one less connection in the pool now.
+                    --size;
+                    continue; //skip back to biginning of loop
+                }else{
+                    this.checkConnections = false;
+                }
+            }
             if (connection.getCallCount() == 0) {
                 connection.incrementCallCount(getOwner());
                 return connection;
@@ -86,5 +99,13 @@ public class ReadConnectionPool extends ConnectionPool {
      */
     public synchronized void releaseConnection(Accessor connection) throws DatabaseException {
         connection.decrementCallCount();
+        if (!connection.isValid()){
+            this.connectionsAvailable.remove(connection);
+            try{
+                connection.disconnect(getOwner());
+            }catch (Exception ex){
+                //ignore
+            }
+        }
     }
 }

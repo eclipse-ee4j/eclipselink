@@ -30,6 +30,7 @@ public class ConnectionPool {
     protected Login login;
     protected String name;
     protected ServerSession owner;
+    protected boolean checkConnections;
 
     /**
      * PUBLIC:
@@ -38,6 +39,7 @@ public class ConnectionPool {
     public ConnectionPool() {
         this.maxNumberOfConnections = 50;
         this.minNumberOfConnections = 3;
+        this.checkConnections = false;
         resetConnections();
     }
 
@@ -51,6 +53,7 @@ public class ConnectionPool {
         this.name = name;
         this.maxNumberOfConnections = maxNumberOfConnections;
         this.minNumberOfConnections = minNumberOfConnections;
+        this.checkConnections = false;
         resetConnections();
     }
     
@@ -75,6 +78,36 @@ public class ConnectionPool {
 
         Accessor connection = (Accessor)this.connectionsAvailable.get(0);
         this.connectionsAvailable.remove(connection);
+        if (this.checkConnections){
+            int connectionSize = this.connectionsAvailable.size();
+            //TopLink has encountered a problem with a connection where the database no longer responded
+            //We need to now ensure that the failure was specific to that connection or we need to empty
+            //the pool of dead connections in the case of a database failover.
+            while (connectionSize >= 0){
+                if (this.getOwner().getLogin().isConnectionHealthValidatedOnError() && this.getOwner().getServerPlatform().wasFailureCommunicationBased(null, connection, this.getOwner())){
+                    try{
+                        //connection failed connect test
+                        connection.closeConnection();
+                    }catch (Exception ex){
+                        //ignore
+                    }
+                    if (this.connectionsAvailable.isEmpty()){
+                        this.checkConnections = false;
+                        //we have emptied out all connections so let's have the connection pool build more
+                        return this.acquireConnection();
+                    }else{
+                        //test next connection
+                        connection = (Accessor)this.connectionsAvailable.get(0);
+                        this.connectionsAvailable.remove(connection);
+                        --connectionSize;
+                    }
+                }else{
+                    //connection was good use it.  And make sure we stop testing connections
+                    this.checkConnections = false;
+                    break;
+                }
+            }
+        }
         this.connectionsUsed.add(connection);
         if (getOwner().isInProfile()) {
             getOwner().updateProfile(getName(), new Integer(getConnectionsUsed().size()));
@@ -196,10 +229,19 @@ public class ConnectionPool {
 
         this.connectionsUsed.remove(connection);
 
-        if ((this.connectionsUsed.size() + this.connectionsAvailable.size()) < this.minNumberOfConnections) {
-            this.connectionsAvailable.add(connection);
-        } else {
-            connection.disconnect(getOwner());
+        if (!connection.isValid()){
+            this.checkConnections = true;
+            try{
+                connection.disconnect(getOwner());
+            }catch (DatabaseException ex){
+                //this is an invalid connection so expect an exception.
+            }
+        }else{
+            if ( (this.connectionsUsed.size() + this.connectionsAvailable.size() ) < this.minNumberOfConnections) {
+                this.connectionsAvailable.add(connection);
+            } else {
+                connection.disconnect(getOwner());
+            }
         }
         if (getOwner().isInProfile()) {
             getOwner().updateProfile(getName(), new Integer(getConnectionsUsed().size()));

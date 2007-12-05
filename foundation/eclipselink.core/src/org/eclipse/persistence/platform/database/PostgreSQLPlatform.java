@@ -39,6 +39,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     
     public PostgreSQLPlatform() {
         super();
+        this.pingSQL = "SELECT 1";
     }
     
     /**

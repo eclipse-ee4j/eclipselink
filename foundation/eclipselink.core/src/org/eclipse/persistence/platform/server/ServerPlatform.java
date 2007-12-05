@@ -9,7 +9,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server;
 
+import java.sql.SQLException;
+
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
 /**
@@ -198,4 +202,16 @@ public interface ServerPlatform {
      * @return boolean 
      */
     public boolean shouldUseDriverManager();
+
+    /**
+     * INTERNAL:
+     * A call to this method will perform a platform based check on the connection and exception
+     * error code to determine if the connection is still valid or if a communication error has occurred.
+     * In the case of the server platform the connection pool itself may be tested.
+     * If a communication error has occurred then the query may be retried.
+     * If this platform is unable to determine if the error was communication based it will return
+     * false forcing the error to be thrown to the user.
+     */
+    
+    public boolean wasFailureCommunicationBased(SQLException exception, Accessor connection, AbstractSession sessionForProfile);
 }

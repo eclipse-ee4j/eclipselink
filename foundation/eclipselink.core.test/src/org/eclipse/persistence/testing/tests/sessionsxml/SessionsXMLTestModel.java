@@ -74,6 +74,7 @@ public class SessionsXMLTestModel extends TestModel {
         suite.addTest(new SessionsXMLSchemaLoggingOptionsTest());
         suite.addTest(new SessionsXMLSchemaJBossPlatformTest());
         suite.addTest(new SessionManagerGetMultipleSessionsTest());
+        suite.addTest(new FailoverLoginSettingsTest());
 
         return suite;
     }

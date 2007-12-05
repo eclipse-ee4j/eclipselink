@@ -104,7 +104,7 @@ public abstract class Cursor implements Enumeration, java.io.Serializable {
                 return;
             }
             try {
-                getAccessor().closeCursor(getResultSet());
+                getAccessor().closeCursor(getResultSet(), getSession());
                 getAccessor().closeStatement(getStatement(), getSession(), null);
             } catch (RuntimeException caughtException) {
                 exception = caughtException;
@@ -126,7 +126,7 @@ public abstract class Cursor implements Enumeration, java.io.Serializable {
             }
             setResultSet(null);
         } catch (SQLException sqlException) {
-            throw DatabaseException.sqlException(sqlException, getAccessor(), getSession());
+            throw DatabaseException.sqlException(sqlException, getAccessor(), getSession(), false);
         }
     }
 

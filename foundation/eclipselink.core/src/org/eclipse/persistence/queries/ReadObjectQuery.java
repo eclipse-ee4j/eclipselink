@@ -488,7 +488,9 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             return getDescriptor().getObjectBuilder().buildWorkingCopyCloneFromResultSet(this, null, resultSet, unitOfWork, accessor, metaData, platform);
         } catch (SQLException exception) {
             exceptionOccured = true;
-            throw DatabaseException.sqlException(exception, call, accessor, unitOfWork);
+            DatabaseException commException = accessor.processExceptionForCommError(session, exception, call);
+            if (commException != null) throw commException;
+            throw DatabaseException.sqlException(exception, call, accessor, unitOfWork, false);
         } finally {
             try {
                 if (resultSet != null) {
@@ -499,7 +501,12 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                 }
             } catch (SQLException exception) {
                 if (!exceptionOccured) {
-                    throw DatabaseException.sqlException(exception, call, accessor, session);
+                    //in the case of an external connection pool the connection may be null after the statement release
+                    // if it is null we will be unable to check the connection for a comm error and
+                    //therefore must return as if it was not a comm error.
+                    DatabaseException commException = accessor.processExceptionForCommError(session, exception, call);
+                    if (commException != null) throw commException;
+                    throw DatabaseException.sqlException(exception, call, accessor, session, false);
                 }
             }
         }

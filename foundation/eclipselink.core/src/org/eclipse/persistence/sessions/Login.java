@@ -42,6 +42,18 @@ public interface Login {
 
     /**
      * PUBLIC:
+     * This value defaults to false when not on a DatabaseLogin as the functionality has not been implemented
+     * for other datasource type.  On an SQL Exception TopLink will ping the database to determine
+     * if the connection used can continue to be used for queries.  This should have no impact on applications
+     * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
+     * If that is the case and the application is experiencing a performance impact from the health check then
+     * this feature can be turned off. Turning this feature off will prevent TopLink from being able to
+     * retry queries in the case of database failure. 
+     */
+    public boolean isConnectionHealthValidatedOnError();
+
+    /**
+     * PUBLIC:
      * All logins must take a user name and password.
      */
     void setPassword(String password);

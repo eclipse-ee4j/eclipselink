@@ -320,7 +320,7 @@ public class NestedTableMapping extends CollectionMapping {
             java.sql.Connection connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
             array = session.getPlatform().createArray(getStructureName(), fields, session,connection);
         } catch (java.sql.SQLException exception) {
-            throw DatabaseException.sqlException(exception, session.getAccessor(), session);
+            throw DatabaseException.sqlException(exception, session.getAccessor(), session, false);
         } finally {
             ((DatabaseAccessor)session.getAccessor()).decrementCallCount();
         }
@@ -358,7 +358,7 @@ public class NestedTableMapping extends CollectionMapping {
             java.sql.Connection connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
             array = session.getPlatform().createArray(getStructureName(), fields, session, connection);
         } catch (java.sql.SQLException exception) {
-            throw DatabaseException.sqlException(exception, session.getAccessor(), session);
+            throw DatabaseException.sqlException(exception, session.getAccessor(), session, false);
         } finally {
             ((DatabaseAccessor)session.getAccessor()).decrementCallCount();
         }

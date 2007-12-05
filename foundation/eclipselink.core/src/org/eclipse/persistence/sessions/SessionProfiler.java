@@ -71,6 +71,7 @@ public interface SessionProfiler {
     public static final String LoggingDMSDisPlayName = "Logging";
     public static final String JtsBeforeCompletion = "TXBeforeCompletion";
     public static final String JtsAfterCompletion = "TXAfterCompletion";
+    public static final String ConnectionPing = "ConnectionHealthTest";
 
     //Token used by existed default performance profiler 
     public static final String Register = "register";

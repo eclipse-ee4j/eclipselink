@@ -158,6 +158,13 @@ public interface Accessor extends Cloneable {
     boolean isConnected();
 
     /**
+     * Returns true if this Accessor can continue to be used.  This will be false if a communication
+     * failure occurred during a call execution.  In the case of an invalid accessor the Accessor
+     * will not be returned to the pool.
+     */
+    public boolean isValid();
+    
+    /**
      * Reconnect to the database. This can be used if the connection was
      * temporarily disconnected or if it timed out.
      */
@@ -181,6 +188,12 @@ public interface Accessor extends Cloneable {
      * Roll back a transaction on the data store.
      */
     void rollbackTransaction(AbstractSession session,AbstractSession callingSession) throws DatabaseException;
+    
+    /**
+     * This should be set to 'false' if a communication failure occurred durring a call execution.
+     * In the case of an invalid accessor the Accessor will not be returned to the Pool.
+     */
+    public void setIsValid(boolean isValid);
     
     /**
      * Return whether the accessor uses an external

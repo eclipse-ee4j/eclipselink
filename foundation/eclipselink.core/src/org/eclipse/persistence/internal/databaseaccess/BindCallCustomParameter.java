@@ -92,7 +92,7 @@ public class BindCallCustomParameter {
      * This method will be used recursively on the dbField's nestedField and objects in the collection
      * to build the Array object, allowing for nested structures to be produced ie arrays of arrays
      */
-    public Object convert(Object parameter, DatabaseField dbField, AbstractSession session, java.sql.Connection connection){
+    public Object convert(Object parameter, DatabaseField dbField, AbstractSession session, java.sql.Connection connection) throws SQLException{
         if (parameter == null){
             return dbField;
         }
@@ -132,11 +132,7 @@ public class BindCallCustomParameter {
             fields[i++] = element;
         }
 
-        try {
-            return session.getPlatform().createArray(((ObjectRelationalDatabaseField)dbField).getSqlTypeName(), fields, session,connection);
-        } catch (java.sql.SQLException exception) {
-            throw DatabaseException.sqlException(exception, session);
-        }
+        return session.getPlatform().createArray(((ObjectRelationalDatabaseField)dbField).getSqlTypeName(), fields, session,connection);
     }
     
 }

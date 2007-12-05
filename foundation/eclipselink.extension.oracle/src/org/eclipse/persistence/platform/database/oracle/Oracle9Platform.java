@@ -156,7 +156,7 @@ public class Oracle9Platform extends Oracle8Platform {
                 
                 return getXMLTypeFactory().getDOM((OPAQUE)result);
             } catch (SQLException ex) {
-                throw DatabaseException.sqlException(ex, null, session);
+                throw DatabaseException.sqlException(ex, null, session, false);
             }
         } else {
             return super.getObjectFromResultSet(resultSet, columnNumber, type, session);

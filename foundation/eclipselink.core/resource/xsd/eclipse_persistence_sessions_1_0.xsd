@@ -809,6 +809,26 @@ of this file are typically located as: 'META-INF/sessions.xml'
                             <xsd:group ref="struct-converters" />
                         </xsd:complexType>
                     </xsd:element>
+					<xsd:element name="connection-health-validated-on-error" type="xsd:boolean" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>If true will cause EclipseLink to ping database to determine if an SQLException was cause by a communication failure</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="query-retry-attempt-count" type="xsd:integer" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Configure the number of attempts EclipseLink will make if EclipseLink is attempting to retry a query.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="delay-between-reconnect-attempts" type="xsd:integer" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Configure the time in miliseconds that EclipseLink will wait between attempts to reconnect if EclipseLink is attempting to retry a query.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="ping-sql" type="xsd:string" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Override the platform specific SQL that EclipseLink will issue to a connection to determine if the connection is still live.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
