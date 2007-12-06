@@ -46,7 +46,7 @@
 
     <target name="package.eclipselink.jar" depends="build.core" description="build EclipseLink jar">
       <unjar src="${eclipselink.extension.oracle}/${eclipselink.oracle.depend.jar}" dest="${build.dir}"/>
-      <filter token="VERSION" value="${release.version} ${build_number_string}"/>
+      <filter token="VERSION" value="${release.version} ${installer_id}"/>
       <copy file="${eclipselink.core}/${resource.dir}/META-INF/MANIFEST.MF" tofile="${build.dir}/META-INF/MANIFEST.MF" filtering="true" overwrite="true"/>
       <jar jarfile="${eclipselink.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
           <fileset dir="${eclipselink.core}/${classes.dir}">
