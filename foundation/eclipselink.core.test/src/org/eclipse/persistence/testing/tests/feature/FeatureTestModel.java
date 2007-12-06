@@ -89,6 +89,7 @@ public class FeatureTestModel extends TestModel {
         addTest(getIntegrityCheckerTestSuite());
         addTest(getExceptionHandlerTestSuite());
         addTest(getMessageLoggingTestSuite());
+        addTest(getFieldedMessageLoggingTestSuite());
         addTest(getNullValueTestSuite());
         addTest(getMiscTestSuite());
         if (!getExecutor().isServer) {
@@ -178,9 +179,18 @@ public class FeatureTestModel extends TestModel {
         suite.setDescription("This Suite tests the functionality of Logging messages.");
         suite.addTest(new MessageLoggingEfficiencyTest());
         return suite;
-
     }
 
+    public static TestSuite getFieldedMessageLoggingTestSuite() {
+        TestSuite suite;
+        suite = new TestSuite();
+        suite.setName("Fielded Message Logging");
+        suite.setDescription("This Suite tests the functionality of Logging messages containing formatting string.");
+        suite.addTest(new FieldedMessageLoggingTest());
+        return suite;
+    }
+
+    
     public static TestSuite getIntegrityCheckerTestSuite() {
         TestSuite suite;
 
