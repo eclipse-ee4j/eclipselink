@@ -78,7 +78,7 @@ public class DefineWithImportsExceptionTestCases extends XSDHelperDefineTestCase
     public void testErrorProcessingImportExceptionCase() {
     	List types = null;
         try {
-            String invalidURLFile = "org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/exception/Level1RootIncludes.xsd";
+            String invalidURLFile = "org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/exception/Level1rootIncludes.xsd";
             InputStream is = getSchemaInputStream(invalidURLFile);
             types = xsdHelper.define(is, getSchemaLocation());
             assertEquals(6, types.size());
