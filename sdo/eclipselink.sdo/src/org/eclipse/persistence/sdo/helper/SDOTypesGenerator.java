@@ -49,10 +49,10 @@ import commonj.sdo.helper.HelperContext;
  * @see commonj.sdo.XSDHelper
  */
 public class SDOTypesGenerator extends SchemaParser {
-    private java.util.Map generatedTypes;
+    private java.util.Map<QName, Type> generatedTypes;
     private String packageName;
-    private List nonContainmentReferences;
-    private Map globalRefs;
+    private List<NonContainmentReference> nonContainmentReferences;
+    private Map<Type, List<GlobalRef>> globalRefs;
     private boolean isImportProcessor;
 
     // hold the context containing all helpers so that we can preserve inter-helper relationships
@@ -64,60 +64,63 @@ public class SDOTypesGenerator extends SchemaParser {
 
     protected void processImport(Import theImport) {
         try {
-            if (theImport.getSchema() != null) {
-                SDOTypesGenerator generator = new SDOTypesGenerator(aHelperContext);
-                generator.setIsImportProcessor(true);
-                java.util.List importedTypes = generator.define(theImport.getSchema(), isReturnAllTypes(), isProcessImports());
-                for (int i = 0; i < importedTypes.size(); i++) {
-                    Type nextType = (Type)importedTypes.get(i);
-                    String name = nextType.getName();
-                    QName qname = new QName(nextType.getURI(), name);
-                    getGeneratedTypes().put(qname, nextType);
-                }
-            }
+        	processImportIncludeInternal(theImport);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw SDOException.errorProcessingImport(theImport.getSchemaLocation(), theImport.getNamespace());
+            throw SDOException.errorProcessingImport(theImport.getSchemaLocation(), theImport.getNamespace(), e);
         }
     }
 
     protected void processInclude(Include theInclude) {
         try {
-            if (theInclude.getSchema() != null) {
-                SDOTypesGenerator generator = new SDOTypesGenerator(aHelperContext);
-                generator.setIsImportProcessor(true);
-                java.util.List includedTypes = generator.define(theInclude.getSchema(), isReturnAllTypes(), isProcessImports());
-                for (int i = 0; i < includedTypes.size(); i++) {
-                    Type nextType = (Type)includedTypes.get(i);
-                    String name = nextType.getName();
-                    QName qname = new QName(nextType.getURI(), name);
-                    getGeneratedTypes().put(qname, nextType);
-                }
-            }
+        	processImportIncludeInternal(theInclude);
         } catch (Exception e) {
-            throw SDOException.errorProcessingInclude(theInclude.getSchemaLocation());
+            throw SDOException.errorProcessingInclude(theInclude.getSchemaLocation(), e);
         }
     }
 
-    public List define(Source xsdSource, SchemaResolver schemaResolver) {
+    /**
+     * INTERNAL:
+     * This function is referenced by processImport or processInclude possibly recursively
+     * @param Include theImportOrInclude
+     * @throws Exception
+     */
+    private void processImportIncludeInternal(Include theImportOrInclude) throws Exception {
+        if (theImportOrInclude.getSchema() != null) {
+		SDOTypesGenerator generator = new SDOTypesGenerator(aHelperContext);
+		// Both imports and includes are treated the same when checking for a mid-schema tree walk state 
+		generator.setIsImportProcessor(true);
+		// May throw an IAE if a global type: local part cannot be null when creating a QName			
+		java.util.List<Type> importedTypes = generator.define(theImportOrInclude.getSchema(), isReturnAllTypes(), isProcessImports());
+		if(null != importedTypes) {
+			for (int i = 0, size = importedTypes.size(); i < size; i++) {
+				Type nextType = importedTypes.get(i);
+				String name = nextType.getName();
+				QName qname = new QName(nextType.getURI(), name);
+				getGeneratedTypes().put(qname, nextType);
+			}
+		}
+	}
+}
+    
+    public List<Type> define(Source xsdSource, SchemaResolver schemaResolver) {
         return define(xsdSource, schemaResolver, false, true);
     }
 
-    public List define(Source xsdSource, SchemaResolver schemaResolver, boolean includeAllTypes, boolean processImports) {
+    public List<Type> define(Source xsdSource, SchemaResolver schemaResolver, boolean includeAllTypes, boolean processImports) {
         Schema schema = getSchema(xsdSource, schemaResolver);
         return define(schema, includeAllTypes, processImports);
     }
 
-    public List define(Schema schema, boolean includeAllTypes, boolean processImports) {
-        setReturnAllTypes(includeAllTypes);
+    public List<Type> define(Schema schema, boolean includeAllTypes, boolean processImports) {
+    	// Initialize the List of Types before we process the schema
+    	List<Type> returnList = new ArrayList<Type>();
+    	
+    	setReturnAllTypes(includeAllTypes);
         setProcessImports(processImports);
         processSchema(schema);
-
-        List returnList = new ArrayList();
-
-        Iterator iter = getGeneratedTypes().values().iterator();
-
-        List descriptors = new ArrayList();
+        
+        Iterator<Type> iter = getGeneratedTypes().values().iterator();
+        List<XMLDescriptor> descriptors = new ArrayList<XMLDescriptor>();
         
         while (iter.hasNext()) {
             SDOType nextSDOType = (SDOType)iter.next();
@@ -301,7 +304,7 @@ public class SDOTypesGenerator extends SchemaParser {
             return;
         }
 
-        List baseTypes = new ArrayList();
+        List<Type> baseTypes = new ArrayList<Type>();
         baseTypes.add(baseType);
 
         if (ownerName != null) {
@@ -592,6 +595,7 @@ public class SDOTypesGenerator extends SchemaParser {
             p.setXsd(refProp.isXsd());
             p.setAppInfoElements(refProp.getAppInfoElements());
         } else {
+        	// If the global property is not defined yet throw an exception only if it is not eventually defined
             throw SDOException.referencedPropertyNotFound(globalRef.getUri(), globalRef.getLocalName());
         }
 
@@ -649,10 +653,11 @@ public class SDOTypesGenerator extends SchemaParser {
             if (nr != null) {
                 prefix = nr.resolveNamespaceURI(targetNamespace);
             }
-            if ((prefix == null) || prefix.equals("")) {
+            if ((prefix == null) || prefix.equals(SDOConstants.EMPTY_STRING)) {
                 ((SDOType)p.getType()).getXmlDescriptor().addRootElement(xsdName);
             } else {
-                ((SDOType)p.getType()).getXmlDescriptor().addRootElement(prefix + ":" + xsdName);
+                ((SDOType)p.getType()).getXmlDescriptor().addRootElement(prefix + //
+                		SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + xsdName);
             }
         }
     }
@@ -674,15 +679,15 @@ public class SDOTypesGenerator extends SchemaParser {
         QName xsdType = getQNameForString(targetNamespace, typeName);
 
         if ((xsdType != null) && xsdType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
-            if (xsdType.getLocalPart().equals("ID")) {
+            if (xsdType.getLocalPart().equals(SDOConstants.ID)) {
                 owningType.setInstanceProperty(SDOConstants.ID_PROPERTY, p.getName());
-            } else if (xsdType.getLocalPart().equals("IDREF")) {
+            } else if (xsdType.getLocalPart().equals(SDOConstants.IDREF)) {
                 p.setContainment(false);
                 String propertyTypeValue = (String)simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_PROPERTYTYPE_QNAME);
                 if (propertyTypeValue != null) {
                     buildMapping = false;
                 }
-            } else if (xsdType.getLocalPart().equals("IDREFS")) {
+            } else if (xsdType.getLocalPart().equals(SDOConstants.IDREFS)) {
                 p.setContainment(false);
                 p.setMany(true);
                 String propertyTypeValue = (String)simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_PROPERTYTYPE_QNAME);
@@ -909,7 +914,6 @@ public class SDOTypesGenerator extends SchemaParser {
             nonContainmentReference.setOwningProp(p);
             String oppositePropValue = (String)simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_OPPOSITEPROPERTY_QNAME);
 
-            // TODO: 20060906
             nonContainmentReference.setOppositePropName(oppositePropValue);
             getNonContainmentReferences().add(nonContainmentReference);
         }
@@ -939,12 +943,10 @@ public class SDOTypesGenerator extends SchemaParser {
                         owningProp.setType(oppositeType);
                         owningProp.setContainment(false);
                         owningProp.buildMapping(owningProp.getType().getURI());
-                        // TODO: 20060906: bidirectional
+                        // Bidirectional property name
                         String oppositePropName = nonContainmentReference.getOppositePropName();
                         if (oppositePropName != null) {
                             SDOProperty prop = (SDOProperty)oppositeType.getProperty(oppositePropName);
-
-                            // TODO: 20060906
                             owningProp.setOpposite(prop);
                             prop.setOpposite(owningProp);
                         }
@@ -953,22 +955,22 @@ public class SDOTypesGenerator extends SchemaParser {
             }
         }
 
-        Iterator iter = getGlobalRefs().keySet().iterator();
+        Iterator<Type> iter = getGlobalRefs().keySet().iterator();
         while (iter.hasNext()) {
             Object nextKey = iter.next();
-            List value = (List)getGlobalRefs().get(nextKey);
+            List<GlobalRef> value = getGlobalRefs().get(nextKey);
             if (value != null) {
                 for (int i = 0; i < value.size(); i++) {
-                    processRef((GlobalRef)value.get(i));
+                    processRef(value.get(i));
                 }
             }
         }
     }
 
     private void addGlobalRef(GlobalRef ref) {
-        List refs = (List)getGlobalRefs().get(ref.getOwningType());
-        if (refs == null) {
-            refs = new ArrayList();
+        List<GlobalRef> refs = getGlobalRefs().get(ref.getOwningType());
+        if (null == refs) {
+            refs = new ArrayList<GlobalRef>();
             refs.add(ref);
             getGlobalRefs().put(ref.getOwningType(), refs);
         } else {
@@ -1024,13 +1026,13 @@ public class SDOTypesGenerator extends SchemaParser {
             String theURI = getURIForPrefix(defaultNamespace, prefix);
             QName qname = new QName(theURI, localName);
             SDOType sdoType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getSDOTypeFromXSDType(qname);
-            if (sdoType == null) {
+            if (null == sdoType) {
                 sdoType = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getType(theURI, localName);
-                if (sdoType == null) {
+                if (null == sdoType) {
                     sdoType = findSdoType(targetNamespace, defaultNamespace, name, localName, theURI);
                 }
             }
-            if (sdoType == null) {
+            if (null == sdoType) {
                 sdoType = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(theURI, localName, localName);
                 if(!sdoType.isFinalized()) {
                     //if it's not finalized, then it's new, so add it to the generated types map
@@ -1050,9 +1052,9 @@ public class SDOTypesGenerator extends SchemaParser {
                 QName qname = new QName(defaultNamespace, name);
                 sdoType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getSDOTypeFromXSDType(qname);
             }
-            if (sdoType == null) {
+            if (null == sdoType) {
                 sdoType = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getType(targetNamespace, name);
-                if (sdoType == null) {
+                if (null == sdoType) {
                     return findSdoType(targetNamespace, defaultNamespace, name, name, targetNamespace);
                 }                
                 return (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(targetNamespace, name, name);
@@ -1064,7 +1066,7 @@ public class SDOTypesGenerator extends SchemaParser {
     private SDOType findSdoType(String targetNamespace, String defaultNamespace, String qualifiedName, String localName, String theURI) {
         //need to also check imports
         SDOType type = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getType(theURI, localName);
-        if (type == null) {
+        if (null == type) {
             processGlobalItem(targetNamespace, defaultNamespace, qualifiedName);
             String sdoName = (String)itemNameToSDOName.get(localName);
             if (sdoName != null) {
@@ -1073,7 +1075,7 @@ public class SDOTypesGenerator extends SchemaParser {
 
             type = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getType(theURI, localName);
         }
-        if (type == null) {
+        if (null == type) {
             type = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(theURI, localName, localName);
             if(!type.isFinalized()) {
                 //if it's not finalized, then it's new, so add it to the generated types map
@@ -1084,13 +1086,13 @@ public class SDOTypesGenerator extends SchemaParser {
         return type;
     }
 
-    public void setGeneratedTypes(Map generatedTypes) {
+    public void setGeneratedTypes(Map<QName, Type> generatedTypes) {
         this.generatedTypes = generatedTypes;
     }
 
-    public Map getGeneratedTypes() {
-        if (generatedTypes == null) {
-            generatedTypes = new HashMap();
+    public Map<QName, Type> getGeneratedTypes() {
+        if (null == generatedTypes) {
+            generatedTypes = new HashMap<QName, Type>();
         }
         return generatedTypes;
     }
@@ -1115,7 +1117,7 @@ public class SDOTypesGenerator extends SchemaParser {
     }
 
     private QName getQNameForString(String targetNamespace, String name) {
-        if (name == null) {
+        if (null == name) {
             return null;
         }
         int index = name.indexOf(':');
@@ -1138,14 +1140,14 @@ public class SDOTypesGenerator extends SchemaParser {
                 for (int i = namespaceResolvers.size() - 1; i >= 0; i--) {
                     NamespaceResolver next = (NamespaceResolver)namespaceResolvers.get(i);
                     uri = next.resolveNamespacePrefix(prefix);
-                    if ((uri != null) && !uri.equals("")) {
+                    if ((uri != null) && !uri.equals(SDOConstants.EMPTY_STRING)) {
                         break;
                     }
                 }
             }
         }
 
-        if (uri == null) {
+        if (null == uri) {
             uri = targetNamespace;
         }
         return uri;
@@ -1247,16 +1249,16 @@ public class SDOTypesGenerator extends SchemaParser {
         }
     }
 
-    private List getNonContainmentReferences() {
-        if (nonContainmentReferences == null) {
-            nonContainmentReferences = new ArrayList();
+    private List<NonContainmentReference> getNonContainmentReferences() {
+        if (null == nonContainmentReferences) {
+            nonContainmentReferences = new ArrayList<NonContainmentReference>();
         }
         return nonContainmentReferences;
     }
 
-    private Map getGlobalRefs() {
-        if (globalRefs == null) {
-            globalRefs = new HashMap();
+    private Map<Type, List<GlobalRef>> getGlobalRefs() {
+        if (null == globalRefs) {
+            globalRefs = new HashMap<Type, List<GlobalRef>>();
         }
         return globalRefs;
     }
