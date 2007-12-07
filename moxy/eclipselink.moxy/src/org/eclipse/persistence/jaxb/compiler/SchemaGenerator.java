@@ -400,6 +400,8 @@ public class SchemaGenerator {
                     }
                 } else if (!helper.isAnnotationPresent(next.getElement(), XmlValue.class)) {
                     Element element = new Element();
+                    // Set minOccurs based on the 'required' flag
+                    element.setMinOccurs(next.isRequired() ? "1" : "0");
                     QName elementName = next.getSchemaName();
                     JavaClass javaType = next.getType();
                     boolean isCollectionType = isCollectionType(next);
@@ -517,9 +519,6 @@ public class SchemaGenerator {
                         reference.setMinOccurs("0");
                         parentCompositor.addElement(reference);
                     } else {
-                        // TODO: some TCK tests expect this to be unset, or perhaps set to "1".  
-                        // @see - java2schema/CustomizedMapping/classes/XmlType/basetype/BaseType002
-                        element.setMinOccurs("0");
                         parentCompositor.addElement(element);
                     }
                 }

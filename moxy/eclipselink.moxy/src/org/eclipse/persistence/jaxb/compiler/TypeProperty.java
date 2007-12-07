@@ -51,6 +51,7 @@ public class TypeProperty {
     private Helper helper;
     private String getMethodName;
     private String setMethodName;
+    private boolean isRequired = false;
     
     public TypeProperty() {
     }
@@ -169,6 +170,14 @@ public class TypeProperty {
         isMtomAttachment = b;
     }
     
+    public boolean isRequired() {
+        return isRequired;
+    }
+    
+    public void setIsRequired(boolean b) {
+        isRequired = b;
+    }
+
     public String getMimeType() {
         return mimeType;
     }

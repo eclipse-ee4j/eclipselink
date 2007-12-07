@@ -51,4 +51,35 @@ public class SchemaGenEmployeeTestCases extends TestCase {
         }
         assertTrue("Schema validation failed unexpectedly: " + msg, exception==false);
     }
+
+    /**
+     * The following test expects a schema validation exception to occur.
+     * This is due to the fact that the supplied instance document does
+     * not contain a 'firstName' element, which is required as the 
+     * corresponding field in the Employee class contains the following
+     * annotation:  @XmlElement(required = true)
+     * @throws Exception
+     */
+    public void testEmployeeSchemaGenMissingRequiredElement() throws Exception {
+        boolean exception = false;
+        String src = "org/eclipse/persistence/testing/jaxb/schemagen/employee/employee_missing_required_element.xml";
+        String tmpdir = System.getenv("T_WORK");
+        String msg = "";
+
+        try {
+            Class[] jClasses = new Class[] { Address.class, Employee.class, PhoneNumber.class, Department.class };
+            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl()));
+            gen.generateSchemaFiles(tmpdir, null);
+            SchemaFactory sFact = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
+            Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
+            Validator validator = theSchema.newValidator();
+            StreamSource ss = new StreamSource(new File(src)); 
+            validator.validate(ss);
+        } catch (Exception ex) {
+            exception = true;
+            msg = ex.getLocalizedMessage();
+        }
+        assertTrue("Schema validation passed unexpectedly", exception);
+        assertTrue("An unexpected exception occurred: " + msg, msg.contains("firstName"));
+    }
 }

@@ -374,6 +374,10 @@ public class AnnotationsProcessor {
                     if(helper.isAnnotationPresent(property.getElement(), XmlAttribute.class) || helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
                         property.setIsAttribute(true);
                     }                    
+                    // Check for XmlElement annotation and set required (a.k.a. minOccurs) accordingly
+                    if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
+                        property.setIsRequired(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());
+                    }                    
                     
                     // Figure out schema name and namesapce
                     property.setSchemaName(getQNameForProperty(Introspector.decapitalize(nextField.getName()), nextField));
@@ -502,6 +506,10 @@ public class AnnotationsProcessor {
             if (!helper.isAnnotationPresent(property.getElement(), XmlTransient.class)) {
                 properties.add(property);
             }
+            // Check for XmlElement annotation and set required (a.k.a. minOccurs) accordingly
+            if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
+                property.setIsRequired(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());
+            }                    
         }
         return properties;
     }

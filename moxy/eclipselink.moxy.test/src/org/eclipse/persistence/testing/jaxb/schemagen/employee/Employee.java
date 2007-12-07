@@ -20,6 +20,7 @@ public class Employee
     @XmlAttribute(name="id")
     public int id;
     
+    @XmlElement(required = true)
     public String firstName;
 
     public String lastName;
