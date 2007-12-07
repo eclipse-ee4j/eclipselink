@@ -89,9 +89,10 @@ public class SDOException extends EclipseLinkException {
       * INTERNAL:
       * Exception when processing an import during xsdhelper.define
       */
-    public static SDOException errorProcessingImport(String schemaLocation, String namespace) {
+    public static SDOException errorProcessingImport(String schemaLocation, String namespace, Exception nestedException) {
         Object[] args = { schemaLocation, namespace };
-        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, ERROR_PROCESSING_IMPORT, args));
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(//
+        		SDOException.class, ERROR_PROCESSING_IMPORT, args), nestedException);
         exception.setErrorCode(ERROR_PROCESSING_IMPORT);
         return exception;
     }
@@ -100,9 +101,10 @@ public class SDOException extends EclipseLinkException {
      * INTERNAL:
      * Exception when processing an include during xsdhelper.define
      */
-    public static SDOException errorProcessingInclude(String schemaLocation) {
+    public static SDOException errorProcessingInclude(String schemaLocation, Exception nestedException) {
         Object[] args = { schemaLocation };
-        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, ERROR_PROCESSING_INCLUDE, args));
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(//
+        		SDOException.class, ERROR_PROCESSING_INCLUDE, args), nestedException);
         exception.setErrorCode(ERROR_PROCESSING_INCLUDE);
         return exception;
     }
