@@ -31,6 +31,7 @@ public class ComplexDefineTestSuite {
         suite.addTest(new TestSuite(PurchaseOrderWithAnnotationsDefineTestCases.class));
         suite.addTest(new TestSuite(DefineWithImportsTestCases.class));
         suite.addTest(new TestSuite(DefineWithIncludesTestCases.class));
+        suite.addTest(new TestSuite(DefineWithImportsExceptionTestCases.class));        
         suite.addTest(new TestSuite(CyclicImportsDefineTestCases.class));
         suite.addTest(new TestSuite(DefineWithBuiltInSchemaLocationTestCases.class));
         suite.addTest(new TestSuite(ClashingNamespacesTestCases.class)); 
