@@ -408,7 +408,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         if (isXmlDescriptor()) {
             XMLDescriptor xmlDescriptor = (XMLDescriptor)getDescriptor();
             extraNamespaces = addExtraNamespacesToNamespaceResolver(xmlDescriptor, record, session);
-            writeExtraNamespaces(extraNamespaces, record, session);
+            writeExtraNamespaces(extraNamespaces, record);
 
         }
 
@@ -478,7 +478,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         if (xsiPrefix == null) {
             xsiPrefix = xmlDescriptor.getNonNullNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
             generated = true;
-            writeXsiNamespace((DOMRecord)row, xmlDescriptor, xsiPrefix);
+            writeXsiNamespace((DOMRecord)row, xsiPrefix);
         }
         XMLField xmlField = (XMLField)xmlDescriptor.buildField("@" + xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
         if (generated) {
@@ -488,7 +488,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         row.add(xmlField, typeValue);
     }
 
-    private void writeXsiNamespace(DOMRecord nestedRecord, XMLDescriptor referenceDescriptor, String xsiPrefix) {
+    private void writeXsiNamespace(DOMRecord nestedRecord, String xsiPrefix) {
         if(nestedRecord.getDOM().getNodeType() == Node.ELEMENT_NODE) {
             ((Element)nestedRecord.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         }
@@ -558,7 +558,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         return returnList;
     }
 
-    public void writeExtraNamespaces(List extraNamespaces, XMLRecord xmlRecord, AbstractSession session) {        
+    public void writeExtraNamespaces(List extraNamespaces, XMLRecord xmlRecord) {        
         if(extraNamespaces == null){
           return;
         }

@@ -9,6 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm;
 
+import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 
 public class XMLRoot {
@@ -18,6 +19,7 @@ public class XMLRoot {
     protected String xmlVersion;
     protected String schemaLocation;
     protected String noNamespaceSchemaLocation;
+    protected QName schemaType;
 
     public XMLRoot() {
         rootFragment = new XPathFragment();
@@ -55,42 +57,49 @@ public class XMLRoot {
     }
 
     /**
-     * INTERNAL:     
+     * INTERNAL:
      */
     public XPathFragment getRootFragment() {
         return rootFragment;
     }
-    
+
     public String getEncoding() {
         return encoding;
     }
-    
+
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
-    
+
     public String getXMLVersion() {
         return xmlVersion;
     }
-    
+
     public void setVersion(String version) {
         this.xmlVersion = version;
     }
-    
+
     public String getSchemaLocation() {
         return schemaLocation;
     }
-    
+
     public void setSchemaLocation(String schemaLocation) {
         this.schemaLocation = schemaLocation;
     }
-    
+
     public String getNoNamespaceSchemaLocation() {
         return noNamespaceSchemaLocation;
     }
-    
+
     public void setNoNamespaceSchemaLocation(String noNamespaceSchemaLocation) {
         this.noNamespaceSchemaLocation = noNamespaceSchemaLocation;
     }
-    
+
+    public void setSchemaType(QName schemaType) {
+        this.schemaType = schemaType;
+    }
+
+    public QName getSchemaType() {
+        return schemaType;
+    }
 }

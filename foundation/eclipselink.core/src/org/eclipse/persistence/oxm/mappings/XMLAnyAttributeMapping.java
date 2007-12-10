@@ -321,7 +321,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
                 }
             }
         }
-        ((XMLObjectBuilder)descriptor.getObjectBuilder()).writeExtraNamespaces(extraNamespaces, row, session);
+        ((XMLObjectBuilder)descriptor.getObjectBuilder()).writeExtraNamespaces(extraNamespaces, row);
         ((XMLObjectBuilder)descriptor.getObjectBuilder()).removeExtraNamespacesFromNamespaceResolver(row, extraNamespaces, session);
     }
     

@@ -46,8 +46,9 @@ import org.w3c.dom.Text;
 public class XPathEngine {
     private static XPathEngine instance = null;
     private UnmarshalXPathEngine unmarshalXPathEngine;
-    private DocumentPreservationPolicy noDocPresPolicy = new NoDocumentPreservationPolicy(); //handles xpath engine calls without a policy
-    private DocumentPreservationPolicy xmlBinderPolicy = new XMLBinderPolicy(); //used for adding new elements to a collection.
+    private DocumentPreservationPolicy noDocPresPolicy = new NoDocumentPreservationPolicy();//handles xpath engine calls without a policy
+    private DocumentPreservationPolicy xmlBinderPolicy = new XMLBinderPolicy();//used for adding new elements to a collection.
+
     /**
     * Return the <code>XPathEngine</code> singleton.
     */
@@ -82,6 +83,7 @@ public class XPathEngine {
     public Node create(XMLField xmlField, Node element, Object value) {
         return create(xmlField, element, value, null, noDocPresPolicy);
     }
+
     /**
     * Create the node path specified by <code>xpathString</code> under <code>element</code>
     * and initialize the leaf node with <code>value</code>.
@@ -100,7 +102,7 @@ public class XPathEngine {
         if (null == value) {
             return null;
         }
-        if(docPresPolicy == null) {
+        if (docPresPolicy == null) {
             //EIS case and others
             docPresPolicy = this.noDocPresPolicy;
         }
@@ -151,10 +153,10 @@ public class XPathEngine {
         }
         Node nextElement = element;
         Element sibling = null;
-        if(lastUpdated != null && !lastUpdated.getXPathFragment().isAttribute() && !lastUpdated.getXPathFragment().nameIsText()) {
+        if ((lastUpdated != null) && !lastUpdated.getXPathFragment().isAttribute() && !lastUpdated.getXPathFragment().nameIsText()) {
             //find the sibling element. 
             NodeList nodes = unmarshalXPathEngine.selectElementNodes(element, lastUpdated.getXPathFragment(), lastUpdated.getNamespaceResolver());
-            if(nodes.getLength() > 0) {
+            if (nodes.getLength() > 0) {
                 sibling = (Element)nodes.item(nodes.getLength() - 1);
             }
         }
@@ -249,7 +251,7 @@ public class XPathEngine {
             return (String)XMLConversionManager.getDefaultXMLManager().convertObject(value, ClassConstants.STRING, schemaType);
         }
     }
-    
+
     private Object getValueToWrite(Object value, XMLField xmlField) {
         if (value instanceof Node) {
             return value;
@@ -414,7 +416,7 @@ public class XPathEngine {
             Element newElement = parent.getOwnerDocument().createElementNS(namespace, fragment.getShortName());
             elementsToReturn.add(newElement);
             docPresPolicy.getNodeOrderingPolicy().appendNode(parent, newElement, sibling);
-            
+
         } else if (value == null) {
             elementsToReturn.add(parent);
         } else {
@@ -477,12 +479,12 @@ public class XPathEngine {
         }
         String nodeName = lastFragment.getShortName();
         String namespace = resolveNamespacePrefix(lastFragment, xmlField.getNamespaceResolver());
-                
+
         Element elem = parent.getOwnerDocument().createElementNS(namespace, nodeName);
         if (lastFragment.isGeneratedPrefix()) {
             elem.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + lastFragment.getPrefix(), lastFragment.getNamespaceURI());
-        } 
-    
+        }
+
         return elem;
     }
 
@@ -500,10 +502,6 @@ public class XPathEngine {
         NamespaceResolver namespaceResolver = field.getNamespaceResolver();
         if (!field.isTypedTextField()) {
             return;
-        }
-
-        if (null == schemaInstancePrefix) {
-            schemaInstancePrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
         }
 
         List values;
@@ -527,13 +525,19 @@ public class XPathEngine {
             if (next.getNodeType() == Node.ELEMENT_NODE) {
                 QName qname = field.getXMLType(values.get(i).getClass());
                 if (qname != null) {
+                    if (null == schemaInstancePrefix) {
+                        schemaInstancePrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
+                        ((Element)next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + schemaInstancePrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+                    }
+
                     String type;
                     String prefix = this.resolveNamespacePrefixForURI(qname.getNamespaceURI(), namespaceResolver);
                     if ((prefix == null) || (prefix.equals(""))) {
                         type = qname.getLocalPart();
-                    } else {
-                        type = prefix + ":" + qname.getLocalPart();
+                        prefix = namespaceResolver.generatePrefix();
+                        ((Element)next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, qname.getNamespaceURI());
                     }
+                    type = prefix + ":" + qname.getLocalPart();
                     ((Element)next).setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, schemaInstancePrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, type);
                 }
             }
@@ -557,14 +561,15 @@ public class XPathEngine {
         if ((document == null) && (parent.getNodeType() == Node.DOCUMENT_NODE)) {
             document = (Document)parent;
         }
-        
+
         String nodeUri = value.getNamespaceURI();
         String nodeName = value.getLocalName();
+
         //String fragUri = resolveNamespacePrefix(fragment, namespaceResolver);
         String fragUri = fragment.getNamespaceURI();
         String fragName = fragment.getLocalName();
-        
-        if (nodeName != null && nodeName.equals(fragName) && ((nodeUri != null && nodeUri.equals(fragUri))||((nodeUri == null) && fragUri == null))) {
+
+        if ((nodeName != null) && nodeName.equals(fragName) && (((nodeUri != null) && nodeUri.equals(fragUri)) || ((nodeUri == null) && (fragUri == null)))) {
             if (document != value.getOwnerDocument()) {
                 return (Element)document.importNode(value, true);
             }
@@ -603,7 +608,7 @@ public class XPathEngine {
     private Node addAttribute(XPathFragment attributeFragment, XMLField xmlField, Node parent, Object value) {
         Object valueToWrite = null;
 
-        if(!(parent instanceof Element)) {
+        if (!(parent instanceof Element)) {
             return parent;
         }
         Element parentElement = (Element)parent;
@@ -617,7 +622,7 @@ public class XPathEngine {
                     }
                     if (pfx != null) {
                         // If the namespace resolver has a prefix for the node's URI, use it
-                        parentElement.setAttributeNS(attr.getNamespaceURI(), pfx+":"+attr.getLocalName(), attr.getNodeValue());
+                        parentElement.setAttributeNS(attr.getNamespaceURI(), pfx + ":" + attr.getLocalName(), attr.getNodeValue());
                     } else {
                         // No entry for the node's URI in the resolver, so use the node's 
                         // prefix/uri pair and define the URI locally
@@ -626,7 +631,7 @@ public class XPathEngine {
                 }
                 return parent;
             }
-            valueToWrite = value; 
+            valueToWrite = value;
         } else {
             valueToWrite = getNonNodeValueToWrite(value, xmlField);
         }
@@ -753,8 +758,8 @@ public class XPathEngine {
 
     public NodeList replaceCollection(XMLField xmlField, Node parent, Collection values) throws XMLMarshalException {
         NodeList nodes = null;
-        if(xmlField != null) {
-           nodes = unmarshalXPathEngine.selectNodes(parent, xmlField, xmlField.getNamespaceResolver());
+        if (xmlField != null) {
+            nodes = unmarshalXPathEngine.selectNodes(parent, xmlField, xmlField.getNamespaceResolver());
         } else {
             nodes = parent.getChildNodes();
         }
@@ -766,6 +771,7 @@ public class XPathEngine {
 
         int nodesLength = nodes.getLength();
         Vector newNodes = new Vector();
+
         // Iterate over both collections until one runs out, creating a collection of correct nodes
         // while removing the old ones.
         boolean performedReplace = true;
@@ -774,10 +780,11 @@ public class XPathEngine {
             //Keep track of which nodes have been replaced
             Node oldChild = nodes.item(i);
             Element newChild = null;
-            if(performedReplace) {
+            if (performedReplace) {
                 value = collectionValues.next();
             }
             Node parentNode = oldChild.getParentNode();
+
             // Handle Attributes and Text
             if (oldChild.getNodeType() != Node.ELEMENT_NODE) {
                 if (((oldChild.getNodeType() == Node.TEXT_NODE) || (oldChild.getNodeType() == Node.CDATA_SECTION_NODE)) && (value == null)) {
@@ -793,8 +800,8 @@ public class XPathEngine {
                 XPathFragment childFragment = new XPathFragment(elementName);
                 childFragment.setNamespaceURI(element.getNamespaceURI());
                 newChild = (Element)createElement(parentNode, childFragment, xmlField, valueToWrite);
-                if(!newNodes.contains(oldChild)) {
-                    if(newChild != oldChild) {
+                if (!newNodes.contains(oldChild)) {
+                    if (newChild != oldChild) {
                         parentNode.replaceChild(newChild, oldChild);
                     }
                     newNodes.addElement(newChild);
@@ -810,7 +817,7 @@ public class XPathEngine {
         while (i < nodesLength) {
             Node toRemove = nodes.item(i);
             Node removedParent = toRemove.getParentNode();
-            if (removedParent != null && !newNodes.contains(toRemove)) {
+            if ((removedParent != null) && !newNodes.contains(toRemove)) {
                 //only remove it, if it's not already been added back in
                 removedParent.removeChild(toRemove);
             }
@@ -819,14 +826,12 @@ public class XPathEngine {
 
         //Now add the nodes back in, in the correct order
         //for (Iterator newNodesIter = newNodes.iterator(); newNodesIter.hasNext();) {
-           // Element newNode = (Element)newNodesIter.next();
-            //this.create(xmlField, parent, newNode);
-            
+        // Element newNode = (Element)newNodesIter.next();
+        //this.create(xmlField, parent, newNode);
         //}
-
-        if(value != null && !performedReplace) {
+        if ((value != null) && !performedReplace) {
             //If we didn't add in the last element we tried then add it now
-            if(xmlField.getXPathFragment().getNextFragment() == null || xmlField.getXPathFragment().getHasText()) {
+            if ((xmlField.getXPathFragment().getNextFragment() == null) || xmlField.getXPathFragment().getHasText()) {
                 //if there's no grouping element, ensure that new collection elements
                 //are added inline with the others
                 create(xmlField, parent, value, xmlField, xmlBinderPolicy);
@@ -839,7 +844,7 @@ public class XPathEngine {
         while (collectionValues.hasNext()) {
             value = collectionValues.next();
             //If there's a grouping element, then just do the normal create
-            if(xmlField.getXPathFragment().getNextFragment() == null || xmlField.getXPathFragment().getHasText()) {
+            if ((xmlField.getXPathFragment().getNextFragment() == null) || xmlField.getXPathFragment().getHasText()) {
                 //if there's no grouping element, ensure that new collection elements
                 //are added inline with the others
                 create(xmlField, parent, value, xmlField, xmlBinderPolicy);
@@ -849,7 +854,8 @@ public class XPathEngine {
         }
 
         return nodes;
-    }    
+    }
+
     // ==========================================================================================	
 
     /**
@@ -871,7 +877,7 @@ public class XPathEngine {
             if (fragment.getNamespaceURI() != null) {
                 return fragment.getNamespaceURI();
             }
-            
+
             return namespaceResolver.resolveNamespacePrefix(fragment.getPrefix());
         } catch (Exception e) {
             return null;
@@ -893,6 +899,7 @@ public class XPathEngine {
         }
         return null;
     }
+
     private Node addText(XMLField xmlField, Node element, String textValue) {
         if (xmlField.isCDATA()) {
             CDATASection cdata = element.getOwnerDocument().createCDATASection((String)textValue);

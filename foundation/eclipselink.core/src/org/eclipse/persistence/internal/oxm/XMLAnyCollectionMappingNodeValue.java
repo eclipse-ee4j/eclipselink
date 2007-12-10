@@ -17,10 +17,8 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
-import org.eclipse.persistence.internal.oxm.record.UnmappedContentHandlerWrapper;
 import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHandler;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -102,7 +100,11 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                         String prefix = frag.getPrefix();
                         String url = unmarshalRecord.resolveNamespacePrefix(prefix);
                         frag.setNamespaceURI(url);
+
+                        QName qname = new QName(url, frag.getLocalName());
+                        unmarshalRecord.setTypeQName(qname);
                     }
+
                     xmlDescriptor = xmlContext.getDescriptorByGlobalType(frag);
                 }
             }
@@ -194,12 +196,22 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         Object value = unmarshalRecord.getStringBuffer().toString().trim();
         unmarshalRecord.resetStringBuffer();
         if (!EMPTY_STRING.equals(value) && xmlAnyCollectionMapping.isMixedContent()) {
+            QName qname = unmarshalRecord.getTypeQName();
+            if (qname != null) {
+                XMLConversionManager xmlConversionManager = (XMLConversionManager)unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
+                Class theClass = (Class)xmlConversionManager.getDefaultXMLTypes().get(qname);
+                if (theClass != null) {
+                    value = xmlConversionManager.convertObject(value, theClass, qname);
+                }
+            }
+
             if (!xmlAnyCollectionMapping.usesXMLRoot()) {
                 unmarshalRecord.addAttributeValue(this, value);
             } else {
                 XMLRoot xmlRoot = new XMLRoot();
                 xmlRoot.setNamespaceURI(xPathFragment.getNamespaceURI());
                 xmlRoot.setLocalName(xPathFragment.getLocalName());
+                xmlRoot.setSchemaType(qname);
                 xmlRoot.setObject(value);
                 unmarshalRecord.addAttributeValue(this, xmlRoot);
             }
@@ -336,8 +348,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
     private void marshalSimpleValue(XPathFragment xmlRootFragment, MarshalRecord marshalRecord, Object originalValue, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlRootFragment != null) {
-            // QName qname = ((XMLRoot)originalValue).getSchemaType();
-			QName qname = null;
+            QName qname = ((XMLRoot)originalValue).getSchemaType();
                           
             XMLConversionManager xmlConversionManager = (XMLConversionManager)session.getDatasourcePlatform().getConversionManager();                
             value = xmlConversionManager.convertObject(value, ClassConstants.STRING, qname);
@@ -368,6 +379,6 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     
     public XMLAnyCollectionMapping getMapping() {
         return xmlAnyCollectionMapping;
-    }
+    }    
  
 }
