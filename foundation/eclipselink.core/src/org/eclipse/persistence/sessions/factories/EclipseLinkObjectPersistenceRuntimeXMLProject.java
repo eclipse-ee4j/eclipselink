@@ -426,7 +426,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildStoredProcedureCallDescriptor());
         // 5877994 -- add metadata support for Stored Function Calls
         addDescriptor(buildStoredFunctionCallDescriptor());
-                
+
         //5963607 -- add Sorted Collection mapping support
         addDescriptor(buildSortedCollectionContainerPolicyDescriptor());
 
@@ -441,7 +441,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildAbstractNullPolicyDescriptor());
         addDescriptor(buildNullPolicyDescriptor());
         addDescriptor(buildIsSetNullPolicyDescriptor());
-        
+
         // Do not add any descriptors beyond this point or an namespaceResolver exception may occur
 
         // Set the namespaces on all descriptors.
@@ -473,7 +473,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
 
         return descriptor;
     }
-    
+
 
     protected ClassDescriptor buildAggregateCollectionMappingDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -2751,7 +2751,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
                 "soft-cache-weak-reference", SoftCacheWeakIdentityMap.class);
         remoteIdentityMapClassConverter.addConversionValue(
                 "hard-cache-weak-reference", HardCacheWeakIdentityMap.class);
-        remoteIdentityMapClassConverter.addConversionValue("soft-reference", SoftIdentityMap.class); 
+        remoteIdentityMapClassConverter.addConversionValue("soft-reference", SoftIdentityMap.class);
         remoteIdentityMapClassMapping
                 .setConverter(remoteIdentityMapClassConverter);
         remoteIdentityMapClassMapping
@@ -3334,7 +3334,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         converterMapping.setXPath("eclipselink:converter");
         converterMapping.setReferenceClass(Converter.class);
         descriptor.addMapping(converterMapping);
-		
+
 		XMLDirectMapping attributeClassificationMapping = new XMLDirectMapping();
 		attributeClassificationMapping.setAttributeName("attributeClassification");
 		attributeClassificationMapping.setGetMethodName("getAttributeClassification");
@@ -3377,7 +3377,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         aMapping.setAttributeName("nullPolicy");
         aMapping.setXPath("null-policy");
         ((DatabaseMapping)aMapping).setAttributeAccessor(new NullPolicyAttributeAccessor());
-        descriptor.addMapping(aMapping);       
+        descriptor.addMapping(aMapping);
 
         return descriptor;
     }
@@ -4225,7 +4225,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         orderedFieldsMapping
                 .useCollectionClass(org.eclipse.persistence.internal.helper.NonSynchronizedVector.class);
         orderedFieldsMapping.setAttributeName("orderedFields");
-        orderedFieldsMapping.setXPath("eclipselink:field-order/field");
+        orderedFieldsMapping.setXPath("eclipselink:field-order/eclipselink:field");
         orderedFieldsMapping.setReferenceClass(DatabaseField.class);
         descriptor.addMapping(orderedFieldsMapping);
 
@@ -6086,7 +6086,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
 		equalNamespaceResolversMapping.setXPath("eclipselink:equal-namespace-resolvers/text()");
 		equalNamespaceResolversMapping.setNullValue(Boolean.TRUE);
 		descriptor.addMapping(equalNamespaceResolversMapping);
-		
+
 		return descriptor;
     }
 
@@ -6609,10 +6609,10 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
      * <b>Purpose</b>: helper classes - represent stored procedure arguments in
      * XML
      * <p>
-     * 
+     *
      * @author Kyle Chen
      * @since 11
-     * 
+     *
      * mnorman - moved from o.t.i.workbench.storedprocedure to be nested inner
      * classes of ObjectPersistenceRuntimeXMLProject_11_1_1 so that they don't
      * 'leak' out into the runtime
@@ -7146,23 +7146,23 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
          XMLDirectMapping xnrnMapping = new XMLDirectMapping();
          xnrnMapping.setAttributeName("isNullRepresentedByXsiNil");
          xnrnMapping.setXPath("eclipselink:xsi-nil-represents-null/text()");
-         xnrnMapping.setNullValue(Boolean.FALSE);         
+         xnrnMapping.setNullValue(Boolean.FALSE);
          aDescriptor.addMapping(xnrnMapping);
 
          XMLDirectMapping enrnMapping = new XMLDirectMapping();
          enrnMapping.setAttributeName("isNullRepresentedByEmptyNode");
          enrnMapping.setXPath("eclipselink:empty-node-represents-null/text()");
-         enrnMapping.setNullValue(Boolean.FALSE);         
+         enrnMapping.setNullValue(Boolean.FALSE);
          aDescriptor.addMapping(enrnMapping);
 
          XMLDirectMapping nrfxMapping = new XMLDirectMapping();
          nrfxMapping.setAttributeName("marshalNullRepresentation");
          nrfxMapping.setXPath("eclipselink:null-representation-for-xml/text()");
-         // Restricted to XSI_NIL,ABSENT_NODE,EMPTY_NODE	
+         // Restricted to XSI_NIL,ABSENT_NODE,EMPTY_NODE
          EnumTypeConverter aConverter = new EnumTypeConverter(nrfxMapping, XMLNullRepresentationType.class, false);
          nrfxMapping.setConverter(aConverter);
          aDescriptor.addMapping(nrfxMapping);
-         
+
          // Subclasses
          aDescriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
          aDescriptor.getInheritancePolicy().addClassIndicator(IsSetNullPolicy.class, "eclipselink:is-set-null-policy");
@@ -7180,12 +7180,12 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
          XMLDirectMapping xnranMapping = new XMLDirectMapping();
          xnranMapping.setAttributeName("isSetPerformedForAbsentNode");
          xnranMapping.setXPath("eclipselink:is-set-performed-for-absent-node/text()");
-         xnranMapping.setNullValue(Boolean.TRUE);         
+         xnranMapping.setNullValue(Boolean.TRUE);
          aDescriptor.addMapping(xnranMapping);
 
          return aDescriptor;
      }
-     
+
      protected ClassDescriptor buildIsSetNullPolicyDescriptor() {
          // The IsSetPerformedForAbsentNode flag is always false on this IsSet mapping
     	 XMLDescriptor aDescriptor = new XMLDescriptor();
@@ -7201,13 +7201,13 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
          XMLCompositeDirectCollectionMapping isSetParameterTypesMapping = new XMLCompositeDirectCollectionMapping();
          isSetParameterTypesMapping.setAttributeName("isSetParameterTypes");
          isSetParameterTypesMapping.setXPath("eclipselink:is-set-parameter-type");
-         ((DatabaseMapping)isSetParameterTypesMapping).setAttributeAccessor(new IsSetNullPolicyIsSetParameterTypesAttributeAccessor());         
+         ((DatabaseMapping)isSetParameterTypesMapping).setAttributeAccessor(new IsSetNullPolicyIsSetParameterTypesAttributeAccessor());
          aDescriptor.addMapping(isSetParameterTypesMapping);
 
          XMLCompositeDirectCollectionMapping isSetParametersMapping = new XMLCompositeDirectCollectionMapping();
          isSetParametersMapping.setAttributeName("isSetParameters");
-         isSetParametersMapping.setXPath("eclipselink:is-set-parameter");         
-         ((DatabaseMapping)isSetParametersMapping).setAttributeAccessor(new IsSetNullPolicyIsSetParametersAttributeAccessor());         
+         isSetParametersMapping.setXPath("eclipselink:is-set-parameter");
+         ((DatabaseMapping)isSetParametersMapping).setAttributeAccessor(new IsSetNullPolicyIsSetParametersAttributeAccessor());
          aDescriptor.addMapping(isSetParametersMapping);
 
          return aDescriptor;
@@ -7222,8 +7222,8 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
          public IsSetNullPolicyIsSetParametersAttributeAccessor() {
         	 super();
          }
-         
-         @Override   
+
+         @Override
          public Object getAttributeValueFromObject(Object object) throws DescriptorException {
         	 IsSetNullPolicy aPolicy = (IsSetNullPolicy)object;
        		 NonSynchronizedVector aCollection = new NonSynchronizedVector();
@@ -7232,12 +7232,12 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
        		 }
        		 return aCollection;
          }
-         
+
          @Override
          public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         	 // Convert the collection of Strings to an array of Object values (round-trip)
         	 if(value instanceof Collection) {
-    			 int i = 0;    			 
+    			 int i = 0;
     			 Object[] parameters = new Object[((Collection)value).size()];
     			 for(Iterator anIterator = ((Collection)value).iterator(); anIterator.hasNext();) {
    					 // Lookup the object type via the predefined parameterTypes array and convert based on that type
@@ -7260,8 +7260,8 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
          public IsSetNullPolicyIsSetParameterTypesAttributeAccessor() {
              super();
          }
-         
-         @Override   
+
+         @Override
          public Object getAttributeValueFromObject(Object object) throws DescriptorException {
         	 IsSetNullPolicy aPolicy = (IsSetNullPolicy)object;
        		 NonSynchronizedVector aCollection = new NonSynchronizedVector();
@@ -7270,7 +7270,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
        		 }
        		 return aCollection;
          }
-         
+
          @Override
          public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         	 try {
@@ -7290,40 +7290,40 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         		 throw new RuntimeException(e);
         	 }
          }
-     }     
+     }
 
      /**
       * INTERNAL:
       * If the policy is the default NullPolicy with defaults set - then represent this default policy by null.
       */
      public class NullPolicyAttributeAccessor extends AttributeAccessor {
-         
+
          public NullPolicyAttributeAccessor() {
              super();
          }
-         
-         @Override   
+
+         @Override
          public Object getAttributeValueFromObject(Object object) throws DescriptorException {
           	// If the policy is default (NullPolicy(ispfan=true, inrben=false, inrbxnn=false, XMLNullRep=ABSENT_NODE) return null
           	AbstractNullPolicy value = ((XMLNillableMapping)object).getNullPolicy();
           	if(value instanceof NullPolicy) {
               	NullPolicy aPolicy = (NullPolicy)value;
               	if(aPolicy.getIsSetPerformedForAbsentNode() && !aPolicy.isNullRepresentedByEmptyNode() //
-              			&& !aPolicy.isNullRepresentedByXsiNil() // 
+              			&& !aPolicy.isNullRepresentedByXsiNil() //
               			&& aPolicy.getMarshalNullRepresentation().equals(XMLNullRepresentationType.ABSENT_NODE)) {
               		// The default policy is represented by null
               		return null;
               	}
-          	}                	
+          	}
           	return ((XMLNillableMapping)object).getNullPolicy();
          }
-         
+
          @Override
          public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
          	// If value is a default policy represented by null - return (NullPolicy(ispfan=true, inrben=false, inrbxn=false, XMLNullRep=ABSENT_NODE)
           	if(null == value) {
           		// Create and set a default policy
-          		((XMLNillableMapping)object).setNullPolicy(new NullPolicy());                    	
+          		((XMLNillableMapping)object).setNullPolicy(new NullPolicy());
           	} else {
           		// Set the value as policy
               	((XMLNillableMapping)object).setNullPolicy((AbstractNullPolicy)value);
