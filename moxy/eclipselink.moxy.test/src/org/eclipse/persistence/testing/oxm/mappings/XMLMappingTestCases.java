@@ -105,7 +105,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         removeEmptyTextNodes(writeControlDocument);
         inputStream.close();
     }
-    
+
     abstract protected Object getControlObject();
 
     /*
@@ -154,6 +154,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         assertEquals(controlObj.getLocalName(), testObj.getLocalName());
         assertEquals(controlObj.getNamespaceURI(), testObj.getNamespaceURI());
         assertEquals(controlObj.getObject(), testObj.getObject());
+        assertEquals(controlObj.getSchemaType(), testObj.getSchemaType());
     }
 
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {

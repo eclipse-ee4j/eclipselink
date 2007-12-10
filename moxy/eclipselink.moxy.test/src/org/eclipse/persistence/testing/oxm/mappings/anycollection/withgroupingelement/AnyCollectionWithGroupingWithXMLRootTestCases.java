@@ -9,8 +9,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.mappings.anycollection.withgroupingelement;
 
+import java.util.Calendar;
 import java.util.Vector;
 import junit.textui.TestRunner;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
@@ -52,19 +54,39 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLMappingTes
         xmlroot0.setRootElementURI("www.example.com/some-dir/some.xsd");
         any.addElement(xmlroot0);*/
 
-        XMLRoot xmlroot1 = new XMLRoot();
-        xmlroot1.setObject("theStringValue");
-        xmlroot1.setLocalName("myns:theString");
-        xmlroot1.setNamespaceURI("www.example.com/some-dir/some.xsd");
-        any.addElement(xmlroot1);
+       
 
         XMLRoot xmlroot2 = new XMLRoot();
 
-        //xmlroot2.setObject(new Integer(15));
-        xmlroot2.setObject("15");
+        xmlroot2.setObject(new Integer(15));
+        //xmlroot2.setObject("15");
         xmlroot2.setLocalName("myns:theInteger");
         xmlroot2.setNamespaceURI("www.example.com/some-dir/some.xsd");
+        xmlroot2.setSchemaType(XMLConstants.INT_QNAME);
         any.addElement(xmlroot2);
+        
+         XMLRoot xmlroot1 = new XMLRoot();
+        xmlroot1.setObject("15");
+        xmlroot1.setLocalName("myns:theString");
+        xmlroot1.setNamespaceURI("www.example.com/some-dir/some.xsd");
+        any.addElement(xmlroot1);
+        
+        XMLRoot next = new XMLRoot();
+    
+        Calendar theCalendar  =Calendar.getInstance();
+        theCalendar.clear();
+        theCalendar.set(Calendar.HOUR, 9);
+        theCalendar.set(Calendar.HOUR_OF_DAY, 9);
+        theCalendar.set(Calendar.AM_PM, Calendar.AM);
+        theCalendar.set(Calendar.MINUTE, 30);
+        theCalendar.set(Calendar.SECOND, 45);
+        theCalendar.set(Calendar.MILLISECOND, 0);
+        next.setSchemaType(XMLConstants.TIME_QNAME);
+        
+        next.setObject(theCalendar);
+        next.setNamespaceURI("www.example.com/some-dir/some.xsd");
+        next.setLocalName("theTime");        
+        any.addElement(next);
 
         XMLRoot xmlroot3 = new XMLRoot();
         child = new Child();
