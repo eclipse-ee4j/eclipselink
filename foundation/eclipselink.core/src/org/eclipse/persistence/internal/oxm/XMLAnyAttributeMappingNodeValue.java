@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.queries.DirectMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -43,11 +43,11 @@ public class XMLAnyAttributeMappingNodeValue extends XMLSimpleMappingNodeValue i
         if (xmlAnyAttributeMapping.isReadOnly()) {
             return false;
         }
-        DirectMapContainerPolicy cp = (DirectMapContainerPolicy)xmlAnyAttributeMapping.getContainerPolicy();
         Object collection = xmlAnyAttributeMapping.getAttributeValueFromObject(object);
         if (collection == null) {
             return false;
         }
+        DirectMapContainerPolicy cp = getContainerPolicy();
         Object iter = cp.iteratorFor(collection);
         if (!cp.hasNext(iter)) {
             return false;
@@ -104,7 +104,19 @@ public class XMLAnyAttributeMappingNodeValue extends XMLSimpleMappingNodeValue i
         xmlAnyAttributeMapping.setAttributeValueInObject(object, container);
     }
 
+    public DirectMapContainerPolicy getContainerPolicy() {
+        return (DirectMapContainerPolicy)xmlAnyAttributeMapping.getContainerPolicy();
+    }
+
     public boolean isContainerValue() {
         return true;
     }
+
+    public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    }
+
+    public XMLAnyAttributeMapping getMapping() {
+        return xmlAnyAttributeMapping;
+    }
+ 
 }

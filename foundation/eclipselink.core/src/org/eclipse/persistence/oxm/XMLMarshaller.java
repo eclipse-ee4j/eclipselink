@@ -42,12 +42,9 @@ import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.w3c.dom.Attr;
-import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.Text;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
@@ -345,6 +342,7 @@ public class XMLMarshaller {
         } else {
             writerRecord = new WriterRecord();
         }
+        writerRecord.setMarshaller(this);
         writerRecord.setWriter(writer);
         
         //if this is a simple xml root, the session and descriptor will be null
@@ -403,6 +401,7 @@ public class XMLMarshaller {
         //if it's a simple xml root then session and descriptor will be null
         if ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
             ContentHandlerRecord contentHandlerRecord = new ContentHandlerRecord();
+            contentHandlerRecord.setMarshaller(this);
             contentHandlerRecord.setContentHandler(contentHandler);
             contentHandlerRecord.setLexicalHandler(lexicalHandler);
             marshal(object, contentHandlerRecord, xmlDescriptor, isXMLRoot);
@@ -450,6 +449,7 @@ public class XMLMarshaller {
             //if this is a simple xml root, descriptor and session will be null
             if ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
                 NodeRecord nodeRecord = new NodeRecord();
+                nodeRecord.setMarshaller(this);
                 nodeRecord.setDOM(node);
 
                 if (!isXMLRoot) {
@@ -720,11 +720,13 @@ public class XMLMarshaller {
             XMLRecord xmlRow = null;
             if (!isXMLRoot) {
                 xmlRow = (XMLRecord)((XMLObjectBuilder)descriptor.getObjectBuilder()).createRecordFor(object, xmlContext.getDocumentPreservationPolicy(session));
+                xmlRow.setMarshaller(this);
                 addRootDescriptorNamespacesToXMLRecord(descriptor, xmlRow);
             }
             return objectToXML(object, descriptor, xmlRow, isXMLRoot);
         } else {
             MarshalRecord marshalRecord = new NodeRecord();
+            marshalRecord.setMarshaller(this);
             marshal(object, marshalRecord, descriptor, isXMLRoot);
             return marshalRecord.getDocument();
         }
@@ -740,6 +742,7 @@ public class XMLMarshaller {
             XMLRecord xmlRow = null;
             if (!isXMLRoot) {
                 xmlRow = (XMLRecord)((XMLObjectBuilder)descriptor.getObjectBuilder()).createRecordFor(object, xmlContext.getDocumentPreservationPolicy(session));
+                xmlRow.setMarshaller(this);
                 if (xmlRow.getDOM().getNodeType() == Node.ELEMENT_NODE) {
                     addRootDescriptorNamespacesToXMLRecord(descriptor, xmlRow);
                 }
@@ -752,6 +755,7 @@ public class XMLMarshaller {
             }
         } else {
             MarshalRecord marshalRecord = new NodeRecord();
+            marshalRecord.setMarshaller(this);
             marshal(object, marshalRecord, descriptor, isXMLRoot);
             return marshalRecord.getDocument();
         }
@@ -788,9 +792,11 @@ public class XMLMarshaller {
         AbstractSession session = xmlContext.getSession(descriptor);
         if ((session != null) && xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
             XMLRecord xmlRow = (XMLRecord)((XMLObjectBuilder)descriptor.getObjectBuilder()).createRecord(localRootName, parent);
+            xmlRow.setMarshaller(this);
             return objectToXML(object, descriptor, xmlRow, isXMLRoot);
         } else {
             MarshalRecord marshalRecord = new NodeRecord(localRootName, parent);
+            marshalRecord.setMarshaller(this);
             marshal(object, marshalRecord, descriptor, isXMLRoot);
             return marshalRecord.getDocument();
         }
@@ -826,6 +832,7 @@ public class XMLMarshaller {
                     shouldCallSetAttributeNS = true;
                 }
                 xmlRow = (XMLRecord)((XMLObjectBuilder)descriptor.getObjectBuilder()).createRecordFor(((XMLRoot)object).getObject(), xmlContext.getDocumentPreservationPolicy(xmlContext.getSession(descriptor)), recordName, xmlRootUri);
+                xmlRow.setMarshaller(this);
                 if (!isRootDocumentFragment) {
                     addRootDescriptorNamespacesToXMLRecord(descriptor, xmlRow);
                     if (shouldCallSetAttributeNS) {
@@ -837,7 +844,6 @@ public class XMLMarshaller {
                     }
                 }
             }
-            xmlRow.setMarshaller(this);
 
             document = xmlRow.getDocument();
             Element docElement = document.getDocumentElement();
@@ -860,10 +866,10 @@ public class XMLMarshaller {
             }
             object = ((XMLRoot)object).getObject();
         }
-        xmlRow.setMarshaller(this);
 
         XMLObjectBuilder bldr = (XMLObjectBuilder)descriptor.getObjectBuilder();
         xmlRow = (XMLRecord)bldr.buildRow(xmlRow, object, (org.eclipse.persistence.internal.sessions.AbstractSession)xmlContext.getSession(object), isXMLRoot);
+        xmlRow.setMarshaller(this);
         if (shouldCallSetAttributeNS && !isRootDocumentFragment) {
             ((Element)xmlRow.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
         }

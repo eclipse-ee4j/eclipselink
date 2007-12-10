@@ -1,0 +1,3 @@
+<ns:employee xmlns:ns="urn:example">
+	<STRING>Hello World</STRING>
+</ns:employee>

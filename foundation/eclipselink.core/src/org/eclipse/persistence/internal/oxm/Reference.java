@@ -12,6 +12,7 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.HashMap;
 import java.util.Vector;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
+import org.eclipse.persistence.oxm.sequenced.Setting;
 
 /**
  * INTERNAL:
@@ -27,6 +28,15 @@ public class Reference {
 	protected Class targetClass;		// the reference class
 	protected Vector primaryKeys;		// primary key values for cache lookup - used in single case
 	protected HashMap primaryKeyMap;	// map of primary key values for cache lookup - used in collection case
+	private Setting setting;
+
+	public Setting getSetting() {
+		return setting;
+	}
+
+	public void setSetting(Setting setting) {
+		this.setting = setting;
+	}
 
 	/**
 	 * Constructor typically used in the collection case.

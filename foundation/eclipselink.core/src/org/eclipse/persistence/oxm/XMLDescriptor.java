@@ -48,6 +48,7 @@ public class XMLDescriptor extends ClassDescriptor {
     private XMLSchemaReference schemaReference;
     private boolean shouldPreserveDocument = false;
     private XMLField defaultRootElementField;
+    private boolean sequencedObject = false;
 
     /**
      * PUBLIC:
@@ -730,6 +731,11 @@ public class XMLDescriptor extends ClassDescriptor {
      * and should be marshalled accordingly.
      */
     public boolean isSequencedObject() {
-        return false;
+        return sequencedObject;
     }
+
+    public void setSequencedObject(boolean isSequenced) {
+        this.sequencedObject = isSequenced;
+    }
+
 }

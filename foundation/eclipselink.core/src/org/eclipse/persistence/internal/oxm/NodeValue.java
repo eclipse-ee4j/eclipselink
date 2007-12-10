@@ -9,6 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm;
 
+import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -74,6 +75,8 @@ public abstract class NodeValue {
 
     /**
      * INTERNAL:
+     * This method is no longer required as now MarshalRecord maintains a 
+     * reference to the XMLMarshaller.
      * @param xPathFragment
      * @param marshalRecord
      * @param object
@@ -83,9 +86,25 @@ public abstract class NodeValue {
      * @return
      */
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, org.eclipse.persistence.oxm.XMLMarshaller marshaller) {
+    	marshalRecord.setMarshaller(marshaller);
         return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
     }
 
+    /**
+     * INTERNAL:
+     * Override this method if the NodeValue is applicable to sequenced objects.
+     * @param xPathFragment
+     * @param marshalRecord
+     * @param object
+     * @param session
+     * @param namespaceResolver
+     * @param xPathNodeWalker
+     * @return
+     */
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
+    }
+    
     /**
      * INTERNAL:
      * @param xPathFragment
@@ -142,6 +161,9 @@ public abstract class NodeValue {
       */
     public boolean isNullCapableValue() {
         return false;
+    }
+    
+    public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
     }
 
     /**

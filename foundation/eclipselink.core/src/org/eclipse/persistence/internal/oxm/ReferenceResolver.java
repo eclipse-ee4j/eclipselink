@@ -161,6 +161,9 @@ public class ReferenceResolver extends SessionEventAdapter {
 	            if (value != null) {
 	                ((XMLObjectReferenceMapping)reference.getMapping()).setAttributeValueInObject(reference.getSourceObject(), value);
                 }
+	            if(null != reference.getSetting()) {
+	                reference.getSetting().setValue(value);
+	            }
 	        }
         }
         // release the unit of work, if required

@@ -13,12 +13,15 @@ import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
 import org.xml.sax.Attributes;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -43,7 +46,11 @@ public class XMLBinaryDataCollectionMappingNodeValue extends NodeValue implement
      }
     
     public Object getContainerInstance() {
-        return xmlBinaryDataCollectionMapping.getContainerPolicy().containerInstance();
+        return getContainerPolicy().containerInstance();
+    }
+    
+    public ContainerPolicy getContainerPolicy() {
+        return xmlBinaryDataCollectionMapping.getContainerPolicy();        
     }
     
     protected String getValueToWrite(QName schemaType, Object value) {
@@ -55,20 +62,13 @@ public class XMLBinaryDataCollectionMappingNodeValue extends NodeValue implement
     }
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
-        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, null);
-    }
-
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, org.eclipse.persistence.oxm.XMLMarshaller marshaller) {
         if (xmlBinaryDataCollectionMapping.isReadOnly()) {
             return false;
         }
-        ContainerPolicy cp = xmlBinaryDataCollectionMapping.getContainerPolicy();
         Object collection = xmlBinaryDataCollectionMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (null == collection) {
             return false;
         }
-        Object iterator = cp.iteratorFor(collection);
-        boolean addDeclaration = false;
         String xopPrefix = null;
         // If the field's resolver is non-null and has an entry for XOP, 
         // use it - otherwise, create a new resolver, set the XOP entry, 
@@ -81,81 +81,17 @@ public class XMLBinaryDataCollectionMappingNodeValue extends NodeValue implement
         }
         if (xopPrefix == null || namespaceResolver == null) {
             xopPrefix = XMLConstants.XOP_PREFIX;
-            addDeclaration = true;
-            namespaceResolver = new NamespaceResolver();
-            namespaceResolver.put(xopPrefix, XMLConstants.XOP_URL);
+            marshalRecord.getNamespaceResolver().put(xopPrefix, XMLConstants.XOP_URL);
         }
         
+        ContainerPolicy cp = getContainerPolicy();
+        Object iterator = cp.iteratorFor(collection);
         while(cp.hasNext(iterator)) {
             Object objectValue = cp.next(iterator, (AbstractSession)session);
+            marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
+                }
         
-            if(xmlBinaryDataCollectionMapping.getValueConverter() != null) {
-                Converter converter = xmlBinaryDataCollectionMapping.getValueConverter();
-                if(converter instanceof XMLConverter) {
-                    objectValue = ((XMLConverter)converter).convertObjectValueToDataValue(objectValue, session, marshaller);
-                } else {
-                    objectValue = converter.convertObjectValueToDataValue(objectValue, session);
-                }
-            }
-            XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-            marshalRecord.closeStartGroupingElements(groupingFragment);
-            marshalRecord.openStartElement(xPathFragment, namespaceResolver);
-            marshalRecord.closeStartElement();
-        
-            if(xmlBinaryDataCollectionMapping.isSwaRef() && marshaller.getAttachmentMarshaller() != null) {
-                //object value should be a DataHandler
-                String c_id = null;
-                if (xmlBinaryDataCollectionMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
-                    c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler)objectValue);
-                } else {
-                    XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
-                            objectValue, marshaller, xmlBinaryDataCollectionMapping.getMimeType(object));
-                            byte[] bytes = data.getData();
-                            c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment(bytes, 0, bytes.length);
-                    
-                }
-                marshalRecord.characters(c_id);
-            } else {
-                if(marshaller.getAttachmentMarshaller() != null && marshaller.getAttachmentMarshaller().isXOPPackage() && !xmlBinaryDataCollectionMapping.shouldInlineBinaryData()) {
-                    XPathFragment lastFrag = ((XMLField)xmlBinaryDataCollectionMapping.getField()).getLastXPathFragment();
-                    String c_id = "";
-                    if(objectValue.getClass() == ClassConstants.APBYTE) {
-                        byte[] bytes = (byte[])objectValue;
-                        c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, lastFrag.getLocalName(), lastFrag.getNamespaceURI(), null);
-                    } else if(xmlBinaryDataCollectionMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
-                        c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler)objectValue, lastFrag.getLocalName(), lastFrag.getNamespaceURI());    
-                    } else {
-                        XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
-                        		objectValue, marshaller, xmlBinaryDataCollectionMapping.getMimeTypePolicy().getMimeType(object));
-                        byte[] bytes = data.getData();
-                        c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, //
-                        		data.getMimeType(), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
-                    }
-                    XPathFragment xopInclude = new XPathFragment(xopPrefix + ":Include");
-                    xopInclude.setNamespaceURI(XMLConstants.XOP_URL);
-                    marshalRecord.openStartElement(xopInclude, namespaceResolver);
-                    marshalRecord.attribute("", "href", "href", c_id);
-                    if (addDeclaration) {
-                        marshalRecord.attribute(XMLConstants.XMLNS_URL, xopPrefix, XMLConstants.XMLNS + ":" + xopPrefix, XMLConstants.XOP_URL);
-                        //marshalRecord.attribute(new XPathFragment("@xmlns:" + xopPrefix), namespaceResolver, XMLConstants.XOP_URL);
-                    }
-                    marshalRecord.closeStartElement();
-                    marshalRecord.endElement(xPathFragment, namespaceResolver);
-                    //marshal as an attachment.
-                } else {
-                    String value = "";
-                    if(objectValue.getClass() == ClassConstants.ABYTE || objectValue.getClass() == ClassConstants.APBYTE) {
-                        value = getValueToWrite(((XMLField)xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue);
-                    } else {
-                        byte[] bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
-                        		objectValue, marshaller,xmlBinaryDataCollectionMapping.getMimeTypePolicy().getMimeType(object)).getData();
-                        value = getValueToWrite(((XMLField)xmlBinaryDataCollectionMapping.getField()).getSchemaType(), bytes);
-                    }
-                    marshalRecord.characters(value);
-                }
-            }
-            marshalRecord.endElement(xPathFragment, namespaceResolver);
-        }
+        marshalRecord.getNamespaceResolver().removeNamespace(XMLConstants.XOP_PREFIX);
         return true;
     }
     
@@ -247,4 +183,100 @@ public class XMLBinaryDataCollectionMappingNodeValue extends NodeValue implement
     public boolean isContainerValue() {
         return true;
     }
+    public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        boolean addDeclaration = false;
+        boolean removePrefix = false;
+        String xopPrefix = null;
+        if(namespaceResolver != null) {
+            xopPrefix = namespaceResolver.resolveNamespaceURI(XMLConstants.XOP_URL);
+        }
+        if(xopPrefix == null) {
+            //check for it in the MarshalRecord's NamespaceResolver
+            addDeclaration = true;
+            xopPrefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(XMLConstants.XOP_URL);
+            if(xopPrefix == null) {
+                //if it's still null, add it, and make a note to remove it later
+                removePrefix = true;
+                xopPrefix = XMLConstants.XOP_PREFIX;
+                marshalRecord.getNamespaceResolver().put(xopPrefix, XMLConstants.XOP_URL);
+            }
+            namespaceResolver = marshalRecord.getNamespaceResolver();
+        }
+        
+        XMLMarshaller marshaller = marshalRecord.getMarshaller();
+        if(xmlBinaryDataCollectionMapping.getValueConverter() != null) {
+            Converter converter = xmlBinaryDataCollectionMapping.getValueConverter();
+            if(converter instanceof XMLConverter) {
+                objectValue = ((XMLConverter)converter).convertObjectValueToDataValue(objectValue, session, marshaller);
+            } else {
+                objectValue = converter.convertObjectValueToDataValue(objectValue, session);
+            }
+        }
+        XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
+        marshalRecord.closeStartGroupingElements(groupingFragment);
+        marshalRecord.openStartElement(xPathFragment, namespaceResolver);
+        marshalRecord.closeStartElement();
+    
+        if(xmlBinaryDataCollectionMapping.isSwaRef() && marshaller.getAttachmentMarshaller() != null) {
+            //object value should be a DataHandler
+            String c_id = null;
+            if (xmlBinaryDataCollectionMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
+                c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler)objectValue);
+            } else {
+                XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
+                        objectValue, marshaller, xmlBinaryDataCollectionMapping.getMimeType(object));
+                        byte[] bytes = data.getData();
+                        c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment(bytes, 0, bytes.length);
+                
+            }
+            marshalRecord.characters(c_id);
+        } else {
+            if(marshaller.getAttachmentMarshaller() != null && marshaller.getAttachmentMarshaller().isXOPPackage() && !xmlBinaryDataCollectionMapping.shouldInlineBinaryData()) {
+                XPathFragment lastFrag = ((XMLField)xmlBinaryDataCollectionMapping.getField()).getLastXPathFragment();
+                String c_id = "";
+                if(objectValue.getClass() == ClassConstants.APBYTE) {
+                    byte[] bytes = (byte[])objectValue;
+                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, lastFrag.getLocalName(), lastFrag.getNamespaceURI(), null);
+                } else if(xmlBinaryDataCollectionMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
+                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler)objectValue, lastFrag.getLocalName(), lastFrag.getNamespaceURI());    
+                } else {
+                    XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
+                            objectValue, marshaller, xmlBinaryDataCollectionMapping.getMimeTypePolicy().getMimeType(object));
+                    byte[] bytes = data.getData();
+                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, //
+                            data.getMimeType(), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
+                }
+                XPathFragment xopInclude = new XPathFragment(xopPrefix + ":Include");
+                xopInclude.setNamespaceURI(XMLConstants.XOP_URL);
+                marshalRecord.openStartElement(xopInclude, namespaceResolver);
+                marshalRecord.attribute("", "href", "href", c_id);
+                if (addDeclaration) {
+                    marshalRecord.attribute(XMLConstants.XMLNS_URL, xopPrefix, XMLConstants.XMLNS + ":" + xopPrefix, XMLConstants.XOP_URL);
+                    //marshalRecord.attribute(new XPathFragment("@xmlns:" + xopPrefix), namespaceResolver, XMLConstants.XOP_URL);
+                }
+                marshalRecord.closeStartElement();
+                marshalRecord.endElement(xPathFragment, namespaceResolver);
+                //marshal as an attachment.
+            } else {
+                String value = "";
+                if(objectValue.getClass() == ClassConstants.ABYTE || objectValue.getClass() == ClassConstants.APBYTE) {
+                    value = getValueToWrite(((XMLField)xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue);
+                } else {
+                    byte[] bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
+                            objectValue, marshaller,xmlBinaryDataCollectionMapping.getMimeTypePolicy().getMimeType(object)).getData();
+                    value = getValueToWrite(((XMLField)xmlBinaryDataCollectionMapping.getField()).getSchemaType(), bytes);
+                }
+                marshalRecord.characters(value);
+            }
+        }
+        marshalRecord.endElement(xPathFragment, namespaceResolver);
+        if(removePrefix) {
+            marshalRecord.getNamespaceResolver().removeNamespace(XMLConstants.XOP_PREFIX);
+        }
+    }
+
+    public XMLBinaryDataCollectionMapping getMapping() {
+        return xmlBinaryDataCollectionMapping;
+    }
+
 }

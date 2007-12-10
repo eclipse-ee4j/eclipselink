@@ -136,6 +136,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
     		pks.setSize(pkFieldNames.size());
     		reference = new Reference(this, srcObject, getReferenceClass(), pks);
     		resolver.addReference(reference);
+    		record.reference(reference);
     	}
 		XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlField);
         int idx = pkFieldNames.indexOf(tgtFld.getXPath());

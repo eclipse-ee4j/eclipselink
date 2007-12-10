@@ -136,6 +136,21 @@ public abstract class XMLRelationshipMappingNodeValue extends NodeValue {
         marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
     }
     
+    protected void addTypeAttribute(MarshalRecord marshalRecord, String typeValue) {        
+        String xsiPrefix = null;
+        if (marshalRecord.getNamespaceResolver() != null) {
+            xsiPrefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+        } else {
+            xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
+            marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+        }
+        if (xsiPrefix == null) {
+            xsiPrefix = marshalRecord.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
+            marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+        }
+        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
+    }
+    
     protected void writeExtraNamespaces(List extraNamespaces, XMLRecord xmlRecord, AbstractSession session) {
         if (extraNamespaces == null) {
             return;

@@ -11,10 +11,11 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -126,10 +127,13 @@ public class XMLObjectReferenceMappingNodeValue extends XMLSimpleMappingNodeValu
     }
 
     /**
-     * 
+     * Handle the marshal operation for this NodeValue's XMLField.  The target
+     * object's primary key value that is mapped to this NodeValue's XMLField 
+     * (in the XMLObjectReferenceMapping's source-target key field association list)
+     * is retrieved and written out. 
      */
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
-        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, null);
+        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
 
     /**
@@ -138,11 +142,11 @@ public class XMLObjectReferenceMappingNodeValue extends XMLSimpleMappingNodeValu
      * (in the XMLObjectReferenceMapping's source-target key field association list)
      * is retrieved and written out. 
      */
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlObjectReferenceMapping.isReadOnly()) {
             return false;
         }
-        Object targetObject = xmlObjectReferenceMapping.getAttributeValueFromObject(object);
+        Object targetObject = marshalContext.getAttributeValue(object, xmlObjectReferenceMapping);
         Object fieldValue = xmlObjectReferenceMapping.buildFieldValue(targetObject, xmlField, session);
         if (fieldValue == null) {
             return false;

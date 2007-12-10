@@ -9,10 +9,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -39,7 +40,7 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
      * Override the method in XPathNode such that the marshaller can be set on the
      * marshalRecord - this is required for XMLConverter usage.
      */
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlFragmentCollectionMapping.isReadOnly()) {
             return false;
         }
@@ -58,15 +59,9 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
         Object objectValue;
         while (cp.hasNext(iterator)) {
             objectValue = cp.next(iterator, session);
-            if (objectValue instanceof Node) {
-                marshalRecord.node((org.w3c.dom.Node)objectValue, namespaceResolver);
-            }
+            marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
         }
         return true;
-    }
-    
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
-        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, null);
     }
     
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
@@ -97,14 +92,29 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
     }
 
     public Object getContainerInstance() {
-        return xmlFragmentCollectionMapping.getContainerPolicy().containerInstance();
+        return getContainerPolicy().containerInstance();
     }
 
     public void setContainerInstance(Object object, Object containerInstance) {
         xmlFragmentCollectionMapping.setAttributeValueInObject(object, containerInstance);
     }
 
+    public ContainerPolicy getContainerPolicy() {
+        return xmlFragmentCollectionMapping.getContainerPolicy();
+    }
+
     public boolean isContainerValue() {
         return true;
-    }    
+    }
+
+    public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        if (value instanceof Node) {
+            marshalRecord.node((org.w3c.dom.Node)value, namespaceResolver);
+        }
+    }
+
+    public XMLFragmentCollectionMapping getMapping() {
+        return xmlFragmentCollectionMapping;
+    }
+
 }

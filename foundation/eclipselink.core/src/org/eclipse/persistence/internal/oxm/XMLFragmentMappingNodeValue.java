@@ -13,6 +13,8 @@ import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
@@ -48,21 +50,21 @@ public class XMLFragmentMappingNodeValue extends XMLSimpleMappingNodeValue imple
         return true;
     }
     
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, org.eclipse.persistence.oxm.XMLMarshaller marshaller) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());	
+    }
+
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlFragmentMapping.isReadOnly()) {
             return false;
         }
         marshalRecord.openStartGroupingElements(namespaceResolver);
-        Object attributeValue = xmlFragmentMapping.getAttributeValueFromObject(object);
+        Object attributeValue = marshalContext.getAttributeValue(object, xmlFragmentMapping);
         if (!(attributeValue instanceof Node)) {
             return false;
         }
         marshalRecord.node((Node)attributeValue, namespaceResolver);
         return true;
-    }
-    
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
-        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, null);
     }
     
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
@@ -96,7 +98,7 @@ public class XMLFragmentMappingNodeValue extends XMLSimpleMappingNodeValue imple
             xmlFragmentMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), attributeValue);
         } else if (!lastFrag.isAttribute()) {
             Object value = builder.getNodes().pop();
-            xmlFragmentMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), value);
+            unmarshalRecord.setAttributeValue(value, xmlFragmentMapping);
         }
     }
     

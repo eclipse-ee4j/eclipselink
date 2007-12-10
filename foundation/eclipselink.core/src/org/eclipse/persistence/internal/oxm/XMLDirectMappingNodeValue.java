@@ -10,6 +10,8 @@
 package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
+import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
@@ -40,20 +42,15 @@ public class XMLDirectMappingNodeValue extends XMLSimpleMappingNodeValue impleme
         return xPathFragment.isAttribute() || xPathFragment.nameIsText();
     }
 
-    /**
-     * Override the method in XPathNode such that the marshaller can be set on the
-     * marshalRecord - this is required for XMLConverter usage.
-     */
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, org.eclipse.persistence.oxm.XMLMarshaller marshaller) {
-        marshalRecord.setMarshaller(marshaller);
-        return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
     
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlDirectMapping.isReadOnly()) {
             return false;
         }
-        Object objectValue = xmlDirectMapping.getAttributeValueFromObject(object);
+        Object objectValue = marshalContext.getAttributeValue(object, xmlDirectMapping);
         Object fieldValue = xmlDirectMapping.getFieldValue(objectValue, session, marshalRecord);
         // Check for a null value 
         if (null == fieldValue) {
@@ -110,7 +107,7 @@ public class XMLDirectMappingNodeValue extends XMLSimpleMappingNodeValue impleme
         }
 
         Object convertedValue = xmlDirectMapping.getAttributeValue(value, unmarshalRecord.getSession(), unmarshalRecord);
-        xmlDirectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), convertedValue);
+        unmarshalRecord.setAttributeValue(convertedValue, xmlDirectMapping);
     }
 
     public void setNullValue(Object object, Session session) {

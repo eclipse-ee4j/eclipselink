@@ -751,4 +751,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
         }
         return unmappedNodes;
     }
+    public boolean isCollectionMapping() {
+        return true;
+    }
 }

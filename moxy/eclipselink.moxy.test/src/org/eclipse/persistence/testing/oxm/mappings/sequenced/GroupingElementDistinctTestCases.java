@@ -1,0 +1,69 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2007 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0, which accompanies this distribution
+ * and is available at http://www.eclipse.org/legal/epl-v10.html.
+ *
+ * Contributors:
+ *     Oracle - initial API and implementation from Oracle TopLink
+ ******************************************************************************/  
+package org.eclipse.persistence.testing.oxm.mappings.sequenced;
+
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.sequenced.SequencedObject;
+import org.eclipse.persistence.oxm.sequenced.Setting;
+import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+
+public class GroupingElementDistinctTestCases extends XMLMappingTestCases {
+    
+    private static final String XML_RESOURCE = "oracle/toplink/testing/ox/mappings/sequenced/GroupingElementDistinct.xml";
+    private static final String CONTROL_EMPLOYEE_FIRST_NAME = "Jane";
+    private static final String CONTROL_EMPLOYEE_LAST_NAME = "Doe";
+
+    private static final EmployeeProject EMPLOYEE_PROJECT = new EmployeeProject();
+
+    public GroupingElementDistinctTestCases(String name) throws Exception {
+        super(name);
+        setControlDocument(XML_RESOURCE);
+        setProject(EMPLOYEE_PROJECT);
+    }
+       
+    public Object getControlObject() {
+        SequencedObject controlEmployee = new Employee();
+
+        Setting fnPersonalInfoSetting = new Setting(null, "personal-info");
+        controlEmployee.getSettings().add(fnPersonalInfoSetting);
+        
+        Setting firstNameSetting = new Setting("urn:example", "first-name");
+        fnPersonalInfoSetting.addChild(firstNameSetting);
+        
+        Setting firstNameTextSetting = new Setting(null, "text()");
+        firstNameTextSetting.setObject(controlEmployee);
+        DatabaseMapping firstNameMapping = EMPLOYEE_PROJECT.getDescriptor(Employee.class).getMappingForAttributeName("firstName");
+        firstNameTextSetting.setMapping(firstNameMapping);        
+        firstNameTextSetting.setValue(CONTROL_EMPLOYEE_FIRST_NAME);
+        firstNameSetting.addChild(firstNameTextSetting);
+        
+        Setting lnPersonalInfoSetting = new Setting(null, "personal-info");
+        controlEmployee.getSettings().add(lnPersonalInfoSetting);
+
+        Setting lastNameSetting = new Setting(null, "last-name");
+        lnPersonalInfoSetting.addChild(lastNameSetting);
+        
+        Setting lastNameTextSetting = new Setting(null, "text()");
+        lastNameTextSetting.setObject(controlEmployee);
+        DatabaseMapping lastNameMapping = EMPLOYEE_PROJECT.getDescriptor(Employee.class).getMappingForAttributeName("lastName");
+        lastNameTextSetting.setMapping(lastNameMapping);        
+        lastNameTextSetting.setValue(CONTROL_EMPLOYEE_LAST_NAME);
+        lastNameSetting.addChild(lastNameTextSetting);
+        
+        return controlEmployee;
+    }
+  
+    public void xmlToObjectTest(Object testObject) throws Exception {
+        Employee testEmployee = (Employee) testObject;
+        assertEquals(2, testEmployee.getSettings().size());
+        super.xmlToObjectTest(testObject); 
+    }    
+    
+}

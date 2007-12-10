@@ -11,6 +11,8 @@ package org.eclipse.persistence.internal.oxm;
 
 import java.util.List;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -46,17 +48,11 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
     }
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
-        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, null);
-    }
-
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
         if (xmlCompositeCollectionMapping.isReadOnly()) {
             return false;
         }
 
-        XMLDescriptor descriptor;
-        TreeObjectBuilder objectBuilder;
-        ContainerPolicy cp = xmlCompositeCollectionMapping.getContainerPolicy();
+        ContainerPolicy cp = getContainerPolicy();
         Object collection = xmlCompositeCollectionMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (null == collection) {
             return false;
@@ -70,39 +66,8 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         }
         Object objectValue;
         while (cp.hasNext(iterator)) {
-            if (xPathFragment.hasLeafElementType()) {
-                marshalRecord.setLeafElementType(xPathFragment.getLeafElementType());
-            }
-            objectValue = cp.next(iterator, (org.eclipse.persistence.internal.sessions.AbstractSession)session);
-            // convert the value - if necessary
-            if (xmlCompositeCollectionMapping.hasConverter()) {
-                Converter converter = xmlCompositeCollectionMapping.getConverter();
-                if (converter instanceof XMLConverter) {
-                    objectValue = ((XMLConverter)converter).convertObjectValueToDataValue(objectValue, session, marshaller);
-                } else {
-                    objectValue = converter.convertObjectValueToDataValue(objectValue, session);
-                }
-            }
-            descriptor = (XMLDescriptor)session.getDescriptor(objectValue);
-            objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
-            if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
-                marshaller.getMarshalListener().beforeMarshal(objectValue);
-            }
-            getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, objectValue);
-
-            if ((xmlCompositeCollectionMapping.getReferenceDescriptor() == null) && (descriptor.getSchemaReference() != null)) {
-                addTypeAttributeIfNeeded(descriptor, xmlCompositeCollectionMapping, marshalRecord);
-            }
-
-            List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
-            writeExtraNamespaces(extraNamespaces, marshalRecord, session);
-            objectBuilder.buildRow(marshalRecord, objectValue, (org.eclipse.persistence.internal.sessions.AbstractSession)session, marshaller);
-            marshalRecord.endElement(xPathFragment, namespaceResolver);
-            objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
-
-            if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
-                marshaller.getMarshalListener().afterMarshal(objectValue);
-            }
+            objectValue = cp.next(iterator, (AbstractSession)session);
+            marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
         }
         return true;
     }
@@ -127,7 +92,10 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         Object collection = unmarshalRecord.getContainerInstance(this);
-
+        endElement(xPathFragment, unmarshalRecord, collection);
+    }
+    
+    public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
         // convert the value - if necessary
         Object objectValue = unmarshalRecord.getChildRecord().getCurrentObject();
         if (xmlCompositeCollectionMapping.hasConverter()) {
@@ -144,13 +112,17 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
     }
 
     public Object getContainerInstance() {
-        return xmlCompositeCollectionMapping.getContainerPolicy().containerInstance();
+        return getContainerPolicy().containerInstance();
     }
 
     public void setContainerInstance(Object object, Object containerInstance) {
         xmlCompositeCollectionMapping.setAttributeValueInObject(object, containerInstance);
     }
 
+    public ContainerPolicy getContainerPolicy() {
+        return xmlCompositeCollectionMapping.getContainerPolicy();
+    }
+    
     public boolean isContainerValue() {
         return true;
     }
@@ -161,4 +133,46 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             addTypeAttribute(descriptor, marshalRecord, xmlRef.getSchemaContext());
         }
     }
+    
+    public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        if (xPathFragment.hasLeafElementType()) {
+            marshalRecord.setLeafElementType(xPathFragment.getLeafElementType());
+        }
+        XMLMarshaller marshaller = marshalRecord.getMarshaller();
+        // convert the value - if necessary
+        if (xmlCompositeCollectionMapping.hasConverter()) {
+            Converter converter = xmlCompositeCollectionMapping.getConverter();
+            if (converter instanceof XMLConverter) {
+                value = ((XMLConverter)converter).convertObjectValueToDataValue(value, session, marshaller);
+            } else {
+                value = converter.convertObjectValueToDataValue(value, session);
+            }
+        }
+        XMLDescriptor descriptor = (XMLDescriptor)session.getDescriptor(value);
+        TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
+        if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
+            marshaller.getMarshalListener().beforeMarshal(value);
+        }
+        getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, value);
+
+        if ((xmlCompositeCollectionMapping.getReferenceDescriptor() == null) && (descriptor.getSchemaReference() != null)) {
+            addTypeAttributeIfNeeded(descriptor, xmlCompositeCollectionMapping, marshalRecord);
+        }
+
+        List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
+        writeExtraNamespaces(extraNamespaces, marshalRecord, session);
+        objectBuilder.buildRow(marshalRecord, value, (AbstractSession)session, marshaller);
+        marshalRecord.endElement(xPathFragment, namespaceResolver);
+        objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
+
+        if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
+            marshaller.getMarshalListener().afterMarshal(value);
+        }
+        
+    }
+
+    public XMLCompositeCollectionMapping getMapping() {
+        return xmlCompositeCollectionMapping;
+    }
+
 }

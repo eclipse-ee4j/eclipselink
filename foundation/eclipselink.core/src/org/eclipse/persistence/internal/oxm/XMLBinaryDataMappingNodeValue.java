@@ -14,11 +14,14 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Attributes;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
+import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -45,15 +48,17 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     public XMLBinaryDataMappingNodeValue(XMLBinaryDataMapping mapping) {
         this.xmlBinaryDataMapping = mapping;
     }
+
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
-        return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, null);
+    	return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
 
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, org.eclipse.persistence.oxm.XMLMarshaller marshaller) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlBinaryDataMapping.isReadOnly()) {
             return false;
         }
-        Object objectValue = xmlBinaryDataMapping.getAttributeValueFromObject(object);
+        XMLMarshaller marshaller = marshalRecord.getMarshaller();
+        Object objectValue = marshalContext.getAttributeValue(object, xmlBinaryDataMapping);
         if (xmlBinaryDataMapping.getConverter() != null) {
             Converter converter = xmlBinaryDataMapping.getConverter();
             if (converter instanceof XMLConverter) {
@@ -213,7 +218,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         }
         value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, xmlBinaryDataMapping.getAttributeClassification());
         
-        xmlBinaryDataMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), value);
+        unmarshalRecord.setAttributeValue(value, xmlBinaryDataMapping);
     }
 
     public void setNullValue(Object object, Session session) {

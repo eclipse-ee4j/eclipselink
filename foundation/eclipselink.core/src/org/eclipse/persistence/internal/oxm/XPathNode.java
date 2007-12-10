@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -200,11 +202,11 @@ public class XPathNode {
         }
     }
 
-    public boolean marshal(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
-        return marshal(marshalRecord, object, session, namespaceResolver, null);
+    public boolean marshal(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        return marshal(marshalRecord, object, session, namespaceResolver, null, marshalContext);
     }
 
-    public boolean marshal(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, org.eclipse.persistence.oxm.XMLMarshaller marshaller) {
+    public boolean marshal(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller, MarshalContext marshalContext) {
         if ((null == nodeValue) || nodeValue.isMarshalOnlyNodeValue()) {
             marshalRecord.addGroupingElement(this);
 
@@ -214,17 +216,18 @@ public class XPathNode {
                 int size = attributeChildren.size();
                 for (int x = 0; x < size; x++) {
                     xPathNode = (XPathNode)attributeChildren.get(x);
-                    hasValue = xPathNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller) || hasValue;
+                    hasValue = xPathNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller, ObjectMarshalContext.getInstance()) || hasValue;
                 }
             }
             if (anyAttributeNode != null) {
-                hasValue = anyAttributeNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller) || hasValue;
+                hasValue = anyAttributeNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller, ObjectMarshalContext.getInstance()) || hasValue;
             }
             if (null != nonAttributeChildren) {
-                int size = nonAttributeChildren.size();
+                int size = marshalContext.getNonAttributeChildrenSize(this);
                 for (int x = 0; x < size; x++) {
-                    xPathNode = (XPathNode)nonAttributeChildren.get(x);
-                    hasValue = xPathNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller) || hasValue;
+                    xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, this);
+                    MarshalContext childMarshalContext = marshalContext.getMarshalContext(x);
+                    hasValue = xPathNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller, childMarshalContext) || hasValue;
                 }
             }
 
@@ -236,7 +239,7 @@ public class XPathNode {
 
             return hasValue;
         } else {
-            return nodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, marshaller);
+            return marshalContext.marshal(nodeValue, xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
     }
 
@@ -251,12 +254,12 @@ public class XPathNode {
             int size = attributeChildren.size();
             for (int x = 0; x < size; x++) {
                 attributeNode = (XPathNode)attributeChildren.get(x);
-                hasValue = attributeNode.marshal(marshalRecord, object, session, namespaceResolver) || hasValue;
+                hasValue = attributeNode.marshal(marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance()) || hasValue;
             }
         }
         if (anyAttributeNode != null) {
             //marshal the anyAttribute node here before closeStartElement()
-            hasValue = anyAttributeNode.marshal(marshalRecord, object, session, namespaceResolver) || hasValue;
+            hasValue = anyAttributeNode.marshal(marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance()) || hasValue;
         }
 
         if (null != compositeObjectBuilder) {

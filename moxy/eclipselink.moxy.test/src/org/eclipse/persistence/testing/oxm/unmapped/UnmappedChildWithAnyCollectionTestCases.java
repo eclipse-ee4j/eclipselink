@@ -41,7 +41,7 @@ public class UnmappedChildWithAnyCollectionTestCases extends OXTestCase {
 
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
         Employee emp = (Employee)xmlUnmarshaller.unmarshal(inputStream);
-        assertEquals(2, MyUnmappedContentHandler.INSTANCE_COUNTER);
+        assertEquals(4, MyUnmappedContentHandler.INSTANCE_COUNTER);
     }
 
     public void testWithKeepAllAsElementMapping() {
