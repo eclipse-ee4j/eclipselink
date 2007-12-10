@@ -16,6 +16,9 @@ import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
+ * <p>Setting objects are used to control the order in which the
+ * mappings for Sequenced Objects are processed.</p>
+ * 
  * <b>Example 1</b>
  * <pre>
  * Setting piSetting = new Setting(null, "personal-info");
@@ -24,6 +27,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * piSetting.addChild(fnSetting);
  * 
  * Setting fnTextSetting = new Setting(null, "text()");
+ * fnTextSetting.setObject(customerObject);
+ * fnTextSetting.setMapping(customerFirstNameMapping);
  * fnTextSetting.setValue("Jane");
  * fnSetting.addChild(fnTextSetting);
  *
@@ -31,6 +36,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * piSetting.addChild(lnSetting);
  * 
  * Setting lnTextSetting = new Setting(null, "text()");
+ * lnTextSetting.setObject(customerObject);
+ * lnTextSetting.setMapping(customerLastNameMapping);
  * lnTextSetting.setValue("Doe");
  * lnSetting.getSequence().add(lnTextSetting);
  * </pre> 
@@ -48,6 +55,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * fnpiSetting.addChild(fnSetting);
  * 
  * Setting fnTextSetting = new Setting(null, "text()");
+ * fnTextSetting.setObject(customerObject);
+ * fnTextSetting.setMapping(customerFirstNameMapping);
  * fnTextSetting.setValue("Jane");
  * fnSetting.addChild(fnTextSetting);
  *
@@ -57,6 +66,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * lnpiSetting.addChild(lnSetting);
  * 
  * Setting lnTextSetting = new Setting(null, "text()");
+ * lnTextSetting.setObject(customerObject);
+ * lnTextSetting.setMapping(customerLastNameMapping);
  * lnTextSetting.setValue("Doe");
  * lnSetting.addChild(lnTextSetting);
  * </pre> 
@@ -114,7 +125,7 @@ public class Setting {
     }
 
     /**
-     * Return the namespace URI that qualifies the name of the Setting (if there 
+     * @return The namespace URI that qualifies the name of the Setting (if there 
      * is one).
      */
     public String getNamespaceURI() {
@@ -122,7 +133,7 @@ public class Setting {
     }
 
     /**
-     * Specify the namespace URI that qualifies the name of the Setting (if 
+     * @param namespaceURI Specify the namespace URI that qualifies the name of the Setting (if 
      * there is one).
      */
     public void setNamespaceURI(String namespaceURI) {
@@ -130,17 +141,26 @@ public class Setting {
     }
 
     /**
-     * Return the value corresponding to this setting.  For sequenced object the 
-     * property values correspond to the setting and not the domain object. 
+     * @return The value corresponding to this setting.
      */
     public Object getValue() {
         return value;
     }
 
+    /**
+     * Set the value on the Setting.  This method will also update the corresponding 
+     * domain object using the specified mapping.
+     * @param value
+     */
     public void setValue(Object value) {
         setValue(value, true);
     }
 
+    /**
+     * @param value The value to be set on the Setting.
+     * @param updateObject This flag indicates if an update is performed 
+     * on the corresponding domain object using the specified mapping.
+     */
     public void setValue(Object value, boolean updateObject) {
         this.value = value;
         if(updateObject) {
@@ -151,6 +171,11 @@ public class Setting {
         }              
     }
 
+    /**
+     * @param value
+     * @param updateObject
+     * @param container
+     */
     public void addValue(Object value, boolean updateObject, Object container) {
         this.value = value;
 
@@ -169,22 +194,39 @@ public class Setting {
         }              
     }
 
+    /**
+     * @return The domain object to which this Setting applies. 
+     */
     public Object getObject() {
         return object;
     }
 
+    /**
+     * @param object This is the domain object to which this Setting belongs.
+     */
     public void setObject(Object object) {
         this.object = object;
     }
 
+    /**
+     * @return The mapping for the domain object that corresponds to this Setting.
+     */
     public DatabaseMapping getMapping() {
         return mapping;
     }
 
+    /**
+     * @param mapping The mapping for the domain object that corresponds to this Setting.
+     */
     public void setMapping(DatabaseMapping mapping) {
         this.mapping = mapping;
     }
 
+    /**
+     * 
+     * @param childSetting This setting will be added to the parent.  The parenting 
+     * information will be updated automatically.  A child must only be added to one parent.
+     */
     public void addChild(Setting childSetting) {
         childSetting.setParent(this);
         if(null == children) {
@@ -193,18 +235,31 @@ public class Setting {
         children.add(childSetting);
     }
 
+    /**
+     * @return The parent Setting or null if this setting has not parent.
+     */
     public Setting getParent() {
         return parent;
     }
 
-    public void setParent(Setting parentSetting) {
+    /**
+     * @param parentSetting The parent Setting or null if this setting has not parent. 
+     */
+    protected void setParent(Setting parentSetting) {
         this.parent = parentSetting;
     }
 
+    /**
+     * @return The child Settings or null if this setting has no children.
+     */
     public List<Setting> getChildren() {
         return children;
     }
 
+    /**
+     * @return A copy of the Setting object and its child Setting objects.  The copy
+     * contains references to the original object, mapping, and value.
+     */
     public Setting copy() {
         Setting copy = new Setting();
         copy.setName(name);

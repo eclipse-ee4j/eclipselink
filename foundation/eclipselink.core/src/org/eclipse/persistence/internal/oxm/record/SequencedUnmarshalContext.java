@@ -17,6 +17,10 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
+/**
+ * An implementation of UnmarshalContext for handling sequenced objects that
+ * are mapped to XML. 
+ */
 public class SequencedUnmarshalContext implements UnmarshalContext {
 
     private static final String TEXT_XPATH = "text()";

@@ -20,6 +20,10 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
+/**
+ * An implementation of MarshalContext for handling sequenced objects that
+ * are mapped to XML. 
+ */
 public class SequencedMarshalContext implements MarshalContext {
 
     private List<Setting> settings;

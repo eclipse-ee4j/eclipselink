@@ -11,6 +11,10 @@ package org.eclipse.persistence.oxm.sequenced;
 
 import java.util.List;
 
+/**
+ * In order to mark a domain object as being a Sequenced Object it must 
+ * implement this interface.
+ */
 public interface SequencedObject {
 
     List<Setting> getSettings();

@@ -14,6 +14,10 @@ import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
+/**
+ * An implementation of UnmarshalContext for handling plain old java objects that
+ * are mapped to XML. 
+ */
 public class ObjectUnmarshalContext implements UnmarshalContext {
 
     private static final ObjectUnmarshalContext INSTANCE = new ObjectUnmarshalContext();

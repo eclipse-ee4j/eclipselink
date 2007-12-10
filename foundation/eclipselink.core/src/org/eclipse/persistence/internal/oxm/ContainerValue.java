@@ -30,6 +30,16 @@ public interface ContainerValue {
     
     public ContainerPolicy getContainerPolicy();
     
+    /**
+     * Marshal only one of the values from the collection. 
+     * @param xPathFragment
+     * @param marshalRecord
+     * @param object
+     * @param value
+     * @param session
+     * @param namespaceResolver
+     * @param marshalContext
+     */
     public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext);
     
     public DatabaseMapping getMapping();    

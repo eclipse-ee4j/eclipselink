@@ -17,6 +17,10 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 
+/**
+ * An implementation of MarshalContext for handling plain old java objects that
+ * are mapped to XML. 
+ */
 public class ObjectMarshalContext implements MarshalContext {
 
     private static final ObjectMarshalContext INSTANCE = new ObjectMarshalContext();
