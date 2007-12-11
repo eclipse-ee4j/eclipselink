@@ -18,6 +18,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.tools.schemaframework.*;
 
 /**
@@ -105,27 +106,18 @@ public class TestSystem {
     }
 
     /**
-     * Load the default login from the titl.properties file.
-     * This file (twork directory) must be on the classpath.
+     * Load the default login from the test.properties file.
+     * This file must be on the classpath, or system property set.
      */
-    public void loadLoginFromProperties() {
-        URL url = Thread.currentThread().getContextClassLoader().getResource("test.properties");
-        if (url == null) {
-            throw new TestErrorException("test.properties must be on your classpath to run this test.");
-        }
-        Properties properties = new Properties();
-        try {
-            properties.load(url.openStream());
-        } catch (java.io.IOException exception) {
-            throw new TestErrorException("Error loading test.properties.", exception);
-        }
+    public void loadLoginFromProperties() {        
+        Map properties = JUnitTestCaseHelper.getDatabaseProperties();
         login = new DatabaseLogin();
-        login.setDriverClassName((String)properties.get("db.driver"));
-        login.setConnectionString((String)properties.get("db.url"));
-        login.setUserName((String)properties.get("db.user"));
+        login.setDriverClassName((String)properties.get("eclipselink.jdbc.driver"));
+        login.setConnectionString((String)properties.get("eclipselink.jdbc.url"));
+        login.setUserName((String)properties.get("eclipselink.jdbc.user"));
         // This avoids encrypting the password, as some tests require it non-encrypted.
-        login.setEncryptedPassword((String)properties.get("db.pwd"));
-        login.setPlatformClassName((String)properties.get("db.platform"));
+        login.setEncryptedPassword((String)properties.get("eclipselink.jdbc.password"));
+        login.setPlatformClassName((String)properties.get("eclipselink.target-database"));
     }
 
     /**

@@ -1,6 +1,8 @@
 <project name="Eclipse Persistence Services" default="all" basedir=".">
 
-	<property file="${user.home}/build.properties"/>
+    <property environment="env"/>
+
+    <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
 
     <path id="compile.path">
@@ -12,10 +14,10 @@
             includes="${eclipselink.core.depend}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
     </path>
-	
+
     <!-- all -->
     <target name="all" depends="clean, compile, process.resource" description="build EclipseLink jar"/>
-	
+
     <!-- compile --> 
     <target name="compile" depends="" description="compile EclipseLink core tests">  
         <mkdir dir="${eclipselink.core.test}/${classes.dir}"/>
@@ -34,7 +36,7 @@
             </classpath>
         </javac>
     </target>
-	
+
     <target name="process.resource">
         <filter token="dbUser" value="${db.user}"/>
         <filter token="dbPassword" value="${db.password}"/>

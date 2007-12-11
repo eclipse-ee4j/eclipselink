@@ -71,6 +71,7 @@ public class JUnitTestCaseHelper {
                 String dbUrl = (String) properties.get("db.url");
                 String dbUser = (String) properties.get("db.user");
                 String dbPwd = (String) properties.get("db.pwd");
+                String platform = (String) properties.get("db.platform");
                 String logLevel = (String) properties.get("eclipselink.logging.level");
                 
                 if (dbDriver != null) {
@@ -87,6 +88,9 @@ public class JUnitTestCaseHelper {
                 }
                 if (logLevel != null) {
                     propertiesMap.put("eclipselink.logging.level", logLevel);
+                }
+                if (platform != null) {
+                    propertiesMap.put("eclipselink.target-database", platform);
                 }
             }
             propertiesMap.putAll(persistencePropertiesTestMap);
