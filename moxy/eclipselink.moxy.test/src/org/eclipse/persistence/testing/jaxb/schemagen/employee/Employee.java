@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name="employee-data")
 @XmlType(name = "employee-type", propOrder = {"firstName", "birthday", "id", "age", "lastName", "address", "department", 
-    "startTime", "phoneNumbers", "responsibilities"})
+    "startTime", "phoneNumbers", "responsibilities", "peeps"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Employee 
 {
@@ -42,4 +42,7 @@ public class Employee
     @XmlElement(name= "responsibilities")
     @XmlList
     public java.util.Collection<String> responsibilities;
+
+    @XmlElement(name="peep", required=true, namespace="examplenamespace")
+    public java.util.Collection<Employee> peeps;
 }

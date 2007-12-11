@@ -496,8 +496,14 @@ public class SchemaGenerator {
                         element.setType(typeName);
                     }
                     if (!elementName.getNamespaceURI().equals("")) {
+                        Element reference = new Element();
+                        reference.setMinOccurs(element.getMinOccurs());
+                        reference.setMaxOccurs(element.getMaxOccurs());
                         Schema attributeSchema = this.getSchemaForNamespace(elementName.getNamespaceURI());
                         if(attributeSchema.getTopLevelElements().get(element.getName()) == null) {
+                            // reset min/max occurs as they aren't applicable for global elements
+                            element.setMinOccurs(null);
+                            element.setMaxOccurs(null);
                             //don't overwrite global elements. May have been defined by a type.
                             attributeSchema.getTopLevelElements().put(element.getName(), element);
                         }
@@ -508,7 +514,6 @@ public class SchemaGenerator {
                             schema.getImports().put(schemaImport.getSchemaLocation(), schemaImport);
                             schema.getNamespaceResolver().put(schema.getNamespaceResolver().generatePrefix(), attributeSchema.getTargetNamespace());
                         }
-                        Element reference = new Element();
                         //add an import here
                         String prefix = getPrefixForNamespace(attributeSchema.getTargetNamespace(), schema.getNamespaceResolver());
                         if (prefix == null) {
@@ -516,7 +521,6 @@ public class SchemaGenerator {
                         } else {
                             reference.setRef(prefix + ":" + element.getName());
                         }
-                        reference.setMinOccurs("0");
                         parentCompositor.addElement(reference);
                     } else {
                         parentCompositor.addElement(element);

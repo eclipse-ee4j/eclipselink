@@ -507,6 +507,11 @@ public class SchemaModelProject extends Project {
         typeMapping.setXPath("@type");
         descriptor.addMapping(typeMapping);
 
+        XMLDirectMapping refMapping = new XMLDirectMapping();
+        refMapping.setAttributeName("ref");
+        refMapping.setXPath("@ref");
+        descriptor.addMapping(refMapping);
+        
         XMLDirectMapping minOccursMapping = new XMLDirectMapping();
         minOccursMapping.setAttributeName("minOccurs");
         minOccursMapping.setXPath("@minOccurs");
@@ -536,10 +541,6 @@ public class SchemaModelProject extends Project {
         fixedMapping.setXPath("@fixed");
         descriptor.addMapping(fixedMapping);
 
-        XMLDirectMapping refMapping = new XMLDirectMapping();
-        refMapping.setAttributeName("ref");
-        refMapping.setXPath("@ref");
-        descriptor.addMapping(refMapping);
 
         XMLCompositeObjectMapping annotationMapping = new XMLCompositeObjectMapping();
         annotationMapping.setReferenceClass(Annotation.class);
