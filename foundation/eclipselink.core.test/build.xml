@@ -1,10 +1,24 @@
-<project name="Eclipse Persistence Services" default="all" basedir=".">
+<!-- This ant project includes the following tasks:
+        - all (default) : compiles all tests, translates resources
+        - compile : compiles all tests
+        - process.resource : translates login info in resources into run directory
+        - test : runs LRG
+        - test.lrg : runs LRG
+        - test.srg : runs SRG
 
+        It requires some configuration of the build.properties and test.properties to run.
+    -->
+<project name="Eclipse Persistence Services Testing" default="all" basedir=".">
+
+    <!-- Allows tools.jar to be relative to JAVA_HOME. -->
     <property environment="env"/>
 
+    <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
+    <property file="${test.properties}"/>
 
+    <!-- Classpath used for compiling tests, also used in running tests. -->
     <path id="compile.path">
         <pathelement path="${eclipselink.core.lib}/eclipselink-antlr.jar"/>
         <pathelement path="${eclipselink.core.lib}/eclipselink-asm.jar"/>
@@ -15,10 +29,10 @@
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
     </path>
 
-    <!-- all -->
+    <!-- Default ant target, compiles and translates resources, does not run tests. -->
     <target name="all" depends="clean, compile, process.resource" description="build EclipseLink jar"/>
 
-    <!-- compile --> 
+    <!-- Compiles all tests. --> 
     <target name="compile" depends="" description="compile EclipseLink core tests">  
         <mkdir dir="${eclipselink.core.test}/${classes.dir}"/>
         <javac srcdir="${eclipselink.core.test}/${src.dir}" 
@@ -37,13 +51,14 @@
         </javac>
     </target>
 
+    <!-- Translates the login information in the resources into the run directory. -->
     <target name="process.resource">
         <filter token="dbUser" value="${db.user}"/>
         <filter token="dbPassword" value="${db.password}"/>
         <filter token="driverClass" value="${db.driver}"/>
         <filter token="dbURL" value="${db.url}"/>
-        <filter token="loglevel" value="${eclipselink.log.level}"/>
-        <filter token="boolvalue" value="${eclipselink.logging.boolvalue}"/>
+        <filter token="loglevel" value="${logging.level}"/>
+        <filter token="boolvalue" value="${logging.boolvalue}"/>
         <filter token="dbPlatform" value="${db.platform}"/>
         <copy todir="${eclipselink.core.test}/${run.dir}" filtering="true">
             <fileset dir="${eclipselink.core.test}/${resource.dir}"
@@ -57,7 +72,29 @@
          </copy>
     </target>
 
-    <target name="test" depends="process.resource">
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.core.test}/${classes.dir}"/>
+        </delete>
+    </target>
+
+    <!-- Testing -->
+
+    <!-- Classpath used for running tests. -->
+    <path id="run.classpath">
+        <pathelement path="${eclipselink.core.test}/${classes.dir}"/>
+        <pathelement path="${eclipselink.core.test}/${run.dir}"/>
+        <path refid="compile.path"/>
+        <pathelement path="${eclipselink.core}/${resource.dir}"/>
+        <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
+        <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
+        <pathelement path="${eclipselink.extension.oracle}/eclipselink-extension-oracle.jar"/>
+        <pathelement path="${jdbc.driver.jar}"/>
+        <pathelement path="${tools.jar}"/>
+    </path>
+
+    <!-- Runs the test using the PromptTestRunner -->
+    <target name="test.prompt-runner" depends="process.resource">
         <java   classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
              fork="true"
              maxmemory="512m"
@@ -69,22 +106,49 @@
             <arg value="regressionlog=${core.test.regression.log}" />
 
             <classpath>
-                <pathelement path="."/>
-                <pathelement path="${eclipselink.core.test}/${classes.dir}"/>
-                <pathelement path="${eclipselink.core.test}/${run.dir}"/>
-                <path refid="compile.path"/>
-                <pathelement path="${eclipselink.core}/${resource.dir}"/>
-                <pathelement path="${eclipselink.extension.oracle}/eclipselink-extension-oracle.jar"/>
-                <pathelement path="${jdbc.driver.jar}"/>
-                <pathelement path="${tools.jar}"/>
+                <path refid="run.classpath"/>
             </classpath>
         </java>
     </target>
 
-    <target name="clean" description="Clean the build">
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${eclipselink.core.test}/${classes.dir}"/>
-        </delete>
+    <!-- Default test target, runs LRG (TestRunModel). -->
+    <target name="test">
+        <antcall target="test.lrg" inheritRefs="true"/>
+    </target>
+
+    <!-- Runs SRG (SRGTestModel). -->
+    <target name="test.srg">
+        <property name="test.class" value="org.eclipse.persistence.testing.tests.SRGTestModel"/>
+        <antcall target="run.test" inheritRefs="true"/>
+    </target>
+
+    <!-- Runs LRG (TestRunModel). -->
+    <target name="test.lrg">
+        <property name="test.class" value="org.eclipse.persistence.testing.tests.TestRunModel"/>
+        <antcall target="run.test" inheritRefs="true"/>
+    </target>
+
+    <!-- Generic target for running tests. -->
+    <target name="run.test">
+        <echo>Running test with ${test.properties} on ${db.url}</echo>
+        <mkdir dir="${report.dir}"/>
+        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${run.dir}">
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
+            <classpath>
+                <path refid="run.classpath"/>
+            </classpath>
+            <formatter type="xml"/>
+            <test name="${test.class}" haltonfailure="no" outfile="${report.dir}/test-results">
+            </test>
+        </junit>
+        <junitreport todir="${report.dir}">
+            <fileset dir="${report.dir}">
+                <include name="test-results.xml"/>
+            </fileset>
+            <report format="noframes" todir="${report.dir}"/>
+        </junitreport>
+        <fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
     </target>
 
 </project>

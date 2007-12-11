@@ -1,13 +1,25 @@
-<project name="Eclipse Persistence Services Testing" default="all" basedir=".">
+<!-- This ant project includes the following tasks:
+        - all (default) : compiles all JPA tests, packages test jars
+        - compile : compiles all JPA tests
+        - package : jars JPA persistent units and tests jars
+        - test : runs JPA LRG (FullRegressionTestSuite)
+        - test.no-weave : runs JPA LRG using no weaving (no agent)
+        - test.static-weave : runs JPA LRG using static weaving
 
+        It requires some configuration of the build.properties and test.properties to run.
+    -->
+<project name="Eclipse Persistence Services JPA Testing" default="all" basedir=".">
+
+    <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
     <property file="${eclipselink.jpa.test}/local.build.properties"/>
-
     <property file="${test.properties}"/>
 
+    <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
     <available file="${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
 
+    <!-- Configures paths for trunk checkout. -->
     <target name="config-trunk" if="is.trunk">
         <path id="compile.path">
             <pathelement path="${eclipselink.core.trunk}/${classes.dir}"/>
@@ -23,6 +35,7 @@
         </path>
     </target>
 
+    <!-- Configures paths for Eclipse project checkout. -->
     <target name="config-flat" unless="is.trunk">
         <path id="compile.path">
             <pathelement path="${eclipselink.core}/${classes.dir}"/>
@@ -38,9 +51,10 @@
         </path>
     </target>
 
-    <!-- all -->
-    <target name="all" depends="clean, init, compile, package" description="build EclipseLink testing jars"/>
+    <!-- Default ant target, compiles and packages test jars, does not run tests. -->
+    <target name="all" depends="clean, init, compile, package" description="build EclipseLink JPA testing jars"/>
 
+    <!-- Creates required directories for building. -->
     <target name="init">
         <mkdir dir="${eclipselink.jpa.test}/${classes.dir}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-annotation-model}"/>
@@ -51,7 +65,7 @@
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-advanced-properties}"/>
     </target>
 
-    <!-- compile --> 
+    <!-- Compiles all tests. --> 
     <target name="compile" depends="init, config-trunk, config-flat" description="compile EclipseLink tesing">  
         <javac srcdir="${eclipselink.jpa.test}/${src.dir}" 
                destdir="${eclipselink.jpa.test}/${classes.dir}"
@@ -67,6 +81,7 @@
         </javac>
     </target>
 
+    <!-- Packages JPA persistent unit test jars. -->
     <target name="package" depends="package.annotation, package.ddl, package.xml-only, package.xml-merge, package.validation-failed, package.jpa-advanced-field-access, package.jpa-advanced-properties" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
@@ -203,6 +218,7 @@
 
     <!-- Testing -->
 
+    <!-- Classpath used for running tests. -->
     <path id="run.classpath">
         <pathelement path="${jdbc.driver.jar}"/>
         <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
@@ -218,18 +234,21 @@
         <pathelement path="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
     </path>
 
+    <!-- Default test target, runs FullRegressionTestSuite with agent. -->
     <target name="test">
         <property name="test.agent" value="-javaagent:${eclipselink.jar.run}"/>
         <property name="test.weaving" value="-Darg2=false"/>
         <antcall target="run.test" inheritRefs="true"/>
     </target>
 
+    <!-- Runs FullRegressionTestSuite with no agent. TEST_NO_WEAVING property informs tests that no weaving was done. -->
     <target name="test.no-weave">
         <property name="test.agent" value="-Darg1=false"/>
         <property name="test.weaving" value="-DTEST_NO_WEAVING=true"/>
         <antcall target="run.test" inheritRefs="true"/>
     </target>
 
+    <!-- Runs FullRegressionTestSuite with static weaving. -->
     <target name="test.static-weave" depends="config-trunk, config-flat, run-weaver">
         <path id="run.classpath">
             <pathelement path="${jdbc.driver.jar}"/>
@@ -247,6 +266,7 @@
         <antcall target="run.test" inheritRefs="true"/>
     </target>
 
+    <!-- Generic target for running tests. -->
     <target name="run.test" depends="config-trunk, config-flat">
         <echo>Running test with ${test.properties} on ${db.url}</echo>
         <mkdir dir="${report.dir}"/>
@@ -272,6 +292,7 @@
         <fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
     </target>
 
+    <!-- Runs EclipseLink static weaving ant task on test jars. -->
     <target name="run-weaver">
         <!-- define weaving ant task-->
         <taskdef name="weave" classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask">
