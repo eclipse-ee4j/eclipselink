@@ -12,6 +12,9 @@ package org.eclipse.persistence.testing.oxm.mappings.anyobject;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.eclipse.persistence.testing.oxm.mappings.anyobject.withgroupingelement.AnyObjectWithGroupingWithXMLRootSimpleTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectWithoutGroupingWithXMLRootSimpleTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectXMLRootSimpleNonStringTestCases;
 
 public class XMLAnyObjectMappingTestSuite extends TestCase {
     public static Test suite() {
@@ -23,12 +26,16 @@ public class XMLAnyObjectMappingTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyobject.withgroupingelement.AnyObjectNoDefaultRootComplexChildrenTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyobject.withgroupingelement.AnyObjectWithGroupingWithXMLRootTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyobject.withgroupingelement.AnyObjectWithGroupingWithXMLRootXSITypeTestCases.class);
+        suite.addTestSuite(AnyObjectWithGroupingWithXMLRootSimpleTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyobject.withgroupingelement.AnyObjectXMLRootSimpleNonStringTestCases.class);
         
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectComplexChildTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectNoChildTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectTextChildTestCases.class);        
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectNoDefaultRootComplexChildrenTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.AnyObjectWithoutGroupingWithXMLRootTestCases.class);
+        suite.addTestSuite(AnyObjectWithoutGroupingWithXMLRootSimpleTestCases.class);
+        suite.addTestSuite(AnyObjectXMLRootSimpleNonStringTestCases.class);
 
         return suite;
     }
