@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.IdentityHashtable;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -292,8 +293,9 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
         NodeList nodes = root.getChildNodes();
         Collection unmappedChildren = getUnmappedChildNodes(nodes);
         Iterator iter = unmappedChildren.iterator();
-        int i = 0; int length = unmappedChildren.size();
-        while(iter.hasNext()) {
+        int i = 0;
+        int length = unmappedChildren.size();
+        while (iter.hasNext()) {
             org.w3c.dom.Node next = (Node)iter.next();
             if (next.getNodeType() == Node.TEXT_NODE) {
                 if ((i == (length - 1)) || (next.getNodeValue().trim().length() > 0)) {
@@ -316,6 +318,7 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
                     }
                 } else {
                     String schemaType = ((Element)next).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                    QName schemaTypeQName = null;
                     XPathFragment frag = new XPathFragment();
                     if ((null != schemaType) && (!schemaType.equals(""))) {
                         frag.setXPath(schemaType);
@@ -325,6 +328,7 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
                             XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
                             String url = xmlPlatform.resolveNamespacePrefix(next, prefix);
                             frag.setNamespaceURI(url);
+                            schemaTypeQName = new QName(url, frag.getLocalName());
                         }
                         XMLContext xmlContext = nestedRecord.getUnmarshaller().getXMLContext();
                         referenceDescriptor = xmlContext.getDescriptorByGlobalType(frag);
@@ -349,12 +353,21 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
                         if ((textchild != null) && (textchild.getNodeType() == Node.TEXT_NODE)) {
                             value = ((Text)textchild).getNodeValue();
                         }
-                        if(value != null && ! value.equals("")){
-                          XMLRoot rootValue = new XMLRoot();
-                          rootValue.setLocalName(next.getLocalName());
-                          rootValue.setNamespaceURI(next.getNamespaceURI());
-                          rootValue.setObject(value);
-                          return rootValue;
+                        if ((value != null) && !value.equals("")) {
+                            if (schemaTypeQName != null) {
+                                XMLConversionManager xmlConversionManager = (XMLConversionManager)session.getDatasourcePlatform().getConversionManager();
+                                Class theClass = (Class)xmlConversionManager.getDefaultXMLTypes().get(schemaTypeQName);
+                                if (theClass != null) {
+                                    value = XMLConversionManager.getDefaultXMLManager().convertObject(value, theClass, schemaTypeQName);
+                                }
+                            }
+
+                            XMLRoot rootValue = new XMLRoot();
+                            rootValue.setLocalName(next.getLocalName());
+                            rootValue.setSchemaType(schemaTypeQName);
+                            rootValue.setNamespaceURI(next.getNamespaceURI());
+                            rootValue.setObject(value);
+                            return rootValue;
                         }
                     }
                 }
@@ -416,28 +429,13 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
             value = ((XMLRoot)value).getObject();
         }
         if (value instanceof String) {
-            if (wasXMLRoot) {
-                if (((XMLRoot)originalObject).getRootFragment().getNamespaceURI() != null) {
-                    String prefix = row.getNamespaceResolver().resolveNamespaceURI(((XMLRoot)originalObject).getRootFragment().getNamespaceURI());
-                    if ((prefix == null) || prefix.equals("")) {
-                        xmlRootField.getXPathFragment().setGeneratedPrefix(true);
-                        prefix = row.getNamespaceResolver().generatePrefix();
-                    }
-                    xmlRootField.getXPathFragment().setXPath(prefix + ":" + ((XMLRoot)originalObject).getLocalName());
-                }
-            }
-
-            if (null == xmlRootField) {
-                Text textNode = doc.createTextNode((String)value);
-                if(toReplace != null) {
-                    root.replaceChild(textNode, toReplace);
-                } else {
-                    root.appendChild(textNode);
-                }
-            }
+            writeSimpleValue(xmlRootField, record, session, originalObject, value, root, toReplace, wasXMLRoot);
         } else {
             XMLDescriptor referenceDescriptor = (XMLDescriptor)session.getDescriptor(value.getClass());
-
+            if (referenceDescriptor == null) {
+                writeSimpleValue(xmlRootField, record, session, originalObject, value, root, toReplace, wasXMLRoot);
+                return;
+            }
             if (wasXMLRoot) {
                 if (((XMLRoot)originalObject).getRootFragment().getNamespaceURI() != null) {
                     String prefix = referenceDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(((XMLRoot)originalObject).getNamespaceURI());
@@ -454,24 +452,23 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
 
             DOMRecord nestedRecord = (DOMRecord)buildCompositeRow(value, session, referenceDescriptor, row, xmlRootField, originalObject, wasXMLRoot);
 
-            if (nestedRecord != null && toReplace != null) {
-                if(nestedRecord.getDOM() != toReplace) {
+            if ((nestedRecord != null) && (toReplace != null)) {
+                if (nestedRecord.getDOM() != toReplace) {
                     root.replaceChild(nestedRecord.getDOM(), toReplace);
                 }
-            } else if(nestedRecord != null) {
+            } else if (nestedRecord != null) {
                 root.appendChild(nestedRecord.getDOM());
-            } else if(toReplace != null) {
+            } else if (toReplace != null) {
                 root.removeChild(toReplace);
             }
         }
     }
 
-
-    protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, XMLDescriptor referenceDescriptor, AbstractRecord parentRow, DatabaseField field, Object originalObject, boolean wasXMLRoot ) {
+    protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, XMLDescriptor referenceDescriptor, AbstractRecord parentRow, DatabaseField field, Object originalObject, boolean wasXMLRoot) {
         if ((field == null) && (referenceDescriptor != null) && (referenceDescriptor.getDefaultRootElement() != null)) {
             field = referenceDescriptor.buildField(referenceDescriptor.getDefaultRootElement());
         }
-        
+
         if ((field != null) && (referenceDescriptor != null)) {
             ((XMLRecord)parentRow).setLeafElementType(referenceDescriptor.getDefaultRootElementType());
             XMLObjectBuilder objectBuilder = (XMLObjectBuilder)referenceDescriptor.getObjectBuilder();
@@ -516,30 +513,31 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
         }
         return false;
     }
-    
+
     private ArrayList getUnmappedChildNodes(NodeList nodes) {
         ArrayList unmappedNodes = new ArrayList();
-        for(int i = 0; i < nodes.getLength(); i++) {
+        for (int i = 0; i < nodes.getLength(); i++) {
             Node next = nodes.item(i);
-            if(isUnmappedContent(next)) {
+            if (isUnmappedContent(next)) {
                 unmappedNodes.add(next);
             }
         }
         return unmappedNodes;
     }
+
     private XPathFragment getFragmentToCompare(XMLField field, XMLField context) {
-        if(field == null) {
+        if (field == null) {
             return null;
         }
-        if(context == null) {
+        if (context == null) {
             return field.getXPathFragment();
         }
         XPathFragment fieldFrag = field.getXPathFragment();
         XPathFragment contextFrag = context.getXPathFragment();
-        
-        while(fieldFrag != null && contextFrag != null) {
-            if(fieldFrag.equals(contextFrag)) {
-                if(contextFrag.getNextFragment() == null) {
+
+        while ((fieldFrag != null) && (contextFrag != null)) {
+            if (fieldFrag.equals(contextFrag)) {
+                if (contextFrag.getNextFragment() == null) {
                     return fieldFrag.getNextFragment();
                 } else {
                     contextFrag = contextFrag.getNextFragment();
@@ -551,55 +549,118 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
         }
         return null;
     }
+
     private boolean isUnmappedContent(Node node) {
-        if(!areOtherMappingInThisContext) {
+        if (!areOtherMappingInThisContext) {
             return true;
         }
         XMLDescriptor parentDesc = (XMLDescriptor)this.getDescriptor();
         XMLField field = (XMLField)this.getField();
         Iterator mappings = parentDesc.getMappings().iterator();
         int mappingsInContext = 0;
-        while(mappings.hasNext()) {
+        while (mappings.hasNext()) {
             DatabaseMapping next = (DatabaseMapping)mappings.next();
-            if(!(next == this)) {
+            if (!(next == this)) {
                 XMLField nextField = (XMLField)next.getField();
                 XPathFragment frag = getFragmentToCompare(nextField, field);
-                if(frag != null) {
+                if (frag != null) {
                     mappingsInContext++;
-                    if((node.getNodeType() == Node.TEXT_NODE || node.getNodeType() == Node.CDATA_SECTION_NODE) && frag.nameIsText()) {
+                    if (((node.getNodeType() == Node.TEXT_NODE) || (node.getNodeType() == Node.CDATA_SECTION_NODE)) && frag.nameIsText()) {
                         return false;
                     }
-                    if(node.getNodeType() == Node.ELEMENT_NODE) {
+                    if (node.getNodeType() == Node.ELEMENT_NODE) {
                         String nodeNS = node.getNamespaceURI();
                         String fragNS = frag.getNamespaceURI();
                         String nodeLocalName = node.getLocalName();
                         String fragLocalName = frag.getLocalName();
-                        if((nodeNS == fragNS) || (nodeNS != null && fragNS != null && nodeNS.equals(fragNS))) {
-                            if((nodeLocalName == fragLocalName) || (nodeLocalName != null && fragLocalName != null && nodeLocalName.equals(fragLocalName))) {
+                        if ((nodeNS == fragNS) || ((nodeNS != null) && (fragNS != null) && nodeNS.equals(fragNS))) {
+                            if ((nodeLocalName == fragLocalName) || ((nodeLocalName != null) && (fragLocalName != null) && nodeLocalName.equals(fragLocalName))) {
                                 return false;
                             }
                         }
                     }
                 }
-             }
-             if(mappingsInContext == 0) {
-                 this.areOtherMappingInThisContext = false;
-             }
+            }
+            if (mappingsInContext == 0) {
+                this.areOtherMappingInThisContext = false;
+            }
         }
         return true;
-    }  
+    }
 
     public Node getNodeToReplace(Node parent) {
         //find the first child node that this any applies to.
         NodeList children = parent.getChildNodes();
-        for(int i = 0; i < children.getLength(); i++) {
+        for (int i = 0; i < children.getLength(); i++) {
             Node next = children.item(i);
-            if(next.getNodeType() == Node.ELEMENT_NODE || next.getNodeType() == Node.TEXT_NODE || next.getNodeType() == Node.CDATA_SECTION_NODE) {
-                if(isUnmappedContent(next)) {
+            if ((next.getNodeType() == Node.ELEMENT_NODE) || (next.getNodeType() == Node.TEXT_NODE) || (next.getNodeType() == Node.CDATA_SECTION_NODE)) {
+                if (isUnmappedContent(next)) {
                     return next;
                 }
             }
         }
         return null;
+    }
+
+    private void writeSimpleValue(XMLField xmlRootField, DOMRecord row, AbstractSession session, Object originalObject, Object value, Node root, Node toReplace, boolean wasXMLRoot) {
+        org.w3c.dom.Document doc = row.getDocument();
+        if (wasXMLRoot) {
+            if (((XMLRoot)originalObject).getRootFragment().getNamespaceURI() != null) {
+                String prefix = row.getNamespaceResolver().resolveNamespaceURI(((XMLRoot)originalObject).getRootFragment().getNamespaceURI());
+                if ((prefix == null) || prefix.equals("")) {
+                    xmlRootField.getXPathFragment().setGeneratedPrefix(true);
+                    prefix = row.getNamespaceResolver().generatePrefix();
+                }
+                xmlRootField.getXPathFragment().setXPath(prefix + ":" + ((XMLRoot)originalObject).getLocalName());
+            }
+        }
+
+        if (null == xmlRootField) {
+            Text textNode = doc.createTextNode((String)value);
+            if (toReplace != null) {
+                root.replaceChild(textNode, toReplace);
+            } else {
+                root.appendChild(textNode);
+            }
+        } else {
+            QName qname = ((XMLRoot)originalObject).getSchemaType();
+            Node newNode = XPathEngine.getInstance().create(xmlRootField, root, value);
+            if (qname != null) {
+                String typeValue = qname.getLocalPart();
+
+                String prefix = row.getNamespaceResolver().resolveNamespaceURI(qname.getNamespaceURI());
+                if ((prefix == null) || (prefix.equals(""))) {
+                    typeValue = qname.getLocalPart();
+                    prefix = row.getNamespaceResolver().generatePrefix();
+                    ((Element)newNode).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, qname.getNamespaceURI());
+                }
+                typeValue = prefix + ":" + qname.getLocalPart();
+                writeXsiTypeAttribute(row, newNode, typeValue);
+            }
+        }
+    }
+
+    private void writeXsiTypeAttribute(DOMRecord row, Node theNode, String typeValue) {
+        String xsiPrefix = null;
+        boolean generated = false;
+
+        xsiPrefix = row.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+        if (xsiPrefix == null) {
+            xsiPrefix = ((XMLDescriptor)descriptor).getNonNullNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
+            generated = true;
+            writeXsiNamespace(theNode, xsiPrefix);
+        }
+        XMLField xmlField = (XMLField)descriptor.buildField("@" + xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+        if (generated) {
+            xmlField.getLastXPathFragment().setGeneratedPrefix(true);
+        }
+        xmlField.getLastXPathFragment().setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+        XPathEngine.getInstance().create(xmlField, theNode, typeValue);
+    }
+
+    private void writeXsiNamespace(Node theNode, String xsiPrefix) {
+        if (theNode.getNodeType() == Node.ELEMENT_NODE) {
+            ((Element)theNode).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+        }
     }
 }
