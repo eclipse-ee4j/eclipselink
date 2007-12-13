@@ -13,7 +13,6 @@ package org.eclipse.persistence.platform.database.oracle;
 // Javse imports
 import java.util.ListIterator;
 import java.util.Vector;
-
 import static java.sql.Types.OTHER;
 
 // EclipseLink imports

@@ -4899,6 +4899,93 @@
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
+
+    <xsd:complexType name="plsql-stored-procedure-call">
+        <xsd:annotation>
+            <xsd:documentation>Defines a stored procedure invocation definition whose arguments contain at least one Oracle PL/SQL type that has no JDBC representation (e.g. BOOLEAN, PLS_INTEGER, PL/SQL record).</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="criteria">
+                <xsd:sequence>
+                    <xsd:element name="procedure-name" type="xsd:string">
+                        <xsd:annotation>
+                            <xsd:documentation>The name of the stored procedure.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="arguments" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>The list of input and output arguments.</xsd:documentation>
+                        </xsd:annotation>
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="argument" type="plsql-procedure-argument-type" minOccurs="0" maxOccurs="unbounded">
+                                    <xsd:annotation>
+                                        <xsd:documentation>Defines an argument to the procedure.</xsd:documentation>
+                                    </xsd:annotation>
+                                </xsd:element>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="plsql-procedure-argument-type" abstract="true">
+      <xsd:sequence>
+        <xsd:element name="name" type="xsd:string"/>
+        <xsd:element name="index" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="direction" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="jdbc-type">
+      <xsd:complexContent>
+        <xsd:extension base="plsql-procedure-argument-type">
+          <xsd:sequence>
+            <xsd:choice>
+              <xsd:element name="length" type="xsd:string" minOccurs="0"/>
+              <xsd:sequence>
+                <xsd:element name="precision" type="xsd:string"/>
+                <xsd:element name="scale" type="xsd:string"/>
+              </xsd:sequence>
+            </xsd:choice>
+          </xsd:sequence>
+          <xsd:attribute name="type-name" type="xsd:string"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="plsql-type">
+      <xsd:complexContent>
+        <xsd:extension base="plsql-procedure-argument-type">
+          <xsd:attribute name="type-name" type="xsd:string"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>  
+    <xsd:complexType name="plsql-record">
+      <xsd:complexContent>
+        <xsd:extension base="plsql-procedure-argument-type">
+          <xsd:sequence>
+            <xsd:element name="record-name" type="xsd:string"/>
+            <xsd:element name="type-name" type="xsd:string"/>
+            <xsd:element name="compatible-type" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="fields" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>The list of fields.</xsd:documentation>
+                </xsd:annotation>
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="field" type="plsql-procedure-argument-type" minOccurs="0" maxOccurs="unbounded">
+                            <xsd:annotation>
+                                <xsd:documentation>Defines an argument to the procedure.</xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>  
+
     <xsd:complexType name="eis-class-mapping-descriptor">
         <xsd:annotation>
             <xsd:documentation>

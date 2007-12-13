@@ -13,6 +13,7 @@ package org.eclipse.persistence.platform.database.jdbc;
 // Javse imports
 import java.util.ListIterator;
 import java.util.Vector;
+
 import static java.sql.Types.ARRAY;
 import static java.sql.Types.BIGINT;
 import static java.sql.Types.BINARY;
@@ -57,7 +58,6 @@ import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeH
 
 /**
  * <b>PUBLIC</b>: JDBC types
- * 
  * @author  Mike Norman - michael.norman@oracle.com
  * @since  Oracle TopLink 11.x.x
  */
@@ -151,6 +151,10 @@ public enum JDBCTypes implements JDBCType {
         
         public boolean isComplexDatabaseType() {
             return false;
+        }
+
+        public boolean isJDBCType() {
+            return true;
         }
 
         public int getSqlCode() {

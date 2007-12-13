@@ -9,6 +9,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.sessions.factories;
 
+// javase imports
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -19,13 +20,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
+import org.xml.sax.Attributes;
+import static java.lang.Integer.MIN_VALUE;
 
+// Java extension imports
 import javax.xml.namespace.QName;
 
+// EclipseLink imports
 import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ChangedFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.ClassExtractor;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -86,6 +92,7 @@ import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.DatabaseTypeWrapper;
 import org.eclipse.persistence.internal.helper.FalseUndefinedTrue;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.history.HistoricalDatabaseTable;
@@ -184,10 +191,20 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
+import org.eclipse.persistence.oxm.record.DOMRecord;
+import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaFileReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
+import org.eclipse.persistence.platform.database.jdbc.JDBCTypeWrapper;
+import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
+import org.eclipse.persistence.platform.database.oracle.ComplexPLSQLTypeWrapper;
+import org.eclipse.persistence.platform.database.oracle.OraclePLSQLTypes;
+import org.eclipse.persistence.platform.database.oracle.PLSQLStoredProcedureCall;
+import org.eclipse.persistence.platform.database.oracle.PLSQLargument;
+import org.eclipse.persistence.platform.database.oracle.PLSQLrecord;
+import org.eclipse.persistence.platform.database.oracle.SimplePLSQLTypeWrapper;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.CursoredStreamPolicy;
 import org.eclipse.persistence.queries.DataModifyQuery;
@@ -222,8 +239,12 @@ import org.eclipse.persistence.sequencing.UnaryTableSequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.queries.SortedCollectionContainerPolicy;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
 
 /**
  * INTERNAL: Define the EclipseLInk OX project and descriptor information to
@@ -442,6 +463,16 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildNullPolicyDescriptor());
         addDescriptor(buildIsSetNullPolicyDescriptor());
 
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=211611
+        // add metadata support for PLSQLStoredProcedureCall
+        addDescriptor(buildDatabaseTypeWrapperDescriptor());
+        addDescriptor(buildJDBCTypeWrapperDescriptor());
+        addDescriptor(buildSimplePLSQLTypeWrapperDescriptor());
+        addDescriptor(buildComplexPLSQLTypeWrapperDescriptor());
+        addDescriptor(buildPLSQLargumentDescriptor());
+        addDescriptor(buildPLSQLStoredProcedureCallDescriptor());
+        addDescriptor(buildPLSQLrecordDescriptor());
+        
         // Do not add any descriptors beyond this point or an namespaceResolver exception may occur
 
         // Set the namespaces on all descriptors.
@@ -1790,6 +1821,8 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
                 StoredProcedureCall.class, "eclipselink:stored-procedure-call");
         descriptor.getInheritancePolicy().addClassIndicator(
                 StoredFunctionCall.class, "eclipselink:stored-function-call");
+        descriptor.getInheritancePolicy().addClassIndicator(
+                PLSQLStoredProcedureCall.class, "eclipselink:plsql-stored-procedure-call");
 
         return descriptor;
     }
@@ -7329,5 +7362,187 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
               	((XMLNillableMapping)object).setNullPolicy((AbstractNullPolicy)value);
           	}
          }
+     }
+     
+     public static final String COMPLEX_PLSQL_TYPE = "eclipselink:plsql-record";
+     public static final String SIMPLE_PLSQL_TYPE = "eclipselink:plsql-type";
+     public static final String SIMPLE_JDBC_TYPE = "eclipselink:jdbc-type";
+     public static final String TYPE_NAME = "type-name";
+     
+     protected ClassDescriptor buildComplexPLSQLTypeWrapperDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(ComplexPLSQLTypeWrapper.class);
+         descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
+         
+         XMLCompositeObjectMapping wrappedDatabaseTypeMapping = new XMLCompositeObjectMapping();
+         wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
+         wrappedDatabaseTypeMapping.setXPath(".");
+         wrappedDatabaseTypeMapping.setReferenceClass(PLSQLrecord.class);
+         descriptor.addMapping(wrappedDatabaseTypeMapping);
+
+         return descriptor;
+     }
+
+     protected ClassDescriptor buildSimplePLSQLTypeWrapperDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(SimplePLSQLTypeWrapper.class);
+         descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
+
+         XMLDirectMapping wrappedDatabaseTypeMapping = new XMLDirectMapping();
+         wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
+         wrappedDatabaseTypeMapping.setXPath("@" + TYPE_NAME);
+         EnumTypeConverter oraclePLSQLTypesEnumTypeConverter = new EnumTypeConverter(
+             wrappedDatabaseTypeMapping, OraclePLSQLTypes.class, false);
+         wrappedDatabaseTypeMapping.setConverter(oraclePLSQLTypesEnumTypeConverter);
+         descriptor.addMapping(wrappedDatabaseTypeMapping);
+
+         return descriptor;
+     }
+
+     protected ClassDescriptor buildJDBCTypeWrapperDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(JDBCTypeWrapper.class);
+         descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
+
+         XMLDirectMapping wrappedDatabaseTypeMapping = new XMLDirectMapping();
+         wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
+         wrappedDatabaseTypeMapping.setXPath("@" + TYPE_NAME);
+         EnumTypeConverter jdbcTypesEnumTypeConverter = new EnumTypeConverter(
+             wrappedDatabaseTypeMapping, JDBCTypes.class, false);
+         wrappedDatabaseTypeMapping.setConverter(jdbcTypesEnumTypeConverter);
+         descriptor.addMapping(wrappedDatabaseTypeMapping);
+
+         return descriptor;
+     }
+
+     protected ClassDescriptor buildPLSQLrecordDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(PLSQLrecord.class);
+
+         XMLDirectMapping nameMapping = new XMLDirectMapping();
+         nameMapping.setAttributeName("recordName");
+         nameMapping.setXPath("eclipselink:record-name/text()");
+         descriptor.addMapping(nameMapping);
+
+         XMLDirectMapping typeNameMapping = new XMLDirectMapping();
+         typeNameMapping.setAttributeName("typeName");
+         typeNameMapping.setXPath("eclipselink:type-name/text()");
+         descriptor.addMapping(typeNameMapping);
+
+         XMLDirectMapping compatibleTypeMapping = new XMLDirectMapping();
+         compatibleTypeMapping.setAttributeName("compatibleType");
+         compatibleTypeMapping.setGetMethodName("getCompatibleType");
+         compatibleTypeMapping.setSetMethodName("setCompatibleType");
+         compatibleTypeMapping.setXPath("eclipselink:compatible-type/text()");
+         descriptor.addMapping(compatibleTypeMapping);
+
+         XMLCompositeCollectionMapping fieldsMapping = new XMLCompositeCollectionMapping();
+         fieldsMapping.setAttributeName("fields");
+         fieldsMapping.setReferenceClass(PLSQLargument.class);
+         fieldsMapping.setXPath("eclipselink:fields/eclipselink:field");
+         descriptor.addMapping(fieldsMapping);
+
+         return descriptor;
+     }
+
+     protected ClassDescriptor buildDatabaseTypeWrapperDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(DatabaseTypeWrapper.class);
+         descriptor.getInheritancePolicy().setClassIndicatorField(
+                 new XMLField("@xsi:type"));
+         descriptor.getInheritancePolicy().addClassIndicator(
+                 JDBCTypeWrapper.class, SIMPLE_JDBC_TYPE);
+         descriptor.getInheritancePolicy().addClassIndicator(
+                 SimplePLSQLTypeWrapper.class, SIMPLE_PLSQL_TYPE);
+         descriptor.getInheritancePolicy().addClassIndicator(
+                 ComplexPLSQLTypeWrapper.class, COMPLEX_PLSQL_TYPE);
+
+         return descriptor;
+     }
+
+     protected ClassDescriptor buildPLSQLargumentDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(PLSQLargument.class);
+
+         XMLDirectMapping nameMapping = new XMLDirectMapping();
+         nameMapping.setAttributeName("name");
+         nameMapping.setXPath("eclipselink:name/text()");
+         descriptor.addMapping(nameMapping);
+
+         XMLDirectMapping indexMapping = new XMLDirectMapping();
+         indexMapping.setAttributeName("originalIndex");
+         indexMapping.setXPath("eclipselink:index/text()");
+         indexMapping.setNullValue(-1);
+         descriptor.addMapping(indexMapping);
+
+         XMLDirectMapping directionMapping = new XMLDirectMapping();
+         directionMapping.setAttributeName("direction");
+         directionMapping.setXPath("eclipselink:direction/text()");
+         ObjectTypeConverter directionConverter = new ObjectTypeConverter();
+         directionConverter.addConversionValue("IN", IN);
+         directionConverter.addConversionValue("INOUT", INOUT);
+         directionConverter.addConversionValue("OUT", OUT);
+         directionMapping.setConverter(directionConverter);
+         directionMapping.setNullValue(IN);
+         descriptor.addMapping(directionMapping);
+
+         XMLDirectMapping lengthMapping = new XMLDirectMapping();
+         lengthMapping.setAttributeName("length");
+         lengthMapping.setXPath("eclipselink:length/text()");
+         lengthMapping.setNullValue(255);
+         descriptor.addMapping(lengthMapping);
+
+         XMLDirectMapping precisionMapping = new XMLDirectMapping();
+         precisionMapping.setAttributeName("precision");
+         precisionMapping.setXPath("eclipselink:precision/text()");
+         precisionMapping.setNullValue(MIN_VALUE);
+         descriptor.addMapping(precisionMapping);
+
+         XMLDirectMapping scaleMapping = new XMLDirectMapping();
+         scaleMapping.setAttributeName("scale");
+         scaleMapping.setXPath("eclipselink:scale/text()");
+         scaleMapping.setNullValue(MIN_VALUE);
+         descriptor.addMapping(scaleMapping);
+
+         XMLDirectMapping cursorOutputMapping = new XMLDirectMapping();
+         cursorOutputMapping.setAttributeName("cursorOutput");
+         cursorOutputMapping.setXPath("@cursorOutput");
+         cursorOutputMapping.setNullValue(Boolean.FALSE);
+         descriptor.addMapping(cursorOutputMapping);
+
+         XMLCompositeObjectMapping databaseTypeMapping = new XMLCompositeObjectMapping();
+         databaseTypeMapping.setAttributeName("databaseTypeWrapper");
+         databaseTypeMapping.setReferenceClass(DatabaseTypeWrapper.class);
+         databaseTypeMapping.setXPath(".");
+         descriptor.addMapping(databaseTypeMapping);
+
+         return descriptor;
+     }
+
+     protected XMLDescriptor buildPLSQLStoredProcedureCallDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(PLSQLStoredProcedureCall.class);
+         descriptor.getInheritancePolicy().setParentClass(Call.class);
+         descriptor.setDefaultRootElement("eclipselink:plsql-stored-procedure-call");
+
+         XMLDirectMapping procedureNameMapping = new XMLDirectMapping();
+         procedureNameMapping.setAttributeName("procedureName");
+         procedureNameMapping.setXPath("eclipselink:procedure-name/text()");
+         descriptor.addMapping(procedureNameMapping);
+
+         XMLCompositeCollectionMapping argumentsMapping = new XMLCompositeCollectionMapping();
+         argumentsMapping.setAttributeName("arguments");
+         argumentsMapping.setXPath("eclipselink:arguments/eclipselink:argument");
+         argumentsMapping.setReferenceClass(PLSQLargument.class);
+         descriptor.addMapping(argumentsMapping);
+
+         return descriptor;
      }
 }

@@ -15,6 +15,8 @@ import static java.lang.Integer.MIN_VALUE;
 
 // EclipseLink imports
 import org.eclipse.persistence.internal.helper.DatabaseType;
+import org.eclipse.persistence.internal.helper.DatabaseTypeWrapper;
+import org.eclipse.persistence.platform.database.jdbc.JDBCTypeWrapper;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
@@ -26,23 +28,36 @@ import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT
  * helper class - tracks argument's original position as well as re-ordered position
  * Used by PLSQLrecord and PLSQLStoredProcedureCall
  */
-public class PLSQLargument {
+public class PLSQLargument implements Cloneable {
 
     public String name;
     public int direction = IN;
     public int originalIndex = MIN_VALUE;
     public int inIndex = MIN_VALUE;   // re-computed positional index for IN argument
     public int outIndex = MIN_VALUE;  // re-computed positional index for OUT argument
-    public DatabaseType databaseType;
+    public DatabaseTypeWrapper databaseTypeWrapper;
     public int length = 255;          //default from the EJB 3.0 spec.
     public int precision = MIN_VALUE;
     public int scale = MIN_VALUE;
     public boolean cursorOutput = false;
+
+    public PLSQLargument() {
+        super();
+    }
     
     public PLSQLargument(String name, int originalIndex, int direction,
         DatabaseType databaseType) {
+        this();
         this.name = name;
-        this.databaseType = databaseType;
+        if (databaseType.isComplexDatabaseType()) {
+            databaseTypeWrapper = new ComplexPLSQLTypeWrapper(databaseType);
+        }
+        else if (databaseType.isJDBCType()) {
+            databaseTypeWrapper = new JDBCTypeWrapper(databaseType);
+        }
+        else {
+            databaseTypeWrapper = new SimplePLSQLTypeWrapper(databaseType);
+        }
         this.originalIndex = originalIndex;
         this.direction = direction;
     }
@@ -103,5 +118,4 @@ public class PLSQLargument {
         sb.append('}');
         return sb.toString();
     } 
-
 }

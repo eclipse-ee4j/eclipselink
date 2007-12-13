@@ -65,7 +65,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     public void addNamedArgument(String procedureParameterName, DatabaseType databaseType) {
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, IN,
             databaseType.isComplexDatabaseType() ? 
-                ((ComplexDatabaseType)databaseType).deepCopy() : databaseType));
+                ((ComplexDatabaseType)databaseType).clone() : databaseType));
     }
 
     /**
@@ -78,7 +78,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         int length) {
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, IN,
             databaseType.isComplexDatabaseType() ? 
-                ((ComplexDatabaseType)databaseType).deepCopy() : databaseType, length));
+                ((ComplexDatabaseType)databaseType).clone() : databaseType, length));
     }
 
     /**
@@ -89,10 +89,10 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * scale and precision specification
      */
     public void addNamedArgument(String procedureParameterName, DatabaseType databaseType,
-        int scale, int precision) {        
+        int precision, int scale) {        
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++, IN,
             databaseType.isComplexDatabaseType() ? 
-                ((ComplexDatabaseType)databaseType).deepCopy() : databaseType, scale, precision));
+                ((ComplexDatabaseType)databaseType).clone() : databaseType, precision, scale));
     }
     
     @Override
@@ -116,7 +116,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     public void addNamedInOutputArgument(String procedureParameterName, DatabaseType databaseType) {
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++,
             INOUT, databaseType.isComplexDatabaseType() ? 
-                ((ComplexDatabaseType)databaseType).deepCopy() : databaseType));
+                ((ComplexDatabaseType)databaseType).clone() : databaseType));
     }
 
     /**
@@ -129,7 +129,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         int length) {
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++,
             INOUT, databaseType.isComplexDatabaseType() ? 
-                ((ComplexDatabaseType)databaseType).deepCopy() : databaseType, length));
+                ((ComplexDatabaseType)databaseType).clone() : databaseType, length));
     }
 
     /**
@@ -140,10 +140,10 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * scale and precision specification
      */
     public void addNamedInOutputArgument(String procedureParameterName, DatabaseType databaseType,
-        int scale, int precision) {
+        int precision, int scale) {
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++,
             INOUT, databaseType.isComplexDatabaseType() ? 
-                ((ComplexDatabaseType)databaseType).deepCopy() : databaseType, scale, precision));
+                ((ComplexDatabaseType)databaseType).clone() : databaseType, precision, scale));
     }
 
     @Override
@@ -183,7 +183,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     public void addNamedOutputArgument(String procedureParameterName, DatabaseType databaseType) {
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++,
             OUT, databaseType.isComplexDatabaseType() ? 
-                ((ComplexDatabaseType)databaseType).deepCopy() : databaseType));
+                ((ComplexDatabaseType)databaseType).clone() : databaseType));
     }
 
     /**
@@ -196,7 +196,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         int length) {
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++,
             OUT, databaseType.isComplexDatabaseType() ? 
-                ((ComplexDatabaseType)databaseType).deepCopy() : databaseType, length));
+                ((ComplexDatabaseType)databaseType).clone() : databaseType, length));
     }
 
     /**
@@ -207,10 +207,10 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * scale and precision specification
      */
     public void addNamedOutputArgument(String procedureParameterName, DatabaseType databaseType,
-        int scale, int precision) {
+        int precision, int scale) {
         arguments.add(new PLSQLargument(procedureParameterName, originalIndex++,
             OUT, databaseType.isComplexDatabaseType() ? 
-                ((ComplexDatabaseType)databaseType).deepCopy() : databaseType, scale, precision));
+                ((ComplexDatabaseType)databaseType).clone() : databaseType, precision, scale));
     }
 
     @Override
@@ -443,7 +443,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         PLSQLargument newArg = 
             new PLSQLargument(argumentName, originalIndex++, OUT, 
                 databaseType.isComplexDatabaseType() ? 
-                    ((ComplexDatabaseType)databaseType).deepCopy() : databaseType);
+                    ((ComplexDatabaseType)databaseType).clone() : databaseType);
         newArg.cursorOutput = true;
         arguments.add(newArg);
     }
@@ -464,17 +464,18 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             PLSQLargument inArg = inArgsIter.next();
             // delegate to arg's DatabaseType - ComplexTypes may expand arguments
             // use ListIterator so that computeInIndex can add expanded args
-            newIndex = inArg.databaseType.computeInIndex(inArg, newIndex, inArgsIter);
+            newIndex = inArg.databaseTypeWrapper.getWrappedType().computeInIndex(inArg, newIndex,
+                inArgsIter);
         }
         for (PLSQLargument inArg : inArguments) {
-            if (!inArg.databaseType.isComplexDatabaseType()) {
+            if (!inArg.databaseTypeWrapper.getWrappedType().isComplexDatabaseType()) {
                 super.addNamedArgument(inArg.name, inArg.name,
-                    inArg.databaseType.getConversionCode());
+                    inArg.databaseTypeWrapper.getWrappedType().getConversionCode());
             }
             else {
                 if (inArg.inIndex != MIN_VALUE) {
                     super.addNamedArgument(inArg.name, inArg.name,
-                        inArg.databaseType.getConversionCode());
+                        inArg.databaseTypeWrapper.getWrappedType().getConversionCode());
                 }
             }
         }
@@ -483,18 +484,20 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         for(ListIterator<PLSQLargument> outArgsIter = outArguments.listIterator();
             outArgsIter.hasNext(); ) {
             PLSQLargument outArg = outArgsIter.next();
-            newIndex = outArg.databaseType.computeOutIndex(outArg, newIndex, outArgsIter);
+            newIndex = outArg.databaseTypeWrapper.getWrappedType().computeOutIndex(outArg, newIndex,
+                outArgsIter);
         }
         for (PLSQLargument outArg : outArguments) {
-            if (!outArg.databaseType.isComplexDatabaseType()) {
+            if (!outArg.databaseTypeWrapper.getWrappedType().isComplexDatabaseType()) {
                 super.addNamedOutputArgument(outArg.name, outArg.name,
-                    outArg.databaseType.getConversionCode());
+                    outArg.databaseTypeWrapper.getWrappedType().getConversionCode());
             }
             else {
                 if (outArg.outIndex != MIN_VALUE) {
                     super.addNamedOutputArgument(outArg.name, outArg.name,
-                        outArg.databaseType.getConversionCode(), 
-                        ((ComplexDatabaseType)outArg.databaseType).getCompatibleType());
+                        outArg.databaseTypeWrapper.getWrappedType().getConversionCode(), 
+                        ((ComplexDatabaseType)outArg.databaseTypeWrapper.getWrappedType()).
+                            getCompatibleType());
                 }
             }
         }
@@ -513,10 +516,10 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         inArguments.addAll(inOutArguments);
         List<PLSQLargument> outArguments = getArguments(arguments, OUT);
         for (PLSQLargument arg : inArguments) {
-            arg.databaseType.buildInDeclare(sb, arg);
+            arg.databaseTypeWrapper.getWrappedType().buildInDeclare(sb, arg);
         }
         for (PLSQLargument arg : outArguments) {
-            arg.databaseType.buildOutDeclare(sb, arg);
+            arg.databaseTypeWrapper.getWrappedType().buildOutDeclare(sb, arg);
         }
     }
 
@@ -531,7 +534,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         List<PLSQLargument> inArguments = getArguments(arguments, IN);
         inArguments.addAll(getArguments(arguments, INOUT));
         for (PLSQLargument arg : inArguments) {
-            arg.databaseType.buildBeginBlock(sb, arg);
+            arg.databaseTypeWrapper.getWrappedType().buildBeginBlock(sb, arg);
         }
     }
 
@@ -568,7 +571,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         List<PLSQLargument> outArguments = getArguments(arguments, OUT);
         outArguments.addAll(getArguments(arguments, INOUT));
         for (PLSQLargument arg : outArguments) {
-            arg.databaseType.buildOutAssignment(sb, arg);
+            arg.databaseTypeWrapper.getWrappedType().buildOutAssignment(sb, arg);
         }
     }
     /**
@@ -605,8 +608,9 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         translationRowValues.setSize(len);
         for (PLSQLargument arg : arguments) {
             if (arg.direction == IN || arg.direction == INOUT) {
-                arg.databaseType.translate(arg, translationRow, copyOfTranslationRow,
-                    copyOfTranslationFields, translationRowFields, translationRowValues);
+                arg.databaseTypeWrapper.getWrappedType().translate(arg, translationRow,
+                    copyOfTranslationRow, copyOfTranslationFields, translationRowFields,
+                    translationRowValues);
             }
         }
         this.translationRow = translationRow; // save a copy for logging
@@ -629,11 +633,11 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             }
         });
         for (PLSQLargument outArg : outArguments) {
-            if (outArg.databaseType.isComplexDatabaseType()) {
-                ((ComplexDatabaseType)outArg.databaseType).setCall(this);
+            if (outArg.databaseTypeWrapper.getWrappedType().isComplexDatabaseType()) {
+                ((ComplexDatabaseType)outArg.databaseTypeWrapper.getWrappedType()).setCall(this);
             }
-            outArg.databaseType.buildOutputRow(outArg, outputRow, newOutputRow, outputRowFields,
-                outputRowValues);
+            outArg.databaseTypeWrapper.getWrappedType().buildOutputRow(outArg, outputRow,
+                newOutputRow, outputRowFields, outputRowValues);
         }
         return newOutputRow;
     }
@@ -653,7 +657,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         });
         for (Iterator<PLSQLargument> i = inArguments.iterator(); i.hasNext(); ) {
             PLSQLargument inArg = i.next();
-            inArg.databaseType.logParameter(sb, IN, inArg, translationRow, 
+            inArg.databaseTypeWrapper.getWrappedType().logParameter(sb, IN, inArg, translationRow, 
                 getQuery().getSession().getPlatform());
             if (i.hasNext()) {
                 sb.append(", ");
@@ -671,7 +675,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         }
         for (Iterator<PLSQLargument> i = outArguments.iterator(); i.hasNext(); ) {
             PLSQLargument outArg = i.next();
-            outArg.databaseType.logParameter(sb, OUT, outArg, translationRow,
+            outArg.databaseTypeWrapper.getWrappedType().logParameter(sb, OUT, outArg, translationRow,
                 getQuery().getSession().getPlatform());
         }
         sb.append("]");

@@ -34,32 +34,25 @@ import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeH
 
 /**
  * <b>PUBLIC</b>: describe an Oracle PL/SQL Record type
- * 
- * <b>This version is 'stubbed' out until the solution to the 'order-of-out-args' issues is checked in
- * 
  * @author  Mike Norman - michael.norman@oracle.com
  * @since  Oracle TopLink 11.x.x
  */
+public class PLSQLrecord implements ComplexDatabaseType, OraclePLSQLType, Cloneable {
 
-/**
- * <b>PUBLIC</b>: describe an Oracle PL/SQL Record type
- * @author  Mike Norman - michael.norman@oracle.com
- * @since  Oracle TopLink 11.x.x
- */
-public class PLSQLrecord implements ComplexDatabaseType, OraclePLSQLType {
-
-    protected String name;
+    protected String recordName;
     protected String typeName;
     boolean hasCompatibleType = false;
     protected String compatibleType;
-    protected List<PLSQLargument> fields = new ArrayList<PLSQLargument>();
+    protected List<PLSQLargument> fields = 
+        new ArrayList<PLSQLargument>();
     protected PLSQLStoredProcedureCall call;
 
     public PLSQLrecord() {
         super();
     }
 
-    public PLSQLrecord deepCopy()  {
+    @Override
+    public PLSQLrecord clone()  {
         try {
             PLSQLrecord clone = (PLSQLrecord)super.clone();
             clone.fields = new ArrayList<PLSQLargument>(fields.size());
@@ -77,11 +70,15 @@ public class PLSQLrecord implements ComplexDatabaseType, OraclePLSQLType {
         return true;
     }
     
-    public String getName() {
-        return name;
+    public boolean isJDBCType() {
+        return false;
     }
-    public void setName(String name) {
-        this.name = name;
+
+    public String getRecordName() {
+        return recordName;
+    }
+    public void setRecordName(String name) {
+        this.recordName = name;
     }
 
     public String getTypeName() {
@@ -138,7 +135,8 @@ public class PLSQLrecord implements ComplexDatabaseType, OraclePLSQLType {
         fields.add(new PLSQLargument(fieldName, -1, IN, databaseType, length));
     }
     
-    public int computeInIndex(PLSQLargument inArg, int newIndex, ListIterator<PLSQLargument> i) {
+    public int computeInIndex(PLSQLargument inArg, int newIndex,
+        ListIterator<PLSQLargument> i) {
         if (hasCompatibleType) {
             return databaseTypeHelper.computeInIndex(inArg, newIndex);
         }
@@ -306,7 +304,8 @@ public class PLSQLrecord implements ComplexDatabaseType, OraclePLSQLType {
         else {
             for (Iterator<PLSQLargument> i = fields.iterator(); i.hasNext(); ) {
                 PLSQLargument f = i.next();
-                f.databaseType.logParameter(sb, direction, f, translationRow, platform);
+                f.databaseTypeWrapper.getWrappedType().logParameter(sb, direction, f, translationRow,
+                    platform);
                 if (i.hasNext()) {
                     sb.append(", ");
                 }

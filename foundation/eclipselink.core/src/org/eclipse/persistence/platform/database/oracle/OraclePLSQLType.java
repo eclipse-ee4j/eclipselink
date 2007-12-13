@@ -15,6 +15,7 @@ package org.eclipse.persistence.platform.database.oracle;
 // Java extension imports
 
 // EclipseLink imports
+import org.eclipse.persistence.internal.helper.SimpleDatabaseType;
 
 /**
  * <b>PUBLIC</b>: Marker interface for Oracle PL/SQL types
@@ -22,6 +23,6 @@ package org.eclipse.persistence.platform.database.oracle;
  * @author Mike Norman - michael.norman@oracle.com
  * @since Oracle TopLink 11.x.x
  */
-public interface OraclePLSQLType {
+public interface OraclePLSQLType extends SimpleDatabaseType {
 
 }

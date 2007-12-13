@@ -23,12 +23,12 @@ import org.eclipse.persistence.platform.database.oracle.PLSQLStoredProcedureCall
  * @author Mike Norman - michael.norman@oracle.com
  * @since Oracle TopLink 11.x.x
  */
-public interface ComplexDatabaseType extends DatabaseType {
+public interface ComplexDatabaseType extends DatabaseType, Cloneable {
     
     public boolean hasCompatibleType();
     public String getCompatibleType();
   
-    public ComplexDatabaseType deepCopy();
+    public ComplexDatabaseType clone();
     
     public void setCall(PLSQLStoredProcedureCall call);
 }

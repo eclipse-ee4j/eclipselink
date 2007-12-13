@@ -39,6 +39,8 @@ public interface DatabaseType {
     public static final String COMPAT_SUFFIX = "_COMPAT";
 
     public boolean isComplexDatabaseType();
+
+    public boolean isJDBCType();
     
     public int getSqlCode();
 

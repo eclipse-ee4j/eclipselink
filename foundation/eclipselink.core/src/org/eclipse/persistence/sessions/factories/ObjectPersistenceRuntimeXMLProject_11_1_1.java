@@ -16,15 +16,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import org.xml.sax.Attributes;
+import static java.lang.Integer.MIN_VALUE;
 
+// java extension imports
+import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.ClassExtractor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.DatabaseTypeWrapper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.oxm.QNameInheritancePolicy;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionPair;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -35,6 +42,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
+import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
@@ -59,15 +68,30 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
+import org.eclipse.persistence.oxm.record.DOMRecord;
+import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+import org.eclipse.persistence.platform.database.jdbc.JDBCTypeWrapper;
+import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
+import org.eclipse.persistence.platform.database.oracle.ComplexPLSQLTypeWrapper;
+import org.eclipse.persistence.platform.database.oracle.OraclePLSQLTypes;
+import org.eclipse.persistence.platform.database.oracle.PLSQLStoredProcedureCall;
+import org.eclipse.persistence.platform.database.oracle.PLSQLargument;
+import org.eclipse.persistence.platform.database.oracle.PLSQLrecord;
+import org.eclipse.persistence.platform.database.oracle.SimplePLSQLTypeWrapper;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.internal.identitymaps.SoftIdentityMap;
 import org.eclipse.persistence.queries.CursoredStreamPolicy;
 import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.queries.StoredFunctionCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.queries.SortedCollectionContainerPolicy;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
 
 /**
  * INTERNAL:
@@ -109,6 +133,15 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         addDescriptor(buildAbstractNullPolicyDescriptor());
         addDescriptor(buildNullPolicyDescriptor());
         addDescriptor(buildIsSetNullPolicyDescriptor());
+        
+        // 6029568 -- add metadata support for PLSQLStoredProcedureCall
+        addDescriptor(buildDatabaseTypeWrapperDescriptor());
+        addDescriptor(buildJDBCTypeWrapperDescriptor());
+        addDescriptor(buildSimplePLSQLTypeWrapperDescriptor());
+        addDescriptor(buildComplexPLSQLTypeWrapperDescriptor());
+        addDescriptor(buildPLSQLargumentDescriptor());
+        addDescriptor(buildPLSQLStoredProcedureCallDescriptor());
+        addDescriptor(buildPLSQLrecordDescriptor());
         
         // Do not add any descriptors beyond this point or an namespaceResolver exception may occur
         
@@ -708,6 +741,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
           "toplink:stored-procedure-call");
       descriptor.getInheritancePolicy().addClassIndicator(StoredFunctionCall.class,
           "toplink:stored-function-call");
+      descriptor.getInheritancePolicy().addClassIndicator(PLSQLStoredProcedureCall.class,
+          "toplink:plsql-stored-procedure-call");
       return descriptor;
     }
     
@@ -737,7 +772,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
           }
           
           public Integer getArgType() {
-              return DatasourceCall.IN;
+              return IN;
           }
     
           public StoredProcedureArgument(DatabaseField dbfield) {
@@ -840,7 +875,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         }
 
         public Integer getArgType() {
-            return DatasourceCall.OUT;
+            return OUT;
         }
         
         public StoredProcedureOutArgument(DatabaseField dbfield){
@@ -986,7 +1021,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                 Object argument = parameters.get(i);
                 String argumentName = (String) procedureArgumentNames.get(i);
 
-                if (DatasourceCall.IN.equals(argumentType)) {
+                if (IN.equals(argumentType)) {
                     StoredProcedureArgument inArgument;
                     
                     // set argument value or argument field .
@@ -999,7 +1034,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                     inArgument.setArgumentName(argumentName);
 
                     procedureArguments.add(inArgument);
-                } else if (DatasourceCall.INOUT.equals(argumentType)) {
+                } else if (INOUT.equals(argumentType)) {
                     StoredProcedureInOutArgument inOutArgument = null;
                     if (argument instanceof Object[]) {
                         Object[] objects = (Object[]) argument;
@@ -1019,7 +1054,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                         inOutArgument.setArgumentName(argumentName);
                     }
                     procedureArguments.add(inOutArgument);
-                } else if (DatasourceCall.OUT.equals(argumentType)) {
+                } else if (OUT.equals(argumentType)) {
                     StoredProcedureOutArgument outArgument = new StoredProcedureOutArgument((DatabaseField)argument);
                     outArgument.setArgumentName(argumentName);
                     procedureArguments.add(outArgument);
@@ -1036,7 +1071,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
             Vector procedureArguments = (Vector)attributeValue;
             for (int i = 0; i < procedureArguments.size(); i++) {
                 StoredProcedureArgument spa = (StoredProcedureArgument) procedureArguments.get(i);
-                if (spa.getArgType().equals(DatasourceCall.IN)) {
+                if (spa.getArgType().equals(IN)) {
                     String inArgumentFieldName = spa.getArgumentFieldName();
 
                     // Either argument value or database field name need be specified in XML. 
@@ -1051,8 +1086,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                     spc.getProcedureArgumentNames().add(spa.getArgumentName());
 
                     // Set argument type.
-                    spc.getParameterTypes().add(DatasourceCall.IN);
-                } else if (spa.getArgType().equals(DatasourceCall.INOUT)) {
+                    spc.getParameterTypes().add(IN);
+                } else if (spa.getArgType().equals(INOUT)) {
                     StoredProcedureInOutArgument inOutArgument = (StoredProcedureInOutArgument) spa;
 
                     Object inField;
@@ -1075,8 +1110,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                     spc.getParameters().add(objects);
                     
                     //Set argument type.
-                    spc.getParameterTypes().add(DatasourceCall.INOUT);
-                }else if (spa.getArgType().equals(DatasourceCall.OUT)) {
+                    spc.getParameterTypes().add(INOUT);
+                }else if (spa.getArgType().equals(OUT)) {
                     
                     //Set procedure argument name.
                     spc.getProcedureArgumentNames().add(spa.getArgumentName());
@@ -1084,7 +1119,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                     spc.getParameters().add(spa.getDatabaseField());
                     
                     //Set argument type.
-                    spc.getParameterTypes().add(DatasourceCall.OUT);
+                    spc.getParameterTypes().add(OUT);
                 }
             }
         }
@@ -1146,7 +1181,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
             sfc.getProcedureArgumentNames().set(0, spoa.getArgumentName());
             sfc.getParameters().set(0, spoa.getDatabaseField());
             // Set argument type.
-            sfc.getParameterTypes().set(0, DatasourceCall.OUT);
+            sfc.getParameterTypes().set(0, OUT);
         }
     }
     
@@ -1431,10 +1466,185 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          }
      }
 
-     /**
-      * INTERNAL:
-      */
-     protected ConstantTransformer getConstantTransformerForProjectVersionMapping() {
-     	return new ConstantTransformer("Oracle TopLink - 11g Release 1 (11.1.1)");
+     public static final String COMPLEX_PLSQL_TYPE = "toplink:plsql-record";
+     public static final String SIMPLE_PLSQL_TYPE = "toplink:plsql-type";
+     public static final String SIMPLE_JDBC_TYPE = "toplink:jdbc-type";
+     public static final String TYPE_NAME = "type-name";
+     
+     protected ClassDescriptor buildComplexPLSQLTypeWrapperDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(ComplexPLSQLTypeWrapper.class);
+         descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
+         
+         XMLCompositeObjectMapping wrappedDatabaseTypeMapping = new XMLCompositeObjectMapping();
+         wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
+         wrappedDatabaseTypeMapping.setXPath(".");
+         wrappedDatabaseTypeMapping.setReferenceClass(PLSQLrecord.class);
+         descriptor.addMapping(wrappedDatabaseTypeMapping);
+
+         return descriptor;
+     }
+
+     protected ClassDescriptor buildSimplePLSQLTypeWrapperDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(SimplePLSQLTypeWrapper.class);
+         descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
+         
+         XMLDirectMapping wrappedDatabaseTypeMapping = new XMLDirectMapping();
+         wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
+         wrappedDatabaseTypeMapping.setXPath("@" + TYPE_NAME);
+         EnumTypeConverter oraclePLSQLTypesEnumTypeConverter = new EnumTypeConverter(
+             wrappedDatabaseTypeMapping, OraclePLSQLTypes.class, false);
+         wrappedDatabaseTypeMapping.setConverter(oraclePLSQLTypesEnumTypeConverter);
+         descriptor.addMapping(wrappedDatabaseTypeMapping);
+
+         return descriptor;
+     }
+
+     protected ClassDescriptor buildJDBCTypeWrapperDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(JDBCTypeWrapper.class);
+         descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
+
+         XMLDirectMapping wrappedDatabaseTypeMapping = new XMLDirectMapping();
+         wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
+         wrappedDatabaseTypeMapping.setXPath("@" + TYPE_NAME);
+         EnumTypeConverter jdbcTypesEnumTypeConverter = new EnumTypeConverter(
+             wrappedDatabaseTypeMapping, JDBCTypes.class, false);
+         wrappedDatabaseTypeMapping.setConverter(jdbcTypesEnumTypeConverter);
+         descriptor.addMapping(wrappedDatabaseTypeMapping);
+
+         return descriptor;
+     }
+
+     protected ClassDescriptor buildPLSQLrecordDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(PLSQLrecord.class);
+
+         XMLDirectMapping nameMapping = new XMLDirectMapping();
+         nameMapping.setAttributeName("recordName");
+         nameMapping.setXPath("toplink:record-name/text()");
+         descriptor.addMapping(nameMapping);
+
+         XMLDirectMapping typeNameMapping = new XMLDirectMapping();
+         typeNameMapping.setAttributeName("typeName");
+         typeNameMapping.setXPath("toplink:type-name/text()");
+         descriptor.addMapping(typeNameMapping);
+
+         XMLDirectMapping compatibleTypeMapping = new XMLDirectMapping();
+         compatibleTypeMapping.setAttributeName("compatibleType");
+         compatibleTypeMapping.setGetMethodName("getCompatibleType");
+         compatibleTypeMapping.setSetMethodName("setCompatibleType");
+         compatibleTypeMapping.setXPath("toplink:compatible-type/text()");
+         descriptor.addMapping(compatibleTypeMapping);
+
+         XMLCompositeCollectionMapping fieldsMapping = new XMLCompositeCollectionMapping();
+         fieldsMapping.setAttributeName("fields");
+         fieldsMapping.setReferenceClass(PLSQLargument.class);
+         fieldsMapping.setXPath("toplink:fields/toplink:field");
+         descriptor.addMapping(fieldsMapping);
+
+         return descriptor;
+     }
+
+     protected ClassDescriptor buildDatabaseTypeWrapperDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(DatabaseTypeWrapper.class);
+         descriptor.getInheritancePolicy().setClassIndicatorField(
+                 new XMLField("@xsi:type"));
+         descriptor.getInheritancePolicy().addClassIndicator(
+                 JDBCTypeWrapper.class, SIMPLE_JDBC_TYPE);
+         descriptor.getInheritancePolicy().addClassIndicator(
+                 SimplePLSQLTypeWrapper.class, SIMPLE_PLSQL_TYPE);
+         descriptor.getInheritancePolicy().addClassIndicator(
+                 ComplexPLSQLTypeWrapper.class, COMPLEX_PLSQL_TYPE);
+
+         return descriptor;
+     }
+
+     protected ClassDescriptor buildPLSQLargumentDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(PLSQLargument.class);
+
+         XMLDirectMapping nameMapping = new XMLDirectMapping();
+         nameMapping.setAttributeName("name");
+         nameMapping.setXPath("toplink:name/text()");
+         descriptor.addMapping(nameMapping);
+
+         XMLDirectMapping indexMapping = new XMLDirectMapping();
+         indexMapping.setAttributeName("originalIndex");
+         indexMapping.setXPath("toplink:index/text()");
+         indexMapping.setNullValue(-1);
+         descriptor.addMapping(indexMapping);
+
+         XMLDirectMapping directionMapping = new XMLDirectMapping();
+         directionMapping.setAttributeName("direction");
+         directionMapping.setXPath("toplink:direction/text()");
+         ObjectTypeConverter directionConverter = new ObjectTypeConverter();
+         directionConverter.addConversionValue("IN", IN);
+         directionConverter.addConversionValue("INOUT", INOUT);
+         directionConverter.addConversionValue("OUT", OUT);
+         directionMapping.setConverter(directionConverter);
+         directionMapping.setNullValue(IN);
+         descriptor.addMapping(directionMapping);
+
+         XMLDirectMapping lengthMapping = new XMLDirectMapping();
+         lengthMapping.setAttributeName("length");
+         lengthMapping.setXPath("toplink:length/text()");
+         lengthMapping.setNullValue(255);
+         descriptor.addMapping(lengthMapping);
+
+         XMLDirectMapping precisionMapping = new XMLDirectMapping();
+         precisionMapping.setAttributeName("precision");
+         precisionMapping.setXPath("toplink:precision/text()");
+         precisionMapping.setNullValue(MIN_VALUE);
+         descriptor.addMapping(precisionMapping);
+
+         XMLDirectMapping scaleMapping = new XMLDirectMapping();
+         scaleMapping.setAttributeName("scale");
+         scaleMapping.setXPath("toplink:scale/text()");
+         scaleMapping.setNullValue(MIN_VALUE);
+         descriptor.addMapping(scaleMapping);
+
+         XMLDirectMapping cursorOutputMapping = new XMLDirectMapping();
+         cursorOutputMapping.setAttributeName("cursorOutput");
+         cursorOutputMapping.setXPath("@cursorOutput");
+         cursorOutputMapping.setNullValue(Boolean.FALSE);
+         descriptor.addMapping(cursorOutputMapping);
+
+         XMLCompositeObjectMapping databaseTypeMapping = new XMLCompositeObjectMapping();
+         databaseTypeMapping.setAttributeName("databaseTypeWrapper");
+         databaseTypeMapping.setReferenceClass(DatabaseTypeWrapper.class);
+         databaseTypeMapping.setXPath(".");
+         descriptor.addMapping(databaseTypeMapping);
+
+         return descriptor;
+     }
+
+     protected XMLDescriptor buildPLSQLStoredProcedureCallDescriptor() {
+
+         XMLDescriptor descriptor = new XMLDescriptor();
+         descriptor.setJavaClass(PLSQLStoredProcedureCall.class);
+         descriptor.getInheritancePolicy().setParentClass(Call.class);
+         descriptor.setDefaultRootElement("toplink:plsql-stored-procedure-call");
+
+         XMLDirectMapping procedureNameMapping = new XMLDirectMapping();
+         procedureNameMapping.setAttributeName("procedureName");
+         procedureNameMapping.setXPath("toplink:procedure-name/text()");
+         descriptor.addMapping(procedureNameMapping);
+
+         XMLCompositeCollectionMapping argumentsMapping = new XMLCompositeCollectionMapping();
+         argumentsMapping.setAttributeName("arguments");
+         argumentsMapping.setXPath("toplink:arguments/toplink:argument");
+         argumentsMapping.setReferenceClass(PLSQLargument.class);
+         descriptor.addMapping(argumentsMapping);
+
+         return descriptor;
      }
 }
