@@ -55,11 +55,9 @@ public class SDOTypesGenerator extends SchemaParser {
     private Map<Type, List<GlobalRef>> globalRefs;
     private boolean isImportProcessor;
 
-    // hold the context containing all helpers so that we can preserve inter-helper relationships
-    private HelperContext aHelperContext;
 
     public SDOTypesGenerator(HelperContext aContext) {
-        aHelperContext = aContext;
+        super(aContext);
     }
 
     protected void processImport(Import theImport) {
@@ -583,6 +581,8 @@ public class SDOTypesGenerator extends SchemaParser {
             p.setNamespaceQualified(refProp.isNamespaceQualified());
             p.setAliasNames(refProp.getAliasNames());
             p.setDefault(refProp.getDefault());
+            p.setSubstitutable(refProp.isSubstitutable());
+            p.setSubstitutableElements(refProp.getSubstitutableElements());
 
             if (p.getType() == null) {
                 p.setType(refProp.getType());

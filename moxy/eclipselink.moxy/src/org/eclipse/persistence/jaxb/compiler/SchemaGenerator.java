@@ -288,10 +288,11 @@ public class SchemaGenerator {
             if (next == null) { continue; }
             
             TypeDefParticle parentCompositor = compositor;
+            boolean isChoice = (parentCompositor instanceof Choice);
             ComplexType parentType = type;
             if (!helper.isAnnotationPresent(next.getElement(), XmlTransient.class)) {
                 // deal with the XmlElementWrapper case
-                if (helper.isAnnotationPresent(next.getElement(), XmlElementWrapper.class)) {
+                if (!isChoice && helper.isAnnotationPresent(next.getElement(), XmlElementWrapper.class)) {
                     XmlElementWrapper wrapper = (XmlElementWrapper) helper.getAnnotation(next.getElement(), XmlElementWrapper.class);
                     Element wrapperElement = new Element();
                     wrapperElement.setName(wrapper.name());
@@ -397,6 +398,15 @@ public class SchemaGenerator {
                         content.getRestriction().setAnyAttribute(anyAttribute);
                     } else {
                         type.setAnyAttribute(anyAttribute);
+                    }
+                } else if(next.isChoice()) {
+                    Choice choice = new Choice();
+                    ArrayList<TypeProperty> choiceProperties = (ArrayList<TypeProperty>)next.getChoiceProperties();
+                    addToSchemaType(choiceProperties, choice, parentType, schema);
+                    if(parentCompositor instanceof Sequence) {
+                        ((Sequence)parentCompositor).addChoice(choice);
+                    } else if(parentCompositor instanceof Choice) {
+                        ((Choice)parentCompositor).addChoice(choice);
                     }
                 } else if (!helper.isAnnotationPresent(next.getElement(), XmlValue.class)) {
                     Element element = new Element();

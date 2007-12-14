@@ -236,6 +236,9 @@ public class Helper {
      * @return
      */
     public boolean isAnnotationPresent(JavaHasAnnotations element, Class annotationClass) {
+        if(element == null || annotationClass == null) {
+            return false;
+        }
         return (this.getAnnotaion(element, annotationClass) != null);
     }
 

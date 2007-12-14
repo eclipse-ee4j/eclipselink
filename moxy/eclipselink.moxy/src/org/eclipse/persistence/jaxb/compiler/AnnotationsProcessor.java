@@ -374,6 +374,32 @@ public class AnnotationsProcessor {
                     if(helper.isAnnotationPresent(property.getElement(), XmlAttribute.class) || helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
                         property.setIsAttribute(true);
                     }                    
+                    if(helper.isAnnotationPresent(property.getElement(), XmlElements.class)) {
+                        property.setChoice(true);
+                        XmlElements xmlElements = (XmlElements)helper.getAnnotation(property.getElement(), XmlElements.class);
+                        XmlElement[] elements = xmlElements.value();
+                        ArrayList<TypeProperty> choiceProperties = new ArrayList<TypeProperty>(elements.length);
+                        for(int i = 0; i < elements.length; i++) {
+                            XmlElement next = elements[i];
+                            TypeProperty choiceProp = new TypeProperty();
+                            String name = next.name();
+                            String namespace = next.namespace();
+                            QName qName = null;
+                            if (!namespace.equals("##default")) {
+                                qName = new QName(namespace, name);
+                            } else {
+                                qName = new QName(name);
+                            }
+                            choiceProp.setPropertyName(property.getPropertyName());
+                            choiceProp.setType(helper.getJavaClass(next.type()));
+                            choiceProp.setSchemaName(qName);
+                            choiceProp.setSchemaType(getSchemaTypeFor(helper.getJavaClass(next.type())));
+                            choiceProp.setElement(property.getElement());
+                            choiceProperties.add(choiceProp);
+                        }
+                        property.setChoiceProperties(choiceProperties);
+                    }
+
                     // Check for XmlElement annotation and set required (a.k.a. minOccurs) accordingly
                     if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
                         property.setIsRequired(((XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class)).required());
@@ -503,6 +529,31 @@ public class AnnotationsProcessor {
             if(helper.isAnnotationPresent(property.getElement(), XmlAttribute.class) || helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
                 property.setIsAttribute(true);
             }
+            if(helper.isAnnotationPresent(property.getElement(), XmlElements.class)) {
+                property.setChoice(true);
+                XmlElements xmlElements = (XmlElements)helper.getAnnotation(property.getElement(), XmlElements.class);
+                XmlElement[] elements = xmlElements.value();
+                ArrayList<TypeProperty> choiceProperties = new ArrayList<TypeProperty>(elements.length);
+                for(int j = 0; j < elements.length; j++) {
+                    XmlElement next = elements[j];
+                    TypeProperty choiceProp = new TypeProperty();
+                    String name = next.name();
+                    String namespace = next.namespace();
+                    QName qName = null;
+                    if (!namespace.equals("##default")) {
+                        qName = new QName(namespace, name);
+                    } else {
+                        qName = new QName(name);
+                    }
+                    choiceProp.setPropertyName(property.getPropertyName());
+                    choiceProp.setType(helper.getJavaClass(next.type()));
+                    choiceProp.setSchemaName(qName);
+                    choiceProp.setSchemaType(getSchemaTypeFor(helper.getJavaClass(next.type())));
+                    choiceProp.setElement(property.getElement());
+                    choiceProperties.add(choiceProp);
+                }
+                property.setChoiceProperties(choiceProperties);
+           }
             if (!helper.isAnnotationPresent(property.getElement(), XmlTransient.class)) {
                 properties.add(property);
             }

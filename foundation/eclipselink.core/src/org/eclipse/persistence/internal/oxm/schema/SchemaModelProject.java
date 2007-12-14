@@ -541,6 +541,10 @@ public class SchemaModelProject extends Project {
         fixedMapping.setXPath("@fixed");
         descriptor.addMapping(fixedMapping);
 
+        XMLDirectMapping subGroupMapping = new XMLDirectMapping();
+        subGroupMapping.setAttributeName("substitutionGroup");
+        subGroupMapping.setXPath("@substitutionGroup");
+        descriptor.addMapping(subGroupMapping);
 
         XMLCompositeObjectMapping annotationMapping = new XMLCompositeObjectMapping();
         annotationMapping.setReferenceClass(Annotation.class);

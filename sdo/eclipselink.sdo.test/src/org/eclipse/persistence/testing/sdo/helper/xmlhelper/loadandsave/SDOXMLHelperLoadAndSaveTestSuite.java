@@ -100,6 +100,10 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
         // all numeric primitive defaults
         suite.addTest(new TestSuite(IsSetOptionalWithoutDefaultSetNOPNumericPrimsTestCases.class));
         
+        // substitution groups
+        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.substitutiongroups.SingleValueBaseTypeTestCases.class));
+        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.substitutiongroups.SingleValueNonBaseTypeTestCases.class));
+        suite.addTest(new TestSuite(org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.substitutiongroups.CollectionValueTestCases.class));
         return suite;
     }
 }

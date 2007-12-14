@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
+import java.util.Iterator;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.helper.AttributeMimeTypePolicy;
 import org.eclipse.persistence.sdo.helper.InstanceClassConverter;
@@ -33,6 +35,8 @@ import org.eclipse.persistence.oxm.mappings.MimeTypePolicy;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
@@ -80,6 +84,8 @@ public class SDOProperty implements Property, Serializable {
     private Map appInfoMap;
     private boolean nameCollision;
     private String uri;
+    private boolean isSubstitutable;
+    private Collection<SDOProperty> substitutableElements;
 
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;
@@ -445,7 +451,14 @@ public class SDOProperty implements Property, Serializable {
                         ((SDOType)getType()).getNonFinalizedMappingURIs().add(mappingUri);
                         return;
                     }
-                    if (isMany()) {
+                    if(isSubstitutable()) {
+                        if(isMany()) {
+                            xmlMapping = buildXMLChoiceCollectionMapping(mappingUri);
+                        } else {
+                            xmlMapping = buildXMLChoiceObjectMapping(mappingUri);
+                        }
+                    }
+                    else if (isMany()) {
                         if (isContainment()) {
                             xmlMapping = buildXMLCompositeCollectionMapping(mappingUri);
                         } else {
@@ -467,7 +480,11 @@ public class SDOProperty implements Property, Serializable {
                     if (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) || ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler")))) {
                         xmlMapping = buildXMLBinaryDataCollectionMapping(mappingUri, mimeTypePolicy);
                     } else {
-                        xmlMapping = buildXMLCompositeDirectCollectionMapping(mappingUri);
+                        if(isSubstitutable()) {
+                            xmlMapping = buildXMLChoiceCollectionMapping(mappingUri);
+                        } else {
+                            xmlMapping = buildXMLCompositeDirectCollectionMapping(mappingUri);
+                        }
                     }
                 } else {
                     MimeTypePolicy mimeTypePolicy = getMimeTypePolicy();
@@ -476,7 +493,11 @@ public class SDOProperty implements Property, Serializable {
                     if (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) || ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler")))) {
                         xmlMapping = buildXMLBinaryDataMapping(mappingUri, mimeTypePolicy);
                     } else {
-                        xmlMapping = buildXMLDirectMapping(mappingUri);
+                        if(isSubstitutable()) {
+                            xmlMapping = buildXMLChoiceObjectMapping(mappingUri);
+                        } else {
+                            xmlMapping = buildXMLDirectMapping(mappingUri);
+                        }
                     }
                 }
             }
@@ -713,6 +734,40 @@ public class SDOProperty implements Property, Serializable {
         }
         return mapping;
     }
+    
+    private DatabaseMapping buildXMLChoiceObjectMapping(String mappingUri) {
+        XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
+        mapping.setAttributeName(getName());
+
+        //First add XPath for this property
+        String xPath = getQualifiedXPath(mappingUri, getType().isDataType());
+        mapping.addChoiceElement(xPath, ((SDOType)getType()).getImplClass());
+        //For each substitutable property, create the xpath and add it.
+        Iterator<SDOProperty> properties = this.getSubstitutableElements().iterator();
+        while(properties.hasNext()) {
+            SDOProperty nextProp = properties.next();
+            xPath = nextProp.getQualifiedXPath(mappingUri, nextProp.getType().isDataType(), (SDOType)getContainingType());
+            mapping.addChoiceElement(xPath, ((SDOType)nextProp.getType()).getImplClass());
+        }
+        return mapping;
+    }
+    
+    private DatabaseMapping buildXMLChoiceCollectionMapping(String mappingUri) {
+        XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
+        mapping.setAttributeName(getName());
+        mapping.useCollectionClass(ListWrapper.class);
+        //First add XPath for this property
+        String xPath = getQualifiedXPath(mappingUri, getType().isDataType());
+        mapping.addChoiceElement(xPath, ((SDOType)getType()).getImplClass());
+        //For each substitutable property, create the xpath and add it.
+        Iterator<SDOProperty> properties = this.getSubstitutableElements().iterator();
+        while(properties.hasNext()) {
+            SDOProperty nextProp = properties.next();
+            xPath = nextProp.getQualifiedXPath(mappingUri, nextProp.getType().isDataType(), (SDOType)getContainingType());
+            mapping.addChoiceElement(xPath, ((SDOType)nextProp.getType()).getImplClass());
+        }
+        return mapping;
+    }
 
     /**
      * INTERNAL:
@@ -801,13 +856,18 @@ public class SDOProperty implements Property, Serializable {
       * INTERNAL:
       */
     private String getQualifiedXPath(String uri, boolean simple) {
+        SDOType containingType = (SDOType)this.getContainingType();
+        return getQualifiedXPath(uri, simple, containingType);
+    }
+    
+    private String getQualifiedXPath(String uri, boolean simple, SDOType containingType) {
         if (valueProperty) {
             return "text()";
         }
         String xpath = getXPath();
         String prefix = null;
         if (isNamespaceQualified()) {
-            prefix = ((SDOType)getContainingType()).getXmlDescriptor().getNonNullNamespaceResolver().resolveNamespaceURI(uri);
+            prefix = containingType.getXmlDescriptor().getNonNullNamespaceResolver().resolveNamespaceURI(uri);
         }
 
         if (aHelperContext.getXSDHelper().isAttribute(this)) {
@@ -1020,5 +1080,21 @@ public class SDOProperty implements Property, Serializable {
         mapping.setAttributeAccessor(new SDOFragmentMappingAttributeAccessor(this, aHelperContext));
         
         return mapping;
+    }
+    
+    public boolean isSubstitutable() {
+        return this.isSubstitutable;
+    }
+    
+    public void setSubstitutable(boolean substitutable) {
+        this.isSubstitutable = substitutable;
+    }
+    
+    public Collection<SDOProperty> getSubstitutableElements() {
+        return this.substitutableElements;
+    }
+    
+    public void setSubstitutableElements(Collection<SDOProperty> elements) {
+        this.substitutableElements = elements;
     }
 }

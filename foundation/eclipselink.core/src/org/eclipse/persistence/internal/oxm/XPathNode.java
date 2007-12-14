@@ -24,9 +24,9 @@ import org.eclipse.persistence.oxm.record.MarshalRecord;
 /**
  * INTERNAL:
  * <p><b>Purpose</b>:  XPathNodes are used together to build a tree.  The tree
- * is built from all of the XPath statments specified in the mapping metadata 
+ * is built from all of the XPath statements specified in the mapping metadata 
  * (mappings and policies).  This tree is then navigated by the 
- * TreeObjectBuilder to perform marshal and umarshal operations.</p>
+ * TreeObjectBuilder to perform marshal and unmarshal operations.</p>
  * <p>The XPaths "a/b" and "a/c" would result in a tree with the root "a" and 
  * two child nodes "b" and "c".</p>
  * <p><b>Responsibilities</b>:<ul>
@@ -42,7 +42,8 @@ import org.eclipse.persistence.oxm.record.MarshalRecord;
  */
 
 public class XPathNode {
-    private NodeValue nodeValue;
+    private NodeValue unmarshalNodeValue;
+    private NodeValue marshalNodeValue;
     private XPathFragment xPathFragment;
     private XPathNode parent;
     private List attributeChildren;
@@ -62,16 +63,39 @@ public class XPathNode {
     }
 
     public NodeValue getNodeValue() {
-        return nodeValue;
+        return unmarshalNodeValue;
     }
 
     public void setNodeValue(NodeValue nodeValue) {
-        this.nodeValue = nodeValue;
+        this.marshalNodeValue = nodeValue;
+        this.unmarshalNodeValue = nodeValue;
         if (null != nodeValue) {
             nodeValue.setXPathNode(this);
         }
     }
+    
+    public NodeValue getUnmarshalNodeValue() {
+        return unmarshalNodeValue;
+    }
+    
+    public void setUnmarshalNodeValue(NodeValue nodeValue) {
+        if (null != nodeValue) {
+            nodeValue.setXPathNode(this);
+        }
+        this.unmarshalNodeValue = nodeValue;
+    }
 
+    public NodeValue getMarshalNodeValue() {
+        return marshalNodeValue;
+    }
+    
+    public void setMarshalNodeValue(NodeValue nodeValue) {
+        if (null != nodeValue) {
+            nodeValue.setXPathNode(this);
+        }
+        this.marshalNodeValue = nodeValue;
+    }
+    
     public XPathNode getParent() {
         return parent;
     }
@@ -127,7 +151,7 @@ public class XPathNode {
             }
             return this.getXPathFragment().equals(perfNode.getXPathFragment());
 
-            // turn fix off for now until we reenable XMLAnyObjectAndAnyCollectionTestCases
+            // turn fix off for now until we re-enable XMLAnyObjectAndAnyCollectionTestCases
             //          } catch (NullPointerException npe) {
             // b5259059 all cases X0X1 (1mapping xpath=null, 2nd mapping xpath=filled
             // catch when object.getXPathFragment() == null
@@ -166,13 +190,20 @@ public class XPathNode {
         }
 
         if (null == anXPathFragment) {
-            xPathNode.setNodeValue(aNodeValue);
+            if(aNodeValue.isMarshalNodeValue()) {
+                xPathNode.setMarshalNodeValue(aNodeValue);
+            }
+            if(aNodeValue.isUnmarshalNodeValue()) {
+                xPathNode.setUnmarshalNodeValue(aNodeValue);
+            }
             xPathNode.setParent(this);
             if (aNodeValue instanceof XMLAnyAttributeMappingNodeValue) {
                 setAnyAttributeNodeValue((XMLAnyAttributeMappingNodeValue)aNodeValue);
                 anyAttributeNode = xPathNode;
             } else {
-                children.add(xPathNode);
+                if(!children.contains(xPathNode)) {
+                    children.add(xPathNode);
+                }
                 childrenMap.put(anXPathFragment, xPathNode);
             }
             return;
@@ -183,19 +214,28 @@ public class XPathNode {
             xPathNode = (XPathNode)children.get(index);
         } else {
             xPathNode.setParent(this);
-            children.add(xPathNode);
+            if(!children.contains(xPathNode)) {
+                children.add(xPathNode);
+            }
             if (XPathFragment.SELF_FRAGMENT.equals(anXPathFragment)) {
                 if (null == selfChildren) {
                     selfChildren = new ArrayList();
                 }
-                selfChildren.add(xPathNode);
+                if(!selfChildren.contains(xPathNode)) {
+                    selfChildren.add(xPathNode);
+                }
             } else {
                 childrenMap.put(anXPathFragment, xPathNode);
             }
         }
 
         if (aNodeValue.isOwningNode(anXPathFragment)) {
-            xPathNode.setNodeValue(aNodeValue);
+            if(aNodeValue.isMarshalNodeValue()) {
+                xPathNode.setMarshalNodeValue(aNodeValue);
+            } 
+            if(aNodeValue.isUnmarshalNodeValue()) {
+                xPathNode.setUnmarshalNodeValue(aNodeValue);
+            }
         } else {
             XPathFragment nextFragment = anXPathFragment.getNextFragment();
             xPathNode.addChild(nextFragment, aNodeValue, namespaceResolver);
@@ -206,8 +246,8 @@ public class XPathNode {
         return marshal(marshalRecord, object, session, namespaceResolver, null, marshalContext);
     }
 
-    public boolean marshal(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller, MarshalContext marshalContext) {
-        if ((null == nodeValue) || nodeValue.isMarshalOnlyNodeValue()) {
+    public boolean marshal(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, org.eclipse.persistence.oxm.XMLMarshaller marshaller, MarshalContext marshalContext) {
+        if ((null == marshalNodeValue) || marshalNodeValue.isMarshalOnlyNodeValue()) {
             marshalRecord.addGroupingElement(this);
 
             XPathNode xPathNode;
@@ -239,7 +279,7 @@ public class XPathNode {
 
             return hasValue;
         } else {
-            return marshalContext.marshal(nodeValue, xPathFragment, marshalRecord, object, session, namespaceResolver);
+            return marshalContext.marshal(marshalNodeValue, xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
     }
 
@@ -280,9 +320,9 @@ public class XPathNode {
      * @return
      */
     public boolean marshalSelfAttributes(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
-        if (nodeValue == null) {
+        if (marshalNodeValue == null) {
             return false;
         }
-        return nodeValue.marshalSelfAttributes(xPathFragment, marshalRecord, object, session, namespaceResolver, marshaller);
+        return marshalNodeValue.marshalSelfAttributes(xPathFragment, marshalRecord, object, session, namespaceResolver, marshaller);
     }
 }

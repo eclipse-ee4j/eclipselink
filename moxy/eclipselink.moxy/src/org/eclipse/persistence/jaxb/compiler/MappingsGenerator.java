@@ -164,7 +164,13 @@ public class MappingsGenerator {
             return;
         }
 
-        if (isMapType(property) && helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
+        if (property.isChoice()) {
+            if(this.isCollectionType(property)) {
+                generateChoiceCollectionMapping(property, descriptor, namespaceInfo);
+            } else {
+                generateChoiceMapping(property, descriptor, namespaceInfo);
+            }
+        } else if (isMapType(property) && helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
             generateAnyAttributeMapping(property, descriptor, namespaceInfo);
         } else if (isCollectionType(property)) {
             generateCollectionMapping(property, descriptor, namespaceInfo);
@@ -189,6 +195,49 @@ public class MappingsGenerator {
                 }
             }
         }
+    }
+    
+    public XMLChoiceObjectMapping generateChoiceMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespace) {
+        XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
+        mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+        }
+        Iterator<TypeProperty> choiceProperties = property.getChoiceProperties().iterator();
+        while(choiceProperties.hasNext()) {
+            TypeProperty next = choiceProperties.next();
+            JavaClass type = next.getType();
+            XMLField xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
+            mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());
+        }
+        descriptor.addMapping(mapping);
+        return mapping;
+    }
+    public XMLChoiceCollectionMapping generateChoiceCollectionMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespace) {
+        XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
+        mapping.setAttributeName(property.getPropertyName());
+        if(property.isMethodProperty()) {
+            mapping.setGetMethodName(property.getGetMethodName());
+            mapping.setSetMethodName(property.getSetMethodName());
+        }
+        JavaClass collectionType = property.getType();
+        if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
+            collectionType = jotArrayList;
+        } else if (areEquals(collectionType, Set.class)) {
+            collectionType = jotHashSet;
+        }
+        mapping.useCollectionClassName(collectionType.getRawName());
+        
+        Iterator<TypeProperty> choiceProperties = property.getChoiceProperties().iterator();
+        while(choiceProperties.hasNext()) {
+            TypeProperty next = choiceProperties.next();
+            JavaClass type = next.getType();
+            XMLField xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
+            mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());
+        }
+        descriptor.addMapping(mapping);
+        return mapping;
     }
     public XMLCompositeObjectMapping generateCompositeObjectMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();

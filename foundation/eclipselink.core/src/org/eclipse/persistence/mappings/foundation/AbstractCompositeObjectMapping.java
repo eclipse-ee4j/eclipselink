@@ -195,7 +195,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
     /**
      * The aggregate object is held in a single field.
      */
-    protected void setField(DatabaseField field) {
+    public void setField(DatabaseField field) {
         this.field = field;
     }
 

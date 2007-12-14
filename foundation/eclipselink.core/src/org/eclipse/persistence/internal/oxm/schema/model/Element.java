@@ -16,6 +16,7 @@ public class Element extends SimpleComponent {
     private boolean nillable;
     private boolean abstractValue;
     private String ref;
+    private String substitutionGroup;
 
     public Element() {
     }
@@ -69,5 +70,13 @@ public class Element extends SimpleComponent {
 
     public String getRef() {
         return ref;
+    }
+    
+    public String getSubstitutionGroup() {
+        return substitutionGroup;
+    }
+    
+    public void setSubstitutionGroup(String group) {
+        this.substitutionGroup = group;
     }
 }

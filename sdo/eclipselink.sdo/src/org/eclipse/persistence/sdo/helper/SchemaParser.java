@@ -16,7 +16,9 @@ import java.util.Iterator;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
+import commonj.sdo.helper.HelperContext;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.*;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -44,14 +46,18 @@ public abstract class SchemaParser {
     private boolean returnAllTypes;
     protected java.util.List namespaceResolvers;
     protected boolean inRestriction;
+    // hold the context containing all helpers so that we can preserve inter-helper relationships
+    protected HelperContext aHelperContext;
+    
 
-    public SchemaParser() {
+    public SchemaParser(HelperContext aHelperContext) {
         processedComplexTypes = new HashMap();
         processedSimpleTypes = new HashMap();
         processedElements = new HashMap();
         processedAttributes = new HashMap();
         itemNameToSDOName = new HashMap();
         namespaceResolvers = new ArrayList();
+        this.aHelperContext = aHelperContext;
     }
 
     public abstract void startNewComplexType(String targetNamespace, String defaultNamespace, String name, String xsdLocalName, ComplexType complexType);
@@ -176,6 +182,35 @@ public abstract class SchemaParser {
         while (elementsIter.hasNext()) {
             Element nextElement = (Element)elementsIter.next();
             processGlobalElement(schema.getTargetNamespace(), schema.getDefaultNamespace(), nextElement);
+        }
+        //process substitution groups after properties have been created for all elements
+        elementsIter = elements.iterator();
+        while (elementsIter.hasNext()) {
+            Element nextElement = (Element)elementsIter.next();
+            if(nextElement.getSubstitutionGroup() != null) {
+                String substitutionGroup = nextElement.getSubstitutionGroup();
+                String localName = null;
+                String uri = null;
+
+                int index = substitutionGroup.indexOf(':');
+                if (index != -1) {
+                    String prefix = substitutionGroup.substring(0, index);
+                    localName = substitutionGroup.substring(index + 1, substitutionGroup.length());
+                    uri = getURIForPrefix(schema.getDefaultNamespace(), prefix);
+                } else {
+                    localName = substitutionGroup;
+                    uri = schema.getDefaultNamespace();
+                }
+                SDOProperty rootProp = (SDOProperty)aHelperContext.getXSDHelper().getGlobalProperty(uri, localName, true);
+                SDOProperty thisProperty = (SDOProperty)aHelperContext.getXSDHelper().getGlobalProperty(schema.getTargetNamespace(), nextElement.getName(), true);
+                if(rootProp != null && thisProperty != null) {
+                    if(rootProp.getSubstitutableElements() == null) {
+                        rootProp.setSubstitutableElements(new java.util.ArrayList<SDOProperty>());
+                        rootProp.setSubstitutable(true);
+                    }
+                    rootProp.getSubstitutableElements().add(thisProperty);
+                }
+            }
         }
     }
 

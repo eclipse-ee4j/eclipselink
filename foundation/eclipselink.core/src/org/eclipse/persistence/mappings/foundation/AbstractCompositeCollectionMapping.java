@@ -673,7 +673,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     /**
      * Set the field in the mapping.
      */
-    protected void setField(DatabaseField field) {
+    public void setField(DatabaseField field) {
         this.field = field;
     }
 

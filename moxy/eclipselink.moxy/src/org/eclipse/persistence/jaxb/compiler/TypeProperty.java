@@ -10,6 +10,7 @@
 package org.eclipse.persistence.jaxb.compiler;
 
 import java.util.Iterator;
+import java.util.Collection;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -48,10 +49,12 @@ public class TypeProperty {
     private JavaHasAnnotations element;
     private JavaClass genericType;
     private boolean isAttribute = false;
+    private boolean isChoice = false;
     private Helper helper;
     private String getMethodName;
     private String setMethodName;
     private boolean isRequired = false;
+    private Collection<TypeProperty> choiceProperties;
     
     public TypeProperty() {
     }
@@ -208,5 +211,21 @@ public class TypeProperty {
     
     public void setSetMethodName(String methodName) {
         setMethodName = methodName;
+    }
+    
+    public void setChoice(boolean b) {
+        isChoice = b;
+    }
+    
+    public boolean isChoice() {
+        return isChoice;
+    }
+    
+    public Collection<TypeProperty> getChoiceProperties() {
+        return this.choiceProperties;
+    }
+    
+    public void setChoiceProperties(Collection<TypeProperty> properties) {
+        this.choiceProperties = properties;
     }
 }

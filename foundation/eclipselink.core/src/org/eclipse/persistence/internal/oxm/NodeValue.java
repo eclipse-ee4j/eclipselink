@@ -165,6 +165,16 @@ public abstract class NodeValue {
     
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
     }
+    
+
+    public boolean isUnmarshalNodeValue() {
+        return true;
+    }
+    
+    public boolean isMarshalNodeValue() {
+        return true;
+    }
+    
 
     /**
      * INTERNAL:

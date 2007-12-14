@@ -522,7 +522,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
             XPathNode node = getNonAttributeXPathNode(namespaceURI, localName, qName);
             if (null == node) {
-                NodeValue parentNodeValue = xPathNode.getNodeValue();
+                NodeValue parentNodeValue = xPathNode.getUnmarshalNodeValue();
                 if ((null == xPathNode.getXPathFragment()) && (parentNodeValue != null)) {
                     XPathFragment parentFragment = new XPathFragment();
                     if (EMPTY_STRING.equals(namespaceURI)) {
@@ -550,7 +550,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 unmarshalContext.startElement(this);
                 levelIndex++;
 
-                NodeValue nodeValue = node.getNodeValue();
+                NodeValue nodeValue = node.getUnmarshalNodeValue();
                 if (null != nodeValue) {
                     if (!nodeValue.startElement(xPathFragment, this, atts)) {
                         // UNMAPPED CONTENT
@@ -647,8 +647,8 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 }
             }
 
-            if (null != xPathNode.getNodeValue()) {
-                xPathNode.getNodeValue().endElement(xPathFragment, this);
+            if (null != xPathNode.getUnmarshalNodeValue()) {
+                xPathNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
                 if (xPathNode.getParent() != null) {
                     xPathNode = xPathNode.getParent();
                 }
@@ -723,7 +723,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
                 xPathNode = textNode;
                 unmarshalContext.characters(this);
             }
-            if (null != xPathNode.getNodeValue()) {
+            if (null != xPathNode.getUnmarshalNodeValue()) {
                 stringBuffer.append(ch, start, length);
             }
         } catch (EclipseLinkException e) {
@@ -847,7 +847,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
             }
             XPathNode node = (XPathNode)attributeChildrenMap.get(xPathFragment);
             if (node != null) {
-                return node.getNodeValue();
+                return node.getUnmarshalNodeValue();
             }
         }
         return null;
@@ -882,7 +882,7 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     }
 
     public void startCDATA() {
-        if (xPathNode.getNodeValue() != null) {
+        if (xPathNode.getUnmarshalNodeValue() != null) {
             this.isBufferCDATA = true;
         }
     }

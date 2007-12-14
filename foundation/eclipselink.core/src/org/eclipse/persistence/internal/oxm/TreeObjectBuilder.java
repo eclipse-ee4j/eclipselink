@@ -44,6 +44,8 @@ import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.NodeRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -194,6 +196,42 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                             addNullCapableValue((NullCapableValue)mappingNodeValue);
                         }
                         addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
+                    }
+                    continue;
+                } else if (xmlMapping instanceof XMLChoiceObjectMapping) {
+                    XMLChoiceObjectMapping xmlChoiceMapping = (XMLChoiceObjectMapping)xmlMapping;
+                    Iterator fields = xmlChoiceMapping.getChoiceElementMappings().keySet().iterator();
+                    XMLField firstField = (XMLField)fields.next();
+                    XMLChoiceObjectMappingNodeValue firstNodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, firstField);
+                    firstNodeValue.setNullCapableNodeValue(firstNodeValue);
+                    this.addNullCapableValue(firstNodeValue);
+                    addChild(firstField.getXPathFragment(), firstNodeValue, xmlDescriptor.getNamespaceResolver());
+                    while(fields.hasNext()) {
+                        XMLField next = (XMLField)fields.next();
+                        XMLChoiceObjectMappingNodeValue nodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, next);
+                        nodeValue.setNullCapableNodeValue(firstNodeValue);
+                        addChild(next.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
+                    }
+                    continue;
+                } else if(xmlMapping instanceof XMLChoiceCollectionMapping) {
+                    XMLChoiceCollectionMapping xmlChoiceMapping = (XMLChoiceCollectionMapping)xmlMapping;
+                    Iterator fields = xmlChoiceMapping.getChoiceElementMappings().keySet().iterator();
+                    XMLField firstField = (XMLField)fields.next();
+                    XMLChoiceCollectionMappingUnmarshalNodeValue unmarshalValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, firstField);
+                    XMLChoiceCollectionMappingMarshalNodeValue marshalValue = new XMLChoiceCollectionMappingMarshalNodeValue(xmlChoiceMapping, firstField);
+                    HashMap<XMLField, NodeValue> fieldToNodeValues = new HashMap<XMLField, NodeValue>();
+                    unmarshalValue.setContainerNodeValue(unmarshalValue);
+                    marshalValue.setFieldToNodeValues(fieldToNodeValues);
+                    this.addContainerValue(unmarshalValue);
+                    fieldToNodeValues.put(firstField, unmarshalValue);
+                    addChild(firstField.getXPathFragment(), unmarshalValue, xmlDescriptor.getNamespaceResolver());
+                    addChild(firstField.getXPathFragment(), marshalValue, xmlDescriptor.getNamespaceResolver());
+                    while(fields.hasNext()) {
+                        XMLField next = (XMLField)fields.next();
+                        XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, next);
+                        nodeValue.setContainerNodeValue(unmarshalValue);
+                        addChild(next.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
+                        fieldToNodeValues.put(next, nodeValue);
                     }
                     continue;
                 }
