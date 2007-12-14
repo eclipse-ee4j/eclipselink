@@ -5152,7 +5152,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em = createEntityManager();
         em.getTransaction().begin();
         try {
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName LIKE 'Level_%'").executeUpdate();
+        	List<Employee> employees = em.createQuery("Select e FROM Employee e WHERE e.firstName LIKE 'Level_%'").getResultList();
+        	Iterator<Employee> i = employees.iterator();
+        	while(i.hasNext()){
+        		Employee emp = i.next();
+        		emp.setManager(null);
+        		emp.setManagedEmployees(null);
+        		em.remove(emp);
+        	}         
             em.getTransaction().commit();
         } finally {
             if (em.getTransaction().isActive()){
