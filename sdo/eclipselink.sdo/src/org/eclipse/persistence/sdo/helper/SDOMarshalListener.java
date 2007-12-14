@@ -193,12 +193,15 @@ public class SDOMarshalListener implements XMLMarshalListener {
         if ((original != null) && cs.isDeleted((DataObject)original)) {
             isDeleted = true;
         }
-
+      
         String qualifiedName = getXPathForProperty(prop);
-        XMLField xmlField = new XMLField(qualifiedName);
-        xmlField.setNamespaceResolver(((SDOTypeHelper)typeHelper).getNamespaceResolver());
-        String uri = xmlField.getXPathFragment().getNamespaceURI();
-
+        String uri = null;
+        if(prop.isOpenContent()){
+          uri = prop.getUri();
+        }else{      
+          uri = prop.getContainingType().getURI();          
+        }
+      
         if (isDeleted) {
             String pathToNode = getPathFromAncestor(((SDODataObject)original), modifiedObject, cs);
             String containerPath = null;
