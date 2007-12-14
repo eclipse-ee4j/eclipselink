@@ -38,9 +38,7 @@ public abstract class LoadAndSaveTestCases extends LoadAndSaveWithOptionsTestCas
         byte[] bytes = new byte[inputStream.available()];
         inputStream.read(bytes);
         XMLDocument document = xmlHelper.load(new String(bytes));
-        // Don't call verifyAfterLoad(document) here as encoding info is not supported by all parsers
-        // Simply verify that the version is correct
-        assertTrue(document.getXMLVersion().equals(LoadAndSaveXMLEncodingAndVersionTestCases.VERSION));
+        verifyAfterLoad(document);
 
         StringWriter writer = new StringWriter();
         xmlHelper.save(document, writer, null);

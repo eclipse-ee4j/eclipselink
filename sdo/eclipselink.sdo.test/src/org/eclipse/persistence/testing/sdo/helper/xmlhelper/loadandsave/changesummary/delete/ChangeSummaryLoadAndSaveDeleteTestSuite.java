@@ -26,6 +26,7 @@ public class ChangeSummaryLoadAndSaveDeleteTestSuite {
         suite.addTestSuite(ChangeSummaryRootSimpleDeleteTestCases.class);
         suite.addTestSuite(ChangeSummaryChildSimpleDeleteTestCases.class);
         suite.addTestSuite(ChangeSummaryRootDetachAndDeleteTestCases.class);
+        suite.addTestSuite(LoadAndSaveBug6680769TestCases.class);
         return suite;
     }
 }

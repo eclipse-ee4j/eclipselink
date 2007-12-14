@@ -134,9 +134,7 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
         defineTypes();
         FileReader reader = new FileReader(getControlFileName());
         XMLDocument document = xmlHelper.load(reader, null, getOptions());
-        // Don't call verifyAfterLoad(document) here as encoding info is not supported by all parsers
-        // Simply verify that the version is correct
-        assertTrue(document.getXMLVersion().equals(LoadAndSaveXMLEncodingAndVersionTestCases.VERSION));
+        verifyAfterLoad(document);
 
         String s = xmlHelper.save(document.getRootObject(), getControlRootURI(), getControlRootName());
         compareXML(getControlDataObjectFileName(), s);
