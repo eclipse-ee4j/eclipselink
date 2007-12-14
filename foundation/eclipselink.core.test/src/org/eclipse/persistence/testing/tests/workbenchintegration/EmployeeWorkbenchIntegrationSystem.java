@@ -23,6 +23,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.QueryResultsCachePolicy;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
@@ -417,7 +418,7 @@ public class EmployeeWorkbenchIntegrationSystem extends EmployeeSystem {
 
     public void buildCacheQueryResultsQuery(DescriptorQueryManager queryManager) {
         ReadObjectQuery namedQuery = new ReadObjectQuery(Employee.class);
-        namedQuery.setShouldCacheQueryResults(true);
+        namedQuery.setQueryResultsCachePolicy(new QueryResultsCachePolicy());
         queryManager.addQuery("cacheQueryResultsQuery", namedQuery);
     }
 

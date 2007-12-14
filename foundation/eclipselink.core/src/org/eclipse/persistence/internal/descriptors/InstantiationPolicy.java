@@ -463,16 +463,6 @@ public class InstantiationPolicy implements Cloneable, Serializable {
         setFactoryClass(factoryClass);
     }
 
-    /**
-     * @deprecated - no direct replacement API.
-     */
-    public void createFactory(Class factoryClass, String factoryMethodName) throws DescriptorException {
-        this.setFactoryClass(factoryClass);
-        this.setFactoryClassName(factoryClass.getName());
-        this.setFactoryMethodName(factoryMethodName);
-        this.setFactory(this.buildFactory());
-        this.initializeMethod();
-    }
 
     public String toString() {
         String mName = null;

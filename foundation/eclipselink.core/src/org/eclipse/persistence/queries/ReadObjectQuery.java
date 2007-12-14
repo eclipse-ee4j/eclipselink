@@ -160,16 +160,6 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         setTemporaryCachedQueryResults(cachableObject);
     }
 
-    /**
-     * OBSOLETE:
-     * This can be used to explicitly disable the cache hit.
-     * The cache hit may not be desired in some cases, such as
-     * stored procedures that accept the primary key but do not query on it.
-     * @deprecated replaced by checkCacheByPrimaryKey
-     */
-    public void checkCache() {
-        setCacheUsage(CheckCacheByPrimaryKey);
-    }
 
     /**
      * PUBLIC:
@@ -738,20 +728,6 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         return controller.replaceValueHoldersIn(object);
     }
 
-    /**
-     * OBSOLETE:
-     * This can be used to explicitly disable the cache hit.
-     * The cache hit may not be desired in some cases, such as
-     * stored procedures that accept the primary key but do not query on it.
-     * @deprecated replaced by setCacheUsage
-     */
-    public void setCheckCache(boolean checkCache) {
-        if (checkCache) {
-            setCacheUsage(CheckCacheByPrimaryKey);
-        } else {
-            setCacheUsage(DoNotCheckCache);
-        }
-    }
 
     /**
      * PUBLIC:

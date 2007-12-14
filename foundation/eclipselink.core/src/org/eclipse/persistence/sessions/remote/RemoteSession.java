@@ -98,17 +98,6 @@ public class RemoteSession extends DistributedSession {
         return query.remoteExecute(this);
     }
 
-    /**
-     * OBSOLETE:
-     * Return the login, the login holds any database connection information given.
-     * This has been replaced by getDatasourceLogin to make use of the Login interface
-     * to support non-relational datasources,
-     * if DatabaseLogin API is required it will need to be cast.
-     * @deprecated replaced by getDatasourceLogin()
-     */
-    public DatabaseLogin getLogin() {
-        return (DatabaseLogin)getDatasourceLogin();
-    }
 
     /**
      * PUBLIC:

@@ -234,23 +234,6 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     }
 
     /**
-     * OBSOLETE:
-     * TopLink supports sequence number preallocation.
-     * This improves the performance and concurrency of inserts by
-     * selecting new object IDs in batches and caching them on the client.
-     * The preallocation size can be configured, and the default is 50.
-     * By default a sequence table is used. Using a sequence table is recommended
-     * as it supports preallocation.
-     * (Native sequencing on Sybase/SQL Server/Informix does not support preallocation.
-     * Preallocation can be supported on Oracle by setting the increment size of the
-     * SEQUENCE object to match the preallocation size.)
-     * @deprecated use getDefaultSequence().getPreallocationSize() instead
-     */
-    public int getSequencePreallocationSize() {
-        return getDatasourcePlatform().getSequencePreallocationSize();
-    }
-
-    /**
      * PUBLIC:
      * Return the qualifier for the all of the tables referenced by TopLink.
      * This can be the creator of the table or database name the table exists on.
@@ -550,38 +533,6 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     }
 
     /**
-     * OBSOLETE:
-     * Override the default query for reading the sequence numbers.
-     * This query must be a valid query that has one parameter,
-     * the sequence name. The query should only return the new value.
-     * It will be called after the sequence update query.
-     * If TopLink is using native sequencing, then the query must both update and
-     * return the new sequence value.
-     * Additionally, if TopLink is using native sequencing,
-     * the query should not define any parameters.
-     * @deprecated use ((QuerySequence)getDefaultSequence()).setSelectQuery(ValueReadQuery) instead
-     */
-    public void setSelectSequenceNumberQuery(ValueReadQuery selectSequenceNumberQuery) {
-        getDatasourcePlatform().setSelectSequenceNumberQuery(selectSequenceNumberQuery);
-    }
-
-    /**
-     * OBSOLETE:
-     * TopLink supports sequence number preallocation.
-     * This improves the performance and concurrency of inserts by
-     * selecting new object IDs in batches and caching them on the client.
-     * The preallocation size can be configured, and the default is 50.
-     * By default a sequence table is used. Using a sequence table is recommended
-     * as it supports preallocation.
-     * This MUST be 1 if native sequencing is used on Sybase, Informix, or SQL Server.
-     * This MUST match the SEQUENCE increment if Oracle native sequencing is used.
-     * @deprecated use getDefaultSequence().setPreallocationSize(int) instead
-     */
-    public void setSequencePreallocationSize(int size) {
-        getDatasourcePlatform().setSequencePreallocationSize(size);
-    }
-
-    /**
      * PUBLIC:
      * Set the default qualifier for all tables.
      * This can be the creator of the table or database name the table exists on.
@@ -599,17 +550,6 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
         getDatasourcePlatform().setTimestampQuery(timestampQuery);
     }
 
-    /**
-     * OBSOLETE:
-     * Override the default query for updating sequence numbers.
-     * This allows another query to be used instead of the default, TopLink-generated, one.
-     * This is called before the sequence select query and only
-     * if TopLink is using non-native sequencing.
-     * @deprecated use ((QuerySequence)getDefaultSequence()).setUpdateQuery(DataModifyQuery) instead
-     */
-    public void setUpdateSequenceQuery(DataModifyQuery updateSequenceNumberQuery) {
-        getDatasourcePlatform().setUpdateSequenceQuery(updateSequenceNumberQuery);
-    }
 
     /**
      * PUBLIC:

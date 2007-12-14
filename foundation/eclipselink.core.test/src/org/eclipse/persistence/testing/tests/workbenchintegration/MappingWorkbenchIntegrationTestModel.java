@@ -83,7 +83,6 @@ public class MappingWorkbenchIntegrationTestModel extends TestModel {
 
         suite.addTest(new BuildConstructorPorjectsDefaultReadOnlyClassesIsNotEmptyTest());
         suite.addTest(new BuildDescriptorAddMultipleTableForeignKeyFieldNameTest());
-        suite.addTest(new BuildDescriptorGetAdditionalTablePrimaryKeyFieldsTest());
         suite.addTest(new BuildDescriptorIsForInterfaceTrueTest());
         suite.addTest(new CollectionMappingIsMapPolicyTest());
         suite.addTest(new GetClassExtractionMethodNameIsNotNullTest());

@@ -135,13 +135,10 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
-import org.eclipse.persistence.mappings.ObjectTypeMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.PropertyAssociation;
-import org.eclipse.persistence.mappings.SerializedObjectMapping;
 import org.eclipse.persistence.mappings.TransformationMapping;
-import org.eclipse.persistence.mappings.TypeConversionMapping;
 import org.eclipse.persistence.mappings.TypedAssociation;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 import org.eclipse.persistence.mappings.converters.ClassInstanceConverter;
@@ -335,9 +332,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildAbstractDirectMappingDescriptor());
         addDescriptor(buildDirectToFieldMappingDescriptor());
         addDescriptor(buildXMLDirectMappingDescriptor());
-        addDescriptor(buildObjectTypeMappingDescriptor());
-        addDescriptor(buildSerializedObjectMappingDescriptor());
-        addDescriptor(buildTypeConversionMappingDescriptor());
 		try {
 			Class typesafeenumClass = (Class) new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
 			addDescriptor(buildTypesafeEnumConverterDescriptor(typesafeenumClass));
@@ -1865,18 +1859,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setJavaClass(ReadQuery.class);
         descriptor.getInheritancePolicy().setParentClass(DatabaseQuery.class);
 
-        XMLDirectMapping shouldCacheQueryResultsMapping = new XMLDirectMapping();
-        shouldCacheQueryResultsMapping
-                .setAttributeName("shouldCacheQueryResults");
-        shouldCacheQueryResultsMapping
-                .setGetMethodName("shouldCacheQueryResults");
-        shouldCacheQueryResultsMapping
-                .setSetMethodName("setShouldCacheQueryResults");
-        shouldCacheQueryResultsMapping
-                .setXPath("eclipselink:cache-query-results/text()");
-        shouldCacheQueryResultsMapping.setNullValue(Boolean.FALSE);
-        descriptor.addMapping(shouldCacheQueryResultsMapping);
-
         XMLDirectMapping maxRowsMapping = new XMLDirectMapping();
         maxRowsMapping.setAttributeName("maxRows");
         maxRowsMapping.setGetMethodName("getMaxRows");
@@ -2411,14 +2393,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
                 new XMLField("@xsi:type"));
         descriptor.getInheritancePolicy().addClassIndicator(
                 DirectToFieldMapping.class, "eclipselink:direct-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(
-                ObjectTypeMapping.class, "eclipselink:object-type-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(
-                TypeConversionMapping.class,
-                "eclipselink:type-conversion-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(
-                SerializedObjectMapping.class,
-                "eclipselink:serialized-object-mapping");
         descriptor.getInheritancePolicy().addClassIndicator(
                 TransformationMapping.class,
                 "eclipselink:transformation-mapping");
@@ -4265,16 +4239,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildObjectTypeMappingDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(ObjectTypeMapping.class);
-
-        descriptor.getInheritancePolicy().setParentClass(
-                AbstractDirectMapping.class);
-
-        return descriptor;
-    }
-
     protected ClassDescriptor buildObjectTypeConverterDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(ObjectTypeConverter.class);
@@ -5366,15 +5330,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildSerializedObjectMappingDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(SerializedObjectMapping.class);
-
-        descriptor.getInheritancePolicy().setParentClass(
-                AbstractDirectMapping.class);
-
-        return descriptor;
-    }
 
     protected ClassDescriptor buildSerializedObjectConverterDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -5437,7 +5392,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
         XMLDirectMapping attributeMethodNameMapping = new XMLDirectMapping();
         attributeMethodNameMapping.setAttributeName("attributeMethodName");
         attributeMethodNameMapping.setGetMethodName("getAttributeMethodName");
-        attributeMethodNameMapping.setSetMethodName("setAttributeMethodName");
+        attributeMethodNameMapping.setSetMethodName("setAttributeTransformation");
         attributeMethodNameMapping
                 .setXPath("eclipselink:attribute-method/text()");
         descriptor.addMapping(attributeMethodNameMapping);
@@ -5532,16 +5487,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
                 .getInheritancePolicy()
                 .setParentClass(
                         org.eclipse.persistence.internal.indirection.IndirectionPolicy.class);
-
-        return descriptor;
-    }
-
-    protected ClassDescriptor buildTypeConversionMappingDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(TypeConversionMapping.class);
-
-        descriptor.getInheritancePolicy().setParentClass(
-                AbstractDirectMapping.class);
 
         return descriptor;
     }

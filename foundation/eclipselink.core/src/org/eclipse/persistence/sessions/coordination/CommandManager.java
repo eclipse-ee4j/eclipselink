@@ -206,21 +206,4 @@ public interface CommandManager {
     */
     public boolean isCommandProcessorASession();
 
-    /**
-     * OBSOLETE:
-     * Set whether connections to remote services should be disconnected when an
-     * error occurs.
-     * @deprecated
-     * @see #TransportManager.setShouldRemoveConnectionOnError(boolean shouldRemoveConnectionOnError)
-     */
-    public void setShouldRemoveConnectionOnError(boolean shouldRemoveConnectionOnError);
-
-    /**
-     * OBSOLETE:
-     * Return whether connections to remote services should be disconnected when an
-     * error occurs.
-     * @deprecated
-     * @see #TransportManager.shouldRemoveConnectionOnError()
-     */
-    public boolean shouldRemoveConnectionOnError();
 }

@@ -308,17 +308,6 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
     }
 
     /**
-     * ADVANCED:
-     * Set the discovery manager that detects the arrival of new cluster members.
-     * Note: This should only be used in rare cases or special customized systems.
-     *       Under normal circumstances the discovery manager should not need to be set.
-     * @deprecated overwrite TransportManager.createDiscovery() method if special DiscoveryManager is needed.
-     */
-    public void setDiscoveryManager(DiscoveryManager mgr) {
-        discoveryManager = mgr;
-    }
-
-    /**
      * PUBLIC:
      * Return the converter instance used to convert between TopLink Command
      * objects and an application command format.
@@ -480,28 +469,6 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      */
     public void setShouldPropagateAsynchronously(boolean asyncMode) {
         isAsynchronous = asyncMode;
-    }
-
-    /**
-     * OBSOLETE:
-     * Set whether connections to remote services should be disconnected when an
-     * error occurs.
-     * @deprecated
-     * @see #TransportManager.setShouldRemoveConnectionOnError(boolean shouldRemoveConnectionOnError)
-     */
-    public void setShouldRemoveConnectionOnError(boolean shouldRemoveConnectionOnError) {
-        transportManager.setShouldRemoveConnectionOnError(shouldRemoveConnectionOnError);
-    }
-
-    /**
-     * OBSOLETE:
-     * Return whether connections to remote services should be disconnected when an
-     * error occurs.
-     * @deprecated
-     * @see #TransportManager.shouldRemoveConnectionOnError()
-     */
-    public boolean shouldRemoveConnectionOnError() {
-        return transportManager.shouldRemoveConnectionOnError();
     }
 
     /**

@@ -995,7 +995,7 @@ public class ProjectClassGenerator {
         if (query.isReadQuery()) {
             ReadQuery readQuery = (ReadQuery)query;
             if (readQuery.shouldCacheQueryResults()) {
-                method.addLine(queryIdentifier + ".setShouldCacheQueryResults(" + String.valueOf(readQuery.shouldCacheQueryResults()) + ");");
+                method.addLine(queryIdentifier + ".setQueryResultsCachePolicy(new QueryResultsCachePolicy());");
             }
             if (readQuery.getMaxRows() != 0) {
                 method.addLine(queryIdentifier + ".setMaxRows(" + String.valueOf(readQuery.getMaxRows()) + ");");
@@ -1475,13 +1475,10 @@ public class ProjectClassGenerator {
                 Iterator keyMappingSourceFieldsEnum = keyMapping.keySet().iterator();
                 Iterator keyMappingTargetFieldsEnum = keyMapping.values().iterator();
                 while (keyMappingSourceFieldsEnum.hasNext()) {
-                    //PRS#36802(CR#2057)  addMultipleTablePrimaryKeyFieldName is added
                     DatabaseField sourceField = (DatabaseField)keyMappingSourceFieldsEnum.next();
                     DatabaseField targetField = (DatabaseField)keyMappingTargetFieldsEnum.next();
                     if (descriptor.getMultipleTableForeignKeys().containsKey(sourceField.getTable())) {
                         method.addLine("descriptor.addForeignKeyFieldNameForMultipleTable(\"" + targetField.getQualifiedName() + "\", \"" + sourceField.getQualifiedName() + "\");");
-                    } else {
-                        method.addLine("descriptor.addMultipleTablePrimaryKeyFieldName(\"" + sourceField.getQualifiedName() + "\", \"" + targetField.getQualifiedName() + "\");");
                     }
                 }
             }
@@ -1967,24 +1964,6 @@ public class ProjectClassGenerator {
         for (Enumeration mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
             DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
             if (mapping.getClass().equals(DirectToFieldMapping.class)) {
-                sortedMappings.addElement(mapping);
-            }
-        }
-        for (Enumeration mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
-            if (mapping.isTypeConversionMapping()) {
-                sortedMappings.addElement(mapping);
-            }
-        }
-        for (Enumeration mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
-            if (mapping.isObjectTypeMapping()) {
-                sortedMappings.addElement(mapping);
-            }
-        }
-        for (Enumeration mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
-            if (mapping.isSerializedObjectMapping()) {
                 sortedMappings.addElement(mapping);
             }
         }

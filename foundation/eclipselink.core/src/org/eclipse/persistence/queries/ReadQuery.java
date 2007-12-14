@@ -96,18 +96,6 @@ public abstract class ReadQuery extends DatabaseQuery {
      */
     public abstract void cacheResult(Object object);
 
-    /**
-     * PUBLIC:
-     * Clears the current cached results, the next execution with
-     * read from the database.
-     *
-     * @deprecated
-     * @since 10.1.3
-     * @see #clearQueryResults(Session)
-     */
-    public void clearQueryResults() {
-        throw QueryException.clearQueryResultsNotSupported(this);
-    }
 
     /**
      * INTERNAL
@@ -137,8 +125,6 @@ public abstract class ReadQuery extends DatabaseQuery {
       * executions return result sets according to the current configuration of
       * query parameters. After calling this method, any previously cached result
       * set will be discarded the next time the query is executed.</P>
-      * <P>This is equivalent to calling {@link #setShouldCacheQueryResults}
-      * passing in a boolean false.</P>
       * <P>To enable this behaviour, call {@link #cacheQueryResults} or
       * {@link #setQueryResultsCachePolicy} passing in a valid QueryResultsCachePolicy.</P>
       * Note: If this method is called on a query that initially cached query results, 
@@ -435,40 +421,6 @@ public abstract class ReadQuery extends DatabaseQuery {
             arguments =  row.getValues();
         }
         session.getIdentityMapAccessorInstance().putQueryResult(this, arguments, resultFromQuery);
-    }
-
-    /**
-     * ADVANCED:
-     * Use this method to configure whether or not the query should cache the
-     * results returned by its next execution.
-     * <P>When shouldCacheQueryResults is true, this method instructs the query
-     * to cache the results returned by its next execution. All subsequent
-     * executions of this query will return this cached result set even if you
-     * specify new query parameters. This provides a performance enhancement for
-     * queries known to always return the same result set. Oracle recommends that
-     * you set this parameter to true only for such queries.</P>
-     * <P>When shouldCacheQueryResults is false, this method instructs the
-     * query not to cache results. All subsequent executions of this query return
-     * result sets according to the current configuration of query parameters.
-     * After setting this parameter to false, any previously cached result set will
-     * be discarded the next time the query is executed.</P>
-     * @param shouldCacheQueryResults boolean true, the query caches results of its
-     * next execution; false, the query does not cache results
-     *
-     * Note: If calling setShouldCacheQueryResults(false) on a query that currently
-     * caches it's results, clearQueryResults(Session) should also be called
-     * This will avoid using extra memory to store query results of a query that
-     * no longer caches.
-     *
-     * @deprecated since 10.1.3, replaced by setQueryResultsCachingPolicy(QueryResultsCachePolicy)
-     * @see #setQueryResultsCachePolicy(QueryResultsCachePolicy)
-     */
-    public void setShouldCacheQueryResults(boolean shouldCacheQueryResults) {
-        if (shouldCacheQueryResults) {
-            setQueryResultsCachePolicy(new QueryResultsCachePolicy());
-        } else {
-            setQueryResultsCachePolicy(null);
-        }
     }
 
     /**

@@ -347,95 +347,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
             throw DescriptorException.invalidMappingType(mapping);
         }
     }
-
-    /**
-     * PUBLIC:
-     * This protocol can be used to associate multiple tables with foreign key 
-     * information. The join criteria will be generated based on the fields 
-     * provided. By default TopLink associates multiple tables using a primary 
-     * key join where the primary keys fields are named the same.
-     * 
-     * @deprecated 11.1.1.0.0
-     * @see addForeignKeyFieldForMultipleTable(DatabaseField, DatabaseField)
-     */
-    public void addMultipleTableForeignKeyField(DatabaseField sourceField, DatabaseField targetField) throws DescriptorException {  
-        addMultipleTableForeignKeys(sourceField, targetField, true);  
-    }
-    
-    /**
-     * PUBLIC:
-     * This protocol can be used to associate multiple tables with foreign key 
-     * information. The join criteria will be generated based on the fields 
-     * provided. By default TopLink associates multiple tables using a primary 
-     * key join where the primary keys fields are named the same.
-     * 
-     * @deprecated 11.1.1.0.0
-     * @see addForeignKeyFieldNameForMultipleTable(String, String)
-     */
-    public void addMultipleTableForeignKeyFieldName(String sourceFieldName, String targetFieldName) throws DescriptorException {  
-        addMultipleTableForeignKeyField(new DatabaseField(sourceFieldName), new DatabaseField(targetFieldName));  
-    }
-    
-    /**
-     * INTERNAL:
-     * Add the multiple fields, if is a foreign key then add the tables to the 
-     * foreign keys ordering.
-     * 
-     * @deprecated 11.1.1.0.0
-     * @see addForeignKeyFieldsForMultipleTable(DatabaseField, DatabaseField)
-     */
-    protected void addMultipleTableForeignKeys(DatabaseField sourceField, DatabaseField targetField, boolean isForeignKey) throws DescriptorException {        
-        // Make sure that the table is fully qualified.
-        if ((!sourceField.hasTableName()) || (!targetField.hasTableName())) {
-            throw DescriptorException.multipleTablePrimaryKeyMustBeFullyQualified(this);
-        }
-        
-        DatabaseTable sourceTable = sourceField.getTable();
-        DatabaseTable targetTable = targetField.getTable();
-        setAdditionalTablePrimaryKeyFields(targetTable, sourceField, targetField);
-        
-        if (isForeignKey) {
-            getMultipleTableForeignKeys().put(sourceTable, targetTable);
-        } 
-    }
-    
-    /**
-     * INTERNAL:
-     * Add the multiple table fields, if is a foreign key then add the tables to the 
-     * foreign keys ordering.
-     * 
-     * @deprecated 11.1.1.0.0
-     * @see addForeignKeyFieldForMultipleTable(DatabaseField, DatabaseField)
-     */
-    protected void addMultipleTableForeignKeys(String fieldNameInSourceTable, String fieldNameInTargetTable, boolean isForeignKey) throws DescriptorException {        
-        addMultipleTableForeignKeys(new DatabaseField(fieldNameInSourceTable), new DatabaseField(fieldNameInTargetTable), isForeignKey);
-    }
-
-    /**
-     * PUBLIC:
-     * This protocol can be used to map the primary key fields in a multiple 
-     * table descriptor. By default TopLink assumes that all of the primary key 
-     * fields are named the same.
-     * 
-     * @deprecated 11.1.1.0.0
-     * @see addForeignKeyFieldForMultipleTable(DatabaseField, DatabaseField)
-     */
-    public void addMultipleTablePrimaryKeyField(DatabaseField sourceField, DatabaseField targetField) throws DescriptorException {
-        addMultipleTableForeignKeys(sourceField, targetField, false);
-    }
-    
-    /**
-     * PUBLIC:
-     * This protocol can be used to map the primary key field names in a 
-     * multiple table descriptor. By default TopLink assumes that all of the 
-     * primary key fields are named the same.
-     * 
-     * @deprecated 11.1.1.0.0
-     * @see addForeignKeyFieldNameForMultipleTable(String, String)
-     */
-    public void addMultipleTablePrimaryKeyFieldName(String sourceFieldName, String targetFieldName) throws DescriptorException {
-        addMultipleTablePrimaryKeyField(new DatabaseField(sourceFieldName), new DatabaseField(targetFieldName));
-    }
     
     /**
      * PUBLIC:
@@ -3350,21 +3261,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * This method is used by the TopLink XML Deployment ClassDescriptor to read and write these mappings
-     * 
-     * @deprecated 11.1.1.0.0
-     * @see setForeignKeyFieldNamesForMultipleTable(Vector)
-     */
-    public void setMultipleTableForeignKeyFieldNames(Vector associations) throws DescriptorException {
-        Enumeration foreignKeys = associations.elements();
-        while (foreignKeys.hasMoreElements()) {
-            Association association = (Association)foreignKeys.nextElement();
-            addMultipleTableForeignKeys((String)association.getKey(), (String)association.getValue(), true);
-        }
-    }
-
-    /**
-     * INTERNAL:
      *
      * @see #getMultipleTableForeignKeys
      */
@@ -3381,20 +3277,6 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.multipleTableInsertOrder = newValue;
     }
     
-    /**
-     * INTERNAL:
-     * This method is used by the TopLink XML Deployment ClassDescriptor to read and write these mappings
-     * 
-     * @deprecated 11.1.1.0.0
-     * @see setForeignKeyFieldNamesForMultipleTable(Vector)
-     */
-    public void setMultipleTablePrimaryKeyFieldNames(Vector associations) throws DescriptorException {
-        Enumeration foreignKeys = associations.elements();
-        while (foreignKeys.hasMoreElements()) {
-            Association association = (Association)foreignKeys.nextElement();
-            addMultipleTableForeignKeys((String)association.getKey(), (String)association.getValue(), true);
-        }
-    }
 
     /**
      * INTERNAL:

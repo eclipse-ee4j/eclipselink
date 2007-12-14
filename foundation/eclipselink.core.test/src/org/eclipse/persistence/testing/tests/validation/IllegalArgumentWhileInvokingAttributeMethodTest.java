@@ -37,7 +37,6 @@ public class IllegalArgumentWhileInvokingAttributeMethodTest extends ExceptionTe
         mapping = new TransformationMapping();
         mapping.setAttributeName("normalHours");
         mapping.setAttributeTransformation("invalidMethod");
-        mapping.setAttributeMethodName("invalidMethod");
         descriptor.addMapping(mapping);
         mapping.initialize((AbstractSession)getSession());
         row = new DatabaseRecord();

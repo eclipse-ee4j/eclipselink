@@ -13,6 +13,7 @@ import java.io.*;
 import java.util.*;
 import java.sql.Time;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -480,15 +481,15 @@ public class StoredProcedureGenerator {
                 definition.setName(Helper.truncate(project.getName() + "SEQ_SEL", MAX_NAME_SIZE));
                 definition.addArgument("SEQ_NAME", String.class, 100);
                 definition.addArgument("PREALLOC_SIZE", java.math.BigDecimal.class, 10);
-                definition.addStatement("UPDATE " + login.getSequenceTableName() + " SET "
-                    + login.getSequenceCounterFieldName() + " = "
-                    + login.getSequenceCounterFieldName() + " + "
+                definition.addStatement("UPDATE " + ((TableSequence)login.getDefaultSequence()).getTableName() + " SET "
+                    + ((TableSequence)login.getDefaultSequence()).getCounterFieldName() + " = "
+                    + ((TableSequence)login.getDefaultSequence()).getCounterFieldName() + " + "
                     + getSession().getPlatform().getStoredProcedureParameterPrefix() + "PREALLOC_SIZE WHERE "
-                    + login.getSequenceNameFieldName() + " = "
+                    + ((TableSequence)login.getDefaultSequence()).getNameFieldName() + " = "
                     + getSession().getPlatform().getStoredProcedureParameterPrefix() + "SEQ_NAME");
-                definition.addStatement("SELECT " + login.getSequenceCounterFieldName() + " FROM "
-                    + login.getSequenceTableName() + " WHERE "
-                    + login.getSequenceNameFieldName() + " = "
+                definition.addStatement("SELECT " + ((TableSequence)login.getDefaultSequence()).getCounterFieldName() + " FROM "
+                    + ((TableSequence)login.getDefaultSequence()).getTableName() + " WHERE "
+                    + ((TableSequence)login.getDefaultSequence()).getNameFieldName() + " = "
                     + getSession().getPlatform().getStoredProcedureParameterPrefix() + "SEQ_NAME");
                 sequenceProcedures.put("SELECT", definition);
                 writeDefinition(definition);

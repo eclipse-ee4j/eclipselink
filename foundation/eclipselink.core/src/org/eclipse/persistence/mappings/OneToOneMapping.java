@@ -315,17 +315,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         return clone;
     }
 
-    /**
-     * PUBLIC:
-     * Indicates whether the referenced object should always be joined on read queries.
-     * Joining will join the two classes tables to read all of the data in a single query.
-     * This should only be used if it is know that the related objects are always required with the source object, or indirection is not used.
-     * @deprecated since OracleAS TopLink 11<i>g</i> (11.1.1.0.0).  This class is replaced by
-     *         {@link org.eclipse.persistence.mappings.ForeignReferenceMapping.setJoinFetch(int)}
-     */
-    public void dontUseJoining() {
-        setUsesJoining(false);
-    }
 
     /**
      * INTERNAL:
@@ -912,46 +901,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         this.targetToSourceKeyFields = targetToSourceKeyFields;
     }
 
-    /**
-     * PUBLIC:
-     * Indicates whether the referenced object should always be joined on read queries.
-     * Joining will join the two classes tables to read all of the data in a single query.
-     * This should only be used if it is know that the related objects are always required with the source object, or indirection is not used.
-     * @deprecated since OracleAS TopLink 11<i>g</i> (11.1.1.0.0).  This class is replaced by
-     *         {@link org.eclipse.persistence.mappings.ForeignReferenceMapping.setJoinFetch(int)}
-     */
-    public void setUsesJoining(boolean usesJoining) {
-        if (usesJoining) {
-            setJoinFetch(INNER_JOIN);
-        } else {
-            setJoinFetch(NONE);
-        }
-
-        // For 3524579 now cache joined mappings on the object builder.
-        // This allows a user to set joining dynamically after the
-        // descriptors have been initialized.  Generally this is not
-        // supported, but since we were checking this flag in prepare after
-        // initialization some degree of backward compatibility should be
-        // provided.
-        if (getDescriptor() != null) {
-            getDescriptor().reInitializeJoinedAttributes();
-        }
-
-        // Still every query which is already prepared, like all selection
-        // queries, will not pick up this change.
-    }
-
-    /**
-     * PUBLIC:
-     * Indicates whether the referenced object should always be joined on read queries.
-     * Joining will join the two classes tables to read all of the data in a single query.
-     * This should only be used if it is know that the related objects are always required with the source object, or indirection is not used.
-     * @deprecated since OracleAS TopLink 11<i>g</i> (11.1.1.0.0).  This class is replaced by
-     *         {@link org.eclipse.persistence.mappings.ForeignReferenceMapping.getJoinFetch()}
-     */
-    public boolean shouldUseJoining() {
-        return getJoinFetch() != NONE;
-    }
 
     /**
      * PUBLIC:
@@ -978,17 +927,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         return true;
     }
 
-    /**
-     * PUBLIC:
-     * Indicates whether the referenced object should always be joined on read queries.
-     * Joining will join the two classes tables to read all of the data in a single query.
-     * This should only be used if it is know that the related objects are always required with the source object, or indirection is not used.
-     * @deprecated since OracleAS TopLink 11<i>g</i> (11.1.1.0.0).  This class is replaced by
-     *         {@link org.eclipse.persistence.mappings.ForeignReferenceMapping.setJoinFetch(int)}
-     */
-    public void useJoining() {
-        setUsesJoining(true);
-    }
 
     /**
      * INTERNAL:

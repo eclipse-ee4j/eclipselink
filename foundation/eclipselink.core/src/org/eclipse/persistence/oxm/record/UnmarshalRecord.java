@@ -295,13 +295,6 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
         this.noNamespaceSchemaLocation = location;
     }
 
-    /**
-     * @deprecated Replaced by getCurrentObject().
-     */
-    public Object getObject() {
-        return this.getCurrentObject();
-    }
-
     public StrBuffer getStringBuffer() {
         return this.stringBuffer;
     }

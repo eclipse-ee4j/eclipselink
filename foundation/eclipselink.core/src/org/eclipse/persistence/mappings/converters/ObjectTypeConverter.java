@@ -239,12 +239,6 @@ public class ObjectTypeConverter implements Converter {
         return fieldValue;
     }
 
-    /**
-     * INTERNAL:
-     */
-    public boolean isObjectTypeMapping() {
-        return true;
-    }
 
     /**
      * PUBLIC:

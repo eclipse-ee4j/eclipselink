@@ -87,24 +87,6 @@ public class MetadataProcessor {
         m_project = new MetadataProject(puInfo, session, enableLazyForOneToOne);
     }
     
-    /**
-     * INTERNAL:
-     * Called from RelationshipWeaverTestSuite. Use this constructor to avoid
-     * XML processing.
-     * @deprecated
-     */
-    public MetadataProcessor(AbstractSession session, ClassLoader loader, Collection<Class> entities, boolean enableLazyForOneToOne) {
-        m_loader = loader;
-        m_project = new MetadataProject(null, session, enableLazyForOneToOne);
-        m_session = session;
-        Collection<String> entityNames = new HashSet<String>(entities.size());
-        for (Class entity : entities) {
-            m_project.addDescriptor(new MetadataDescriptor(entity));
-            entityNames.add(entity.getName());
-        }
-        m_project.setWeavableClassNames(entityNames);
-        m_logger = new MetadataLogger(session);
-    }
     
     /**
      * INTERNAL: 

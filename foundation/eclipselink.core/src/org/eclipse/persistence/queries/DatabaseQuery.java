@@ -809,16 +809,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
         }
     }
 
-    /**
-     * OBSOLETE:
-     * Return the calls for this query.  Used for queries with multiple calls.
-     * This call contains the SQL and argument list.
-     * @deprecated
-     * @see #getDatasourceCalls();
-     */
-    public List getCalls() {
-        return getDatasourceCalls();
-    }
 
     /**
      * ADVANCED:

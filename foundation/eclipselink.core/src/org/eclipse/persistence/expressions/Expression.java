@@ -297,25 +297,6 @@ public abstract class Expression implements Serializable, Cloneable {
     }
 
     /**
-     * ADVANCED:
-     * Append the SQL as is directly into the expression.
-     * Warning: Allowing an unverified SQL string to be passed into this
-     * method makes your application vulnerable to SQL injection attacks.
-     * @deprecated since OracleAS TopLink 10<i>g</i> (9.0.4).  See {@link #prefixSQL}, {@link #postfixSQL}.
-     */
-    public Expression appendSQL(String sqlString) {
-        ExpressionOperator anOperator = new ExpressionOperator();
-        anOperator.setType(ExpressionOperator.FunctionOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        v.addElement(sqlString);
-        anOperator.printsAs(v);
-        anOperator.bePrefix();
-        anOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-
-        return anOperator.expressionFor(this);
-    }
-
-    /**
      * PUBLIC:
      * This can only be used within an ordering expression.
      * It will order the result ascending.

@@ -60,7 +60,7 @@ public class MultipleTablePrimaryKeyMustBeFullyQualifiedTest extends ExceptionTe
         descriptor.addTableName("EMPLOYEE");
         descriptor.addTableName("SALARY");
         //descriptor.addPrimaryKeyFieldName("EMP_ID");
-        descriptor.addMultipleTablePrimaryKeyFieldName("EMP_ID", "EMP_ID");
+        descriptor.addForeignKeyFieldNameForMultipleTable("EMP_ID", "EMP_ID");
 
         DirectToFieldMapping idMapping = new DirectToFieldMapping();
         idMapping.setAttributeName("id");

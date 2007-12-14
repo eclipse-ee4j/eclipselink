@@ -572,15 +572,6 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
         return getReadConnectionPool().getLogin();
     }
 
-    /**
-     * OBSOLETE:
-     * A read connection pool has be added to ecapsulate read connection pooling.
-     * @deprecated  Replaced by getReadConnectionPool().getMaxNumberOfConnections()
-     *         {@link ConnectionPool#getMaxNumberOfConnections()}
-     */
-    public int getNumberOfReadConnections() {
-        return getReadConnectionPool().getMaxNumberOfConnections();
-    }
 
     /**
      * PUBLIC:
@@ -707,21 +698,6 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      */
     public void setNumberOfNonPooledConnectionsUsed(int numberOfNonPooledConnectionsUsed) {
         this.numberOfNonPooledConnectionsUsed = numberOfNonPooledConnectionsUsed;
-    }
-
-    /**
-     * OBSOLETE:
-     * A read connection pool has be added to ecapsulate read connection pooling.
-     * @deprecated  Replaced by getReadConnectionPool().setMaxNumberOfConnections(int)
-     *         {@link ConnectionPool#setMaxNumberOfConnections(int)}
-     */
-    public void setNumberOfReadConnections(int numberOfReadConnections) {
-        if (!isConnected()) {
-            getReadConnectionPool().setMaxNumberOfConnections(numberOfReadConnections);
-            getReadConnectionPool().setMinNumberOfConnections(numberOfReadConnections);
-        } else {
-            throw ValidationException.cannotSetReadPoolSizeAfterLogin();
-        }
     }
 
     /**

@@ -52,28 +52,26 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)session;
         boolean isNew = ((backUp == null) || ((unitOfWork.isObjectNew(clone)) && (!descriptor.isAggregateDescriptor())));
 
-        if (!session.usesOldCommit()) {
-            // PERF: Provide EJB life-cycle callbacks without using events.
-            if (descriptor.hasCMPPolicy()) {
-                descriptor.getCMPPolicy().invokeEJBStore(clone, session);
-            }
-        
-            // PERF: Avoid events if no listeners.
-            if (descriptor.getEventManager().hasAnyEventListeners() && shouldRaiseEvent) {
-                // The query is built for compatability to old event mechanism.
-                WriteObjectQuery writeQuery = new WriteObjectQuery(clone.getClass());
-                writeQuery.setObject(clone);
-                writeQuery.setBackupClone(backUp);
-                writeQuery.setSession(session);
-                writeQuery.setDescriptor(descriptor);
+        // PERF: Provide EJB life-cycle callbacks without using events.
+        if (descriptor.hasCMPPolicy()) {
+            descriptor.getCMPPolicy().invokeEJBStore(clone, session);
+        }
+    
+        // PERF: Avoid events if no listeners.
+        if (descriptor.getEventManager().hasAnyEventListeners() && shouldRaiseEvent) {
+            // The query is built for compatability to old event mechanism.
+            WriteObjectQuery writeQuery = new WriteObjectQuery(clone.getClass());
+            writeQuery.setObject(clone);
+            writeQuery.setBackupClone(backUp);
+            writeQuery.setSession(session);
+            writeQuery.setDescriptor(descriptor);
 
-                descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreWriteEvent, writeQuery));
+            descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreWriteEvent, writeQuery));
 
-                if (isNew) {
-                    descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreInsertEvent, writeQuery));
-                } else {
-                    descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreUpdateEvent, writeQuery));
-                }
+            if (isNew) {
+                descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreInsertEvent, writeQuery));
+            } else {
+                descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreUpdateEvent, writeQuery));
             }
         }
         

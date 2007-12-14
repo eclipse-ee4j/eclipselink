@@ -114,13 +114,6 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      */
     public int getMaxNumberOfNonPooledConnections();
 
-    /**
-     * OBSOLETE:
-     * A read connection pool has be added to ecapsulate read connection pooling.
-     * @deprecated  Replaced by getReadConnectionPool().getMaxNumberOfConnections()
-     *         {@link ConnectionPool#getMaxNumberOfConnections()}
-     */
-    public int getNumberOfReadConnections();
 
     /**
      * PUBLIC:
@@ -158,13 +151,6 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      */
     public void setMaxNumberOfNonPooledConnections(int maxNumberOfNonPooledConnections);
 
-    /**
-     * OBSOLETE:
-     * A read connection pool has be added to ecapsulate read connection pooling.
-     * @deprecated  Replaced by getReadConnectionPool().setMaxNumberOfConnections(int)
-     *         {@link ConnectionPool#setMaxNumberOfConnections(int)}
-     */
-    public void setNumberOfReadConnections(int numberOfReadConnections);
 
     /**
      * PUBLIC:

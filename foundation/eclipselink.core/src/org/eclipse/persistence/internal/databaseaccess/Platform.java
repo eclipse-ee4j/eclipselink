@@ -58,20 +58,6 @@ public interface Platform extends Serializable, Cloneable {
     public void setConversionManager(ConversionManager conversionManager);
 
     /**
-     * OBSOLETE:
-     * This method lazy initializes the select sequence number query.  It
-     * allows for other queries to be used instead of the default one.
-     * @deprecated use ((QuerySequence)getDefaultSequence()).getSelectQuery() instead
-     */
-    public ValueReadQuery getSelectSequenceQuery();
-
-    /**
-     * OBSOLETE:
-     * @deprecated use getDefaultSequence().getPreallocationSize() instead
-     */
-    public int getSequencePreallocationSize();
-
-    /**
      * Return the qualifier for the table. Required by some
      * databases such as Oracle and DB2
      */
@@ -89,13 +75,6 @@ public interface Platform extends Serializable, Cloneable {
      */
     public ValueReadQuery getTimestampQuery();
 
-    /**
-     * OBSOLETE:
-     * This method lazy initializes the update sequence number query.  It
-     * allows for other queries to be used instead of the default one.
-     * @deprecated use ((QuerySequence)getDefaultSequence()).getUpdateQuery() instead
-     */
-    public DataModifyQuery getUpdateSequenceQuery();
 
     public boolean isAccess();
 
@@ -134,23 +113,6 @@ public interface Platform extends Serializable, Cloneable {
     public boolean isPostgreSQL();
 
     /**
-     * OBSOLETE:
-     * Can override the default query for returning the sequence numbers.
-     * This query must be a valid query that has one parameter which is
-     * the sequence name.
-     * @deprecated use ((QuerySequence)getDefaultSequence()).setSelectQuery(ValueReadQuery) instead
-     */
-    public void setSelectSequenceNumberQuery(ValueReadQuery seqQuery);
-
-    /**
-     * OBSOLETE:
-     * Set the number of sequence values to preallocate.
-     * Preallocating sequence values can greatly improve insert performance.
-     * @deprecated use getDefaultSequence().setPreallocationSize(int) instead
-     */
-    public void setSequencePreallocationSize(int size);
-
-    /**
      * Set the qualifier for the table. Required by some
      * databases such as Oracle and DB2
      */
@@ -161,14 +123,6 @@ public interface Platform extends Serializable, Cloneable {
      * See: getTimestampFromServer
      */
     public void setTimestampQuery(ValueReadQuery tsQuery);
-
-    /**
-     * OBSOLETE:
-     * This method sets the update sequence number query.  It
-     * allows for other queries to be used instead of the default one.
-     * @deprecated use ((QuerySequence)getDefaultSequence()).setUpdateQuery(DataModifyQuery) instead
-     */
-    public void setUpdateSequenceQuery(DataModifyQuery updateSequenceNumberQuery);
 
     /**
      * Add the parameter.

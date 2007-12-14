@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 
 /**
  * INTERNAL:
- * Defines a custom ObjectInputStream that is used with SerializedObjectMappings
+ * Defines a custom ObjectInputStream that is used with SerializedObjectConverter
  * to ensure the correct class loader is used.
  * BUG# 2813583
  *

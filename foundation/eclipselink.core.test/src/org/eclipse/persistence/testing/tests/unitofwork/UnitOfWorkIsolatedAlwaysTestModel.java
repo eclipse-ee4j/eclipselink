@@ -137,8 +137,6 @@ new UpdateDeepOwnershipTest((org.eclipse.persistence.testing.models.ownership.Ob
         addTest(new ConcurrentRefreshOnCloneTest());
         //CR 4094 
         addTest(new GetIdentityMapFromUOWForREADONLYClassTest());
-        //code coverage testing
-        addTest(new UnitOfWorkCommitToDatabaseOldCommitTest());
         addTest(new UnitOfWorkCommitToDatabaseTest());
         addTest(new UnitOfWorkInitializeAllIdentityMapsTest());
         //CR#4204
@@ -158,8 +156,6 @@ new UpdateDeepOwnershipTest((org.eclipse.persistence.testing.models.ownership.Ob
 
         // bug 2612331
         addTest(new CreateDeleteCreateTest());
-        //bug 3309899
-        addTest(new UnitOfWorkOldCommitIssueSQLBeforeCompletionTest());
         //bug 2612602
         //addTest(new WorkingCloneCopyPolicyTest()); - Requires non-isolated.
         addTest(new UnregisteredNewObjectOptimisticLockTest());

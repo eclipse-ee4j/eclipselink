@@ -14,6 +14,8 @@ import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
 
+import javax.persistence.spi.PersistenceUnitInfo;
+
 // JUnit imports
 import junit.framework.*;
 
@@ -29,10 +31,30 @@ import org.eclipse.persistence.testing.models.weaving.Order;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
 import org.eclipse.persistence.internal.weaving.*;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;;
 
 public class RelationshipWeaverTestSuite extends TestCase {
+    
+    class CustomizeMetadataProcessor extends org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor{
+        CustomizeMetadataProcessor(AbstractSession session, ClassLoader loader, Collection<Class> entities, boolean enableLazyForOneToOne){
+            super(null, session, loader, enableLazyForOneToOne);
+            m_loader = loader;
+            m_project = new MetadataProject(null, session, enableLazyForOneToOne);
+            m_session = session;
+            Collection<String> entityNames = new HashSet<String>(entities.size());
+            for (Class entity : entities) {
+                m_project.addDescriptor(new MetadataDescriptor(entity));
+                entityNames.add(entity.getName());
+            }
+            m_project.setWeavableClassNames(entityNames);
+            m_logger = new MetadataLogger(session);
+            
+        }
+    }
 	
 	// fixtures
     public static SimpleClassLoader setupClassLoader = null;
@@ -96,7 +118,7 @@ public class RelationshipWeaverTestSuite extends TestCase {
 		Class newOrderClass = null;
         Session session = new Project(new DatabaseLogin()).createServerSession();
         session.setLogLevel(SessionLog.OFF);
-        MetadataProcessor eap = new MetadataProcessor((AbstractSession) session, setupClassLoader, entities, true);
+        MetadataProcessor eap = new CustomizeMetadataProcessor((AbstractSession) session, setupClassLoader, entities, true);
 
         eap.processAnnotations();
         PersistenceWeaver tw = (PersistenceWeaver)

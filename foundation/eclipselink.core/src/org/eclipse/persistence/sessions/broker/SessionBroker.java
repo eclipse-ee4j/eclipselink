@@ -812,17 +812,6 @@ public class SessionBroker extends DatabaseSessionImpl {
 
     /**
      * PUBLIC:
-     * Called on a client Session Broker.  Releases all the client sessions
-     * held in this broker.  Should be used in conjunction with
-     * acquireClientSessionBroker()
-     * @deprecated Since OracleAS TopLink 10<i>g</i> (10.0.3).  Use release().
-     */
-    public void releaseClientSessionBroker() {
-        release();
-    }
-
-    /**
-     * PUBLIC:
      * set the integrityChecker. IntegrityChecker holds all the ClassDescriptor Exceptions.
      */
     public void setIntegrityChecker(IntegrityChecker integrityChecker) {

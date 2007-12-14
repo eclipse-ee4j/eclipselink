@@ -725,12 +725,6 @@ public abstract class AggregateMapping extends DatabaseMapping {
         }
         WriteObjectQuery aggregateQuery = buildAggregateWriteQuery(query, attributeValue);
 
-        // aggregates do not actually use a query to write to the database so the pre-write must be called here
-        if (query.getSession().usesOldCommit()) {
-            // in new commit process these events will be thrown at changeset calc time
-            executeEvent(DescriptorEventManager.PreWriteEvent, aggregateQuery);
-            executeEvent(DescriptorEventManager.PreInsertEvent, aggregateQuery);
-        }
         getQueryManager(attributeValue, query.getSession()).preInsert(aggregateQuery);
     }
 

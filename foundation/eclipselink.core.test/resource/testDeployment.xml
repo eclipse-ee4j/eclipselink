@@ -414,7 +414,7 @@
                <eclipselink:set-method>setSsn</eclipselink:set-method>
                <eclipselink:field table="HOLDER" name="SSN" xsi:type="eclipselink:column"/>
             </eclipselink:attribute-mapping>
-            <eclipselink:attribute-mapping xsi:type="eclipselink:object-type-mapping">
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
                <eclipselink:attribute-name>sex</eclipselink:attribute-name>
                <eclipselink:get-method>getSex</eclipselink:get-method>
                <eclipselink:set-method>setSex</eclipselink:set-method>

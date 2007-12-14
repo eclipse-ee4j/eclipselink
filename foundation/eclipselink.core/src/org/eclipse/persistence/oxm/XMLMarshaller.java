@@ -772,37 +772,6 @@ public class XMLMarshaller {
     }
 
     /**
-    * PUBLIC:
-    * Convert the given object to descendants of the parent element
-    * @param object the object to marshal
-    * @param parent the node to marshal the object to
-    * @return the document which the specified object has been marshalled to
-    * @throws XMLMarshalException if an error occurred during marshalling
-    * @deprecated
-    */
-    public Document objectToXML(Object object, Node parent) throws XMLMarshalException {
-        boolean isXMLRoot = (object instanceof XMLRoot);
-        XMLDescriptor descriptor = getDescriptor(object, isXMLRoot);
-
-        String localRootName = descriptor.getDefaultRootElement();
-        if (null == localRootName) {
-            throw XMLMarshalException.defaultRootElementNotSpecified(descriptor);
-        }
-
-        AbstractSession session = xmlContext.getSession(descriptor);
-        if ((session != null) && xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
-            XMLRecord xmlRow = (XMLRecord)((XMLObjectBuilder)descriptor.getObjectBuilder()).createRecord(localRootName, parent);
-            xmlRow.setMarshaller(this);
-            return objectToXML(object, descriptor, xmlRow, isXMLRoot);
-        } else {
-            MarshalRecord marshalRecord = new NodeRecord(localRootName, parent);
-            marshalRecord.setMarshaller(this);
-            marshal(object, marshalRecord, descriptor, isXMLRoot);
-            return marshalRecord.getDocument();
-        }
-    }
-
-    /**
     * INTERNAL:
     * Convert the given object to an XML Document
     */

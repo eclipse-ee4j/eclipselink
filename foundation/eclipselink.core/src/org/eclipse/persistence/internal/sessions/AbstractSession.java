@@ -145,7 +145,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /** Used to determine If a session is in a Broker or not */
     protected boolean isInBroker;
-    protected boolean usesOldCommit;
 
     /**
      * Used to connect this session to TopLink cluster for distributed command
@@ -179,7 +178,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         // PERF - move to lazy init (3286091)
         this.numberOfActiveUnitsOfWork = 0;
         this.isInBroker = false;
-        this.usesOldCommit = false;
     }
 
     /**
@@ -234,7 +232,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public UnitOfWorkImpl acquireNonSynchronizedUnitOfWork() {
         setNumberOfActiveUnitsOfWork(getNumberOfActiveUnitsOfWork() + 1);
         UnitOfWorkImpl unitOfWork = new UnitOfWorkImpl(this);
-        unitOfWork.setUseOldCommit(this.usesOldCommit());
         if (shouldLog(SessionLog.FINER, SessionLog.TRANSACTION)) {
             log(SessionLog.FINER, SessionLog.TRANSACTION, "acquire_unit_of_work_with_argument", String.valueOf(System.identityHashCode(unitOfWork)));
         }
@@ -591,28 +588,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     public boolean compareObjectsDontMatch(Object firstObject, Object secondObject) {
         return !this.compareObjects(firstObject, secondObject);
-    }
-
-    /**
-     * ADVANCED:
-     * Return if their is an object for the primary key.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public boolean containsObjectInIdentityMap(Object domainObject) {
-        return getIdentityMapAccessorInstance().containsObjectInIdentityMap(domainObject);
-    }
-
-    /**
-     * ADVANCED:
-     * Return if their is an object for the primary key.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public boolean containsObjectInIdentityMap(Vector primaryKey, Class theClass) {
-        return getIdentityMapAccessorInstance().containsObjectInIdentityMap(primaryKey, theClass);
     }
 
     /**
@@ -1084,7 +1059,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                 if (queryException.getQuery() == null) {
                     queryException.setQuery(query);
                 }
-                if (queryException.getQueryArguments() == null) {
+                if (queryException.getQueryArgumentsRecord() == null) {
                     queryException.setQueryArguments(row);
                 }
                 if (queryException.getSession() == null) {
@@ -1268,41 +1243,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     public Map getAliasDescriptors() {
         return project.getAliasDescriptors();
-    }
-
-    /**
-     * ADVANCED:
-     * Query the cache in-memory.
-     * If the expression is too complex an exception will be thrown.
-     * @deprecated
-     */
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow) throws QueryException {
-        return getAllFromIdentityMap(selectionCriteria, theClass, translationRow, new InMemoryQueryIndirectionPolicy());
-    }
-
-    /**
-     * ADVANCED:
-     * Query the cache in-memory.
-     * If the expression is too complex an exception will be thrown.
-     * Only return objects that are invalid in the cache if specified.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException {
-        return getIdentityMapAccessorInstance().getAllFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy, shouldReturnInvalidatedObjects);
-    }
-
-    /**
-     * ADVANCED:
-     * Query the cache in-memory.
-     * If the expression is too complex an exception will be thrown.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException {
-        return getIdentityMapAccessorInstance().getAllFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy);
     }
 
     /**
@@ -1652,64 +1592,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     }
 
     /**
-     * ADVANCED:
-     * Return the object from the identity with primary and class of the given object.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object getFromIdentityMap(Object domainObject) {
-        return getIdentityMapAccessorInstance().getFromIdentityMap(domainObject);
-    }
-
-    /**
-     * ADVANCED:
-     * Return the object from the identity with the primary and class.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass) {
-        return getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, theClass);
-    }
-
-    /**
-     * ADVANCED:
-     * Return the object from the identity with the primary and class.
-     * Only return Invalidated objects if requested.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects) {
-        return getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects);
-    }
-
-    /**
-     * ADVANCED:
-     * Query the cache in-memory.
-     * If the object is not found null is returned.
-     * If the expression is too complex an exception will be thrown.
-     * @deprecated Since 4.0.1
-     */
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow) throws QueryException {
-        return getFromIdentityMap(selectionCriteria, theClass, translationRow, new InMemoryQueryIndirectionPolicy());
-    }
-
-    /**
-     * ADVANCED:
-     * Query the cache in-memory.
-     * If the object is not found null is returned.
-     * If the expression is too complex an exception will be thrown.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException {
-        return getIdentityMapAccessorInstance().getFromIdentityMap(selectionCriteria, theClass, translationRow, valueHolderPolicy);
-    }
-
-    /**
      * PUBLIC:
      * The IdentityMapAccessor is the preferred way of accessing IdentityMap funcitons
      * This will return an object which implements an interface which exposes all public
@@ -1725,17 +1607,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     public org.eclipse.persistence.internal.sessions.IdentityMapAccessor getIdentityMapAccessorInstance() {
         return identityMapAccessor;
-    }
-
-    /**
-     * INTERNAL:
-     * Required public for testing access
-     * Although this is an internal method, we suspect some customers are using it
-     * we will deprecate this method instead of removing it.
-     * @deprecated
-     */
-    public IdentityMapManager getIdentityMapManager() {
-        return getIdentityMapAccessorInstance().getIdentityMapManager();
     }
 
     /**
@@ -2081,28 +1952,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     }
 
     /**
-     * ADVANCED:
-     * Extract the write lock value from the identity map.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object getWriteLockValue(Object domainObject) {
-        return (Object)getIdentityMapAccessorInstance().getWriteLockValue(domainObject);
-    }
-
-    /**
-     * ADVANCED:
-     * Extract the write lock value from the identity map.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object getWriteLockValue(Vector primaryKey, Class theClass) {
-        return (Object)getIdentityMapAccessorInstance().getWriteLockValue(primaryKey, theClass);
-    }
-
-    /**
      * PUBLIC:
      * Allow any WARNING level exceptions that occur within TopLink to be logged and handled by the exception handler.
      */
@@ -2178,35 +2027,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         return externalTransactionController != null;
     }
 
-    /**
-     * PUBLIC:
-     * Reset the entire object cache.
-     * <p> NOTE: be careful using this method. This method blows away both this session's and its parents caches,
-     * this includes the server cache or any other cache. This throws away any objects that have been read in.
-     * Extream caution should be used before doing this because object identity will no longer
-     * be maintained for any objects currently read in.  This should only be called
-     * if the application knows that it no longer has references to object held in the cache.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void initializeAllIdentityMaps() {
-        getIdentityMapAccessor().initializeAllIdentityMaps();
-    }
-
-    /**
-     * PUBLIC:
-     * Reset the identity map for only the instances of the class.
-     * For inheritance the user must make sure that they only use the root class.
-     * Caution must be used in doing this to ensure that the objects within the identity map
-     * are not referenced from other objects of other classes or from the application.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void initializeIdentityMap(Class theClass) {
-        getIdentityMapAccessorInstance().initializeIdentityMap(theClass);
-    }
 
     /**
      * INTERNAL:
@@ -2215,21 +2035,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     public void initializeIdentityMapAccessor() {
         this.identityMapAccessor = new org.eclipse.persistence.internal.sessions.IdentityMapAccessor(this, new IdentityMapManager(this));
-    }
-
-    /**
-     * PUBLIC:
-     * Reset the entire local object cache.
-     * This throws away any objects that have been read in.
-     * Extream caution should be used before doing this because object identity will no longer
-     * be maintained for any objects currently read in.  This should only be called
-     * if the application knows that it no longer has references to object held in the cache.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void initializeIdentityMaps() {
-        getIdentityMapAccessorInstance().initializeIdentityMaps();
     }
 
     /**
@@ -2509,78 +2314,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
     }
     
-    /**
-     * PUBLIC:
-     * Used to print all the objects in the identity map of the passed in class.
-     * The output of this method will be logged to this session's SessionLog at SEVERE level.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void printIdentityMap(Class businessClass) {
-        getIdentityMapAccessorInstance().printIdentityMap(businessClass);
-    }
-
-    /**
-     * PUBLIC:
-     * Used to print all the objects in every identity map in this session.
-     * The output of this method will be logged to this session's SessionLog at SEVERE level.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void printIdentityMaps() {
-        getIdentityMapAccessorInstance().printIdentityMaps();
-    }
-
-    /**
-     * ADVANCED:
-     * Register the object with the identity map.
-     * The object must always be registered with its version number if optimistic locking is used.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object putInIdentityMap(Object domainObject) {
-        return getIdentityMapAccessorInstance().putInIdentityMap(domainObject);
-    }
-
-    /**
-     * ADVANCED:
-     * Register the object with the identity map.
-     * The object must always be registered with its version number if optimistic locking is used.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object putInIdentityMap(Object domainObject, Vector key) {
-        return getIdentityMapAccessorInstance().putInIdentityMap(domainObject, key);
-    }
-
-    /**
-     * ADVANCED:
-     * Register the object with the identity map.
-     * The object must always be registered with its version number if optimistic locking is used.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object putInIdentityMap(Object domainObject, Vector key, Object writeLockValue) {
-        return getIdentityMapAccessorInstance().putInIdentityMap(domainObject, key, writeLockValue);
-    }
-
-    /**
-     * ADVANCED:
-     * Register the object with the identity map.
-     * The object must always be registered with its version number if optimistic locking is used.
-     * The readTime may also be included in the cache key as it is constructed
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object putInIdentityMap(Object domainObject, Vector key, Object writeLockValue, long readTime) {
-        return getIdentityMapAccessorInstance().putInIdentityMap(domainObject, key, writeLockValue, readTime);
-    }
 
     /**
      * PUBLIC:
@@ -2782,29 +2515,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         setNumberOfActiveUnitsOfWork(getNumberOfActiveUnitsOfWork() - 1);
     }
 
-    /**
-     * ADVANCED:
-     * Remove the object from the object cache.
-     * Caution should be used when calling to avoid violating object identity.
-     * The application should only call this is it knows that no references to the object exist.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void removeFromIdentityMap(Object domainObject) {
-        getIdentityMapAccessorInstance().removeFromIdentityMap(domainObject);
-    }
-
-    /**
-     * ADVANCED:
-     * Remove the object from the object cache.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void removeFromIdentityMap(Vector key, Class theClass) {
-        getIdentityMapAccessorInstance().removeFromIdentityMap(key, theClass);
-    }
 
     /**
      * PUBLIC:
@@ -3114,18 +2824,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
     }
 
-    /**
-     * ADVANCED:
-     * Customers may experience errors with older code, that uses query events on commit, and 9.0.4 of TopLink.
-     * Setting this flag to true should remove those errors.  Any new code should not use this flag but
-     * instead use API on DescriptorEvent to update the values in the Objects and the
-     * UnitOfWork Change Sets as well;
-     * @deprecated
-    */
-    public void setUseOldCommit(boolean oldCommit) {
-        this.usesOldCommit = oldCommit;
-    }
-
     protected void setTransactionMutex(ConcurrencyManager transactionMutex) {
         this.transactionMutex = transactionMutex;
     }
@@ -3209,48 +2907,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         query.setObject(domainObject);
         query.setIsExecutionClone(true);
         return executeQuery(query);
-    }
-
-    /**
-     * ADVANCED:
-     * Update the write lock value in the identity map.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void updateWriteLockValue(Object domainObject, Object writeLockValue) {
-        getIdentityMapAccessorInstance().updateWriteLockValue(domainObject, writeLockValue);
-    }
-
-    /**
-     * ADVANCED:
-     * Update the write lock value in the identity map.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void updateWriteLockValue(Vector primaryKey, Class theClass, Object writeLockValue) {
-        getIdentityMapAccessorInstance().updateWriteLockValue(primaryKey, theClass, writeLockValue);
-    }
-
-    /**
-     * This should not be used, and isn't but for some reason was on the interface.
-     * This should be removed next release.
-     * @deprecated
-     */
-    public boolean usesExternalTransactionController() {
-        return accessor.usesExternalTransactionController();
-    }
-
-    /**
-     * ADVANCED:
-     * Customers may experience errors with older code, that uses query events on commit, and 9.0.4 of TopLink.
-     * Setting this flag to true should remove those errors.  Any new code should not use this flag but
-     * instead use API on DescriptorEvent to update the values in the Objects and the
-     * UnitOfWork Change Sets as well;
-    */
-    public boolean usesOldCommit() {
-        return this.usesOldCommit;
     }
 
     /**

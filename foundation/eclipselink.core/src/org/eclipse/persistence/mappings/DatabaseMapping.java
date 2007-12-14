@@ -742,14 +742,6 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
-    public boolean isObjectTypeMapping() {
-        return false;
-    }
-
-    /**
-     * INTERNAL:
-     * Related mapping should implement this method to return true.
-     */
     public boolean isOneToManyMapping() {
         return false;
     }
@@ -925,14 +917,6 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
-    public boolean isSerializedObjectMapping() {
-        return false;
-    }
-
-    /**
-     * INTERNAL:
-     * Related mapping should implement this method to return true.
-     */
     public boolean isStructureMapping() {
         return false;
     }
@@ -942,14 +926,6 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Related mapping should implement this method to return true.
      */
     public boolean isTransformationMapping() {
-        return false;
-    }
-
-    /**
-     * INTERNAL:
-     * Related mapping should implement this method to return true.
-     */
-    public boolean isTypeConversionMapping() {
         return false;
     }
 

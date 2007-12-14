@@ -101,8 +101,6 @@ public class QueryException extends ValidationException {
     public final static int TYPE_MISMATCH_BETWEEN_ATTRIBUTE_AND_CONSTANT_ON_EXPRESSION = 6091;
     public final static int MUST_INSTANTIATE_VALUEHOLDERS = 6092;
 
-    /** @deprecated since 10.1.3, no direct replacement API. */
-    public final static int MUST_BE_ONE_TO_ONE_OR_ONE_TO_MANY_MAPPING = 6093;
     public final static int PARAMETER_NAME_MISMATCH = 6094;
     public final static int CLONE_METHOD_REQUIRED = 6095;
     public final static int CLONE_METHOD_INACCESSIBLE = 6096;
@@ -476,14 +474,6 @@ public class QueryException extends ValidationException {
      */
     public DatabaseQuery getQuery() {
         return query;
-    }
-
-    /**
-     * OBSOLETE:
-     * @deprecated    Replaced by {@link #getQueryArgumentsRecord()}
-     */
-    public Record getQueryArguments() {
-        return queryArguments;
     }
 
     /**

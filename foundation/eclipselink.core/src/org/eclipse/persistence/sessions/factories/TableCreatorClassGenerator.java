@@ -16,6 +16,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.internal.codegen.*;
 import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.sequencing.TableSequence;;
 
 /**
  * <p><b>Purpose</b>: Allow for a class storing a TopLink table creator's tables (meta-data) to be generated.
@@ -155,9 +156,9 @@ public class TableCreatorClassGenerator {
         method.addLine("// Configuration properties.");
         method.addLine("login.setUsesNativeSequencing(" + login.shouldUseNativeSequencing() + ");");
         if (!login.shouldUseNativeSequencing()) {
-            method.addLine("login.setSequenceTableName(\"" + login.getSequenceTableName() + "\");");
-            method.addLine("login.setSequenceNameFieldName(\"" + login.getSequenceNameFieldName() + "\");");
-            method.addLine("login.setSequenceCounterFieldName(\"" + login.getSequenceCounterFieldName() + "\");");
+            method.addLine("login.setSequenceTableName(\"" + ((TableSequence)login.getDefaultSequence()).getTableName() + "\");");
+            method.addLine("login.setSequenceNameFieldName(\"" + ((TableSequence)login.getDefaultSequence()).getNameFieldName() + "\");");
+            method.addLine("login.setSequenceCounterFieldName(\"" + ((TableSequence)login.getDefaultSequence()).getCounterFieldName() + "\");");
         }
         method.addLine("login.setShouldBindAllParameters(" + login.shouldBindAllParameters() + ");");
         method.addLine("login.setShouldCacheAllStatements(" + login.shouldCacheAllStatements() + ");");

@@ -209,26 +209,6 @@ public class DatabaseLogin extends DatasourceLogin {
     }
 
     /**
-     * OBSOLETE:
-     * TopLink can be configured to use a sequence table
-     * or native sequencing to generate unique object IDs.
-     * Native sequencing uses the ID generation service provided by the database
-     * (e.g. SEQUENCE objects on Oracle and IDENTITY columns on Sybase).
-     * By default a sequence table is used. Using a sequence table is recommended
-     * as it supports preallocation.
-     * (Native sequencing on Sybase/SQL Server/Informix does not support preallocation.
-     * Preallocation can be supported on Oracle by setting the increment size of the
-     * SEQUENCE object to match the preallocation size.)
-     * @deprecated use setDefaultSequence(Sequence) instead, sequence could be:
-     * sequence = new TableSequence();
-     * sequence = new UnaryTableSequence();
-     * ....
-     */
-    public void dontUseNativeSequencing() {
-        setUsesNativeSequencing(false);
-    }
-
-    /**
      * PUBLIC:
      * TopLink can be configured to use database-specific SQL grammar,
      * as opposed to the JDBC standard grammar.
@@ -379,38 +359,6 @@ public class DatabaseLogin extends DatasourceLogin {
         return getPlatform().getPingSQL();
     }
     
-    /**
-     * OBSOLETE:
-     * Return the name of the column in the TopLink sequence table
-     * that holds the current value for a given sequence (e.g. "SEQ_COUNT").
-     * TopLink uses the sequence table to generate unique object IDs.
-     * @deprecated use ((TableSequence)getDefaultSequence()).getCounterFieldName() instead
-     */
-    public String getSequenceCounterFieldName() {
-        return getPlatform().getSequenceCounterFieldName();
-    }
-
-    /**
-     * OBSOLETE:
-     * Return the name of the column in the TopLink sequence table
-     * that holds the name for a given sequence (e.g. "SEQ_NAME").
-     * TopLink uses the sequence table to generate unique object IDs.
-     * @deprecated use ((TableSequence)getDefaultSequence()).getNameFieldName() instead
-     */
-    public String getSequenceNameFieldName() {
-        return getPlatform().getSequenceNameFieldName();
-    }
-
-    /**
-     * OBSOLETE:
-     * Return the the qualified name of the TOPLink sequence table.
-     * @deprecated use ((TableSequence)getDefaultSequence()).getQualifiedTableName() instead
-     */
-
-    //CR#2407  This method is added to include table qualifier. 
-    public String getQualifiedSequenceTableName() {
-        return getPlatform().getQualifiedSequenceTableName();
-    }
 
     /**
      * PUBLIC:
@@ -422,16 +370,6 @@ public class DatabaseLogin extends DatasourceLogin {
      */
     public int getQueryRetryAttemptCount() {
         return queryRetryAttemptCount;
-    }
-
-    /**
-     * OBSOLETE:
-     * Return the name of the TopLink sequence table.
-     * TopLink uses a sequence table to generate unique object IDs.
-     * @deprecated use ((TableSequence)getDefaultSequence()).getTableName() instead
-     */
-    public String getSequenceTableName() {
-        return getPlatform().getSequenceTableName();
     }
 
     /**
@@ -777,17 +715,6 @@ public class DatabaseLogin extends DatasourceLogin {
         getDefaultConnector().setDatabaseURL(databaseURL);
     }
 
-    /**
-     * OBSOLETE:
-     * This API canot be used with a J2EE DataSource.
-     * The data source name is required if connecting through ODBC (JDBC-ODBC, etc.).
-     * This is the ODBC name given in the ODBC Data Source Administrator.
-     * This is just the database part of the URL.
-     * @deprecated since 10.1.3 replaced by {@link #setODBCDataSourceName(String)}
-     */
-    public void setDataSourceName(String dataSourceName) {
-        setODBCDataSourceName(dataSourceName);
-    }
     
     /**
      * PUBLIC:
@@ -870,37 +797,6 @@ public class DatabaseLogin extends DatasourceLogin {
         getPlatform().setMaxBatchWritingSize(maxBatchWritingSize);
     }
 
-    /**
-     * OBSOLETE:
-     * Set the name of the column in the TopLink sequence table
-     * that holds the current value for a given sequence (e.g. "SEQ_COUNT").
-     * TopLink uses the sequence table to generate unique object IDs.
-     * @deprecated use ((TableSequence)getDefaultSequence()).setCounterFieldName(String) instead
-     */
-    public void setSequenceCounterFieldName(String name) {
-        getPlatform().setSequenceCounterFieldName(name);
-    }
-
-    /**
-     * OBSOLETE:
-     * Set the name of the column in the TopLink sequence table
-     * that holds the name for a given sequence (e.g. "SEQ_NAME").
-     * TopLink uses the sequence table to generate unique object IDs.
-     * @deprecated use ((TableSequence)getDefaultSequence()).setNameFieldName(String) instead
-     */
-    public void setSequenceNameFieldName(String name) {
-        getPlatform().setSequenceNameFieldName(name);
-    }
-
-    /**
-     * OBSOLETE:
-     * Set the name of the TopLink sequence table.
-     * TopLink uses a sequence table to generate unique object IDs.
-     * @deprecated use ((TableSequence)getDefaultSequence()).setTableName(String) instead
-     */
-    public void setSequenceTableName(String name) {
-        getPlatform().setSequenceTableName(name);
-    }
 
     /**
      * PUBLIC:
@@ -1012,14 +908,6 @@ public class DatabaseLogin extends DatasourceLogin {
         getPlatform().setUsesBatchWriting(value);
     }
 
-    /**
-     * OBSOLETE:
-     * @deprecated replaced by setUsesByteArrayBinding(boolean)
-     * @see #setUsesByteArrayBinding(boolean)
-     */
-    public void setUsesBinding(boolean value) {
-        setUsesByteArrayBinding(value);
-    }
 
     /**
      * PUBLIC:
@@ -1042,28 +930,6 @@ public class DatabaseLogin extends DatasourceLogin {
      */
     public void setUsesJDBCBatchWriting(boolean usesJDBCBatchWriting) {
         getPlatform().setUsesJDBCBatchWriting(usesJDBCBatchWriting);
-    }
-
-    /**
-     * OBSOLETE:
-     * TopLink can be configured to use a sequence table,
-     * or native sequencing to generate unique object ids.
-     * Native sequencing uses the id generation service provided by the database,
-     * such as "sequence" objects on Oracle and "identity" columns on Sybase.
-     * By default a sequence table is used and suggested to be used as it allows for sequence
-     * Preallocation which cannot be done through native sequencing.
-     * @deprecated use setDefaultSequence(Sequence) instead, sequence could be:
-     * sequence = new TableSequence();
-     * sequence = new UnaryTableSequence();
-     * sequence = new NativeSequence();
-     * ...
-     */
-    public void setUsesNativeSequencing(boolean useNativeSequencing) {
-        if(!shouldUseNativeSequencing() && useNativeSequencing) {
-            getPlatform().setDefaultSequence(new NativeSequence(getPlatform().getDefaultSequence().getName(), getPlatform().getDefaultSequence().getPreallocationSize()));
-        } else if(shouldUseNativeSequencing() && !useNativeSequencing) {
-            getPlatform().setDefaultSequence(new TableSequence(getPlatform().getDefaultSequence().getName(), getPlatform().getDefaultSequence().getPreallocationSize()));
-        }
     }
 
     /**

@@ -572,30 +572,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         setRealAttributeValueInObject(object, remoteAttributeValue);
     }
 
-    /**
-     * INTERNAL:
-     * Return the ordering.
-     * Used for Workbench integration.
-     * @deprecated
-     * @see #getOrderByQueryKeyExpressions()
-     */
-    public String getAscendingOrderByQueryKey() {
-        if ((getSelectionQuery() == null) || (!getSelectionQuery().isReadAllQuery())) {
-            return null;
-        }
-
-        Vector orderExpressions = ((ReadAllQuery)getSelectionQuery()).getOrderByExpressions();
-        if (orderExpressions.isEmpty()) {
-            return null;
-        }
-
-        Expression orderExpression = (Expression)orderExpressions.firstElement();
-        if ((!orderExpression.isFunctionExpression()) || (((FunctionExpression)orderExpression).getOperator().getSelector() != ExpressionOperator.Ascending) || (!((FunctionExpression)orderExpression).getBaseExpression().isQueryKeyExpression())) {
-            return null;
-        }
-
-        return ((QueryKeyExpression)((FunctionExpression)orderExpression).getBaseExpression()).getName();
-    }
 
     /**
      * INTERNAL:
@@ -612,30 +588,6 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         return deleteAllQuery;
     }
 
-    /**
-     * INTERNAL:
-     * Return the ordering.
-     * Used for Workbench integration.
-     * @deprecated
-     * @see #getOrderByQueryKeyExpressions()
-     */
-    public String getDescendingOrderByQueryKey() {
-        if ((getSelectionQuery() == null) || (!getSelectionQuery().isReadAllQuery())) {
-            return null;
-        }
-
-        Vector orderExpressions = ((ReadAllQuery)getSelectionQuery()).getOrderByExpressions();
-        if (orderExpressions.isEmpty()) {
-            return null;
-        }
-
-        Expression orderExpression = (Expression)orderExpressions.firstElement();
-        if ((!orderExpression.isFunctionExpression()) || (((FunctionExpression)orderExpression).getOperator().getSelector() != ExpressionOperator.Descending) || (!((FunctionExpression)orderExpression).getBaseExpression().isQueryKeyExpression())) {
-            return null;
-        }
-
-        return ((QueryKeyExpression)((FunctionExpression)orderExpression).getBaseExpression()).getName();
-    }
 
     /**
      * INTERNAL:

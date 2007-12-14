@@ -290,18 +290,6 @@ public class SessionManager {
     /**
      * PUBLIC:
      * Return the session by name, loading the configuration from the file
-     * specified in the xmlLoader. Provide the class loader for loading the
-     * project, the configuration file and the deployed classes.
-     * @deprecated since OracleAS TopLink 10<i>g</i> (10.1.3).  Replaced by
-     *         {@link #getSession(XMLSessionConfigLoader, String, ClassLoader)}
-     */
-    public AbstractSession getSession(XMLLoader xmlLoader, String sessionName, ClassLoader objectClassLoader) {
-        return getSession(xmlLoader, sessionName, objectClassLoader, true, false);
-    }
-
-    /**
-     * PUBLIC:
-     * Return the session by name, loading the configuration from the file
      * specified in the XMLSessionConfigLoader. Provide the class loader for
      * loading the project, the configuration file and the deployed classes.
      * This method will cause the class loader to be compared with the classloader
@@ -318,55 +306,6 @@ public class SessionManager {
         return getSession(loader);
     }
 
-    /**
-     * PUBLIC:
-     * Return the session by name, loading the configuration from the file
-     * specified in the xmlLoader. Provide the class loader for loading the
-     * project, the configuration file and the deployed classes. Pass in true for
-     * shouldLoginSession if the session returned should be logged in before
-     * returned otherwise false. Pass in true for shouldRefreshSession if the
-     * xmlLoader should reparse the configuration file for new sessions. False,
-     * will cause the XMLLoader not to parse the file again.
-     * @deprecated since OracleAS TopLink 10<i>g</i> (10.1.3).  Replaced by
-     *         {@link #getSession(XMLSessionConfigLoader, String, ClassLoader, boolean, boolean)}
-     */
-    public synchronized AbstractSession getSession(XMLLoader xmlLoader, String sessionName, ClassLoader objectClassLoader, boolean shouldLoginSession, boolean shouldRefreshSession) {
-        //Store the last loader used so that when a client simply call getSession(String) we can reuse the old loader
-        AbstractSession session = (AbstractSession)getSessions().get(sessionName);
-        if ((session == null) || shouldRefreshSession) {
-            if (session != null) {
-                if (session.isDatabaseSession() && session.isConnected()) {
-                    ((DatabaseSession)session).logout();
-                }
-                this.getSessions().remove(sessionName);
-            }
-            try {
-                if (xmlLoader == null){
-                    xmlLoader = new XMLLoader();
-                }
-                xmlLoader.load(this, objectClassLoader, shouldLoginSession, shouldRefreshSession);
-                shouldRefreshSession = false;
-                session = (AbstractSession)getSessions().get(sessionName);
-            } catch (ValidationException validationException) {
-                throw validationException;
-            }
-        }
-        if (session instanceof SessionBrokerPlaceHolder) {
-            session = processSessionBrokerPlaceHolder((SessionBrokerPlaceHolder)session, xmlLoader, objectClassLoader, shouldLoginSession, shouldRefreshSession);
-            if (session != null) {
-                getSessions().put(sessionName, session);
-            }
-        }
-
-        //Bug#4055740.  Log a message when session is null
-        if (session == null) {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, "no_session_found", sessionName, xmlLoader.getResourceName());
-        // CR#4214 
-        } else if (shouldLoginSession && !session.isConnected()) {
-            ((DatabaseSession)session).login();
-        }
-        return session;
-    }
 
     /**
      * PUBLIC:
@@ -454,10 +393,6 @@ public class SessionManager {
         
                     if (loader.load(this, loader.getClassLoader())) {
                         session = (AbstractSession)getSessions().get(loader.getSessionName());
-                    } else {
-                        // Loading from the XMLSchema failed so try with the XMLLoader.
-                        // Need to preserve the resource name from the XMLSessionConfigLoader.
-                        return getSession(new XMLLoader(loader.getResourceName()), loader.getSessionName(), loader.getClassLoader(), loader.shouldLogin(), shouldRefreshSession);
                     }
                 }
             }
@@ -504,40 +439,6 @@ public class SessionManager {
         throw exception;
     }
 
-    /**
-     * INTERNAL:
-     * @deprecated since OracleAS TopLink 10<i>g</i> (10.0.3) There is no direct replacement API.
-     */
-    public SessionBroker processSessionBrokerPlaceHolder(SessionBrokerPlaceHolder placeHolder, XMLLoader xmlLoader, ClassLoader objectClassLoader, boolean shouldLoginSession, boolean shouldRefreshSession) {
-        Iterator sessionNames = placeHolder.getSessionNamesRequired().iterator();
-        while (sessionNames.hasNext()) {
-            String name = (String)sessionNames.next();
-
-            // SM CR#4214.  First disable autologin for sub-sessions; broker must handle this when it logs itself in.
-            Session session = this.getSession(xmlLoader, name, objectClassLoader, false, shouldRefreshSession);
-            if (session != null) {
-                sessionNames.remove();
-                placeHolder.getSessionCompleted().add(session);
-            } else {
-                return null;
-            }
-        }
-        SessionBroker broker = new SessionBroker();
-        broker.setName(placeHolder.getName());
-        Iterator sessions = placeHolder.getSessionCompleted().iterator();
-        while (sessions.hasNext()) {
-            Session session = (Session)sessions.next();
-            broker.registerSession(session.getName(), session);
-        }
-        broker.setCacheSynchronizationManager(placeHolder.getCacheSynchronizationManager());
-        broker.setEventManager(placeHolder.getEventManager());
-        broker.setExceptionHandler(placeHolder.getExceptionHandler());
-        broker.setProfiler(placeHolder.getProfiler());
-        broker.setExternalTransactionController(placeHolder.getExternalTransactionController());
-        //		broker.setShouldLogMessages(placeHolder.shouldLogMessages());
-        broker.setSessionLog(placeHolder.getSessionLog());
-        return broker;
-    }
 
     /**
      * INTERNAL:
@@ -576,23 +477,4 @@ public class SessionManager {
         manager = theManager;
     }
 
-    /**
-     * PUBLIC:
-     * Get the shouldPerformDTDValidation flag.
-     * @deprecated since OracleAS TopLink 10<i>g</i> (10.1.3).  Replaced by
-     *         {@link #shouldUseSchemaValidation()}
-     */
-    public static boolean shouldPerformDTDValidation() {
-        return shouldPerformDTDValidation;
-    }
-
-    /**
-     * PUBLIC:
-     * Set the shouldPerformDTDValidation flag.
-     * @deprecated since OracleAS TopLink 10<i>g</i> (10.1.3).  Replaced by
-     *         {@link #setShouldUseSchemaValidation(boolean)}
-     */
-    public static void setShouldPerformDTDValidation(boolean shouldPerformDTDValidation0) {
-        shouldPerformDTDValidation = shouldPerformDTDValidation0;
-    }
 }

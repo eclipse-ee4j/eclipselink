@@ -1017,18 +1017,6 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         attributeTransformerClassName = className;
     }
  
-    /**
-     * PUBLIC:
-     * To set the attribute transformation method name.
-     * @deprecated replaced by setAttributeTransformation(String)
-     */
-    public void setAttributeMethodName(String aMethodName) {
-        if ((aMethodName != null) && (aMethodName != "")) {
-            setAttributeTransformer(new MethodBasedAttributeTransformer(aMethodName));
-        } else {
-            setAttributeTransformer(null);
-        }
-    }
  
     /**
      * PUBLIC:
@@ -1038,7 +1026,11 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * record to set into the object, but should not set the value on the object, only return it.
      */
     public void setAttributeTransformation(String methodName) {
-        setAttributeMethodName(methodName);
+        if ((methodName != null) && (methodName != "")) {
+            setAttributeTransformer(new MethodBasedAttributeTransformer(methodName));
+        } else {
+            setAttributeTransformer(null);
+        }
     }
  
     /**

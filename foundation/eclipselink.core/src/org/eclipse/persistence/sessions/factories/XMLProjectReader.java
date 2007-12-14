@@ -76,15 +76,6 @@ public class XMLProjectReader {
         return read(fileOrResourceName, null);
     }
 
-    /**
-     * INTERNAL:
-     * This should not be used.
-     * @deprecated
-     * @see read(String, ClassLoader)
-     */
-    public static Project readWithClassLoader(String fileOrResourceName, ClassLoader classLoader) {
-        return read(fileOrResourceName, classLoader);
-    }
 
     /**
      * PUBLIC:

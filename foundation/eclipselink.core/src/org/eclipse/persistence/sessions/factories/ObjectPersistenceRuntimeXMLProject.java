@@ -118,13 +118,10 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
-import org.eclipse.persistence.mappings.ObjectTypeMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.PropertyAssociation;
-import org.eclipse.persistence.mappings.SerializedObjectMapping;
 import org.eclipse.persistence.mappings.TransformationMapping;
-import org.eclipse.persistence.mappings.TypeConversionMapping;
 import org.eclipse.persistence.mappings.TypedAssociation;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 import org.eclipse.persistence.mappings.converters.ClassInstanceConverter;
@@ -289,9 +286,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         addDescriptor(buildAbstractDirectMappingDescriptor());
         addDescriptor(buildDirectToFieldMappingDescriptor());
         addDescriptor(buildXMLDirectMappingDescriptor());
-        addDescriptor(buildObjectTypeMappingDescriptor());
-        addDescriptor(buildSerializedObjectMappingDescriptor());
-        addDescriptor(buildTypeConversionMappingDescriptor());
 		try {
 			Class typesafeenumClass = (Class) new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
 			addDescriptor(buildTypesafeEnumConverterDescriptor(typesafeenumClass));
@@ -1485,14 +1479,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         descriptor.setJavaClass(ReadQuery.class);
         descriptor.getInheritancePolicy().setParentClass(DatabaseQuery.class);
 
-        XMLDirectMapping shouldCacheQueryResultsMapping = new XMLDirectMapping();
-        shouldCacheQueryResultsMapping.setAttributeName("shouldCacheQueryResults");
-        shouldCacheQueryResultsMapping.setGetMethodName("shouldCacheQueryResults");
-        shouldCacheQueryResultsMapping.setSetMethodName("setShouldCacheQueryResults");
-        shouldCacheQueryResultsMapping.setXPath("toplink:cache-query-results/text()");
-        shouldCacheQueryResultsMapping.setNullValue(Boolean.FALSE);
-        descriptor.addMapping(shouldCacheQueryResultsMapping);
-
         XMLDirectMapping maxRowsMapping = new XMLDirectMapping();
         maxRowsMapping.setAttributeName("maxRows");
         maxRowsMapping.setGetMethodName("getMaxRows");
@@ -1916,9 +1902,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
 
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
         descriptor.getInheritancePolicy().addClassIndicator(DirectToFieldMapping.class, "toplink:direct-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(ObjectTypeMapping.class, "toplink:object-type-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(TypeConversionMapping.class, "toplink:type-conversion-mapping");
-        descriptor.getInheritancePolicy().addClassIndicator(SerializedObjectMapping.class, "toplink:serialized-object-mapping");
         descriptor.getInheritancePolicy().addClassIndicator(TransformationMapping.class, "toplink:transformation-mapping");
         descriptor.getInheritancePolicy().addClassIndicator(OneToOneMapping.class, "toplink:one-to-one-mapping");
         descriptor.getInheritancePolicy().addClassIndicator(VariableOneToOneMapping.class, "toplink:variable-one-to-one-mapping");
@@ -2426,7 +2409,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
                         association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
                         association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
                     }
-                    mapping.setMultipleTablePrimaryKeyFieldNames(associations);
+                    mapping.setForeignKeyFieldNamesForMultipleTable(associations);
                 }
             });
         multipleTablesPrimaryKey.setAttributeName("multipleTablesPrimaryKeys");
@@ -2457,7 +2440,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
                         association.setKey(((DatabaseField)association.getKey()).getQualifiedName());
                         association.setValue(((DatabaseField)association.getValue()).getQualifiedName());
                     }
-                    mapping.setMultipleTableForeignKeyFieldNames(associations);
+                    mapping.setForeignKeyFieldNamesForMultipleTable(associations);
                 }
             });
         multipleTables.setAttributeName("multipleTablesForeignKeys");
@@ -3385,14 +3368,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildObjectTypeMappingDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(ObjectTypeMapping.class);
-
-        descriptor.getInheritancePolicy().setParentClass(AbstractDirectMapping.class);
-
-        return descriptor;
-    }
 
     protected ClassDescriptor buildObjectTypeConverterDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -4295,14 +4270,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildSerializedObjectMappingDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(SerializedObjectMapping.class);
-
-        descriptor.getInheritancePolicy().setParentClass(AbstractDirectMapping.class);
-
-        return descriptor;
-    }
 
     protected ClassDescriptor buildSerializedObjectConverterDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -4361,7 +4328,7 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         XMLDirectMapping attributeMethodNameMapping = new XMLDirectMapping();
         attributeMethodNameMapping.setAttributeName("attributeMethodName");
         attributeMethodNameMapping.setGetMethodName("getAttributeMethodName");
-        attributeMethodNameMapping.setSetMethodName("setAttributeMethodName");
+        attributeMethodNameMapping.setSetMethodName("setAttributeTransformation");
         attributeMethodNameMapping.setXPath("toplink:attribute-method/text()");
         descriptor.addMapping(attributeMethodNameMapping);
 
@@ -4444,14 +4411,6 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         return descriptor;
     }
 
-    protected ClassDescriptor buildTypeConversionMappingDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(TypeConversionMapping.class);
-
-        descriptor.getInheritancePolicy().setParentClass(AbstractDirectMapping.class);
-
-        return descriptor;
-    }
 
     protected ClassDescriptor buildTypesafeEnumConverterDescriptor(Class jaxbTypesafeEnumConverter) {
         XMLDescriptor descriptor = new XMLDescriptor();

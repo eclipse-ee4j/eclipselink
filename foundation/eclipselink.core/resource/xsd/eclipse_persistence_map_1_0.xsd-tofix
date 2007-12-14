@@ -2686,42 +2686,6 @@
             <xsd:extension base="direct-mapping" />
         </xsd:complexContent>
     </xsd:complexType>
-    <xsd:complexType name="object-type-mapping">
-        <xsd:annotation>
-            <xsd:documentation>
-                Defines a mapping from a finite set of simple object
-                values to a set of data values. This makes use of the
-                object-type-converter.
-            </xsd:documentation>
-        </xsd:annotation>
-        <xsd:complexContent>
-            <xsd:extension base="direct-mapping" />
-        </xsd:complexContent>
-    </xsd:complexType>
-    <xsd:complexType name="type-conversion-mapping">
-        <xsd:annotation>
-            <xsd:documentation>
-                Defines a mapping from object type to a data type that
-                requires simple conversion. This makes use of the
-                type-conversion-converter.
-            </xsd:documentation>
-        </xsd:annotation>
-        <xsd:complexContent>
-            <xsd:extension base="direct-mapping" />
-        </xsd:complexContent>
-    </xsd:complexType>
-    <xsd:complexType name="serialized-object-mapping">
-        <xsd:annotation>
-            <xsd:documentation>
-                Defines a mapping that serializes the object value into
-                a binary data value. This makes use of the
-                serialized-object-converter.
-            </xsd:documentation>
-        </xsd:annotation>
-        <xsd:complexContent>
-            <xsd:extension base="direct-mapping" />
-        </xsd:complexContent>
-    </xsd:complexType>
     <xsd:complexType name="field-transformation" abstract="true">
         <xsd:annotation>
             <xsd:documentation>
@@ -3964,16 +3928,6 @@
         <xsd:complexContent>
             <xsd:extension base="database-query">
                 <xsd:sequence>
-                    <xsd:element name="cache-query-results"
-                        type="xsd:boolean" default="false" minOccurs="0">
-                        <xsd:annotation>
-                            <xsd:documentation>
-                                Specifies if the query should cache the
-                                query results to avoid future
-                                executions.
-                            </xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
                     <xsd:element name="max-rows" type="xsd:integer"
                         minOccurs="0">
                         <xsd:annotation>

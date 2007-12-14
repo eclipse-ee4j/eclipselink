@@ -127,23 +127,6 @@ public interface Session {
      */
     public void clearProfile();
 
-    /**
-     * ADVANCED:
-     * Return if their is an object for the primary key.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public boolean containsObjectInIdentityMap(Object domainObject);
-
-    /**
-     * ADVANCED:
-     * Return if their is an object for the primary key.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public boolean containsObjectInIdentityMap(Vector primaryKey, Class theClass);
 
     /**
      * PUBLIC:
@@ -374,25 +357,6 @@ public interface Session {
      */
     public ClassDescriptor getClassDescriptorForAlias(String alias);
 
-    /**
-     * ADVANCED:
-     * Query the cache in-memory.
-     * If the expression is too complex an exception will be thrown.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException;
-
-    /**
-     * ADVANCED:
-     * Query the cache in-memory.
-     * If the expression is too complex an exception will be thrown.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow) throws QueryException;
 
     /**
      * ADVANCED:
@@ -469,45 +433,6 @@ public interface Session {
      */
     public ExternalTransactionController getExternalTransactionController();
 
-    /**
-     * ADVANCED:
-     * Return the object from the identity with primary and class of the given object.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object getFromIdentityMap(Object domainObject);
-
-    /**
-     * ADVANCED:
-     * Return the object from the identity with the primary and class.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass);
-
-    /**
-     * ADVANCED:
-     * Query the cache in-memory.
-     * If the object is not found null is returned.
-     * If the expression is too complex an exception will be thrown.
-     * @deprecated Since 3.6.3
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow) throws QueryException;
-
-    /**
-     * ADVANCED:
-     * Query the cache in-memory.
-     * If the object is not found null is returned.
-     * If the expression is too complex an exception will be thrown.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException;
 
     /**
      * PUBLIC:
@@ -641,23 +566,6 @@ public interface Session {
      */
     public SessionLog getSessionLog();
 
-    /**
-     * ADVANCED:
-     * Extract the write lock value from the identity map.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object getWriteLockValue(Object domainObject);
-
-    /**
-     * ADVANCED:
-     * Extract the write lock value from the identity map.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object getWriteLockValue(Vector primaryKey, Class theClass);
 
     /**
      * PUBLIC:
@@ -691,44 +599,6 @@ public interface Session {
      */
     public boolean hasExternalTransactionController();
 
-    /**
-     * PUBLIC:
-     * Reset the entire object cache.
-     * <p> NOTE: be careful using this method. This method blows away both this session's and its parents caches,
-     * this includes the server cache or any other cache. This throws away any objects that have been read in.
-     * Extream caution should be used before doing this because object identity will no longer
-     * be maintained for any objects currently read in.  This should only be called
-     * if the application knows that it no longer has references to object held in the cache.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void initializeAllIdentityMaps();
-
-    /**
-     * PUBLIC:
-     * Reset the identity map for only the instances of the class.
-     * For inheritence the user must make sure that they only use the root class.
-     * Caution must be used in doing this to ensure that the objects within the identity map
-     * are not referenced from other objects of other classes or from the application.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void initializeIdentityMap(Class theClass);
-
-    /**
-     * PUBLIC:
-     * Reset the entire object cache.
-     * This throws away any objects that have been read in.
-     * Extream caution should be used before doing this because object identity will no longer
-     * be maintained for any objects currently read in.  This should only be called
-     * if the application knows that it no longer has references to object held in the cache.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void initializeIdentityMaps();
 
     /**
      * PUBLIC:
@@ -807,55 +677,6 @@ public interface Session {
      */
     public void logMessage(String message);
 
-    /**
-     * PUBLIC:
-     * Used to print all the objects in the identity map of the passed in class.
-     * The output of this method will be logged to this session's SessionLog at SEVERE level.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void printIdentityMap(Class businessClass);
-
-    /**
-     * PUBLIC:
-     * Used to print all the objects in every identity map in this session.
-     * The output of this method will be logged to this session's SessionLog at SEVERE level.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void printIdentityMaps();
-
-    /**
-     * ADVANCED:
-     * Register the object with the identity map.
-     * The object must always be registered with its version number if optimistic locking is used.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object putInIdentityMap(Object domainObject);
-
-    /**
-     * ADVANCED:
-     * Register the object with the identity map.
-     * The object must always be registered with its version number if optimistic locking is used.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object putInIdentityMap(Object domainObject, Vector key);
-
-    /**
-     * ADVANCED:
-     * Register the object with the identity map.
-     * The object must always be registered with its version number if optimistic locking is used.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public Object putInIdentityMap(Object domainObject, Vector key, Object writeLockValue);
 
     /**
      * PUBLIC:
@@ -868,17 +689,6 @@ public interface Session {
      */
     public Vector readAllObjects(Class domainClass) throws DatabaseException;
 
-    /**
-     * OBSOLETE:
-     * Read all of the instances of the class from the database returned through execution the SQL string.
-     * The SQL string must be a valid SQL select statement or selecting stored procedure call.
-     * This operation can be customized through using a ReadAllQuery.
-     * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
-     * @deprecated  Replaced by
-     *         {@link #readAllObjects(Class, Call)}
-     */
-    public Vector readAllObjects(Class domainClass, String sqlString) throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -915,18 +725,6 @@ public interface Session {
      * @see #readAllObjects(Class, Expression)
      */
     public Object readObject(Class domainClass) throws DatabaseException;
-
-    /**
-     * OBSOLETE:
-     * Read the first instance of the class from the database returned through execution the SQL string.
-     * The SQL string must be a valid SQL select statement or selecting stored procedure call.
-     * This operation can be customized through using a ReadObjectQuery.
-     * Warning: Allowing an unverified SQL string to be passed into this 
-     * method makes your application vulnerable to SQL injection attacks. 
-     * @deprecated use readObject(Class domainClass, Call aCall)
-     * @see ReadObjectQuery
-     */
-    public Object readObject(Class domainClass, String sqlString) throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -972,25 +770,6 @@ public interface Session {
      */
     public void release();
 
-    /**
-     * ADVANCED:
-     * Remove the object from the object cache.
-     * Caution should be used when calling to avoid violating object identity.
-     * The application should only call this is it knows that no references to the object exist.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void removeFromIdentityMap(Object domainObject);
-
-    /**
-     * ADVANCED:
-     * Remove the object from the object cache.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void removeFromIdentityMap(Vector key, Class theClass);
 
     /**
      * PUBLIC:
@@ -1089,30 +868,6 @@ public interface Session {
      */
     public boolean shouldLogMessages();
 
-    /**
-     * ADVANCED:
-     * Update the write lock value in the identity map.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void updateWriteLockValue(Object domainObject, Object writeLockValue);
-
-    /**
-     * ADVANCED:
-     * Update the write lock value in the identity map.
-     * @deprecated
-     * @see #getIdentityMapAccessor()
-     * @see org.eclipse.persistence.sessions.IdentityMapAccessor
-     */
-    public void updateWriteLockValue(Vector primaryKey, Class theClass, Object writeLockValue);
-
-    /**
-     * OBSOLETE:
-     * This should no longer be used.
-     * @deprecated replaced by #hasExternalTransactionController()
-     */
-    public boolean usesExternalTransactionController();
 
     /**
      * ADVANCED:

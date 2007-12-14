@@ -152,9 +152,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     //CR 3677 removed option to only throw valueHolderExceptions as this governed by
     //the InMemoryQueryIndirectionPolicy
-
-    /** @deprecated Since 4.0.1 */
-    public static final int THROW_ONLY_VALUEHOLDER_EXCEPTIONS = 2;
     public static final String LOCK_QUERIES_PROPERTY = "LockQueriesProperties";
 
     /** Used for merging dependent values without use of WL SessionAccessor */
@@ -1140,12 +1137,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Commit the changes to any objects to the parent.
      */
     public void commitRootUnitOfWork() throws DatabaseException, OptimisticLockException {
-        if (this.usesOldCommit()) {
-            commitToDatabaseOldCommit(true);
-        } else {
-            commitToDatabaseWithChangeSet(true);
-        }
-
+        commitToDatabaseWithChangeSet(true);
         // Merge after commit	
         mergeChangesIntoParent();
     }
@@ -1161,95 +1153,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         // Merge after commit	
         mergeChangesIntoParent();
-    }
-
-    /**
-     * INTERNAL:
-     * Commit the changes to any objects to the parent.
-     * @param commitTransaction false if called by writeChanges as intent is
-     * not to finalize the transaction.
-     */
-    protected void commitToDatabaseOldCommit(boolean commitTransaction) throws DatabaseException, OptimisticLockException {
-        try {
-            IdentityHashtable allObjects=null;
-            startOperationProfile(SessionProfiler.UowCommit);
-            try{
-                // The sequence numbers are assigned outside of the commit transaction.
-                // This improves concurrency, avoids deadlock and in the case of three-tier will
-                // not leave invalid cached sequences on rollback.
-                // Also must first set the commit manager active.
-                getCommitManager().setIsActive(true);
-                // This will assgin sequence numbers.
-            
-                allObjects = collectAndPrepareObjectsForOldCommit();
-
-                // Must clone because the commitManager will remove the objects from the collection
-                // as the objects are written to the database.
-                setAllClonesCollection((IdentityHashtable)allObjects.clone());
-            }catch(RuntimeException exception){
-                copyStatementsCountIntoProperties();
-                throw exception;
-            }
-
-            try {
-                //CR4202 - ported from 3.6.4
-                if (wasTransactionBegunPrematurely()) {
-                    // beginTransaction() has been already called
-                    setWasTransactionBegunPrematurely(false);
-                } else {
-                    beginTransaction();
-                }
-
-                Vector deletedObjects = new Vector();
-                if (hasDeletedObjects()) {
-                    for (Enumeration objects = getDeletedObjects().keys();
-                             objects.hasMoreElements();) {
-                        deletedObjects.addElement(objects.nextElement());
-                    }
-                }
-
-                if (shouldPerformDeletesFirst) {
-                    // This must go to the commit manager because uow overrides to do normal deletion.
-                    getCommitManager().deleteAllObjects(deletedObjects);
-
-                    // Revert all of the deleted objects, so that if the user changes them after deleting, we won't issue UPDATEs
-                    // PRS# 35901 - RMB
-                    int size = deletedObjects.size();
-                    for (int i = 0; i < size; i++) {
-                        revertObject(deletedObjects.elementAt(i));
-                    }
-
-                    // Let the commit manager figure out how to write the objects
-                    super.writeAllObjects(allObjects);
-
-                } else {
-                    // Let the commit manager figure out how to write the objects
-                    super.writeAllObjects(allObjects);
-
-                    // This must go to the commit manager because uow overrides to do normal deletion.
-                    getCommitManager().deleteAllObjects(deletedObjects);
-
-                }
-
-                // Issue prepare event.
-                getEventManager().prepareUnitOfWork();
-
-                if (commitTransaction) {
-                    commitTransaction();
-                }
-            } catch (RuntimeException exception) {
-                copyStatementsCountIntoProperties();
-                rollbackTransaction(commitTransaction);
-                if (hasExceptionHandler()) {
-                    getExceptionHandler().handleException(exception);
-                } else {
-                    throw exception;
-                }
-            }
-            endOperationProfile(SessionProfiler.UowCommit);
-        } catch (RuntimeException exception) {
-            handleException((RuntimeException)exception);
-        }
     }
 
     /**
@@ -1868,18 +1771,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         return backupClone;
     }
 
-    /**
-     * ADVANCED:
-     * This method Will Calculate the chages for the UnitOfWork.  Without assigning sequence numbers
-     * This is a Computationaly intensive operation and should be avoided unless necessary.
-     * A valid changeSet, with sequencenumbers can be collected from the UnitOfWork After the commit
-     * is complete by calling unitOfWork.getUnitOfWorkChangeSet()
-     * @deprecated since OracleAS TopLink 10<i>g</i> (10.0.3)
-     * @see #getCurrentChanges()
-     */
-    public UnitOfWorkChangeSet getChanges() {
-        return (UnitOfWorkChangeSet)getCurrentChanges();
-    }
 
     /**
      * ADVANCED:
@@ -2931,11 +2822,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_commit");
         getEventManager().preCommitUnitOfWork();
         setLifecycle(CommitPending);
-        if (usesOldCommit()) {
-            commitToDatabaseOldCommit(commitTransaction);
-        } else {
-            commitToDatabaseWithChangeSet(commitTransaction);
-        }
+        commitToDatabaseWithChangeSet(commitTransaction);
     }
 
     /**
@@ -5042,11 +4929,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         getEventManager().preCommitUnitOfWork();
         setLifecycle(CommitPending);
         try {
-            if (usesOldCommit()) {
-                commitToDatabaseOldCommit(false);
-            } else {
-                commitToDatabaseWithChangeSet(false);
-            }
+            commitToDatabaseWithChangeSet(false);
             //bug:5526260 - flush batch mechanisms
             this.writesCompleted();
         } catch (RuntimeException e) {

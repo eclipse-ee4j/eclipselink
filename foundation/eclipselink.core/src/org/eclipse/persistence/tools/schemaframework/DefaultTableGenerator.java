@@ -41,7 +41,6 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.TransformationMapping;
-import org.eclipse.persistence.mappings.TypeConversionMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.sequencing.DefaultSequence;
@@ -50,6 +49,12 @@ import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
+import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
+
 
 
 /**
@@ -303,11 +308,17 @@ public class DefaultTableGenerator {
                 buildRelationTableDefinition((ManyToManyMapping) mapping);
             } else if (mapping.isDirectCollectionMapping()) {
                 buildDirectCollectionTableDefinition((DirectCollectionMapping) mapping, desc);
-            } else if (mapping.isTypeConversionMapping()) {
-                resetFieldTypeForLOB((TypeConversionMapping) mapping);
-            } else if (mapping.isSerializedObjectMapping()) {
-                //serialized object mapping field should be BLOB/IMAGE
-                getFieldDefFromDBField(mapping.getField(), false).setType(Byte[].class);
+            } else if (mapping.isDirectToFieldMapping()) {
+                Converter converter = ((DirectToFieldMapping)mapping).getConverter();
+                if (converter != null) {
+                    if(converter instanceof TypeConversionConverter) {
+                        resetFieldTypeForLOB((DirectToFieldMapping)mapping);
+                    }
+                    if(converter instanceof SerializedObjectConverter) {
+                        //serialized object mapping field should be BLOB/IMAGE
+                        getFieldDefFromDBField(mapping.getField(), false).setType(Byte[].class);
+                    }
+                }
             } else if (mapping.isAggregateCollectionMapping()) {
                 //need to figure out the target foreign key field and add it into the aggregate target table
                 addForeignkeyFieldToAggregateTargetTable((AggregateCollectionMapping) mapping);
@@ -405,12 +416,12 @@ public class DefaultTableGenerator {
     /**
      * Reset field type to use BLOB/CLOB with type conversion mapping fix for 4k oracle thin driver bug.
      */
-    private void resetFieldTypeForLOB(TypeConversionMapping mapping) {
-        if (mapping.getFieldClassificationName().equals("java.sql.Blob")) {
+    private void resetFieldTypeForLOB(DirectToFieldMapping mapping) {
+        if (mapping.getFieldClassification().getName().equals("java.sql.Blob")) {
             //allow the platform to figure out what database field type gonna be used. 
             //For example, Oracle9 will generate BLOB type, SQL Server generats IMAGE.
             getFieldDefFromDBField(mapping.getField(), false).setType(Byte[].class);
-        } else if (mapping.getFieldClassificationName().equals("java.sql.Clob")) {
+        } else if (mapping.getFieldClassification().getName().equals("java.sql.Clob")) {
             //allow the platform to figure out what database field type gonna be used. 
             //For example, Oracle9 will generate CLOB type. SQL Server generats TEXT.
             getFieldDefFromDBField(mapping.getField(), false).setType(Character[].class);
