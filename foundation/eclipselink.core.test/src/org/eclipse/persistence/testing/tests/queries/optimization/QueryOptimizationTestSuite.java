@@ -118,6 +118,7 @@ public class QueryOptimizationTestSuite extends TestSuite {
         addTest(new BatchReadingBatchReadExpressionTest());
         addTest(new BatchReadingWithInvalidQueryKeyTest());
         addTest(new BatchReadValueholderTest());
+        addTest(new BatchReadingStackOverflowTest());
     }
 
     public void addJoinTests() {

@@ -398,8 +398,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             batchQuery.setShouldRefreshIdentityMapResult(query.shouldRefreshIdentityMapResult());
             batchQuery.setCascadePolicy(query.getCascadePolicy());
             batchQuery.setShouldMaintainCache(query.shouldMaintainCache());
-            //CR #4365
-            batchQuery.setQueryId(query.getQueryId());
             if (query.hasAsOfClause()) {
                 batchQuery.setAsOfClause(query.getAsOfClause());
             }
@@ -408,6 +406,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             batchQuery.setShouldBindAllParameters(query.getShouldBindAllParameters());
             batchQuery.setShouldPrepare(query.shouldPrepare());
         }
+        //CR #4365
+        batchQuery.setQueryId(query.getQueryId());
 
         // For CR#2646-S.M.  In case of inheritance the descriptor to use may not be that
         // of the source query (the base class descriptor), but that of the subclass, if the
