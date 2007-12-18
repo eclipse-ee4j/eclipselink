@@ -9,9 +9,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.record;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.MarshalRecordContentHandler;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
@@ -22,6 +26,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 /**
  * <p>Use this type of MarshalRecord when the marshal target is a Node.</p>
@@ -196,11 +202,15 @@ public class NodeRecord extends MarshalRecord {
                     attribute(XMLConstants.XMLNS_URL, "",XMLConstants.XMLNS + ":" + attr.getPrefix(), attr.getNamespaceURI());
                 }
             }
+        } else if (node.getNodeType() == Node.TEXT_NODE) {
+            characters(node.getNodeValue());
         } else {
-            Node newnode = document.importNode(node, true);
+            NodeRecordContentHandler mrcHdlr = new NodeRecordContentHandler(this, namespaceResolver);
+            XMLFragmentReader xfRdr = new XMLFragmentReader(namespaceResolver);
+            xfRdr.setContentHandler(mrcHdlr);
             try {
-                getNode().appendChild(newnode);
-            } catch (Exception e) {
+                xfRdr.parse(node);
+            } catch (SAXException sex) {
                 // Do nothing.
             }
         }
@@ -302,4 +312,59 @@ public class NodeRecord extends MarshalRecord {
             return uri;
         }
     }
+    
+    /**
+     * This class will typically be used in conjunction with an XMLFragmentReader.
+     * The XMLFragmentReader will walk a given XMLFragment node and report events
+     * to this class - the event's data is then used to create required attributes
+     * and elements which are appended to the the enclosing class' document.
+     * 
+     * @see org.eclipse.persistence.internal.oxm.record.XMLFragmentReader
+     */
+    protected class NodeRecordContentHandler extends MarshalRecordContentHandler {
+        Map<String, String> prefixMappings;
+
+        public NodeRecordContentHandler(NodeRecord nRec, NamespaceResolver resolver) {
+            super(nRec, resolver);
+            prefixMappings = new HashMap<String, String>();
+        }
+        
+        public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
+            Element element;
+            if (namespaceURI == null) {
+                element = getDocument().createElement(qName);
+            } else {
+                element = getDocument().createElementNS(namespaceURI, qName);
+            }
+            
+            try {
+                getNode().appendChild(element);
+                nodes.push(element);
+            } catch (Exception e) {
+                document.appendChild(element);
+                setDOM(element);
+                nodes.push(element);
+            }
+            // Handle attributes
+            for (int i = 0; i < atts.getLength(); i++) {
+                marshalRecord.attribute(atts.getURI(i), atts.getLocalName(i), atts.getQName(i), atts.getValue(i));
+            }
+            // Handle prefix mappings
+            if (!prefixMappings.isEmpty()) {
+                for (java.util.Iterator<String> keys = prefixMappings.keySet().iterator(); keys.hasNext();) {
+                    String prefix = keys.next();
+                    element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, (String) prefixMappings.get(prefix));
+                }
+                prefixMappings.clear();
+            }
+            marshalRecord.closeStartElement();
+        }
+        
+        public void startPrefixMapping(String prefix, String uri) throws SAXException {
+            String namespaceUri = getNamespaceResolver().resolveNamespacePrefix(prefix);
+            if(namespaceUri == null || !namespaceUri.equals(uri)) {
+                prefixMappings.put(prefix, uri);
+            }
+        }
+    }        
 }

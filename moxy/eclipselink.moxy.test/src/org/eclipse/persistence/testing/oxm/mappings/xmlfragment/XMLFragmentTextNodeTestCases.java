@@ -18,9 +18,7 @@ package org.eclipse.persistence.testing.oxm.mappings.xmlfragment;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
-
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class XMLFragmentTextNodeTestCases extends XMLMappingTestCases {

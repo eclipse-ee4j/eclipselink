@@ -26,7 +26,6 @@ import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
-//import org.custommonkey.xmlunit.Diff;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -174,17 +173,10 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         } else {
             desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
         }
-       
         int sizeBefore = getNamespaceResolverSize(desc);
-
         Document testDocument = xmlMarshaller.objectToXML(objectToWrite);
-        
         int sizeAfter = getNamespaceResolverSize(desc);
-        
         assertEquals(sizeBefore, sizeAfter);
-       
-        
-
         objectToXMLDocumentTest(testDocument);
     }
 
@@ -215,7 +207,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         objectToXMLDocumentTest(testDocument);
     }
     
-    private int getNamespaceResolverSize(XMLDescriptor desc){
+    protected int getNamespaceResolverSize(XMLDescriptor desc){
        int size = -1;
         if (desc != null) {
             NamespaceResolver nr = desc.getNamespaceResolver();

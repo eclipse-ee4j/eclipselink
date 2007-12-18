@@ -24,11 +24,12 @@ import org.xml.sax.SAXException;
  */
 
 public class MarshalRecordContentHandler implements ContentHandler {
-    private MarshalRecord marshalRecord;
-    private NamespaceResolver resolver;
+    protected MarshalRecord marshalRecord;
+    protected NamespaceResolver resolver;
 
     public MarshalRecordContentHandler(MarshalRecord record, NamespaceResolver resolver) {
-        marshalRecord = record;        
+        marshalRecord = record;
+        this.resolver = resolver;
     }
 
     public void setMarshalRecord(MarshalRecord record) {
