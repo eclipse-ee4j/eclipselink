@@ -46,7 +46,7 @@ public @interface Converter {
 
     /**
      * (Required) The converter class to be used. This class must implement the
-     * TopLink org.eclipse.persistence.mappings.converters.Converter interface.
+     *  org.eclipse.persistence.mappings.converters.Converter interface.
      */
     Class converterClass(); 
 }
