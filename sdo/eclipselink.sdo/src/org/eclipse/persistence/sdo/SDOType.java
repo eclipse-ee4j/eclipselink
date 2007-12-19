@@ -648,52 +648,35 @@ public class SDOType implements Type, Serializable {
     public void setXmlDescriptor(XMLDescriptor anXMLDescriptor) {
         xmlDescriptor = anXMLDescriptor;
     }
-
-    /**
-      * INTERNAL:
-      */
-    public XMLDescriptor buildXmlDescriptor(List namespaceResolvers) {
-        // do not create descriptors for SDO_TYPE or dataTypes
-        if (!isDataType() && (null == xmlDescriptor) && (this != SDOConstants.SDO_TYPE)) {
-            xmlDescriptor = new XMLDescriptor();
-
-            NamespaceResolver newNR = new NamespaceResolver();
-
-            // copy namespaces between resolvers for well known and SDO namespaces
-            if (namespaceResolvers != null) {
-                for (int i = 0; i < namespaceResolvers.size(); i++) {
-                    NamespaceResolver nr = (NamespaceResolver)namespaceResolvers.get(i);
-                    if (nr != null) {
-                        for (int j = 0, size = nr.getNamespaces().size(); j < size; j++) {
-                            Namespace nextNamespace = (Namespace)nr.getNamespaces().get(j);
-                            if ((!nextNamespace.getPrefix().equals(XMLConstants.XMLNS)) && (!nextNamespace.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOXML_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDO_URL))) {
-                                String newPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).addNamespace(nextNamespace.getPrefix(), nextNamespace.getNamespaceURI());
-                                newNR.put(newPrefix, nextNamespace.getNamespaceURI());
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (getURI() != null) {
-                String prefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(getURI());
-                newNR.put(prefix, getURI());
-            }
-
-            xmlDescriptor.setNamespaceResolver(newNR);
-            xmlDescriptor.getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-        }
-        return xmlDescriptor;
+   
+    public XMLDescriptor getXmlDescriptor() {
+        return getXmlDescriptor(null);
     }
 
     /**
       * INTERNAL:
       * Get the XMLDescriptor associated with this Type or generate a new one.
       */
-    public XMLDescriptor getXmlDescriptor() {
+    public XMLDescriptor getXmlDescriptor(List namespaceResolvers) {
         if (!isDataType() && (xmlDescriptor == null)) {
             xmlDescriptor = new XMLDescriptor();
             NamespaceResolver nr = new NamespaceResolver();
+
+            // copy namespaces between resolvers for well known and SDO namespaces
+            if (namespaceResolvers != null) {
+                for (int i = 0; i < namespaceResolvers.size(); i++) {
+                    NamespaceResolver nextNR = (NamespaceResolver)namespaceResolvers.get(i);
+                    if (nextNR != null) {
+                        for (int j = 0, size = nextNR.getNamespaces().size(); j < size; j++) {
+                            Namespace nextNamespace = (Namespace)nextNR.getNamespaces().get(j);
+                            if ((!nextNamespace.getPrefix().equals(XMLConstants.XMLNS)) && (!nextNamespace.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOXML_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDO_URL))) {
+                                String newPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).addNamespace(nextNamespace.getPrefix(), nextNamespace.getNamespaceURI());
+                                nr.put(newPrefix, nextNamespace.getNamespaceURI());
+                            }
+                        }
+                    }
+                }
+            }
 
             if ((getBaseTypes() != null) && (getBaseTypes().size() > 0)) {
                 SDOType baseType = (SDOType)getBaseTypes().get(0);
@@ -722,9 +705,9 @@ public class SDOType implements Type, Serializable {
 
     private void setupInheritance(SDOType parentType) {
         if ((parentType.getURI() != null) && (!parentType.getURI().equals(SDOConstants.SDO_URL))) {
-            XMLField field = new XMLField("@xsi:type");
+            XMLField field = (XMLField)getXmlDescriptor().buildField("@xsi:type");
             XMLDescriptor parentDescriptor = (XMLDescriptor)parentType.getXmlDescriptor().getInheritancePolicy().getRootParentDescriptor();
-
+            
             parentDescriptor.getInheritancePolicy().setClassIndicatorField(field);
             if (getInstanceClassName() != null) {
                 String indicator = getName();
@@ -769,16 +752,16 @@ public class SDOType implements Type, Serializable {
      * @param packageName
      * @param nr
      */
-    public void startInitializeTopLink(String packageName, List namespaceResolvers) {
+    public void preInitialize(String packageName, List namespaceResolvers) {
         String instanceClassName = getInstanceClassName();
         if (null == instanceClassName) {
             if (null == packageName) {
-            	String uri = getURI();
-            	if(null == uri) {
-            		packageName = SDOUtil.getDefaultPackageName() + SDOConstants.JAVA_PACKAGE_NAME_SEPARATOR;
-            	} else {
-            		packageName = SDOUtil.getPackageNameFromURI(uri) + SDOConstants.JAVA_PACKAGE_NAME_SEPARATOR;
-            	}
+                String uri = getURI();
+                if (null == uri) {
+                    packageName = SDOUtil.getDefaultPackageName() + SDOConstants.JAVA_PACKAGE_NAME_SEPARATOR;
+                } else {
+                    packageName = SDOUtil.getPackageNameFromURI(uri) + SDOConstants.JAVA_PACKAGE_NAME_SEPARATOR;
+                }
             }
 
             // Verify and fix any Class name that does not conform to conventions
@@ -795,7 +778,7 @@ public class SDOType implements Type, Serializable {
                                         "sdo_type_generation_processing_type", //
                                         new Object[] { Helper.getShortClassName(getClass()), getInstanceClassName() });
 
-        buildXmlDescriptor(namespaceResolvers).setJavaClassName(getImplClassName());
+        getXmlDescriptor(namespaceResolvers).setJavaClassName(getImplClassName());
         // load classes by classloader by getting the current instance class
         loadClasses();
 
@@ -819,10 +802,20 @@ public class SDOType implements Type, Serializable {
     /**
       * INTERNAL:
       */
-    public void finishInitializeTopLink() {
+    public void postInitialize() {
         if (!isDataType && (getBaseTypes() != null) && (getBaseTypes().size() > 0)) {
             setupInheritance((SDOType)getBaseTypes().get(0));
         }
+
+        String idPropName = (String)get(SDOConstants.ID_PROPERTY);
+        if (idPropName != null) {
+            SDOProperty idProp = (SDOProperty)getProperty(idPropName);
+            if (idProp != null) {
+                String targetxpath = idProp.getQualifiedXPath(getURI(), true);
+                getXmlDescriptor().addPrimaryKeyFieldName(targetxpath);
+            }
+        }
+
         setFinalized(true);
         for (int i = 0; i < getNonFinalizedReferencingProps().size(); i++) {
             SDOProperty nextProp = (SDOProperty)getNonFinalizedReferencingProps().get(i);
@@ -917,8 +910,7 @@ public class SDOType implements Type, Serializable {
     public void setInstanceProperty(Property property, Object value) {
         if (property.equals(SDOConstants.JAVA_CLASS_PROPERTY) && value instanceof String) {
             setInstanceClassName((String)value);
-        }
-
+        }      
         getPropertyValues().put(property, value);
     }
 

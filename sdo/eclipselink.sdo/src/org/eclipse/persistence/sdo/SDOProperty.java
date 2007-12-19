@@ -727,7 +727,6 @@ public class SDOProperty implements Property, Serializable {
 
         if (targetIDProp != null) {
             String targetxpath = targetIDProp.getQualifiedXPath(getType().getURI(), true);
-            ((SDOType)getType()).getXmlDescriptor().addPrimaryKeyFieldName(targetxpath);
             mapping.addSourceToTargetKeyFieldAssociation(sourcexpath, targetxpath);
         } else {
             throw SDOException.noTargetIdSpecified(getType().getURI(), getType().getName());
@@ -796,7 +795,6 @@ public class SDOProperty implements Property, Serializable {
         SDOProperty targetIDProp = getIDProp(getType());
         if (targetIDProp != null) {
             String targetxpath = targetIDProp.getQualifiedXPath(getType().getURI(), true);
-            ((SDOType)getType()).getXmlDescriptor().addPrimaryKeyFieldName(targetxpath);
             mapping.addSourceToTargetKeyFieldAssociation(sourcexpath, targetxpath);
         } else {
             throw SDOException.noTargetIdSpecified(getType().getURI(), getType().getName());
@@ -855,7 +853,7 @@ public class SDOProperty implements Property, Serializable {
     /**
       * INTERNAL:
       */
-    private String getQualifiedXPath(String uri, boolean simple) {
+    public String getQualifiedXPath(String uri, boolean simple) {
         SDOType containingType = (SDOType)this.getContainingType();
         return getQualifiedXPath(uri, simple, containingType);
     }

@@ -378,6 +378,24 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             return exists;
         }
     }
+    
+    public Type define(DataObject dataObject) {
+        List types = new ArrayList();
+        Type rootType = define(dataObject, types);
+        initializeTypes(types);             
+        return rootType;
+
+    }
+    
+    private void initializeTypes(List types){        
+        for (int i = 0; i < types.size(); i++) {
+            SDOType nextType = (SDOType)types.get(i);
+            if (!nextType.isDataType()) {
+                nextType.postInitialize();
+            }
+        }        
+        ((SDOXMLHelper)aHelperContext.getXMLHelper()).addDescriptors(types);
+    }
 
     /**
      * Define the DataObject as a Type.
@@ -386,7 +404,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @return the defined Type.
      * @throws IllegalArgumentException if the Type could not be defined.
      */
-    public Type define(DataObject dataObject) {
+    public Type define(DataObject dataObject, List types) {
         SDOTypeHelper typeHelper = (SDOTypeHelper)aHelperContext.getTypeHelper();
         if ((dataObject == null) || (dataObject.getType() == null) || (!dataObject.getType().getURI().equals(SDOConstants.SDO_URL)) || (!dataObject.getType().getName().equals(SDOConstants.TYPE))) {
             throw new IllegalArgumentException(SDOException.errorDefiningType());
@@ -403,6 +421,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         if (type == null) {
             type = new SDOType(uri, name, aHelperContext);
             addType(uri, name, type);
+            types.add(type);
         } else {
             return type;
         }
@@ -413,7 +432,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
         List baseTypes = dataObject.getList("baseType");
         for (int i = 0; i < baseTypes.size(); i++) {
-            SDOType baseType = (SDOType)getValueFromObject(baseTypes.get(i));
+            SDOType baseType = (SDOType)getValueFromObject(baseTypes.get(i), types);
             type.addBaseType(baseType);
         }
 
@@ -426,14 +445,14 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         List openProps = ((SDODataObject)dataObject)._getOpenContentProperties();
         for (int i = 0; i < openProps.size(); i++) {
             SDOProperty nextProp = (SDOProperty)openProps.get(i);
-            Object value = getValueFromObject(dataObject.get(nextProp));
+            Object value = getValueFromObject(dataObject.get(nextProp), types);
             type.setInstanceProperty(nextProp, value);
         }
 
         List openPropsAttrs = ((SDODataObject)dataObject)._getOpenContentPropertiesAttributes();
         for (int i = 0; i < openPropsAttrs.size(); i++) {
             SDOProperty nextProp = (SDOProperty)openPropsAttrs.get(i);
-            Object value = getValueFromObject(dataObject.get(nextProp));
+            Object value = getValueFromObject(dataObject.get(nextProp), types);
             type.setInstanceProperty(nextProp, value);
         }
 
@@ -443,21 +462,15 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             Object nextValue = properties.get(i);
 
             if (nextValue instanceof DataObject) {
-                buildPropertyFromDataObject((DataObject)nextValue, type);
+                buildPropertyFromDataObject((DataObject)nextValue, type, types);                
             }
         }
         type.setOpen(dataObject.getBoolean("open"));
+        
         if (!type.isDataType()) {
-            type.startInitializeTopLink(null, null);
-            type.finishInitializeTopLink();
+            type.preInitialize(null, null);                        
         }
-
-        if (!type.isDataType()) {
-            ((SDOXMLHelper)aHelperContext.getXMLHelper()).addDescriptor(type.getXmlDescriptor());
-        }
-
-        //TODO: Need to update session not just project        
-        //((SDOXMLHelper)aHelperContext.getXMLHelper()).addProject(p);
+  
         return type;
     }
 
@@ -474,23 +487,23 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         return false;
     }
 
-    private Object getValueFromObject(Object objectValue) {
+    private Object getValueFromObject(Object objectValue, List types) {
         if (objectValue instanceof DataObject) {
-            if (((DataObject)objectValue).getType() == SDOConstants.SDO_TYPE) {
-                return define((DataObject)objectValue);
+            if (((DataObject)objectValue).getType() == SDOConstants.SDO_TYPE) {                
+                return define((DataObject)objectValue, types);                
             }
         }
         return objectValue;
     }
 
-    private SDOProperty buildPropertyFromDataObject(DataObject dataObject, Type containingType) {
+    private SDOProperty buildPropertyFromDataObject(DataObject dataObject, Type containingType, List types) {
         String nameValue = dataObject.getString("name");
         Object typeObjectValue = dataObject.get("type");
 
         SDOProperty newProperty = new SDOProperty(aHelperContext);
 
         newProperty.setName(nameValue);
-        Type typeValue = (Type)getValueFromObject(typeObjectValue);
+        Type typeValue = (Type)getValueFromObject(typeObjectValue, types);
         newProperty.setType(typeValue);
 
         if (typeValue != null) {
@@ -537,14 +550,14 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         List openProps = ((SDODataObject)dataObject)._getOpenContentProperties();
         for (int i = 0; i < openProps.size(); i++) {
             SDOProperty nextProp = (SDOProperty)openProps.get(i);
-            Object value = getValueFromObject(dataObject.get(nextProp));
+            Object value = getValueFromObject(dataObject.get(nextProp), types);
             newProperty.setInstanceProperty(nextProp, value);
         }
 
         List openPropsAttrs = ((SDODataObject)dataObject)._getOpenContentPropertiesAttributes();
         for (int i = 0; i < openPropsAttrs.size(); i++) {
             SDOProperty nextProp = (SDOProperty)openPropsAttrs.get(i);
-            Object value = getValueFromObject(dataObject.get(nextProp));
+            Object value = getValueFromObject(dataObject.get(nextProp), types);
             newProperty.setInstanceProperty(nextProp, value);
         }
 
@@ -635,8 +648,10 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             propertyToReturn = aHelperContext.getXSDHelper().getGlobalProperty(uri, name, false);
         }
 
-        if ((propertyToReturn == null) || (!(propertyToReturn instanceof Property))) {
-            propertyToReturn = buildPropertyFromDataObject(propertyDO, null);
+        if ((propertyToReturn == null) || (!(propertyToReturn instanceof Property))) {            
+            List types = new ArrayList();
+            propertyToReturn = buildPropertyFromDataObject(propertyDO, null, types);
+            initializeTypes(types);
             defineOpenContentProperty(uri, name, (Property)propertyToReturn);
         }
 
@@ -676,7 +691,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
                     QName elementType = new QName(propertyUri, rootName);
                     aDescriptor.setDefaultRootElementType(elementType);
 
-                    ((SDOXMLHelper) aHelperContext.getXMLHelper()).setDirty(true);
+                    ((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlContext().storeXMLDescriptorByQName(aDescriptor);
                 }
             }
         }

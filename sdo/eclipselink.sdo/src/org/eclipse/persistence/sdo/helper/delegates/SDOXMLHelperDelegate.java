@@ -38,6 +38,7 @@ import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -64,10 +65,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     private Map<Thread, XMLUnmarshaller> xmlUnmarshallerMap;
 
     private Project topLinkProject;
-    private boolean isDirty;
-    private TimeZone timeZone;
-    private boolean timeZoneQualified;
-    
+
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;
 
@@ -82,32 +80,24 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     /**
      * The specified TimeZone will be used for all String to date object
      * conversions.  By default the TimeZone from the JVM is used.
-     */   
-    public void setTimeZone(TimeZone timeZone) {
-    	if(this.timeZone == timeZone) {
-    		return;
-    	}
-    	if(null == timeZone) {
-    		timeZone = TimeZone.getDefault();
-    	}
-    	if(!timeZone.equals(this.timeZone)) {
-        	this.timeZone = timeZone;
-        	isDirty = true;    		
-    	}
+     */
+    public void setTimeZone(TimeZone timeZone) {       
+        Session session = getXmlContext().getSession(0);
+        XMLConversionManager xmlConversionManager = (XMLConversionManager)session.getDatasourceLogin().getDatasourcePlatform().getConversionManager();                            
+        xmlConversionManager.setTimeZone(timeZone);
     }
-    
+
     /**
-     * By setting this flag to true the marshalled date objects marshalled to 
-     * the XML schema types time and dateTime will be qualified by a time zone.  
+     * By setting this flag to true the marshalled date objects marshalled to
+     * the XML schema types time and dateTime will be qualified by a time zone.
      * By default time information is not time zone qualified.
      */
     public void setTimeZoneQualified(boolean timeZoneQualified) {
-    	if(this.timeZoneQualified != timeZoneQualified) {
-        	this.timeZoneQualified = timeZoneQualified;
-        	isDirty = true;    		
-    	}
-    }    
-    
+        Session session = getXmlContext().getSession(0);
+        XMLConversionManager xmlConversionManager = (XMLConversionManager)session.getDatasourceLogin().getDatasourcePlatform().getConversionManager();                
+        xmlConversionManager.setTimeZoneQualified(timeZoneQualified);                           
+    }
+
     /**
      * Creates and returns an XMLDocument from the input String.
      * By default does not perform XSD validation.
@@ -440,6 +430,10 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
 
     public void setLoader(SDOClassLoader loader) {
         this.loader = loader;
+      
+        Session session = getXmlContext().getSession(0);
+        XMLConversionManager xmlConversionManager = (XMLConversionManager)session.getDatasourceLogin().getDatasourcePlatform().getConversionManager();                
+        xmlConversionManager.setLoader(this.loader);                                
     }
 
     public SDOClassLoader getLoader() {
@@ -450,36 +444,46 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         this.xmlContext = xmlContext;
     }
 
-    public synchronized XMLContext getXmlContext() {
-        if (xmlContext == null || isDirty) {
+    public synchronized XMLContext getXmlContext() {        
+        if (xmlContext == null) {
             xmlContext = new XMLContext(getTopLinkProject());
-            isDirty = false;
-            List sessions = xmlContext.getSessions();
-            int sessionsSize = sessions.size();
-            for(int x=0; x<sessionsSize; x++) {
-            	Session session = (Session) sessions.get(x);
-            	XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourceLogin().getDatasourcePlatform().getConversionManager();
-            	xmlConversionManager.setLoader(this.loader);
-            	if(null != this.timeZone) {
-            		xmlConversionManager.setTimeZone(timeZone);
-            	}
-            	xmlConversionManager.setTimeZoneQualified(timeZoneQualified);
-            }
+            
+            Session session = getXmlContext().getSession(0);
+            XMLConversionManager xmlConversionManager = (XMLConversionManager)session.getDatasourceLogin().getDatasourcePlatform().getConversionManager();                
+            xmlConversionManager.setLoader(this.loader);
+                        
+            xmlConversionManager.setTimeZone(TimeZone.getTimeZone("GMT"));            
+            xmlConversionManager.setTimeZoneQualified(true);                                 
         }
         return xmlContext;
+    }                            
+   
+    public void initializeDescriptor(XMLDescriptor descriptor){
+        AbstractSession theSession = (AbstractSession)getXmlContext().getSession(0);
+        //do initialization for new descriptor;        
+        descriptor.preInitialize(theSession);
+        descriptor.initialize(theSession);
+        descriptor.postInitialize(theSession);
+        descriptor.getObjectBuilder().initializePrimaryKey(theSession);
+        getXmlContext().storeXMLDescriptorByQName(descriptor);                           
     }
 
-    public void addDescriptor(XMLDescriptor descriptor) {
-        getTopLinkProject().addDescriptor(descriptor);
-        isDirty = true;
-    }
-
-    public void addDescriptors(List descriptors) {
-        for (int i = 0; i < descriptors.size(); i++) {
-            XMLDescriptor nextDescriptor = (XMLDescriptor)descriptors.get(i);
-            getTopLinkProject().addDescriptor(nextDescriptor);
-        }
-        isDirty = true;
+    public void addDescriptors(List types) {        
+        for (int i = 0; i < types.size(); i++) {
+            SDOType nextType = (SDOType)types.get(i);      
+            
+            if (!nextType.isDataType() && nextType.isFinalized()){            
+              XMLDescriptor nextDescriptor = nextType.getXmlDescriptor();
+              getTopLinkProject().addDescriptor(nextDescriptor);            
+            }
+        }        
+        for (int i = 0; i < types.size(); i++) {
+          SDOType nextType = (SDOType)types.get(i);                
+          if (!nextType.isDataType() && nextType.isFinalized()){            
+             XMLDescriptor nextDescriptor = nextType.getXmlDescriptor();
+             initializeDescriptor(nextDescriptor);          
+          }
+        }                
     }
 
     public void setTopLinkProject(Project toplinkProject) {
@@ -546,18 +550,13 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     	}
         return unmarshaller;
     }
-
-    public void setDirty(boolean value) {
-    	this.isDirty = value;    	
-    }
-    
     
     public void reset() {
+        setTopLinkProject(null);
         setXmlContext(null);
         this.xmlMarshallerMap.clear();
         this.xmlUnmarshallerMap.clear();
-        setLoader(new SDOClassLoader(getClass().getClassLoader(), (HelperContext)this));
-        setTopLinkProject(null);
+        setLoader(new SDOClassLoader(getClass().getClassLoader(), (HelperContext)aHelperContext));
     }
 
     public HelperContext getHelperContext() {

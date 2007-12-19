@@ -37,32 +37,28 @@ import org.eclipse.persistence.oxm.XMLConstants;
 public class SDODataHelper implements DataHelper {
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;
-    private XMLConversionManager xmlConversionManager;
 
     public SDODataHelper() {
         // TODO: JIRA129 - default to static global context - Do Not use this convenience constructor outside of JUnit testing
-        //aHelperContext = HelperProvider.getDefaultContext();
-        xmlConversionManager = (XMLConversionManager)XMLConversionManager.getDefaultXMLManager().clone();
-        xmlConversionManager.setTimeZone(TimeZone.getTimeZone("GMT"));
-        xmlConversionManager.setTimeZoneQualified(true);
     }
 
     public SDODataHelper(HelperContext aContext) {
         aHelperContext = aContext;
-        xmlConversionManager = (XMLConversionManager)XMLConversionManager.getDefaultXMLManager().clone();
-        xmlConversionManager.setTimeZone(TimeZone.getTimeZone("GMT"));
-        xmlConversionManager.setTimeZoneQualified(true);        
     }
-
+    
+    private XMLConversionManager getXMLConversionManager(){
+     return (XMLConversionManager)((SDOXMLHelper)getHelperContext().getXMLHelper()).getXmlContext().getSession(0).getDatasourceLogin().getDatasourcePlatform().getConversionManager();
+    }
+    
     /**
      * The specified TimeZone will be used for all String to date object
      * conversions.  By default the TimeZone from the JVM is used.
      */
     public void setTimeZone(TimeZone timeZone) {
         if (null == timeZone) {
-            xmlConversionManager.setTimeZone(TimeZone.getTimeZone("GMT"));
+            getXMLConversionManager().setTimeZone(TimeZone.getTimeZone("GMT"));
         } else {
-            xmlConversionManager.setTimeZone(timeZone);
+            getXMLConversionManager().setTimeZone(timeZone);
         }
     }
 
@@ -72,7 +68,7 @@ public class SDODataHelper implements DataHelper {
      * By default time information is not time zone qualified.
      */
     public void setTimeZoneQualified(boolean timeZoneQualified) {
-        xmlConversionManager.setTimeZoneQualified(timeZoneQualified);
+        getXMLConversionManager().setTimeZoneQualified(timeZoneQualified);
     }
 
     /**
@@ -210,7 +206,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }        
-        return xmlConversionManager.stringFromDate(date, XMLConstants.DATE_TIME_QNAME);
+        return getXMLConversionManager().stringFromDate(date, XMLConstants.DATE_TIME_QNAME);
     }
 
     /**
@@ -237,7 +233,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return xmlConversionManager.stringFromDate(date, XMLConstants.TIME_QNAME);
+        return getXMLConversionManager().stringFromDate(date, XMLConstants.TIME_QNAME);
     }
 
     /**
@@ -249,7 +245,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return xmlConversionManager.stringFromDate(date, XMLConstants.G_DAY_QNAME);
+        return getXMLConversionManager().stringFromDate(date, XMLConstants.G_DAY_QNAME);
     }
 
     /**
@@ -261,7 +257,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return xmlConversionManager.stringFromDate(date, XMLConstants.G_MONTH_QNAME);
+        return getXMLConversionManager().stringFromDate(date, XMLConstants.G_MONTH_QNAME);
     }
 
     /**
@@ -273,7 +269,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return xmlConversionManager.stringFromDate(date, XMLConstants.G_MONTH_DAY_QNAME);
+        return getXMLConversionManager().stringFromDate(date, XMLConstants.G_MONTH_DAY_QNAME);
     }
 
     /**
@@ -285,7 +281,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return xmlConversionManager.stringFromDate(date, XMLConstants.G_YEAR_QNAME);
+        return getXMLConversionManager().stringFromDate(date, XMLConstants.G_YEAR_QNAME);
     }
 
     /**
@@ -297,7 +293,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return xmlConversionManager.stringFromDate(date, XMLConstants.G_YEAR_MONTH_QNAME);
+        return getXMLConversionManager().stringFromDate(date, XMLConstants.G_YEAR_MONTH_QNAME);
     }
 
     /**
@@ -309,7 +305,7 @@ public class SDODataHelper implements DataHelper {
         if (date == null) {
             return null;
         }
-        return xmlConversionManager.stringFromDate(date, XMLConstants.DATE_QNAME);
+        return getXMLConversionManager().stringFromDate(date, XMLConstants.DATE_QNAME);
     }
 
     /**
@@ -321,7 +317,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.DATE_TIME_QNAME);
+        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.DATE_TIME_QNAME);
     }
 
     /**
@@ -360,7 +356,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.TIME_QNAME);
+        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.TIME_QNAME);
     }
 
     /**
@@ -372,7 +368,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_DAY_QNAME);
+        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.G_DAY_QNAME);
     }
 
     /**
@@ -384,7 +380,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_MONTH_QNAME);
+        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.G_MONTH_QNAME);
     }
 
     /**
@@ -396,7 +392,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_MONTH_DAY_QNAME);
+        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.G_MONTH_DAY_QNAME);
     }
 
     /**
@@ -408,7 +404,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_YEAR_QNAME);
+        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.G_YEAR_QNAME);
     }
 
     /**
@@ -420,7 +416,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.G_YEAR_MONTH_QNAME);
+        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.G_YEAR_MONTH_QNAME);
     }
 
     /**
@@ -432,7 +428,7 @@ public class SDODataHelper implements DataHelper {
         if (calendar == null) {
             return null;
         }
-        return xmlConversionManager.stringFromCalendar(calendar, XMLConstants.DATE_QNAME);
+        return getXMLConversionManager().stringFromCalendar(calendar, XMLConstants.DATE_QNAME);
     }
 
     /**
@@ -519,7 +515,7 @@ public class SDODataHelper implements DataHelper {
            * @return the original value converted based on the convertClass parameter.
        */
     public Object convertValue(Object value, Class convertClass, QName schemaType) {
-        return xmlConversionManager.convertObject(value, convertClass, schemaType);
+        return getXMLConversionManager().convertObject(value, convertClass, schemaType);
 
     }
 
@@ -535,7 +531,7 @@ public class SDODataHelper implements DataHelper {
         } else if (convertClass == ClassConstants.CALENDAR) {
             return toCalendar(value);
         } else {
-            return xmlConversionManager.convertObject(value, convertClass);
+            return getXMLConversionManager().convertObject(value, convertClass);
         }
     }
 
@@ -581,7 +577,7 @@ public class SDODataHelper implements DataHelper {
         } else if (convertClass == ClassConstants.CALENDAR) {
             return toCalendar(value);
         } else {
-            return xmlConversionManager.convertObject(value, convertClass, schemaType);
+            return getXMLConversionManager().convertObject(value, convertClass, schemaType);
         }
     }
 
@@ -633,7 +629,7 @@ public class SDODataHelper implements DataHelper {
                 return toYearMonthDay((Date)value);
             }
         }
-        return (String)xmlConversionManager.convertObject(value, ClassConstants.STRING);
+        return (String)getXMLConversionManager().convertObject(value, ClassConstants.STRING);
     }
 
     /**
@@ -660,7 +656,7 @@ public class SDODataHelper implements DataHelper {
             return convertToStringValue(value, type);
         } else {
             try {
-                return xmlConversionManager.convertObject(value, convertClass);
+                return getXMLConversionManager().convertObject(value, convertClass);
             } catch (ConversionException e) {
                 throw new IllegalArgumentException(SDOException.conversionError(e));
             }
@@ -716,9 +712,9 @@ public class SDODataHelper implements DataHelper {
             	SDOProperty sdoProp = (SDOProperty) prop;
             	DatabaseMapping xmlMapping = sdoProp.getXmlMapping();
             	if (xmlMapping != null && xmlMapping.isDirectToFieldMapping() && sdoProp.getXsdType() != null) {
-            		return xmlConversionManager.convertObject(valueToConvert, convertToClass, sdoProp.getXsdType());
+            		return getXMLConversionManager().convertObject(valueToConvert, convertToClass, sdoProp.getXsdType());
             	} else {
-            		return xmlConversionManager.convertObject(valueToConvert, convertToClass);
+            		return getXMLConversionManager().convertObject(valueToConvert, convertToClass);
             	}                   	
             }
         } catch (ConversionException e) {

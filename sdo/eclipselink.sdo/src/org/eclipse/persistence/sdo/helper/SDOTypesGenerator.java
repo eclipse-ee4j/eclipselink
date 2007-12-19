@@ -116,32 +116,21 @@ public class SDOTypesGenerator extends SchemaParser {
     	setReturnAllTypes(includeAllTypes);
         setProcessImports(processImports);
         processSchema(schema);
+             
+        returnList.addAll(getGeneratedTypes().values());
         
-        Iterator<Type> iter = getGeneratedTypes().values().iterator();
-        List<XMLDescriptor> descriptors = new ArrayList<XMLDescriptor>();
-        
-        while (iter.hasNext()) {
-            SDOType nextSDOType = (SDOType)iter.next();
-            if(!nextSDOType.isFinalized() && !this.isImportProcessor()) {
+        if(!this.isImportProcessor()){      
+            Iterator<Type> iter = getGeneratedTypes().values().iterator();            
+            while (iter.hasNext()) {            
+              SDOType nextSDOType = (SDOType)iter.next();
+              if(!nextSDOType.isFinalized()) {
                 //Only throw this error if we're not processing an import.
                 throw SDOException.typeReferencedButNotDefined(nextSDOType.getURI(), nextSDOType.getName());
+              }              
             }
-            if (!nextSDOType.isDataType()) {
-                XMLDescriptor desc = nextSDOType.getXmlDescriptor();
-                descriptors.add(desc);
-            }
-            returnList.add(nextSDOType);
+            ((SDOXMLHelper)aHelperContext.getXMLHelper()).addDescriptors(new ArrayList(getGeneratedTypes().values()));
         }
-        ((SDOXMLHelper)aHelperContext.getXMLHelper()).addDescriptors(descriptors);
 
-        //((SDOXMLHelper)aHelperContext.getXMLHelper()).addProject(p);        
-        //TODO: project for now but need to update appropriate session
-
-        /*
-        Session s = p.createDatabaseSession();
-        String sessionName = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getNextSessionName();
-        ((SDOXMLHelper)aHelperContext.getXMLHelper()).getSessionBroker().getSessionsByName().put(sessionName, s);
-        */
         return returnList;
     }
 
@@ -193,7 +182,7 @@ public class SDOTypesGenerator extends SchemaParser {
                 currentType.setInstanceProperty(SDOConstants.DOCUMENTATION_PROPERTY, documentation);
             }
         }
-        currentType.startInitializeTopLink(packageName, namespaceResolvers);
+        currentType.preInitialize(packageName, namespaceResolvers);
         if (complexType.getAnnotation() != null) {
             currentType.setAppInfoElements(complexType.getAnnotation().getAppInfo());
         }
@@ -201,7 +190,7 @@ public class SDOTypesGenerator extends SchemaParser {
 
     public void finishComplexType(String targetNamespace, String defaultNamespace, String name) {
         SDOType currentType = getSDOTypeForName(targetNamespace, defaultNamespace, false, name);
-        currentType.finishInitializeTopLink();
+        currentType.postInitialize();
     }
 
     public void finishNestedComplexType(String targetNamespace, String defaultNamespace, TypeDefParticle typeDefParticle, String name) {

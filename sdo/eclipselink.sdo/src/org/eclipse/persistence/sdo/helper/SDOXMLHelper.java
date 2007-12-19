@@ -82,14 +82,7 @@ public interface SDOXMLHelper extends XMLHelper {
      * 
      * @return
      */
-    public XMLContext getXmlContext();
-
-    /**
-     * INTERNAL:
-     * 
-     * @param descriptor
-     */
-    public void addDescriptor(XMLDescriptor descriptor);
+    public XMLContext getXmlContext();    
 
     /**
      * INTERNAL:
@@ -156,14 +149,6 @@ public interface SDOXMLHelper extends XMLHelper {
      */
     public void setHelperContext(HelperContext helperContext);
 
-    /**
-     * INTERNAL:
-     * Set the dirty flag.
-     * 
-     * @param value
-     */
-    public void setDirty(boolean value);
-    
     /**
      * INTERNAL:
      * 

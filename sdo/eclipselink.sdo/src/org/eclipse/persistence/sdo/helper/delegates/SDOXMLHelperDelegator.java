@@ -141,10 +141,6 @@ public class SDOXMLHelperDelegator implements SDOXMLHelper {
         return getSDOXMLHelperDelegate().getXmlContext();
     }
 
-    public void addDescriptor(XMLDescriptor descriptor) {
-        getSDOXMLHelperDelegate().addDescriptor(descriptor);
-    }
-
     public void addDescriptors(List descriptors) {
         getSDOXMLHelperDelegate().addDescriptors(descriptors);
     }
@@ -237,10 +233,6 @@ public class SDOXMLHelperDelegator implements SDOXMLHelper {
         aHelperContext = helperContext;
     }
 
-    public void setDirty(boolean value) {
-    	getSDOXMLHelperDelegate().setDirty(value);    	
-    }
-    
     public void reset() {
         getSDOXMLHelperDelegate().reset();
     }

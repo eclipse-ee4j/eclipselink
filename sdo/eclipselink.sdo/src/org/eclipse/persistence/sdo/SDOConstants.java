@@ -639,8 +639,8 @@ public class SDOConstants {
         JAVA_CLASS_PROPERTY.setType(stringType);      
         //define open content xmldatatype property
         XMLDATATYPE_PROPERTY.setType(SDO_TYPE);        
-        //define open content idProp property
-        ID_PROPERTY.setType(SDO_TYPE);        
+        //define open content idProp property        
+        ID_PROPERTY.setType(stringType);        
         
         //define documentation property  
         DOCUMENTATION_PROPERTY.setType(stringType);        
