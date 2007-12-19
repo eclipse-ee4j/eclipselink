@@ -46,12 +46,16 @@ public class LoadAndSavePurchaseOrderWithAnnotations extends LoadAndSaveTestCase
     }
 
     protected String getControlDataObjectFileName() {
-        return "./org/eclipse/persistence/testing/sdo/schemas/purchaseOrderWithInstanceClass.xml";
+        return "./org/eclipse/persistence/testing/sdo/schemas/purchaseOrderWithInstanceClassWrite.xml";
     }
 
     protected String getControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/schemas/purchaseOrderWithInstanceClass.xml";
     }
+    
+    protected String getControlWriteFileName() {
+        return "./org/eclipse/persistence/testing/sdo/schemas/purchaseOrderWithInstanceClassWrite.xml";
+    }        
 
     protected String getSchemaName() {
         return "org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderWithInstanceClass.xsd";

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<purchaseOrder comment="Hurry, my lawn is going wild!" orderDate="2001-12-17T01:01:01.0Z" xmlns:ns0="org.eclipse.persistence.sdo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <items>
+      <item theMimeType="image" productName="Lawnmower" quantity="1" partNum="872-AA">
+         <porder>123</porder>
+         <skusTest>abc</skusTest>
+         <skusTest>def</skusTest>
+         <binaryData>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryData>
+         <binaryDataHandler>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryDataHandler>
+         <binaryDataMany>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryDataMany>
+         <binaryDataMany>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryDataMany>
+         <binaryDataHandlerMany>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryDataHandlerMany>
+         <binaryDataHandlerMany>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryDataHandlerMany>
+         <binaryDataHandlerNoMime>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryDataHandlerNoMime>
+         <binaryDataHandlerManyNoMime>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryDataHandlerManyNoMime>
+         <binaryDataHandlerManyNoMime>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryDataHandlerManyNoMime>
+      </item>
+      <item productName="Baby Monitor" quantity="1" partNum="926-AA">
+         <porder>456</porder>
+         <skusTest>ghi</skusTest>
+         <skusTest>jkl</skusTest>
+         <binaryData>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryData>
+         <binaryDataHandler>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryDataHandler>
+         <binaryDataMany>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryDataMany>
+         <binaryDataMany>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryDataMany>
+         <binaryDataHandlerMany>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryDataHandlerMany>
+         <binaryDataHandlerMany>R0lGODlhcgGSALMAAAQCAEMmCZtuMFQxDS8b</binaryDataHandlerMany>
+      </item>
+   </items>
+</purchaseOrder>

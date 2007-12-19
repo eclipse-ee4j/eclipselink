@@ -77,81 +77,13 @@ public class LoadAndSaveValuePropTestCases extends LoadAndSaveTestCases {
         return packages;
     }
     
-    protected void registerTypes() {
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
-        Type dateType = typeHelper.getType("commonj.sdo", "String");
-        Type pInfoType = registerPersonalInfoType();        
-
-        //phoneNumberDO TYPE
-        DataObject phoneNumberDO = dataFactory.create("commonj.sdo", "Type");
-        phoneNumberDO.set("uri", getControlRootURI());
-        phoneNumberDO.set("name", "phone-number");
-                
-        //TODO:How to do this  - is this possbile??? need an open content prop to represent value property?
-        addProperty(phoneNumberDO, "value", stringType, false, false, true);
-        addProperty(phoneNumberDO, "ptype", stringType, false, false, false);
-        Type phoneNumberType = typeHelper.define(phoneNumberDO);
-        ((SDOProperty)phoneNumberType.getProperty("value")).setValueProperty(true);
-        ((SDOProperty)phoneNumberType.getProperty("value")).buildMapping(null, -1);
-
-        //ADDRESS TYPE
-        DataObject addressTypeDO = dataFactory.create("commonj.sdo", "Type");
-        addressTypeDO.set("uri", getControlRootURI());
-        addressTypeDO.set("name", "address-type");
-
-        addProperty(addressTypeDO, "street", stringType, true, true, true);
-        addProperty(addressTypeDO, "city", stringType, true, false, true);
-        addProperty(addressTypeDO, "state", stringType, true, false, true);
-        addProperty(addressTypeDO, "zip-code", stringType, true, false, true);
-
-        Type addressType = typeHelper.define(addressTypeDO);
-
-        //CONTACT INFO
-        DataObject contactTypeDO = dataFactory.create("commonj.sdo", "Type");
-        contactTypeDO.set("uri", getControlRootURI());
-        contactTypeDO.set("name", "contact-info");
-        addProperty(contactTypeDO, "billing-address", addressType, true, false, true);
-        addProperty(contactTypeDO, "shipping-address", addressType, true, false, true);
-        DataObject phoneProp = addProperty(contactTypeDO, "phone-number", phoneNumberType, true, true, true);
-        Type contactType = typeHelper.define(contactTypeDO);
-
-        //GENDER GLOBAL PROP              
-        DataObject genderPropertyDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
-        genderPropertyDO.set("name", "gender");
-        genderPropertyDO.set("type", stringType);
-        Property genderProp = typeHelper.defineOpenContentProperty(getControlRootURI(), genderPropertyDO);
-
-        //CUSTOMER
-        DataObject customerTypeDO = dataFactory.create("commonj.sdo", "Type");
-        customerTypeDO.set("uri", getControlRootURI());
-        customerTypeDO.set("name", "customer-type");
-        addProperty(customerTypeDO, "personal-info", pInfoType, true, false, true);
-        //addProperty(customerTypeDO, "first-name", stringType, true, false, true);
-        //addProperty(customerTypeDO, "last-name", stringType, true, false, true);
-        //addProperty(customerTypeDO, "gender", genderProp, true, false);        
-        //addProperty(customerTypeDO, "date-of-birth", dateType, true, false, true);
-        addProperty(customerTypeDO, "contact-info", contactType, true, false, true);
-        //addProperty(phoneNumberDO, "phone-number", phoneNumberType, true, false, true);
-        Type customerType = typeHelper.define(customerTypeDO);
-
-        DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
-        propDO.set("name", getControlRootName());
-        propDO.set("type", customerType);
-        typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
+    public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
+      //do nothing, this test doesn't apply
+      //we would have to do the following to make this work in current code
     }
-
-    private Type registerPersonalInfoType() {
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
-        Type dateType = typeHelper.getType("commonj.sdo", "String");
-        DataObject customerTypeDO = dataFactory.create("commonj.sdo", "Type");
-        customerTypeDO.set("uri", getControlRootURI());
-        customerTypeDO.set("name", "personal-info");
-        addProperty(customerTypeDO, "first-name", stringType, true, false, true);
-        addProperty(customerTypeDO, "last-name", stringType, true, false, true);
-        addProperty(customerTypeDO, "gender", stringType, true, false, true);
-        addProperty(customerTypeDO, "date-of-birth", dateType, true, false, true);
-        Type pInfoType = typeHelper.define(customerTypeDO);
-        return pInfoType;
+    
+    public void registerTypes(){
+      //do nothing because testNoSchemaLoadFromInputStreamSaveDataObjectToString is not run for this model
     }
             
 }

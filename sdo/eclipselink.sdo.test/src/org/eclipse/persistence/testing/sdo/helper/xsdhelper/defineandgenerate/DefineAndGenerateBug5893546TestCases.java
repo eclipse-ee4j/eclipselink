@@ -54,10 +54,17 @@ public class DefineAndGenerateBug5893546TestCases extends XSDHelperDefineAndGene
     }
 
     public void testBug5893546() throws Exception {
-        Type empType = (Type)getControlTypes().get(0);
+   
+        DataObject empTypeDO = dataFactory.create(SDOConstants.SDO_URL, "Type");        
+        empTypeDO.set("uri", "http://example.com/emp/");
+        empTypeDO.set("name", "Emp");
+        
+        addProperty(empTypeDO, "ename", SDOConstants.SDO_STRING, false, false, true);
+        Type empType = typeHelper.define(empTypeDO);
+        
         List baseTypes = new ArrayList();
         baseTypes.add(empType);
-
+        
         DataObject typeDO = dataFactory.create(SDOConstants.SDO_URL, "Type");
         typeDO.set("uri", "http://example.com/commemp/");
         typeDO.set("name", "CommEmp");

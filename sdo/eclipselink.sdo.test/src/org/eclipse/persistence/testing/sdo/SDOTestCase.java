@@ -301,11 +301,7 @@ public class SDOTestCase extends junit.framework.TestCase {
 
     public void setUp() {
         ((SDOTypeHelper) aHelperContext.getTypeHelper()).reset();
-        ((SDOXMLHelper) aHelperContext.getXMLHelper()).setXmlContext(null);
-        ((SDOXMLHelper) aHelperContext.getXMLHelper()).setXmlMarshaller(null);
-        ((SDOXMLHelper) aHelperContext.getXMLHelper()).setLoader(new SDOClassLoader(getClass().getClassLoader(), aHelperContext));
-        ((SDOXMLHelper) aHelperContext.getXMLHelper()).setXmlUnmarshaller(null);
-        ((SDOXMLHelper) aHelperContext.getXMLHelper()).setTopLinkProject(null);
+        ((SDOXMLHelper) aHelperContext.getXMLHelper()).reset();
         ((SDOXSDHelper) aHelperContext.getXSDHelper()).reset();       
     }
 
