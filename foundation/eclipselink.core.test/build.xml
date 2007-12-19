@@ -15,8 +15,8 @@
 
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
-    <property file="./build.properties"/>
-    <property file="${test.properties}"/>
+    <property file="${eclipselink.core.test}/build.properties"/>
+    <property file="${eclipselink.core.test}/${test.properties}"/>
 
     <!-- Classpath used for compiling tests, also used in running tests. -->
     <path id="compile.path">
@@ -101,9 +101,9 @@
              failonerror="true"
              dir="${run.dir}">
             <jvmarg value="-Djava.security.policy=${eclipselink.core.test}/resource/java.policy.allpermissions"/>
-            <arg value="pfile=${core.test.properties}" />
+            <arg value="pfile=${eclipselink.core.test}/${core.test.properties}" />
             <arg value="testmodel=org.eclipse.persistence.testing.tests.TestRunModel" />
-            <arg value="regressionlog=${core.test.regression.log}" />
+            <arg value="regressionlog=${eclipselink.core.test}/${core.test.regression.log}" />
 
             <classpath>
                 <path refid="run.classpath"/>
@@ -130,25 +130,25 @@
 
     <!-- Generic target for running tests. -->
     <target name="run.test">
-        <echo>Running test with ${test.properties} on ${db.url}</echo>
-        <mkdir dir="${report.dir}"/>
-        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${run.dir}">
+        <echo>Running test with ${eclipselink.core.test}/${test.properties} on ${db.url}</echo>
+        <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
+        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Dtest.properties=${test.properties.run}"/>
             <classpath>
                 <path refid="run.classpath"/>
             </classpath>
             <formatter type="xml"/>
-            <test name="${test.class}" haltonfailure="no" outfile="${report.dir}/test-results">
+            <test name="${test.class}" haltonfailure="no" outfile="${eclipselink.core.test}/${report.dir}/test-results">
             </test>
         </junit>
-        <junitreport todir="${report.dir}">
-            <fileset dir="${report.dir}">
+        <junitreport todir="${eclipselink.core.test}/${report.dir}">
+            <fileset dir="${eclipselink.core.test}/${report.dir}">
                 <include name="test-results.xml"/>
             </fileset>
-            <report format="noframes" todir="${report.dir}"/>
+            <report format="noframes" todir="${eclipselink.core.test}/${report.dir}"/>
         </junitreport>
-        <fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
+        <fail message="Some of the junit tests failed.  See the ${eclipselink.core.test}/${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
     </target>
 
 </project>

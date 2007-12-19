@@ -12,9 +12,9 @@
 
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
-    <property file="./build.properties"/>
+    <property file="${eclipselink.jpa.test}/build.properties"/>
     <property file="${eclipselink.jpa.test}/local.build.properties"/>
-    <property file="${test.properties}"/>
+    <property file="${eclipselink.jpa.test}/${test.properties}"/>
 
     <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
     <available file="${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
@@ -236,7 +236,7 @@
 
     <!-- Default test target, runs FullRegressionTestSuite with agent. -->
     <target name="test">
-        <property name="test.agent" value="-javaagent:${eclipselink.jar.run}"/>
+        <property name="test.agent" value="${eclipselink.jpa.test}/${eclipselink.jar.run}"/>
         <property name="test.weaving" value="-Darg2=false"/>
         <antcall target="run.test" inheritRefs="true"/>
     </target>
@@ -268,9 +268,9 @@
 
     <!-- Generic target for running tests. -->
     <target name="run.test" depends="config-trunk, config-flat">
-        <echo>Running test with ${test.properties} on ${db.url}</echo>
-        <mkdir dir="${report.dir}"/>
-        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="256m" dir="${run.dir}">
+        <echo>Running test with ${eclipselink.jpa.test}/${test.properties} on ${db.url}</echo>
+        <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
+        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="256m" dir="${eclipselink.jpa.test}/${run.dir}">
             <jvmarg value="${test.agent}"/>
             <jvmarg value="${test.weaving}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
@@ -280,16 +280,16 @@
                 <path refid="run.classpath"/>
             </classpath>
             <formatter type="xml"/>
-            <test name="${test.class}" haltonfailure="no" outfile="${report.dir}/test-results">
+            <test name="${test.class}" haltonfailure="no" outfile="${eclipselink.jpa.test}/${report.dir}/test-results">
             </test>
         </junit>
-        <junitreport todir="${report.dir}">
-            <fileset dir="${report.dir}">
+        <junitreport todir="${eclipselink.jpa.test}/${report.dir}">
+            <fileset dir="${eclipselink.jpa.test}/${report.dir}">
                 <include name="test-results.xml"/>
             </fileset>
-            <report format="noframes" todir="${report.dir}"/>
+            <report format="noframes" todir="${eclipselink.jpa.test}/${report.dir}"/>
         </junitreport>
-        <fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
+        <fail message="Some of the junit tests failed.  See the ${eclipselink.jpa.test}/${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
     </target>
 
     <!-- Runs EclipseLink static weaving ant task on test jars. -->
@@ -301,50 +301,50 @@
             </classpath>
         </taskdef>
         <!-- process the weaving function-->
-        <weave source= "${eclipselink-annotation-model}.jar"
-               target = "woven-${eclipselink-annotation-model}.jar">
+        <weave source= "${eclipselink.jpa.test}/${eclipselink-annotation-model}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink-annotation-model}.jar">
                <classpath>
                     <path refid="compile.path"/>
                     <path refid="run.classpath"/>
                </classpath>
         </weave>
-        <weave source= "${eclipselink-ddl-generation-model}.jar"
-               target = "woven-${eclipselink-ddl-generation-model}.jar">
+        <weave source= "${eclipselink.jpa.test}/${eclipselink-ddl-generation-model}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink-ddl-generation-model}.jar">
                <classpath>
                     <path refid="compile.path"/>
                     <path refid="run.classpath"/>
                </classpath>
         </weave>
-        <weave source= "${eclipselink-xml-only-model}.jar"
-               target = "woven-${eclipselink-xml-only-model}.jar">
+        <weave source= "${eclipselink.jpa.test}/${eclipselink-xml-only-model}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink-xml-only-model}.jar">
                <classpath>
                     <path refid="compile.path"/>
                     <path refid="run.classpath"/>
                </classpath>
         </weave>
-        <weave source= "${eclipselink-xml-merge-model}.jar"
-               target = "woven-${eclipselink-xml-merge-model}.jar">
+        <weave source= "${eclipselink.jpa.test}/${eclipselink-xml-merge-model}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink-xml-merge-model}.jar">
                <classpath>
                     <path refid="compile.path"/>
                     <path refid="run.classpath"/>
                </classpath>
         </weave>
-        <weave source= "${eclipselink-validation-failed-model}.jar"
-               target = "woven-${eclipselink-validation-failed-model}.jar">
+        <weave source= "${eclipselink.jpa.test}/${eclipselink-validation-failed-model}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink-validation-failed-model}.jar">
                <classpath>
                     <path refid="compile.path"/>
                     <path refid="run.classpath"/>
                </classpath>
         </weave>
-        <weave source= "${eclipselink-advanced-field-access-model}.jar"
-               target = "woven-${eclipselink-advanced-field-access-model}.jar">
+        <weave source= "${eclipselink.jpa.test}/${eclipselink-advanced-field-access-model}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink-advanced-field-access-model}.jar">
                <classpath>
                     <path refid="compile.path"/>
                     <path refid="run.classpath"/>
                </classpath>
         </weave>
-        <weave source= "${eclipselink-advanced-properties}.jar"
-               target = "woven-${eclipselink-advanced-properties}.jar">
+        <weave source= "${eclipselink.jpa.test}/${eclipselink-advanced-properties}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink-advanced-properties}.jar">
                <classpath>
                     <path refid="compile.path"/>
                     <path refid="run.classpath"/>
