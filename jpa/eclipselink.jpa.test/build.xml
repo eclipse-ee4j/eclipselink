@@ -236,7 +236,7 @@
 
     <!-- Default test target, runs FullRegressionTestSuite with agent. -->
     <target name="test">
-        <property name="test.agent" value="${eclipselink.jpa.test}/${eclipselink.jar.run}"/>
+        <property name="test.agent" value="-javaagent:${eclipselink.jpa.test}/${eclipselink.jar.run}"/>
         <property name="test.weaving" value="-Darg2=false"/>
         <antcall target="run.test" inheritRefs="true"/>
     </target>
