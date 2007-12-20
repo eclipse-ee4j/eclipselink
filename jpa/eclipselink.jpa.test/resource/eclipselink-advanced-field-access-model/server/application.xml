@@ -4,9 +4,9 @@
     <display-name>field-access</display-name>
     <description>field-access</description>
     <module>
-        <ejb>jpaadvancedfieldaccess_ejb.jar</ejb>
+        <ejb>eclipselink-advanced-field-access-model_ejb.jar</ejb>
     </module>
     <module>
-        <java>jpaadvancedfieldaccess_client.jar</java>
+        <java>eclipselink-advanced-field-access-model_client.jar</java>
     </module>
 </application>

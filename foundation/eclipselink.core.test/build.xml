@@ -15,6 +15,7 @@
 
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
+    <property file="${user.home}/test.properties"/>
     <property file="${eclipselink.core.test}/build.properties"/>
     <property file="${eclipselink.core.test}/${test.properties}"/>
 
@@ -54,7 +55,7 @@
     <!-- Translates the login information in the resources into the run directory. -->
     <target name="process.resource">
         <filter token="dbUser" value="${db.user}"/>
-        <filter token="dbPassword" value="${db.password}"/>
+        <filter token="dbPassword" value="${db.pwd}"/>
         <filter token="driverClass" value="${db.driver}"/>
         <filter token="dbURL" value="${db.url}"/>
         <filter token="loglevel" value="${logging.level}"/>
@@ -130,9 +131,10 @@
 
     <!-- Generic target for running tests. -->
     <target name="run.test">
-        <echo>Running test with ${eclipselink.core.test}/${test.properties} on ${db.url}</echo>
+        <echo>Running test with ${test.properties} on ${db.url}</echo>
+        <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
-        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.core.test}/${run.dir}">
+        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Dtest.properties=${test.properties.run}"/>
             <classpath>
@@ -148,7 +150,7 @@
             </fileset>
             <report format="noframes" todir="${eclipselink.core.test}/${report.dir}"/>
         </junitreport>
-        <fail message="Some of the junit tests failed.  See the ${eclipselink.core.test}/${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
+        <fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
     </target>
 
 </project>

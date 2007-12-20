@@ -47,7 +47,7 @@ import org.eclipse.persistence.testing.framework.server.TestRunner;
  * login.driverClass
  * 
  * If you are using the TestingBrowser, these properties come from the login panel instead.
- * If you are running the test in JEE the properties comr from the server config.
+ * If you are running the test in JEE the properties come from the server config.
  * This class should be used for all EntityManager operations to allow tests to be run in the server.
  */
 public abstract class JUnitTestCase extends TestCase {
@@ -69,7 +69,7 @@ public abstract class JUnitTestCase extends TestCase {
     public Boolean shouldRunTestOnServer;
     
     /** System variable to set the tests to run on the server. */
-    public static final String RUN_ON_SERVER = "run-on-server";
+    public static final String RUN_ON_SERVER = "server.run";
     
     static {
         emfNamedPersistenceUnits = new Hashtable();
@@ -151,7 +151,7 @@ public abstract class JUnitTestCase extends TestCase {
             getServerSession(persistenceUnitName).getIdentityMapAccessor().initializeAllIdentityMaps();
          } catch (Exception ex) {
             throw new  RuntimeException("An exception occurred trying clear the cache.", ex);
-        }   
+        }
     }
         
     /**
@@ -342,9 +342,9 @@ public abstract class JUnitTestCase extends TestCase {
     public void runBareClient() throws Throwable {
         Properties properties = new Properties();
         // TODO: make url platform independent.
-        String url = System.getProperty("oc4j-url");
+        String url = System.getProperty("server.url");
         if (url == null) {
-            fail("System property 'oc4j-url' must be set.");
+            fail("System property 'server.url' must be set.");
         }
         properties.put("java.naming.provider.url", url);
         Context context = new InitialContext(properties);

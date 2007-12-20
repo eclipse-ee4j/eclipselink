@@ -4,9 +4,9 @@
     <display-name>session-bean</display-name>
     <description>session-bean</description>
     <module>
-        <ejb>jpasessionbean_ejb.jar</ejb>
+        <ejb>eclipselink-sessionbean-model_ejb.jar</ejb>
     </module>
     <module>
-        <java>jpasessionbean_client.jar</java>
+        <java>eclipselink-sessionbean-model_client.jar</java>
     </module>
 </application>
