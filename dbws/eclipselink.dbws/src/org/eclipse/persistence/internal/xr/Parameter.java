@@ -62,12 +62,10 @@ public class Parameter {
 
         if (!type.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
             if (!xrService.schemaTypes.contains(type)) {
-                throw new DBWSException("Parameter type '" + type + "' for operation '"
-                    + operationName + "' does not exist in the schema");
+                throw DBWSException.parameterDoesNotExistForOperation(type.toString(), operationName);
             }
             if (!xrService.descriptorsByType.containsKey(type)) {
-                throw new DBWSException("Parameter type '" + type + "' for operation '"
-                    + operationName + "' has no TopLink O-X mapping");
+                throw DBWSException.parameterHasNoMapping(type.toString(), operationName);
             }
         }
     }

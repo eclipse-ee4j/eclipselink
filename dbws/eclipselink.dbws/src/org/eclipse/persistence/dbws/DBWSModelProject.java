@@ -44,8 +44,8 @@ import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
@@ -107,7 +107,7 @@ public class DBWSModelProject extends Project {
         sessionFile.setXPath("sessions-file/text()");
         descriptor.addMapping(sessionFile);
 
-        XMLAnyCollectionMapping operationsMapping = new XMLAnyCollectionMapping();
+        XMLChoiceCollectionMapping operationsMapping = new XMLChoiceCollectionMapping();
         operationsMapping.setAttributeName("operations");
         operationsMapping.setAttributeAccessor(new AttributeAccessor() {
             public Object getAttributeValueFromObject(Object object) {
@@ -127,6 +127,10 @@ public class DBWSModelProject extends Project {
                 }
             }
           });
+        operationsMapping.addChoiceElement("insert", InsertOperation.class);
+        operationsMapping.addChoiceElement("query", QueryOperation.class);
+        operationsMapping.addChoiceElement("update", UpdateOperation.class);
+        operationsMapping.addChoiceElement("delete", DeleteOperation.class);
         descriptor.addMapping(operationsMapping);
         return descriptor;
     }
@@ -157,8 +161,15 @@ public class DBWSModelProject extends Project {
         resultMapping.setXPath( "result");
         descriptor.addMapping(resultMapping);
 
-        XMLAnyObjectMapping queryHandlerMapping = new XMLAnyObjectMapping();
+        XMLChoiceObjectMapping queryHandlerMapping = new XMLChoiceObjectMapping();
         queryHandlerMapping.setAttributeName("queryHandler");
+        queryHandlerMapping.addChoiceElement("jpql", JPQLQueryHandler.class);
+        queryHandlerMapping.addChoiceElement("named-query", NamedQueryHandler.class);
+        queryHandlerMapping.addChoiceElement("sql", SQLQueryHandler.class);
+        queryHandlerMapping.addChoiceElement("stored-procedure",
+            StoredProcedureQueryHandler.class);
+        queryHandlerMapping.addChoiceElement("stored-function",
+            StoredFunctionQueryHandler.class);
         descriptor.addMapping(queryHandlerMapping);
 
         return descriptor;

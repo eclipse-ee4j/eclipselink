@@ -45,8 +45,6 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
-import org.eclipse.persistence.oxm.record.NodeRecord;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
 import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
 
@@ -89,14 +87,6 @@ public class WSDLGenerator {
     }
 
     public Definition generateWSDL() throws WSDLException {
-        // workaround for ant task support:
-        // WSDLFactory tries to load the class from the thread context
-        // classloader.
-        // Since ant does not modify the thread context classloader for each
-        // class, the
-        // WSDL jar would have to be on the system classpath, causing confusion
-        // and delay.
-        //WSDLFactory factory = new oracle.webservices.wsdl.WSDLFactoryImpl();
         WSDLFactory factory = WSDLFactory.newInstance();
         ExtensionRegistry registry = factory.newPopulatedExtensionRegistry();
 
@@ -261,19 +251,6 @@ public class WSDLGenerator {
             ComplexType requestType = new ComplexType();
             requestType.setName(op.getName() + TYPE_SUFFIX);
             Sequence requestSequence = new Sequence();
-            /*
-            <xsd:complexType name="create_empType">
-                <xsd:sequence>
-                    <xsd:element name="theInstance">
-                        <xsd:complexType>
-                            <xsd:sequence>
-                                <xsd:element name="emp" type="empType"/>
-                            </xsd:sequence>
-                        </xsd:complexType>
-                    </xsd:element>
-                </xsd:sequence>
-            </xsd:complexType>
-             */
             for (Parameter p : op.getParameters()) {
                 Element arg = new Element();
                 arg.setName(p.getName());
@@ -349,11 +326,8 @@ public class WSDLGenerator {
                 schema.addTopLevelElement(responseElement);
             }
         }
-
         XMLContext context = new XMLContext(project);
         XMLMarshaller marshaller = context.createMarshaller();
-        MarshalRecord marshalRecord = new NodeRecord();
-        marshaller.marshal(schema, marshalRecord);
-        return marshalRecord.getDOM();
+        return marshaller.objectToXML(schema).getDocumentElement();
     }
 }

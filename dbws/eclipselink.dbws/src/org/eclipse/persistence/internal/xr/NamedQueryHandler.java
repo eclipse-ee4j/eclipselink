@@ -55,20 +55,16 @@ public class NamedQueryHandler extends QueryHandler {
         if (descriptor != null) {
             if (!xrService.getORSession().getProject().getAliasDescriptors().
                 containsKey(descriptor)) {
-                throw new DBWSException("The descriptor '" + descriptor
-                    + "' for operation '" + getName()
-                    + "' does not exist in the TopLink O-R project");
+                throw DBWSException.couldNotLocateDescriptorForOperation(descriptor,getName());
             }
             ClassDescriptor cd = xrService.getORSession().getProject().
                 getDescriptorForAlias(descriptor);
             if (cd.getQueryManager().getQuery(name) == null) {
-                throw new DBWSException("The query '" + name
-                    + "' does not exist for descriptor '" + descriptor + "'");
+                throw DBWSException.couldNotLocateQueryForDescriptor(name, descriptor);
             }
         }
         else if (xrService.getORSession().getQuery(name) == null) {
-            throw new DBWSException("The query '" + name
-                + "' does not exist for session '" + xrService.getORSession().getName());
+            throw DBWSException.couldNotLocateQueryForSession(name,xrService.getORSession().getName());
         }
     }
 

@@ -122,8 +122,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
 
         if ((getInOutArguments().size() + getOutArguments().size()) > 1 &&
             !queryOperation.isSimpleXMLFormat()) {
-            throw new DBWSException(
-                "Only Simple XML Format queries support multiple output arguments");
+            throw DBWSException.multipleOutputArgumentsOnlySupportedForSimpleXML();
         }
 
         // find IN and INOUT parameters
@@ -139,7 +138,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
 
             if (arg != null && arg instanceof ProcedureOutputArgument) {
                 if (isCursorType(xrService, p.getType())) {
-                    throw new DBWSException("INOUT cursor parameters are not supported");
+                    throw DBWSException.inoutCursorArgumentsNotSupported();
                 }
                 spCall.addNamedInOutputArgument(argName, p.getName());
             } else {

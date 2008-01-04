@@ -117,12 +117,11 @@ public class QueryOperation extends Operation {
         if (resultType != null) {
             if (!resultType.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
                 if (!xrService.schemaTypes.contains(resultType)) {
-                    throw new DBWSException("result type '" + resultType + "' for operation '"
-                        + name + "' does not exist in the schema");
+                    throw DBWSException.resultDoesNotExistForOperation(resultType.toString(), name);
                 }
-                if (!xrService.descriptorsByType.containsKey(resultType)) {
-                    throw new DBWSException("result type '" + resultType + "' for operation '"
-                        + name + "' has no TopLink O-X mapping");
+                if (!(resultType.getLocalPart().equals("sxfType")) &&
+                    !xrService.descriptorsByType.containsKey(resultType)) {
+                    throw DBWSException.resultHasNoMapping(resultType.toString(), name);
                 }
             }
         }

@@ -232,7 +232,7 @@ public class XRServiceFactory  {
             }
         }
         if (!found) {
-            throw new DBWSException("Cannot find " + DBWS_SESSIONS_XML);
+            throw DBWSException.couldNotLocateFile(DBWS_SESSIONS_XML);
         }
         Map sessions = sessionManager.getSessions();
         String orSessionKey = xrService.name + "-" + DBWS_OR_SESSION_NAME_SUFFIX;
@@ -240,16 +240,14 @@ public class XRServiceFactory  {
             xrService.orSession = (Session)sessions.get(orSessionKey);
         }
         else {
-            throw new DBWSException("Cannot find O-R session for Service " +
-                xrService.name);
+            throw DBWSException.couldNotLocateORSessionForService(xrService.name);
         }
         String oxSessionKey = xrService.name + "-" + DBWS_OX_SESSION_NAME_SUFFIX;
         if (sessions.containsKey(oxSessionKey)) {
             xrService.oxSession = (Session)sessions.get(oxSessionKey);
         }
         else {
-            throw new DBWSException("Cannot find O-X session for Service " +
-                xrService.name);
+            throw DBWSException.couldNotLocateOXSessionForService(xrService.name);
         }
         ProjectHelper.fixOROXAccessors(xrService.orSession.getProject(),
             xrService.oxSession.getProject());

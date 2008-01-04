@@ -79,6 +79,18 @@ import static org.eclipse.persistence.tools.dbws.Util.InOut.RETURN;
  * 5) databaseMetaData.getProcedureColumns will not return the 'null' column for Stored Procedures
  *    that have no arguments, while USER_PROCEDURES (since 9.x) will
  *
+ * 6) When making a call java method to a pl/sql stored procedure, register an out parameter of
+ * type java.sql.Types.VARCHAR (statement.registerOutParameter(i, Types.VARCHAR). The procedure
+ * has an OUT parameter of type VARCHAR2 with a NOCOPY hint (parameter1 OUT NOCOPY  VARCHAR2).
+ * The pl/sql procedure throws an exception as soon as the size of 'parameter1' exceeds ~2000
+ * characters (~4000 bytes).
+ * 
+ * workaround : use oracle.jdbc.OracleTypes.VARCHAR
+ * 
+ * 7) databaseMetaData.getIndexInfo() does not work for VIEWS, a SQLException with the following
+ * "ORA-01702: a view is not appropriate here: can't retrieve indexInfo" is thrown
+ * (other platforms just ignore).
+ * 
  * For IBM AS/400 via JTOpen
  * 1) In the result set returned by DatabaseMetaData.getColumns(), the CHAR_OCTET_LENGTH and
  *    ORDINAL_POSITION columns are not supported in Toolbox versions prior to V5R1 (JTOpen 2.x).
@@ -97,6 +109,11 @@ import static org.eclipse.persistence.tools.dbws.Util.InOut.RETURN;
  *
  * ODBC-JDBC Bridge
  * 1) for MS-ACCESS getPrimaryKeys not supported
+ * 
+ * Apache Derby (a.k.a. JavaDB)
+ * 1) metadata for storedFunctions not available until JDK 6/JDBC 4
+ *    (Oracle returns metadata for storedFunctions via databaseMetaData.getProcedures()) 
+ * 
  */
 public class JDBCHelper {
 

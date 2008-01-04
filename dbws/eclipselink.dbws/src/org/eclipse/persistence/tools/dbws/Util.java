@@ -10,10 +10,7 @@
 
 package org.eclipse.persistence.tools.dbws;
 
-// Javase imports
-import java.util.ArrayList;
-
-import javax.xml.namespace.QName;
+// javase imports
 import static java.sql.Types.BIGINT;
 import static java.sql.Types.CHAR;
 import static java.sql.Types.DATE;
@@ -29,6 +26,7 @@ import static java.sql.Types.TIME;
 import static java.sql.Types.TIMESTAMP;
 import static java.sql.Types.TINYINT;
 import static java.sql.Types.VARCHAR;
+import javax.xml.namespace.QName;
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
@@ -65,12 +63,23 @@ public class Util {
         "META-INF/";
     public static final String WEB_INF_DIR =
         "WEB-INF/";
+    public static final String SWAREF_FILENAME =
+        "swaref.xsd";
+    public static final String WEB_XML_FILENAME =
+        "web.xml";
+    public static final String DEFAULT_PLATFORM_CLASSNAME = 
+        "org.eclipse.persistence.platform.database.oracle.OraclePlatform";
+    public static final String ORACLE_WEBSERVICES_FILENAME =
+        "oracle-webservices.xml";
     public static final String ORACLE_WEBSERVICES_FILE =
-        WEB_INF_DIR + "oracle-webservices.xml";
+        WEB_INF_DIR + ORACLE_WEBSERVICES_FILENAME;
+    public static final String WSDL_FILENAME =
+        "eclipselink-dbws.wsdl";
     public static final String WSDL_FILE =
-        WEB_INF_DIR + "wsdl/toplink-dbws.wsdl";
+        WEB_INF_DIR + "wsdl/" + WSDL_FILENAME;
     public static final String WAR_CLASSES_DIR =
         "classes/";
+    public static final String INDEX_DOT_HTML = "index.html";
     public static final String INDEX_HTML =
         "<html>\n" +
         "  <head>\n" +
@@ -136,8 +145,6 @@ public class Util {
         "update";
     public static final String REMOVE_OPERATION_NAME =
         "delete";
-    public static final String DEFAULT_PLATFORM_CLASSNAME =
-        "org.eclipse.persistence.platform.database.oracle.Oracle10Platform";
 
     public static final QName SXF_QNAME = new QName("", "sxfType");
     // TODO - expand to cover more cases
@@ -219,25 +226,6 @@ public class Util {
             }
         }
         return qName;
-    }
-
-    public static String convertJDBCParameterBindingMarkers(String sqlString, ArrayList<Binding> bindings) {
-        int idx = sqlString.indexOf("?");
-        if (idx == -1) {
-            return sqlString;
-        }
-        int argNumber = 0;
-        int anchorIdx = 0;
-        StringBuilder sb = new StringBuilder();
-        while (idx != -1) {
-            sb.append(sqlString.substring(anchorIdx, idx));
-            sb.append("#");
-            sb.append(bindings.get(argNumber).getName());
-            anchorIdx = idx + 1;
-            idx = sqlString.indexOf("?", anchorIdx);
-            argNumber++;
-        }
-        return sb.toString();
     }
 
     /*
