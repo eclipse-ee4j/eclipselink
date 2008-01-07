@@ -24,8 +24,6 @@ import org.eclipse.persistence.sequencing.Sequence;
  * @see DatasourcePlatform
  * @see DatabasePlatform
  * @see org.eclipse.persistence.eis.EISPlatform
- * @see deprecated.xml.XMLPlatform
- * @see deprecated.sdk.SDKPlatform
  *
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
