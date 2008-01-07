@@ -106,9 +106,13 @@
       </zip>
     </target>
 
-    <!-- test.jpa -->
+    <!-- test.core -->
     <target name="test.core" description="run the core tests">
         <ant antfile="${eclipselink.core.test}/build.xml" target="test"/>
+    </target>
+    <!-- test.core -->
+    <target name="test.core.srg" description="run the core tests">
+        <ant antfile="${eclipselink.core.test}/build.xml" target="test.srg"/>
     </target>
     <!-- test.jpa -->
     <target name="test.jpa" description="run the jpa tests">
