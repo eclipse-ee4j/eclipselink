@@ -1,17 +1,17 @@
 <project name="Eclipse Persistence Services" default="all" basedir=".">
 
     <property file="${user.home}/build.properties"/>
-    <property file="./build.properties"/>
+    <property file="build.properties"/>
 
-    <available file="${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
+    <available file="${eclipselink.jpa}/${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
 
     <target name="config-trunk" if="is.trunk">
         <path id="compile.path">
-            <pathelement path="${eclipselink.core.lib.trunk}/eclipselink-antlr.jar"/>
-            <pathelement path="${eclipselink.core.lib.trunk}/eclipselink-asm.jar"/>
-            <pathelement path="${eclipselink.core.trunk}/${classes.dir}"/>
+            <pathelement path="${eclipselink.jpa}/${eclipselink.core.lib.trunk}/eclipselink-antlr.jar"/>
+            <pathelement path="${eclipselink.jpa}/${eclipselink.core.lib.trunk}/eclipselink-asm.jar"/>
+            <pathelement path="${eclipselink.jpa}/${eclipselink.core.trunk}/${classes.dir}"/>
             <fileset
-                dir="${eclipselink.core.lib.trunk}"
+                dir="${eclipselink.jpa}/${eclipselink.core.lib.trunk}"
                 includes="${eclipselink.core.depend}"/>
         </path>
     </target>

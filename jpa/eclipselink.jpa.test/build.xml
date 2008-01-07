@@ -26,13 +26,13 @@
     <property file="${eclipselink.jpa.test}/${test.properties}"/>
 
     <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
-    <available file="${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
+    <available file="${eclipselink.jpa.test}/${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
 
     <!-- Configures paths for trunk checkout. -->
     <target name="config.trunk" if="is.trunk">
-        <property name="eclipselink.core.dir" value="${eclipselink.core.trunk}"/>
-        <property name="eclipselink.core.test.dir" value="${eclipselink.core.test.trunk}"/>
-        <property name="eclipselink.core.lib.dir" value="${eclipselink.core.lib.trunk}"/>
+        <property name="eclipselink.core.dir" value="${eclipselink.jpa.test}/${eclipselink.core.trunk}"/>
+        <property name="eclipselink.core.test.dir" value="${eclipselink.jpa.test}/${eclipselink.core.test.trunk}"/>
+        <property name="eclipselink.core.lib.dir" value="${eclipselink.jpa.test}/${eclipselink.core.lib.trunk}"/>
         <antcall target="config.compile-path" inheritRefs="true"/>
     </target>
 
