@@ -9,11 +9,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.validation;
 
-import org.eclipse.persistence.exceptions.CacheSynchCommunicationException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.exceptions.SynchronizationException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
@@ -32,11 +30,9 @@ public class ChainedExceptionTestCase extends AutoVerifyTestCase {
     private Exception internalException = null;
     private IllegalAccessException internalIllegalAccessException = null;
 
-    private CacheSynchCommunicationException cacheSynchCommunicationException = null;
     private DatabaseException databaseException = null;
     private DescriptorException descriptorException = null;
     private QueryException queryException = null;
-    private SynchronizationException synchronizationException = null;
     private ValidationException validationException = null;
 
     public ChainedExceptionTestCase() {
@@ -44,29 +40,18 @@ public class ChainedExceptionTestCase extends AutoVerifyTestCase {
     }
 
     public void setup() {
-        if (org.eclipse.persistence.Version.isJDK13()) {
-            throw new TestWarningException("Exception Chaining only works on JDK 1.4 and later.");
-        }
         internalException = new Exception("Test Exception");
         internalIllegalAccessException = new IllegalAccessException("Test Exception");
     }
 
     public void test() {
-        cacheSynchCommunicationException = CacheSynchCommunicationException.failedToReconnect(null, internalException);
         databaseException = DatabaseException.configurationErrorNewInstanceIllegalAccessException(internalIllegalAccessException, java.lang.Object.class);
         descriptorException = DescriptorException.couldNotInstantiateIndirectContainerClass(java.lang.Object.class, internalException);
         queryException = QueryException.cannotAddElement(new Object(), new Object(), internalException);
-        synchronizationException = SynchronizationException.errorBindingController("registryName", internalException);
         validationException = ValidationException.ejbInvalidProjectClass("projectClassName", "projectName", internalException);
     }
 
     public void verify() {
-        if ((cacheSynchCommunicationException.getInternalException() != cacheSynchCommunicationException.getCause()) || (cacheSynchCommunicationException.getCause() != internalException)) {
-            throw new TestErrorException("JDK 1.4 Exception Chaining does not work correctly for CacheSynchCommunicationException.");
-        }
-        if (cacheSynchCommunicationException.getMessage().indexOf(ExceptionMessageGenerator.getHeader("InternalExceptionHeader")) < 0) {
-            throw new TestErrorException("JDK 1.4 Exception chaining does not include internal exception in getMessage().");
-        }
 
         if ((databaseException.getInternalException() != databaseException.getCause()) || (databaseException.getCause() != internalIllegalAccessException)) {
             throw new TestErrorException("JDK 1.4 Exception Chaining does not work correctly for DatabaseException.");
@@ -78,10 +63,6 @@ public class ChainedExceptionTestCase extends AutoVerifyTestCase {
 
         if ((queryException.getInternalException() != queryException.getCause()) || (queryException.getCause() != internalException)) {
             throw new TestErrorException("JDK 1.4 Exception Chaining does not work correctly for QueryException.");
-        }
-
-        if ((synchronizationException.getInternalException() != synchronizationException.getCause()) || (synchronizationException.getCause() != internalException)) {
-            throw new TestErrorException("JDK 1.4 Exception Chaining does not work correctly for SynchronizationException.");
         }
 
         if ((validationException.getInternalException() != validationException.getCause()) || (validationException.getCause() != internalException)) {

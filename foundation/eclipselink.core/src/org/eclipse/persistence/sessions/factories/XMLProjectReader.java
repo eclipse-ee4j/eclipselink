@@ -28,7 +28,7 @@ import org.eclipse.persistence.internal.sessions.factories.*;
 /**
  * <p><b>Purpose</b>: Allow for a TopLink Mapping Workbench generated deployment XML project file to be read.
  * This reader returns an instance of Project to be used to initialize a TopLink session.
- * This class supports reading the 11g 11.1.1 and 10g 10.1.3 and (currently) the 9.0.4/10.1.2 formats.
+ * This class supports reading the 11g 11.1.1 and 10g 10.1.3.
  *
  * @since TopLink 3.0
  * @author James Sutherland

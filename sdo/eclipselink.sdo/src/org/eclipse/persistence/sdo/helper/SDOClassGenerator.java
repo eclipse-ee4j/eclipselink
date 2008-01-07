@@ -202,12 +202,6 @@ public class SDOClassGenerator {
         return generate(xsdSource, aCodeWriter, schemaResolver, true);
     }
 
-    /**
-     * @deprecated December 1st, 2006
-     */
-    public Map generate(Schema schema, CodeWriter aCodeWriter) {
-        throw new UnsupportedOperationException();
-    }
 
     public Map generate(Source xsdSource, CodeWriter aCodeWriter, SchemaResolver schemaResolver, boolean bProcessImports) {
         SDOTypesGenerator gen = new SDOTypesGenerator(aHelperContext);

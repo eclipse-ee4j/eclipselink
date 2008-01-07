@@ -31,7 +31,6 @@ import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.sessions.factories.model.*;
-import org.eclipse.persistence.internal.sessions.factories.model.csm.*;
 import org.eclipse.persistence.internal.sessions.factories.model.rcm.*;
 import org.eclipse.persistence.internal.sessions.factories.model.rcm.command.*;
 import org.eclipse.persistence.internal.sessions.factories.model.log.*;
@@ -44,7 +43,6 @@ import org.eclipse.persistence.internal.sessions.factories.model.session.*;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.*;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.oc4j.*;
 import org.eclipse.persistence.internal.sessions.factories.model.property.*;
-import org.eclipse.persistence.internal.sessions.factories.model.clustering.*;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.*;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.discovery.*;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.naming.*;
@@ -115,15 +113,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
     public XMLSessionConfigProject() {
         setName("XMLSessionConfigProject");
         addDescriptor(buildSessionConfigsDescriptor());
-        addDescriptor(buildClusteringServiceConfigDescriptor());
-        addDescriptor(buildJMSClusteringConfigDescriptor());
-        addDescriptor(buildRMIClusteringConfigDescriptor());
-        addDescriptor(buildRMIIIOPJNDIClusteringConfigDescriptor());
-        addDescriptor(buildRMIJNDIClusteringConfigDescriptor());
         addDescriptor(buildSunCORBATransportManagerConfigDescriptor());
-        addDescriptor(buildSunCORBAJNDIClusteringConfigDescriptor());
-        addDescriptor(buildWLSClusteringConfigDescriptor());
-        addDescriptor(buildCacheSynchronizationManagerConfigDescriptor());
         addDescriptor(buildSessionEventManagerConfigDescriptor());
         addDescriptor(buildDefaultSessionLogConfigDescriptor());
         addDescriptor(buildLoggingOptionsConfigDescriptor());
@@ -151,7 +141,6 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         addDescriptor(buildTransportManagerConfigDescriptor());
         addDescriptor(buildUserDefinedTransportManagerConfigDescriptor());
         addDescriptor(buildDiscoveryConfigDescriptor());
-        addDescriptor(buildJNDIClusteringConfigDescriptor());
         addDescriptor(buildJNDINamingServiceConfigDescriptor());
         addDescriptor(buildPropertyConfigDescriptor());
         addDescriptor(buildRMIRegistryNamingServiceConfigDescriptor());
@@ -201,80 +190,6 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         this.setDatasourceLogin(xmlLogin);
     }
 
-    public ClassDescriptor buildCacheSynchronizationManagerConfigDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(CacheSynchronizationManagerConfig.class);
-
-        XMLCompositeObjectMapping clusteringServiceMapping = new XMLCompositeObjectMapping();
-        clusteringServiceMapping.setReferenceClass(ClusteringServiceConfig.class);
-        clusteringServiceMapping.setAttributeName("m_clusteringService");
-        clusteringServiceMapping.setGetMethodName("getClusteringServiceConfig");
-        clusteringServiceMapping.setSetMethodName("setClusteringServiceConfig");
-        clusteringServiceMapping.setXPath("clustering-service");
-        descriptor.addMapping(clusteringServiceMapping);
-
-        XMLDirectMapping isAsynchronousMapping = new XMLDirectMapping();
-        isAsynchronousMapping.setAttributeName("m_isAsynchronous");
-        isAsynchronousMapping.setGetMethodName("getIsAsynchronous");
-        isAsynchronousMapping.setSetMethodName("setIsAsynchronous");
-        isAsynchronousMapping.setXPath("asynchronous/text()");
-        isAsynchronousMapping.setNullValue(new Boolean(IS_ASYNCHRONOUS_DEFAULT));
-        descriptor.addMapping(isAsynchronousMapping);
-
-        XMLDirectMapping removeConnectionOnErrorMapping = new XMLDirectMapping();
-        removeConnectionOnErrorMapping.setAttributeName("m_removeConnectionOnError");
-        removeConnectionOnErrorMapping.setGetMethodName("getRemoveConnectionOnError");
-        removeConnectionOnErrorMapping.setSetMethodName("setRemoveConnectionOnError");
-        removeConnectionOnErrorMapping.setXPath("remove-connection-on-error/text()");
-        removeConnectionOnErrorMapping.setNullValue(new Boolean(REMOVE_CONNECTION_ON_ERROR_DEFAULT));
-        descriptor.addMapping(removeConnectionOnErrorMapping);
-
-        return descriptor;
-    }
-
-    public ClassDescriptor buildClusteringServiceConfigDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(ClusteringServiceConfig.class);
-
-        descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
-        descriptor.getInheritancePolicy().addClassIndicator(WLSClusteringConfig.class, "wls-clustering");
-        descriptor.getInheritancePolicy().addClassIndicator(RMIClusteringConfig.class, "rmi-clustering");
-        descriptor.getInheritancePolicy().addClassIndicator(JMSClusteringConfig.class, "jms-clustering");
-        descriptor.getInheritancePolicy().addClassIndicator(RMIJNDIClusteringConfig.class, "rmi-jndi-clustering");
-        descriptor.getInheritancePolicy().addClassIndicator(RMIIIOPJNDIClusteringConfig.class, "rmi-iiop-jndi-clustering");
-        descriptor.getInheritancePolicy().addClassIndicator(SunCORBAJNDIClusteringConfig.class, "sun-corba-jndi-clustering");
-
-        XMLDirectMapping multicastPortMapping = new XMLDirectMapping();
-        multicastPortMapping.setAttributeName("m_multicastPort");
-        multicastPortMapping.setGetMethodName("getMulticastPort");
-        multicastPortMapping.setSetMethodName("setMulticastPort");
-        multicastPortMapping.setXPath("multicast-port/text()");
-        multicastPortMapping.setNullValue(new Integer(MULTICAST_PORT_RMI_CLUSTERING_DEFAULT));
-        descriptor.addMapping(multicastPortMapping);
-
-        XMLDirectMapping multicastGroupAddressMapping = new XMLDirectMapping();
-        multicastGroupAddressMapping.setAttributeName("m_multicastGroupAddress");
-        multicastGroupAddressMapping.setGetMethodName("getMulticastGroupAddress");
-        multicastGroupAddressMapping.setSetMethodName("setMulticastGroupAddress");
-        multicastGroupAddressMapping.setXPath("multicast-group-address/text()");
-        multicastGroupAddressMapping.setNullValue(MULTICAST_GROUP_ADDRESS_RMI_CLUSTERING);
-        descriptor.addMapping(multicastGroupAddressMapping);
-
-        XMLDirectMapping packetTimeToLiveMapping = new XMLDirectMapping();
-        packetTimeToLiveMapping.setAttributeName("m_packetTimeToLive");
-        packetTimeToLiveMapping.setGetMethodName("getPacketTimeToLive");
-        packetTimeToLiveMapping.setSetMethodName("setPacketTimeToLive");
-        packetTimeToLiveMapping.setXPath("packet-time-to-live/text()");
-        packetTimeToLiveMapping.setNullValue(new Integer(PACKET_TIME_TO_LIVE_DEFAULT));
-        descriptor.addMapping(packetTimeToLiveMapping);
-        XMLDirectMapping namingServiceURLMapping = new XMLDirectMapping();
-        namingServiceURLMapping.setAttributeName("m_namingServiceURL");
-        namingServiceURLMapping.setGetMethodName("getNamingServiceURL");
-        namingServiceURLMapping.setSetMethodName("setNamingServiceURL");
-        namingServiceURLMapping.setXPath("naming-service-url/text()");
-        descriptor.addMapping(namingServiceURLMapping);
-        return descriptor;
-    }
 
     public ClassDescriptor buildCommandsConfigDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -709,28 +624,6 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         return descriptor;
     }
 
-    public ClassDescriptor buildJMSClusteringConfigDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(JMSClusteringConfig.class);
-        descriptor.getInheritancePolicy().setParentClass(JNDIClusteringServiceConfig.class);
-
-        XMLDirectMapping jmsTopicConnectionFactoryNameMapping = new XMLDirectMapping();
-        jmsTopicConnectionFactoryNameMapping.setAttributeName("m_jmsTopicConnectionFactoryName");
-        jmsTopicConnectionFactoryNameMapping.setGetMethodName("getJMSTopicConnectionFactoryName");
-        jmsTopicConnectionFactoryNameMapping.setSetMethodName("setJMSTopicConnectionFactoryName");
-        jmsTopicConnectionFactoryNameMapping.setXPath("jms-topic-connection-factory-name/text()");
-        descriptor.addMapping(jmsTopicConnectionFactoryNameMapping);
-
-        XMLDirectMapping jmsTopicNameMapping = new XMLDirectMapping();
-        jmsTopicNameMapping.setAttributeName("m_jmsTopicName");
-        jmsTopicNameMapping.setGetMethodName("getJMSTopicName");
-        jmsTopicNameMapping.setSetMethodName("setJMSTopicName");
-        jmsTopicNameMapping.setXPath("jms-topic-name/text()");
-        descriptor.addMapping(jmsTopicNameMapping);
-
-        return descriptor;
-    }
-
     public ClassDescriptor buildJMSTopicTransportManagerConfigDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(JMSTopicTransportManagerConfig.class);
@@ -770,32 +663,6 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         return descriptor;
     }
 
-    public ClassDescriptor buildJNDIClusteringConfigDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(JNDIClusteringServiceConfig.class);
-        descriptor.getInheritancePolicy().setParentClass(ClusteringServiceConfig.class);
-        XMLDirectMapping jndiUsernameMapping = new XMLDirectMapping();
-        jndiUsernameMapping.setAttributeName("m_jndiUsername");
-        jndiUsernameMapping.setGetMethodName("getJNDIUsername");
-        jndiUsernameMapping.setSetMethodName("setJNDIUsername");
-        jndiUsernameMapping.setXPath("jndi-user-name/text()");
-        descriptor.addMapping(jndiUsernameMapping);
-
-        XMLDirectMapping jndiPasswordMapping = new XMLDirectMapping();
-        jndiPasswordMapping.setAttributeName("m_jndiPassword");
-        jndiPasswordMapping.setGetMethodName("getJNDIPassword");
-        jndiPasswordMapping.setSetMethodName("setJNDIPassword");
-        jndiPasswordMapping.setXPath("jndi-password/text()");
-        descriptor.addMapping(jndiPasswordMapping);
-
-        XMLDirectMapping namingServiceInitialContextFactoryNameMapping = new XMLDirectMapping();
-        namingServiceInitialContextFactoryNameMapping.setAttributeName("m_namingServiceInitialContextFactoryName");
-        namingServiceInitialContextFactoryNameMapping.setGetMethodName("getNamingServiceInitialContextFactoryName");
-        namingServiceInitialContextFactoryNameMapping.setSetMethodName("setNamingServiceInitialContextFactoryName");
-        namingServiceInitialContextFactoryNameMapping.setXPath("naming-service-initial-context-factory-name/text()");
-        descriptor.addMapping(namingServiceInitialContextFactoryNameMapping);
-        return descriptor;
-    }
 
     public ClassDescriptor buildJNDINamingServiceConfigDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -1100,20 +967,6 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         return descriptor;
     }
 
-    public ClassDescriptor buildRMIClusteringConfigDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(RMIClusteringConfig.class);
-        descriptor.getInheritancePolicy().setParentClass(ClusteringServiceConfig.class);
-
-        return descriptor;
-    }
-
-    public ClassDescriptor buildRMIIIOPJNDIClusteringConfigDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(RMIIIOPJNDIClusteringConfig.class);
-        descriptor.getInheritancePolicy().setParentClass(JNDIClusteringServiceConfig.class);
-        return descriptor;
-    }
 
     public ClassDescriptor buildRMIIIOPTransportManagerConfigDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -1122,12 +975,6 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         return descriptor;
     }
 
-    public ClassDescriptor buildRMIJNDIClusteringConfigDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(RMIJNDIClusteringConfig.class);
-        descriptor.getInheritancePolicy().setParentClass(JNDIClusteringServiceConfig.class);
-        return descriptor;
-    }
 
     public ClassDescriptor buildRMIRegistryNamingServiceConfigDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -1375,13 +1222,6 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         remoteCommandManagerConfigMapping.setXPath("remote-command");
         descriptor.addMapping(remoteCommandManagerConfigMapping);
 
-        XMLCompositeObjectMapping cacheSynchronizationManagerConfigMapping = new XMLCompositeObjectMapping();
-        cacheSynchronizationManagerConfigMapping.setReferenceClass(CacheSynchronizationManagerConfig.class);
-        cacheSynchronizationManagerConfigMapping.setAttributeName("m_cacheSynchronizationManagerConfig");
-        cacheSynchronizationManagerConfigMapping.setGetMethodName("getCacheSynchronizationManagerConfig");
-        cacheSynchronizationManagerConfigMapping.setSetMethodName("setCacheSynchronizationManagerConfig");
-        cacheSynchronizationManagerConfigMapping.setXPath("cache-synchronization-manager");
-        descriptor.addMapping(cacheSynchronizationManagerConfigMapping);
 
         XMLCompositeObjectMapping sessionEventManagerConfigMapping = new XMLCompositeObjectMapping();
         sessionEventManagerConfigMapping.setReferenceClass(SessionEventManagerConfig.class);
@@ -1437,12 +1277,6 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         return descriptor;
     }
 
-    public ClassDescriptor buildSunCORBAJNDIClusteringConfigDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(SunCORBAJNDIClusteringConfig.class);
-        descriptor.getInheritancePolicy().setParentClass(JNDIClusteringServiceConfig.class);
-        return descriptor;
-    }
 
     public ClassDescriptor buildSunCORBATransportManagerConfigDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -1509,13 +1343,6 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         transportClassMapping.setXPath("transport-class/text()");
         descriptor.addMapping(transportClassMapping);
 
-        return descriptor;
-    }
-
-    public ClassDescriptor buildWLSClusteringConfigDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(WLSClusteringConfig.class);
-        descriptor.getInheritancePolicy().setParentClass(ClusteringServiceConfig.class);
         return descriptor;
     }
 

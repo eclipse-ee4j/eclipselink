@@ -20,7 +20,6 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
-import org.eclipse.persistence.sessions.remote.CacheSynchronizationManager;
 
 /**
  * <p>
@@ -371,14 +370,6 @@ public interface Session {
 
     /**
      * ADVANCED:
-     * Returns the Synchronization Policy for this session.
-     * @deprecated since OracleAS TopLink 10<i>g</i> (10.1.3).  This method is replaced by
-     *         {@link DatabaseSession.getCommandManager()}
-     */
-    public CacheSynchronizationManager getCacheSynchronizationManager();
-
-    /**
-     * ADVANCED:
      * Return the descriptor specified for the class.
      * If the class does not have a descriptor but implements an interface that is also implemented
      * by one of the classes stored in the hashtable, that descriptor will be stored under the
@@ -573,11 +564,6 @@ public interface Session {
      */
     public Object handleException(RuntimeException exception) throws RuntimeException;
 
-    /**
-     * ADVANCED:
-     * Return true if a synchronisation policy exists
-     */
-    public boolean hasCacheSynchronizationManager();
 
     /**
      * ADVANCED:
@@ -783,13 +769,6 @@ public interface Session {
      */
     public void removeQuery(String queryName);
 
-    /**
-     * ADVANCED:
-     * Sets synchronization policy for this session.
-     * @deprecated since OracleAS TopLink 10<i>g</i> (10.1.3).  This method is replaced by
-     *         {@link DatabaseSession.setCommandManager(CommandManager)}
-     */
-    public void setCacheSynchronizationManager(CacheSynchronizationManager synchronizationManager);
 
     /**
      * PUBLIC:

@@ -79,7 +79,7 @@ public class SessionBroker extends DatabaseSessionImpl {
         SessionBroker clientBroker = copySessionBroker();
         clientBroker.getIdentityMapAccessorInstance().setIdentityMapManager(getIdentityMapAccessorInstance().getIdentityMapManager());
         clientBroker.commitManager = getCommitManager();
-        clientBroker.cacheSynchronizationManager = getCacheSynchronizationManager();
+        clientBroker.commandManager = getCommandManager();
         clientBroker.externalTransactionController = getExternalTransactionController();
         String sessionName;
         AbstractSession ssession;
@@ -677,8 +677,8 @@ public class SessionBroker extends DatabaseSessionImpl {
                 }
             }
             initializeDescriptors();
-            if (getCacheSynchronizationManager() != null) {
-                getCacheSynchronizationManager().initialize();
+            if(getCommandManager()!=null) {
+                getCommandManager().initialize();
             }
             isLoggedIn = true;
         }

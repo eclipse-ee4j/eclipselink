@@ -37,10 +37,6 @@ public class MemoryQueryLike extends TestCase {
     }
 
     public void setup() {
-        if (Version.isJDK13()) {
-            throw new TestWarningException("Conforming queries with 'Like' only work in JDK 1.4 and above.");
-        }
-
         // read all the employees into the cache.
         getSession().readAllObjects(Employee.class);
     }

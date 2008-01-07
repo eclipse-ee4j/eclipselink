@@ -50,7 +50,6 @@ public class TIMESTAMPHelper {
         gCal.getTimeZone().setID(tz.getID());
         gCal.getTimeZone().setRawOffset(tz.getRawOffset());
 
-        assignMillisecond(gCal, ts);
         return gCal;
     }
 
@@ -76,14 +75,6 @@ public class TIMESTAMPHelper {
         return gCal;
     }
 
-    /**
-     * Assign milliseconds to Calendar specifically for JDK13 to overcome the bug.
-     */
-    public static void assignMillisecond(Calendar cal, Timestamp ts) {
-        if (Version.isJDK13() && ((cal.get(Calendar.MILLISECOND) * 1000000d) != (double)ts.getNanos())) {
-            cal.set(Calendar.MILLISECOND, (int)(((double)ts.getNanos()) / 1000000d));
-        }
-    }
 
     /**
      * Build a calendar string based on the calendar fields.  includeTimeZone indicates

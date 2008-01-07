@@ -22,8 +22,6 @@ import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.logging.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.coordination.*;
-import org.eclipse.persistence.sessions.remote.jms.JMSClusteringService;
-import org.eclipse.persistence.sessions.remote.rmi.RMIClusteringService;
 import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
 import org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager;
@@ -56,7 +54,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.factories.model.*;
 import org.eclipse.persistence.internal.sessions.factories.model.log.*;
-import org.eclipse.persistence.internal.sessions.factories.model.csm.*;
 import org.eclipse.persistence.internal.sessions.factories.model.pool.*;
 import org.eclipse.persistence.internal.sessions.factories.model.rcm.*;
 import org.eclipse.persistence.internal.sessions.factories.model.rcm.command.*;
@@ -67,7 +64,6 @@ import org.eclipse.persistence.internal.sessions.factories.model.sequencing.*;
 import org.eclipse.persistence.internal.sessions.factories.model.session.*;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.*;
 import org.eclipse.persistence.internal.sessions.factories.model.property.*;
-import org.eclipse.persistence.internal.sessions.factories.model.clustering.*;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.*;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.naming.*;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.discovery.*;
@@ -788,9 +784,6 @@ public class SessionsFactory {
             session.setSessionLog(log);
         }
 
-        // Cache synchronization
-        session.setCacheSynchronizationManager(buildCacheSynchronizationManagerConfig(sessionConfig.getCacheSynchronizationManagerConfig(), session));
-
         // Remote command manager    
         buildRemoteCommandManagerConfig(sessionConfig.getRemoteCommandManagerConfig(), session);
 
@@ -1170,16 +1163,12 @@ public class SessionsFactory {
      */
     private SessionLog buildJavaLogConfig(JavaLogConfig javaLogConfig, AbstractSession session) {
         SessionLog javaLog = null;
-        if (!Version.isJDK13()) {
-            try {
-                // use ConversionManager to avoid loading the JDK 1.4 class unless it is needed.
-                javaLog = (SessionLog)((Class)ConversionManager.getDefaultManager().convertObject("org.eclipse.persistence.logging.JavaLog", Class.class)).newInstance();
-                javaLog.setSession(session);
-            } catch (Exception exception) {
-                throw ValidationException.unableToLoadClass("org.eclipse.persistence.logging.JavaLog", exception);
-            }
-        } else {
-            throw ValidationException.featureIsNotAvailableInRunningJDKVersion("Java Log");
+        try {
+            // use ConversionManager to avoid loading the JDK 1.4 class unless it is needed.
+            javaLog = (SessionLog)((Class)ConversionManager.getDefaultManager().convertObject("org.eclipse.persistence.logging.JavaLog", Class.class)).newInstance();
+            javaLog.setSession(session);
+        } catch (Exception exception) {
+            throw ValidationException.unableToLoadClass("org.eclipse.persistence.logging.JavaLog", exception);
         }
 
         // Process the common elements from LogConfig
@@ -1240,121 +1229,6 @@ public class SessionsFactory {
         }
     }
 
-    /**
-     * INTERNAL:
-     */
-    private CacheSynchronizationManager buildCacheSynchronizationManagerConfig(CacheSynchronizationManagerConfig csmConfig, AbstractSession session) {
-        CacheSynchronizationManager csm = null;
-
-        if (csmConfig != null) {
-            csm = new CacheSynchronizationManager();
-
-            // Is asynchronous - XML Schema default is true
-            csm.setIsAsynchronous(csmConfig.getIsAsynchronous());
-
-            // Remove connection on error - XML Schema default is true
-            csm.setShouldRemoveConnectionOnError(csmConfig.getRemoveConnectionOnError());
-
-            // Clustering service
-            AbstractClusteringService clusteringService = buildClusteringService(csmConfig.getClusteringServiceConfig(), session);
-            if (clusteringService != null) {
-                csm.setClusteringService(clusteringService);
-            }
-        }
-
-        return csm;
-    }
-
-    /**
-     * INTERNAL:
-     * Build the correct clustering service type based on the clustering config type.
-     */
-    private AbstractClusteringService buildClusteringService(ClusteringServiceConfig csConfig, AbstractSession session) {
-    	if (csConfig instanceof RMIClusteringConfig) {
-            return buildRMIClusteringConfig((RMIClusteringConfig)csConfig, session);
-        } else if (csConfig instanceof JMSClusteringConfig) {
-            return buildJMSClusteringConfig((JMSClusteringConfig)csConfig, session);
-        } else if (csConfig instanceof RMIJNDIClusteringConfig) {
-            return buildRMIJNDIClusteringConfig((RMIJNDIClusteringConfig)csConfig, session);
-        } else if (csConfig instanceof RMIIIOPJNDIClusteringConfig) {
-            return buildRMIIIOPJNDIClusteringConfig((RMIIIOPJNDIClusteringConfig)csConfig, session);
-        } else if (csConfig instanceof SunCORBAJNDIClusteringConfig) {
-            return buildSunCORBAJNDIClusteringConfig((SunCORBAJNDIClusteringConfig)csConfig, session);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Builds an RMI Clustering service from the given ClusteringConfig.
-     */
-    private AbstractClusteringService buildRMIClusteringConfig(RMIClusteringConfig csConfig, AbstractSession session) {
-        RMIClusteringService cs = new RMIClusteringService(session);
-
-        // Process the common elements in ClusteringServiceConfig
-        processClusteringServiceConfig(csConfig, cs);
-
-        return cs;
-    }
-
-    /**
-     * INTERNAL:
-     * Builds a JMS Clustering service from the given ClusteringConfig.
-     */
-    private AbstractClusteringService buildJMSClusteringConfig(JMSClusteringConfig csConfig, AbstractSession session) {
-        JMSClusteringService cs = new JMSClusteringService(session);
-
-        // Topic connection factory name - null is handled in the clustering service
-        cs.setTopicConnectionFactoryName(csConfig.getJMSTopicConnectionFactoryName());
-
-        // Topic name - null is handled in the clustering service
-        cs.setTopicName(csConfig.getJMSTopicName());
-
-        // Process the common elements in JNDIClusteringServiceConfig
-        processJNDIClusteringServiceConfig(csConfig, cs);
-
-        return cs;
-    }
-
-    /**
-     * INTERNAL:
-     * Builds an RMI JNDI Clustering service from the given ClusteringConfig.
-     */
-    private AbstractClusteringService buildRMIJNDIClusteringConfig(RMIJNDIClusteringConfig csConfig, AbstractSession session) {
-        org.eclipse.persistence.sessions.remote.rmi.RMIJNDIClusteringService cs = new org.eclipse.persistence.sessions.remote.rmi.RMIJNDIClusteringService(session);
-
-        // Process the common elements in JNDIClusteringServiceConfig
-        processJNDIClusteringServiceConfig(csConfig, cs);
-
-        return cs;
-    }
-
-    /**
-     * INTERNAL:
-     * Builds an RMI-IIOP JNDI Clustering service from the given ClusteringConfig.
-     */
-    private AbstractClusteringService buildRMIIIOPJNDIClusteringConfig(RMIIIOPJNDIClusteringConfig csConfig, AbstractSession session) {
-        org.eclipse.persistence.sessions.remote.rmi.iiop.RMIJNDIClusteringService cs = new org.eclipse.persistence.sessions.remote.rmi.iiop.RMIJNDIClusteringService(session);
-
-        // Process the common elements in JNDIClusteringServiceConfig
-        processJNDIClusteringServiceConfig(csConfig, cs);
-
-        return cs;
-    }
-
-    /**
-     * INTERNAL:
-     * Builds a Sun CORBA JNDI Clustering service from the given ClusteringConfig.
-     */
-    private AbstractClusteringService buildSunCORBAJNDIClusteringConfig(SunCORBAJNDIClusteringConfig csConfig, AbstractSession session) {
-        org.eclipse.persistence.sessions.remote.corba.sun.CORBAJNDIClusteringService cs = new org.eclipse.persistence.sessions.remote.corba.sun.CORBAJNDIClusteringService(session);
-
-        // Process the common elements in JNDIClusteringServiceConfig
-        processJNDIClusteringServiceConfig(csConfig, cs);
-
-        return cs;
-    }
 
     /**
      * INTERNAL:
@@ -1368,60 +1242,6 @@ public class SessionsFactory {
 
         // Process the common elements in TransportManagerConfig
         processTransportManagerConfig(tmConfig, tm);
-    }
-
-    /**
-     * INTERNAL:
-     * Process the common elements of a ClusteringServiceConfig
-     */
-    private void processClusteringServiceConfig(ClusteringServiceConfig csConfig, AbstractClusteringService cs) {
-        // Multicast port - XML Schema default is 6018
-        Integer multicastPort = csConfig.getMulticastPort();
-        if (multicastPort != null) {
-            cs.setMulticastPort(multicastPort.intValue());
-        }
-
-        // Multicast group address - XML Schema default is 226.18.6.18
-        cs.setMulticastGroupAddress(csConfig.getMulticastGroupAddress());
-
-        // Packet time to live - XML Schema default is 2
-        Integer timeToLive = csConfig.getPacketTimeToLive();
-        if (timeToLive != null) {
-            cs.setTimeToLive(timeToLive.intValue());
-        }
-
-        // Naming Service URL
-        String localHostURL = csConfig.getNamingServiceURL();
-        if (localHostURL != null) {
-            cs.setLocalHostURL(localHostURL);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Process the common elements of a ClusteringServiceConfig
-     */
-    private void processJNDIClusteringServiceConfig(JNDIClusteringServiceConfig csConfig, AbstractJNDIClusteringService cs) {
-        // JNDI username
-        String jndiUsername = csConfig.getJNDIUsername();
-        if (jndiUsername != null) {
-            cs.setUserName(jndiUsername);
-        }
-
-        // JNDI password
-        String jndiPassword = csConfig.getJNDIPassword();
-        if (jndiPassword != null) {
-            cs.setPassword(jndiPassword);
-        }
-
-        // Naming service initial context factory
-        String initialContextFactoryName = csConfig.getNamingServiceInitialContextFactoryName();
-        if (initialContextFactoryName != null) {
-            cs.setInitialContextFactoryName(initialContextFactoryName);
-        }
-
-        // Process the common elements in ClusteringServiceConfig
-        processClusteringServiceConfig(csConfig, cs);
     }
 
     /**

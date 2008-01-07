@@ -26,6 +26,7 @@ public class SessionLoaderException extends EclipseLinkException {
     public static final int UNKNOWN_ATTRIBUTE_OF_TAG = 9009;
     public static final int XML_SCHEMA_PARSING_ERROR = 9010;
     public static final int SERVER_PLATFORM_NO_LONGER_SUPPORTED = 9011;
+    public static final int INVALID_SESSION_XML = 9012;
     private Vector exceptionList;
 
     /**
@@ -150,6 +151,15 @@ public class SessionLoaderException extends EclipseLinkException {
         return sessionLoaderException;
     }
 
+    public static SessionLoaderException InvalidSessionXML() {
+        Object[] args = {};
+
+        SessionLoaderException sessionLoaderException = new SessionLoaderException(ExceptionMessageGenerator.buildMessage(SessionLoaderException.class, INVALID_SESSION_XML, args));
+        sessionLoaderException.setErrorCode(INVALID_SESSION_XML);
+        return sessionLoaderException;
+    }
+
+    
     public void setExceptionList(Vector list) {
         this.exceptionList = list;
     }

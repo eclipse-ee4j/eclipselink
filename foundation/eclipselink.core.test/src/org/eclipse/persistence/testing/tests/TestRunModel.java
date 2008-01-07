@@ -141,7 +141,6 @@ public class TestRunModel extends TestModel {
             tests.addElement("org.eclipse.persistence.testing.tests.remote.RMIRemoteModel");
             tests.addElement("org.eclipse.persistence.testing.tests.remote.rmi.IIOP.RMIIIOPRemoteModel");
             tests.addElement("org.eclipse.persistence.testing.tests.remote.suncorba.SunCORBARemoteModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.distributedservers.DistributedServersModel");
             tests.addElement("org.eclipse.persistence.testing.tests.distributedservers.DistributedSessionBrokerServersModel");
             tests.addElement("org.eclipse.persistence.testing.tests.distributedservers.rcm.RCMDistributedServersModel");
             tests.addElement("org.eclipse.persistence.testing.tests.distributedservers.rcm.jms.JMSRCMDistributedServersModel");

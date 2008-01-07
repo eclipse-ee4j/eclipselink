@@ -37,15 +37,8 @@ public class JavaLogSessionsXMLTest extends SessionsXMLValidationTest {
     }
 
     public void verify() {
-        if (org.eclipse.persistence.Version.isJDK13()) {
-            int expectedExceptionNum = 2;
-            if (((SessionLoaderException)caughtException).getExceptionList().size() != expectedExceptionNum) {
-                throw new TestErrorException("Incorrect number of exceptions caught:" + "\nExpected: " + expectedExceptionNum + "\nCaught:" + caughtException);
-            }
-        } else {
-            if (!(new SessionManager().getSession(new XMLSessionConfigLoader(getSessionXmlFileName()), getSessionName(), this.getClass().getClassLoader()).getSessionLog() instanceof org.eclipse.persistence.logging.JavaLog)) {
-                throw new TestErrorException("Failed to create TopLink Session Log");
-            }
+        if (!(new SessionManager().getSession(new XMLSessionConfigLoader(getSessionXmlFileName()), getSessionName(), this.getClass().getClassLoader()).getSessionLog() instanceof org.eclipse.persistence.logging.JavaLog)) {
+            throw new TestErrorException("Failed to create TopLink Session Log");
         }
     }
 }

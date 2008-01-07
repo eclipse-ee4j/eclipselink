@@ -642,9 +642,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     protected void postConnectDatasource(){
         initializeDescriptors();
         //added to process ejbQL query strings
-        if (getCacheSynchronizationManager() != null) {
-            getCacheSynchronizationManager().initialize();
-        }
         if (getCommandManager() != null) {
             getCommandManager().initialize();
         }
@@ -706,14 +703,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         // We're logging out so turn off change propagation.
         this.setShouldPropagateChanges(false);
         
-        try {
-            if (getCacheSynchronizationManager() != null) {
-                getCacheSynchronizationManager().stopListening();
-            }
-        } catch (Throwable exception) {
-            log(SessionLog.WARNING, SessionLog.CONNECTION, "exception_thrown_when_attempting_to_shutdown_cache_synch", exception);
-        }
-
         if (getCommandManager() != null) {
             getCommandManager().shutdown();
         }

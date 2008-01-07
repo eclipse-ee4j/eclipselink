@@ -66,9 +66,6 @@ public class SequencingWorkbenchIntegrationTest extends AutoVerifyTestCase {
     }
 
     protected void setup() throws Exception {
-        if (Version.isJDK13()) {
-            throw new TestWarningException("This test cannot be run on JDK 1.3.");
-        }
         originalProject = new EmployeeProjectAmended();
         if (mode == PROJECT_XML) {
             project = WorkbenchIntegrationSystemHelper.buildProjectXML(originalProject, fileName);

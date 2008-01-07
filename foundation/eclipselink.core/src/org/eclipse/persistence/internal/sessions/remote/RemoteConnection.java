@@ -35,13 +35,6 @@ public abstract class RemoteConnection implements java.io.Serializable {
     public abstract void processCommand(RemoteCommand remoteCommand);
 
     /**
-     * INTERNAL:
-     * This method is used by the Framework to send commands to the remote session for processing
-     * @param remoteCommand RemoteCommand The command to be executed on the remote session
-     */
-    public abstract void addRemoteControllerForSynchronization(Object remoteSessionControllerDispatcher) throws Exception;
-
-    /**
      * Begin a transaction on the database.
      */
     public abstract void beginTransaction();

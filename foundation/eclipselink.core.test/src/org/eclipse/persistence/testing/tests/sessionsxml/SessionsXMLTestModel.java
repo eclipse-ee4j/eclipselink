@@ -60,11 +60,7 @@ public class SessionsXMLTestModel extends TestModel {
             suite.addTest(new SessionsXMLSchemaReloadTest());
         }
         suite.addTest(new SessionsXMLSchemaSunCORBATransportConfigTest());
-
-        if (!Version.isJDK13()) {
-            suite.addTest(new SessionsXMLSchemaJavaLogTest());
-        }
-
+        suite.addTest(new SessionsXMLSchemaJavaLogTest());
         suite.addTest(new SessionsXMLSchemaSequencingTest());
         suite.addTest(new SessionsXMLSchemaInvalidTagTest());
         suite.addTest(new SessionsXMLSchemaMisplacedDependentTagTest());

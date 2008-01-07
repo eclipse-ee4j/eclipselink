@@ -200,14 +200,6 @@ public class ClientSession extends AbstractSession {
         return super.getAccessor();
     }
 
-    /**
-     * INTERNAL:
-     * Was PUBLIC: customer will be redirected to {@link org.eclipse.persistence.sessions.Session}.
-     * Returns the Synchronization Policy for this session.
-     */
-    public CacheSynchronizationManager getCacheSynchronizationManager() {
-        return getParent().getCacheSynchronizationManager();
-    }
 
     /**
      * ADVANCED:
@@ -384,15 +376,6 @@ public class ClientSession extends AbstractSession {
      */
     public Accessor getWriteConnection() {
         return writeConnection;
-    }
-
-    /**
-     * INTERNAL:
-     * Was PUBLIC: customer will be redirected to {@link org.eclipse.persistence.sessions.Session}.
-     * Return true if a cache synchronisation manager exists.
-     */
-    public boolean hasCacheSynchronizationManager() {
-        return getParent().hasCacheSynchronizationManager();
     }
 
     /**

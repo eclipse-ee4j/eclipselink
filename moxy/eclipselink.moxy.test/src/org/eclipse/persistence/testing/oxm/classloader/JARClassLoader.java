@@ -26,8 +26,6 @@ import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClas
  *
  * @author Big Country
  * @since TOPLink/Java 3.0
- * @deprecated since OracleAS TopLink 10<i>g</i> (10.1.3).  This class is replaced by 
- * 		{@link org.eclipse.persistence.oxm}
  */
 public class JARClassLoader extends ClassLoader {
 	/** Map each package name to the appropriate JAR file. */

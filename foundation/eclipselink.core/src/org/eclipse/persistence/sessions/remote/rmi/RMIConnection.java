@@ -39,20 +39,6 @@ public class RMIConnection extends RemoteConnection {
 
     /**
      * ADVANCED:
-     * This method is intended to be used by newly connecting nodes to notify the
-     * other nodes in a distributed system to send changes to this calling server
-     * @param remoteTransporter Transporter This transporter contains the RemoteDispatcher of the calling
-     * server.
-     * @deprecated Since 4.0. There is no direct replacement API.
-     */
-    public void addRemoteControllerForSynchronization(Object remoteDispatcher) throws Exception {
-        ConnectToSessionCommand command = new ConnectToSessionCommand();
-        command.setRemoteConnection(new RMIConnection((RMIRemoteSessionController)remoteDispatcher));
-        processCommand(command);
-    }
-
-    /**
-     * ADVANCED:
      * This method will send the command to the remote session for processing
      * @param command RemoteCOmmand Contains a command that will be executed on the remote session
      * @see org.eclipse.persistence.internal.RemoteCommand

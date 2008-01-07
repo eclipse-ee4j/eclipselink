@@ -24,7 +24,7 @@ import org.eclipse.persistence.sessions.Session;
  * Cache Synchronisation feature.  This object places a RemoteDispatcher into
  * an RMI registry and then starts a session connection.
  */
-public class DistributedServer extends Thread {
+public abstract class DistributedServer extends Thread {
     /** This attribute holds this threads session */
     public DatabaseSession session;
 
@@ -89,21 +89,9 @@ public class DistributedServer extends Thread {
      * This method starts the server and makes the dispatcher available
      * Creation date: (7/21/00 9:58:37 AM)
      */
-    public void run() {
-        try {
-            this.session.setCacheSynchronizationManager(new org.eclipse.persistence.sessions.remote.CacheSynchronizationManager());
-            this.session.getCacheSynchronizationManager().setLocalHostURL("localhost:1099");
-            this.session.getCacheSynchronizationManager().setClusteringServiceClassType(org.eclipse.persistence.sessions.remote.rmi.RMIClusteringService.class);
-            this.session.getCacheSynchronizationManager().setIsAsynchronous(false);
-            this.session.getCacheSynchronizationManager().initialize();
-        } catch (Exception exception) {
-            System.out.println(exception.toString());
-        }
-    }
+    public abstract void run();
 
-    public void stopServer() {
-        this.session.getCacheSynchronizationManager().getClusteringService().stopListening();
-    }
+    public abstract void stopServer();
 
     /**
      * INTERNAL:

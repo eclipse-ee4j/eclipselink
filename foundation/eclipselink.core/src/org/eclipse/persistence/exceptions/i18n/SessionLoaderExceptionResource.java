@@ -33,7 +33,8 @@ public class SessionLoaderExceptionResource extends ListResourceBundle {
     { "9008", "Unexpected value [{0}] of tag [{1}]." },
                                            { "9009", "Tag [{0}] has unknown attribute." },
                                            { "9010", "A {0} was thrown while parsing the XML file against the XML schema." },
-                                           { "9011", "Server platform class {0} has been removed and the corresponding application server version is no longer supported" }
+                                           { "9011", "Server platform class {0} has been removed and the corresponding application server version is no longer supported" },
+                                           { "9012", "Unable to load session-xml file either because it contains invalid format or the format of XML is not supported." }
     };
 
     /**

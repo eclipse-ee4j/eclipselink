@@ -15,6 +15,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -26,7 +27,11 @@ import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
+import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.sessions.server.Server;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.sessions.server.ClientSession;
 
 public abstract class DistributedCacheMergeTest extends TestCase {
     private OptimisticLockingPolicy policy1 = null;
@@ -70,24 +75,35 @@ public abstract class DistributedCacheMergeTest extends TestCase {
     }
 
     protected Server buildSession(String sessionName) throws Exception {
-        Server session = null;
+        ServerSession session = null;
         Project p = getNewProject();
 
+        
         DatabaseLogin theLogin = originalSession.getLogin();
-	p.setLogin(originalSession.getLogin());
-        session = p.createServerSession();
+	    p.setLogin(originalSession.getLogin());
+        session = (ServerSession)p.createServerSession();
         session.setSessionLog(getSession().getSessionLog());
 
-        org.eclipse.persistence.sessions.remote.CacheSynchronizationManager manager = new org.eclipse.persistence.sessions.remote.CacheSynchronizationManager();
-        manager.setClusteringServiceClassTypeName("org.eclipse.persistence.sessions.remote.rmi.RMIClusteringService");
-        org.eclipse.persistence.sessions.remote.rmi.RMIClusteringService clusteringService = new org.eclipse.persistence.sessions.remote.rmi.RMIClusteringService(session);
-        clusteringService.setLocalHostURL("localhost:1099");
-        manager.setClusteringService(clusteringService);
-        session.setCacheSynchronizationManager(manager);
-
-        ((Server)session).getReadConnectionPool().setMinNumberOfConnections(1);
-        ((Server)session).getDefaultConnectionPool().setMinNumberOfConnections(1);
-
+        RemoteCommandManager cm = new RemoteCommandManager(session);
+        
+        // set propagate command asynchronously for testing
+        cm.setShouldPropagateAsynchronously(true);
+        cm.getDiscoveryManager().setAnnouncementDelay(0);
+        // ovewrite default to use RMI registry naming service  
+        cm.getTransportManager().setNamingServiceType(TransportManager.REGISTRY_NAMING_SERVICE);
+        // set full rmi URL of local host 
+        cm.setUrl("rmi://localhost:1099");
+        // turn on cache sync with RCM
+        session.setShouldPropagateChanges(true);
+        cm.setServerPlatform(((org.eclipse.persistence.sessions.DatabaseSession)getSession()).getServerPlatform());
+        cm.initialize();
+        
+        // Sleep to allow RCM to startup and find each session.
+        try {
+            Thread.sleep(2000);
+        } catch (Exception ignore) {
+        }
+        
         return session;
     }
 
@@ -103,6 +119,14 @@ public abstract class DistributedCacheMergeTest extends TestCase {
         uow.commit();
 
         enableOptimisticLocking(cluster1Session, policy1);
+        enableOptimisticLocking(cluster2Session, policy2);
+        
+        ((AbstractSession)cluster1Session).getCommandManager().shutdown();
+        ((AbstractSession)cluster1Session).setCommandManager(null);
+
+        ((AbstractSession)cluster2Session).getCommandManager().shutdown();
+        ((AbstractSession)cluster2Session).setCommandManager(null);
+
         if (cluster1Session != null) {
             cluster1Session = null;
         }

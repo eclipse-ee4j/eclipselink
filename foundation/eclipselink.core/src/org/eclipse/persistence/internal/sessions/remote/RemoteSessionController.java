@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.sessions.remote.CacheSynchronizationManager;
+import org.eclipse.persistence.sessions.coordination.CommandManager;
 
 /**
  * RemoteSessionController sits between the remote session (on the client)
@@ -42,11 +42,11 @@ public class RemoteSessionController {
     protected Hashtable remoteCursors;
 
     /** This is the Synchronization policy used to synchronise remote caches */
-    protected CacheSynchronizationManager cacheSynchronizationManager;
+    protected CommandManager commandManager;
 
     public RemoteSessionController(AbstractSession session) {
         super();
-        this.cacheSynchronizationManager = session.getCacheSynchronizationManager();
+        this.commandManager = session.getCommandManager();
         this.initialize(session);
     }
 
@@ -337,10 +337,10 @@ public class RemoteSessionController {
 
     /**
      * INTERNAL:
-     * This method returns the synchronization policy for this remote connection
+     * This method returns the command manager policy for this remote connection
      */
-    public CacheSynchronizationManager getCacheSynchronizationManager() {
-        return this.cacheSynchronizationManager;
+    public CommandManager getCommandManager() {
+        return this.commandManager;
     }
 
     /**

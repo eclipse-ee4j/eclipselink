@@ -38,10 +38,6 @@ public class ProjectClassGeneratorTestModel extends XMLProjectWriterTestModel {
      *  Add the Mapping Workbench Integration test system.
      */
     public void addRequiredSystems() {
-        if (Version.isJDK13()) {
-            throw new TestWarningException("This model cannot be run on JDK 1.3.");
-        }
-        
         addRequiredSystem(new EmployeeWorkbenchIntegrationSubSystem());
         addRequiredSystem(new InheritanceWorkbenchIntegrationSubSystem());
         addRequiredSystem(new AggregateWorkbenchIntegrationSubSystem());

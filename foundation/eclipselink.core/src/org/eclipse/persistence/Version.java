@@ -27,9 +27,7 @@ public class Version {
 
     /** Keep track of JDK version in order to make some decisions about datastructures. **/
     public static final int JDK_VERSION_NOT_SET = 0;
-    public static final int JDK_1_3 = 1;
-    public static final int JDK_1_4 = 2;
-    public static final int JDK_1_5 = 3;
+    public static final int JDK_1_5 = 1;
     public static int JDK_VERSION = JDK_VERSION_NOT_SET;
 
     public static String getProduct() {
@@ -54,36 +52,14 @@ public class Version {
      */
     public static int getJDKVersion() {
         if (JDK_VERSION == JDK_VERSION_NOT_SET) {
-            String version = System.getProperty("java.version");
-            if ((version != null) && version.startsWith("1.3")) {
-                useJDK13();
-            } else if ((version != null) && version.startsWith("1.4")) {
-                useJDK14();
-            } else {
-                useJDK15();
-            }
+            useJDK15();
         }
         return JDK_VERSION;
     }
 
-    public static void useJDK13() {
-        JDK_VERSION = JDK_1_3;
-    }
-
-    public static void useJDK14() {
-        JDK_VERSION = JDK_1_4;
-    }
 
     public static void useJDK15() {
         JDK_VERSION = JDK_1_5;
-    }
-
-    public static boolean isJDK13() {
-        return getJDKVersion() == JDK_1_3;
-    }
-
-    public static boolean isJDK14() {
-        return getJDKVersion() == JDK_1_4;
     }
 
     public static boolean isJDK15() {

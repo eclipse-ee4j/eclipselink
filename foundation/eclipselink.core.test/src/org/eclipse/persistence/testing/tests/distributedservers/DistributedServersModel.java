@@ -12,7 +12,6 @@ package org.eclipse.persistence.testing.tests.distributedservers;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import org.eclipse.persistence.sessions.remote.CacheSynchronizationManager;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.models.aggregate.Agent;
@@ -23,7 +22,7 @@ import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 
-public class DistributedServersModel extends TestModel {
+public abstract class DistributedServersModel extends TestModel {
 
     /** This is the collection of threads running distributed servers */
     public static Vector distributedServers;
@@ -84,9 +83,7 @@ public class DistributedServersModel extends TestModel {
     /**
      * Factory method for a DistributedServer.  Overridden by sbuclasses;
      */
-    public DistributedServer createDistributedServer(Session session) {
-        return new DistributedServer(session);
-    }
+    public abstract DistributedServer createDistributedServer(Session session);
 
     /**
      * This method lazy initialises the server List
@@ -189,17 +186,7 @@ public class DistributedServersModel extends TestModel {
         }
     }
 
-    public void startCacheSynchronization() {
-        getSession().setCacheSynchronizationManager(new CacheSynchronizationManager());
-        getSession().getCacheSynchronizationManager().setLocalHostURL("localhost:1099");
-        getSession().getCacheSynchronizationManager().setClusteringServiceClassType(org.eclipse.persistence.sessions.remote.rmi.RMIClusteringService.class);
-        getSession().getCacheSynchronizationManager().setIsAsynchronous(false);
-        getSession().getCacheSynchronizationManager().initialize();
-    }
+    public abstract void startCacheSynchronization();
 
-    public void stopCacheSynchronization() {
-        getSession().getCacheSynchronizationManager().getClusteringService().stopListening();
-        getSession().getCacheSynchronizationManager().removeAllRemoteConnections();
-        getSession().setCacheSynchronizationManager(null);
-    }
+    public abstract void stopCacheSynchronization();
 }

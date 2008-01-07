@@ -94,8 +94,7 @@ public class FeatureTestModel extends TestModel {
         addTest(getMiscTestSuite());
         if (!getExecutor().isServer) {
             addTest(getJNDIConnectionTestSuite());
-        } else
-            addTest(getServerJNDIConnectionTestSuite());
+        }
         addTest(getCustomSequenceTestSuite());
         addTest(getSequenceTestSuite());
         addTest(getCopyingTestSuite());
@@ -215,18 +214,6 @@ public class FeatureTestModel extends TestModel {
         suite.setDescription("Test connecting to a database with a JNDI-supplied DataSource");
 
         suite.addTest(new JNDIConnectionTest());
-        suite.addTest(new AbstractJNDIClusteringServiceTest());
-
-        return suite;
-    }
-
-	public static TestSuite getServerJNDIConnectionTestSuite() {
-        TestSuite suite = new TestSuite();
-        suite.setName("ServerJNDIConnectionTestSuite");
-        suite.setDescription("Test connecting to a database with a JNDI-supplied DataSource");
-
-        //suite.addTest(new JNDIConnectionTest());
-        suite.addTest(new AbstractJNDIClusteringServiceTest());
 
         return suite;
     }

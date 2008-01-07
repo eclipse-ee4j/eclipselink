@@ -2980,15 +2980,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     setMergeManager(null);
 
                     postMergeChanges();
-                    if (getParent().hasCacheSynchronizationManager()) {
-                        if (hasDeletedObjects()) {
-                            uowChangeSet.addDeletedObjects(getDeletedObjects(), this);
-                        }
-                        if (hasObjectsDeletedDuringCommit()) {
-                            uowChangeSet.addDeletedObjects(getObjectsDeletedDuringCommit(), this);
-                        }
-                        getParent().getCacheSynchronizationManager().propagateChanges(uowChangeSet);
-                    }
 
                     // If change propagation enabled through RemoteCommandManager then go for it
                     if (getParent().shouldPropagateChanges() && (getParent().getCommandManager() != null)) {

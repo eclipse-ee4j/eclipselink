@@ -287,6 +287,9 @@ public class XMLSessionConfigLoader {
                 XMLContext context = new XMLContext(getProject());
                 XMLUnmarshaller unmarshaller = context.createUnmarshaller();
                 return (SessionConfigs)unmarshaller.unmarshal(document);
+            }else{
+                // 9.0.4 session.xml or invalid xml format.
+            	throw SessionLoaderException.InvalidSessionXML();
             }
         } else {
             if (document.getDocumentElement().getTagName().equals("toplink-sessions")) {
@@ -300,8 +303,6 @@ public class XMLSessionConfigLoader {
                 throw SessionLoaderException.finalException(getExceptionStore());
             }
         }
-        // 9.0.4 session.xml, send it through the DTD2SessionConfigLoader
-        return new DTD2SessionConfigLoader().load(document);
     }
 
     /**

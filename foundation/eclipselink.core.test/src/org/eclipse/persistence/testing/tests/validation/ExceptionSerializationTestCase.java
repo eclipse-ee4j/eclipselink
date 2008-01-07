@@ -11,7 +11,6 @@ package org.eclipse.persistence.testing.tests.validation;
 
 import java.util.Vector;
 
-import org.eclipse.persistence.exceptions.CacheSynchronizationException;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
@@ -20,12 +19,11 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 
 /**
  * Bug 3214053
- * Ensure ConversionException and CacheSynchronizationException serialize correctly.
+ * Ensure ConversionException serialize correctly.
  */
 public class ExceptionSerializationTestCase extends AutoVerifyTestCase {
 
     protected ConversionException conversionException = null;
-    protected CacheSynchronizationException cacheSyncException = null;
 
     public ExceptionSerializationTestCase() {
         setDescription("Ensure ConversionException and CacheSynchronizationException serialize correctly.");
@@ -37,7 +35,6 @@ public class ExceptionSerializationTestCase extends AutoVerifyTestCase {
         Vector errors = new Vector();
         errors.addElement(errors);
         UnitOfWorkChangeSet changeSet = new UnitOfWorkChangeSet();
-        cacheSyncException = new CacheSynchronizationException(errors, changeSet);
     }
 
     public void test() {
@@ -45,7 +42,6 @@ public class ExceptionSerializationTestCase extends AutoVerifyTestCase {
         try {
             java.io.ObjectOutputStream objectOut = new java.io.ObjectOutputStream(byteOut);
             objectOut.writeObject(conversionException);
-            objectOut.writeObject(cacheSyncException);
             objectOut.flush();
         } catch (java.io.IOException exception) {
             throw new TestErrorException("Exception while serializing exceptions: " + exception.toString(), exception);
@@ -56,7 +52,6 @@ public class ExceptionSerializationTestCase extends AutoVerifyTestCase {
         try {
             java.io.ObjectInputStream objectIn = new java.io.ObjectInputStream(byteIn);
             conversionException = (ConversionException)objectIn.readObject();
-            cacheSyncException = (CacheSynchronizationException)objectIn.readObject();
         } catch (Exception exception) {
             throw new TestErrorException("Exception while serializing exceptions: " + exception.toString(), exception);
         }
@@ -65,9 +60,6 @@ public class ExceptionSerializationTestCase extends AutoVerifyTestCase {
     public void verify() {
         if (conversionException.getSourceObject() != null) {
             throw new TestErrorException("Source Object was sent by serialization and it should not be.");
-        }
-        if (cacheSyncException.getChangeSet() != null) {
-            throw new TestErrorException("UnitOfWorChangeSet was sent by serialization and it should not be.");
         }
     }
 }

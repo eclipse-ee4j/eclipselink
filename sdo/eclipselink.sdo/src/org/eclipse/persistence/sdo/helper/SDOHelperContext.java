@@ -55,15 +55,6 @@ public class SDOHelperContext implements HelperContext {
         //		new Object[] {getClass().getName(), this}, false);
     }
 
-    /**
-    * Factory method to create instances of {@link org.eclipse.persistence.sdo.helper.SDOHelperContext}
-    * @deprecated since OracleAS TopLink 11<i>1</i> (11.1.1.0) 30-Nov-2006.
-    * This method is replaced by the public constructor.
-    */
-    public static SDOHelperContext getInstance() {
-        return new SDOHelperContext();
-    }
-
     public void reset() {
         ((SDOTypeHelper)getTypeHelper()).reset();
         ((SDOXMLHelper)getXMLHelper()).reset();

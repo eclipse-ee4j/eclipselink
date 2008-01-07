@@ -39,7 +39,6 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.sessions.remote.CacheSynchronizationManager;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
@@ -139,9 +138,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     transient protected ClassDescriptor lastDescriptorAccessed;
 
     // bug 3078039: move EJBQL alias > descriptor map from Session to Project (MWN)
-
-    /** This attribute is used to provide all required information for distributed cache synchronisation */
-    transient protected CacheSynchronizationManager cacheSynchronizationManager;
 
     /** Used to determine If a session is in a Broker or not */
     protected boolean isInBroker;
@@ -1343,14 +1339,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     }
 
     /**
-     * ADVANCED:
-     * Returns the Synchronization Policy for this session.
-     */
-    public CacheSynchronizationManager getCacheSynchronizationManager() {
-        return cacheSynchronizationManager;
-    }
-
-    /**
      * INTERNAL:
      * Return if the commit manager has been set.
      */
@@ -1985,13 +1973,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         return broker != null;
     }
 
-    /**
-     * ADVANCED:
-     * Return true if a cache synchronisation manager exists.
-     */
-    public boolean hasCacheSynchronizationManager() {
-        return cacheSynchronizationManager != null;
-    }
 
     /**
      * ADVANCED:
@@ -2651,17 +2632,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         this.broker = broker;
     }
 
-    /**
-     * ADVANCED:
-     * Sets the cache synchronization manager for this session.
-     * This is used to broadcast changes to this session's cache to other sessions on other servers.
-     */
-    public void setCacheSynchronizationManager(CacheSynchronizationManager cacheSynchronizationManager) {
-        this.cacheSynchronizationManager = cacheSynchronizationManager;
-        if (cacheSynchronizationManager != null) {
-            cacheSynchronizationManager.setSession(this);
-        }
-    }
 
     /**
      * INTERNAL:

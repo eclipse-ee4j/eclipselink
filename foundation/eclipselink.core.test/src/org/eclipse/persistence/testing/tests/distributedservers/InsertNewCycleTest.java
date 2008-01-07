@@ -16,6 +16,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TransactionalTestCase;
 import org.eclipse.persistence.testing.tests.unitofwork.Contact;
 import org.eclipse.persistence.testing.tests.unitofwork.Person;
+import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 
 
 public class InsertNewCycleTest extends TransactionalTestCase {
@@ -65,7 +66,7 @@ public class InsertNewCycleTest extends TransactionalTestCase {
             vector.add(contact2);
             personClone.contacts = vector;
             uow.commit();
-        } catch (org.eclipse.persistence.exceptions.CacheSynchronizationException exception) {
+        } catch (RemoteCommandManagerException exception) {
             throw new TestErrorException("New Object Cycles are causing infinite recursion in Cache Synch");
         }
     }

@@ -11,8 +11,9 @@ package org.eclipse.persistence.testing.tests.distributedservers;
 
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.testing.tests.distributedservers.rcm.RCMDistributedServersModel;
 
-public class DistributedSessionBrokerServersModel extends DistributedServersModel {
+public class DistributedSessionBrokerServersModel extends RCMDistributedServersModel {
 
     public DistributedSessionBrokerServersModel() {
         super();

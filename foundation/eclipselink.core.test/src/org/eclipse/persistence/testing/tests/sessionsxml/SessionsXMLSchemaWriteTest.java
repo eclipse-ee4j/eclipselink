@@ -20,8 +20,6 @@ import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.internal.sessions.factories.*;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
-import org.eclipse.persistence.internal.sessions.factories.model.clustering.RMIJNDIClusteringConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.csm.CacheSynchronizationManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.CustomServerPlatformConfig;
@@ -61,25 +59,6 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
         SessionConfigs sessions = new SessionConfigs();
 
         DatabaseSessionConfig dbSessionConfig = new DatabaseSessionConfig();
-
-        // Cache synchronization manager
-        CacheSynchronizationManagerConfig csmConfig = new CacheSynchronizationManagerConfig();
-
-        // Clustering service
-        RMIJNDIClusteringConfig csConfig = new RMIJNDIClusteringConfig();
-        csConfig.setMulticastPort(new Integer(1973));
-        csConfig.setMulticastGroupAddress("somewhereunknown");
-        csConfig.setPacketTimeToLive(new Integer(31473));
-        csConfig.setJNDIPassword("password");
-        csConfig.setJNDIUsername("username");
-        csConfig.setNamingServiceInitialContextFactoryName("initialContextFactoryName");
-        csConfig.setNamingServiceURL("localhost:1099");
-        csmConfig.setClusteringServiceConfig(csConfig);
-
-        csmConfig.setIsAsynchronous(true);
-        csmConfig.setRemoveConnectionOnError(true);
-
-        dbSessionConfig.setCacheSynchronizationManagerConfig(csmConfig);
 
         // Exception handler class
         dbSessionConfig.setExceptionHandlerClass("handlerClass");
@@ -246,29 +225,6 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
         // Session customizer
         check("SessionCustomizer", m_session.getSessionCustomizerClass(), "sessionCustomizer");
 
-        // Cache synchronization manager
-        CacheSynchronizationManagerConfig csmConfig = m_session.getCacheSynchronizationManagerConfig();
-
-        if (csmConfig == null) {
-            throw new TestErrorException("CacheSynchronizationManagerConfig was null");
-        } else {
-            checkBoolean("IsAsynchronous", csmConfig.getIsAsynchronous(), true);
-            checkBoolean("RemoveConnectionOnError", csmConfig.getRemoveConnectionOnError(), true);
-
-            // Clustering service
-            if (!(csmConfig.getClusteringServiceConfig() instanceof RMIJNDIClusteringConfig)) {
-                throw new TestErrorException("ClusteringServiceConfig not correct type");
-            }
-
-            RMIJNDIClusteringConfig csConfig = (RMIJNDIClusteringConfig)csmConfig.getClusteringServiceConfig();
-            check("MulticastPort", csConfig.getMulticastPort(), new Integer(1973));
-            check("MulticastGroupAddress", csConfig.getMulticastGroupAddress(), "somewhereunknown");
-            check("PacketTimeToLive", csConfig.getPacketTimeToLive(), new Integer(31473));
-            check("JNDIPassword", csConfig.getJNDIPassword(), "password");
-            check("JNDIUsername", csConfig.getJNDIUsername(), "username");
-            check("NamingServiceInitialContextFactoryName", csConfig.getNamingServiceInitialContextFactoryName(), "initialContextFactoryName");
-            check("NamingServiceURL", csConfig.getNamingServiceURL(), "localhost:1099");
-        }
 
         // Log config
         if (m_session.getLogConfig() instanceof DefaultSessionLogConfig) {

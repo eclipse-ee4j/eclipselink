@@ -17,8 +17,6 @@ import java.util.*;
  *  This should only implement methods that are dependant on JDK version
  *  The implementers should implement the minimum amount of functionality required to
  *  allow support of multiple versions of the JDK.
- *  @see JDK13Platform
- *  @see JDK14Platform
  *  @see JDK15Platform
  *  @see JavaPlatform
  *  @author Tom Ware
@@ -46,7 +44,7 @@ public interface JDKPlatform {
     Map getConcurrentMap();
 
     /**
-     * JDK 1.4 offers the option of setting the cause of an exception
+     * JDK 1.4 and its above offers the option of setting the cause of an exception
      */
     void setExceptionCause(Throwable exception, Throwable cause);
 
