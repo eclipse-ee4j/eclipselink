@@ -134,7 +134,7 @@
         <echo>Running test with ${test.properties} on ${db.url}</echo>
         <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
-        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${run.dir}">
+        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Dtest.properties=${test.properties.run}"/>
             <classpath>
