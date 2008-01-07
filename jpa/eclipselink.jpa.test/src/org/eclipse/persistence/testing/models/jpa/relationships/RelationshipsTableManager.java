@@ -252,7 +252,7 @@ public class RelationshipsTableManager extends TableCreator {
         fieldQUANTITY.setIsPrimaryKey(false);
         fieldQUANTITY.setIsIdentity(false);
         fieldQUANTITY.setUnique(false);
-        fieldQUANTITY.setShouldAllowNull(false);
+        fieldQUANTITY.setShouldAllowNull(true);
         table.addField(fieldQUANTITY);
 
         FieldDefinition fieldSHIP_ADDR = new FieldDefinition();
