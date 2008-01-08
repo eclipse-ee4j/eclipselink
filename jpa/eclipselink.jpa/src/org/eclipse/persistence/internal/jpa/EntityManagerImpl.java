@@ -764,7 +764,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             factory = null;
             serverSession = null;
             if (extendedPersistenceContext != null) {
-                if (checkForTransaction(false) == null) {
+                //bug210677, checkForTransactioin returns null in afterCompletion - in this case check for uow being synchronized.
+                if (checkForTransaction(false) == null && !extendedPersistenceContext.isSynchronized()) {
                     // clear change sets but keep the cache
                     extendedPersistenceContext.clearForClose(false);
                 } else {
