@@ -86,6 +86,7 @@ public class SDOProperty implements Property, Serializable {
     private String uri;
     private boolean isSubstitutable;
     private Collection<SDOProperty> substitutableElements;
+    private boolean finalized;
 
     // hold the context containing all helpers so that we can preserve inter-helper relationships
     private HelperContext aHelperContext;
@@ -1094,5 +1095,13 @@ public class SDOProperty implements Property, Serializable {
     
     public void setSubstitutableElements(Collection<SDOProperty> elements) {
         this.substitutableElements = elements;
+    }
+    
+    public void setFinalized(boolean isFinalized){
+      finalized = isFinalized;
+    }
+    
+    public boolean isFinalized(){
+      return finalized;
     }
 }

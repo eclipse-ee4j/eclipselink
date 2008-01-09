@@ -50,12 +50,12 @@ import commonj.sdo.helper.HelperContext;
  */
 public class SDOTypesGenerator extends SchemaParser {
     private java.util.Map<QName, Type> generatedTypes;
+    private java.util.Map<QName, Property> generatedGlobalProperties;    
     private String packageName;
     private List<NonContainmentReference> nonContainmentReferences;
     private Map<Type, List<GlobalRef>> globalRefs;
     private boolean isImportProcessor;
-
-
+    
     public SDOTypesGenerator(HelperContext aContext) {
         super(aContext);
     }
@@ -95,10 +95,24 @@ public class SDOTypesGenerator extends SchemaParser {
 				String name = nextType.getName();
 				QName qname = new QName(nextType.getURI(), name);
 				getGeneratedTypes().put(qname, nextType);
-			}
-		}
-	}
-}
+				   }
+			   }
+         
+         //copy over any global properties
+         Iterator<QName> globalPropsIter = generator.getGeneratedGlobalProperties().keySet().iterator();
+         while(globalPropsIter.hasNext()) {
+           QName nextKey = globalPropsIter.next();           
+           getGeneratedGlobalProperties().put(nextKey, generator.getGeneratedGlobalProperties().get(nextKey));
+         }
+         
+         //copy over any unfinished globalRefs
+         Iterator<Type> globalRefsIter = generator.getGlobalRefs().keySet().iterator();
+          while(globalRefsIter.hasNext()) {
+           Type nextKey = globalRefsIter.next();           
+           getGlobalRefs().put(nextKey, generator.getGlobalRefs().get(nextKey));
+         }      
+       }
+    }
     
     public List<Type> define(Source xsdSource, SchemaResolver schemaResolver) {
         return define(xsdSource, schemaResolver, false, true);
@@ -129,6 +143,24 @@ public class SDOTypesGenerator extends SchemaParser {
               }              
             }
             ((SDOXMLHelper)aHelperContext.getXMLHelper()).addDescriptors(new ArrayList(getGeneratedTypes().values()));
+            
+            Iterator<Property> propertiesIter = getGeneratedGlobalProperties().values().iterator();            
+            while (propertiesIter.hasNext()) {            
+              SDOProperty nextSDOProperty = (SDOProperty)propertiesIter.next();
+              if(!nextSDOProperty.isFinalized()) {
+                //Only throw this error if we're not processing an import.
+                throw SDOException.referencedPropertyNotFound(nextSDOProperty.getUri(), nextSDOProperty.getName());
+              }              
+            }
+            
+            Iterator<List<GlobalRef>> globalRefsIter = getGlobalRefs().values().iterator();            
+            while (globalRefsIter.hasNext()) {            
+              List<GlobalRef> nextList = (List)globalRefsIter.next();
+              if(nextList.size() >0){
+                GlobalRef ref = nextList.get(0);
+                throw SDOException.referencedPropertyNotFound(((SDOProperty)ref.getProperty()).getUri(), ref.getProperty().getName());                
+              }
+            }            
         }
 
         return returnList;
@@ -286,6 +318,7 @@ public class SDOTypesGenerator extends SchemaParser {
                 prop.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
                 ((SDOType)ownerType).addDeclaredProperty(prop);
                 prop.buildMapping(null, -1);
+                prop.setFinalized(true);
 
             }
             return;
@@ -553,6 +586,7 @@ public class SDOTypesGenerator extends SchemaParser {
             //we have a global element           
             addRootElementToDescriptor(p, targetNamespace, element.getName());
         }
+        p.setFinalized(true);
     }
 
     private SDOProperty processRef(GlobalRef globalRef) {
@@ -560,8 +594,10 @@ public class SDOTypesGenerator extends SchemaParser {
         SDOProperty p = null;
 
         SDOProperty refProp = (SDOProperty)aHelperContext.getXSDHelper().getGlobalProperty(globalRef.getUri(), globalRef.getLocalName(), isElement);
-
-        if (refProp != null) {
+        if(refProp == null){
+          refProp = (SDOProperty)getGeneratedGlobalProperties().get(new QName(globalRef.getUri(),globalRef.getLocalName()));
+        }
+        if (refProp != null && refProp.isFinalized()) {
             p = (SDOProperty)globalRef.getProperty();
             p.setValueProperty(refProp.isValueProperty());
             p.setNullable(refProp.isNullable());
@@ -583,17 +619,26 @@ public class SDOTypesGenerator extends SchemaParser {
             p.setReadOnly(refProp.isReadOnly());
             p.setXsd(refProp.isXsd());
             p.setAppInfoElements(refProp.getAppInfoElements());
-        } else {
-        	// If the global property is not defined yet throw an exception only if it is not eventually defined
-            throw SDOException.referencedPropertyNotFound(globalRef.getUri(), globalRef.getLocalName());
-        }
-
-        if (p.getXmlMapping() == null) {
+                        
             int index = ((SDOProperty)globalRef.getProperty()).getIndexInDeclaredProperties();
             p.buildMapping(globalRef.getUri(), index);
-        }
-
-        return (SDOProperty)globalRef.getProperty();
+            p.setFinalized(true);
+        } else {
+            if(isImportProcessor){
+              p = new SDOProperty(aHelperContext);
+              p.setGlobal(true);
+              p.setUri(globalRef.getUri());
+              p.setName(globalRef.getLocalName());
+              if (isElement) {
+                p.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
+              }     
+              QName qname = new QName(globalRef.getUri(), globalRef.getLocalName());
+              generatedGlobalProperties.put(qname, p);
+            }else{
+              throw SDOException.referencedPropertyNotFound(globalRef.getUri(), globalRef.getLocalName());
+            }
+        }       
+        return p;
     }
 
     private void updateCollisionProperty(SDOType owningType, SDOProperty p) {
@@ -611,7 +656,13 @@ public class SDOTypesGenerator extends SchemaParser {
     }
 
     private SDOProperty createNewProperty(String targetNamespace, String xsdLocalName, boolean isQualified, boolean isGlobal, boolean isElement, boolean isNillable, Annotation annotation) {
-        SDOProperty p = new SDOProperty(aHelperContext);
+        SDOProperty p = null;        
+        if(isGlobal){
+          p = (SDOProperty)getGeneratedGlobalProperties().get(new QName(targetNamespace, xsdLocalName));         
+        }
+        if(p == null){    
+          p = new SDOProperty(aHelperContext);
+        }
         p.setGlobal(isGlobal);
         p.setXsd(true);
         p.setNullable(isNillable);
@@ -632,6 +683,7 @@ public class SDOTypesGenerator extends SchemaParser {
                 p.setInstanceProperty(SDOConstants.DOCUMENTATION_PROPERTY, documentation);
             }
         }
+               
         return p;
     }
 
@@ -761,6 +813,7 @@ public class SDOTypesGenerator extends SchemaParser {
                         theProp.setInstanceProperty(SDOConstants.DOCUMENTATION_PROPERTY, doc);
                     }
                 }
+                theProp.setFinalized(true);
                 GlobalRef globalRef = new GlobalRef();
                 globalRef.setProperty(theProp);
                 owningType.addDeclaredProperty(theProp);
@@ -831,6 +884,7 @@ public class SDOTypesGenerator extends SchemaParser {
         if (owningType != null) {
             updateOwnerAndBuildMapping(owningType, p, targetNamespace, attribute, typeName, mappingUri);
         }
+        p.setFinalized(true);
     }
 
     private SDOType processSimpleComponentAnnotations(SDOType owningType, SimpleComponent simpleComponent, SDOProperty p, String targetNamespace, String defaultNamespace, SDOType sdoPropertyType) {
@@ -948,12 +1002,20 @@ public class SDOTypesGenerator extends SchemaParser {
         while (iter.hasNext()) {
             Object nextKey = iter.next();
             List<GlobalRef> value = getGlobalRefs().get(nextKey);
+            List refsToRemove = new ArrayList();
             if (value != null) {
                 for (int i = 0; i < value.size(); i++) {
-                    processRef(value.get(i));
-                }
+                    GlobalRef nextGlobalRef = value.get(i);
+                    SDOProperty p = processRef(nextGlobalRef);
+                    if(p.isFinalized()){                     
+                     refsToRemove.add(nextGlobalRef);
+                    }                    
+                }               
             }
-        }
+            for(int i=0;i<refsToRemove.size(); i++){          
+              value.remove(refsToRemove.get(i));
+            }
+        }        
     }
 
     private void addGlobalRef(GlobalRef ref) {
@@ -1085,6 +1147,14 @@ public class SDOTypesGenerator extends SchemaParser {
         }
         return generatedTypes;
     }
+    
+    public Map<QName, Property> getGeneratedGlobalProperties() {
+        if (null == generatedGlobalProperties) {
+            generatedGlobalProperties = new HashMap<QName, Property>();
+        }
+        return generatedGlobalProperties;
+    }
+    
 
     protected void processAnyAttribute(String targetNamespace, String defaultNamespace, String ownerName) {
         SDOType owningType = getTypeForName(targetNamespace, defaultNamespace, ownerName);
@@ -1258,5 +1328,6 @@ public class SDOTypesGenerator extends SchemaParser {
     
     public void setIsImportProcessor(boolean isImport) {
         isImportProcessor = isImport;
-    }
+    }  
+  
 }
