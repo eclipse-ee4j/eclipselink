@@ -9,16 +9,10 @@
        <format property="build_date" pattern="yyyyMMdd"/>
     </tstamp>
     <condition property="build_number" value="${build_id}">
-        <not>
-            <or>
-                <equals arg1="${build_id}" arg2="" trim="true"/>
-                <equals arg1="${build_id}" arg2="local" trim="true"/>
-            </or>
-        </not>
+        <isset property="build_id"/>
     </condition>
     <property name="build_number" value="SNAPSHOT"/>
-    <property name="build_number_string" value="${build_date}"/>
-    <property name="installer_id" value="${build_number_string}"/>
+    <property name="build_number_string" value="${build_number} - ${build_date}"/>
 
   <!-- all -->
   <target name="all" depends="package.eclipselink.jar, build.test, package.src.jar, package.package-renamer.jar, build.javadocs, package.javadoc.zip, package.installer.zip" description="build EclipseLink distribution files"/>
@@ -46,7 +40,7 @@
 
     <target name="package.eclipselink.jar" depends="build.core" description="build EclipseLink jar">
       <unjar src="${eclipselink.extension.oracle}/${eclipselink.oracle.depend.jar}" dest="${build.dir}"/>
-      <filter token="VERSION" value="${release.version} ${installer_id}"/>
+      <filter token="VERSION" value="${release.version} ${build_number_string}"/>
       <copy file="${eclipselink.core}/${resource.dir}/META-INF/MANIFEST.MF" tofile="${build.dir}/META-INF/MANIFEST.MF" filtering="true" overwrite="true"/>
       <jar jarfile="${eclipselink.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
           <fileset dir="${eclipselink.core}/${classes.dir}">
@@ -133,7 +127,7 @@
     </target>
 
     <target name="build.javadocs"> 
-        <property name="javadoc.title" value="${javadoc.prefixTitle}${installer_id} ${javadoc.postfixTitle} - Incubation"/>
+        <property name="javadoc.title" value="${javadoc.prefixTitle}${release.version} ${build_number_string} ${javadoc.postfixTitle} - Incubation"/>
         <javadoc 
             maxmemory="384m"
             packagenames="org.eclipse.persistence.**" 

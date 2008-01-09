@@ -18,7 +18,7 @@
         <tstamp>
             <format property="build.date" pattern="yyyyMMdd"/>
         </tstamp> 
-        <property name="build_number_string" value="${build.date}"/>
+        <property name="build_number_string" value="SNAPSHOT - ${build.date}"/>
     </target>
 
     <!-- compile --> 
