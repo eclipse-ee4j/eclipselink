@@ -21,7 +21,7 @@ public class ComplexDefineTestSuite {
     }
 
     /**
-    *  Inherited suite mthod for generating all test cases.
+    *  Inherited suite method for generating all test cases.
     * @return
     */
     public static Test suite() {
@@ -35,6 +35,10 @@ public class ComplexDefineTestSuite {
         suite.addTest(new TestSuite(CyclicImportsDefineTestCases.class));
         suite.addTest(new TestSuite(DefineWithBuiltInSchemaLocationTestCases.class));
         suite.addTest(new TestSuite(ClashingNamespacesTestCases.class)); 
+        suite.addTestSuite(MultipleDefineSameTypeTestCases.class);                               
+        suite.addTestSuite(AttributeGroupTestCases.class);  
+        suite.addTestSuite(CyclicElementRefTestCases.class);                               
+        suite.addTestSuite(CyclicElementRefErrorTestCases.class);                               
         return suite;
     }
 }

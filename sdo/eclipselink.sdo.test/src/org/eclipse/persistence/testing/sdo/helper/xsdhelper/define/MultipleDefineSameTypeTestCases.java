@@ -113,9 +113,8 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         //this schema is more complex and some new types will be defined but some old ones will be found
         InputStream is3 = getSchemaInputStream("org/eclipse/persistence/testing/sdo/schemas/PurchaseOrderComplex.xsd");
         List types3 = xsdHelper.define(is3, null);
-        newSize = typeHelper.getType("http://www.example.org", "PurchaseOrderType").getDeclaredProperties().size();
         assertEquals(declPropsSize, newSize);
-        assertEquals(8, types3.size());
+        assertEquals(9, types3.size());
         compare(getComplexControlTypes(), types3);
 
         /*
@@ -137,12 +136,14 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         Type floatType = typeHelper.getType("commonj.sdo", "Float");
 
         /****ADDRESS TYPE*****/
-        String javaPackage = "defaultPackage";
+        String javaPackage = "org.example";
 
         //ADDRESS TYPE
         SDOType addrType = new SDOType(uri, "AddressType");
         addrType.setDataType(false);
         addrType.setInstanceClassName(javaPackage + "." + "AddressType");
+        addrType.setXsd(true);
+        addrType.setXsdLocalName("AddressType");
         SDOProperty addrNameProp = new SDOProperty(aHelperContext);
 
         //addrNameProp.setAttribute(false);
@@ -151,6 +152,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         addrNameProp.setXsd(true);
         addrNameProp.setContainingType(addrType);
         addrNameProp.setType(stringType);
+        addrNameProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         addrType.addDeclaredProperty(addrNameProp);
 
         SDOProperty streetProp = new SDOProperty(aHelperContext);
@@ -159,6 +161,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         streetProp.setXsd(true);
         streetProp.setContainingType(addrType);
         streetProp.setType(stringType);
+        streetProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         //streetProp.setAttribute(false);
         addrType.addDeclaredProperty(streetProp);
 
@@ -169,6 +172,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         cityProp.setXsdLocalName("city");
         cityProp.setXsd(true);
         cityProp.setContainingType(addrType);
+        cityProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         addrType.addDeclaredProperty(cityProp);
 
         SDOProperty stateProp = new SDOProperty(aHelperContext);
@@ -177,6 +181,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         stateProp.setXsd(true);
         stateProp.setContainingType(addrType);
         stateProp.setType(stringType);
+        stateProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         //stateProp.setAttribute(false);
         addrType.addDeclaredProperty(stateProp);
 
@@ -186,6 +191,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         zipProp.setXsd(true);
         zipProp.setContainingType(addrType);
         zipProp.setType(stringType);
+        zipProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         //zipProp.setAttribute(false);
         addrType.addDeclaredProperty(zipProp);
 
@@ -196,12 +202,15 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         countryProp.setContainingType(addrType);
         countryProp.setType(stringType);
         //countryProp.setAttribute(true);
+        countryProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.FALSE);
         addrType.addDeclaredProperty(countryProp);
 
         /****ITEM TYPE*****/
         SDOType itemType = new SDOType(uri, "LineItemType");
         itemType.setDataType(false);
         itemType.setInstanceClassName(javaPackage + "." + "LineItemType");
+        itemType.setXsd(true);
+        itemType.setXsdLocalName("LineItemType");
 
         SDOProperty productNameProp = new SDOProperty(aHelperContext);
         productNameProp.setName("productName");
@@ -274,6 +283,8 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         SDOType itemsType = new SDOType(uri, "Items");
         itemsType.setDataType(false);
         itemsType.setInstanceClassName(javaPackage + "." + "Items");
+        itemsType.setXsd(true);
+        itemsType.setXsdLocalName("Items");
 
         SDOProperty itemProp = new SDOProperty(aHelperContext);
         itemProp.setName("item");
@@ -292,6 +303,8 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         SDOType POtype = new SDOType(uri, "PurchaseOrderType");
         POtype.setDataType(false);
         POtype.setInstanceClassName(javaPackage + "." + "PurchaseOrderType");
+        POtype.setXsd(true);
+        POtype.setXsdLocalName("PurchaseOrderType");
 
         SDOProperty idProp = new SDOProperty(aHelperContext);
         idProp.setName("poId");
@@ -375,7 +388,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         Type intType = typeHelper.getType("commonj.sdo", "Int");
         Type yearMonthDayType = typeHelper.getType("commonj.sdo", "YearMonthDay");
         Type floatType = typeHelper.getType("commonj.sdo", "Float");
-        String javaPackage = "defaultPackage";
+        String javaPackage = "org.example";
 
         /****ADDRESS TYPE*****/
 
@@ -432,35 +445,18 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         SDOType usAddressType = new SDOType(uri, "usAddressType");
         usAddressType.setDataType(false);
         usAddressType.setInstanceClassName(javaPackage + "." + "UsAddressType");
+        usAddressType.setXsd(true);
+        usAddressType.setXsdLocalName("usAddressType");
         ArrayList baseTypes = new ArrayList();
         baseTypes.add(addrType);
         usAddressType.setBaseTypes(baseTypes);
-
-        SDOProperty stateProp = new SDOProperty(aHelperContext);
-        stateProp.setName("state");
-        stateProp.setType(stringType);
-        stateProp.setXsd(true);
-        stateProp.setXsdLocalName("state");
-        //stateProp.setElement(true);
-        stateProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
-        stateProp.setContainment(true);
-        stateProp.setContainingType(usAddressType);
-        usAddressType.getDeclaredProperties().add(stateProp);
-
-        SDOProperty zipProp = new SDOProperty(aHelperContext);
-        zipProp.setName("zip");
-        zipProp.setXsdLocalName("zip");
-        zipProp.setXsd(true);
-        //zipProp.setAttribute(true);
-        zipProp.setType(intType);
-        zipProp.setContainment(true);
-        zipProp.setContainingType(usAddressType);
-        usAddressType.getDeclaredProperties().add(zipProp);
 
         /****CDN ADDRESS TYPE*****/
         SDOType cdnAddressType = new SDOType(uri, "cdnAddressType");
         cdnAddressType.setDataType(false);
         cdnAddressType.setInstanceClassName(javaPackage + "." + "CdnAddressType");
+        cdnAddressType.setXsd(true);
+        cdnAddressType.setXsdLocalName("cdnAddressType");
         ArrayList cdnbaseTypes = new ArrayList();
         cdnbaseTypes.add(addrType);
         cdnAddressType.setBaseTypes(cdnbaseTypes);
@@ -473,8 +469,8 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         //postalCodeProp.setElement(true);
         postalCodeProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         postalCodeProp.setContainment(true);
-        postalCodeProp.setContainingType(cdnAddressType);
-        cdnAddressType.getDeclaredProperties().add(postalCodeProp);
+        postalCodeProp.setContainingType(cdnAddressType);        
+        cdnAddressType.addDeclaredProperty(postalCodeProp);
 
         SDOProperty provinceProp = new SDOProperty(aHelperContext);
         provinceProp.setName("province");
@@ -485,7 +481,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         provinceProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         provinceProp.setContainment(true);
         provinceProp.setContainingType(cdnAddressType);
-        cdnAddressType.getDeclaredProperties().add(provinceProp);
+        cdnAddressType.addDeclaredProperty(provinceProp);
 
         SDOProperty territoryProp = new SDOProperty(aHelperContext);
         territoryProp.setName("territory");
@@ -496,23 +492,30 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         territoryProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         territoryProp.setContainment(true);
         territoryProp.setContainingType(cdnAddressType);
-        cdnAddressType.getDeclaredProperties().add(territoryProp);
+        cdnAddressType.addDeclaredProperty(territoryProp);
 
         /****QUANTITY TYPE*****/
         SDOType quantityType = new SDOType(uri, "quantityType");
         quantityType.setDataType(true);
         quantityType.getBaseTypes().add(intType);
+        quantityType.setXsd(true);
+        quantityType.setXsdLocalName("quantityType");
         //quantityType.setInstanceClassName("java.lang.Integer");
         quantityType.setInstanceClassName(ClassConstants.PINT.getName());
 
         /****SKU TYPE*****/
         SDOType SKUType = new SDOType(uri, "SKU");
         SKUType.setDataType(true);
+        SKUType.setXsd(true);
+        SKUType.setXsdLocalName("SKU");
         SKUType.getBaseTypes().add(stringType);
         SKUType.setInstanceClassName("java.lang.String");
 
         /****PHONE TYPE*****/
         SDOType phoneType = new SDOType(uri, "phoneNumber");
+        phoneType.setXsd(true);
+        phoneType.setXsdLocalName("phoneNumber");
+
         phoneType.setDataType(true);
         phoneType.getBaseTypes().add(stringType);
         phoneType.setInstanceClassName("java.lang.String");
@@ -522,12 +525,17 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
 
         //namePrefixType.setDataType(true);
         namePrefixType.setDataType(false);
+        namePrefixType.setXsd(true);
+        namePrefixType.setXsdLocalName("namePrefix");
+
         namePrefixType.getBaseTypes().add(stringType);
         namePrefixType.setInstanceClassName("java.lang.String");
 
         /****GENDER TYPE*****/
         SDOType genderType = new SDOType(uri, "gender");
         genderType.setDataType(true);
+        genderType.setXsd(true);
+        genderType.setXsdLocalName("gender");
         genderType.getBaseTypes().add(stringType);
         genderType.setInstanceClassName("java.lang.String");
 
@@ -644,6 +652,8 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         /****CUSTOMER TYPE*****/
         SDOType customerType = new SDOType(uri, "CustomerType");
         customerType.setDataType(false);
+        customerType.setXsd(true);
+        customerType.setXsdLocalName("CustomerType");
         customerType.setInstanceClassName(javaPackage + "." + "CustomerType");
 
         SDOProperty nameProp = new SDOProperty(aHelperContext);
@@ -654,7 +664,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         //nameProp.setElement(true);
         nameProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         nameProp.setContainingType(customerType);
-        customerType.getDeclaredProperties().add(nameProp);
+        customerType.addDeclaredProperty(nameProp);
 
         SDOProperty genderProp = new SDOProperty(aHelperContext);
         genderProp.setName("gender");
@@ -666,7 +676,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         genderProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         genderProp.setContainingType(customerType);
         genderProp.setContainment(true);
-        customerType.getDeclaredProperties().add(genderProp);
+        customerType.addDeclaredProperty(genderProp);
 
         SDOProperty namePrefixProp = new SDOProperty(aHelperContext);
         namePrefixProp.setName("namePrefix");
@@ -674,10 +684,9 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         namePrefixProp.setXsdLocalName("namePrefix");
         namePrefixProp.setType(namePrefixType);
         namePrefixProp.setXsd(true);
-        //namePrefixProp.setAttribute(true);
-        namePrefixProp.setContainment(true);
+        //namePrefixProp.setAttribute(true);        
         namePrefixProp.setContainingType(customerType);
-        customerType.getDeclaredProperties().add(namePrefixProp);
+        customerType.addDeclaredProperty(namePrefixProp);
 
         SDOProperty phoneProp = new SDOProperty(aHelperContext);
         phoneProp.setName("phoneNumber");
@@ -689,7 +698,7 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         phoneProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
         phoneProp.setContainingType(customerType);
         phoneProp.setContainment(true);
-        customerType.getDeclaredProperties().add(phoneProp);
+        customerType.addDeclaredProperty(phoneProp);
 
         /****PURCHASEORDER TYPE*****/
         /*
@@ -769,18 +778,39 @@ public class MultipleDefineSameTypeTestCases extends XSDHelperDefineTestCases {
         POtype.getDeclaredProperties().add(orderDateProp);
         POtype.getDeclaredProperties().add(customerProp);
         */
+        
+        SDOType cdnMailingAddressType = new SDOType(uri, "cdnAddressMailingType");
+        cdnMailingAddressType.setXsd(true);        
+        cdnMailingAddressType.setDataType(false);
+        cdnMailingAddressType.setInstanceClassName(javaPackage + "." + "CdnAddressMailingType");
+        cdnMailingAddressType.setXsdLocalName("cdnAddressMailingType");
+        ArrayList cdnMailingbaseTypes = new ArrayList();
+        cdnMailingbaseTypes.add(cdnAddressType);
+        cdnMailingAddressType.setBaseTypes(cdnbaseTypes);
+        
+        SDOProperty deliveryProp = new SDOProperty(aHelperContext);
+        deliveryProp.setName("deliveryInfo");
+        deliveryProp.setXsdLocalName("deliveryInfo");
+        deliveryProp.setType(stringType);
+        deliveryProp.setXsd(true);        
+        deliveryProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
+        deliveryProp.setContainment(true);
+        deliveryProp.setContainingType(cdnMailingAddressType);        
+        cdnMailingAddressType.addDeclaredProperty(deliveryProp);
+        
         types.add(quantityType);
         types.add(phoneType);
-        types.add(cdnAddressType);
+        types.add(cdnAddressType);        
         types.add(SKUType);
         types.add(usAddressType);
         //types.add(itemsType);
         //types.add(POtype);
+        types.add(cdnMailingAddressType);
         types.add(customerType);
         types.add(genderType);
         //types.add(itemType);
         //types.add(addrType);
-        types.add(namePrefixType);
+        types.add(namePrefixType);        
 
         return types;
 
