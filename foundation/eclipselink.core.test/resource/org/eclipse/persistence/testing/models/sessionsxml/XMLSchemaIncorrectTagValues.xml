@@ -23,7 +23,7 @@
       </logging>
       <primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
       <login xsi:type="database-login">
-         <platform-class>@dbPlatform@</eclipselink>
+         <platform-class>@dbPlatform@</platform-class>
          <external-connection-pooling>boolean</external-connection-pooling>
          <external-transaction-controller>boolean</external-transaction-controller>
          <sequencing>
