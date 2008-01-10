@@ -729,7 +729,7 @@ public class DescriptorException extends ValidationException {
     public static DescriptorException invalidAttributeTypeForProxyIndirection(Class attributeType, Class[] targetInterfaces, DatabaseMapping mapping) {
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < targetInterfaces.length; i++) {
-            buffer.append(((Class)targetInterfaces[i]).getName());
+            buffer.append(targetInterfaces[i].getName());
             if (i != (targetInterfaces.length - 1)) {
                 buffer.append(", ");
             }
@@ -785,7 +785,7 @@ public class DescriptorException extends ValidationException {
     public static DescriptorException invalidGetMethodReturnTypeForProxyIndirection(Class attributeType, Class[] targetInterfaces, DatabaseMapping mapping) {
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < targetInterfaces.length; i++) {
-            buffer.append(((Class)targetInterfaces[i]).getName());
+            buffer.append(targetInterfaces[i].getName());
             if (i != (targetInterfaces.length - 1)) {
                 buffer.append(", ");
             }
@@ -833,7 +833,7 @@ public class DescriptorException extends ValidationException {
     public static DescriptorException invalidSetMethodParameterTypeForProxyIndirection(Class attributeType, Class[] targetInterfaces, DatabaseMapping mapping) {
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < targetInterfaces.length; i++) {
-            buffer.append(((Class)targetInterfaces[i]).getName());
+            buffer.append(targetInterfaces[i].getName());
             if (i != (targetInterfaces.length - 1)) {
                 buffer.append(", ");
             }

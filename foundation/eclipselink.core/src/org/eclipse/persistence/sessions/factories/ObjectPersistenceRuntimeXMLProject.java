@@ -79,7 +79,6 @@ import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.FalseUndefinedTrue;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.history.HistoricalDatabaseTable;
 import org.eclipse.persistence.internal.identitymaps.CacheIdentityMap;
@@ -1336,21 +1335,11 @@ public class ObjectPersistenceRuntimeXMLProject extends Project {
         XMLDirectMapping shouldBindAllParametersMapping = new XMLDirectMapping();
         shouldBindAllParametersMapping.setAttributeName("shouldBindAllParameters");
         shouldBindAllParametersMapping.setXPath("toplink:bind-all-parameters/text()");
-        ObjectTypeConverter shouldBindAllParametersConverter = new ObjectTypeConverter();
-        shouldBindAllParametersConverter.addConversionValue("false", new Integer(FalseUndefinedTrue.False));
-        shouldBindAllParametersConverter.addConversionValue("true", new Integer(FalseUndefinedTrue.True));
-        shouldBindAllParametersMapping.setConverter(shouldBindAllParametersConverter);
-        shouldBindAllParametersMapping.setNullValue(new Integer(FalseUndefinedTrue.Undefined));
         descriptor.addMapping(shouldBindAllParametersMapping);
 
         XMLDirectMapping shouldCacheStatementMapping = new XMLDirectMapping();
         shouldCacheStatementMapping.setAttributeName("shouldCacheStatement");
         shouldCacheStatementMapping.setXPath("toplink:cache-statement/text()");
-        ObjectTypeConverter shouldCacheStatementConverter = new ObjectTypeConverter();
-        shouldCacheStatementConverter.addConversionValue("false", new Integer(FalseUndefinedTrue.False));
-        shouldCacheStatementConverter.addConversionValue("true", new Integer(FalseUndefinedTrue.True));
-        shouldCacheStatementMapping.setConverter(shouldCacheStatementConverter);
-        shouldCacheStatementMapping.setNullValue(new Integer(FalseUndefinedTrue.Undefined));
         descriptor.addMapping(shouldCacheStatementMapping);
 
         XMLDirectMapping queryTimeoutMapping = new XMLDirectMapping();

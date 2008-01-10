@@ -45,7 +45,7 @@ import org.eclipse.persistence.sessions.SessionProfiler;
  * @author Yvon Lavoie
  * @since TOPLink/Java 1.0
  */
-public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUndefinedTrue {
+public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /** Queries can be given a name and registered with a descriptor to allow common queries to be reused. */
     protected String name;
@@ -76,7 +76,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
     // Bug#3476483 - Restore shouldMaintainCache to previous state after reverse of bug fix 3240668
     protected boolean shouldMaintainCache;
 
-    /** Internallay used by the mappings as a temporary store. */
+    /** Internally used by the mappings as a temporary store. */
     protected Hashtable properties;
 
     /** Only used after the query is cloned for execution to store the session under which the query was executed. */
@@ -112,15 +112,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
 
     /** Bind all arguments to the SQL statement. */
 
-    // Has False, Underfined or True value. In case of Undefined -
+    // Has False, Undefined or True value. In case of Undefined -
     // Session's shouldBindAllParameters() defines whether to bind or not.
-    protected int shouldBindAllParameters;
+    protected Boolean shouldBindAllParameters;
 
     /** Cache the prepared statement, this requires full parameter binding as well. */
 
-    // Has False, Underfined or True value. In case of Undefined -
+    // Has False, Undefined or True value. In case of Undefined -
     // Session's shouldCacheAllStatements() defines whether to cache or not.
-    protected int shouldCacheStatement;
+    protected Boolean shouldCacheStatement;
 
     /** Use the WrapperPolicy for the objects returned by the query */
     protected boolean shouldUseWrapperPolicy;
@@ -198,8 +198,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
         this.queryTimeout = DescriptorQueryManager.DefaultTimeout;
         this.shouldPrepare = true;
         this.shouldCloneCall = false;
-        this.shouldBindAllParameters = Undefined;
-        this.shouldCacheStatement = Undefined;
+        this.shouldBindAllParameters = null;
+        this.shouldCacheStatement = null;
         this.isExecutionClone = false;
     }
 
@@ -510,35 +510,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
     };
 
     /**
-     * INTERNAL:
-     * Added for backwards compatibility.  shouldMaintainCache used to be tri-state and was converted to boolean.
-     * This method is used by deployment XML to properly convert the tri-state variable to a boolean
-     * Added for Bug 4034159
-     */
-    public void deploymentSetShouldMaintainCache(int maintainCache) {
-        // FalseUndefinedTrue.Undefined is intentionally left ignored so it will map to the default.
-        if (maintainCache == FalseUndefinedTrue.True) {
-            setShouldMaintainCache(true);
-        } else if (maintainCache == FalseUndefinedTrue.False) {
-            setShouldMaintainCache(false);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Added for backwards compatibility.  shouldMaintainCache used to be tri-state and was converted to boolean.
-     * This method is used by deployment XML to properly convert the tri-state variable to a boolean
-     * Added for Bug 4034159
-     */
-    public int deploymentShouldMaintainCache() {
-        if (shouldMaintainCache()) {
-            return FalseUndefinedTrue.True;
-        } else {
-            return FalseUndefinedTrue.False;
-        }
-    }
-
-    /**
      * PUBLIC:
      * Do not Bind all arguments to any SQL statement.
      */
@@ -548,7 +519,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
 
     /**
      * PUBLIC:
-     * Dont cache the prepared statements, this requires full parameter binding as well.
+     * Don't cache the prepared statements, this requires full parameter binding as well.
      */
     public void dontCacheStatement() {
         setShouldCacheStatement(false);
@@ -558,7 +529,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
      * PUBLIC:
      * Do not cascade the query and its properties on the queries object(s) relationships.
      * This does not effect the queries private parts but only the object(s) direct row-level attributes.
-     * This is the default for read queries and can be used in writting if it is known that only
+     * This is the default for read queries and can be used in writing if it is known that only
      * row-level attributes changed, or to resolve circular foreign key dependencies.
      */
     public void dontCascadeParts() {
@@ -1095,7 +1066,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
      * Returns the internal tri-state calue of shouldBindParameters
      * used far cascading these settings
      */
-    public int getShouldBindAllParameters() {
+    public Boolean getShouldBindAllParameters() {
         return this.shouldBindAllParameters;
     }
 
@@ -1106,7 +1077,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
      * @see #prepareCall(org.eclipse.persistence.sessions.Session, Record)
      */
     public String getTranslatedSQLString(org.eclipse.persistence.sessions.Session session, Record translationRow) {
-        prepareCall((AbstractSession)session, (AbstractRecord)translationRow);        
+        prepareCall(session, translationRow);        
         //CR#2859559 fix to use Session and Record interfaces not impl classes.
         CallQueryMechanism queryMechanism = (CallQueryMechanism)getQueryMechanism();
         if (queryMechanism.getCall() == null) {
@@ -1125,7 +1096,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
      * @see #prepareCall(Session, Record)
      */
     public List getTranslatedSQLStrings(org.eclipse.persistence.sessions.Session session, Record translationRow) {
-        prepareCall((AbstractSession)session, (AbstractRecord)translationRow);        
+        prepareCall(session, translationRow);        
         CallQueryMechanism queryMechanism = (CallQueryMechanism)getQueryMechanism();
         if ((queryMechanism.getCalls() == null) || queryMechanism.getCalls().isEmpty()) {
             return null;
@@ -1190,7 +1161,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
      * (default setting)
      */
     public void ignoreBindAllParameters() {
-        this.shouldBindAllParameters = Undefined;
+        this.shouldBindAllParameters = null;
     }
 
     /**
@@ -1199,7 +1170,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
      * (default setting)
      */
     public void ignoreCacheStatement() {
-        this.shouldCacheStatement = Undefined;
+        this.shouldCacheStatement = null;
     }
 
     /**
@@ -1890,20 +1861,16 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
      * Bind all arguments to any SQL statement.
      */
     public void setShouldBindAllParameters(boolean shouldBindAllParameters) {
-        if (shouldBindAllParameters) {
-            this.shouldBindAllParameters = True;
-        } else {
-            this.shouldBindAllParameters = False;
-        }
+        this.shouldBindAllParameters = Boolean.valueOf(shouldBindAllParameters);
         setIsPrepared(false);
     }
 
     /**
      * INTERNAL:
      * Sets the internal tri-state value of shouldBindAllParams
-     * Used to cascade this value to alther queries
+     * Used to cascade this value to other queries
      */
-    public void setShouldBindAllParameters(int bindAllParams) {
+    public void setShouldBindAllParameters(Boolean bindAllParams) {
         this.shouldBindAllParameters = bindAllParams;
     }
 
@@ -1912,11 +1879,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
      * Cache the prepared statements, this requires full parameter binding as well.
      */
     public void setShouldCacheStatement(boolean shouldCacheStatement) {
-        if (shouldCacheStatement) {
-            this.shouldCacheStatement = True;
-        } else {
-            this.shouldCacheStatement = False;
-        }
+        this.shouldCacheStatement = Boolean.valueOf(shouldCacheStatement);
         setIsPrepared(false);
     }
     
@@ -1992,7 +1955,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
      * Bind all arguments to any SQL statement.
      */
     public boolean shouldBindAllParameters() {
-        return shouldBindAllParameters == True;
+        return Boolean.TRUE.equals(shouldBindAllParameters);
     }
 
     /**
@@ -2000,7 +1963,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
      * Cache the prepared statements, this requires full parameter binding as well.
      */
     public boolean shouldCacheStatement() {
-        return shouldCacheStatement == True;
+        return Boolean.TRUE.equals(shouldCacheStatement);
     }
 
     /**
@@ -2058,7 +2021,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
      * Session's shouldBindAllParameters() should be used.
      */
     public boolean shouldIgnoreBindAllParameters() {
-        return shouldBindAllParameters == Undefined;
+        return shouldBindAllParameters == null;
     }
 
     /**
@@ -2067,7 +2030,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable, FalseUnd
      * Session's shouldCacheAllStatements() should be used.
      */
     public boolean shouldIgnoreCacheStatement() {
-        return shouldCacheStatement == Undefined;
+        return shouldCacheStatement == null;
     }
 
     /**

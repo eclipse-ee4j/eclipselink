@@ -895,12 +895,12 @@ public class InheritancePolicy implements Serializable, Cloneable {
                 }
 
                 // copy forceUpdate value if not set in child
-                if (cmpPolicy.internalGetForceUpdate() == FalseUndefinedTrue.Undefined) {
+                if (cmpPolicy.internalGetForceUpdate() == null) {
                     cmpPolicy.internalSetForceUpdate(parentCMPPolicy.internalGetForceUpdate());
                 }
 
                 // copy updateAllFields value if not set in child
-                if (cmpPolicy.internalGetUpdateAllFields() == FalseUndefinedTrue.Undefined) {
+                if (cmpPolicy.internalGetUpdateAllFields() == null) {
                     cmpPolicy.internalSetUpdateAllFields(parentCMPPolicy.internalGetUpdateAllFields());
                 }
             }

@@ -31,7 +31,6 @@ import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ChangedFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.ClassExtractor;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -93,7 +92,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.DatabaseTypeWrapper;
-import org.eclipse.persistence.internal.helper.FalseUndefinedTrue;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.history.HistoricalDatabaseTable;
 import org.eclipse.persistence.internal.identitymaps.CacheIdentityMap;
@@ -188,8 +186,6 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
-import org.eclipse.persistence.oxm.record.DOMRecord;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaFileReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
@@ -236,7 +232,6 @@ import org.eclipse.persistence.sequencing.UnaryTableSequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.queries.SortedCollectionContainerPolicy;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
@@ -1685,29 +1680,12 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
                 .setAttributeName("shouldBindAllParameters");
         shouldBindAllParametersMapping
                 .setXPath("eclipselink:bind-all-parameters/text()");
-        ObjectTypeConverter shouldBindAllParametersConverter = new ObjectTypeConverter();
-        shouldBindAllParametersConverter.addConversionValue("false",
-                new Integer(FalseUndefinedTrue.False));
-        shouldBindAllParametersConverter.addConversionValue("true",
-                new Integer(FalseUndefinedTrue.True));
-        shouldBindAllParametersMapping
-                .setConverter(shouldBindAllParametersConverter);
-        shouldBindAllParametersMapping.setNullValue(new Integer(
-                FalseUndefinedTrue.Undefined));
         descriptor.addMapping(shouldBindAllParametersMapping);
 
         XMLDirectMapping shouldCacheStatementMapping = new XMLDirectMapping();
         shouldCacheStatementMapping.setAttributeName("shouldCacheStatement");
         shouldCacheStatementMapping
                 .setXPath("eclipselink:cache-statement/text()");
-        ObjectTypeConverter shouldCacheStatementConverter = new ObjectTypeConverter();
-        shouldCacheStatementConverter.addConversionValue("false", new Integer(
-                FalseUndefinedTrue.False));
-        shouldCacheStatementConverter.addConversionValue("true", new Integer(
-                FalseUndefinedTrue.True));
-        shouldCacheStatementMapping.setConverter(shouldCacheStatementConverter);
-        shouldCacheStatementMapping.setNullValue(new Integer(
-                FalseUndefinedTrue.Undefined));
         descriptor.addMapping(shouldCacheStatementMapping);
 
         XMLDirectMapping queryTimeoutMapping = new XMLDirectMapping();
@@ -1719,7 +1697,6 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends Project {
                 DescriptorQueryManager.DefaultTimeout));
         descriptor.addMapping(queryTimeoutMapping);
 
-        // feaure 2297
         XMLDirectMapping shouldPrepareMapping = new XMLDirectMapping();
         shouldPrepareMapping.setAttributeName("shouldPrepare");
         shouldPrepareMapping.setGetMethodName("shouldPrepare");

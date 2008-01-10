@@ -17,7 +17,6 @@ import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.logging.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sessions.broker.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
@@ -412,22 +411,6 @@ public class SessionManager {
         }
 
         return session;
-    }
-
-    /**
-     * INTERNAL:
-     * This return the first session from toplink-ejb-jar.xml file.  The returned
-     * session is not connected and it is used by TL for WebSphere CMP
-     */
-    public synchronized org.eclipse.persistence.internal.sessions.AbstractSession getWASSession(WASXMLSessionConfigLoader xmlSessionConfigLoader, ClassLoader classLoader) {
-        org.eclipse.persistence.internal.sessions.AbstractSession aSession = null;
-
-        xmlSessionConfigLoader.load(this, classLoader);
-        // After a load on the WASXMLSessionConfigLoader, the loaded
-        // session is stored on the loader.
-        aSession = xmlSessionConfigLoader.getLoadedSession();
-
-        return aSession;
     }
 
     /**

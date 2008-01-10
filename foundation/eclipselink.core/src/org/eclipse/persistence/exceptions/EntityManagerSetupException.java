@@ -10,7 +10,6 @@
 package org.eclipse.persistence.exceptions;
 
 import org.eclipse.persistence.exceptions.i18n.*;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 
 public class EntityManagerSetupException extends EclipseLinkException {
     public static final int SESSIONS_XML_VALIDATION_EXCEPTION = 28001;

@@ -467,7 +467,7 @@ public class CommitManager {
         for (int index = 0; index < descriptors.size(); index++) {
             descriptorsArray[index] = descriptors.elementAt(index);
         }
-        TOPSort.quicksort(descriptorsArray, new DescriptorCompare());
+        Arrays.sort(descriptorsArray, new DescriptorCompare());
         descriptors = new Vector(descriptors.size());
         for (int index = 0; index < descriptorsArray.length; index++) {
             descriptors.addElement(descriptorsArray[index]);

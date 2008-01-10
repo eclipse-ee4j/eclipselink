@@ -56,7 +56,7 @@ public class WriteLockManager {
      */
     public Map acquireLocksForClone(Object objectForClone, ClassDescriptor descriptor, Vector primaryKeys, AbstractSession session) {
         boolean successful = false;
-        EclipseLinkIdentityHashMap lockedObjects = new EclipseLinkIdentityHashMap();
+        IdentityHashMap lockedObjects = new IdentityHashMap();
         try {
             // if the descriptor has indirectin for all mappings then wait as there will be no deadlock risks
             CacheKey toWaitOn = acquireLockAndRelatedLocks(objectForClone, lockedObjects, primaryKeys, descriptor, session);

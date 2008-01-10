@@ -15,7 +15,6 @@ import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.internal.descriptors.CMPLifeCycleListener;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.FalseUndefinedTrue;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -30,8 +29,8 @@ public class CMPPolicy implements java.io.Serializable {
     // SPECJ: Temporary global optimization flag, use to disable uow merge.
     public static boolean OPTIMIZE_PESSIMISTIC_CMP = false;
     
-    protected int forceUpdate;
-    protected int updateAllFields;
+    protected Boolean forceUpdate;
+    protected Boolean updateAllFields;
 
     /** Allow the bean to always be locked as it enters a new transaction. */
     protected PessimisticLockingPolicy pessimisticLockingPolicy;
@@ -68,13 +67,13 @@ public class CMPPolicy implements java.io.Serializable {
     public static final int AFTER_EJBPOSTCREATE = 2;
 
     public CMPPolicy() {
-        this.forceUpdate = FalseUndefinedTrue.Undefined;
-        this.updateAllFields = FalseUndefinedTrue.Undefined;
+        this.forceUpdate = null;
+        this.updateAllFields = null;
     }
 
     /**
      * INTERNAL:
-     * Notify that the insert operation has occured, allow a sequence primary key to be reset.
+     * Notify that the insert operation has occurred, allow a sequence primary key to be reset.
      */
     public void postInsert(Object bean, AbstractSession session) {
         if (getLifeCycleListener() != null) {
@@ -212,7 +211,7 @@ public class CMPPolicy implements java.io.Serializable {
      */
     public boolean getForceUpdate() {
         // default to false
-        return (this.forceUpdate == FalseUndefinedTrue.True);
+        return (Boolean.TRUE.equals(this.forceUpdate));
     }
 
     /**
@@ -224,11 +223,7 @@ public class CMPPolicy implements java.io.Serializable {
      * @param boolean shouldForceUpdate
      */
     public void setForceUpdate(boolean shouldForceUpdate) {
-        if (shouldForceUpdate) {
-            this.forceUpdate = FalseUndefinedTrue.True;
-        } else {
-            this.forceUpdate = FalseUndefinedTrue.False;
-        }
+        this.forceUpdate = Boolean.valueOf(shouldForceUpdate);
     }
 
     /**
@@ -238,7 +233,7 @@ public class CMPPolicy implements java.io.Serializable {
      */
     public boolean getUpdateAllFields() {
         // default to false
-        return (this.updateAllFields == FalseUndefinedTrue.True);
+        return Boolean.TRUE.equals(this.updateAllFields);
     }
 
     /**
@@ -249,18 +244,14 @@ public class CMPPolicy implements java.io.Serializable {
      * @param boolean shouldUpdatAllFields
      */
     public void setUpdateAllFields(boolean shouldUpdatAllFields) {
-        if (shouldUpdatAllFields) {
-            this.updateAllFields = FalseUndefinedTrue.True;
-        } else {
-            this.updateAllFields = FalseUndefinedTrue.False;
-        }
+        this.updateAllFields = Boolean.valueOf(shouldUpdatAllFields);
     }
 
     /**
      * INTERNAL:
      * return internal tri-state value so we can decide whether to inherit or not at init time.
      */
-    public int internalGetForceUpdate() {
+    public Boolean internalGetForceUpdate() {
         return this.forceUpdate;
     }
 
@@ -268,7 +259,7 @@ public class CMPPolicy implements java.io.Serializable {
      * INTERNAL:
      * return internal tri-state value so we can decide whether to inherit or not at init time.
      */
-    public int internalGetUpdateAllFields() {
+    public Boolean internalGetUpdateAllFields() {
         return this.updateAllFields;
     }
 
@@ -276,7 +267,7 @@ public class CMPPolicy implements java.io.Serializable {
      * INTERNAL:
      * internal method to set the tri-state value. This is done in InheritancePolicy at init time.
      */
-    public void internalSetForceUpdate(int newForceUpdateValue) {
+    public void internalSetForceUpdate(Boolean newForceUpdateValue) {
         this.forceUpdate = newForceUpdateValue;
     }
 
@@ -284,7 +275,7 @@ public class CMPPolicy implements java.io.Serializable {
      * INTERNAL:
      * internal method to set the tri-state value. This is done in InheritancePolicy at init time.
      */
-    public void internalSetUpdateAllFields(int newUpdateAllFieldsValue) {
+    public void internalSetUpdateAllFields(Boolean newUpdateAllFieldsValue) {
         this.updateAllFields = newUpdateAllFieldsValue;
     }
 
@@ -361,7 +352,7 @@ public class CMPPolicy implements java.io.Serializable {
                 }
             }
             
-            Object fieldValue = mapping.getRealAttributeValueFromObject(key, (org.eclipse.persistence.internal.sessions.AbstractSession) session);
+            Object fieldValue = mapping.getRealAttributeValueFromObject(key, session);
             accessor.setValue(keyInstance, fieldValue);
         }
         

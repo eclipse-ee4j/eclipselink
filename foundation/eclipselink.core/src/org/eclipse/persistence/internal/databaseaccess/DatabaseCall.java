@@ -31,14 +31,14 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescr
  */
 public abstract class DatabaseCall extends DatasourceCall {
     /**
-     * Indictates if the FirstRow and MaxResults values in this
+     * Indicates if the FirstRow and MaxResults values in this
      * call object are to be ignored.  If true, it should mean they have been
      * built into the SQL statement directly ex: using Oracle Rownum support
      */
     protected boolean ignoreFirstRowMaxResultsSettings = false;
     /**
      * Following fields are used to bind MaxResults and FirstRow settings into 
-     * the query instead of using the values stored in the cal.
+     * the query instead of using the values stored in the call.
      */
     public static DatabaseField MAXROW_FIELD = new DatabaseField("TopLink-MaxResults");
     public static DatabaseField FIRSTRESULT_FIELD = new DatabaseField("TopLink-FirstRow");
@@ -48,10 +48,10 @@ public abstract class DatabaseCall extends DatasourceCall {
     transient protected ResultSet result;
 
     // The call may specify that its parameters should be bound.
-    protected int usesBinding;
+    protected Boolean usesBinding;
 
     // Bound calls can use prepared statement caching.
-    protected int shouldCacheStatement;
+    protected Boolean shouldCacheStatement;
 
     // The returned fields.
     transient protected Vector fields;
@@ -86,9 +86,9 @@ public abstract class DatabaseCall extends DatasourceCall {
     private transient AbstractRecord contexts = null;
     protected boolean isCursorOutputProcedure;
 
-    // This parameter is here to determine if TopLink should expect a ResultSet back from the call
-    // TopLink needs to know this information in order to call teh correct JDBC API
-    protected int returnsResultSet;
+    // This parameter is here to determine if we should expect a ResultSet back from the call
+    // We need to know this information in order to call the correct JDBC API
+    protected Boolean returnsResultSet;
 
     // Whether the call has to build output row
     protected boolean shouldBuildOutputRow;
@@ -98,8 +98,8 @@ public abstract class DatabaseCall extends DatasourceCall {
     protected String sqlString;
 
     public DatabaseCall() {
-        this.usesBinding = FalseUndefinedTrue.Undefined;
-        this.shouldCacheStatement = FalseUndefinedTrue.Undefined;
+        this.usesBinding = null;
+        this.shouldCacheStatement = null;
         this.isFieldMatchingRequired = false;
         this.returnType = RETURN_MANY_ROWS;
         this.queryTimeout = 0;
@@ -107,7 +107,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         this.resultSetFetchSize = 0;
         this.isCursorOutputProcedure = false;
         this.shouldBuildOutputRow = false;
-        this.returnsResultSet = FalseUndefinedTrue.Undefined;
+        this.returnsResultSet = null;
     }
 
     /**
@@ -158,7 +158,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * The platform may also decide to bind the value.
      */
     public void appendParameter(Writer writer, Object parameter, AbstractSession session) {
-        if (usesBinding == FalseUndefinedTrue.True) {
+        if (Boolean.TRUE.equals(usesBinding)) {
             bindParameter(writer, parameter);
         } else {
             session.getPlatform().appendParameter(this, writer, parameter);
@@ -409,10 +409,10 @@ public abstract class DatabaseCall extends DatasourceCall {
      * to false, true.
      */
     public boolean getReturnsResultSet() {
-        if (returnsResultSet == FalseUndefinedTrue.Undefined) {
+        if (returnsResultSet == null) {
             return !shouldBuildOutputRow();
         } else {
-            return returnsResultSet == FalseUndefinedTrue.True;
+            return returnsResultSet.booleanValue();
         }
     }
 
@@ -621,7 +621,7 @@ public abstract class DatabaseCall extends DatasourceCall {
                 getParameterTypes().setElementAt(LITERAL, i);
             }
         }
-        if (this.returnsResultSet == FalseUndefinedTrue.Undefined) {
+        if (this.returnsResultSet == null) {
             setReturnsResultSet(!isCallableStatementRequired());
         }
     }
@@ -768,11 +768,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Use this method to tell TopLink that the stored procedure will be returning a JDBC ResultSet
      */
     public void setReturnsResultSet(boolean returnsResultSet) {
-        if (returnsResultSet) {
-            this.returnsResultSet = FalseUndefinedTrue.True;
-        } else {
-            this.returnsResultSet = FalseUndefinedTrue.False;
-        }
+        this.returnsResultSet = Boolean.valueOf(returnsResultSet);
     }
 
     /**
@@ -787,11 +783,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Bound calls can use prepared statement caching.
      */
     public void setShouldCacheStatement(boolean shouldCacheStatement) {
-        if (shouldCacheStatement) {
-            this.shouldCacheStatement = FalseUndefinedTrue.True;
-        } else {
-            this.shouldCacheStatement = FalseUndefinedTrue.False;
-        }
+        this.shouldCacheStatement = Boolean.valueOf(shouldCacheStatement);
     }
 
     /**
@@ -805,11 +797,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * The call may specify that its parameters should be bound.
      */
     public void setUsesBinding(boolean usesBinding) {
-        if (usesBinding) {
-            this.usesBinding = FalseUndefinedTrue.True;
-        } else {
-            this.usesBinding = FalseUndefinedTrue.False;
-        }
+        this.usesBinding = Boolean.valueOf(usesBinding);
     }
 
     /**
@@ -834,10 +822,10 @@ public abstract class DatabaseCall extends DatasourceCall {
         if (isResultSetScrollable()) {
             return false;
         }
-        if (shouldCacheStatement == FalseUndefinedTrue.Undefined) {
+        if (this.shouldCacheStatement == null) {
             return databasePlatform.shouldCacheAllStatements();
         } else {
-            return shouldCacheStatement == FalseUndefinedTrue.True;
+            return this.shouldCacheStatement.booleanValue();
         }
     }
     
@@ -1025,10 +1013,10 @@ public abstract class DatabaseCall extends DatasourceCall {
      * The call may specify that its parameters should be bound.
      */
     public boolean usesBinding(DatabasePlatform databasePlatform) {
-        if (usesBinding == FalseUndefinedTrue.Undefined) {
+        if (this.usesBinding == null) {
             return databasePlatform.shouldBindAllParameters();
         } else {
-            return usesBinding == FalseUndefinedTrue.True;
+            return this.usesBinding.booleanValue();
         }
     }
 

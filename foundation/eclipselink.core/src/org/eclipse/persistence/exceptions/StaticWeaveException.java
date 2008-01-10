@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
-import java.io.File;
 import java.net.URL;
 
 import org.eclipse.persistence.exceptions.i18n.*;

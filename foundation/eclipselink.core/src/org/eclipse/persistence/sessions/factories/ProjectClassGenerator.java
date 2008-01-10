@@ -113,7 +113,7 @@ public class ProjectClassGenerator {
         for (Iterator fieldTranslationEnum = mapping.getAggregateToSourceFieldNames().keySet().iterator();
                  fieldTranslationEnum.hasNext();) {
             String aggregateField = (String)fieldTranslationEnum.next();
-            String sourceField = (String)mapping.getAggregateToSourceFieldNames().get(aggregateField);
+            String sourceField = mapping.getAggregateToSourceFieldNames().get(aggregateField);
             method.addLine(mappingName + ".addFieldNameTranslation(\"" + sourceField + "\", \"" + aggregateField + "\");");
         }
     }
@@ -754,7 +754,7 @@ public class ProjectClassGenerator {
         for (Iterator foreignKeysEnum = mapping.getSourceToTargetKeyFields().keySet().iterator();
                  foreignKeysEnum.hasNext();) {
             DatabaseField sourceField = (DatabaseField)foreignKeysEnum.next();
-            DatabaseField targetField = (DatabaseField)mapping.getSourceToTargetKeyFields().get(sourceField);
+            DatabaseField targetField = mapping.getSourceToTargetKeyFields().get(sourceField);
             if (mapping.getForeignKeyFields().contains(sourceField)) {
                 method.addLine(mappingName + ".addForeignKeyFieldName(\"" + sourceField.getQualifiedName() + "\", \"" + targetField.getQualifiedName() + "\");");
             } else {
@@ -1560,7 +1560,7 @@ public class ProjectClassGenerator {
         for (int index = 0; index < returnDescriptors.size(); index++) {
             descriptorsArray[index] = returnDescriptors.elementAt(index);
         }
-        TOPSort.quicksort(descriptorsArray, new DescriptorCompare());
+        Arrays.sort(descriptorsArray, new DescriptorCompare());
         returnDescriptors = new Vector(returnDescriptors.size());
         for (int index = 0; index < descriptorsArray.length; index++) {
             returnDescriptors.addElement(descriptorsArray[index]);

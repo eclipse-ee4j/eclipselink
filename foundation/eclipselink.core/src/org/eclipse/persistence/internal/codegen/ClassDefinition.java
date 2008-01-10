@@ -229,7 +229,7 @@ public class ClassDefinition extends CodeDefinition {
         //Object methodArray[] = getMethods().toArray();
         Object[] methodArray = Helper.arrayFromVector(getMethods());
 
-        TOPComparison comparison = new TOPComparison() {
+        Comparator comparison = new Comparator() {
             public int compare(Object first, Object second) {
                 if (((MethodDefinition)first).isConstructor()) {
                     return -1;
@@ -241,7 +241,7 @@ public class ClassDefinition extends CodeDefinition {
             }
         };
 
-        TOPSort.quicksort(methodArray, comparison);
+        Arrays.sort(methodArray, comparison);
 
         Vector sortedMethods = new Vector(getMethods().size());
         for (int index = 0; index < methodArray.length; index++) {

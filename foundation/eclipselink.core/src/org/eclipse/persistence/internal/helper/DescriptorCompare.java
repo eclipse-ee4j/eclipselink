@@ -9,6 +9,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
+import java.util.Comparator;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
@@ -16,7 +18,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  * Use to sort vectors of strings.
  * Avoid using this class as sun.misc is not part of many VM's like Netscapes.
  */
-public class DescriptorCompare implements TOPComparison {
+public class DescriptorCompare implements Comparator {
     public int compare(Object arg1, Object arg2) {
         return ((ClassDescriptor)arg1).getJavaClassName().compareTo(((ClassDescriptor)arg2).getJavaClassName());
     }

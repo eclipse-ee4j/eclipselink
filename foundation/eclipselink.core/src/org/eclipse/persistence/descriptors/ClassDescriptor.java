@@ -1954,7 +1954,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             for (int index = 0; index < mappings.size(); index++) {
                 mappingsArray[index] = mappings.elementAt(index);
             }
-            TOPSort.quicksort(mappingsArray, new MappingCompare());
+            Arrays.sort(mappingsArray, new MappingCompare());
             mappings = NonSynchronizedVector.newInstance(mappingsArray.length);
             for (int index = 0; index < mappingsArray.length; index++) {
                 mappings.addElement(mappingsArray[index]);
@@ -2027,7 +2027,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             for (int index = 0; index < mappings.size(); index++) {
                 mappingsArray[index] = mappings.elementAt(index);
             }
-            TOPSort.quicksort(mappingsArray, new MappingCompare());
+            Arrays.sort(mappingsArray, new MappingCompare());
             mappings = NonSynchronizedVector.newInstance(mappingsArray.length);
             for (int index = 0; index < mappingsArray.length; index++) {
                 mappings.addElement(mappingsArray[index]);

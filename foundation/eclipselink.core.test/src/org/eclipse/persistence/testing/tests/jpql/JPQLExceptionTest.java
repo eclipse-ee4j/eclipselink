@@ -71,7 +71,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
 
     public static JPQLExceptionTest badAliasExceptionTest() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
-        theTest.expectedException = EJBQLException.aliasResolutionException(null);
+        theTest.expectedException = JPQLException.aliasResolutionException(null, 0, 0, null);
         theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee employee WHERE emp.firstName = \"Fred\"");
         theTest.setName("Bad Alias Exception Test 2");
         return theTest;
@@ -98,7 +98,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
     public static JPQLExceptionTest classNotFoundExceptionTest() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
 
-        theTest.expectedException = EJBQLException.resolutionClassNotFoundException(null);
+        theTest.expectedException = JPQLException.resolutionClassNotFoundException(null, null);
         theTest.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Address.class);
         theTest.setEjbqlString("SELECT OBJECT(a) FROM AddressBean a WHERE a.city = \"Ottawa\"");
         theTest.setName("Class Not Found Exception test");
@@ -126,7 +126,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
 
     public static JPQLExceptionTest expressionNotSupportedTest() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
-        theTest.expectedException = EJBQLException.expressionNotSupported(null);
+        theTest.expectedException = JPQLException.expressionNotSupported(null, null);
         theTest.setName("Expression Not Supported Exception test");
         theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.phoneNumbers IS EMPTY");
 
@@ -135,7 +135,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
 
     public static JPQLExceptionTest memberOfNotSupportedTest() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
-        theTest.expectedException = EJBQLException.expressionNotSupported(null);
+        theTest.expectedException = JPQLException.expressionNotSupported(null, null);
         theTest.setName("MEMBER OF Not Supported Exception test");
         theTest.setEjbqlString("SELECT OBJECT(proj) FROM Employee emp, Project proj " + " WHERE  (proj.teamLeader MEMBER OF emp.manager.managedEmployees) " + "AND (emp.lastName = \"Chan\")");
         return theTest;

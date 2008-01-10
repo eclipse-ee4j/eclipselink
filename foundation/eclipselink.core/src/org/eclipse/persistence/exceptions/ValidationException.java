@@ -749,7 +749,6 @@ public class ValidationException extends EclipseLinkException {
     * The session named "name" could not be found in the Sessions.XML
     */
     public static ValidationException errorInSessionsXML(String translatedExceptions) {
-        Object[] args = {  };
         ValidationException validationException = new ValidationException(translatedExceptions);
         validationException.setErrorCode(ERROR_IN_SESSION_XML);
         return validationException;
