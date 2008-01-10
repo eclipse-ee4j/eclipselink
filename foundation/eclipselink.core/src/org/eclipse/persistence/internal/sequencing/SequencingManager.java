@@ -35,7 +35,7 @@ import org.eclipse.persistence.logging.SessionLog;
  * State: Not connected.
  *        isConnected() returns false;
  *        getSequencingControl() could be used;
- *        getSequencing() == getSequencingServer() == getSequencingCallback() == null;
+ *        getSequencing() == getSequencingServer() == getSequencingCallbackFactory() == null;
  *   Action: onConnect is called -> Connected State.
  * State: Connected.
  *        isConnected() returns true;
@@ -102,7 +102,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     private static final int NUMBER_OF_STATES = 4;
     private State[] states;
     private Map<String, ConcurrencyManager> locks;
-    private SequencingCallback callback;
+    private SequencingCallbackFactory callbackFactory;
     private SequencingServer server;
     private Sequencing seq;
     private boolean shouldUseSeparateConnection;
@@ -177,12 +177,12 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         return server;
     }
 
-    protected void setSequencingCallback(SequencingCallback callback) {
-        this.callback = callback;
+    protected void setSequencingCallbackFactory(SequencingCallbackFactory callbackFactory) {
+        this.callbackFactory = callbackFactory;
     }
 
-    public SequencingCallback getSequencingCallback() {
-        return callback;
+    public boolean isSequencingCallbackRequired() {
+        return this.callbackFactory != null;
     }
 
     public boolean shouldUseSeparateConnection() {
@@ -308,7 +308,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     static abstract class State {
         abstract Object getNextValue(Sequence sequence, AbstractSession writeSession);
 
-        SequencingCallback getSequencingCallback() {
+        SequencingCallbackFactory getSequencingCallbackFactory() {
             return null;
         }
 
@@ -327,45 +327,76 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
      * This will use the writeConnection, but use individual transactions per sequence allocation,
      * unless the unit of work is in an early transaction, or the connection is JTA (this may deadlock).
      */
-    class Preallocation_Transaction_NoAccessor_State extends State implements SequencingCallback {
-        protected Hashtable accessorToPreallocated = new Hashtable(20);
+    class Preallocation_Transaction_NoAccessor_State extends State implements SequencingCallbackFactory {
 
-        SequencingCallback getSequencingCallback() {
+        public class SequencingCallbackImpl implements SequencingCallback {
+            Map localSequences = new HashMap();
+            
+            /**
+            * INTERNAL:
+            * Called after transaction has committed (commit in non-jta case; after completion - jta case).
+            * Should not be called after rollback.
+            */
+            public void afterCommit(Accessor accessor) {
+                afterCommitInternal(localSequences, accessor);
+            }
+            
+            public Map getPreallocatedSequenceValues() {
+                return localSequences;
+            }
+        }
+        
+        SequencingCallbackFactory getSequencingCallbackFactory() {
             return this;
         }
 
         /**
+        * INTERNAL:
+        * Creates SequencingCallback.
+        */
+        public SequencingCallback createSequencingCallback() {
+            return new SequencingCallbackImpl();
+        }
+        
+        /**
          * Release any locally allocated sequence back to the global sequence pool.
          */
-        public void afterTransaction(Accessor accessor, boolean committed) {
-            Hashtable localSequences = (Hashtable)accessorToPreallocated.get(accessor);
-            if (localSequences != null) {
-                if (committed) {
-                    for (Enumeration enumtr = localSequences.keys(); enumtr.hasMoreElements();) {
-                        String seqName = (String)enumtr.nextElement();
-                        Vector localSequenceForName = (Vector)localSequences.get(seqName);
-                        if (!localSequenceForName.isEmpty()) {
-                            acquireLock(seqName);
-                            try {
-                                getPreallocationHandler().setPreallocated(seqName, localSequenceForName);
-                                // clear all localSequencesForName
-                                localSequenceForName.clear();
-                            } finally {
-                                releaseLock(seqName);
-                            }
-                        }
+        void afterCommitInternal(Map localSequences, Accessor accessor) {
+            Iterator it = localSequences.entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry entry = (Map.Entry)it.next();
+                String seqName = (String)entry.getKey();
+                Vector localSequenceForName = (Vector)entry.getValue();
+                if (!localSequenceForName.isEmpty()) {
+                    acquireLock(seqName);
+                    try {
+                        getPreallocationHandler().setPreallocated(seqName, localSequenceForName);
+                        // clear all localSequencesForName
+                        localSequenceForName.clear();
+                    } finally {
+                        releaseLock(seqName);
                     }
                 }
-
-                // remove localSequencing corresponding to the accessor from accessorToPreallocated
-                accessorToPreallocated.remove(accessor);
-
-                if (committed) {
-                    getOwnerSession().log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_afterTransactionCommitted", null, accessor);
-                } else {
-                    getOwnerSession().log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_afterTransactionRolledBack", null, accessor);
-                }
             }
+            if(accessor != null) {
+                getOwnerSession().log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_afterTransactionCommitted", null, accessor);
+            } else {
+                getOwnerSession().log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_afterTransactionCommitted", null);
+            }
+        }
+        
+        SequencingCallbackImpl getCallbackImpl(AbstractSession writeSession, Accessor accessor) {
+            SequencingCallbackImpl seqCallbackImpl;
+            if(writeSession.hasExternalTransactionController()) {
+                // note that controller obtained from writeSession (not from ownerSession) -
+                // the difference is important in case of ownerSession being a member of SessionBroker:
+                // in that case only writeSession (which is either ClientSession or DatabaseSession) always has
+                // the correct controller.
+                seqCallbackImpl = (SequencingCallbackImpl)writeSession.getExternalTransactionController().getActiveSequencingCallback(getOwnerSession(), getSequencingCallbackFactory());
+            } else {
+                seqCallbackImpl = (SequencingCallbackImpl)accessor.getSequencingCallback(getSequencingCallbackFactory());
+            }
+            return seqCallbackImpl;
         }
 
         /**
@@ -414,11 +445,8 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
             }
             try {
                 accessor = writeSession.getAccessor();
-                Hashtable localSequences = (Hashtable)accessorToPreallocated.get(accessor);
-                if (localSequences == null) {
-                    localSequences = new Hashtable(20);
-                    accessorToPreallocated.put(accessor, localSequences);
-                }
+                SequencingCallbackImpl seqCallbackImpl = getCallbackImpl(writeSession, accessor);
+                Map localSequences = seqCallbackImpl.getPreallocatedSequenceValues();
                 localSequencesForName = (Vector)localSequences.get(seqName);
                 if ((localSequencesForName == null) || localSequencesForName.isEmpty()) {
                     localSequencesForName = sequence.getGeneratedVector(null, writeSession);
@@ -447,8 +475,8 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                 try {
                     // commitTransaction may copy preallocated sequence numbers 
                     // from localSequences to preallocationHandler: that happens
-                    // if it isn't a nested transaction, and afterTransaction method 
-                    // is called.
+                    // if it isn't a nested transaction, and sequencingCallback.afterCommit 
+                    // method has been called.
                     // In this case:
                     // 1. localSequences corresponding to the accessor
                     //    has been removed from accessorToPreallocated;
@@ -467,12 +495,12 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
 
                 if (!localSequencesForName.isEmpty()) {
                     // localSeqencesForName is not empty, that means
-                    // afterTransaction() has not been called.
+                    // sequencingCallback has not been called.
                     sequenceValue = localSequencesForName.remove(0);
                     return sequenceValue;
                 } else {
                     // localSeqencesForName is empty, that means
-                    // afterTransaction() has been called.
+                    // sequencingCallback has been called.
                     sequenceValue = sequencesForName.poll();
                     if (sequenceValue != null) {
                         return sequenceValue;
@@ -655,7 +683,10 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         if (atLeastOneSequenceShouldUsePreallocation) {
             setLocks(new ConcurrentHashMap(20));
         }
-        createSequencingCallback();
+        createSequencingCallbackFactory();
+        if(getOwnerSession().hasExternalTransactionController()) {
+            getOwnerSession().getExternalTransactionController().initializeSequencingListeners();
+        }
         if (getOwnerSession().isServerSession()) {
             setSequencingServer(this);
         }
@@ -670,7 +701,10 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
 
         setSequencing(null);
         setSequencingServer(null);
-        setSequencingCallback(null);
+        setSequencingCallbackFactory(null);
+        if(getOwnerSession().hasExternalTransactionController()) {
+            getOwnerSession().getExternalTransactionController().clearSequencingListeners();
+        }
         setLocks(null);
         clearStates();
 
@@ -833,37 +867,11 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         }
     }
 
-    protected void createSequencingCallback() {
-        Vector callbackVector = new Vector();
-        for (int i = 0; i < NUMBER_OF_STATES; i++) {
-            if (states[i] != null) {
-                SequencingCallback callback = states[i].getSequencingCallback();
-                if (callback != null) {
-                    callbackVector.addElement(callback);
-                }
-            }
-        }
-        if (callbackVector.isEmpty()) {
-            setSequencingCallback(null);
-        } else if (callbackVector.size() == 1) {
-            setSequencingCallback((SequencingCallback)callbackVector.firstElement());
+    protected void createSequencingCallbackFactory() {
+        if (states[PREALLOCATION_TRANSACTION_NOACCESSOR] != null) {
+            setSequencingCallbackFactory(states[PREALLOCATION_TRANSACTION_NOACCESSOR].getSequencingCallbackFactory());
         } else {
-            setSequencingCallback(new SequencingCallbackContainer(callbackVector));
-        }
-    }
-
-    static class SequencingCallbackContainer implements SequencingCallback {
-        SequencingCallback[] callbackArray;
-
-        SequencingCallbackContainer(Vector callbackVector) {
-            callbackArray = new SequencingCallback[callbackVector.size()];
-            callbackVector.copyInto(callbackArray);
-        }
-
-        public void afterTransaction(Accessor accessor, boolean committed) {
-            for (int i = 0; i < callbackArray.length; i++) {
-                callbackArray[i].afterTransaction(accessor, committed);
-            }
+            setSequencingCallbackFactory(null);
         }
     }
 

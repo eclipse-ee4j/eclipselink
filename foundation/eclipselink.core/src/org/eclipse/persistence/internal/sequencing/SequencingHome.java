@@ -35,5 +35,5 @@ public interface SequencingHome extends SequencingLogInOut {
 
     public SequencingServer getSequencingServer();
 
-    public SequencingCallback getSequencingCallback();
+    public boolean isSequencingCallbackRequired();
 }

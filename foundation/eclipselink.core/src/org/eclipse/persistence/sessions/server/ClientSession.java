@@ -85,15 +85,14 @@ public class ClientSession extends AbstractSession {
 
     /**
      * INTERNAL:
-     * Called after transaction is completed (committed or rolled back)
+     * Called in the end of beforeCompletion of external transaction sychronization listener.
+     * Close the managed sql connection corresponding to the external transaction
+     * and releases accessor.
      */
-    public void afterTransaction(boolean committed, boolean isExternalTransaction) {
+    public void releaseJTSConnection() {
         if (hasWriteConnection()) {
-            getParent().afterTransaction(committed, isExternalTransaction, getWriteConnection());
-            if (isExternalTransaction) {
-                getWriteConnection().afterJTSTransaction();
-                releaseWriteConnection();
-            }
+            getWriteConnection().closeJTSConnection();
+            releaseWriteConnection();
         }
     }
 
@@ -113,23 +112,21 @@ public class ClientSession extends AbstractSession {
         super.basicBeginTransaction();
     }
 
-    
     /**
      * INTERNAL:
      * This is internal to the unit of work and should not be called otherwise.
      */
-    public void basicCommitTransaction(AbstractSession callingSession) {
+    public void basicCommitTransaction() {
         //Only releasee connection when transaction succeeds.  
         //If not, connection will be released in rollback.
-        super.basicCommitTransaction(callingSession);
-        // the connection will be released by afterCompletion callback to
-        // afterTransaction(., true);
-        // if there is no external TX controller, then that means we are currently not synchronized
-        // with a global JTS transaction.  In this case, there won't be any 'afterCompletion'
-        // callbacks so we have to release the connection here.  It is possible (WLS 5.1) to choose
-        // 'usesExternalTransactionController' on the login, but still acquire a uow that WON'T be
-        // synchronized with a global TX.
-        if (!((callingSession instanceof UnitOfWorkImpl) && ((UnitOfWorkImpl)callingSession).isSynchronized())){
+        super.basicCommitTransaction();
+
+        // if synchronized then the connection will be released in external transaction callback.
+        if (hasExternalTransactionController()) {
+            if(!isSynchronized()) {
+                releaseJTSConnection();
+            }
+        } else {
             releaseWriteConnection();
         }
     }
@@ -137,24 +134,21 @@ public class ClientSession extends AbstractSession {
     /**
      * INTERNAL:
      * This is internal to the unit of work and should not be called otherwise.
-     * The calling session is the session that requires rollback transaction.
      */
-    public void basicRollbackTransaction(AbstractSession callingSession) {
+    public void basicRollbackTransaction() {
         try {
             //BUG 2660471: Make sure there is an accessor (moved here from Session)
             //BUG 2846785: EXCEPTION THROWN IN PREBEGINTRANSACTION EVENT CAUSES NPE
             if (hasWriteConnection()) {
-                super.basicRollbackTransaction(callingSession);
+                super.basicRollbackTransaction();
             }
         } finally {
-            // the connection will be released by afterCompletion callback to
-            // afterTransaction(., true);
-            // if there is no external TX controller, then that means we are currently not synchronized
-            // with a global JTS transaction.  In this case, there won't be any 'afterCompletion'
-            // callbacks so we have to release the connection here.  It is possible (WLS 5.1) to choose
-            // 'usesExternalTransactionController' on the login, but still acquire a uow that WON'T be
-            // synchronized with a global TX.
-            if (!((callingSession instanceof UnitOfWorkImpl) && ((UnitOfWorkImpl)callingSession).isSynchronized())){
+            // if synchronized then the connection will be released in external transaction callback.
+            if (hasExternalTransactionController()) {
+                if(!isSynchronized()) {
+                    releaseJTSConnection();
+                }
+            } else {
                 releaseWriteConnection();
             }
         }

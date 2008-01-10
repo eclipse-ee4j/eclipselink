@@ -11,13 +11,19 @@ package org.eclipse.persistence.transaction;
 
 import java.util.*;
 import javax.naming.*;
+
+import org.eclipse.persistence.sessions.broker.SessionBroker;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.helper.JavaPlatform;
+import org.eclipse.persistence.internal.sequencing.SequencingCallback;
+import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
 
 /**
  * <p>
@@ -46,6 +52,24 @@ public abstract class AbstractTransactionController implements ExternalTransacti
 
     /** PERF: Cache the active uow in a thread local. */
     protected ThreadLocal activeUnitOfWorkThreadLocal;
+
+    /** Table of external transaction object keys and sequencing listeners values. */
+    /** Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback > 0 */
+    protected Map<Object, AbstractSynchronizationListener> sequencingListeners;
+
+    /** Table of external transaction object keys and listeners that are currently in beforeCompletion. */
+    /** Request for a new sequencing callback may be triggered by beforeCompletion of existing listener - */
+    /** in this case avoid creating yet another listener for sequencing but rather use the listener */
+    /** that has initiated the request */
+    /** Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback > 0 */
+    protected Map<Object, AbstractSynchronizationListener> currentlyProcessedListeners;
+
+    /** Indicates how many sessions require sequencing callbacks: */
+    /** 0 - sequencing callbacks not used; */
+    /** 1 - the session is DatabaseSession or ServerSession and requires sequencing callbacks, */
+    /** or the session is a session broker with only one member requiring sequencing callbacks. */
+    /** more - the session is a session broker with several members requiring sequencing callbacks. */
+    protected int numSessionsRequiringSequencingCallback;
 
     /**
      * INTERNAL:
@@ -308,18 +332,18 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * INTERNAL:
      * Add a UnitOfWork object to the Hashtable keyed on the external transaction object.
      */
-    public void addUnitOfWork(Object transaction, UnitOfWorkImpl activeUnitOfWork) {
+    public void addUnitOfWork(Object transactionKey, UnitOfWorkImpl activeUnitOfWork) {
         this.activeUnitOfWorkThreadLocal.set(null);
-        getUnitsOfWork().put(transaction, activeUnitOfWork);
+        getUnitsOfWork().put(transactionKey, activeUnitOfWork);
     }
 
     /**
      * INTERNAL:
      * Remove the unit of work associated with the transaction passed in.
      */
-    public void removeUnitOfWork(Object transaction) {
-        if (transaction != null) {
-            getUnitsOfWork().remove(transaction);
+    public void removeUnitOfWork(Object transactionKey) {
+        if (transactionKey != null) {
+            getUnitsOfWork().remove(transactionKey);
         }
         this.activeUnitOfWorkThreadLocal.set(null);
     }
@@ -338,6 +362,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      */
     public void setSession(AbstractSession session) {
         this.session = session;
+        initializeSequencingListeners();
     }
 
     /**
@@ -411,6 +436,115 @@ public abstract class AbstractTransactionController implements ExternalTransacti
             }
         }
         return jndiObject;
+    }
+
+    /**
+     * INTERNAL:
+     * Initializes sequencing listeners.
+     * Always clears sequencing listeners first.
+     * There are two methods calling this method:
+     * 1. setSession method - this could lead to initialization of sequencing listeners
+     * only if sequencing already connected (that would happen if setSession is called
+     * after session.login, which is normally not the case).
+     * 2. in the very end of connecting sequencing,
+     * after it's determined whether sequencing callbacks (and therefore listeners)
+     * will be required.
+     */
+    public void initializeSequencingListeners() {
+        // sets numSessionsRequiringSequencingCallback to 0; removes sequenceListeners.
+        clearSequencingListeners();
+        if(session == null) {
+            return;
+        }
+        AbstractSession parentSession = session;
+        while(parentSession.getParent() != null) {
+            parentSession = parentSession.getParent();
+        }
+        // top parentSession must be DatabaseSessionImpl
+        if(parentSession.isBroker()) {
+            // it could be either SessionBroker
+            numSessionsRequiringSequencingCallback = ((SessionBroker)parentSession).howManySequencingCallbacks();
+        } else {
+            // or DatabaseSessionImpl or ServerSession
+            if(((DatabaseSessionImpl)parentSession).isSequencingCallbackRequired()) {
+                numSessionsRequiringSequencingCallback = 1;
+            }
+        }
+        if(numSessionsRequiringSequencingCallback != 0) {
+            this.sequencingListeners = JavaPlatform.getConcurrentMap();
+            this.currentlyProcessedListeners = JavaPlatform.getConcurrentMap();
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Returns sequencingCallback for the current active external transaction.
+     * DatabaseSession is passed for the sake of SessionBroker case.
+     * This method requires active external transaction.
+     */
+    public SequencingCallback getActiveSequencingCallback(DatabaseSession dbSession, SequencingCallbackFactory sequencingCallbackFactory) {
+        Object transaction = getTransaction();
+        // This method requires active external transaction.
+        if (transaction == null) {
+            throw TransactionException.externalTransactionNotActive();
+        }
+        Object transactionKey = getTransactionKey(transaction);
+
+        AbstractSynchronizationListener listener = sequencingListeners.get(transactionKey);
+        if(listener == null) {
+            // In case this request was triggered from beforeCompletion method of existing listener -
+            // find this listener.
+            listener = currentlyProcessedListeners.get(transactionKey);
+            if(listener == null) {
+                // Create and register the new synchronization listener with uow==session==null.
+                listener = getListenerFactory().newSynchronizationListener(null, null, transaction, this);
+                try {
+                    registerSynchronization_impl(listener, transaction);
+                } catch (Exception exception) {
+                    throw TransactionException.errorBindingToExternalTransaction(exception);
+                }
+            }
+            sequencingListeners.put(transactionKey, listener);
+        }
+        return listener.getSequencingCallback(dbSession, sequencingCallbackFactory);
+    }
+    
+    /**
+     * INTERNAL:
+     * Clears sequencing listeners.
+     * Called by initializeSequencingListeners and by sequencing on disconnect.
+     */
+    public void clearSequencingListeners() {
+        this.sequencingListeners = null;
+        this.currentlyProcessedListeners = null;
+        this.numSessionsRequiringSequencingCallback = 0;
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether sequencing callback may be required.
+     */
+    public boolean isSequencingCallbackRequired() {
+        return this.numSessionsRequiringSequencingCallback > 0;
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates how many sessions require sequencing callbacks.
+     */
+    public int numSessionsRequiringSequencingCallback() {
+        return this.numSessionsRequiringSequencingCallback;
+    }
+
+    /**
+     * INTERNAL:
+     * Clears sequencingCallbacks.
+     * Called by initializeSequencingCallbacks and by sequencing on disconnect.
+     */
+    public void removeSequencingListener(Object transactionKey) {
+        if (transactionKey != null) {
+            sequencingListeners.remove(transactionKey);
+        }
     }
 
     /*

@@ -15,23 +15,22 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
  * <p>
  * <b>Purpose</b>: Define interface for sequencing callback.
  * <p>
- * <b>Description</b>: This interface accessed through
- * DatabaseSession.getSequencingHome().getCallback() method.
+ * <b>Description</b>: Objects implementing this interface
+ *  produced by SequencingCallbackFactory.
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
  * <li> Provides sequencing callback to be called after transaction.
  * </ul>
- * @see org.eclipse.persistence.sequencing.SequencingValueGenerationPolicy
  * @see org.eclipse.persistence.sequencing.SequencingControl
  */
 public interface SequencingCallback {
 
     /**
     * INTERNAL:
-    * Called only by Session.afterTransaction method.
-    * @param accessor Accessor used by transaction.
-    * @param committed boolean true - transaction committed, false - transaction failed.
+    * Called after transaction has committed by the object that owns it:
+    * Accessor in non-jta case, SynchronizationListener in jta case.
+    * Should not be called after rollback.
     */
-    public void afterTransaction(Accessor accessor, boolean committed);
+    void afterCommit(Accessor accessor);
 }

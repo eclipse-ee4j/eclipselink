@@ -66,8 +66,7 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
 
         //Only releasee connection when transaction succeeds.  
         //If not, connection will be released in rollback.
-        //Bug6065882,needs indicate this client session is the one invokes commit txn. 
-        super.basicCommitTransaction(this);
+        super.basicCommitTransaction();
     }
 
     /**

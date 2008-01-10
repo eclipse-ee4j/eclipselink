@@ -37,6 +37,7 @@ import org.eclipse.persistence.internal.sessions.*;
  * </ul>
  */
 public class SessionBroker extends DatabaseSessionImpl {
+    protected SessionBroker parent;
     protected Map sessionNamesByClass;
     protected Map sessionsByName;
     protected Sequencing sequencing;
@@ -77,6 +78,7 @@ public class SessionBroker extends DatabaseSessionImpl {
     public SessionBroker acquireClientSessionBroker() {
         log(SessionLog.FINER, SessionLog.CONNECTION, "acquire_client_session_broker");
         SessionBroker clientBroker = copySessionBroker();
+        clientBroker.parent = this;
         clientBroker.getIdentityMapAccessorInstance().setIdentityMapManager(getIdentityMapAccessorInstance().getIdentityMapManager());
         clientBroker.commitManager = getCommitManager();
         clientBroker.commandManager = getCommandManager();
@@ -125,13 +127,15 @@ public class SessionBroker extends DatabaseSessionImpl {
 
     /**
      * INTERNAL:
-     * Called after transaction is completed (committed or rolled back)
+     * Called in the end of beforeCompletion of external transaction sychronization listener.
+     * Close the managed sql connection corresponding to the external transaction,
+     * if applicable releases accessor.
      */
-    public void afterTransaction(boolean committed, boolean isExternalTransaction) {
+    public void releaseJTSConnection() {
         for (Iterator sessionEnum = getSessionsByName().values().iterator();
                  sessionEnum.hasNext();) {
             AbstractSession session = (AbstractSession)sessionEnum.next();
-            session.afterTransaction(committed, isExternalTransaction);
+            session.releaseJTSConnection();
         }
     }
 
@@ -186,22 +190,13 @@ public class SessionBroker extends DatabaseSessionImpl {
         }
     }
 
-    
     /**
      * INTERNAL:
-     * Allow calling session to be passed.
-     *      
-     * The calling session is the session who actually invokes commit or rollback transaction, 
-     * it is used to determine whether the connection needs to be closed when using external connection pool.
-     * The connection with a externalConnectionPool used by synchronized UOW should leave open until 
-     * afterCompletion call back; the connection with a externalConnectionPool used by other type of session 
-     * should be closed after transaction was finised.
-     * 
      * Commit the transaction on all child sessions.
      * This assumes that the commit of the transaction will not fail because all of the
      * modification has already taken place and no errors would have occured.
      */
-    protected void basicCommitTransaction(AbstractSession callingSession) throws DatabaseException {
+    protected void basicCommitTransaction() throws DatabaseException {
         // Do one last check it make sure that all sessions are still connected.
         for (Iterator sessionEnum = getSessionsByName().values().iterator();
                  sessionEnum.hasNext();) {
@@ -213,32 +208,21 @@ public class SessionBroker extends DatabaseSessionImpl {
         for (Iterator sessionEnum = getSessionsByName().values().iterator();
                  sessionEnum.hasNext();) {
             AbstractSession session = (AbstractSession)sessionEnum.next();
-            session.commitTransaction(callingSession);
+            session.commitTransaction();
         }
     }
 
-    
-
     /**
      * INTERNAL:
-     * 
-     * Allow calling session to be passed.
-     *      
-     * The calling session is the session who actually invokes commit or rollback transaction, 
-     * it is used to determine whether the connection needs to be closed when using external connection pool.
-     * The connection with a externalConnectionPool used by synchronized UOW should leave open until 
-     * afterCompletion call back; the connection with a externalConnectionPool used by other type of session 
-     * should be closed after transaction was finised.
-     * 
      * Rollback the transaction on all child sessions.
      */
-    protected void basicRollbackTransaction(AbstractSession callingSession) throws DatabaseException {
+    protected void basicRollbackTransaction() throws DatabaseException {
         DatabaseException globalException = null;
         for (Iterator sessionEnum = getSessionsByName().values().iterator();
                  sessionEnum.hasNext();) {
             AbstractSession session = (AbstractSession)sessionEnum.next();
             try {
-                session.rollbackTransaction(callingSession);
+                session.rollbackTransaction();
             } catch (DatabaseException exception) {
                 globalException = exception;
             }
@@ -247,8 +231,6 @@ public class SessionBroker extends DatabaseSessionImpl {
             throw globalException;
         }
     }
-    
-    
 
     /**
      * PUBLIC:
@@ -337,6 +319,14 @@ public class SessionBroker extends DatabaseSessionImpl {
             return ((AbstractSession)enumtr.next()).getAsOfClause();
         }
         return null;
+    }
+
+    /**
+     * INTERNAL:
+     * Gets the parent SessionBroker.
+     */
+    public SessionBroker getParent() {
+        return parent;
     }
 
     /**
@@ -537,6 +527,10 @@ public class SessionBroker extends DatabaseSessionImpl {
                 DatabaseSessionImpl databaseSession = (DatabaseSessionImpl)enumtr.next();
                 databaseSession.initializeSequencing();
             }
+            if(hasExternalTransactionController()) {
+                getExternalTransactionController().initializeSequencingListeners();
+            }
+
         }
         super.initializeDescriptors();
         // Must reset project options to session broker project, as initialization occurs
@@ -731,6 +725,11 @@ public class SessionBroker extends DatabaseSessionImpl {
             DatabaseSessionImpl session = (DatabaseSessionImpl)sessionEnum.next();
             session.logout();
         }
+        if (!isClientSessionBroker()) {
+            if(hasExternalTransactionController()) {
+                getExternalTransactionController().clearSequencingListeners();
+            }
+        }
         sequencing = null;
         isLoggedIn = false;
     }
@@ -889,6 +888,22 @@ public class SessionBroker extends DatabaseSessionImpl {
 
     /**
      * INTERNAL:
+     * Set isSynchronized flag to indicate that members of session broker are synchronized.
+     * This method should only be called by setSynchronized method of UnitOfWork
+     * obtained from either DatabaseSession Broker or ClientSession Broker.
+     */
+    public void setSynchronized(boolean synched) {
+        if(!isServerSessionBroker()) {
+            super.setSynchronized(synched);
+            Iterator itSessions = getSessionsByName().values().iterator();
+            while(itSessions.hasNext()) {
+                ((AbstractSession)itSessions.next()).setSynchronized(synched);
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
      * This method notifies the accessor that a particular sets of writes has
      * completed.  This notification can be used for such thing as flushing the
      * batch mechanism
@@ -932,5 +947,34 @@ public class SessionBroker extends DatabaseSessionImpl {
      */
     public Sequencing getSequencing() {
         return sequencing;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns a number of member sessions that require sequencing callback.
+     * Always returns 0 if sequencing is not connected.
+     */
+    public int howManySequencingCallbacks() {
+        if(this.isClientSessionBroker()) {
+            return getParent().howManySequencingCallbacks();
+        } else {
+            int nCallbacks = 0;
+            Iterator itSessions = getSessionsByName().values().iterator();
+            while(itSessions.hasNext()) {
+                if(((DatabaseSessionImpl)itSessions.next()).isSequencingCallbackRequired()) {
+                    nCallbacks++;
+                }
+            }
+            return nCallbacks;
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether SequencingCallback is required.
+     * Always returns false if sequencing is not connected.
+     */
+    public boolean isSequencingCallbackRequired() {
+        return howManySequencingCallbacks() > 0;
     }
 }

@@ -46,9 +46,7 @@ public class ValidationModel extends TestModel {
         TestSuite suite = new TestSuite();
         suite.setName("ConnectionCloseAfterTxnTestSuite");
         suite.setDescription("This suite tests that connections are closed once txn finished.");
-        boolean hasExternalTransactionController=true;
-        suite.addTest(new CloseConnAfterDatabaseSessionTxnTest(hasExternalTransactionController));
-        suite.addTest(new CloseConnAfterDatabaseSessionTxnTest(!hasExternalTransactionController));
+        suite.addTest(new CloseConnAfterDatabaseSessionTxnTest());
         return suite;
     }
     public static TestSuite getClientSessionReleaseTestSuite() {

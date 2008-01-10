@@ -9,11 +9,19 @@
  ******************************************************************************/  
 package org.eclipse.persistence.transaction;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sequencing.SequencingCallback;
+import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
 import org.eclipse.persistence.logging.*;
+import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.sessions.DatabaseSession;
 
 /**
  * <p>
@@ -43,7 +51,8 @@ public abstract class AbstractSynchronizationListener {
 
     /**
      * The unit of work associated with the global txn that this listener is
-     * bound to.
+     * bound to. 
+     * Note that unitOfWork is null in case it's a purely sequencing listener.
      */
     protected UnitOfWorkImpl unitOfWork;
 
@@ -51,6 +60,22 @@ public abstract class AbstractSynchronizationListener {
      * The global transaction object.
      */
     protected Object transaction;
+
+    /**
+     * The global transaction key.
+     */
+    protected Object transactionKey;
+
+    /**
+     * sequencingCallback used in case listener has a single callback.
+     */
+    protected SequencingCallback sequencingCallback;
+
+    /**
+     * sequencingCallbackMap used in case listener has more than one callback:
+     * SessionBroker with at least two members requiring callbacks.
+     */
+    protected Map<DatabaseSession, SequencingCallback> sequencingCallbackMap;
 
     /**
      * INTERNAL:
@@ -67,6 +92,7 @@ public abstract class AbstractSynchronizationListener {
         this.unitOfWork = unitOfWork;
         this.transaction = transaction;
         this.controller = controller;
+        this.transactionKey = controller.getTransactionKey(transaction);
     }
 
     /**
@@ -79,12 +105,20 @@ public abstract class AbstractSynchronizationListener {
      */
     public void beforeCompletion() {
         UnitOfWorkImpl uow = getUnitOfWork();
+        // it's a purely sequencing listener - nothing to do in beforeCompletion.
+        if(unitOfWork == null) {
+            return;
+        }
         try {
             Object status = getTransactionController().getTransactionStatus();
             getTransactionController().logTxStateTrace(uow, "TX_beforeCompletion", status);
             //CR# 3452053 
             session.startOperationProfile(SessionProfiler.JtsBeforeCompletion);
 
+            // In case jts transaction was internally started but completed
+            // directly by TransactionManager this flag is still set to true.
+            getSession().setWasJTSTransactionInternallyStarted(false);
+            
             // If the uow is not active then somebody somewhere messed up 
             if (!uow.isActive()) {
                 throw TransactionException.inactiveUnitOfWork(uow);
@@ -92,6 +126,15 @@ public abstract class AbstractSynchronizationListener {
 
             // Bail out if we don't think we should actually issue the SQL
             if (!getTransactionController().canIssueSQLToDatabase_impl(status)) {
+                // Must force concurrency mgrs active thread if in nested transaction
+                if (getSession().isInTransaction()) {
+                    getSession().getTransactionMutex().setActiveThread(Thread.currentThread());
+                    if(getUnitOfWork().wasTransactionBegunPrematurely()) {
+                        getUnitOfWork().setWasTransactionBegunPrematurely(false);
+                    }
+                    getSession().rollbackTransaction();
+                }
+                getSession().releaseJTSConnection();
                 return;
             }
 
@@ -100,6 +143,13 @@ public abstract class AbstractSynchronizationListener {
                 getSession().getTransactionMutex().setActiveThread(Thread.currentThread());
             }
 
+            // If sequencing callback for this transaction will be required
+            // in case it doesn't already exist it will be created on this very listener
+            // avoiding adding more listeners while processing a listener.
+            if(getTransactionController().isSequencingCallbackRequired()) {
+                getTransactionController().currentlyProcessedListeners.put(getTransactionKey(), this);
+            }
+            
             // Send the SQL to the DB
             uow.issueSQLbeforeCompletion();
 
@@ -112,6 +162,10 @@ public abstract class AbstractSynchronizationListener {
             // Handle the exception according to transaction manager requirements
             handleException(exception);
         } finally {
+            if(getTransactionController().isSequencingCallbackRequired()) {
+                getTransactionController().currentlyProcessedListeners.remove(getTransactionKey());
+            }
+            getSession().releaseJTSConnection();
             session.endOperationProfile(SessionProfiler.JtsBeforeCompletion);
         }
     }
@@ -128,50 +182,70 @@ public abstract class AbstractSynchronizationListener {
      */
     public void afterCompletion(Object status) {
         UnitOfWorkImpl uow = getUnitOfWork();
-        try {
-            // Log the fact that we got invoked
-            getTransactionController().logTxStateTrace(uow, "TX_afterCompletion", status);
-            //Cr#3452053
-            session.startOperationProfile(SessionProfiler.JtsAfterCompletion);
-            // The uow should still be active even in rollback case
-            if (!uow.isActive()) {
-                throw TransactionException.inactiveUnitOfWork(uow);
-            }
-
-            // Only do merge if txn was committed
-            if (getTransactionController().canMergeUnitOfWork_impl(status)) {
-                uow.afterTransaction(true, true);// committed=true; externalTxn=true
-                if (uow.isMergePending()) {
-                    // uow in PENDING_MERGE state, merge clones
-                    uow.mergeClonesAfterCompletion();
+        // it's a purely sequencing listener - call sequencing callback if the transaction has committed.
+        if(uow == null) {
+            if(getTransactionController().isSequencingCallbackRequired()) {
+                if(getTransactionController().canMergeUnitOfWork_impl(status)) {
+                    callSequencingCallback();
                 }
-            } else {
-                uow.afterTransaction(false, true);// committed=false; externalTxn=true
             }
-        } catch (RuntimeException rtEx) {
-            // First log the exception so it gets seen
-            uow.log(new SessionLogEntry(uow, SessionLog.WARNING, SessionLog.TRANSACTION, rtEx));
-            // Rethrow it just for fun (app servers tend to ignore them at this stage)
-            throw rtEx;
-        } finally {
-            session.endOperationProfile(SessionProfiler.JtsAfterCompletion);
-        }
-
-        // Clean up by releasing the uow and client session
-        if (uow.shouldResumeUnitOfWorkOnTransactionCompletion() && getTransactionController().canMergeUnitOfWork_impl(status)){
-            uow.synchronizeAndResume();
-            uow.setSynchronized(false);
-        }else{
-            uow.release();
-            // Release the session explicitly
-            if (getSession().isClientSession()) {
-                getSession().release();
+        } else {
+            try {
+                // Log the fact that we got invoked
+                getTransactionController().logTxStateTrace(uow, "TX_afterCompletion", status);
+                //Cr#3452053
+                session.startOperationProfile(SessionProfiler.JtsAfterCompletion);
+                // The uow should still be active even in rollback case
+                if (!uow.isActive()) {
+                    throw TransactionException.inactiveUnitOfWork(uow);
+                }
+    
+                // Only do merge if txn was committed
+                if (getTransactionController().canMergeUnitOfWork_impl(status)) {
+                    if(getTransactionController().isSequencingCallbackRequired()) {
+                        callSequencingCallback();
+                    }
+                    if (uow.isMergePending()) {
+                        // uow in PENDING_MERGE state, merge clones
+                        uow.mergeClonesAfterCompletion();
+                    }
+                } else {
+                    // call this method again because there may have been no beforeCompletion call
+                    // if case transaction is to be rolled back.
+                    getSession().releaseJTSConnection();
+                    uow.afterExternalTransactionRollback();
+                }
+            } catch (RuntimeException rtEx) {
+                // First log the exception so it gets seen
+                uow.log(new SessionLogEntry(uow, SessionLog.WARNING, SessionLog.TRANSACTION, rtEx));
+                // Rethrow it just for fun (app servers tend to ignore them at this stage)
+                throw rtEx;
+            } finally {
+                session.endOperationProfile(SessionProfiler.JtsAfterCompletion);
             }
+    
+            // Clean up by releasing the uow and client session
+            if (uow.shouldResumeUnitOfWorkOnTransactionCompletion() && getTransactionController().canMergeUnitOfWork_impl(status)){
+                uow.synchronizeAndResume();
+                uow.setSynchronized(false);
+            }else{
+                uow.release();
+                // Release the session explicitly
+                if (getSession().isClientSession() || (getSession().isSessionBroker() && ((SessionBroker)getSession()).isClientSessionBroker())) {
+                    getSession().release();
+                }
+            }
+            getTransactionController().removeUnitOfWork(getTransactionKey());
+            setUnitOfWork(null);
+            setSession(null);
         }
-        getTransactionController().removeUnitOfWork(getTransaction());
-        setUnitOfWork(null);
+        if(getTransactionController().isSequencingCallbackRequired()) {
+            getTransactionController().removeSequencingListener(getTransactionKey());
+            sequencingCallback = null;
+            sequencingCallbackMap = null;
+        }
         setTransaction(null);
-        setSession(null);
+        setTransactionKey(null);
     }
 
     /**
@@ -208,6 +282,14 @@ public abstract class AbstractSynchronizationListener {
         this.transaction = transaction;
     }
 
+    protected Object getTransactionKey() {
+        return transactionKey;
+    }
+
+    protected void setTransactionKey(Object transactionKey) {
+        this.transactionKey = transactionKey;
+    }
+
     protected AbstractSession getSession() {
         return session;
     }
@@ -222,5 +304,43 @@ public abstract class AbstractSynchronizationListener {
 
     protected void setUnitOfWork(UnitOfWorkImpl unitOfWork) {
         this.unitOfWork = unitOfWork;
+    }
+    
+    protected void callSequencingCallback() {
+        if(sequencingCallback != null) {
+            sequencingCallback.afterCommit(null);
+        } else if (sequencingCallbackMap != null) {
+            Iterator<SequencingCallback> itCallback = sequencingCallbackMap.values().iterator();
+            while(itCallback.hasNext()) {
+                itCallback.next().afterCommit(null);
+            }
+        }
+    }
+
+    /**
+     * Return sequencingCallback corresponding to the passed session.
+     */
+    public SequencingCallback getSequencingCallback(DatabaseSession dbSession, SequencingCallbackFactory sequencingCallbackFactory) {
+        if(getTransactionController().numSessionsRequiringSequencingCallback() == 1) {
+            if(sequencingCallback == null) {
+                sequencingCallback = sequencingCallbackFactory.createSequencingCallback();
+            }
+            return sequencingCallback;
+        } else if(getTransactionController().numSessionsRequiringSequencingCallback() > 1) {
+            SequencingCallback callback = null;
+            if(sequencingCallbackMap == null) {
+                sequencingCallbackMap = new HashMap(getTransactionController().numSessionsRequiringSequencingCallback());
+            } else {
+                callback = sequencingCallbackMap.get(dbSession);
+            }
+            if(callback == null) {
+                callback = sequencingCallbackFactory.createSequencingCallback();
+                sequencingCallbackMap.put(dbSession, callback);
+            }
+            return callback;
+        } else {
+            // should never happen.
+            return null;
+        }
     }
 }

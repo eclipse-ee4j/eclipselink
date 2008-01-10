@@ -412,17 +412,6 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
 
     /**
      * INTERNAL:
-     * Called after transaction is completed (committed or rolled back)
-     */
-    public void afterTransaction(boolean committed, boolean isExternalTransaction, Accessor accessor) {
-        SequencingCallback callback = getSequencingHome().getSequencingCallback();
-        if (callback != null) {
-            callback.afterTransaction(accessor, committed);
-        }
-    }
-
-    /**
-     * INTERNAL:
      * Return a read connection from the read pool.
      * Note that depending on the type of pool this may be a shared or exclusive connection.
      * Each query execution is assigned a read connection.
@@ -734,6 +723,14 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             pool = new ConnectionPool("read", readLogin, 2, 2, this);
         }
         this.readConnectionPool = pool;
+    }
+
+    /**
+     * INTERNAL:
+     * Set isSynchronized flag to indicate that this session is synchronized.
+     * The method is ignored on ServerSession and should never be called.
+     */
+    public void setSynchronized(boolean synched) {
     }
 
     /**

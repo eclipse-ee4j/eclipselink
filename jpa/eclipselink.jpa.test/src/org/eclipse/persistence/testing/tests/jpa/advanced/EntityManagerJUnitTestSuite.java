@@ -47,11 +47,13 @@ import org.eclipse.persistence.jpa.config.PessimisticLock;
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.jpa.config.EclipseLinkQueryHints;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sequencing.NativeSequence;
+import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -5268,5 +5270,68 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail(errorMsg);
         }
     }
+    
+    /**
+     * Test that sequence numbers allocated but unused in the transaction
+     * kept after transaction commits
+     * in case SequencingCallback used (that happens if TableSequence is used without
+     * using sequencing connection pool).
+     */
+    public void testSequencePreallocationUsingCallbackTest() {
+        // setup
+        ServerSession ss = ((EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();
+        // make sure the sequence has both preallocation and callback
+        // (the latter means not using sequencing connection pool, 
+        // acquiring values before insert and requiring transaction).
+        if(ss.getSequencingControl().shouldUseSeparateConnection()) {
+            fail("setup failure: the test requires serverSession.getSequencingControl().shouldUseSeparateConnection()==false");
+        }
+        String seqName = ss.getDescriptor(Employee.class).getSequenceNumberName();
+        Sequence sequence = getServerSession().getLogin().getSequence(seqName);
+        if(sequence.getPreallocationSize() < 2) {
+            fail("setup failure: the test requires sequence preallocation size greater than 1");
+        }
+        if(sequence.shouldAcquireValueAfterInsert()) {
+            fail("setup failure: the test requires sequence that acquires value before insert, like TableSequence");
+        }
+        if(!sequence.shouldUseTransaction()) {
+            fail("setup failure: the test requires sequence that uses transaction, like TableSequence");
+        }
+        // clear all already allocated sequencing values for seqName
+        getServerSession().getSequencingControl().initializePreallocated(seqName);
+        
+        // test
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee emp1 = new Employee();
+        emp1.setFirstName("testSequencePreallocation");
+        emp1.setLastName("1");
+        em.persist(emp1);
+        int assignedSequenceNumber = emp1.getId();
+        commitTransaction(em);
 
+        // verify
+        em = createEntityManager();
+        beginTransaction(em);
+        Employee emp2 = new Employee();
+        emp2.setFirstName("testSequencePreallocation");
+        emp2.setLastName("2");
+        em.persist(emp2);
+        int nextSequenceNumber = emp2.getId();
+        // only need nextSequenceNumber, no need to commit
+        rollbackTransaction(em);
+        
+        // cleanup
+        // remove the object that has been created in setup
+        em = createEntityManager();
+        beginTransaction(em);
+        emp1 = em.find(Employee.class, assignedSequenceNumber);
+        em.remove(emp1);
+        commitTransaction(em);
+        
+        // report result
+        if(assignedSequenceNumber + 1 != nextSequenceNumber) {
+            fail("Transaction that assigned sequence number committed, assignedSequenceNumber = " + assignedSequenceNumber +", but nextSequenceNumber = "+ nextSequenceNumber +"("+Integer.toString(assignedSequenceNumber+1)+" was expected)");
+        }
+    }
 }

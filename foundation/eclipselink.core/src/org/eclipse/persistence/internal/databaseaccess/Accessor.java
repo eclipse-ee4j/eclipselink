@@ -11,6 +11,8 @@ package org.eclipse.persistence.internal.databaseaccess;
 
 import java.util.Vector;
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.sequencing.SequencingCallback;
+import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.sessions.Login;
@@ -41,9 +43,12 @@ import org.eclipse.persistence.queries.Call;
 public interface Accessor extends Cloneable {
 
     /**
-     * To be called after JTS transaction has been completed (committed or rolled back)
+     * Called from beforeCompletion external transaction synchronization listener callback
+     * to close the external connection corresponding to the completing external transaction.
+     * Final sql calls could be sent through the connection by this method
+     * before it closes the connection.
      */
-    public void afterJTSTransaction();
+    public void closeJTSConnection();
 
     /**
      * Begin a transaction on the data store.
@@ -68,22 +73,9 @@ public interface Accessor extends Cloneable {
     void commitTransaction(AbstractSession session) throws DatabaseException;
 
     /**
-     * Allow calling session to be passed.
-     *      
-     * The calling session is the session who actually invokes commit or rollback transaction, 
-     * it is used to determine whether the connection needs to be closed when using external connection pool.
-     * The connection with a externalConnectionPool used by synchronized UOW should leave open until 
-     * afterCompletion call back; the connection with a externalConnectionPool used by other type of session 
-     * should be closed after transaction was finised.
-     *
-     * Commit a transaction on the data store 
-     */
-    void commitTransaction(AbstractSession session, AbstractSession callingSession) throws DatabaseException;
-    /**
      * Connect to the data store using the configuration
      * information in the login.
      */
-
     void connect(Login login, AbstractSession session) throws DatabaseException;
 
     /**
@@ -141,6 +133,11 @@ public interface Accessor extends Cloneable {
     Object getDatasourceConnection();
 
     /**
+     * Return sequencing callback.
+     */
+    SequencingCallback getSequencingCallback(SequencingCallbackFactory sequencingCallbackFactory);
+
+    /**
      * Return the table metadata for the specified
      * selection criteria.
      */
@@ -175,23 +172,9 @@ public interface Accessor extends Cloneable {
      */
     void rollbackTransaction(AbstractSession session) throws DatabaseException;
 
-
     /**
-     * Allow calling session to be passed.     
-     * 
-     * The calling session is the session who actually invokes commit or rollback transaction, 
-     * it is used to determine whether the connection needs to be closed when using external connection pool.
-     * The connection with a externalConnectionPool used by synchronized UOW should leave open until 
-     * afterCompletion call back; the connection with a externalConnectionPool used by other type of session 
-     * should be closed after transaction was finised.
-     * 
-     * Roll back a transaction on the data store.
-     */
-    void rollbackTransaction(AbstractSession session,AbstractSession callingSession) throws DatabaseException;
-    
-    /**
-     * This should be set to 'false' if a communication failure occurred durring a call execution.
-     * In the case of an invalid accessor the Accessor will not be returned to the Pool.
+     * This should be set to false if a communication failure occurred durring a call execution.  
+     * In the case of an invalid accessor the Accessor will not be returned to the pool.
      */
     public void setIsValid(boolean isValid);
     
@@ -200,6 +183,11 @@ public interface Accessor extends Cloneable {
      * transaction controller (e.g. JTS).
      */
     boolean usesExternalTransactionController();
+
+    /**
+     * Return whether the accessor uses external connection pooling.
+     */
+    boolean usesExternalConnectionPooling();
 
     /**
      * This method will be called after a series of writes have been issued to

@@ -132,7 +132,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * With the new synchronized unit of work, need a lifecycle state variable to
      * track birth, commited, pending_merge and death.
      */
-    protected boolean isSynchronized;
     protected int lifecycle;
     public static final int Birth = 0;
     public static final int CommitPending = 1;
@@ -254,7 +253,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.shouldThrowConformExceptions = DO_NOT_THROW_CONFORM_EXCEPTIONS;
 
         // initialize lifecycle state variable
-        this.isSynchronized = false;
         this.lifecycle = Birth;
         // PERF: Cache the write-lock check to avoid cost of checking in every register/clone.
         this.shouldCheckWriteLock = parent.getDatasourceLogin().shouldSynchronizedReadOnWrite() || parent.getDatasourceLogin().shouldSynchronizeWrites();
@@ -1352,8 +1350,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * The uow shares its parents transactions.
      */
     public void commitTransaction() throws DatabaseException {
-        //Bug6065882,needs indicate this UOW is the one invokes commit txn. 
-        getParent().commitTransaction(this);
+        getParent().commitTransaction();
     }
 
     /**
@@ -2063,22 +2060,29 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * Called after transaction is completed (committed or rolled back)
+     * Called after external transaction rolled back.
      */
-    public void afterTransaction(boolean committed, boolean isExternalTransaction) {
-        if (!committed && isExternalTransaction) {
-            // In case jts transaction was internally started but rolled back
-            // directly by TransactionManager this flag may still be true during afterCompletion
-            getParent().setWasJTSTransactionInternallyStarted(false);
-            //bug#4699614 -- added a new life cycle status so we know if the external transaction was rolledback and we don't try to rollback again later            
-            setLifecycle(AfterExternalTransactionRolledBack);
-        }
-        if ((!committed) && (getMergeManager() != null) && (getMergeManager().getAcquiredLocks() != null) && (!getMergeManager().getAcquiredLocks().isEmpty())) {
+    public void afterExternalTransactionRollback() {
+        // In case jts transaction was internally started but rolled back
+        // directly by TransactionManager this flag may still be true during afterCompletion
+        getParent().setWasJTSTransactionInternallyStarted(false);
+        //bug#4699614 -- added a new life cycle status so we know if the external transaction was rolledback and we don't try to rollback again later            
+        setLifecycle(AfterExternalTransactionRolledBack);
+
+        if ((getMergeManager() != null) && (getMergeManager().getAcquiredLocks() != null) && (!getMergeManager().getAcquiredLocks().isEmpty())) {
             //may have unreleased cache locks because of a rollback...
             getParent().getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
             this.setMergeManager(null);
         }
-        getParent().afterTransaction(committed, isExternalTransaction);
+    }
+
+    /**
+     * INTERNAL:
+     * Called in the end of beforeCompletion of external transaction sychronization listener.
+     * Close the managed sql connection corresponding to the external transaction.
+     */
+    public void releaseJTSConnection() {
+        getParent().releaseJTSConnection();
     }
 
     /**
@@ -2838,14 +2842,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 getParent().executeQuery(query, translationRow);
             }
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Return if this session is a synchronized unit of work.
-     */
-    public boolean isSynchronized() {
-        return isSynchronized;
     }
 
     /**
@@ -3992,6 +3988,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public void registerWithTransactionIfRequired() {
         if (getParent().hasExternalTransactionController() && ! isSynchronized()) {
+            //TODO: Throw an exception in case the parent is already synchronized:
+            // DatabaseSession or ClientSession may have only one synchronized uow at a time.
             boolean hasAlreadyStarted = getParent().wasJTSTransactionInternallyStarted();
             getParent().getExternalTransactionController().registerSynchronizationListener(this, getParent());
 
@@ -4206,8 +4204,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public void rollbackTransaction() throws DatabaseException {
         incrementProfile(SessionProfiler.UowRollbacks);
-        //Bug6065882,needs indicate this UOW is the one invokes rollback txn. 
-        getParent().rollbackTransaction(this);
+        getParent().rollbackTransaction();
     }
 
     /**
@@ -4485,7 +4482,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Set isSynchronized flag to indicate that this session is a synchronized unit of work.
      */
     public void setSynchronized(boolean synched) {
-        isSynchronized = synched;
+        super.setSynchronized(synched);
+        getParent().setSynchronized(synched);
     }
 
     /**

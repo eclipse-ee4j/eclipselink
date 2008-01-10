@@ -13,11 +13,12 @@ import java.util.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.internal.sequencing.SequencingCallback;
+import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 
 /**
  * INTERNAL:
@@ -78,16 +79,23 @@ public abstract class DatasourceAccessor implements Accessor {
     /** Keep track of whether the accessor is "connected". */
     protected boolean isConnected;
 
+    /** PERF: Cache platform to avoid gets (small but can add up). */
+    /** This is also required to ensure all accessors for a session are using the same platform. */
+    protected DatasourcePlatform platform;
+    
     /**
      *  This attribute is used to determine if the connection should be returned to the pool or
      *  removed from the pool and closed.  It will be set to false if an exception occurs durring
      *  Call execution.
      */
     protected boolean isValid;
-
-    /** PERF: Cache platform to avoid gets (small but can add up). */
-    /** This is also required to ensure all accessors for a session are using the same platform. */
-    protected DatasourcePlatform platform;
+    
+    /**
+     *  During (not external) transaction, SequencingManager may set SequencingCallback on the accessor,
+     *  The callback's only method is called when transaction commits,
+     *  after transaction is completed the callback is discarded.
+     */
+    protected transient SequencingCallback sequencingCallback;
 
     /**
      *    Default Constructor.
@@ -112,14 +120,16 @@ public abstract class DatasourceAccessor implements Accessor {
     }
 
     /**
-     * To be called after JTS transaction has been completed (committed or rolled back)
+     * Called from beforeCompletion external transaction synchronization listener callback
+     * to close the external connection corresponding to the completing external transaction.
+     * Final sql calls could be sent through the connection by this method
+     * before it closes the connection.
      */
-    public void afterJTSTransaction() {
+    public void closeJTSConnection() {
         if (usesExternalTransactionController()) {
             setIsInTransaction(false);
-            if ((getDatasourceConnection() != null) && usesExternalConnectionPooling()) {
+            if (usesExternalConnectionPooling()) {
                 closeConnection();
-                setDatasourceConnection(null);
             }
         }
     }
@@ -296,32 +306,16 @@ public abstract class DatasourceAccessor implements Accessor {
      * Commit a transaction on the database. If using non-managed transaction commit the local transaction.
      */
     public void commitTransaction(AbstractSession session) throws DatabaseException {
-        this.commitTransaction(session, session);
-    }
-    
-    /**
-     * Allow calling session to be passed.     
-     * 
-     * The calling session is the session who actually invokes commit or rollback transaction, 
-     * it is used to determine whether the connection needs to be closed when using external connection pool.
-     * The connection with a externalConnectionPool used by synchronized UOW should leave open until 
-     * afterCompletion call back; the connection with a externalConnectionPool used by other type of session 
-     * should be closed after transaction was finised.
-     * 
-     * Commit a transaction on the database. If using non-managed transaction commit the local transaction.
-     */
-    public void commitTransaction(AbstractSession session,AbstractSession callingSession) throws DatabaseException {
         if (usesExternalTransactionController()) {
             // if there is no external TX controller, then that means we are currently not synchronized
             // with a global JTS transaction.  In this case, there won't be any 'afterCompletion'
             // callbacks so we have to release the connection here.  It is possible (WLS 5.1) to choose
             // 'usesExternalTransactionController' on the login, but still acquire a uow that WON'T be
             // synchronized with a global TX.
-            if (!((callingSession instanceof UnitOfWorkImpl) && ((UnitOfWorkImpl)callingSession).isSynchronized())){
+            if (!session.isSynchronized()) {
                 setIsInTransaction(false);
-                if ((getDatasourceConnection() != null) && usesExternalConnectionPooling()) {
+                if (usesExternalConnectionPooling()) {
                     closeConnection();
-                    setDatasourceConnection(null);
                 }
             }
             return;
@@ -334,15 +328,16 @@ public abstract class DatasourceAccessor implements Accessor {
             incrementCallCount(session);
             basicCommitTransaction(session);
 
-            // true=="committed"; false=="not jts transactioin"
-            session.afterTransaction(true, false);
+            if(sequencingCallback != null) {
+                sequencingCallback.afterCommit(this);
+            }
             setIsInTransaction(false);
         } finally {
+            sequencingCallback = null;
             decrementCallCount();
             session.endOperationProfile(SessionProfiler.TRANSACTION);
         }
     }
-    
 
     /**
      * Connect to the datasource.  Through using a CCI ConnectionFactory.
@@ -570,32 +565,16 @@ public abstract class DatasourceAccessor implements Accessor {
      * Rollback the transaction on the datasource. If not using managed transaction rollback the local transaction.
      */
     public void rollbackTransaction(AbstractSession session) throws DatabaseException {
-        this.rollbackTransaction(session, session);
-    }
-    
-    /**
-     * Allow calling session to be passed.     
-     * 
-     * The calling session is the session who actually invokes commit or rollback transaction, 
-     * it is used to determine whether the connection needs to be closed when using external connection pool.
-     * The connection with a externalConnectionPool used by synchronized UOW should leave open until 
-     * afterCompletion call back; the connection with a externalConnectionPool used by other type of session 
-     * should be closed after transaction was finised.
-     *
-     * Rollback the transaction on the datasource. If not using managed transaction rollback the local transaction.
-     */
-    public void rollbackTransaction(AbstractSession session, AbstractSession callingSession) throws DatabaseException {
         if (usesExternalTransactionController()) {
             // if there is no external TX controller, then that means we are currently not synchronized
             // with a global JTS transaction.  In this case, there won't be any 'afterCompletion'
             // callbacks so we have to release the connection here.  It is possible (WLS 5.1) to choose
             // 'usesExternalTransactionController' on the login, but still acquire a uow that WON'T be
             // synchronized with a global TX.
-            if (!((callingSession instanceof UnitOfWorkImpl) && ((UnitOfWorkImpl)callingSession).isSynchronized())){
+            if (!session.isSynchronized()) {
                 setIsInTransaction(false);
-                if ((getDatasourceConnection() != null) && usesExternalConnectionPooling()) {
+                if (usesExternalConnectionPooling()) {
                     closeConnection();
-                    setDatasourceConnection(null);
                 }
             }
             return;
@@ -608,14 +587,12 @@ public abstract class DatasourceAccessor implements Accessor {
             incrementCallCount(session);
             basicRollbackTransaction(session);
         } finally {
-            // false=="rolled back"; false=="not jts transactioin"
-            session.afterTransaction(false, false);
             setIsInTransaction(false);
+            sequencingCallback = null;
             decrementCallCount();
             session.endOperationProfile(SessionProfiler.TRANSACTION);
         }
     }
-
 
     /**
      * Return true if some external transaction service is controlling transactions.
@@ -667,5 +644,15 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     public void writesCompleted(AbstractSession session) {
         //this is a no-op in this method as we do not batch on this accessor
+    }
+
+    /**
+     * Return sequencing callback.
+     */
+    public SequencingCallback getSequencingCallback(SequencingCallbackFactory sequencingCallbackFactory) {
+        if(sequencingCallback == null) {
+            sequencingCallback = sequencingCallbackFactory.createSequencingCallback();
+        }
+        return sequencingCallback;
     }
 }

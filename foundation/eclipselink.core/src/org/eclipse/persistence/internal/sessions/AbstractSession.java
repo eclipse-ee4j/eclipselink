@@ -161,6 +161,13 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /** List of active command threads. */
     protected ExposedNodeLinkedList activeCommandThreads;
 
+    /** 
+     * Indicates whether the session is synchronized.
+     * In case external transaction controller is used isSynchronized==true means
+     * the session's jta connection will be freed during external transaction callback.
+     */
+    protected boolean isSynchronized;
+    
     /**
      * INTERNAL:
      * Create and return a new session.
@@ -174,6 +181,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         // PERF - move to lazy init (3286091)
         this.numberOfActiveUnitsOfWork = 0;
         this.isInBroker = false;
+        this.isSynchronized = false;
     }
 
     /**
@@ -327,51 +335,34 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
-     * Called after transaction is completed (committed or rolled back)
+     * Called in the end of beforeCompletion of external transaction sychronization listener.
+     * Close the managed sql connection corresponding to the external transaction,
+     * if applicable releases accessor.
      */
-    public void afterTransaction(boolean committed, boolean isExternalTransaction) {
+    public void releaseJTSConnection() {
     }
 
-
-    
     /**
      * INTERNAL:
-     * Allow calling session to be passed.     
-     * 
-     * The calling session is the session who actually invokes commit or rollback transaction, 
-     * it is used to determine whether the connection needs to be closed when using external connection pool.
-     * The connection with a externalConnectionPool used by synchronized UOW should leave open until 
-     * afterCompletion call back; the connection with a externalConnectionPool used by other type of session 
-     * should be closed after transaction was finised.
-     * 
      * Called by commitTransaction() to commit a transaction.
      * This commits the active transaction.
      */
-    protected void basicCommitTransaction(AbstractSession callingSession) throws DatabaseException {
+    protected void basicCommitTransaction() throws DatabaseException {
         try {
-            getAccessor().commitTransaction(this,callingSession);
+            getAccessor().commitTransaction(this);
         } catch (RuntimeException exception) {
             handleException(exception);
         }
     }
 
-    
     /**
      * INTERNAL:
-     * Allow calling session to be passed.     
-     * 
-     * The calling session is the session who actually invokes commit or rollback transaction, 
-     * it is used to determine whether the connection needs to be closed when using external connection pool.
-     * The connection with a externalConnectionPool used by synchronized UOW should leave open until 
-     * afterCompletion call back; the connection with a externalConnectionPool used by other type of session 
-     * should be closed after transaction was finised.
-     * 
      * Called by rollbackTransaction() to rollback a transaction.
      * This rollsback the active transaction.
      */
-    protected void basicRollbackTransaction(AbstractSession callingSession) throws DatabaseException {
+    protected void basicRollbackTransaction() throws DatabaseException {
         try {
-            getAccessor().rollbackTransaction(this,callingSession);
+            getAccessor().rollbackTransaction(this);
         } catch (RuntimeException exception) {
             handleException(exception);
         }
@@ -512,33 +503,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * @exception ConcurrencyException if this session is not within a transaction.
      */
     public void commitTransaction() throws DatabaseException, ConcurrencyException {
-        this.commitTransaction(this);
-    }
-    /**
-     * PUBLIC:
-     * Allow calling session to be passed.     
-     * 
-     * The calling session is the session who actually invokes commit or rollback transaction, 
-     * it is used to determine whether the connection needs to be closed when using external connection pool.
-     * The connection with a externalConnectionPool used by synchronized UOW should leave open until 
-     * afterCompletion call back; the connection with a externalConnectionPool used by other type of session 
-     * should be closed after transaction was finised.
-     * 
-     * Commit the active database transaction.
-     * This allows a group of database modification to be commited or rolledback as a unit.
-     * All writes/deletes will be sent to the database be will not be visible to other users until commit.
-     * Although databases do not allow nested transaction,
-     * TopLink supports nesting through only committing to the database on the outer commit.
-     *
-     * @exception DatabaseException most databases validate changes as they are done,
-     * normally errors do not occur on commit unless the disk fails or the connection is lost.
-     * @exception ConcurrencyException if this session is not within a transaction.
-     */
-    public void commitTransaction(AbstractSession callingSession) throws DatabaseException, ConcurrencyException {
         // Release mutex and call subclass specific commit.
         if (!getTransactionMutex().isNested()) {
             getEventManager().preCommitTransaction();
-            basicCommitTransaction(callingSession);
+            basicCommitTransaction();
             getEventManager().postCommitTransaction();
         }
 
@@ -552,8 +520,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             commitExternalTransaction();
         }
     }
-    
-    
+
     /**
      * INTERNAL:
      * Return if the two object match completely.
@@ -2228,6 +2195,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     }
 
     /**
+     * INTERNAL:
+     * Return if this session is synchronized.
+     */
+    public boolean isSynchronized() {
+        return isSynchronized;
+    }
+
+    /**
      * PUBLIC:
      * Return if this session is a unit of work.
      */
@@ -2573,34 +2548,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * @exception ConcurrencyException if this session is not within a transaction.
      */
     public void rollbackTransaction() throws DatabaseException, ConcurrencyException {
-        this.rollbackTransaction(this);
-    }
-    
-    /**
-     * PUBLIC:
-     * Allow calling session to be passed.     
-     * 
-     * The calling session is the session who actually invokes commit or rollback transaction, 
-     * it is used to determine whether the connection needs to be closed when using external connection pool.
-     * The connection with a externalConnectionPool used by synchronized UOW should leave open until 
-     * afterCompletion call back; the connection with a externalConnectionPool used by other type of session 
-     * should be closed after transaction was finised.
-     * 
-     * Rollback the active database transaction.
-     * This allows a group of database modification to be commited or rolledback as a unit.
-     * All writes/deletes will be sent to the database be will not be visible to other users until commit.
-     * Although databases do not allow nested transaction,
-     * TopLink supports nesting through only committing to the database on the outer commit.
-     *
-     * @exception DatabaseException if the database connection is lost or the rollback fails.
-     * @exception ConcurrencyException if this session is not within a transaction.
-     */
-    public void rollbackTransaction(AbstractSession callingSession) throws DatabaseException, ConcurrencyException {
         // Ensure release of mutex and call subclass specific release.
         try {
             if (!getTransactionMutex().isNested()) {
                 getEventManager().preRollbackTransaction();
-                basicRollbackTransaction(callingSession);
+                basicRollbackTransaction();
                 getEventManager().postRollbackTransaction();
             }
         } finally {
@@ -2614,7 +2566,6 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             }
         }
     }
-    
 
     /**
      * INTERNAL:
@@ -2792,6 +2743,15 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         if ((sessionLog != null) && (sessionLog.getSession() == null)) {
             sessionLog.setSession(this);
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Set isSynchronized flag to indicate that this session is synchronized.
+     * This method should only be called by setSynchronized methods of derived classes.
+     */
+    public void setSynchronized(boolean synched) {
+        isSynchronized = synched;
     }
 
     protected void setTransactionMutex(ConcurrencyManager transactionMutex) {

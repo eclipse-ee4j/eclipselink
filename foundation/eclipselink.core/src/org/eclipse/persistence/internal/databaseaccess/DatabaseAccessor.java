@@ -366,26 +366,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
      *    Commit a transaction on the database. First flush any batched statements.
      */
     public void commitTransaction(AbstractSession session) throws DatabaseException {
-        this.commitTransaction(session,session);
-    }
-    
-    
-    /**
-     * Allow calling session to be passed.     
-     * 
-     * The calling session is the session who actually invokes commit or rollback transaction, 
-     * it is used to determine whether the connection needs to be closed when using external connection pool.
-     * The connection with a externalConnectionPool used by synchronized UOW should leave open until 
-     * afterCompletion call back; the connection with a externalConnectionPool used by other type of session 
-     * should be closed after transaction was finised.
-     * 
-     * Commit a transaction on the database. First flush any batched statements.
-     */
-    public void commitTransaction(AbstractSession session,AbstractSession callingSession) throws DatabaseException {
         this.writesCompleted(session);
-        super.commitTransaction(session,callingSession);
+        super.commitTransaction(session);
     }
-    
 
     /**
      * Commit a transaction on the database. This means toggling the auto-commit option.
@@ -1441,24 +1424,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * Rollback a transaction on the database. This means toggling the auto-commit option.
      */
     public void rollbackTransaction(AbstractSession session) throws DatabaseException {
-        this.rollbackTransaction(session,session);
-    }
-    
-    
-    /**
-     * Allow calling session to be passed
-     * The calling session is the session who actually invokes commit or rollback transaction, 
-     * it is used to determine whether the connection needs to be closed when using external connection pool.
-     * The connection with a externalConnectionPool used by synchronized UOW should leave open until 
-     * afterCompletion call back; the connection with a externalConnectionPool used by other type of session 
-     * should be closed after transaction was finished.
-     * Rollback a transaction on the database. This means toggling the auto-commit option.
-     */
-    public void rollbackTransaction(AbstractSession session,AbstractSession callingSession) throws DatabaseException {
         getActiveBatchWritingMechanism().clear();
-        super.rollbackTransaction(session,callingSession);
+        super.rollbackTransaction(session);
     }
-    
 
     /**
      * Rollback a transaction on the database. This means toggling the auto-commit option.

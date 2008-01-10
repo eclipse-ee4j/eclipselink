@@ -9,6 +9,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
+import org.eclipse.persistence.internal.sequencing.SequencingCallback;
+import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.exceptions.*;
@@ -79,4 +81,33 @@ public interface ExternalTransactionController {
      * Set the manager's session.
      */
     void setSession(AbstractSession session);
+    
+    /**
+     * INTERNAL:
+     * Initializes sequencing listeners.
+     * Always clears sequencing listeners first.
+     * There are two methods calling this method:
+     * 1. setSession method - this could lead to initialization of sequencing listeners
+     * only if sequencing already connected (that would happen if setSession is called
+     * after session.login, which is normally not the case).
+     * 2. in the very end of connecting sequencing,
+     * after it's determined whether sequencing callbacks (and therefore listeners)
+     * will be required.
+     */
+    public void initializeSequencingListeners();
+
+    /**
+     * INTERNAL:
+     * Returns sequencingCallback for the current active external transaction.
+     * DatabaseSession is passed for the sake of SessionBroker case.
+     * This method requires active external transaction.
+     */
+    public SequencingCallback getActiveSequencingCallback(DatabaseSession dbSession, SequencingCallbackFactory sequencingCallbackFactory);
+    
+    /**
+     * INTERNAL:
+     * Clears sequencing listeners.
+     * Called by initializeSequencingListeners and by sequencing on disconnect.
+     */
+    public void clearSequencingListeners();
 }

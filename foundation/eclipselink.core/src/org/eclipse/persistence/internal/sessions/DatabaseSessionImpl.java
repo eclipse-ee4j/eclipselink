@@ -119,6 +119,15 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
     /**
      * INTERNAL:
+     * Indicates whether SequencingCallback is required.
+     * Always returns false if sequencing is not connected.
+     */
+    public boolean isSequencingCallbackRequired() {
+        return getSequencingHome().isSequencingCallbackRequired();
+    }
+
+    /**
+     * INTERNAL:
      * Creates sequencing object
      */
     public void initializeSequencing() {
@@ -128,13 +137,11 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
     /**
      * INTERNAL:
-     * Called after transaction is completed (committed or rolled back)
+     * Called in the end of beforeCompletion of external transaction sychronization listener.
+     * Close the managed sql connection corresponding to the external transaction.
      */
-    public void afterTransaction(boolean committed, boolean isExternalTransaction) {
-        SequencingCallback callback = getSequencingHome().getSequencingCallback();
-        if (callback != null) {
-            callback.afterTransaction(getAccessor(), committed);
-        }
+    public void releaseJTSConnection() {
+        getAccessor().closeJTSConnection();
     }
 
     /**

@@ -21,7 +21,6 @@ import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
@@ -75,17 +74,6 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
         discoverAllUnregisteredNewObjects();
         return Helper.buildVectorFromHashtableElements(getUnregisteredNewObjects());
     }
-    
-    /**
-     * INTERNAL:
-     * This overloading method is required, it forces non-callingSession specified commitTransaction method 
-     * being invoked from its parent class, this guarantees the method being invoked from correct parent 
-     * class - RemoteSession, which has only one non-callingSession specified commitTrasaction method defined.
-     */
-    public void commitTransaction() throws DatabaseException {
-        getParent().commitTransaction();
-    }
-
 
     /**
      * The remote unit of work returned after its commit on the server is merged with remote unit of work
@@ -471,17 +459,6 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
         if (getParent().hasExternalTransactionController()) {
             getParent().getExternalTransactionController().registerSynchronizationListener(this, getParent());
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * This overloading method is required, it forces non-callingSession specified rollbackTransaction method 
-     * being invoked from its parent class, this guarantees the method being invoked from correct parent 
-     * class - RemoteSession, which has only one non-callingSession specified rollbackTransaction method defined.
-     */
-    public void rollbackTransaction() throws DatabaseException {
-        incrementProfile(SessionProfiler.UowRollbacks);
-        getParent().rollbackTransaction();
     }
 
     protected void setIsOnClient(boolean isOnClient) {

@@ -20,38 +20,17 @@ import org.eclipse.persistence.testing.models.employee.domain.EmployeePopulator;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
 
 /**
- * for bug 6065882, Verify databaseSession connection should close after txn was finished(either commit or rollback txn)
- * regardless the txn controlled by ExternalTransactionController
+ * for bug 6065882, Verify databaseSession connection should close after txn was finished(either commit or rollback txn).
+ * This test works only without external transaction controller.
+ * The version of this test working with external transactionm controller
+ * is in server/threetier:
+ * ..threetier.tests.externaltransaction.ConnCloseValidationInDatabaseSessionExternalTxnTestCase
  */
 public class CloseConnAfterDatabaseSessionTxnTest extends AutoVerifyTestCase {
     protected DatabaseSession session = null;
-    protected boolean hasExternalTransactionController = false;
     
-    public CloseConnAfterDatabaseSessionTxnTest(boolean hasExternalTransactionController){
-        if(hasExternalTransactionController){
-           setDescription("Ensure the connection closed properly once query finished - DatabaseSession has ExternalTransactionController");
-        } else {
-            setDescription("Ensure the connection closed properly once query finished - DatabaseSession has no ExternalTransactionController");
-        }
-        this.hasExternalTransactionController = hasExternalTransactionController;
-    }
-    
-    public static class DummyExternalTransactionController extends org.eclipse.persistence.transaction.AbstractTransactionController {
-        public boolean isRolledBack_impl(Object status){return false;}
-        protected void registerSynchronization_impl(org.eclipse.persistence.transaction.AbstractSynchronizationListener listener, Object txn) throws Exception{}
-        protected Object getTransaction_impl() throws Exception {return null;}
-        protected Object getTransactionKey_impl(Object transaction) throws Exception {return null;}
-        protected Object getTransactionStatus_impl() throws Exception {return null;}
-        protected void beginTransaction_impl() throws Exception{}
-        protected void commitTransaction_impl() throws Exception{}
-        protected void rollbackTransaction_impl() throws Exception{}
-        protected void markTransactionForRollback_impl() throws Exception{}
-        protected boolean canBeginTransaction_impl(Object status){return false;}
-        protected boolean canCommitTransaction_impl(Object status){return false;}
-        protected boolean canRollbackTransaction_impl(Object status){return false;}
-        protected boolean canIssueSQLToDatabase_impl(Object status){return false;}
-        protected boolean canMergeUnitOfWork_impl(Object status){return false;}
-        protected String statusToString_impl(Object status){return "";}
+    public CloseConnAfterDatabaseSessionTxnTest(){
+        setDescription("Ensure the connection closed properly once query finished - DatabaseSession has no ExternalTransactionController");
     }
     
     public void setup() {
@@ -59,13 +38,7 @@ public class CloseConnAfterDatabaseSessionTxnTest extends AutoVerifyTestCase {
         DatasourceLogin clonedLogin = (DatasourceLogin)((org.eclipse.persistence.sessions.DatabaseSession)getSession()).getProject().getDatasourceLogin().clone();
         project.setLogin(clonedLogin);
         clonedLogin.useExternalConnectionPooling();
-        if(hasExternalTransactionController){
-            clonedLogin.useExternalTransactionController();
-         }
         session=project.createDatabaseSession();
-        if(hasExternalTransactionController){
-            session.setExternalTransactionController(new DummyExternalTransactionController());
-         }
         session.login();
     }
 
