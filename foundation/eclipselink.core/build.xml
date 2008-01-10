@@ -2,6 +2,10 @@
 
     <property file="${user.home}/build.properties"/>
     <property file="./build.properties"/>
+    <tstamp>
+        <format property="build.date" pattern="yyyyMMdd"/>
+    </tstamp> 
+    <property name="build_number_string" value="SNAPSHOT - ${build.date}"/>
 
     <path id="compile.path">
         <pathelement path="${eclipselink.core.lib}/eclipselink-antlr.jar"/>
@@ -12,17 +16,9 @@
     </path>
 	
     <!-- all -->
-    <target name="all" depends="clean, init, compile" description="build EclipseLink jar"/>
-
-    <target name="init">
-        <tstamp>
-            <format property="build.date" pattern="yyyyMMdd"/>
-        </tstamp> 
-        <property name="build_number_string" value="SNAPSHOT - ${build.date}"/>
-    </target>
-
+    <target name="all" depends="clean, compile" description="build EclipseLink jar"/>
     <!-- compile --> 
-    <target name="compile" depends="init" description="compile EclipseLink">  
+    <target name="compile" description="compile EclipseLink">  
         <mkdir dir="${eclipselink.core}/${classes.dir}"/>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="BUILD_NUMBER" value="${build_number_string}"/>
