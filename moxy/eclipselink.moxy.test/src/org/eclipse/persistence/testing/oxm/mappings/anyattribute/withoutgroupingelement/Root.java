@@ -46,11 +46,12 @@ public class Root {
                 return false;
             } else {
                 Iterator values1 = any.keySet().iterator();
-                Iterator values2 = ((Root)object).getAny().keySet().iterator();
                 while(values1.hasNext()) {
                     Object key1 = values1.next();
-                    Object key2 = values2.next();
-                    if(!(key1.equals(key2) && any.get(key1).equals(collection2.get(key2)))) {
+                    Object value1 = collection1.get(key1);
+                    Object value2 = collection2.get(key1);
+                    
+                    if(!(value1.equals(value2))) {
                         return false;
                     }
                 }
