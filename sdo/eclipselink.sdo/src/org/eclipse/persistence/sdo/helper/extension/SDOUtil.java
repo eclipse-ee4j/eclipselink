@@ -119,15 +119,18 @@ public class SDOUtil {
 		// Save error state so that we can emit a warning after the URI has been processed
 		boolean invalidOriginalFormat = false;
 		// Save whether we are a supported urn or http scheme
-		boolean isValidScheme = false;
+    boolean invalidScheme = false;
 		try {
 			// Creating a URI object and catching a syntax exception may be a performance hit 
 			uri = new URI(uriString);
 			schemePrefix = uri.getScheme();			
-			// Remove http or urn schemes for valid URI's
-			if(null != schemePrefix && (schemePrefix.equalsIgnoreCase("http") || schemePrefix.equalsIgnoreCase("urn"))) {
-				uriString = uri.getSchemeSpecificPart();
-				isValidScheme = true;
+			// Remove http or urn schemes for valid URI's			
+      if(null != schemePrefix){
+        if((schemePrefix.equalsIgnoreCase("http") || schemePrefix.equalsIgnoreCase("urn"))) {
+          uriString = uri.getSchemeSpecificPart();          
+        }else{
+          invalidScheme = true;
+        }
 			}
 		} catch (NullPointerException npe) {			
             AbstractSessionLog.getLog().log(AbstractSessionLog.FINEST, INVALID_URI_WARNING,//
@@ -140,13 +143,11 @@ public class SDOUtil {
 			if (uriString.length() > 4) {
 				prefix = uriString.substring(0, 4);
 				if (prefix.equalsIgnoreCase("urn:")) {
-					uriString = uriString.substring(4);
-					isValidScheme = true;
+					uriString = uriString.substring(4);					
 				} else {
 					prefix = uriString.substring(0, 5);
 					if (prefix.equalsIgnoreCase("http:")) {						
-						uriString = uriString.substring(5);
-						isValidScheme = true;
+						uriString = uriString.substring(5);						
 					}
 				}
 			}
@@ -168,11 +169,11 @@ public class SDOUtil {
 			 * 1 | 1 Remove file ext				ie: urn://site.com/file.xsd -> com.site
 			 */
 			// Don't Remove trailing host fragment for http|urn schemes
-			if((!isValidScheme && potentialFileExtIndex != -1) || //
+			if((invalidScheme && potentialFileExtIndex != -1) || //
 				((potentialFileExtIndex != -1 && potentialPathSepIndex != -1 && //
 				potentialHostSepIndex != -1 && (potentialPathSepIndex - potentialHostSepIndex) > 1))) { // -1's are handled
-				String extension = uriString.substring(potentialFileExtIndex);				
-				if (extension.length() == 3 || extension.length() == 4	|| extension.equalsIgnoreCase(".html")) {					
+				String extension = uriString.substring(potentialFileExtIndex);							
+        if (extension.length() == 3 || extension.length() == 4	|| extension.equalsIgnoreCase(".html")) {					
 					uriString = uriString.substring(0, potentialFileExtIndex);
 				}
 			}
