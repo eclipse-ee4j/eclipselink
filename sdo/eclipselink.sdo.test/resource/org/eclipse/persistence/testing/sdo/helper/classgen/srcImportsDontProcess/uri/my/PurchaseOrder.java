@@ -1,4 +1,4 @@
-package my;
+package uri.my;
 
 public interface PurchaseOrder {
 

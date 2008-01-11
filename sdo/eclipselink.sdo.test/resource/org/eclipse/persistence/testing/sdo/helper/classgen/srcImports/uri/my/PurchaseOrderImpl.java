@@ -1,4 +1,4 @@
-package my;
+package uri.my;
 
 import org.eclipse.persistence.sdo.SDODataObject;
 

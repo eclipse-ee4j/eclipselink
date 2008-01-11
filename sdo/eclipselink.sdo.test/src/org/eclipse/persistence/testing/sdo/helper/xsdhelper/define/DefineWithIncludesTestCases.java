@@ -39,7 +39,7 @@ public class DefineWithIncludesTestCases extends XSDHelperDefineTestCases {
         List<Type> types = new ArrayList<Type>();
         String uri = "my.uri";
 
-        String javaPackage = "my";
+        String javaPackage = "uri.my";
 
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type intType = typeHelper.getType("commonj.sdo", "Int");

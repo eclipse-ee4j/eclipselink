@@ -46,7 +46,7 @@ public class DefineWithImportsTestCases extends XSDHelperDefineTestCases {
         String uri3 = "my.uri3";
         String uri4 = "my.uri4";
 
-        String javaPackage = "my";
+        String javaPackage = "uri.my";
 
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type intType = typeHelper.getType("commonj.sdo", "Int");

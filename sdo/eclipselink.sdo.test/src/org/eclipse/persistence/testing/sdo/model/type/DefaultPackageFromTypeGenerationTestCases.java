@@ -228,7 +228,26 @@ public class DefaultPackageFromTypeGenerationTestCases extends SDOTestCase {
 	    	assertEquals(SDOConstants.JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME,//
 	    			getPackageName(".."));
 	    }
+      public void testPackageNameFromUriWithDotsButNoScheme() {	    	
+        assertEquals("uri2.my", getPackageName("my.uri2"));
 
+	    	assertEquals("uri.my", getPackageName("my.uri"));    
+        
+        assertEquals("uri.my.test.file", getPackageName("my.uri/test/file.xsd"));            
+	    }
+      
+      public void testPackageNameFromUriWithDotsAndScheme() {	    	
+        assertEquals("uri2.my", getPackageName("http://my.uri2"));
+
+	    	assertEquals("uri.my", getPackageName("http://my.uri"));            
+        
+        assertEquals("uri.my.file", getPackageName("http://my.uri/file.xsd"));            
+	    }
+      
+      public void testPackageNameFromUriWithDotsAndInvalidScheme() {	    	       
+	    	assertEquals("abc.my", getPackageName("abc://my.uri"));              
+	    }
+ 
 	public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.model.type.DefaultPackageFromTypeGenerationTestCases" };
         TestRunner.main(arguments);        

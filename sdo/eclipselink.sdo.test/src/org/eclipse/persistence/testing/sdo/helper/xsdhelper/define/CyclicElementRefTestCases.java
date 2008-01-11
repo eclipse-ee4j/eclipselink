@@ -78,7 +78,7 @@ public class CyclicElementRefTestCases extends XSDHelperDefineTestCases {
         phoneType.setXsd(true);
         phoneType.setXsdLocalName("PhoneType");
         phoneType.setDataType(false);
-        phoneType.setInstanceClassName("my.PhoneType");
+        phoneType.setInstanceClassName("uri.my.PhoneType");
 
         SDOProperty numberProp = new SDOProperty(aHelperContext);
         numberProp.setName("number");

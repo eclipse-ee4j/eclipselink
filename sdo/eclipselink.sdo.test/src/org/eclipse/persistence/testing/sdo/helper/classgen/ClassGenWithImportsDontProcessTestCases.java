@@ -51,7 +51,7 @@ public class ClassGenWithImportsDontProcessTestCases extends SDOClassGenTestCase
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();
         for(int i = 0;i < getControlFileNames().size();i++) {
-        	packages.add("my");
+        	packages.add("uri/my");
         }
         return packages;
     }

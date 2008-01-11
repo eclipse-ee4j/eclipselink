@@ -169,7 +169,7 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
         phoneType.setXsd(true);
         phoneType.setXsdLocalName("PhoneType");
         phoneType.setDataType(false);
-        phoneType.setInstanceClassName("my.PhoneType");
+        phoneType.setInstanceClassName("uri.my.PhoneType");
 
         SDOProperty numberProp = new SDOProperty(aHelperContext);
         numberProp.setName("number");
@@ -242,7 +242,7 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
         SDOType POtype = new SDOType(uri, "PurchaseOrder");
         POtype.setXsd(true);
         POtype.setXsdLocalName("PurchaseOrder");
-        POtype.setInstanceClassName("my.PurchaseOrder");
+        POtype.setInstanceClassName("uri.my.PurchaseOrder");
         POtype.setDataType(false);
         POtype.addDeclaredProperty(shipToProp);
         POtype.addDeclaredProperty(billToProp);

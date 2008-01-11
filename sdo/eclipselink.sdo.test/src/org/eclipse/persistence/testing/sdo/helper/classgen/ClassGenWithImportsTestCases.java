@@ -55,8 +55,8 @@ public class ClassGenWithImportsTestCases extends SDOClassGenTestCases {
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
     protected List<String> getPackages() {
         List<String> packages = new ArrayList<String>();       
-        packages.add("my");
-        packages.add("my");
+        packages.add("uri/my");
+        packages.add("uri/my");
         packages.add("uri2/my");
         packages.add("uri2/my");        
         return packages;
