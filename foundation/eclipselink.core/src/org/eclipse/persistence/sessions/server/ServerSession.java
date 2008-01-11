@@ -250,7 +250,13 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             ConnectionPool pool = (ConnectionPool)getConnectionPools().get(clientSession.getConnectionPolicy().getPoolName());
             Accessor connection = pool.acquireConnection();
             clientSession.setWriteConnection(connection);
-            getEventManager().postAcquireConnection(connection);
+            //if we are using external connection pooling the event will be thrown when the connection is actually acquired
+            if(!connection.usesExternalConnectionPooling()) {
+                getEventManager().postAcquireConnection(connection);
+                if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
+                    getEventManager().postAcquireExclusiveConnection(clientSession, clientSession.getWriteConnection());
+                }
+            }
         } else {
             if (this.maxNumberOfNonPooledConnections != NO_MAX) {
                 synchronized (this) {
@@ -266,10 +272,12 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
             }
             clientSession.setWriteConnection(clientSession.getLogin().buildAccessor());
             clientSession.connect();
-        }
-        if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
-            //if we are using external connection pooling the event will be thrown when the connection is actually acquired
-            getEventManager().postAcquireExclusiveConnection(clientSession, clientSession.getWriteConnection());
+            if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
+                //if we are using external connection pooling the event will be thrown when the connection is actually acquired
+                if(!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
+                    getEventManager().postAcquireExclusiveConnection(clientSession, clientSession.getWriteConnection());
+                }
+            }
         }
     }
 
@@ -618,10 +626,22 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
     public void releaseClientSession(ClientSession clientSession) throws DatabaseException {
         if (clientSession.getConnectionPolicy().isPooled()) {
             ConnectionPool pool = (ConnectionPool)getConnectionPools().get(clientSession.getConnectionPolicy().getPoolName());
-            getEventManager().preReleaseConnection(clientSession.getWriteConnection());
+            //if we are using external connection pooling the event is thrown right before the connection closes.
+            if(!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
+                getEventManager().preReleaseConnection(clientSession.getWriteConnection());
+                if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
+                    getEventManager().preReleaseExclusiveConnection(clientSession, clientSession.getWriteConnection());
+                }
+            }
             pool.releaseConnection(clientSession.getWriteConnection());
             clientSession.setWriteConnection(null);
         } else {
+            if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
+                //if we are using external connection pooling the event is thrown right before the connection closes.
+                if(!clientSession.getWriteConnection().usesExternalConnectionPooling()) {
+                    getEventManager().preReleaseExclusiveConnection(clientSession, clientSession.getWriteConnection());
+                }
+            }
             clientSession.disconnect();
             clientSession.setWriteConnection(null);
             if (this.maxNumberOfNonPooledConnections != NO_MAX) {
@@ -630,10 +650,6 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
                     notify();
                 }
             }
-        }
-        if (clientSession.getConnectionPolicy().shouldUseExclusiveConnection()) {
-            //if we are using external connection pooling the event will be thrown when the connection is actually released
-            getEventManager().preReleaseExclusiveConnection(clientSession, clientSession.getWriteConnection());
         }
     }
 

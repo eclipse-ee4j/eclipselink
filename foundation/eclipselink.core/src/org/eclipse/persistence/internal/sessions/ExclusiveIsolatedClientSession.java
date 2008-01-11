@@ -24,53 +24,6 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
 
     /**
      * INTERNAL:
-     * This is internal to the unit of work and should never be called otherwise.
-     */
-    public void basicBeginTransaction() {
-        //if we are begining the transaction then we should allow the accessor to
-        //release the connection and re-acquire a new one.  This is usefull in
-        //the case of external connection pools with JTA.
-        if ((this.getWriteConnection() != null) && this.getLogin().shouldUseExternalConnectionPooling()) {
-            // let the user remove the privledges
-            getEventManager().preReleaseExclusiveConnection(this, this.getWriteConnection());
-            //let the accessor release the connection
-            this.getWriteConnection().decrementCallCount();
-            //make the accessor re-acquire a new connection.  This supports the case
-            //where a JTA transaction was started since the client session was first acquired.
-            this.getWriteConnection().incrementCallCount(this);
-            // let the user update the connection with required privledges.
-            getEventManager().postAcquireExclusiveConnection(this, this.getWriteConnection());
-        }
-        super.basicBeginTransaction();
-    }
-
-    /**
-     * INTERNAL:
-     * This is internal to the unit of work and should not be called otherwise.
-     */
-    public void basicCommitTransaction() {
-        //if we are ending the transaction then we should allow the accessor to
-        //release the connection and re-acquire a new one.  This is usefull in
-        //the case of external connection pools with JTA.
-        if ((this.getWriteConnection() != null) && this.getLogin().shouldUseExternalConnectionPooling()) {
-            // let the user remove the privledges
-            getEventManager().preReleaseExclusiveConnection(this, this.getWriteConnection());
-            //let the accessor release the connection
-            this.getWriteConnection().decrementCallCount();
-            //make the accessor re-acquire a new connection.  This supports the case
-            //where a JTA transaction was started since the client session was first acquired.
-            this.getWriteConnection().incrementCallCount(this);
-            // let the user update the connection with required privledges.
-            getEventManager().postAcquireExclusiveConnection(this, this.getWriteConnection());
-        }
-
-        //Only releasee connection when transaction succeeds.  
-        //If not, connection will be released in rollback.
-        super.basicCommitTransaction();
-    }
-
-    /**
-     * INTERNAL:
      * Override to acquire the connection from the pool at the last minute
      */
     public Object executeCall(Call call, AbstractRecord translationRow, DatabaseQuery query) throws DatabaseException {
@@ -155,13 +108,6 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
      * access
      */
     public void setWriteConnection(Accessor accessor) {
-        if (getLogin().shouldUseExternalConnectionPooling()) {
-            if (accessor != null) {
-                accessor.incrementCallCount(this);// lets ensure that TopLink does not release this connection.
-            } else {//the accessor is being released
-                this.accessor.decrementCallCount();// let the accessor relase the connection
-            }
-        }
         this.accessor = accessor;
     }
 }

@@ -96,6 +96,31 @@ public abstract class DatasourceAccessor implements Accessor {
      *  after transaction is completed the callback is discarded.
      */
     protected transient SequencingCallback sequencingCallback;
+    
+    /**
+     *  Used only in externalConnectionPooling case. Indicates which session is currently using connection.
+     *  Allows to rise appropriate session's event when connection is already/still alive.
+     *  Events will be risen when ClientSession or DatabaseSession acquires connection in the beginning
+     *  and releases connection in the end of transaction (in afterCompletion in jta case).
+     *  In case the session requires exclusive connection (ExclusiveIsolatedClientSession) the events
+     *  will be risen every time the session acquires or releases connection -
+     *  which is a rare event - the connection is kept for the duration of jta transaction,
+     *  after jta transaction is completed the new connection is acquired on a first query execution
+     *  and kept until the next beginTransaction call.
+     *  In non-jta case the connection is acquired for session's life and release only by session's release.
+     *  Note that the attribute is nullified only in one place - by closeConnection method.
+     */
+    protected transient AbstractSession currentSession;
+
+    /**
+     *  Indicates that isInTransaction flag is about to change from false to true.
+     */
+    protected transient boolean isBeginningTransaction;
+
+    /**
+     *  Indicates that isInTransaction flag is about to change from true to false
+     */
+    protected transient boolean isCompletingTransaction;
 
     /**
      *    Default Constructor.
@@ -142,7 +167,7 @@ public abstract class DatasourceAccessor implements Accessor {
     }
 
     /**
-     * This should be set to false if a communication failure occurred durring a call execution.  
+     * This should be set to false if a communication failure occurred during a call execution.  
      * In the case of an invalid accessor the Accessor will not be returned to the pool.
      */
     public void setIsValid(boolean isValid){
@@ -158,7 +183,7 @@ public abstract class DatasourceAccessor implements Accessor {
 
     /**
      * Returns true if this Accessor can continue to be used.  This will be false if a communication
-     * failure occurred durring a call execution.  In the case of an invalid accessor the Accessor
+     * failure occurred during a call execution.  In the case of an invalid accessor the Accessor
      * will not be returned to the pool.
      */
     public boolean isValid(){
@@ -180,6 +205,9 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     public void beginTransaction(AbstractSession session) throws DatabaseException {
         if (usesExternalTransactionController()) {
+            if(session.isExclusiveConnectionRequired() && !isInTransaction() && usesExternalConnectionPooling()) {
+                closeConnection();
+            }
             setIsInTransaction(true);
             return;
         }
@@ -188,10 +216,12 @@ public abstract class DatasourceAccessor implements Accessor {
 
         try {
             session.startOperationProfile(SessionProfiler.TRANSACTION);
+            isBeginningTransaction = true;
             incrementCallCount(session);
             basicBeginTransaction(session);
             setIsInTransaction(true);
         } finally {
+            isBeginningTransaction = false;
             decrementCallCount();
             session.endOperationProfile(SessionProfiler.TRANSACTION);
         }
@@ -222,7 +252,7 @@ public abstract class DatasourceAccessor implements Accessor {
             return;
         }
         setCallCount(count - 1);
-        if (usesExternalConnectionPooling() && (!isInTransaction()) && (count == 1)) {
+        if (usesExternalConnectionPooling() && (!isInTransaction()) && (currentSession == null || !currentSession.isExclusiveConnectionRequired()) && (count == 1)) {
             try {
                 closeConnection();
             } catch (DatabaseException ignore) {
@@ -256,6 +286,16 @@ public abstract class DatasourceAccessor implements Accessor {
                 // If ExternalConnectionPooling is used, the connection can be re-established.
                 if (usesExternalConnectionPooling()) {
                     reconnect(session);
+                    // either transaction is starting (the method is called from beginTransaction, no externalTransactionController case)
+                    // or the connection is required for the session which is
+                    //   either in transaction already (will happen in externalTransactionController case);
+                    //   or requires exclusive connection.
+                    if(isBeginningTransaction || isInTransaction() || session.isExclusiveConnectionRequired()) {
+                        session.postConnectExternalConnection(this);
+                        currentSession = session;
+                    } else if(isCompletingTransaction) {
+                        currentSession = session;
+                    }
                 } else {
                     throw DatabaseException.databaseAccessorNotConnected();
                 }
@@ -264,7 +304,7 @@ public abstract class DatasourceAccessor implements Accessor {
     }
 
     /**
-     * Reset statment count.
+     * Reset statement count.
      */
     public void resetStatmentsCount() {
         readStatementsCount=0;
@@ -315,6 +355,8 @@ public abstract class DatasourceAccessor implements Accessor {
             if (!session.isSynchronized()) {
                 setIsInTransaction(false);
                 if (usesExternalConnectionPooling()) {
+                    // closeConnection method uses currentSession and then sets it to null.
+                    currentSession = session;
                     closeConnection();
                 }
             }
@@ -325,6 +367,7 @@ public abstract class DatasourceAccessor implements Accessor {
 
         try {
             session.startOperationProfile(SessionProfiler.TRANSACTION);
+            isCompletingTransaction = true;
             incrementCallCount(session);
             basicCommitTransaction(session);
 
@@ -333,6 +376,7 @@ public abstract class DatasourceAccessor implements Accessor {
             }
             setIsInTransaction(false);
         } finally {
+            isCompletingTransaction = false;
             sequencingCallback = null;
             decrementCallCount();
             session.endOperationProfile(SessionProfiler.TRANSACTION);
@@ -427,6 +471,9 @@ public abstract class DatasourceAccessor implements Accessor {
         try {
             if (getDatasourceConnection() != null) {
                 if (isDatasourceConnected()) {
+                    if(currentSession != null) {
+                        currentSession.preDisconnectExternalConnection(this);
+                    }
                     closeDatasourceConnection();
                 }
                 setDatasourceConnection(null);
@@ -434,6 +481,8 @@ public abstract class DatasourceAccessor implements Accessor {
         } catch (DatabaseException exception) {
             // Ignore
             setDatasourceConnection(null);
+        } finally {
+            currentSession = null;
         }
     }
 
@@ -574,6 +623,8 @@ public abstract class DatasourceAccessor implements Accessor {
             if (!session.isSynchronized()) {
                 setIsInTransaction(false);
                 if (usesExternalConnectionPooling()) {
+                    // closeConnection method uses currentSession and then sets it to null.
+                    currentSession = session;
                     closeConnection();
                 }
             }
@@ -584,10 +635,12 @@ public abstract class DatasourceAccessor implements Accessor {
 
         try {
             session.startOperationProfile(SessionProfiler.TRANSACTION);
+            isCompletingTransaction = true;
             incrementCallCount(session);
             basicRollbackTransaction(session);
         } finally {
             setIsInTransaction(false);
+            isCompletingTransaction = false;
             sequencingCallback = null;
             decrementCallCount();
             session.endOperationProfile(SessionProfiler.TRANSACTION);
