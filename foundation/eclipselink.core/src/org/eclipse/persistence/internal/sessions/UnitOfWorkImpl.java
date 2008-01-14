@@ -336,9 +336,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Adds the classes in the given Vector to the existing set of read-only classes.
      * Cannot be called after objects have been registered in the unit of work.
      */
-    public void addReadOnlyClasses(Vector classes) {
-        for (Enumeration enumtr = classes.elements(); enumtr.hasMoreElements();) {
-            Class theClass = (Class)enumtr.nextElement();
+    public void addReadOnlyClasses(Collection classes) {
+        for (Iterator iterator = classes.iterator(); iterator.hasNext();) {
+            Class theClass = (Class)iterator.next();
             addReadOnlyClass(theClass);
         }
     }
@@ -1316,13 +1316,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
             endOperationProfile(SessionProfiler.UowCommit);
         } catch (RuntimeException exception) {
-            handleException((RuntimeException)exception);
+            handleException(exception);
         }
     }
 
     /**
      * INTERNAL:
-     * Commit pre-built changeSet to the database changest to the database.
+     * Commit pre-built changeSet to the database changset to the database.
      */
     protected void commitToDatabaseWithPreBuiltChangeSet(UnitOfWorkChangeSet uowChangeSet, boolean commitTransaction) throws DatabaseException, OptimisticLockException {
         try {
@@ -1340,13 +1340,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             uowChangeSet.setIsChangeSetFromOutsideUOW(false);
 
         } catch (RuntimeException exception) {
-            handleException((RuntimeException)exception);
+            handleException(exception);
         }
     }
 
     /**
      * INTERNAL:
-     * This is internal to the uow, transactions should not be used explictly in a uow.
+     * This is internal to the uow, transactions should not be used explicitly in a uow.
      * The uow shares its parents transactions.
      */
     public void commitTransaction() throws DatabaseException {

@@ -39,6 +39,7 @@ public class NativeBatchWritingTestModel extends OptimisticLockingTestModel {
             platform.setShouldCacheAllStatements(true);
             platform.setUsesJDBCBatchWriting(true);
             platform.setUsesNativeBatchWriting(true);
+            platform.setMaxBatchWritingSize(100);
         }
 
         getExecutor().removeConfigureSystem(new EmployeeSystem());

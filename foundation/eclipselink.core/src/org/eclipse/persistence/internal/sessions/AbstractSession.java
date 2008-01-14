@@ -29,7 +29,6 @@ import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
-import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.SessionEventManager;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
@@ -808,7 +807,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             throw QueryException.descriptorIsMissingForNamedQuery(domainClass, queryName);
         }
 
-        DatabaseQuery query = (DatabaseQuery)descriptor.getQueryManager().getQuery(queryName);
+        DatabaseQuery query = descriptor.getQueryManager().getQuery(queryName);
 
         if (query == null) {
             throw QueryException.queryNotDefined(queryName, domainClass);
@@ -861,7 +860,23 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         argumentValues.addElement(arg3);
         return executeQuery(queryName, domainClass, argumentValues);
     }
-
+    
+    /**
+     * PUBLIC:
+     * Execute the pre-defined query by name and return the result.
+     * Queries can be pre-defined and named to allow for their reuse.
+     * The class is the descriptor in which the query was pre-defined.
+     *
+     * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
+     */
+    public Object executeQuery(String queryName, Class domainClass, List argumentValues) throws DatabaseException {
+        if (argumentValues instanceof Vector) {
+            return executeQuery(queryName, domainClass, (Vector)argumentValues);
+        } else {
+            return executeQuery(queryName, domainClass, new Vector(argumentValues));            
+        }
+    }
+    
     /**
      * PUBLIC:
      * Execute the pre-defined query by name and return the result.
@@ -877,7 +892,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             throw QueryException.descriptorIsMissingForNamedQuery(domainClass, queryName);
         }
 
-        DatabaseQuery query = (DatabaseQuery)descriptor.getQueryManager().getQuery(queryName, argumentValues);
+        DatabaseQuery query = descriptor.getQueryManager().getQuery(queryName, argumentValues);
 
         if (query == null) {
             throw QueryException.queryNotDefined(queryName, domainClass);
@@ -927,7 +942,22 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         argumentValues.addElement(arg3);
         return executeQuery(queryName, argumentValues);
     }
-
+    
+    /**
+     * PUBLIC:
+     * Execute the pre-defined query by name and return the result.
+     * Queries can be pre-defined and named to allow for their reuse.
+     *
+     * @see #addQuery(String, DatabaseQuery)
+     */
+    public Object executeQuery(String queryName, List argumentValues) throws DatabaseException {
+        if (argumentValues instanceof Vector) {
+            return executeQuery(queryName, (Vector)argumentValues);
+        } else {
+            return executeQuery(queryName, new Vector(argumentValues));            
+        }
+    }
+    
     /**
      * PUBLIC:
      * Execute the pre-defined query by name and return the result.
@@ -957,10 +987,23 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public Object executeQuery(DatabaseQuery query) throws DatabaseException {
         return executeQuery(query, EmptyRecord.getEmptyRecord());
     }
-
+    
     /**
      * PUBLIC:
-     * Return the results from exeucting the database query.
+     * Return the results from executing the database query.
+     * the arguments are passed in as a vector
+     */
+    public Object executeQuery(DatabaseQuery query, List argumentValues) throws DatabaseException {
+        if (argumentValues instanceof Vector) {
+            return executeQuery(query, (Vector)argumentValues);
+        } else {
+            return executeQuery(query, new Vector(argumentValues));            
+        }
+    }
+    
+    /**
+     * PUBLIC:
+     * Return the results from executing the database query.
      * the arguments are passed in as a vector
      */
     public Object executeQuery(DatabaseQuery query, Vector argumentValues) throws DatabaseException {
@@ -975,7 +1018,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
-     * Return the results from exeucting the database query.
+     * Return the results from executing the database query.
      * the arguments should be a database row with raw data values.
      */
     public Object executeQuery(DatabaseQuery query, AbstractRecord row) throws DatabaseException {
@@ -1356,12 +1399,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         if (theClass == null) {
             return null;
         }
-        ClassDescriptor desc = getDescriptor(theClass);
-        if (desc instanceof ClassDescriptor) {
-            return (ClassDescriptor)desc;
-        } else {
-            throw ValidationException.cannotCastToClass(desc, desc.getClass(), ClassDescriptor.class);
-        }
+        return getDescriptor(theClass);
     }
 
     /**
@@ -1374,12 +1412,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         if (domainObject == null) {
             return null;
         }
-        ClassDescriptor desc = getDescriptor(domainObject);
-        if (desc instanceof ClassDescriptor) {
-            return (ClassDescriptor)desc;
-        } else {
-            throw ValidationException.cannotCastToClass(desc, desc.getClass(), ClassDescriptor.class);
-        }
+        return getDescriptor(domainObject);
     }
 
     /**
@@ -1429,7 +1462,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             if (!theClass.isInterface()) {
                 Class[] interfaces = theClass.getInterfaces();
                 for (int index = 0; index < interfaces.length; ++index) {
-                    Class interfaceClass = (Class)interfaces[index];
+                    Class interfaceClass = interfaces[index];
                     descriptor = getDescriptor(interfaceClass);
                     if (descriptor != null) {
                         getDescriptors().put(interfaceClass, descriptor);
@@ -1810,7 +1843,24 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public DatabaseQuery getQuery(String name) {
         return getQuery(name, null);
     }
-
+    
+    /**
+     * PUBLIC:
+     * Return the query from the session pre-defined queries with the given name and argument types.
+     * This allows for common queries to be pre-defined, reused and executed by name.
+     * This method should be used if the Session has multiple queries with the same name but
+     * different arguments.
+     *
+     * @see #getQuery(String)
+     */
+    public DatabaseQuery getQuery(String name, List arguments) {
+        if (arguments instanceof Vector) {
+            return getQuery(name, (Vector)arguments);
+        } else {
+            return getQuery(name, new Vector(arguments));
+        }
+    }
+    
     /**
      * PUBLIC:
      * Return the query from the session pre-defined queries with the given name and argument types.

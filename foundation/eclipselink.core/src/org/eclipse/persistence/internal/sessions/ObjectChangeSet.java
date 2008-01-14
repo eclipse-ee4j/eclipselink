@@ -71,15 +71,12 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * This variable is set just before the change set is serialized.
      */
     protected int cacheSynchronizationType = ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR;
-
-    // uses to map SDK project
-    protected int id = -1;
     
     /** PERF: Cache the session cacheKey during thr merge to avoid duplicate lookups. */
     protected transient CacheKey activeCacheKey;
 
     /**
-     * The default constructor is used only by SDK XML project for mapping ObjectChangeSet
+     * The default constructor.
      */
     public ObjectChangeSet() {
         super();
@@ -336,13 +333,6 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         ClassDescriptor descriptor = session.getDescriptor(getClassType(session));
 
         if (descriptor != null) {
-            // Rebuild PK to expected type for identity lookup only if chang set was converted to user format such as XML  
-            // Note that other conversions of changed attributes will be handled by each mapping during merging.
-            // Obsolete SDK cache synch code.
-            if ((session.getCommandManager() != null) && (session.getCommandManager().getCommandConverter() != null)) {
-                rebuildPKFromUserFormat(descriptor, session);
-            }
-
             if (session.isUnitOfWork()) {
                 // The unit of works will have a copy or a new instance must be made
                 if (((UnitOfWorkImpl)session).getLifecycle() == UnitOfWorkImpl.MergePending) {
@@ -595,7 +585,6 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         this.shouldModifyVersionField = changeSetToMergeFrom.shouldModifyVersionField;
         this.hasCmpPolicyForcedUpdate = changeSetToMergeFrom.hasCmpPolicyForcedUpdate;
         this.hasChangesFromCascadeLocking = changeSetToMergeFrom.hasChangesFromCascadeLocking;
-        this.id = changeSetToMergeFrom.id;
     }
 
     /**
@@ -650,7 +639,6 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         this.isInvalid = stream.readBoolean();
         setIsNew(stream.readBoolean());
         setIsAggregate(stream.readBoolean());
-        setId(stream.readInt());
 
         // Only the identity information is sent with a number of cache synchronization types
         // Here we decide what to read.
@@ -884,7 +872,6 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         stream.writeBoolean(isInvalid);
         stream.writeBoolean(isNew);
         stream.writeBoolean(isAggregate);
-        stream.writeInt(id);
         if (shouldBeDeleted || (cacheSynchronizationType == ClassDescriptor.DO_NOT_SEND_CHANGES) || (cacheSynchronizationType == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS)) {
             writeIdentityInformation(stream);
         } else {
@@ -945,44 +932,6 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         return ! (deferredSet == null  || this.deferredSet.isEmpty());
     }
 
-    /**
-     * INTERNAL:
-     * Used by SDK for XML project to map ObjectChangeSet
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * INTERNAL:
-     * Used by SDK for XML project to map ObjectChangeSet
-     */
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    /**
-     * INTERNAL:
-     * Used by SDK for XML project to map ObjectChangeSet
-     */
-    public Vector getSDKChanges() {
-        return getChanges();
-    }
-
-    /**
-     * INTERNAL:
-     * Used by SDK for XML project to map ObjectChangeSet
-     */
-    public void setSDKChanges(Vector changeRecords) {
-        if (changeRecords != null) {
-            // rebuild owner
-            for (Enumeration enumtr = changeRecords.elements(); enumtr.hasMoreElements();) {
-                ((ChangeRecord)enumtr.nextElement()).setOwner(this);
-            }
-            setChanges(changeRecords);
-        }
-    }
-
     protected void dirtyUOWChangeSet() {
         // PERF: Set the unit of work change set to dirty avoid unnecessary message sends.
         UnitOfWorkChangeSet unitOfWorkChangeSet = (UnitOfWorkChangeSet)getUOWChangeSet();
@@ -998,24 +947,6 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
         // computed its 'hasChanges' flag.  If not done, the change set will not be merged.
         if (this.getUOWChangeSet() != null) {
             ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)this.getUOWChangeSet()).setHasChanges(this.hasChanges());
-        }
-    }
-
-    /**
-     * Rebuild primary key to the expected type from user format i.e XML change set has all values as String.
-     * Do nothing if the change set was not converted to user format
-     */
-    public void rebuildPKFromUserFormat(ClassDescriptor descriptor, AbstractSession session) {
-        Vector newPks = new Vector();
-        Vector pks = getPrimaryKeys();
-        Vector keyClassifications = descriptor.getObjectBuilder().getPrimaryKeyClassifications();
-
-        for (int i = 0; i < pks.size(); i++) {
-            Object key = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(pks.elementAt(i), (Class)keyClassifications.elementAt(i));
-            newPks.add(i, key);
-        }
-        if (newPks.size() > 0) {
-            this.setPrimaryKeys(newPks);
         }
     }
 
@@ -1047,10 +978,6 @@ public class ObjectChangeSet implements Serializable, org.eclipse.persistence.se
      * Remove object represent this change set from identity map.  If change set is in XML format, rebuild pk to the correct class type from String
      */
     protected void removeFromIdentityMap(AbstractSession session) {
-        // Rebuild PK to the expected type if change set was converted to user format such as XML
-        if ((session.getCommandManager() != null) && (session.getCommandManager().getCommandConverter() != null)) {
-            rebuildPKFromUserFormat(session.getDescriptor(getClassType(session)), session);
-        }
         session.getIdentityMapAccessor().removeFromIdentityMap(getPrimaryKeys(), getClassType(session));
     }
 

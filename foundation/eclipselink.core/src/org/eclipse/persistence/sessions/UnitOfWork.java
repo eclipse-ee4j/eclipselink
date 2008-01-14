@@ -20,10 +20,10 @@ import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
  * <b>Description</b>: The unit of work is a session that implements all of the normal
  * protocol of a TopLink session. It can be spawned from any other session including another unit of work.
  * Objects can be brought into the unit of work through reading them or through registering them.
- * The unit of work will opperate on its own object space, that is the objects within the unit of work
- * will be clones of the orignial objects.  When the unit of work is commited, all changes to any objects
- * registered within the unit of work will be commited to the database.  A minimal commit/update will
- * be performed and any foreign keys/circular reference/referencial integrity will be resolved.
+ * The unit of work will operate on its own object space, that is the objects within the unit of work
+ * will be clones of the original objects.  When the unit of work is committed, all changes to any objects
+ * registered within the unit of work will be committed to the database.  A minimal commit/update will
+ * be performed and any foreign keys/circular reference/referential integrity will be resolved.
  * If the commit to the database is successful the changed objects will be merged back into the unit of work
  * parent session.
  * <p>
@@ -32,8 +32,8 @@ import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
  * <li> Allow parallel transactions against a session's objects.
  * <li> Allow nested transactions.
  * <li> Not require the application to write objects that is changes, automatically determine what has changed.
- * <li> Perform a minimal commit/update of all changes that occured.
- * <li> Resolve foreign keys for newly created objects and maintain referencial integrity.
+ * <li> Perform a minimal commit/update of all changes that occurred.
+ * <li> Resolve foreign keys for newly created objects and maintain referential integrity.
  * <li> Allow for the object transaction to use its own object space.
  * </ul>
  */
@@ -51,7 +51,7 @@ public interface UnitOfWork extends Session {
      * Adds the classes in the given Vector to the existing set of read-only classes.
      * Cannot be called after objects have been registered in the unit of work.
      */
-    public void addReadOnlyClasses(Vector classes);
+    public void addReadOnlyClasses(Collection classes);
 
     /**
      * ADVANCED:
@@ -77,8 +77,8 @@ public interface UnitOfWork extends Session {
      * Tell the unit of work to begin a transaction now.
      * By default the unit of work will begin a transaction at commit time.
      * The default is the recommended approach, however sometimes it is
-     * neccessary to start the transaction before commit time.  When the
-     * unit of work commits, this transcation will be commited.
+     * necessary to start the transaction before commit time.  When the
+     * unit of work commits, this transaction will be committed.
      *
      * @see #commit()
      * @see #release()
@@ -185,13 +185,6 @@ public interface UnitOfWork extends Session {
 
     /**
      * PUBLIC:
-     * Delete all of the objects and all of their privately owned parts in the database.
-     * Delete operations are delayed in a unit of work until commit.
-     */
-    public void deleteAllObjects(Vector domainObjects);
-
-    /**
-     * PUBLIC:
      * Delete the object and all of their privately owned parts in the database.
      * Delete operations are delayed in a unit of work until commit.
      */
@@ -201,8 +194,8 @@ public interface UnitOfWork extends Session {
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
-     * ensures that objects from the parent cache are not refered in the unit of work cache.
+     * ensuring deleted objects are not referred after commit,
+     * ensures that objects from the parent cache are not referred in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
@@ -211,7 +204,7 @@ public interface UnitOfWork extends Session {
 
     /**
      * ADVANCED:
-     * Set optmistic read lock on the object.  This feature is overide by normal optimistic lock.
+     * Set optimistic read lock on the object.  This feature is override by normal optimistic lock.
      * when the object is changed in UnitOfWork. The cloneFromUOW must be the clone of from this
      * UnitOfWork and it must implements version locking or timestamp locking.
      * The SQL would look like the followings.
@@ -249,7 +242,7 @@ public interface UnitOfWork extends Session {
     /**
      * ADVANCED:
      * Returns the currentChangeSet from the UnitOfWork.
-     * This is only valid after the UnitOfWork has commited successfully
+     * This is only valid after the UnitOfWork has committed successfully
      */
     public org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet getUnitOfWorkChangeSet();
 
@@ -257,8 +250,8 @@ public interface UnitOfWork extends Session {
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
-     * ensures that objects from the parent cache are not refered in the unit of work cache.
+     * ensuring deleted objects are not referred after commit,
+     * ensures that objects from the parent cache are not referred in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
@@ -336,8 +329,8 @@ public interface UnitOfWork extends Session {
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
-     * ensures that objects from the parent cache are not refered in the unit of work cache.
+     * ensuring deleted objects are not referred after commit,
+     * ensures that objects from the parent cache are not referred in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
@@ -348,8 +341,8 @@ public interface UnitOfWork extends Session {
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
-     * ensures that objects from the parent cache are not refered in the unit of work cache.
+     * ensuring deleted objects are not referred after commit,
+     * ensures that objects from the parent cache are not referred in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
@@ -386,7 +379,7 @@ public interface UnitOfWork extends Session {
      * All newly created root domain objects must be registered to be inserted on commit.
      * Also any existing objects that will be edited and were not read from this unit of work
      * must also be registered.
-     * Once registered any changes to the objects will be commited to the database on commit.
+     * Once registered any changes to the objects will be committed to the database on commit.
      *
      * @return is the clones of the original objects, the return value must be used for editing,
      * editing the original is not allowed in the unit of work.
@@ -394,22 +387,9 @@ public interface UnitOfWork extends Session {
     public Vector registerAllObjects(Collection domainObjects);
 
     /**
-     * PUBLIC:
-     * Register the objects with the unit of work.
-     * All newly created root domain objects must be registered to be inserted on commit.
-     * Also any existing objects that will be edited and were not read from this unit of work
-     * must also be registered.
-     * Once registered any changes to the objects will be commited to the database on commit.
-     *
-     * @return is the clones of the original objects, the return value must be used for editing,
-     * editing the original is not allowed in the unit of work.
-     */
-    public Vector registerAllObjects(Vector domainObjects);
-
-    /**
      * ADVANCED:
      * Register the existing object with the unit of work.
-     * This is a advanced API that can be used if the application can guarentee the object exists on the database.
+     * This is a advanced API that can be used if the application can guaranteed the object exists on the database.
      * When registerObject is called the unit of work determines existence through the descriptor's doesExist setting.
      *
      * @return The clone of the original object, the return value must be used for editing.
@@ -435,7 +415,7 @@ public interface UnitOfWork extends Session {
      * All newly created root domain objects must be registered to be inserted on commit.
      * Also any existing objects that will be edited and were not read from this unit of work
      * must also be registered.
-     * Once registered any changes to the objects will be commited to the database on commit.
+     * Once registered any changes to the objects will be committed to the database on commit.
      *
      * @return the clone of the original object, the return value must be used for editing,
      *
@@ -506,7 +486,7 @@ public interface UnitOfWork extends Session {
      * By default new objects are not cached until the exist on the database.
      * Occasionally if mergeClone is used on new objects and is required to allow multiple merges
      * on the same new object, then if the new objects are not cached, each mergeClone will be
-     * interpretted as a different new object.
+     * interpreted as a different new object.
      * By setting new objects to be cached mergeClone can be performed multiple times before commit.
      * New objects cannot be cached unless they have a valid assigned primary key before being registered.
      * New object with non-null invalid primary keys such as 0 or '' can cause problems and should not be used with this option.
@@ -524,8 +504,8 @@ public interface UnitOfWork extends Session {
      * ADVANCED:
      * Conforming queries can be set to provide different levels of detail about the
      * exceptions they encounter
-     * There are two levels:
-     *    DO_NOT_THROW_CONFORM_EXCEPTIONS = 0;
+     * There are two levels:<br>
+     *    DO_NOT_THROW_CONFORM_EXCEPTIONS = 0;<br>
      *    THROW_ALL_CONFORM_EXCEPTIONS = 1;
      */
     public void setShouldThrowConformExceptions(int shouldThrowExceptions);
@@ -534,8 +514,8 @@ public interface UnitOfWork extends Session {
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
-     * ensures that objects from the parent cache are not refered in the unit of work cache.
+     * ensuring deleted objects are not referred after commit,
+     * ensures that objects from the parent cache are not referred in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
@@ -583,7 +563,7 @@ public interface UnitOfWork extends Session {
      * By default new objects are not cached until the exist on the database.
      * Occasionally if mergeClone is used on new objects and is required to allow multiple merges
      * on the same new object, then if the new objects are not cached, each mergeClone will be
-     * interpretted as a different new object.
+     * interpreted as a different new object.
      * By setting new objects to be cached mergeClone can be performed multiple times before commit.
      * New objects cannot be cached unless they have a valid assigned primary key before being registered.
      * New object with non-null invalid primary keys such as 0 or '' can cause problems and should not be used with this option.
@@ -602,8 +582,8 @@ public interface UnitOfWork extends Session {
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
-     * ensures that objects from the parent cache are not refered in the unit of work cache.
+     * ensuring deleted objects are not referred after commit,
+     * ensures that objects from the parent cache are not referred in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
@@ -614,8 +594,8 @@ public interface UnitOfWork extends Session {
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
-     * ensures that objects from the parent cache are not refered in the unit of work cache.
+     * ensuring deleted objects are not referred after commit,
+     * ensures that objects from the parent cache are not referred in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
@@ -626,8 +606,8 @@ public interface UnitOfWork extends Session {
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
-     * ensures that objects from the parent cache are not refered in the unit of work cache.
+     * ensuring deleted objects are not referred after commit,
+     * ensures that objects from the parent cache are not referred in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.

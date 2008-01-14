@@ -14,19 +14,18 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 /**
  * <p>
  * <b>Purpose</b>: To record the changes for an attribute that references a single Object
- * @see RelatedClasses prototype.changeset.CollectionChangeRecord,prototype.changeset.SingleObjectChangeRecord
  */
 public class ObjectReferenceChangeRecord extends ChangeRecord implements org.eclipse.persistence.sessions.changesets.ObjectReferenceChangeRecord {
 
     /** This is the object change set that the attribute points to. */
     protected ObjectChangeSet newValue;
     
-    /** A reference to the old value must also be sotred.  This is only required for the commit and must never be serialized. */
+    /** A reference to the old value must also be stored.  This is only required for the commit and must never be serialized. */
     protected transient Object oldValue;
 
     /**
      * INTERNAL:
-     * This default constructor is reference internally by SDK XML project to mapp this class
+     * This default constructor.
      */
     public ObjectReferenceChangeRecord() {
         super();
@@ -35,7 +34,6 @@ public class ObjectReferenceChangeRecord extends ChangeRecord implements org.ecl
     /**
      * INTERNAL:
      * This Constructor is used to create an ObjectReferenceChangeRecord With an owner
-     * @param owner prototype.changeset.ObjectChangeSet
      */
     public ObjectReferenceChangeRecord(ObjectChangeSet owner) {
         this.owner = owner;
@@ -44,7 +42,6 @@ public class ObjectReferenceChangeRecord extends ChangeRecord implements org.ecl
     /**
      * ADVANCED:
      * Returns the new reference for this object
-     * @return prototype.changeset.ObjectChangeSet
      */
     public org.eclipse.persistence.sessions.changesets.ObjectChangeSet getNewValue() {
         return newValue;
@@ -66,17 +63,17 @@ public class ObjectReferenceChangeRecord extends ChangeRecord implements org.ecl
      * associated with this ChangeRecord
      */
     public void prepareForSynchronization(AbstractSession session) {
-        if ((newValue != null) && (((org.eclipse.persistence.internal.sessions.ObjectChangeSet)newValue).getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR)) {
+        if ((newValue != null) && (newValue.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR)) {
             ClassDescriptor descriptor = session.getDescriptor(newValue.getClassType(session));
             int syncType = descriptor.getCacheSynchronizationType();
-            ((org.eclipse.persistence.internal.sessions.ObjectChangeSet)newValue).setSynchronizationType(syncType);
-            ((org.eclipse.persistence.internal.sessions.ObjectChangeSet)newValue).prepareChangeRecordsForSynchronization(session);
+            newValue.setSynchronizationType(syncType);
+            newValue.prepareChangeRecordsForSynchronization(session);
         }
     }
 
     /**
      * This method sets the value of the change to be made.
-     * @param newValue prototype.changeset.ObjectChangeSet
+     * @param newValue ObjectChangeSet
      */
     public void setNewValue(org.eclipse.persistence.sessions.changesets.ObjectChangeSet newValue) {
         this.newValue = (ObjectChangeSet)newValue;
@@ -84,7 +81,6 @@ public class ObjectReferenceChangeRecord extends ChangeRecord implements org.ecl
 
     /**
      * This method sets the value of the change to be made.
-     * @param newValue prototype.changeset.ObjectChangeSet
      */
     public void setNewValue(ObjectChangeSet newValue) {
         this.newValue = newValue;

@@ -36,6 +36,7 @@ public class ParameterizedBatchUpdatesTestModel extends TopLinkBatchUpdatesTestM
         platform.setShouldBindAllParameters(true);
         platform.setShouldCacheAllStatements(true);
         platform.setUsesJDBCBatchWriting(true);
+        platform.setMaxBatchWritingSize(100);
 
         getExecutor().removeConfigureSystem(new EmployeeSystem());
         // Force the database to be recreated to ensure the sequences are defined.

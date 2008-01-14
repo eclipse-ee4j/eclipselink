@@ -22,6 +22,7 @@ public class JDBCBatchUpdatesTestModel extends TopLinkBatchUpdatesTestModel {
         DatabasePlatform platform = getSession().getPlatform();
         wasBatchWriting = Boolean.valueOf(platform.usesBatchWriting());
         wasJDBCBatchWriting = Boolean.valueOf(platform.usesJDBCBatchWriting());
+        wasParameterBinding = Boolean.valueOf(getSession().getLogin().shouldBindAllParameters());
 
         try {
             getSession().getLog().write("WARNING, some JDBC drivers may fail BatchUpdates.");
@@ -30,6 +31,7 @@ public class JDBCBatchUpdatesTestModel extends TopLinkBatchUpdatesTestModel {
 
         platform.setUsesBatchWriting(true);
         platform.setUsesJDBCBatchWriting(true);
+        getSession().getLogin().dontBindAllParameters();
 
         getExecutor().removeConfigureSystem(new EmployeeSystem());
         // Force the database to be recreated to ensure the sequences are defined.

@@ -15,7 +15,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.sequencing.SequencingControl;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
-import org.eclipse.persistence.sequencing.SequencingControl;
 
 /**
  * <p>
@@ -30,10 +29,10 @@ public interface DatabaseSession extends Session {
      * Add the descriptor to the session.
      * All persistent classes must have a descriptor registered for them with the session.
      * It is best to add the descriptors before login, if added after login the order in which
-     * descriptors are added is dependant on inheritice and references unless the addDescriptors
+     * descriptors are added is dependent on inheritance and references unless the addDescriptors
      * method is used.
      *
-     * @see #addDescriptors(Vector)
+     * @see #addDescriptors(Collection)
      * @see #addDescriptors(Project)
      */
     public void addDescriptor(ClassDescriptor descriptor);
@@ -43,9 +42,9 @@ public interface DatabaseSession extends Session {
      * Add the descriptors to the session.
      * All persistent classes must have a descriptor registered for them with the session.
      * This method allows for a batch of descriptors to be added at once so that TopLink
-     * can resolve the dependancies between the descriptors and perform initialization optimially.
+     * can resolve the dependencies between the descriptors and perform initialization optimially.
      */
-    public void addDescriptors(Vector descriptors);
+    public void addDescriptors(Collection descriptors);
 
     /**
      * PUBLIC:
@@ -58,7 +57,7 @@ public interface DatabaseSession extends Session {
     /**
      * PUBLIC:
      * Begin a transaction on the database.
-     * This allows a group of database modification to be commited or rolledback as a unit.
+     * This allows a group of database modification to be committed or rolledback as a unit.
      * All writes/deletes will be sent to the database be will not be visible to other users until commit.
      * Although databases do not allow nested transaction,
      * TopLink supports nesting through only committing to the database on the outer commit.
@@ -72,7 +71,7 @@ public interface DatabaseSession extends Session {
     /**
      * PUBLIC:
      * Commit the active database transaction.
-     * This allows a group of database modification to be commited or rolledback as a unit.
+     * This allows a group of database modification to be committed or rolledback as a unit.
      * All writes/deletes will be sent to the database be will not be visible to other users until commit.
      * Although databases do not allow nested transaction,
      * TopLink supports nesting through only committing to the database on the outer commit.
@@ -90,24 +89,11 @@ public interface DatabaseSession extends Session {
      * The objects will be deleted through a single transactions.
      *
      * @exception DatabaseException if an error occurs on the database,
-     * these include constraint violations, security violations and general database erros.
+     * these include constraint violations, security violations and general database errors.
      * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
      * the object has been updated or deleted by another user since it was last read.
      */
     public void deleteAllObjects(Collection domainObjects);
-
-    /**
-     * PUBLIC:
-     * delete all of the objects and all of their privately owned parts in the database.
-     * The allows for a group of objects to be deleted as a unit.
-     * The objects will be deleted through a single transactions.
-     *
-     * @exception DatabaseException if an error occurs on the database,
-     * these include constraint violations, security violations and general database erros.
-     * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
-     * the object has been updated or deleted by another user since it was last read.
-     */
-    public void deleteAllObjects(Vector domainObjects);
 
     /**
      * PUBLIC:
@@ -133,18 +119,18 @@ public interface DatabaseSession extends Session {
     /**
      * PUBLIC:
      * Return if the session is currently in the progress of a database transaction.
-     * Because nested transactions are allowed check if the transaction mutex has been aquired.
+     * Because nested transactions are allowed check if the transaction mutex has been acquired.
      */
     public boolean isInTransaction();
 
     /**
      * PUBLIC:
-     * Set the server platform defining server-specific behaviour for the receiver (Oc4j, WLS, ... ).
+     * Set the server platform defining server-specific behavior for the receiver (Oc4j, WLS, ... ).
      *
      * This is not permitted after the session is logged in.
      *
      * If the user wants a different external transaction controller class or
-     * to provide some different behaviour than the provided ServerPlatform(s), we recommend
+     * to provide some different behavior than the provided ServerPlatform(s), we recommend
      * subclassing org.eclipse.persistence.platform.server.ServerPlatformBase (or a subclass),
      * and overriding:
      *
@@ -152,7 +138,7 @@ public interface DatabaseSession extends Session {
      * ServerPlatformBase.registerMBean()
      * ServerPlatformBase.unregisterMBean()
      *
-     * for the desired behaviour.
+     * for the desired behavior.
      *
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase
      */
@@ -160,10 +146,10 @@ public interface DatabaseSession extends Session {
 
     /**
      * PUBLIC:
-     * Answer the server platform defining server-specific behaviour for the receiver (Oc4j, WLS, ...).
+     * Answer the server platform defining server-specific behavior for the receiver (Oc4j, WLS, ...).
      *
       * If the user wants a different external transaction controller class or
-     * to provide some different behaviour than the provided ServerPlatform(s), we recommend
+     * to provide some different behavior than the provided ServerPlatform(s), we recommend
      * subclassing org.eclipse.persistence.platform.server.ServerPlatformBase (or a subclass),
      * and overriding:
      *
@@ -171,7 +157,7 @@ public interface DatabaseSession extends Session {
      * ServerPlatformBase.registerMBean()
      * ServerPlatformBase.unregisterMBean()
      *
-     * for the desired behaviour.
+     * for the desired behavior.
      *
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase
     */
@@ -199,7 +185,7 @@ public interface DatabaseSession extends Session {
      * The additional login information must have been preset in the session's login attribute.
      * This is the login that should be used if each user has their own id,
      * but all users share the same database configuration.
-     * Under this login mode the password should not stay withint the login definition after login.
+     * Under this login mode the password should not stay within the login definition after login.
      */
     public void login(String userName, String password) throws DatabaseException;
 
@@ -208,7 +194,7 @@ public interface DatabaseSession extends Session {
      * Connect to the database using the given login.
      * The login may also the preset and the login() protocol called.
      * This is the login should only be used if each user has their own database configuration.
-     * Under this login mode the password should not stay withint the login definition after login.
+     * Under this login mode the password should not stay within the login definition after login.
      */
     public void login(Login login) throws DatabaseException;
 
@@ -243,7 +229,7 @@ public interface DatabaseSession extends Session {
     /**
      * PUBLIC:
      * Rollback the active database transaction.
-     * This allows a group of database modification to be commited or rolledback as a unit.
+     * This allows a group of database modification to be committed or rolledback as a unit.
      * All writes/deletes will be sent to the database be will not be visible to other users until commit.
      * Although databases do not allow nested transaction,
      * TopLink supports nesting through only committing to the database on the outer commit.
@@ -256,7 +242,7 @@ public interface DatabaseSession extends Session {
     /**
      * PUBLIC:
      * Used for JTS integration.  If your application requires to have JTS control transactions instead of TopLink an
-     * external transaction controler must be specified.  TopLink provides JTS controlers for JTS 1.0 and Weblogic's JTS.
+     * external transaction controller must be specified.  TopLink provides JTS controllers for JTS 1.0 and Weblogic's JTS.
      * @see org.eclipse.persistence.transaction.JTATransactionController
      * @see org.eclipse.persistence.platform.server.CustomServerPlatform
      */
@@ -345,28 +331,15 @@ public interface DatabaseSession extends Session {
     /**
      * PUBLIC:
      * Write all of the objects and all of their privately owned parts in the database.
-     * The allows for a group of objects to be commited as a unit.
-     * The objects will be commited through a single transactions.
+     * The allows for a group of objects to be committed as a unit.
+     * The objects will be committed through a single transactions.
      *
      * @exception DatabaseException if an error occurs on the database,
-     * these include constraint violations, security violations and general database erros.
+     * these include constraint violations, security violations and general database errors.
      * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
      * the object has been updated or deleted by another user since it was last read.
      */
     public void writeAllObjects(Collection domainObjects);
-
-    /**
-     * PUBLIC:
-     * Write all of the objects and all of their privately owned parts in the database.
-     * The allows for a group of objects to be commited as a unit.
-     * The objects will be commited through a single transactions.
-     *
-     * @exception DatabaseException if an error occurs on the database,
-     * these include constraint violations, security violations and general database erros.
-     * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
-     * the object has been updated or deleted by another user since it was last read.
-     */
-    public void writeAllObjects(Vector domainObjects);
 
     /**
      * PUBLIC:

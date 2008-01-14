@@ -19,7 +19,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  * an object.
  * <p>
  * <b>Description</b>: Collections must be compared to each other and added and removed objects must
- * be recorded seperately.
+ * be recorded separately.
  *
  * NOTE: This class and its sub class are currently not used within TopLink and should be removed.
  */
@@ -30,7 +30,6 @@ public class OrderedCollectionChangeRecord extends ChangeRecord implements org.e
 
     /**
      * This constructor returns a changeRecord representing the DirectCollection mapping
-     * @param owner prototype.changeset.ObjectChangeSet that ObjectChangeSet that uses this record
      */
     public OrderedCollectionChangeRecord(ObjectChangeSet owner) {
         this.owner = owner;
@@ -97,11 +96,11 @@ public class OrderedCollectionChangeRecord extends ChangeRecord implements org.e
         Enumeration changes = getAddObjectList().elements();
         while (changes.hasMoreElements()) {
             ObjectChangeSet changedObject = (ObjectChangeSet)changes.nextElement();
-            if (((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changedObject).getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
+            if (changedObject.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
                 ClassDescriptor descriptor = session.getDescriptor(changedObject.getClassType(session));
                 int syncType = descriptor.getCacheSynchronizationType();
-                ((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changedObject).setSynchronizationType(syncType);
-                ((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changedObject).prepareChangeRecordsForSynchronization(session);
+                changedObject.setSynchronizationType(syncType);
+                changedObject.prepareChangeRecordsForSynchronization(session);
             }
         }
     }

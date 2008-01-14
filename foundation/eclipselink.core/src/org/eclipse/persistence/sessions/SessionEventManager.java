@@ -697,8 +697,8 @@ public class SessionEventManager implements Cloneable, Serializable {
     }
 
     /**
-     * The event listners will receive all events raised by this session.
-     * Also unit of works acquire from this session will inherit the listenrs.
+     * The event listeners will receive all events raised by this session.
+     * Also unit of works acquire from this session will inherit the listeners.
      */
     protected void setListeners(Vector listeners) {
         this.listeners = listeners;
@@ -713,9 +713,9 @@ public class SessionEventManager implements Cloneable, Serializable {
     }
 
     /**
-       * INTERNAL:
-       * Start call
-       */
+     * INTERNAL:
+     * Start call
+     */
     protected void startOperationProfile() {
         if (getSession().isInProfile()) {
             getSession().getProfiler().startOperationProfile(SessionProfiler.SessionEvent);
@@ -723,9 +723,9 @@ public class SessionEventManager implements Cloneable, Serializable {
     }
 
     /**
-       * INTERNAL:
-       * End call
-       */
+     * INTERNAL:
+     * End call
+     */
     protected void endOperationProfile() {
         if (getSession().isInProfile()) {
             getSession().getProfiler().endOperationProfile(SessionProfiler.SessionEvent);

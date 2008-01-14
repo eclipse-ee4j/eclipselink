@@ -41,10 +41,6 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     /** This attribute is set to true if a changeSet with changes has been added */
     protected boolean hasChanges;
     protected boolean hasForcedChanges;
-
-    /* Collection of ObjectChangeSets that is built from other collections and mapped with SDK */
-    private transient Vector sdkAllChangeSets;
-    private transient int objectChangeSetCounter = 0;
     
     /** internal flag set when calling commitToDatabaseWithPreBuiltChangeSet 
     so we are aware the UOW does not contain the changes from this change set */
@@ -237,7 +233,6 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
         if (objectChanges.isAggregate()) {
             getAggregateList().put(objectChanges, objectChanges);
         }
-        objectChanges.setId(++objectChangeSetCounter);
 
         getObjectChangeSetToUOWClone().put(objectChanges, object);
         getCloneToObjectChangeSet().put(object, objectChanges);
@@ -596,47 +591,11 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
 
     /**
      * INTERNAL:
-     * Use by SDK XML mapping project for change set.
-     * Return collection of the real all object change sets include deleted ones, aggregate ones and others.
-     */
-    public Vector getInternalAllChangeSets() {
-        if (sdkAllChangeSets != null) {
-            return sdkAllChangeSets;
-        }
-		
-        Vector sdkAllChangeSets = new Vector();
-
-        // only need ObjectChangeSet with cacheKey not null
-        for (Enumeration enumtr = getDeletedObjects().elements(); enumtr.hasMoreElements();) {
-            sdkAllChangeSets.add(enumtr.nextElement());
-        }
-
-        for (Enumeration enumtr = getAllChangeSets().keys(); enumtr.hasMoreElements();) {
-            sdkAllChangeSets.add(enumtr.nextElement());
-        }
-
-        int i = 1;
-        for (Enumeration enumtr = sdkAllChangeSets.elements(); enumtr.hasMoreElements(); i++) {
-            ((ObjectChangeSet)enumtr.nextElement()).setId(i);
-        }
-
-        // set id in the case of aggregate object is of AggregateCollectionMapping
-        for (Enumeration enumtr = getAggregateList().keys(); enumtr.hasMoreElements(); i++) {
-            ((ObjectChangeSet)enumtr.nextElement()).setId(i);
-        }
-        if (sdkAllChangeSets.size() == 0) {
-            return null;
-        }
-        return sdkAllChangeSets;
-    }
-
-    /**
-     * INTERNAL:
      * This method will return a reference to the new object change set collections
      */
-    public java.util.Hashtable getNewObjectChangeSets() {
+    public Hashtable getNewObjectChangeSets() {
         if (this.newObjectChangeSets == null) {
-            this.newObjectChangeSets = new java.util.Hashtable();
+            this.newObjectChangeSets = new Hashtable();
         }
         return this.newObjectChangeSets;
     }
@@ -649,7 +608,6 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
         if (objectChangeSets == null) {
             return;
         }
-        sdkAllChangeSets = objectChangeSets;
 
         for (int i = 0; i < objectChangeSets.size(); i++) {
             ObjectChangeSet objChangeSet = (ObjectChangeSet)objectChangeSets.elementAt(i);

@@ -13,22 +13,19 @@ package org.eclipse.persistence.internal.sessions;
 /**
  * <p>
  * <b>Purpose</b>: To record the changes for attributes that can be represented as DirectToField
- * <p>
- * @see RelatedClasses prototype.changeset.CollectionChangeRecord,prototype.changeset.SingleObjectChangeRecord
  */
 public class DirectToFieldChangeRecord extends ChangeRecord implements org.eclipse.persistence.sessions.changesets.DirectToFieldChangeRecord {
     protected Object newValue;
 
     /**
-     * This default constructor is reference internally by SDK XML project to mapp this class
+     * This default constructor.
      */
     public DirectToFieldChangeRecord() {
         super();
     }
 
     /**
-     * This constructor returns a changeRecord representing the DirectToField mapping
-     * @param owner prototype.changeset.ObjectChangeSet that ObjectChangeSet that uses this record
+     * This constructor returns a changeRecord representing the DirectToField mapping.
      */
     public DirectToFieldChangeRecord(ObjectChangeSet owner) {
         this.owner = owner;
@@ -36,8 +33,7 @@ public class DirectToFieldChangeRecord extends ChangeRecord implements org.eclip
 
     /**
      * ADVANCED:
-     * Returns the new value assigned during the change
-     * @return java.lang.Object
+     * Returns the new value assigned during the change.
      */
     public Object getNewValue() {
         return newValue;
@@ -45,7 +41,7 @@ public class DirectToFieldChangeRecord extends ChangeRecord implements org.eclip
 
     /**
      * INTERNAL:
-     * This method will be used to merge one record into another
+     * This method will be used to merge one record into another.
      */
     public void mergeRecord(ChangeRecord mergeFromRecord, UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
         this.newValue = ((DirectToFieldChangeRecord)mergeFromRecord).getNewValue();
@@ -53,8 +49,7 @@ public class DirectToFieldChangeRecord extends ChangeRecord implements org.eclip
 
     /**
      * ADVANCED:
-     * Sets the new value assigned during the change
-     * @param newValue java.lang.Object
+     * Sets the new value assigned during the change.
      */
     public void setNewValue(Object newValue) {
         this.newValue = newValue;

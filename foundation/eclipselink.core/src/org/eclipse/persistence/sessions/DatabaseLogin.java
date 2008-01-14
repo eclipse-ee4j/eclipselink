@@ -11,7 +11,6 @@ package org.eclipse.persistence.sessions;
 
 import java.io.*;
 import java.sql.Connection;
-import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.localization.*;
@@ -19,7 +18,6 @@ import org.eclipse.persistence.platform.database.*;
 import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.sequencing.NativeSequence;
-import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.exceptions.*;
 
 /**
@@ -46,7 +44,7 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * Transaction isolation levels used in setTransactionIsolation().
-     * These constants are cribbed from java.sql.Connection.
+     * These constants are from java.sql.Connection.
      */
     /** Transactions are not supported. */
     public static final int TRANSACTION_NONE = Connection.TRANSACTION_NONE;
@@ -63,18 +61,16 @@ public class DatabaseLogin extends DatasourceLogin {
     /** Dirty reads, non-repeatable reads and phantom reads are prevented. */
     public static final int TRANSACTION_SERIALIZABLE = Connection.TRANSACTION_SERIALIZABLE;
 
-    /**The names of the TopLink SDK XML Support JAR files*/
-    public static java.lang.String[] xmlParserJARFileNames;
 
     /** Stores the value for the number of time TopLink will attempt to reconnect the connection on a comm failure
      *  in the case TopLink is attempting to retry a query.  TopLink will retry a read query outside of a transaction
-     *  if TopLink can determine that a communication error occured with the database.  
+     *  if TopLink can determine that a communication error occurred with the database.  
      */
     protected int queryRetryAttemptCount;
     
     /** Stores the number of milliseconds that TopLink will wait between attempts to reconnect a DatabaseConnection
      *  in the case TopLink is attempting to retry a query.  TopLink will retry a read query outside of a transaction
-     *  if TopLink can determine that a communication error occured with the database.
+     *  if TopLink can determine that a communication error occurred with the database.
      */
     protected int delayBetweenConnectionAttempts;
     
@@ -113,7 +109,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * Set the database platform to be custom platform.
      */
     public void usePlatform(DatabasePlatform platform) {
-        super.usePlatform((Platform)platform);
+        super.usePlatform(platform);
     }
 
     /**
@@ -479,14 +475,6 @@ public class DatabaseLogin extends DatasourceLogin {
      */
     public boolean getUsesStringBinding() {
         return getPlatform().usesStringBinding();
-    }
-
-    /**
-     * ADVANCED:
-     * Return the names of the TopLink SDK XML Support JAR files
-     */
-    public static String[] getXMLParserJARFileNames() {
-        return xmlParserJARFileNames;
     }
 
     /**
@@ -957,19 +945,6 @@ public class DatabaseLogin extends DatasourceLogin {
      */
     public void setUsesStringBinding(boolean usesStringBindingSize) {
         getPlatform().setUsesStringBinding(usesStringBindingSize);
-    }
-
-    /**
-     * ADVANCED:
-     * Specify the names of the TopLink SDK XML Support JAR files.
-     * This must be used if the application needs different version of
-     * the various public XML packages (e.g. org.w3c.dom, org.xml.sax, org.apache.xerces)
-     * than those used by TopLink.
-     * Example:
-     *         DatabaseLogin.setXMLParserJARFileNames(new String[] {"xerces.jar", "TopLinkXerces.jar"});
-     */
-    public static void setXMLParserJARFileNames(String[] jarFileNames) {
-        xmlParserJARFileNames = jarFileNames;
     }
 
     /**

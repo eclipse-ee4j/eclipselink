@@ -18,7 +18,7 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
  * an object.
  * <p>
  * <b>Description</b>: Collections must be compared to each other and added and removed objects must
- * be recorded seperately.
+ * be recorded separately.
  */
 public class DirectCollectionChangeRecord extends DeferrableChangeRecord implements org.eclipse.persistence.sessions.changesets.DirectCollectionChangeRecord {
     protected HashMap addObjectMap;
@@ -33,7 +33,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
     public static final NULL Null = new NULL();
 
     /**
-     * This defaul constructor is reference internally by SDK XML project to mapp this class
+     * This default constructor.
      */
     public DirectCollectionChangeRecord() {
         super();
@@ -194,16 +194,6 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
     }
 
     /**
-     * This method sets the list of added objects.  It should only be used in SDK RCM.
-     */
-    public void setAddObjectList(Vector list){
-        for (Iterator iterator = list.iterator(); iterator.hasNext();){
-            Object object = iterator.next();
-            this.addAdditionChange(object, new Integer(1));
-        }
-    }
-
-    /**
      * This method returns the collection of objects that were added to the collection.
      */
     public HashMap getAddObjectMap() {
@@ -238,16 +228,6 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
             }
         }
         return vector;
-    }
-
-    /**
-     * This method sets the list of added objects.  It should only be used in SDK RCM.
-     */
-    public void setRemoveObjectList(Vector list){
-        for (Iterator iterator = list.iterator(); iterator.hasNext();){
-            Object object = iterator.next();
-            this.addRemoveChange(object, new Integer(1));
-        }
     }
 
     /**

@@ -18,16 +18,14 @@ public class AggregateChangeRecord extends ChangeRecord implements org.eclipse.p
     protected org.eclipse.persistence.sessions.changesets.ObjectChangeSet changedObject;
 
     /**
-     * This default constructor is reference internally by SDK XML project to mapp this class
+     * This default constructor.
      */
     public AggregateChangeRecord() {
         super();
     }
 
     /**
-     * This constructor returns an ChangeRecord representing.
-     * an AggregateMapping.
-     * @param owner prototype.changeset.ObjectChangeSet represents the changeSet that uses this record
+     * This constructor returns an ChangeRecord representing an AggregateMapping.
      */
     public AggregateChangeRecord(ObjectChangeSet owner) {
         this.owner = owner;
@@ -36,7 +34,6 @@ public class AggregateChangeRecord extends ChangeRecord implements org.eclipse.p
     /**
      * ADVANCED:
      * This method is used to return the ObjectChangeSet representing the changed Aggregate.
-     * @return prototype.changeset.ObjectChanges
      */
     public org.eclipse.persistence.sessions.changesets.ObjectChangeSet getChangedObject() {
         return changedObject;
@@ -77,8 +74,7 @@ public class AggregateChangeRecord extends ChangeRecord implements org.eclipse.p
 
     /**
      * INTERNAL:
-     * This method is used to set the changed value or values
-     * @param newValue prototype.changeset.ObjectChanges
+     * This method is used to set the changed value or values.
      */
     public void setChangedObject(org.eclipse.persistence.sessions.changesets.ObjectChangeSet newValue) {
         changedObject = newValue;

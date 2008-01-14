@@ -11,7 +11,6 @@ package org.eclipse.persistence.sessions.coordination;
 
 import org.eclipse.persistence.exceptions.CommunicationException;
 import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.internal.helper.Helper;
 
 /**
  * <p>
@@ -78,22 +77,5 @@ public class MergeChangeSetCommand extends Command {
 
         // Do the main merge
         manager.mergeChangesFromChangeSet(getChangeSet());
-    }
-
-    /**
-     * INTERNAL:
-     * This method is used by SDK project to convert this command to XML
-     */
-    public String getIdForSDK() {
-        // Use class name as identifier since there is always one command is process with an empty cache at a time
-        return Helper.getShortClassName(this.getClass());
-    }
-
-    /**
-     * INTERNAL:
-     * This method is used by SDK project to convert this command to XML
-     */
-    public void setIdForSDK(String id) {
-        // No operation - getter awlays returns the class name
     }
 }

@@ -61,11 +61,12 @@ public class CacheStatementBatchWritingTest extends TransactionalTestCase {
         //get statement
         PreparedStatement statement = null;
         java.util.Hashtable statementCache = null;
+        String sql = getSession().getDescriptor(Address.class).getQueryManager().getInsertQuery().getSQLString();
         try {
             Method method = uow.getParent().getAccessor().getClass().getDeclaredMethod("getStatementCache", new Class[] { });
             method.setAccessible(true);
             statementCache = (java.util.Hashtable)method.invoke((DatabaseAccessor)uow.getParent().getAccessor(), new Object[] { });
-            statement =  (PreparedStatement)statementCache.get("INSERT INTO ADDRESS (ADDRESS_ID, P_CODE, COUNTRY, PROVINCE, CITY, STREET) VALUES (?, ?, ?, ?, ?, ?)");
+            statement =  (PreparedStatement)statementCache.get(sql);
         } catch (Exception ex) {
             throw new TestErrorException("Failed to run test. Check java.policy file \"SupressAccessChecks\" perission required :" + 
                                          ex.toString());
@@ -85,11 +86,13 @@ public class CacheStatementBatchWritingTest extends TransactionalTestCase {
         }
         try {
             uow.commit();
+            //a little hack to force the remaining SQL to go to the Database
+            ((DatabaseAccessor)uow.getParent().getAccessor()).getActiveBatchWritingMechanism().executeBatchedStatements(uow.getParent());
         } catch (Exception ex) {
             return; // if the exception is thrown then TopLink is caching correctly
         } finally {
             //removed the closed connection
-            statementCache.remove("INSERT INTO ADDRESS (ADDRESS_ID, P_CODE, COUNTRY, PROVINCE, CITY, STREET) VALUES (?, ?, ?, ?, ?, ?)");
+            statementCache.remove(sql);
         }
         throw new TestErrorException("Statements were not cached correctly");
     }

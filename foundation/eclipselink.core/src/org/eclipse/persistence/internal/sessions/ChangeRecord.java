@@ -16,9 +16,6 @@ import java.io.Serializable;
  * <p>
  * <b>Purpose</b>: This class was designed as a superclass to all possible Change Record types.
  * These Change Records holds the changes made to the objects
- * <p>
- *
- * @see KnownSubclasses prototype.changeset.CollectionChangeRecord,prototype.changeset.DirectToFieldChangeRecord,prototype.changeset.SingleObjectChangeRecord
  */
 public abstract class ChangeRecord implements Serializable, org.eclipse.persistence.sessions.changesets.ChangeRecord {
 
@@ -28,7 +25,7 @@ public abstract class ChangeRecord implements Serializable, org.eclipse.persiste
     protected String attribute;
 
     /**
-     * This attribute stores the mapping allong with the attribute so that the mapping does not need to be looked up
+     * This attribute stores the mapping along with the attribute so that the mapping does not need to be looked up
      */
     protected transient DatabaseMapping mapping;
 
@@ -38,7 +35,7 @@ public abstract class ChangeRecord implements Serializable, org.eclipse.persiste
     /**
      * ADVANCED:
      * Returns the name of the attribute this ChangeRecord Represents
-     * @return java.lang.String
+     * @return String
      */
     public String getAttribute() {
         return attribute;
@@ -52,13 +49,8 @@ public abstract class ChangeRecord implements Serializable, org.eclipse.persiste
         return mapping;
     }
 
-    /**
-     * Insert the method's description here.
-     * Creation date: (5/30/00 3:42:14 PM)
-     * @return prototype.changeset.ObjectChangeSet
-     */
     public org.eclipse.persistence.sessions.changesets.ObjectChangeSet getOwner() {
-        return (org.eclipse.persistence.sessions.changesets.ObjectChangeSet)owner;
+        return owner;
     }
 
     /**
@@ -77,8 +69,7 @@ public abstract class ChangeRecord implements Serializable, org.eclipse.persiste
     }
 
     /**
-     * Sets the name of the attribute that this Record represents
-     * @param newValue java.lang.String
+     * Sets the name of the attribute that this Record represents.
      */
     public void setAttribute(String newValue) {
         this.attribute = newValue;
@@ -93,8 +84,8 @@ public abstract class ChangeRecord implements Serializable, org.eclipse.persiste
 
     /**
      * INTERNAL:
-     * This method is used to set the ObjectChangeSet that uses this Record in that Record
-     * @param newOwner prototype.changeset.ObjectChangeSet The changeSet that uses this record
+     * This method is used to set the ObjectChangeSet that uses this Record in that Record.
+     * @param ObjectChangeSet The changeSet that uses this record.
      */
     public void setOwner(ObjectChangeSet newOwner) {
         owner = newOwner;

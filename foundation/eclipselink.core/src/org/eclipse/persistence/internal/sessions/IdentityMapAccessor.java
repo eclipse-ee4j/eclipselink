@@ -11,7 +11,6 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
 import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -329,7 +328,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the identity with the primary and class.
      */
     public Object getFromIdentityMap(Record rowContainingPrimaryKey, Class theClass) {
-        return getFromIdentityMap(extractPrimaryKeyFromRow((AbstractRecord)rowContainingPrimaryKey, theClass), theClass);
+        return getFromIdentityMap(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass);
     }
 
     /**
@@ -338,7 +337,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Only return invalidated objects if requested.
      */
     public Object getFromIdentityMap(Record rowContainingPrimaryKey, Class theClass, boolean shouldReturnInvalidatedObjects) {
-        return getFromIdentityMap(extractPrimaryKeyFromRow((AbstractRecord)rowContainingPrimaryKey, theClass), theClass, shouldReturnInvalidatedObjects);
+        return getFromIdentityMap(extractPrimaryKeyFromRow(rowContainingPrimaryKey, theClass), theClass, shouldReturnInvalidatedObjects);
     }
 
     /**
@@ -888,9 +887,9 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * This method will validate that all cached objects are in a correct state.
      */
     public void validateCache() {
-        //pass certain calls to this in order to allow subclasses to implement own behaviour
+        //pass certain calls to this in order to allow subclasses to implement own behavior
         getSession().log(SessionLog.FINER, SessionLog.CACHE, "validate_cache");
-        // This define an inner class for process the itteration operation, don't be scared, its just an inner class.
+        // This define an inner class for process the iteration operation, don't be scared, its just an inner class.
         DescriptorIterator iterator = new DescriptorIterator() {
             public void iterate(Object object) {
                 if (!containsObjectInIdentityMap(IdentityMapAccessor.this.session.getDescriptor(object.getClass()).getObjectBuilder().extractPrimaryKeyFromObject(object, IdentityMapAccessor.this.getSession()), object.getClass())) {

@@ -9,11 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.Enumeration;
-import java.util.Vector;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.mappings.Association;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.sessions.Record;
 
 /**
@@ -25,7 +21,7 @@ public class TransformationMappingChangeRecord extends ChangeRecord implements o
     protected AbstractRecord rowCollection;
 
     /**
-     * This default constructor is reference internally by SDK XML project to mapp this class
+     * This default constructor.
      */
     public TransformationMappingChangeRecord() {
         super();
@@ -42,8 +38,7 @@ public class TransformationMappingChangeRecord extends ChangeRecord implements o
 
     /**
      * ADVANCED:
-     * This method is used to access the changes of the fields in a trnasformation mapping.
-     * @return org.eclipse.persistence.sessions.Record
+     * This method is used to access the changes of the fields in a transformation mapping.
      */
     public Record getRecord() {
         if (rowCollection == null) {
@@ -67,47 +62,6 @@ public class TransformationMappingChangeRecord extends ChangeRecord implements o
      */
     public void setRow(AbstractRecord record) {
         this.rowCollection = record;
-    }
-
-    /**
-     *  INTERNAL:
-     *  Use by SDK XML project to mapp TransformationMappingChangeRecord
-     *  Return collection of Assocition where key is the field name an value is the value of the coresponding field name
-     */
-    public Vector getAssociationsFromRow() {
-        Vector associations = new Vector();
-
-        for (Enumeration enumtr = ((AbstractRecord)getRecord()).getFields().elements(); enumtr.hasMoreElements();) {
-            DatabaseField key = (DatabaseField)enumtr.nextElement();
-            Object value = getRecord().get(key);
-
-            if (!(value == AbstractRecord.noEntry)) {
-                Association anAssociation = new Association();
-                anAssociation.setKey(key.getQualifiedName());
-                anAssociation.setValue(value);
-                associations.add(anAssociation);
-            }
-        }
-
-        if (associations.size() == 0) {
-            return null;
-        }
-        return associations;
-    }
-
-    /**
-     *  INTERNAL:
-     *  Use by SDK XML project to mapp TransformationMappingChangeRecord
-     *  Parse collection of Assocition of field name an value and add them to this database row
-     *  @java.util. Vetor associations
-     */
-    public void setRowFromAssociations(Vector associations) {
-    	AbstractRecord newRow = new DatabaseRecord();
-        for (Enumeration enumtr = associations.elements(); enumtr.hasMoreElements();) {
-            Association association = (Association)enumtr.nextElement();
-            newRow.put((String)association.getKey(), association.getValue());
-        }
-        setRow(newRow);
     }
 
     /**

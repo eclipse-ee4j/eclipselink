@@ -17,14 +17,13 @@ import java.util.*;
  * an object.
  * <p>
  * <b>Description</b>: Collections must be compared to each other and added and removed objects must
- * be recorded seperately.
+ * be recorded separately.
  */
 public class OrderedDirectCollectionChangeRecord extends OrderedCollectionChangeRecord {
 
     /**
      * INTERNAL:
      * This constructor returns a changeRecord representing the DirectCollection mapping
-     * @param owner prototype.changeset.ObjectChangeSet that ObjectChangeSet that uses this record
      */
     public OrderedDirectCollectionChangeRecord(ObjectChangeSet owner) {
         super(owner);

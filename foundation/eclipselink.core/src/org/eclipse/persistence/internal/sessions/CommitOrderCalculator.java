@@ -20,7 +20,7 @@ import java.util.*;
  * This is a throwaway class, which exists only for the lifetime of
  * the calculation.
  *
- * The algorithm is descrbied in the method comment for orderCommits().
+ * The algorithm is described in the method comment for orderCommits().
  * This class also includes static methods for quicksort, copied from
  * the standard libraries and adapted for these objects, since that
  * seemed like the easiest way to sort.
@@ -31,9 +31,6 @@ public class CommitOrderCalculator {
     protected Vector orderedDescriptors;
     protected AbstractSession session;
 
-    /**
-     *
-     */
     public CommitOrderCalculator(AbstractSession session) {
         super();
         this.currentTime = 0;
@@ -53,7 +50,7 @@ public class CommitOrderCalculator {
         }
     }
 
-    /*
+    /**
      * Add to each node the dependent nodes
      */
     public void calculateMappingDependencies() {
@@ -63,7 +60,7 @@ public class CommitOrderCalculator {
         }
     }
 
-    /*
+    /**
      * Add to each node the dependent nodes
      */
     public void calculateSpecifiedDependencies() {
@@ -77,7 +74,7 @@ public class CommitOrderCalculator {
 
         /*
          * Traverse the entire graph in breadth-first order. When finished, every node will have a
-         * predecessor which indicates the node that came efore it in the search
+         * predecessor which indicates the node that came before it in the search
          * It will also have a discovery time (the value of the counter when we first saw it) and
          * finishingTime (the value of the counter after we've visited all the adjacent nodes).
          * See Cormen, Leiserson and Rivest, Section 23.3, page 477 for a full explanation of the algorithm
@@ -119,25 +116,6 @@ public class CommitOrderCalculator {
         }
     }
 
-    /* Support for quicksort */
-    /*
-     * Implement the doCompare method.
-     */
-    private static int doCompare(CommitOrderDependencyNode o1, CommitOrderDependencyNode o2) {
-        // I don't care if they're equal, and I want to sort largest first.
-        int first;
-
-        // I don't care if they're equal, and I want to sort largest first.
-        int second;
-        first = o1.getFinishingTime();
-        second = o2.getFinishingTime();
-        if (first >= second) {
-            return 1;
-        } else {
-            return -1;
-        }
-    }
-
     public int getNextTime() {
         int result = currentTime;
         currentTime++;
@@ -148,7 +126,7 @@ public class CommitOrderCalculator {
         return nodes;
     }
 
-    /*
+    /**
      * Return the constraint ordered classes.
      */
     public Vector getOrderedClasses() {
@@ -161,7 +139,7 @@ public class CommitOrderCalculator {
         return orderedClasses;
     }
 
-    /*
+    /**
      * Return the constraint ordered descriptors.
      */
     public Vector getOrderedDescriptors() {
@@ -188,7 +166,7 @@ public class CommitOrderCalculator {
         return null;
     }
 
-    /*
+    /**
      * Calculate the commit order.
      * Do a depth first search on the graph, skipping nodes that we have
      * already visited or are in the process of visiting. Keep a counter
@@ -210,14 +188,14 @@ public class CommitOrderCalculator {
         this.orderedDescriptors = result;
     }
 
-    /*
+    /**
      * Preform a sort using the specified comparitor object.
      */
     private static void quicksort(Object[] arr) {
         quicksort(arr, 0, arr.length - 1);
     }
 
-    /*
+    /**
      * quicksort the array of objects.
      *
      * @param arr[] - an array of objects

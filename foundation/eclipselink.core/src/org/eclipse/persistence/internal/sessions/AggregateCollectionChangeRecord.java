@@ -20,7 +20,7 @@ public class AggregateCollectionChangeRecord extends ChangeRecord implements org
     protected Vector changedValues;
 
     /**
-     * This default constructor referenced internally by SDK XML project
+     * This default constructor.
      */
     public AggregateCollectionChangeRecord() {
         super();
@@ -38,7 +38,6 @@ public class AggregateCollectionChangeRecord extends ChangeRecord implements org
     /**
      * ADVANCED:
      * Return the values representing the changed AggregateCollection.
-     * @return prototype.changeset.ObjectChanges
      */
     public Vector getChangedValues() {
         if (changedValues == null) {
@@ -72,11 +71,11 @@ public class AggregateCollectionChangeRecord extends ChangeRecord implements org
         Enumeration changes = getChangedValues().elements();
         while (changes.hasMoreElements()) {
             ObjectChangeSet changedObject = (ObjectChangeSet)changes.nextElement();
-            if (((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changedObject).getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
+            if (changedObject.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
                 ClassDescriptor descriptor = session.getDescriptor(changedObject.getClassType(session));
                 int syncType = descriptor.getCacheSynchronizationType();
-                ((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changedObject).setSynchronizationType(syncType);
-                ((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changedObject).prepareChangeRecordsForSynchronization(session);
+                changedObject.setSynchronizationType(syncType);
+                changedObject.prepareChangeRecordsForSynchronization(session);
             }
         }
     }

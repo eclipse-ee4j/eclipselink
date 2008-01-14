@@ -15,7 +15,7 @@ import java.util.Vector;
 public class AggregateObjectChangeSet extends ObjectChangeSet {
 
     /**
-     * The default constructor is used only by SDK XML project for mapping ObjectChangeSet
+     * The default constructor.
      */
     public AggregateObjectChangeSet() {
         super();

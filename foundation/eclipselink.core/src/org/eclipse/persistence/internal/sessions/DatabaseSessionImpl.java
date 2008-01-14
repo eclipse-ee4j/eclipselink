@@ -203,9 +203,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * Add the descriptors to the session.
      * All persistent classes must have a descriptor registered for them with the session.
      * This method allows for a batch of descriptors to be added at once so that TopLink
-     * can resolve the dependancies between the descriptors and perform initialization optimially.
+     * can resolve the dependencies between the descriptors and perform initialization optimally.
      */
-    public void addDescriptors(Vector descriptors) {
+    public void addDescriptors(Collection descriptors) {
         // Reset cached data, as may be invalid later on.
         this.lastDescriptorAccessed = null;
 
@@ -476,19 +476,18 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
     /**
      * INTERNAL:
-     * Allow each descriptor to initialize any dependancies on this session.
-     * This is done in two passes to allow the inheritence to be resolved first.
+     * Allow each descriptor to initialize any dependencies on this session.
+     * This is done in two passes to allow the inheritance to be resolved first.
      * Normally the descriptors are added before login, then initialized on login.
      * The descriptors session must be used, not the broker.
      */
-    public void initializeDescriptors(Vector descriptors) {
+    public void initializeDescriptors(Collection descriptors) {
         initializeSequencing();
         try {
             // First initialize basic properties (things that do not depend on anything else)
-            for (Enumeration descriptorEnum = descriptors.elements();
-                     descriptorEnum.hasMoreElements();) {
+            for (Iterator descriptorEnum = descriptors.iterator(); descriptorEnum.hasNext();) {
                 try {
-                    ClassDescriptor descriptor = (ClassDescriptor)descriptorEnum.nextElement();
+                    ClassDescriptor descriptor = (ClassDescriptor)descriptorEnum.next();
                     AbstractSession session = getSessionForClass(descriptor.getJavaClass());
                     if (descriptor.requiresInitialization()) {
                         descriptor.preInitialize(session);
@@ -504,10 +503,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             }
 
             // Second basic initialize mappings
-            for (Enumeration descriptorEnum = descriptors.elements();
-                     descriptorEnum.hasMoreElements();) {
+            for (Iterator descriptorEnum = descriptors.iterator(); descriptorEnum.hasNext();) {
                 try {
-                    ClassDescriptor descriptor = (ClassDescriptor)descriptorEnum.nextElement();
+                    ClassDescriptor descriptor = (ClassDescriptor)descriptorEnum.next();
                     AbstractSession session = getSessionForClass(descriptor.getJavaClass());
                     if (descriptor.requiresInitialization()) {
                         descriptor.initialize(session);
@@ -518,10 +516,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             }
 
             // Third initialize child dependencies
-            for (Enumeration descriptorEnum = descriptors.elements();
-                     descriptorEnum.hasMoreElements();) {
+            for (Iterator descriptorEnum = descriptors.iterator(); descriptorEnum.hasNext();) {
                 try {
-                    ClassDescriptor descriptor = (ClassDescriptor)descriptorEnum.nextElement();
+                    ClassDescriptor descriptor = (ClassDescriptor)descriptorEnum.next();
                     AbstractSession session = getSessionForClass(descriptor.getJavaClass());
                     if (descriptor.requiresInitialization()) {
                         descriptor.postInitialize(session);

@@ -19,7 +19,7 @@ import org.eclipse.persistence.internal.helper.IdentityHashtable;
  * an object.
  * <p>
  * <b>Description</b>: Collections must be compared to each other and added and removed objects must
- * be recorded seperately.
+ * be recorded separately.
  */
 public class CollectionChangeRecord extends DeferrableChangeRecord implements org.eclipse.persistence.sessions.changesets.CollectionChangeRecord {
 
@@ -50,7 +50,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     
     /**
      * Contains a list of extra adds.  These extra adds are used by attribute change tracking
-     * to replicate behaviour when someone adds the same object to a list and removes it once.
+     * to replicate behavior when someone adds the same object to a list and removes it once.
      * In this case the object should still appear once in the change set.
      */
      protected transient List addOverFlow;
@@ -59,16 +59,6 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * Contains the removed values from the collection and their corresponding ChangeSets.
      */
     protected IdentityHashtable removeObjectList;
-
-    /**
-     * Contain the same added values as in addObjectList.  It is only used by SDK mapping of this change record.
-     */
-    protected transient Vector sdkAddObjects;
-
-    /**
-     * Contain the same added values as in addObjectList.  It is only used by SDK mapping of this change record.
-     */
-    protected transient Vector sdkRemoveObjects;
         
     /**
      * This default constructor.
@@ -122,7 +112,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
             ObjectChangeSet change = session.getDescriptor(object.getClass()).getObjectBuilder().createObjectChangeSet(object, changeSet, session);
             
             getOrderedAddObjects().add(change);
-            getOrderedAddObjectIndices().put(change, (Integer) objectChangesIndices.get(object));
+            getOrderedAddObjectIndices().put(change, objectChangesIndices.get(object));
         }
     }
     
@@ -370,68 +360,6 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
         
         setAddObjectList(addList);
         setRemoveObjectList(removeList);
-    }
-
-    /**
-     * This method used by SDK mapping that only supports Collection type not IdentityHashtable.
-     * This method is mapped in org.eclipse.persistence.internal.sessions.coordination.CommandProject.
-     */
-    public Vector getAddObjectsForSDK() {
-        if (sdkAddObjects == null) {
-            sdkAddObjects = new Vector();
-
-            for (Enumeration enumtr = this.getAddObjectList().keys(); enumtr.hasMoreElements();) {
-                sdkAddObjects.add(enumtr.nextElement());
-            }
-        }
-        return sdkAddObjects;
-    }
-
-    /**
-     * This method used by SDK mapping that only supports Collection type not IdentityHashtable.
-     * This method is mapped in org.eclipse.persistence.internal.sessions.coordination.CommandProject.
-     */
-    public void setAddObjectsForSDK(Vector addObjects) {
-        sdkAddObjects = addObjects;
-
-        // build the equivalent addObjectList
-        IdentityHashtable newList = new IdentityHashtable();
-        for (int i = 0; i < sdkAddObjects.size(); i++) {
-            Object change = sdkAddObjects.elementAt(i);
-            newList.put(change, change);
-        }
-        this.setAddObjectList(newList);
-    }
-
-    /**
-     * This method used by SDK mapping that only supports Collection type not IdentityHashtable.
-     * This method is mapped in org.eclipse.persistence.internal.sessions.coordination.CommandProject.
-     */
-    public Vector getRemoveObjectsForSDK() {
-        if (sdkRemoveObjects == null) {
-            sdkRemoveObjects = new Vector();
-
-            for (Enumeration enumtr = this.getRemoveObjectList().keys(); enumtr.hasMoreElements();) {
-                sdkRemoveObjects.add(enumtr.nextElement());
-            }
-        }
-        return sdkRemoveObjects;
-    }
-
-    /**
-     * This method used by SDK mapping that only supports Collection type not IdentityHashtable.
-     * This method is mapped in org.eclipse.persistence.internal.sessions.coordination.CommandProject.
-     */
-    public void setRemoveObjectsForSDK(Vector removeObjects) {
-        sdkRemoveObjects = removeObjects;
-
-        // build the equivalent removeObjectList
-        IdentityHashtable newList = new IdentityHashtable();
-        for (int i = 0; i < sdkRemoveObjects.size(); i++) {
-            Object change = sdkRemoveObjects.elementAt(i);
-            newList.put(change, change);
-        }
-        this.setRemoveObjectList(newList);
     }
     
     /**

@@ -198,11 +198,11 @@ public class Project implements Serializable, Cloneable {
      * Add the descriptors to the session.
      * All persistent classes must have a descriptor registered for them with the session.
      * This method allows for a batch of descriptors to be added at once so that TopLink
-     * can resolve the dependancies between the descriptors and perform initialization optimally.
+     * can resolve the dependencies between the descriptors and perform initialization optimally.
      */
-    public void addDescriptors(Vector descriptors, DatabaseSessionImpl session) {
-        for (Enumeration enumeration = descriptors.elements(); enumeration.hasMoreElements();) {
-            ClassDescriptor descriptor = (ClassDescriptor)enumeration.nextElement();
+    public void addDescriptors(Collection descriptors, DatabaseSessionImpl session) {
+        for (Iterator enumeration = descriptors.iterator(); enumeration.hasNext();) {
+            ClassDescriptor descriptor = (ClassDescriptor)enumeration.next();
             getDescriptors().put(descriptor.getJavaClass(), descriptor);
             String alias = descriptor.getAlias();
             if (alias != null) {
@@ -443,7 +443,7 @@ public class Project implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * Set the descriptors order.
-     * Used to maitain consistent order in XML.
+     * Used to maintain consistent order in XML.
      */
     public void setOrderedDescriptors(Vector orderedDescriptors) {
         this.orderedDescriptors = orderedDescriptors;
@@ -509,8 +509,8 @@ public class Project implements Serializable, Cloneable {
      * PUBLIC:
      * Set the read-only classes which apply to each UnitOfWork create by default.
      */
-    public void setDefaultReadOnlyClasses(Vector newValue) {
-        this.defaultReadOnlyClasses = (Vector)newValue.clone();
+    public void setDefaultReadOnlyClasses(Collection newValue) {
+        this.defaultReadOnlyClasses = new Vector(newValue);
     }
 
     /**

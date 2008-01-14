@@ -147,7 +147,7 @@ public interface Session {
     /**
      * PUBLIC:
      * Return a complete copy of the object.
-     * This can be used to obtain a scatch copy of an object,
+     * This can be used to obtain a scratch copy of an object,
      * or for templatizing an existing object into another new object.
      * The object copying policy allow for the depth, and reseting of the primary key to null, to be specified.
      */
@@ -243,7 +243,7 @@ public interface Session {
      *
      * @see org.eclipse.persistence.descriptors.DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
-    public Object executeQuery(String queryName, Class domainClass, Vector argumentValues);
+    public Object executeQuery(String queryName, Class domainClass, List argumentValues);
 
     /**
      * PUBLIC:
@@ -279,12 +279,12 @@ public interface Session {
      *
      * @see #addQuery(String, DatabaseQuery)
      */
-    public Object executeQuery(String queryName, Vector argumentValues);
+    public Object executeQuery(String queryName, List argumentValues);
 
     /**
      * PUBLIC:
      * Execute the database query.
-     * A query is a database operation such as reading or writting.
+     * A query is a database operation such as reading or writing.
      * The query allows for the operation to be customized for such things as,
      * performance, depth, caching, etc.
      *
@@ -294,10 +294,10 @@ public interface Session {
 
     /**
      * PUBLIC:
-     * Return the results from exeucting the database query.
+     * Return the results from executing the database query.
      * the arguments are passed in as a vector
      */
-    public Object executeQuery(DatabaseQuery query, Vector argumentValues);
+    public Object executeQuery(DatabaseQuery query, List argumentValues);
 
     /**
      * PUBLIC:
@@ -316,9 +316,9 @@ public interface Session {
      * PUBLIC:
      * Execute the selecting SQL string.
      * A Vector of DatabaseRecords are returned.
-	 * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
-	 */
+     * Warning: Allowing an unverified SQL string to be passed into this 
+     * method makes your application vulnerable to SQL injection attacks. 
+     */
     public Vector executeSQL(String sqlString);
 
     /**
@@ -372,7 +372,7 @@ public interface Session {
      * ADVANCED:
      * Return the descriptor specified for the class.
      * If the class does not have a descriptor but implements an interface that is also implemented
-     * by one of the classes stored in the hashtable, that descriptor will be stored under the
+     * by one of the classes stored in the map, that descriptor will be stored under the
      * new class.
      */
     public ClassDescriptor getDescriptor(Class theClass);
@@ -419,7 +419,7 @@ public interface Session {
     /**
      * PUBLIC:
      * Used for JTS integration.  If your application requires to have JTS control transactions instead of TopLink an
-     * external transaction controler must be specified.  TopLink provides JTS controlers for JTS 1.0 and Weblogic's JTS.
+     * external transaction controller must be specified.  TopLink provides JTS controllers for JTS 1.0 and Weblogic's JTS.
      * @see org.eclipse.persistence.transaction.JTATransactionController
      */
     public ExternalTransactionController getExternalTransactionController();
@@ -427,7 +427,7 @@ public interface Session {
 
     /**
      * PUBLIC:
-     * The IdentityMapAccessor is the preferred way of accessing IdentityMap funcitons
+     * The IdentityMapAccessor is the preferred way of accessing IdentityMap functions
      * This will return an object which implements an interface which exposes all public
      * IdentityMap functions.
      */
@@ -452,7 +452,7 @@ public interface Session {
     /**
      * PUBLIC:
      * Return the database platform currently connected to.
-     * The platform is used for database specific behavoir.
+     * The platform is used for database specific behavior.
      * NOTE: this must only be used for relational specific usage,
      * it will fail for non-relational datasources.
      */
@@ -461,7 +461,7 @@ public interface Session {
     /**
      * PUBLIC:
      * Return the database platform currently connected to.
-     * The platform is used for database specific behavoir.
+     * The platform is used for database specific behavior.
      */
     public Platform getDatasourcePlatform();
         
@@ -489,7 +489,7 @@ public interface Session {
 
     /**
      * ADVANCED:
-     * Return the sequnce number from the database
+     * Return the sequence number from the database.
      */
     public Number getNextSequenceNumberValue(Class domainClass);
 
@@ -538,7 +538,7 @@ public interface Session {
      * Return the query from the session pre-defined queries with the given name.
      * This allows for common queries to be pre-defined, reused and executed by name.
      */
-    public DatabaseQuery getQuery(String name, Vector arguments);
+    public DatabaseQuery getQuery(String name, List arguments);
 
     /**
      * PUBLIC:
@@ -580,7 +580,7 @@ public interface Session {
     /**
      * PUBLIC:
      * Used for JTS integration.  If your application requires to have JTS control transactions instead of TopLink an
-     * external transaction controler must be specified.  TopLink provides JTS controlers for JTS 1.0 and Weblogic's JTS.
+     * external transaction controller must be specified.  TopLink provides JTS controllers for JTS 1.0 and Weblogic's JTS.
      * @see org.eclipse.persistence.transaction.JTATransactionController
      */
     public boolean hasExternalTransactionController();
@@ -706,7 +706,7 @@ public interface Session {
      * of the specified Class exists in the cache. Executing a query with
      * selection criteria allows you to avoid a database access if the selected
      * instance is in the cache.
-     * Because of this, you may whish to consider a readObject method that takes selection criteria, such as: {@link #readObject(Class, Call)}, {@link #readObject(Class, Expression)}, or {@link #readObject(Object)}.
+     * Because of this, you may wish to consider a readObject method that takes selection criteria, such as: {@link #readObject(Class, Call)}, {@link #readObject(Class, Expression)}, or {@link #readObject(Object)}.
      * @see ReadObjectQuery
      * @see #readAllObjects(Class, Expression)
      */
@@ -734,7 +734,7 @@ public interface Session {
 
     /**
      * PUBLIC:
-     * Use the example object to consruct a read object query by the objects primary key.
+     * Use the example object to construct a read object query by the objects primary key.
      * This will read the object from the database with the same primary key as the object
      * or null if no object is found.
      */
@@ -744,7 +744,7 @@ public interface Session {
      * PUBLIC:
      * Refresh the attributes of the object and of all of its private parts from the database.
      * This can be used to ensure the object is up to date with the database.
-     * Caution should be used when using this to make sure the application has no un commited
+     * Caution should be used when using this to make sure the application has no uncommitted
      * changes to the object.
      */
     public Object refreshObject(Object object);
@@ -875,7 +875,7 @@ public interface Session {
     /**
      * PUBLIC:
      * Set the log level. 
-	 * <br>Possible values for log level are listed in SessionLog.
+     * <br>Possible values for log level are listed in SessionLog.
      * @see org.eclipse.persistence.sessions.SessionLog
      */
     public void setLogLevel(int level);
@@ -896,7 +896,7 @@ public interface Session {
     
     /**
      * PUBLIC:
-     * Return if this session's decendants should use finalizers.
+     * Return if this session's decendents should use finalizers.
      * The allows certain finalizers such as in ClientSesion to be enabled.
      * These are disable by default for performance reasons.
      */
@@ -904,7 +904,7 @@ public interface Session {
     
     /**
      * PUBLIC:
-     * Set if this session's decendants should use finalizers.
+     * Set if this session's decendents should use finalizers.
      * The allows certain finalizers such as in ClientSesion to be enabled.
      * These are disable by default for performance reasons.
      */

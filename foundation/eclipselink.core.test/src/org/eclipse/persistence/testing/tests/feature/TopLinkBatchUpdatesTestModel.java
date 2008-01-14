@@ -39,6 +39,7 @@ public class TopLinkBatchUpdatesTestModel extends TestModel {
             platform.setUsesBatchWriting(true);
             //Test TopLink batch Writing
             platform.setUsesJDBCBatchWriting(false);
+            platform.setMaxBatchWritingSize(3200);
             // Note: Batch writing does work in Oracle now, as of 9.0.1.
             getSession().getLogin().dontBindAllParameters();
         } else {

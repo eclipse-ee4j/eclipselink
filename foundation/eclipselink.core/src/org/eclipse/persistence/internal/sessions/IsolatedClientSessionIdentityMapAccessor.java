@@ -19,7 +19,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.helper.WriteLockManager;
-import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 
 /**
  * INTERNAL:
@@ -420,7 +419,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
     * By write, unit of work merge is meant.
     */
     public void releaseWriteLock() {
-        //release in the oposite order of the acquire
+        //release in the opposite order of the acquire
         ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().releaseWriteLock();
         getIdentityMapManager().releaseWriteLock();
     }

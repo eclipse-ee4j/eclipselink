@@ -16,13 +16,12 @@ import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.queries.*;
 
 /**
  * INTERNAL:
  * IdentityMapAccessor subclass for UnitOfWork
- * Overrides some initialization functionality and some behavoir having to do with
+ * Overrides some initialization functionality and some behavior having to do with
  * getting objects from identity maps.
  */
 public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
@@ -84,7 +83,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
 
     /**
      * INTERNAL:
-     * Overide the getFromIdentityMapWithDeferredLock method on the session to ensure that
+     * Override the getFromIdentityMapWithDeferredLock method on the session to ensure that
      * invalidated objects are always returned since this is a UnitOfWork
      */
     public Object getFromIdentityMapWithDeferredLock(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {

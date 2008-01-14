@@ -10,11 +10,10 @@
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
-import org.eclipse.persistence.mappings.Association;
 
 /**
  * Change record used by DirectMapMapping.
- * Only needs to track unqiue keys added/removed.
+ * Only needs to track unique keys added/removed.
  */
 public class DirectMapChangeRecord extends DeferrableChangeRecord {
     protected HashMap addObjectsList;
@@ -29,28 +28,7 @@ public class DirectMapChangeRecord extends DeferrableChangeRecord {
     }
 
     /**
-     * Use in SDK propject for the mapping of this change record.
-     */
-    public Vector getAddAssociations() {
-        Vector addAssociations = new Vector();
-
-        for (Iterator i = getAddObjects().keySet().iterator(); i.hasNext(); ) {
-            Association association = new Association();
-            Object key = i.next();
-            Object value = getAddObjects().get(key);
-
-            association.setKey(key);
-            association.setValue(value);
-            addAssociations.add(association);
-        }
-        if (addAssociations.size() == 0) {
-            return null;
-        }
-        return addAssociations;
-    }
-
-    /**
-     * Rreturns true if the change set has changes.
+     * Returns true if the change set has changes.
      */
     public boolean hasChanges() {
         return (!((this.addObjectsList == null || this.addObjectsList.isEmpty()) && ((this.removeObjectsList == null || this.removeObjectsList.isEmpty())))) || getOwner().isNew();
@@ -85,60 +63,6 @@ public class DirectMapChangeRecord extends DeferrableChangeRecord {
                 }
             }
         }
-    }
-
-    /**
-     * Use in SDK propject for the mapping of this change record.
-     */
-    public void setAddAssociations(Vector addAssociations) {
-        HashMap addMap = new HashMap();
-
-        for (Enumeration enumtr = addAssociations.elements(); enumtr.hasMoreElements();) {
-            Association association = (Association)enumtr.nextElement();
-            addMap.put(association.getKey(), association.getValue());
-        }
-        if (addMap.isEmpty()) {
-            addObjectsList = null;
-        }
-        addObjectsList = addMap;
-    }
-
-    /**
-     * Use in SDK propject for the mapping of this change record.
-     */
-    public Vector getRemoveAssociations() {
-        Vector removeAssociations = new Vector();
-
-        for (Iterator i = getRemoveObjects().keySet().iterator(); i.hasNext(); ) {
-            Association association = new Association();
-            
-            Object key = i.next();
-            Object value = getAddObjects().get(key);
-
-            association.setKey(key);
-            association.setValue(value);
-            removeAssociations.add(association);
-        }
-        if (removeAssociations.size() == 0) {
-            return null;
-        }
-        return removeAssociations;
-    }
-
-    /**
-     * Use in SDK propject for the mapping of this change record.
-     */
-    public void setRemoveAssociations(Vector removeAssociations) {
-        HashMap removeMap = new HashMap();
-
-        for (Enumeration enumtr = removeAssociations.elements(); enumtr.hasMoreElements();) {
-            Association association = (Association)enumtr.nextElement();
-            removeMap.put(association.getKey(), association.getValue());
-        }
-        if (removeMap.isEmpty()) {
-            removeObjectsList = null;
-        }
-        removeObjectsList = removeMap;
     }
 
     /**
