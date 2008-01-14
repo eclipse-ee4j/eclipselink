@@ -9,11 +9,16 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.feature;
 
+import java.util.Comparator;
+import java.util.Arrays;
+
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.Login;
+
+import org.eclipse.persistence.testing.framework.TestCase;
 
 /**
  * This testcase test the thread-safeness of TopLink's sequencing. The type of sequencing specified in the login
@@ -29,7 +34,7 @@ import org.eclipse.persistence.sessions.Login;
  *
  * author: Robert Campbell
  */
-public class SequencingConcurrencyTest extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase implements org.eclipse.persistence.internal.helper.TOPComparison {
+public class SequencingConcurrencyTest extends TestCase implements Comparator {
     public java.util.Vector sequences;
     public SequencingConcurrencyTest[] tests;
     public int nThreads;
@@ -243,7 +248,7 @@ public class SequencingConcurrencyTest extends org.eclipse.persistence.testing.f
         }
         try {
             // sort the array.
-            org.eclipse.persistence.internal.helper.TOPSort.quicksort(big, this);
+            Arrays.sort(big, this);
 
             // Verify that there are no duplicates or gaps in the array.
             java.math.BigDecimal previous = (java.math.BigDecimal)big[0];

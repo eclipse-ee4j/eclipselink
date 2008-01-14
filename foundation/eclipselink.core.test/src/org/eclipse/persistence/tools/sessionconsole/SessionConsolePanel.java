@@ -3606,7 +3606,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                     new ClassInfo((ClassDescriptor)iterator.next(), useFullNames);
             index = index + 1;
         }
-        TOPSort.quicksort(classes, new ClassInfoCompare());
+        Arrays.sort(classes, new ClassInfoCompare());
 
         DefaultListModel list = new DefaultListModel();
         for (index = 0; index < classes.length; index++) {

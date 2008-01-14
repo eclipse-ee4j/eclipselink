@@ -9,17 +9,15 @@
  ******************************************************************************/  
 package org.eclipse.persistence.tools.sessionconsole;
 
+import java.util.Comparator;
+
 import org.eclipse.persistence.internal.helper.*;
 
 /**
  * Use to sort vectors of descriptors.
  */
-public class ClassInfoCompare implements TOPComparison {
+public class ClassInfoCompare implements Comparator {
     public int compare(Object arg1, Object arg2) {
-        return ((ClassInfo)arg1).descriptor.getJavaClass().getName().compareTo(((ClassInfo)arg2).descriptor.getJavaClass().getName());
-    }
-
-    public int doCompare(Object arg1, Object arg2) {
         return ((ClassInfo)arg1).descriptor.getJavaClass().getName().compareTo(((ClassInfo)arg2).descriptor.getJavaClass().getName());
     }
 }
