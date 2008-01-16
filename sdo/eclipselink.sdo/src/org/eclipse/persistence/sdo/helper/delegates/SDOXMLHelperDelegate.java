@@ -10,6 +10,7 @@
 package org.eclipse.persistence.sdo.helper.delegates;
 
 import commonj.sdo.DataObject;
+import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.helper.XMLDocument;
 import java.io.IOException;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.WeakHashMap;
-
+import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import org.eclipse.persistence.sdo.SDOConstants;
@@ -36,6 +37,7 @@ import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOUnmarshalListener;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.exceptions.XMLConversionException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -170,16 +172,24 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         XMLUnmarshaller anXMLUnmarshaller = getXmlUnmarshaller();
         Object unmarshalledObject = null;
         if (options == null) {
-            unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource);
+            try {
+               unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource);
+            } catch(XMLMarshalException xmlException){
+               handleXMLMarshalException(xmlException);               
+            }
         } else {
             try {
                 DataObject optionsDataObject = (DataObject)options;
                 try {
                     SDOType theType = (SDOType)optionsDataObject.get(SDOConstants.TYPE_LOAD_OPTION);
-                    if (theType != null) {
-                        unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource, theType.getImplClass());
-                    }else{
-                        unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource);
+                    try{
+                        if (theType != null) {
+                            unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource, theType.getImplClass());
+                        }else{
+                            unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource);
+                        }
+                    } catch(XMLMarshalException xmlException){
+                        handleXMLMarshalException(xmlException);               
                     }
                 } catch (ClassCastException ccException) {                  
                   throw SDOException.typePropertyMustBeAType(ccException);
@@ -236,16 +246,24 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         XMLUnmarshaller anXMLUnmarshaller = getXmlUnmarshaller();
         Object unmarshalledObject = null;
         if (options == null) {
-            unmarshalledObject = anXMLUnmarshaller.unmarshal(source);
+            try {
+                unmarshalledObject = anXMLUnmarshaller.unmarshal(source);
+            } catch(XMLMarshalException xmlException){
+                handleXMLMarshalException(xmlException);               
+            }
         } else {                     
             try {
                 DataObject optionsDataObject = (DataObject)options;
                 try {
                     SDOType theType = (SDOType)optionsDataObject.get(SDOConstants.TYPE_LOAD_OPTION);
-                    if (theType != null) {
-                        unmarshalledObject = anXMLUnmarshaller.unmarshal(source, theType.getImplClass());
-                    }else{
-                        unmarshalledObject = anXMLUnmarshaller.unmarshal(source);
+                    try{
+                        if (theType != null) {
+                            unmarshalledObject = anXMLUnmarshaller.unmarshal(source, theType.getImplClass());
+                        }else{
+                            unmarshalledObject = anXMLUnmarshaller.unmarshal(source);
+                        }
+                    } catch(XMLMarshalException xmlException){
+                        handleXMLMarshalException(xmlException);               
                     }
                 } catch (ClassCastException ccException) {                  
                   throw SDOException.typePropertyMustBeAType(ccException);
@@ -565,5 +583,13 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
 
     public void setHelperContext(HelperContext helperContext) {
         aHelperContext = helperContext;
+    }
+    
+    private void handleXMLMarshalException(XMLMarshalException xmlException) {    
+        if(xmlException.getErrorCode() == XMLMarshalException.NO_DESCRIPTOR_WITH_MATCHING_ROOT_ELEMENT){
+            throw SDOException.globalPropertyNotFound();                       
+        }else{
+            throw xmlException;
+        }
     }
 }
