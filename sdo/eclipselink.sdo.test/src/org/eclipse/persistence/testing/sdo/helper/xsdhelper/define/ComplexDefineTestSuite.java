@@ -39,6 +39,7 @@ public class ComplexDefineTestSuite {
         suite.addTestSuite(AttributeGroupTestCases.class);  
         suite.addTestSuite(CyclicElementRefTestCases.class);                               
         suite.addTestSuite(CyclicElementRefErrorTestCases.class);                               
+        suite.addTestSuite(LoadFailsAfterDefineFailsTestCases.class);                               
         return suite;
     }
 }
