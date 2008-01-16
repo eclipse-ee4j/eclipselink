@@ -52,7 +52,8 @@ public class SDOExceptionResource extends ListResourceBundle {
                                            { "45032", "An XMLMarshalException occurred for uri [{1}] and local name [{2}].  Exception: [{0}]" },
                                            { "45033", "An error occured generating types. The type with name [{1}] and namespace URI [{0}] is referenced but never defined." },
                                            { "45034", "The value of the options parameter must be a DataObject of Type with uri [{0}] and name [{1}]." },
-                                           { "45035", "The value that corresponds to the 'type' property must be a Type object." }
+                                           { "45035", "The value that corresponds to the 'type' property must be a Type object." },
+                                           { "45036", "A global property corresponding to the XML node being loaded was not found." }                                           
     };
 
     /**

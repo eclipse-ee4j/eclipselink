@@ -65,6 +65,7 @@ public class SDOException extends EclipseLinkException {
     public static final int TYPE_REFERENCED_BUT_NEVER_DEFINED = 45033;
     public static final int OPTIONS_MUST_BE_A_DATAOBJECT = 45034;
     public static final int TYPE_PROPERTY_MUST_BE_A_TYPE = 45035;
+    public static final int GLOBAL_PROPERTY_NOT_FOUND = 45036;
     
     protected SDOException(String message) {
         super(message);
@@ -119,7 +120,18 @@ public class SDOException extends EclipseLinkException {
         exception.setErrorCode(REFERENCED_PROPERTY_NOT_FOUND);
         return exception;
     }
-
+    
+    /**
+     * INTERNAL:
+     * Exception when trying to find a global property during an unmarshal
+     */
+    public static SDOException globalPropertyNotFound() {
+        Object[] args = { };
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, GLOBAL_PROPERTY_NOT_FOUND, args));        
+        exception.setErrorCode(GLOBAL_PROPERTY_NOT_FOUND);
+        return exception;
+    }
+        
     /**
      * INTERNAL:
      * Exception when old sequence is not found in the changesummary
