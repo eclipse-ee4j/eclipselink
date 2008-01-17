@@ -60,6 +60,7 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
         suite.addTest(new TestSuite(LoadAndSavePurchaseOrderWithAnnotations.class));
         suite.addTest(new TestSuite(LoadAndSaveOrderBookingTestCases.class));
         suite.addTest(new TestSuite(LoadAndSaveXMLEncodingAndVersionTestCases.class));
+        suite.addTest(new TestSuite(LoadAndSaveWithDataObjectDataTypeTestCases.class));
 
 
         suite.addTest(new TestSuite(LoadAndSaveValuePropTestCases.class));        
