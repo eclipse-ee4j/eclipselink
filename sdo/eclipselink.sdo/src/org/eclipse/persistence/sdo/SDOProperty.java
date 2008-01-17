@@ -440,11 +440,19 @@ public class SDOProperty implements Property, Serializable {
             if (!getType().isDataType()) {
                 if (getType().equals(SDOConstants.SDO_DATAOBJECT)) {
                     ((SDOType)getType()).setImplClassName(SDOConstants.SDO_DATA_OBJECT_IMPL_CLASS_NAME);
-                    sdoMethodAccessor = false;
-                    if (isMany()) {
-                        xmlMapping = buildXMLFragmentCollectionMapping(mappingUri);
-                    } else {
-                        xmlMapping = buildXMLFragmentMapping(mappingUri);
+                    if(getXsdType() != null && !getXsdType().equals(SDOConstants.ANY_TYPE_QNAME)) {
+                       if (isMany()) {
+                            xmlMapping = buildXMLCompositeCollectionMapping(mappingUri);
+                        } else {
+                            xmlMapping = buildXMLCompositeObjectMapping(mappingUri);
+                        }
+                    }else{
+                      sdoMethodAccessor = false;
+                      if (isMany()) {
+                          xmlMapping = buildXMLFragmentCollectionMapping(mappingUri);
+                      } else {
+                          xmlMapping = buildXMLFragmentMapping(mappingUri);
+                      }
                     }
                 } else {
                     if (!((SDOType)getType()).isFinalized()) {
@@ -549,7 +557,7 @@ public class SDOProperty implements Property, Serializable {
                     ((SDOType)getContainingType()).getXmlDescriptor().getMappings().add(indexToAdd, xmlMapping);
                 } else {
                     ((SDOType)getContainingType()).getXmlDescriptor().getMappings().add(xmlMapping);
-                }
+                }        
             }
         }
     }
@@ -680,6 +688,10 @@ public class SDOProperty implements Property, Serializable {
 
             mapping.setReferenceClassName(((SDOType)getType()).getImplClassName());
             mapping.setReferenceClass(((SDOType)getType()).getImplClass());
+        }else{
+            if(getXsdType()!= null){               
+                ((XMLField)mapping.getField()).setLeafElementType(getXsdType());
+            }
         }
         mapping.useCollectionClass(ListWrapper.class);
 
@@ -699,6 +711,10 @@ public class SDOProperty implements Property, Serializable {
             ((XMLField)mapping.getField()).setLeafElementType(schemaContext);
             mapping.setReferenceClassName(((SDOType)getType()).getImplClassName());
             mapping.setReferenceClass(((SDOType)getType()).getImplClass());
+        }else{
+            if(getXsdType()!= null){               
+              ((XMLField)mapping.getField()).setLeafElementType(getXsdType());
+            }
         }
 
         // Handle nillable element support via the nullable property
