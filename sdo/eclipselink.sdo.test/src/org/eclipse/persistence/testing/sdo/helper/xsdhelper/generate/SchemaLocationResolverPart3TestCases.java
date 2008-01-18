@@ -86,7 +86,7 @@ public class SchemaLocationResolverPart3TestCases extends XSDHelperGenerateTestC
         Document generatedSchemaDoc = parser.parse(inputSource);        
         reader.close();
         
-        assertXMLIdentical(getDocument(getControlFileNameSchemaBillToShipTo()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlFileNameSchemaBillToShipTo()), generatedSchemaDoc);
 
     }
 

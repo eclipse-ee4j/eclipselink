@@ -116,7 +116,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         Document generatedSchemaDoc = parser.parse(inputSource);        
         reader.close();
         
-        assertXMLIdentical(getDocument(getControlFileNameSchemaExample1()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlFileNameSchemaExample1()), generatedSchemaDoc);
         
     }
 
@@ -148,7 +148,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         Document generatedSchemaDoc = parser.parse(inputSource);        
         reader.close();
         
-        assertXMLIdentical(getDocument(getControlFileNameSchemaExample2()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlFileNameSchemaExample2()), generatedSchemaDoc);
     }
 
     // When null is returned from the SchemaLocationResolver it indicates that the referenced Types 
@@ -185,7 +185,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         Document generatedSchemaDoc = parser.parse(inputSource);        
         reader.close();
         
-        assertXMLIdentical(getDocument(getControlFileNameSchema()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlFileNameSchema()), generatedSchemaDoc);
     }
 
     // When null is returned from the SchemaLocationResolver it indicates that the referenced Types 
@@ -218,7 +218,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         Document generatedSchemaDoc = parser.parse(inputSource);        
         reader.close();
         
-        assertXMLIdentical(getDocument(getControlFileNameSchemaExample4()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlFileNameSchemaExample4()), generatedSchemaDoc);
     }
 
     // When a non-null value is returned from the SchemaLocationResolver it indicates that the 
@@ -253,7 +253,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         Document generatedSchemaDoc = parser.parse(inputSource);        
         reader.close();
         
-        assertXMLIdentical(getDocument(getControlFileNameSchemaExample5()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlFileNameSchemaExample5()), generatedSchemaDoc);
     }
 
     // In the current spec when generate(List types) is called and additional types are generated inline 
@@ -290,7 +290,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         Document generatedSchemaDoc = parser.parse(inputSource);        
         reader.close();
         
-        assertXMLIdentical(getDocument(getControlFileNameSchemaExample5()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlFileNameSchemaExample5()), generatedSchemaDoc);
     }
 
     public void testGenerateSchemaRoundTrip() throws Exception{
@@ -308,7 +308,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
         Document generatedSchemaDoc = parser.parse(inputSource);        
         reader.close();
         
-        assertXMLIdentical(getDocument(getControlFileNameSchema()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlFileNameSchema()), generatedSchemaDoc);
     }
 
     // Exception test cases

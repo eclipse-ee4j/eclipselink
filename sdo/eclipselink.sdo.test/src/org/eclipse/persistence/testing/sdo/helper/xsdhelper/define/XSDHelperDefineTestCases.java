@@ -40,15 +40,26 @@ public abstract class XSDHelperDefineTestCases extends XSDHelperTestCases {
     protected void compare(List controlTypes, List types) {
         assertEquals(controlTypes.size(), types.size());
         for (int i = 0; i < types.size(); i++) {
-            SDOType generated = (SDOType)types.get(i);
             SDOType control = (SDOType)controlTypes.get(i);
-            assertEquals(control.getURI(), generated.getURI());
-            assertEquals(control.getName(), generated.getName());
+            SDOType generated = null;
+            for(int j = 0; j < types.size(); j++) {
+                //look for the same type in the generated collection
+                //may be in a different order
+                SDOType next = (SDOType)types.get(j);
+                if(next.getName().equals(control.getName())) {
+                    if((next.getURI() == null && control.getURI() == null) || ((next.getURI() != null && control.getURI() != null && next.getURI().equals(control.getURI())))) {
+                        generated = next;
+                        break;
+                    }
+                }
+            }
+            assertNotNull(generated);
             if (control.getBaseTypes() == null) {
                 assertNull(generated.getBaseTypes());
             }
             assertEquals(control.getBaseTypes().size(), generated.getBaseTypes().size());
-
+            String x = control.getInstanceClassName();
+            String y = generated.getInstanceClassName();
             assertEquals(control.getInstanceClassName(), generated.getInstanceClassName());
             assertEquals(control.getDeclaredProperties().size(), generated.getDeclaredProperties().size());
             assertEquals(control.getAliasNames().size(), generated.getAliasNames().size());

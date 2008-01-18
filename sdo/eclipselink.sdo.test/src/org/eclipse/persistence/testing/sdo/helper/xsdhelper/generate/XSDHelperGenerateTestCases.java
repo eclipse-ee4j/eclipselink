@@ -38,7 +38,7 @@ public abstract class XSDHelperGenerateTestCases extends XSDHelperTestCases {
         Document generatedSchemaDoc = parser.parse(inputSource);        
         reader.close();
         
-        assertXMLIdentical(getDocument(getControlFileName()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlFileName()), generatedSchemaDoc);
         
     }
 

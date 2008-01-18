@@ -195,7 +195,7 @@ public class DefineAndGenerateWrapperTypeTestCases extends XSDHelperDefineAndGen
         Document generatedSchemaDoc = parser.parse(inputSource);        
         reader.close();
         
-        assertXMLIdentical(getDocument(getSchemaToDefine()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getSchemaToDefine()), generatedSchemaDoc);
         
     }
     
@@ -213,7 +213,7 @@ public class DefineAndGenerateWrapperTypeTestCases extends XSDHelperDefineAndGen
         Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
 
-        assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);
     }
     
     

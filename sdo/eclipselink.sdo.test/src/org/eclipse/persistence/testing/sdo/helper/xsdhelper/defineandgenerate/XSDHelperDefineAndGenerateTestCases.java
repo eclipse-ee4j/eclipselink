@@ -47,14 +47,26 @@ public abstract class XSDHelperDefineAndGenerateTestCases extends XSDHelperTestC
         Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
 
-        assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);
     }
 
     protected void compareGeneratedTypes(List controlTypes, List types) {
         assertEquals(controlTypes.size(), types.size());
         for (int i = 0; i < types.size(); i++) {
-            SDOType generated = (SDOType)types.get(i);
             SDOType control = (SDOType)controlTypes.get(i);
+            SDOType generated = null;
+            for(int j = 0; j < types.size(); j++) {
+                //look for the same type in the generated collection
+                //may be in a different order
+                SDOType next = (SDOType)types.get(j);
+                if(next.getName().equals(control.getName())) {
+                    if((next.getURI() == null && control.getURI() == null) || ((next.getURI() != null && control.getURI() != null && next.getURI().equals(control.getURI())))) {
+                        generated = next;
+                        break;
+                    }
+                }
+            }
+            assertNotNull(generated);
             assertEquals(control.getURI(), generated.getURI());
             assertEquals(control.getName(), generated.getName());
             if (control.getBaseTypes() == null) {

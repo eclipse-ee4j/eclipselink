@@ -99,7 +99,7 @@ public class SchemaLocationResolverPart2TestCases extends XSDHelperGenerateTestC
         Document generatedSchemaDoc = parser.parse(inputSource);        
         reader.close();
         
-        assertXMLIdentical(getDocument(getControlFileNameSchemaExample3()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlFileNameSchemaExample3()), generatedSchemaDoc);
     }
 
     public void testExample4NewMultipleImport() throws Exception{
@@ -129,7 +129,7 @@ public class SchemaLocationResolverPart2TestCases extends XSDHelperGenerateTestC
         Document generatedSchemaDoc = parser.parse(inputSource);        
         reader.close();
         
-        assertXMLIdentical(getDocument(getControlFileNameSchemaExample4()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlFileNameSchemaExample4()), generatedSchemaDoc);
 
     }
 
@@ -157,7 +157,7 @@ public class SchemaLocationResolverPart2TestCases extends XSDHelperGenerateTestC
         Document generatedSchemaDoc = parser.parse(inputSource);        
         reader.close();
         
-        assertXMLIdentical(getDocument(getControlFileNameSchema()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlFileNameSchema()), generatedSchemaDoc);
     }
 
     public List defineTypesFromSchema() {

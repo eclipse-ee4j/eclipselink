@@ -93,7 +93,7 @@ public class ImportBug6311853TestCases extends XSDHelperGenerateTestCases {
         Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
 
-        assertXMLIdentical(getDocument(getControlFileName()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlFileName()), generatedSchemaDoc);
 
     }
 }

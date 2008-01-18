@@ -1,5 +1,5 @@
-<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.example.org/data" xmlns="http://www.example.org/data" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo">
-   <xsd:element name="data" type="Data"/>
+<xsd:schema elementFormDefault="qualified" targetNamespace="http://www.example.org/data" xmlns:ns0="http://www.example.org/data" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo">
+   <xsd:element name="data" type="ns0:Data"/>
    <xsd:complexType name="Data">
       <xsd:sequence>
          <xsd:element name="Value" type="xsd:anyType" minOccurs="0" maxOccurs="unbounded"/>

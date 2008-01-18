@@ -72,7 +72,7 @@ public class SDOTestCase extends junit.framework.TestCase {
     public DocumentBuilder parser;
     public String classgenCompilePath; 
     public String tempFileDir;
-    private XMLComparer xmlComparer;
+    private SDOXMLComparer xmlComparer;
 
     protected static final String USER_DIR = System.getProperty("user.dir").replace('\\', '/');
     protected static final String FILE_PROTOCOL = USER_DIR.startsWith("/")? "file:" : "file:/";    
@@ -134,6 +134,9 @@ public class SDOTestCase extends junit.framework.TestCase {
         assertTrue("Node " + control + " is not equal to node " + test, xmlComparer.isNodeEqual(control, test));
     }
     
+    public void assertSchemaIdentical(Document control, Document test) {
+        assertTrue("Node " + control + " is not equal to node " + test, xmlComparer.isSchemaEqual(control, test));
+    }
     public String getName() {
         String longClassName = getClass().getName();
         String shortClassName = longClassName.substring(longClassName.lastIndexOf(".") + 1, longClassName.length() - 1);

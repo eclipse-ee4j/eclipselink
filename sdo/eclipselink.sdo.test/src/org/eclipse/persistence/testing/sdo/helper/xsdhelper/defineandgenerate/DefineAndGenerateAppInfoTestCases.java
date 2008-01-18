@@ -62,7 +62,7 @@ public class DefineAndGenerateAppInfoTestCases extends XSDHelperDefineAndGenerat
         Document generatedSchemaDoc = parser.parse(inputSource);
         reader.close();
 
-        assertXMLIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);
+        assertSchemaIdentical(getDocument(getControlGeneratedFileName()), generatedSchemaDoc);
     }
 
     public void testNullSource() {

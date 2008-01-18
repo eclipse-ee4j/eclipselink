@@ -61,29 +61,10 @@ public class ChangeSummaryTestSuite {
         // 20070211: 1 extra failure until #5876860 is fixed
         suite.addTest(new TestSuite(ChangeSummaryXSDTestCases.class));// to be removed when we have all tests extracted
         // the following hybrid Model/XML tests will contain 1 model test and 10 inherited from the XML suite
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootDeleteComplexManyBelowRootTest.class));
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootDetachComplexManyBelowRootTest.class));
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootUnsetComplexManyBelowRootTest.class));
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootDeleteComplexSingleBelowRootTest.class));
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootDetachComplexSingleBelowRootTest.class));
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootUnsetComplexSingleBelowRootTest.class));
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootUnsetComplexSingleBelowRootWithComplexManyChildrenTest.class));
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootDeleteComplexManyLeafBelowComplexManyBelowRootTest.class));//  DetachItem2Price1
 
         // tests against multiple changeSummaries (onRoot = at the CS level, belowRoot = on a child of a DO at the CS level)
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonChildDeleteComplexSingleBelowRootTest.class));
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonChildDetachComplexSingleBelowRootTest.class));
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonChildUnsetComplexSingleBelowRootTest.class));
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleBelowRootTest.class));
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonChildDeleteChainToComplexSingleAtRootTest.class));
 
         // the following 3 tests need to be finalized as part of bug#5837243
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootDeleteComplexSingleAtRootTest.class));// npe on modified root
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootDetachComplexSingleAtRootTest.class));
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootUnsetComplexSingleAtRootTest.class));
-
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootUnsetSimpleManyAtRootAfterSetNullTest.class));
-        suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootUnsetSimpleSingleAtRootAfterUnsetTest.class));
 
         //suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootUnsetSimpleManyAtRootAfterUnsetTest.class));
         //      suite.addTest(new TestSuite(ChangeSummaryXSDWithCSonRootUnsetSimpleSingleAtRootAfterSetNullTest.class)); // Exception executing xpath

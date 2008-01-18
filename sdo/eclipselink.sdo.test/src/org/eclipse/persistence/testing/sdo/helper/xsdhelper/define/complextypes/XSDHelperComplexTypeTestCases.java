@@ -534,8 +534,13 @@ public class XSDHelperComplexTypeTestCases extends XSDHelperTestCases {
         assertEquals(types.size(), 5);
 
         Type aType = null;
-        
-        aType = (Type)types.get(0);
+        for(int i = 0; i < types.size(); i++) {
+            if(((Type)types.get(i)).getName().equals("myTestType2")) {
+                aType = (Type)types.get(i);
+                break;
+            }
+        }
+        assertNotNull(aType);
         // check Type Name
         assertEquals(aType.getName(), "myTestType2");
         // check Type URI
@@ -555,7 +560,14 @@ public class XSDHelperComplexTypeTestCases extends XSDHelperTestCases {
         // check if it is sequenced
         assertTrue(aType.isSequenced());
 
-        aType = (Type)types.get(1);
+        aType = null;
+        for(int i = 0; i < types.size(); i++) {
+            if(((Type)types.get(i)).getName().equals("myTestType4")) {
+                aType = (Type)types.get(i);
+                break;
+            }
+        }
+        assertNotNull(aType);
         // check Type Name
         assertEquals(aType.getName(), "myTestType4");
         // check Type URI
@@ -579,7 +591,13 @@ public class XSDHelperComplexTypeTestCases extends XSDHelperTestCases {
         assertTrue(aType.isSequenced());        
         
 
-        aType = (Type)types.get(2);
+        aType = null;
+        for(int i = 0; i < types.size(); i++) {
+            if(((Type)types.get(i)).getName().equals("myTestType")) {
+                aType = (Type)types.get(i);
+                break;
+            }
+        }
         // check Type Name
         assertEquals(aType.getName(), "myTestType");
         // check Type URI
@@ -599,7 +617,13 @@ public class XSDHelperComplexTypeTestCases extends XSDHelperTestCases {
         // check if it is sequenced
         assertFalse(aType.isSequenced());
 
-        aType = (Type)types.get(3);
+        aType = null;
+        for(int i = 0; i < types.size(); i++) {
+            if(((Type)types.get(i)).getName().equals("myTestType5")) {
+                aType = (Type)types.get(i);
+                break;
+            }
+        }
         // check Type Name
         assertEquals(aType.getName(), "myTestType5");
         // check Type URI
@@ -621,7 +645,13 @@ public class XSDHelperComplexTypeTestCases extends XSDHelperTestCases {
         // check if it is sequenced
         assertTrue(aType.isSequenced());
         
-        aType = (Type)types.get(4);
+        aType = null;
+        for(int i = 0; i < types.size(); i++) {
+            if(((Type)types.get(i)).getName().equals("myTestType3")) {
+                aType = (Type)types.get(i);
+                break;
+            }
+        }
         // check Type Name
         assertEquals(aType.getName(), "myTestType3");
         // check Type URI

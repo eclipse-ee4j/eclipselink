@@ -53,7 +53,7 @@ public class PurchaseOrderComplexGenerateTestCases extends XSDHelperGenerateTest
         Document generatedSchemaDoc = parser.parse(inputSource);        
         reader.close();
         
-        assertXMLIdentical(getDocument(getControlFileNameDifferentOrder()), generatedSchemaDoc);       
+        assertSchemaIdentical(getDocument(getControlFileNameDifferentOrder()), generatedSchemaDoc);       
     }
 
     public java.util.List defineTypesFromSchema() {
