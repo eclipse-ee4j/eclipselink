@@ -577,9 +577,6 @@ public class SDODataObject implements DataObject {
     public void set(int propertyIndex, Object value) {
         try {
             Property p = getInstanceProperty(propertyIndex);
-            if (p.isReadOnly()) {
-                throw new UnsupportedOperationException("Property is readonly.");
-            }
             set(p, value);
         } catch (IndexOutOfBoundsException e) {
             throw new IllegalArgumentException("PropertyIndex invalid.");
