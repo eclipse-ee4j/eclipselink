@@ -236,9 +236,7 @@ public abstract class SchemaParser {
         return false;
     }
 
-    private void processGlobalElement(String targetNamespace, String defaultNamespace, Element element) {
-        boolean addedNR = addNextNamespaceResolver(element.getAttributesMap());
-
+    private void processGlobalElement(String targetNamespace, String defaultNamespace, Element element) {      
         if (element.getName() != null) {
             QName qname = new QName(targetNamespace, element.getName());
             Object processed = processedElements.get(qname);
@@ -251,10 +249,7 @@ public abstract class SchemaParser {
         } else {
             startGlobalElement(targetNamespace, defaultNamespace, element);
             processElement(targetNamespace, defaultNamespace, null, null, element, true, false);
-        }
-        if (addedNR) {
-            namespaceResolvers.remove(namespaceResolvers.size() - 1);
-        }
+        }       
 
         //TODO: ???finishGlobalElement(element.getName());
     }
@@ -523,7 +518,10 @@ public abstract class SchemaParser {
     }
 
     protected void processElement(String targetNamespace, String defaultNamespace, String ownerName, TypeDefParticle typeDefParticle, Element element, boolean isGlobal, boolean isMany) {
-        ComplexType complexType = element.getComplexType();
+    
+        boolean addedNR = addNextNamespaceResolver(element.getAttributesMap());
+    
+        ComplexType complexType = element.getComplexType();        
         boolean qualified = true;
         if (!isGlobal) {
             qualified = rootSchema.isElementFormDefault();
@@ -548,6 +546,9 @@ public abstract class SchemaParser {
             processSimpleElement(targetNamespace, defaultNamespace, ownerName, typeDefParticle, element, qualified, isGlobal, isMany);
         } else {
             processSimpleElement(targetNamespace, defaultNamespace, ownerName, typeDefParticle, element, qualified, isGlobal, isMany);
+        }
+        if (addedNR) {
+            namespaceResolvers.remove(namespaceResolvers.size() - 1);
         }
     }
 
