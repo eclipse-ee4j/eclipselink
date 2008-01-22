@@ -40,6 +40,7 @@ public class ComplexDefineTestSuite {
         suite.addTestSuite(CyclicElementRefTestCases.class);                               
         suite.addTestSuite(CyclicElementRefErrorTestCases.class);                               
         suite.addTestSuite(LoadFailsAfterDefineFailsTestCases.class);                               
+        suite.addTestSuite(DefineWithNestedNamespacesTestCases.class);                               
         return suite;
     }
 }
