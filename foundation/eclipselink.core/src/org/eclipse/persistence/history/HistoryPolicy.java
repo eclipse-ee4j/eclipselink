@@ -12,7 +12,6 @@ package org.eclipse.persistence.history;
 import java.io.Serializable;
 import java.util.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.expressions.*;
@@ -70,7 +69,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
                 // Sort of an implementation of native sql.
                 // Print AS OF TIMESTAMP (SYSDATE - 1000*60*10) not AS OF ('SYSDATE - 1000*60*10').
                 if ((value instanceof ConstantExpression) && (((ConstantExpression)value).getValue() instanceof String)) {
-                    value = ((String)((ConstantExpression)value).getValue());
+                    value = (((ConstantExpression)value).getValue());
                 }
             } else {
                 ConversionManager converter = ConversionManager.getDefaultManager();
@@ -314,7 +313,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
             for (int i = 0; i < getHistoricalTables().size(); i++) {
                 HistoricalDatabaseTable table = (HistoricalDatabaseTable)getHistoricalTables().elementAt(i);
                 if (table.getName().equals("")) {
-                    DatabaseTable mirrored = (DatabaseTable)getDescriptor().getTables().elementAt(i + offset);
+                    DatabaseTable mirrored = getDescriptor().getTables().elementAt(i + offset);
                     table.setName(mirrored.getName());
                     table.setTableQualifier(mirrored.getTableQualifier());
                 }
@@ -323,7 +322,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
                     startField.setTable(table);
                     getStartFields().addElement(startField);
                 } else {
-                    DatabaseField startField = (DatabaseField)getStart(i);
+                    DatabaseField startField = getStart(i);
                     startField.setTable(table);
                 }
                 if (getEndFields().size() < (i + 1)) {
@@ -331,7 +330,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
                     endField.setTable(table);
                     getEndFields().addElement(endField);
                 } else {
-                    DatabaseField endField = (DatabaseField)getEnd(i);
+                    DatabaseField endField = getEnd(i);
                     endField.setTable(table);
                 }
             }
@@ -339,8 +338,6 @@ public class HistoryPolicy implements Cloneable, Serializable {
             // The user did not specify history tables/fields in order, so
             // initialize will take a little longer.
             Vector unsortedTables = getHistoricalTables();
-            Vector unsortedStartFields = getStartFields();
-            Vector unsortedEndFields = getEndFields();
             Vector sortedTables = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(unsortedTables.size());
             Vector sortedStartFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(unsortedTables.size());
             Vector sortedEndFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(unsortedTables.size());
@@ -760,9 +757,6 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * events.
      */
     public void mappingLogicalInsert(DataModifyQuery originalQuery, AbstractRecord arguments, AbstractSession session) {
-        SQLInsertStatement originalStatement = (SQLInsertStatement)originalQuery.getSQLStatement();
-        DatabaseTable originalTable = originalStatement.getTable();
-
         DataModifyQuery historyQuery = new DataModifyQuery();
         SQLInsertStatement historyStatement = new SQLInsertStatement();
         DatabaseTable histTable = (DatabaseTable)getHistoricalTables().elementAt(0);
@@ -838,7 +832,6 @@ public class HistoryPolicy implements Cloneable, Serializable {
      */
     public void mappingLogicalDelete(ModifyQuery originalQuery, AbstractRecord arguments, AbstractSession session) {
         SQLDeleteStatement originalStatement = (SQLDeleteStatement)originalQuery.getSQLStatement();
-        DatabaseTable originalTable = originalStatement.getTable();
 
         DataModifyQuery historyQuery = new DataModifyQuery();
         SQLUpdateStatement historyStatement = new SQLUpdateStatement();

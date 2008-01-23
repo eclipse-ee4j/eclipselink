@@ -250,7 +250,7 @@ public class ParseTree {
      */
     public void addOrderingToQuery(ObjectLevelReadQuery theQuery, GenerationContext generationContext) {
         if (hasOrderBy()) {
-            ((OrderByNode)getOrderByNode()).addOrderingToQuery(theQuery, generationContext);
+            (getOrderByNode()).addOrderingToQuery(theQuery, generationContext);
         }
     }
 
@@ -260,7 +260,7 @@ public class ParseTree {
      */
     public void addGroupingToQuery(ObjectLevelReadQuery theQuery, GenerationContext generationContext) {
         if (hasGroupBy()) {
-            ((GroupByNode)getGroupByNode()).addGroupingToQuery(theQuery, generationContext);
+            (getGroupByNode()).addGroupingToQuery(theQuery, generationContext);
         }
     }
 
@@ -270,7 +270,7 @@ public class ParseTree {
      */
     public void addHavingToQuery(ObjectLevelReadQuery theQuery, GenerationContext generationContext) {
         if (hasHaving()) {
-            ((HavingNode)getHavingNode()).addHavingToQuery(theQuery, generationContext);
+            (getHavingNode()).addHavingToQuery(theQuery, generationContext);
         }
     }
 
@@ -300,7 +300,7 @@ public class ParseTree {
      */
     public void addUpdatesToQuery(UpdateAllQuery theQuery, GenerationContext generationContext) {
         if (getSetNode() != null) {
-            ((SetNode)getSetNode()).addUpdatesToQuery(theQuery, generationContext);
+            (getSetNode()).addUpdatesToQuery(theQuery, generationContext);
         }
     }
 

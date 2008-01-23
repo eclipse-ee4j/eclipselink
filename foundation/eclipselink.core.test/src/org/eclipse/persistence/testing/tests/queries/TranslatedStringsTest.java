@@ -45,10 +45,10 @@ public class TranslatedStringsTest extends AutoVerifyTestCase {
 
         getSession().getDescriptor(Employee.class).getEventManager().addListener(new DescriptorEventAdapter() {
                 public void postInsert(org.eclipse.persistence.descriptors.DescriptorEvent event) {
-                    translatedSQLStrings = event.getQuery().getTranslatedSQLStrings((org.eclipse.persistence.sessions.Session)event.getSession(), event.getQuery().getTranslationRow());
+                    translatedSQLStrings = event.getQuery().getTranslatedSQLStrings(event.getSession(), event.getQuery().getTranslationRow());
                     sqlStrings = event.getQuery().getSQLStrings();
                     calls = event.getQuery().getDatasourceCalls();
-                    translatedSQLString = event.getQuery().getTranslatedSQLString((org.eclipse.persistence.sessions.Session)event.getSession(), event.getQuery().getTranslationRow());
+                    translatedSQLString = event.getQuery().getTranslatedSQLString(event.getSession(), event.getQuery().getTranslationRow());
                     sqlString = event.getQuery().getSQLString();
                     call = event.getQuery().getCall();
                 }

@@ -91,7 +91,6 @@ public abstract class ObjectExpression extends DataExpression {
 
         HashMap tablesJoinExpressions = null;
         if(isUsingOuterJoinForMultitableInheritance()) {
-            Vector tables = getDescriptor().getTables();
             tablesJoinExpressions = new HashMap();
             List childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
             for( int i=0; i < childrenTables.size(); i++) {
@@ -121,7 +120,7 @@ public abstract class ObjectExpression extends DataExpression {
      * </pre></blockquote>
      */
     public Expression anyOf(String attributeName) {
-        QueryKeyExpression queryKey = (QueryKeyExpression)newDerivedExpressionNamed(attributeName);
+        QueryKeyExpression queryKey = newDerivedExpressionNamed(attributeName);
 
         queryKey.doQueryToManyRelationship();
         return queryKey;
@@ -200,14 +199,14 @@ public abstract class ObjectExpression extends DataExpression {
     }
 
     public Expression getAllowingNull(String attributeName, Vector arguments) {
-        ObjectExpression exp = (ObjectExpression)existingDerivedExpressionNamed(attributeName);
+        ObjectExpression exp = existingDerivedExpressionNamed(attributeName);
 
         // The same (aliased) table cannot participate in a normal join and an outer join.
         // To help enforce this, if the node already exists 
         if (exp != null) {
             return exp;
         }
-        exp = (ObjectExpression)derivedExpressionNamed(attributeName);
+        exp = derivedExpressionNamed(attributeName);
         exp.doUseOuterJoin();
         return exp;
 
@@ -350,7 +349,7 @@ public abstract class ObjectExpression extends DataExpression {
      * INTERNAL:
      * Used for cloning.
      */
-    protected void postCopyIn(Dictionary alreadyDone) {
+    protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
         derivedExpressions = copyCollection(derivedExpressions, alreadyDone);
     }
@@ -359,10 +358,10 @@ public abstract class ObjectExpression extends DataExpression {
      * INTERNAL:
      * The method was added to circumvent derivedFields and derivedTables being
      * protected.
-     * @see org.eclipse.persistence.expressions.ExpressionBuilder#registerIn(Dictionary alreadyDone)
+     * @see org.eclipse.persistence.expressions.ExpressionBuilder#registerIn(Map alreadyDone)
      * @bug  2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
      */
-    public void postCopyIn(Dictionary alreadyDone, Vector oldDerivedFields, Vector oldDerivedTables) {
+    public void postCopyIn(Map alreadyDone, Vector oldDerivedFields, Vector oldDerivedTables) {
         if (oldDerivedFields != null) {
             if (derivedFields == null) {
                 derivedFields = copyCollection(oldDerivedFields, alreadyDone);

@@ -263,8 +263,8 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         Namespace generatedNamespace = null;
         String xpath = originalValue.getLocalName();
         if (originalValue.getNamespaceURI() != null) {
-            xmlRootFragment.setNamespaceURI(((XMLRoot)originalValue).getNamespaceURI());
-            String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(((XMLRoot)originalValue).getNamespaceURI());
+            xmlRootFragment.setNamespaceURI((originalValue).getNamespaceURI());
+            String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI((originalValue).getNamespaceURI());
             if ((prefix == null) || prefix.equals("")) {
                 prefix = marshalRecord.getNamespaceResolver().generatePrefix("ns0");
                 generatedNamespace = new Namespace(prefix, xmlRootFragment.getNamespaceURI());

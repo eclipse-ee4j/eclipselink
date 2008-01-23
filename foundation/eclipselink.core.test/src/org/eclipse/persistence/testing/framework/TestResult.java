@@ -168,8 +168,6 @@ public class TestResult implements ResultInterface, Comparable, Serializable {
             return PROBLEM;
         } else if (exception instanceof TestWarningException) {
             return WARNING;
-        } else if (exception instanceof EclipseLinkException) {
-            return FATAL_ERROR;
         } else {
             return FATAL_ERROR;
         }

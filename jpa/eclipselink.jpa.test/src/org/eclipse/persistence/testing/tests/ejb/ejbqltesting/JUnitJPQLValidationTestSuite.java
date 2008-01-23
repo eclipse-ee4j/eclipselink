@@ -24,7 +24,6 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.internal.jpa.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
@@ -35,7 +34,6 @@ import org.eclipse.persistence.jpa.config.EclipseLinkQueryHints;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionException;
 
@@ -866,8 +864,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
   public void commitOptimisticLockExceptionTest()
     {
-        EntityManager firstEm = (EntityManager) createEntityManager();        
-        EntityManager secondEm = (EntityManager) createAlternateEntityManager();
+        EntityManager firstEm = createEntityManager();        
+        EntityManager secondEm = createAlternateEntityManager();
         
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ";   
        
@@ -906,8 +904,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     //this test fakes a JTA transaction
     public void JTAOptimisticLockExceptionTest() 
     {
-        EntityManager firstEm = (EntityManager) createEntityManager();        
-        EntityManager secondEm = (EntityManager) createAlternateEntityManager();
+        EntityManager firstEm = createEntityManager();        
+        EntityManager secondEm = createAlternateEntityManager();
         
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ";   
        
@@ -932,7 +930,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
                 throw ex;
             }
         
-            ((RepeatableWriteUnitOfWork)((EntityManagerImpl)secondEm).getActivePersistenceContext(null)).issueSQLbeforeCompletion();
+            (((EntityManagerImpl)secondEm).getActivePersistenceContext(null)).issueSQLbeforeCompletion();
             fail("javax.persistence.OptimisticLockException must be thrown during commit");
         } catch (Exception e){          
             if (secondEm.getTransaction().isActive()){
@@ -954,9 +952,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         {
             createEntityManager().flush();    
         }
-        catch (TransactionRequiredException e)
-        {            
-            Assert.assertTrue(e instanceof TransactionRequiredException);
+        catch (TransactionRequiredException e) {
+            // ok.
         }
     }
     
@@ -993,9 +990,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         {
             List result = createEntityManager().createNamedQuery("test").getResultList();
         }
-        catch (IllegalArgumentException e)
-        {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+        catch (IllegalArgumentException e) {
+            // ok.
         }       
     } 
     
@@ -1072,7 +1068,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         em.getTransaction().begin();
         try{
             Employee emp = (Employee) em.createQuery(ejbqlString).getSingleResult();        
-            idMapping = (DirectToFieldMapping) ((ServerSession)((EntityManagerImpl)em.getDelegate()).getServerSession()).getClassDescriptor(Employee.class).getMappingForAttributeName("id");
+            idMapping = (DirectToFieldMapping) (((EntityManagerImpl)em.getDelegate()).getServerSession()).getClassDescriptor(Employee.class).getMappingForAttributeName("id");
             defaultFieldName = idMapping.getFieldName();
             idMapping.setFieldName("fake_id");
             emp.setId(323);

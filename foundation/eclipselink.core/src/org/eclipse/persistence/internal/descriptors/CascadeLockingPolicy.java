@@ -87,9 +87,7 @@ public class CascadeLockingPolicy {
         // have been initialized.
         // If the parent mapping is not found, a query will be initialized
         // and the following lookup will no longer hit.
-        if (m_parentMapping == null && m_mappingLookupFields != null && m_query == null) {
-            boolean firstMapping = true;
-        
+        if (m_parentMapping == null && m_mappingLookupFields != null && m_query == null) {        
             for (Enumeration fields = m_mappingLookupFields.elements(); fields.hasMoreElements();) {
                 DatabaseMapping mapping = m_descriptor.getObjectBuilder().getMappingForField((DatabaseField) fields.nextElement());
                 
@@ -187,7 +185,7 @@ public class CascadeLockingPolicy {
             // Extract the mapping lookup fields.
             m_mappingLookupFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
             for (Iterator keys = m_queryKeyFields.keySet().iterator(); keys.hasNext(); ) {
-                m_mappingLookupFields.add((DatabaseField) m_queryKeyFields.get(keys.next()));
+                m_mappingLookupFields.add(m_queryKeyFields.get(keys.next()));
             }
         }
     }

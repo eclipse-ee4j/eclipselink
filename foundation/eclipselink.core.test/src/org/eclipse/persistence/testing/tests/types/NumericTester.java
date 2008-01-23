@@ -40,12 +40,12 @@ public class NumericTester extends TypeTester {
         super("ZERO");
         intValue = 0;
         integerClassValue = new Integer(0);
-        floatValue = (float)0;
-        floatClassValue = new Float((float)0);
-        longValue = (long)0;
-        longClassValue = new Long((long)0);
-        doubleValue = (double)0;
-        doubleClassValue = new Double((double)0);
+        floatValue = 0;
+        floatClassValue = new Float(0);
+        longValue = 0;
+        longClassValue = new Long(0);
+        doubleValue = 0;
+        doubleClassValue = new Double(0);
         shortValue = (short)0;
         shortClassValue = new Short((short)0);
         byteValue = (byte)0;
@@ -397,12 +397,12 @@ public class NumericTester extends TypeTester {
 
         tester.setIntegerValue(0);
         tester.setIntegerClassValue(new Integer(0));
-        tester.setFloatValue((float)0);
-        tester.setFloatClassValue(new Float((float)0));
-        tester.setLongValue((long)0);
-        tester.setLongClassValue(new Long((long)0));
-        tester.setDoubleValue((double)0);
-        tester.setDoubleClassValue(new Double((double)0));
+        tester.setFloatValue(0);
+        tester.setFloatClassValue(new Float(0));
+        tester.setLongValue(0);
+        tester.setLongClassValue(new Long(0));
+        tester.setDoubleValue(0);
+        tester.setDoubleClassValue(new Double(0));
         tester.setShortValue((short)0);
         tester.setShortClassValue(new Short((short)0));
         tester.setByteValue((byte)0);

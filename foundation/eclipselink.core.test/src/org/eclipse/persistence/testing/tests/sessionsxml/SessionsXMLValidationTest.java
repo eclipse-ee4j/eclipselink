@@ -9,8 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
-import java.util.*;
-
 // TopLink imports
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.*;

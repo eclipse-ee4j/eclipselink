@@ -9,6 +9,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
+import java.util.*;
+
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.localization.*;
 
@@ -18,7 +20,7 @@ import org.eclipse.persistence.internal.localization.*;
  *                     This is useful for copying an entire object graph as part of the
  *                     host application's logic.<p>
  * <b>Responsibilities</b>:<ul>
- * <li> Inidcate through CASCADE levels the depth relationships will copied.
+ * <li> Indicate through CASCADE levels the depth relationships will copied.
  * <li> Indicate if PK attributes should be copied with existing value or should be reset.
  * </ul>
  * @since TOPLink/Java 3.0
@@ -27,7 +29,7 @@ import org.eclipse.persistence.internal.localization.*;
 public class ObjectCopyingPolicy {
     protected boolean shouldResetPrimaryKey;
     protected org.eclipse.persistence.internal.sessions.AbstractSession session;
-    protected IdentityHashtable copies;
+    protected Map copies;
 
     /** Policy depth that determines how the copy will cascade to the object's
         related parts */
@@ -53,8 +55,8 @@ public class ObjectCopyingPolicy {
      */
     public ObjectCopyingPolicy() {
         this.shouldResetPrimaryKey = true;
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
-        this.copies = new IdentityHashtable();
+        // 2612538 - the default size of Map (32) is appropriate
+        this.copies = new IdentityHashMap();
         this.depth = CASCADE_PRIVATE_PARTS;
     }
 
@@ -86,7 +88,7 @@ public class ObjectCopyingPolicy {
     /**
      * INTERNAL: Get the session.
      */
-    public IdentityHashtable getCopies() {
+    public Map getCopies() {
         return copies;
     }
 
@@ -107,7 +109,7 @@ public class ObjectCopyingPolicy {
     /**
      * INTERNAL: Set the copies.
      */
-    public void setCopies(IdentityHashtable newCopies) {
+    public void setCopies(Map newCopies) {
         copies = newCopies;
     }
 

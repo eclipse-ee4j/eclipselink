@@ -12,9 +12,6 @@ package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.*;
 //import org.eclipse.persistence.internal.libraries.antlr.TokenBuffer;
 
-//java imports
-import java.io.StringReader;
-
 //toplink imports
 import org.eclipse.persistence.internal.jpa.parsing.jpql.CaseInsensitiveJPQLLexer;
 import org.eclipse.persistence.internal.jpa.parsing.jpql.CaseInsensitiveANTLRStringStream;

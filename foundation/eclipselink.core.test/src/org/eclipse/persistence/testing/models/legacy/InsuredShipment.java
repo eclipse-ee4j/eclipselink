@@ -32,7 +32,7 @@ public class InsuredShipment extends Shipment {
         example.orders.addElement(Order.example9(example, employee));
         example.orders.addElement(Order.example10(example, employee));
 
-        return (Shipment)example;
+        return example;
     }
 
     public static Shipment example2(Employee employee) {
@@ -49,7 +49,7 @@ public class InsuredShipment extends Shipment {
         example.orders.addElement(Order.example11(example, employee));
         example.orders.addElement(Order.example12(example, employee));
 
-        return (Shipment)example;
+        return example;
     }
 
     public static Shipment example3(Employee employee) {
@@ -66,6 +66,6 @@ public class InsuredShipment extends Shipment {
         example.orders.addElement(Order.example13(example, employee));
         example.orders.addElement(Order.example14(example, employee));
 
-        return (Shipment)example;
+        return example;
     }
 }

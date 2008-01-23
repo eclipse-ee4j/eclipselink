@@ -51,7 +51,7 @@ public class ValidationTestSuite extends JUnitTestCase {
     
     public void testCacheIsolation_PropertiesDefault_Config() throws Exception {
         // Be sure not to modify the global properties.
-        Map properties = new HashMap((HashMap) JUnitTestCaseHelper.getDatabaseProperties());
+        Map properties = new HashMap(JUnitTestCaseHelper.getDatabaseProperties());
         properties.put(PersistenceUnitProperties.CACHE_SHARED_DEFAULT, Boolean.FALSE.toString());
         
         EntityManager em = createEntityManager("isolated1053", properties);

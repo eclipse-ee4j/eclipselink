@@ -571,27 +571,6 @@ public class SessionConsole extends JFrame {
     }
 
     /**
-     * connEtoC27:  (GenerateProjectClassMenuItem1.action.actionPerformed(java.awt.event.ActionEvent) --> SessionConsole.createTables()V)
-     * @param arg1 java.awt.event.ActionEvent
-     */
-    private
-
-    /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    void connEtoC27(java.awt.event.ActionEvent arg1) {
-        try {
-            // user code begin {1}
-            // user code end
-            this.createTables();
-            // user code begin {2}
-            // user code end
-        } catch (java.lang.Throwable ivjExc) {
-            // user code begin {3}
-            // user code end
-            handleException(ivjExc);
-        }
-    }
-
-    /**
      * connEtoC28:  (SessionInspectorFrame.window.windowClosing(java.awt.event.WindowEvent) --> SessionConsole.exit()V)
      * @param arg1 java.awt.event.WindowEvent
      */
@@ -1342,29 +1321,6 @@ public class SessionConsole extends JFrame {
             }
         }
         return ivjJSeparator1;
-    }
-
-    /**
-     * Return the JSeparator2 property value.
-     * @return javax.swing.JSeparator
-     */
-    private
-
-    /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    javax.swing.JSeparator getJSeparator2() {
-        if (ivjJSeparator2 == null) {
-            try {
-                ivjJSeparator2 = new javax.swing.JSeparator();
-                ivjJSeparator2.setName("JSeparator2");
-                // user code begin {1}
-                // user code end
-            } catch (java.lang.Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
-                handleException(ivjExc);
-            }
-        }
-        return ivjJSeparator2;
     }
 
     /**

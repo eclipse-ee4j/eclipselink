@@ -275,8 +275,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     public void browseProfile() {
-        if (((org.eclipse.persistence.sessions.Session)getSession()).isInProfile()) {
-            ProfileBrowser.browseProfiles(((PerformanceProfiler)((org.eclipse.persistence.sessions.Session)getSession()).getProfiler()).getProfiles());
+        if ((getSession()).isInProfile()) {
+            ProfileBrowser.browseProfiles(((PerformanceProfiler)(getSession()).getProfiler()).getProfiles());
         }
     }
 
@@ -530,132 +530,6 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             // user code begin {1}
             // user code end
             this.genericPopupDisplay(arg1, getLoginMenu());
-            // user code begin {2}
-            // user code end
-        } catch (Throwable exception) {
-            // user code begin {3}
-            // user code end
-            handleException(exception);
-        }
-    }
-
-    /**
-     * connEtoC48:  (LogSession.item.itemStateChanged(java.awt.event.ItemEvent) --> SessionConsolePanel.loggingChanged()V)
-     * @param arg1 java.awt.event.ItemEvent
-     */
-    private
-
-    /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    void connEtoC48(java.awt.event.ItemEvent arg1) {
-        try {
-            // user code begin {1}
-            // user code end
-            this.loggingChanged();
-            // user code begin {2}
-            // user code end
-        } catch (Throwable exception) {
-            // user code begin {3}
-            // user code end
-            handleException(exception);
-        }
-    }
-
-    /**
-     * connEtoC49:  (LogConnection.item.itemStateChanged(java.awt.event.ItemEvent) --> SessionConsolePanel.loggingChanged()V)
-     * @param arg1 java.awt.event.ItemEvent
-     */
-    private
-
-    /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    void connEtoC49(java.awt.event.ItemEvent arg1) {
-        try {
-            // user code begin {1}
-            // user code end
-            this.loggingChanged();
-            // user code begin {2}
-            // user code end
-        } catch (Throwable exception) {
-            // user code begin {3}
-            // user code end
-            handleException(exception);
-        }
-    }
-
-    /**
-     * connEtoC50:  (LogThread.item.itemStateChanged(java.awt.event.ItemEvent) --> SessionConsolePanel.loggingChanged()V)
-     * @param arg1 java.awt.event.ItemEvent
-     */
-    private
-
-    /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    void connEtoC50(java.awt.event.ItemEvent arg1) {
-        try {
-            // user code begin {1}
-            // user code end
-            this.loggingChanged();
-            // user code begin {2}
-            // user code end
-        } catch (Throwable exception) {
-            // user code begin {3}
-            // user code end
-            handleException(exception);
-        }
-    }
-
-    /**
-     * connEtoC51:  (LogTime.item.itemStateChanged(java.awt.event.ItemEvent) --> SessionConsolePanel.loggingChanged()V)
-     * @param arg1 java.awt.event.ItemEvent
-     */
-    private
-
-    /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    void connEtoC51(java.awt.event.ItemEvent arg1) {
-        try {
-            // user code begin {1}
-            // user code end
-            this.loggingChanged();
-            // user code begin {2}
-            // user code end
-        } catch (Throwable exception) {
-            // user code begin {3}
-            // user code end
-            handleException(exception);
-        }
-    }
-
-    /**
-     * connEtoC52:  (LogExceptions.item.itemStateChanged(java.awt.event.ItemEvent) --> SessionConsolePanel.loggingChanged()V)
-     * @param arg1 java.awt.event.ItemEvent
-     */
-    private
-
-    /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    void connEtoC52(java.awt.event.ItemEvent arg1) {
-        try {
-            // user code begin {1}
-            // user code end
-            this.loggingChanged();
-            // user code begin {2}
-            // user code end
-        } catch (Throwable exception) {
-            // user code begin {3}
-            // user code end
-            handleException(exception);
-        }
-    }
-
-    /**
-     * connEtoC53:  (LogExceptionStack.item.itemStateChanged(java.awt.event.ItemEvent) --> SessionConsolePanel.loggingChanged()V)
-     * @param arg1 java.awt.event.ItemEvent
-     */
-    private
-
-    /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    void connEtoC53(java.awt.event.ItemEvent arg1) {
-        try {
-            // user code begin {1}
-            // user code end
-            this.loggingChanged();
             // user code begin {2}
             // user code end
         } catch (Throwable exception) {
@@ -3402,8 +3276,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     public void logProfileChanged() {
-        if (((org.eclipse.persistence.sessions.Session)getSession()).isInProfile()) {
-            ((PerformanceProfiler)((org.eclipse.persistence.sessions.Session)getSession()).getProfiler()).setShouldLogProfile(getLogProfileCheckbox().isSelected());
+        if ((getSession()).isInProfile()) {
+            ((PerformanceProfiler)(getSession()).getProfiler()).setShouldLogProfile(getLogProfileCheckbox().isSelected());
         }
     }
 
@@ -3504,7 +3378,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     }
 
     public void profileChanged() {
-        if (((org.eclipse.persistence.sessions.Session)getSession()).isInProfile()) {
+        if ((getSession()).isInProfile()) {
             getSession().clearProfile();
         }
         if (getProfileCheckbox().isSelected()) {
@@ -3597,10 +3471,10 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
         boolean useFullNames = getFullNamesMenuItem().isSelected();
         ClassInfo[] classes = 
-            new ClassInfo[((org.eclipse.persistence.sessions.Session)getSession()).getDescriptors().size()];
+            new ClassInfo[(getSession()).getDescriptors().size()];
         int index = 0;
         for (Iterator iterator = 
-             ((org.eclipse.persistence.sessions.Session)getSession()).getDescriptors().values().iterator(); 
+             (getSession()).getDescriptors().values().iterator(); 
              iterator.hasNext(); ) {
             classes[index] = 
                     new ClassInfo((ClassDescriptor)iterator.next(), useFullNames);
@@ -3668,7 +3542,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         String[] columns = new String[descriptor.getMappings().size()];
         for (int index = 0; index < descriptor.getMappings().size(); index++) {
             columns[index] = 
-                    ((DatabaseMapping)descriptor.getMappings().elementAt(index)).getAttributeName();
+                    (descriptor.getMappings().elementAt(index)).getAttributeName();
         }
 
         model.setColumnIdentifiers(columns);
@@ -3679,7 +3553,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             for (int index = 0; index < descriptor.getMappings().size(); 
                  index++) {
                 DatabaseMapping mapping = 
-                    (DatabaseMapping)descriptor.getMappings().elementAt(index);
+                    descriptor.getMappings().elementAt(index);
                 values[index] = 
                         String.valueOf(mapping.getAttributeValueFromObject(object));
             }
@@ -3738,7 +3612,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
         // Do not set if not a DatabaseLogin, i.e. EIS login.
         if (getSession().getDatasourceLogin() instanceof DatabaseLogin) {
-            getLoginEditorPanel().setLogin((DatabaseLogin)((org.eclipse.persistence.sessions.Session)getSession()).getDatasourceLogin());
+            getLoginEditorPanel().setLogin((DatabaseLogin)(getSession()).getDatasourceLogin());
         }
         resetDescriptors();
         resetButtons();

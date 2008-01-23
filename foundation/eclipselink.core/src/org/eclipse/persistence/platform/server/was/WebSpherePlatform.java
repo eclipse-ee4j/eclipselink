@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.was;
 
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.sessions.DatabaseSession;
 

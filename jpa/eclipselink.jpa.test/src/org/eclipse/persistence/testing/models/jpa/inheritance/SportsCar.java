@@ -12,7 +12,6 @@
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import javax.persistence.*;
-import static javax.persistence.InheritanceType.*;
 
 @Entity
 @EntityListeners(org.eclipse.persistence.testing.models.jpa.inheritance.listeners.SportsCarListener.class)

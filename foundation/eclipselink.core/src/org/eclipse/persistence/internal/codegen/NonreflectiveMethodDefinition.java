@@ -87,7 +87,7 @@ public class NonreflectiveMethodDefinition extends MethodDefinition {
             }
             generator.write(argument);
             generator.write(" ");
-            generator.write((String)getArgumentNames().elementAt(index));
+            generator.write(getArgumentNames().elementAt(index));
         }
     }
 }

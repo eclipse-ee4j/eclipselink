@@ -21,7 +21,6 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.internal.helper.IdentityHashtable;
 
 /**
  * PUBLIC:
@@ -99,7 +98,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
      * INTERNAL:
      * Clear the change set in the change event listener.
      */
-    public void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, IdentityHashtable cloneMapping) {
+    public void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, Map cloneMapping) {
         clearChanges(clone, uow, descriptor);        
         cloneMapping.put(clone, clone);
     }

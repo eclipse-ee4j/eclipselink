@@ -69,11 +69,11 @@ public class EMCascadingPersistAndFlushTest extends EntityContainerTestBase  {
             //lets check the cache for the objects
             persistedItems.put("after persist Employee", getEntityManager().find(Employee.class, empIDs[0]));
 
-            Project project1 = (Project)employee.getProjects().iterator().next();
+            Project project1 = employee.getProjects().iterator().next();
             persistedItems.put("after persist Project", project1);
             projIDs[0] = project.getId();        
 
-            PhoneNumber phone1 = (PhoneNumber)employee.getPhoneNumbers().iterator().next();
+            PhoneNumber phone1 = employee.getPhoneNumbers().iterator().next();
             persistedItems.put("after persist PhoneNumber", phone1);
             phones.add(phone.buildPK());
             

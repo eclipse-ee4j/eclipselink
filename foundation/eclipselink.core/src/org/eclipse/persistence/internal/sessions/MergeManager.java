@@ -17,7 +17,6 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.helper.linkedlist.LinkedNode;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
@@ -39,10 +38,10 @@ public class MergeManager {
     protected AbstractSession session;
 
     /** Used only while refreshing objects on remote session */
-    protected IdentityHashtable objectDescriptors;
+    protected Map objectDescriptors;
 
     /** Used to unravel recursion. */
-    protected IdentityHashtable objectsAlreadyMerged;
+    protected Map objectsAlreadyMerged;
     
     /** Used to keep track of merged new objects. */
     protected IdentityHashMap mergedNewObjects;
@@ -86,7 +85,7 @@ public class MergeManager {
     public MergeManager(AbstractSession session) {
         this.session = session;
         this.mergedNewObjects = new IdentityHashMap();
-        this.objectsAlreadyMerged = new IdentityHashtable();
+        this.objectsAlreadyMerged = new IdentityHashMap();
         this.cascadePolicy = CASCADE_ALL_PARTS;
         this.mergePolicy = WORKING_COPY_INTO_ORIGINAL;
         this.acquiredLocks = new ArrayList();
@@ -95,9 +94,9 @@ public class MergeManager {
     /**
      * Build and return an identity set for the specified container.
      */
-    protected IdentityHashtable buildIdentitySet(Object container, ContainerPolicy containerPolicy, boolean keyByTarget) {
+    protected Map buildIdentitySet(Object container, ContainerPolicy containerPolicy, boolean keyByTarget) {
         // find next power-of-2 size
-        IdentityHashtable result = new IdentityHashtable(containerPolicy.sizeFor(container) + 1);
+        Map result = new IdentityHashMap(containerPolicy.sizeFor(container) + 1);
         for (Object iter = containerPolicy.iteratorFor(container); containerPolicy.hasNext(iter);) {
             Object element = containerPolicy.next(iter, getSession());
             if (keyByTarget) {
@@ -142,14 +141,14 @@ public class MergeManager {
         return mergePolicy;
     }
 
-    public IdentityHashtable getObjectDescriptors() {
+    public Map getObjectDescriptors() {
         if (this.objectDescriptors == null) {
-            this.objectDescriptors = new IdentityHashtable();
+            this.objectDescriptors = new IdentityHashMap();
         }
         return this.objectDescriptors;
     }
 
-    public IdentityHashtable getObjectsAlreadyMerged() {
+    public Map getObjectsAlreadyMerged() {
         return objectsAlreadyMerged;
     }
 
@@ -331,9 +330,9 @@ public class MergeManager {
         try {
             // Iterate over each clone and let the object build merge to clones into the originals.
             getSession().getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(this, uowChangeSet);
-            Enumeration objectChangeEnum = uowChangeSet.getAllChangeSets().keys();
-            while (objectChangeEnum.hasMoreElements()) {
-                ObjectChangeSet objectChangeSet = (ObjectChangeSet)objectChangeEnum.nextElement();
+            Iterator objectChangeEnum = uowChangeSet.getAllChangeSets().keySet().iterator();
+            while (objectChangeEnum.hasNext()) {
+                ObjectChangeSet objectChangeSet = (ObjectChangeSet)objectChangeEnum.next();
                 Object object = objectChangeSet.getTargetVersionOfSourceObject(getSession(), false);
 
                 // Don't read the object here.  If it is null then we won't merge it at this stage, unless it
@@ -353,9 +352,9 @@ public class MergeManager {
                     getSession().incrementProfile(SessionProfiler.ChangeSetsProcessed);
                 }
             }
-            Enumeration deletedObjects = uowChangeSet.getDeletedObjects().elements();
-            while (deletedObjects.hasMoreElements()) {
-                ObjectChangeSet changeSet = (ObjectChangeSet)deletedObjects.nextElement();
+            Iterator deletedObjects = uowChangeSet.getDeletedObjects().values().iterator();
+            while (deletedObjects.hasNext()) {
+                ObjectChangeSet changeSet = (ObjectChangeSet)deletedObjects.next();
                 changeSet.removeFromIdentityMap(getSession());
                 getSession().incrementProfile(SessionProfiler.DeletedObject);
             }
@@ -377,9 +376,9 @@ public class MergeManager {
         ContainerPolicy containerPolicy = mapping.getContainerPolicy();
 
         // The vectors must be converted to identity sets to avoid dependency on #equals().
-        IdentityHashtable backupSet = buildIdentitySet(backup, containerPolicy, false);
-        IdentityHashtable sourceSet = null;
-        IdentityHashtable targetToSources = null;
+        Map backupSet = buildIdentitySet(backup, containerPolicy, false);
+        Map sourceSet = null;
+        Map targetToSources = null;
 
         // We need either a source or target-to-source set, depending on the merge type.
         if (shouldMergeWorkingCopyIntoOriginal()) {
@@ -906,11 +905,11 @@ public class MergeManager {
         this.forceCascade = forceCascade;
     }
 
-    public void setObjectDescriptors(IdentityHashtable objectDescriptors) {
+    public void setObjectDescriptors(Map objectDescriptors) {
         this.objectDescriptors = objectDescriptors;
     }
 
-    protected void setObjectsAlreadyMerged(IdentityHashtable objectsAlreadyMerged) {
+    protected void setObjectsAlreadyMerged(Map objectsAlreadyMerged) {
         this.objectsAlreadyMerged = objectsAlreadyMerged;
     }
 
@@ -1036,7 +1035,7 @@ public class MergeManager {
      * INTERNAL:
      * Used to return a hashtable containing new objects found through the 
      * registerObjectForMergeCloneIntoWorkingCopy method.
-     * @return org.eclipse.persistence.internal.helper.IdentityHashtable
+     * @return Map
      */
     public IdentityHashMap getMergedNewObjects(){
         return mergedNewObjects;

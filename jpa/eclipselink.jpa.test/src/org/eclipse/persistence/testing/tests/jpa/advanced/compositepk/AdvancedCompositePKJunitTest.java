@@ -107,7 +107,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         em.getTransaction().begin();
         
         try {    
-            Department department = (Department) em.merge(em.find(Department.class, m_departmentPK));
+            Department department = em.merge(em.find(Department.class, m_departmentPK));
             
             Cubicle cubicle1 = new Cubicle("G");
             em.persist(cubicle1);
@@ -164,7 +164,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     }
     
     public void testReadDepartment() {
-        Department department = (Department) createEntityManager().find(Department.class, m_departmentPK);
+        Department department = createEntityManager().find(Department.class, m_departmentPK);
         
         assertTrue("Error on reading back the ordered department list.", department != null);
         assertTrue("The number of scientists were incorrect.", department.getScientists().size() > 0);
@@ -173,7 +173,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     public void testReadJuniorScientist() {
         JuniorScientist jScientist;
         
-        jScientist = (JuniorScientist) createEntityManager().find(JuniorScientist.class, m_jScientistPK);
+        jScientist = createEntityManager().find(JuniorScientist.class, m_jScientistPK);
         assertTrue("Error on reading back the junior scientist.", jScientist != null);
     }
 

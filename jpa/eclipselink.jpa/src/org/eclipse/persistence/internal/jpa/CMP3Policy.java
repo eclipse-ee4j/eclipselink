@@ -163,7 +163,7 @@ public class CMP3Policy extends CMPPolicy {
             }
             Object fieldValue = null;
             if (mapping.isDirectToFieldMapping()) {
-                fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(pkElementArray[index].getValue(key), (org.eclipse.persistence.internal.sessions.AbstractSession)session);
+                fieldValue = ((AbstractDirectMapping)mapping).getFieldValue(pkElementArray[index].getValue(key), session);
             } else {
                 fieldValue = pkElementArray[index].getValue(key);
             }

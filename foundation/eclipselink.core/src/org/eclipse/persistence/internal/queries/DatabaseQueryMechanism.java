@@ -109,7 +109,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             queryFields = query.getCall().getParameters();
         }
         
-        ClassDescriptor descriptor = (ClassDescriptor) getDescriptor();
+        ClassDescriptor descriptor = getDescriptor();
         List<DatabaseField> primaryKeyFields = descriptor.getPrimaryKeyFields();
         Vector primaryKeyValues = new Vector(primaryKeyFields.size());
         

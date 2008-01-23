@@ -27,7 +27,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
-import org.eclipse.persistence.testing.models.jpa.advanced.PlatinumBuyer;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.queries.ColumnResult;
 import org.eclipse.persistence.queries.EntityResult;

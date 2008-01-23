@@ -22,7 +22,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.descriptors.MethodBasedFieldTransformation;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -51,7 +50,6 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
-import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 
@@ -263,7 +261,7 @@ public class DefaultTableGenerator {
             isPKField = desc.getPrimaryKeyFields().contains(dbField);
 
             //then check if the field is a pk field in the secondary table(s), this is only applied to the multiple tables case.
-            Map secondaryKeyMap = (Map) desc.getAdditionalTablePrimaryKeyFields().get(dbField.getTable());
+            Map secondaryKeyMap = desc.getAdditionalTablePrimaryKeyFields().get(dbField.getTable());
 
             if (secondaryKeyMap != null) {
                 isPKField = isPKField || secondaryKeyMap.containsValue(dbField);
@@ -341,10 +339,6 @@ public class DefaultTableGenerator {
         //first create relation table
         TableDefinition tblDef = getTableDefFromDBTable(mapping.getRelationTable());
 
-        DatabaseField dbField = null;
-        DatabaseField parentDBField = null;
-        FieldDefinition fldDef = null;
-
         //add source foreign key fields into the relation table
         Vector srcFkFields = mapping.getSourceRelationKeyFields();
         Vector srcKeyFields = mapping.getSourceKeyFields();
@@ -399,7 +393,7 @@ public class DefaultTableGenerator {
         Vector refPkFields = mapping.getReferenceKeyFields();
 
         for (int index = 0; index < refPkFields.size(); index++) {
-            dbField = resolveDatabaseField((DatabaseField) refPkFields.get(index), (DatabaseField) mapping.getSourceKeyFields().get(index));
+            dbField = resolveDatabaseField((DatabaseField) refPkFields.get(index), mapping.getSourceKeyFields().get(index));
             tblDef.addField(getDirectCollectionReferenceKeyFieldDefFromDBField(dbField));
         }
 

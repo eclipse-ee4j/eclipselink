@@ -101,7 +101,7 @@ public class ConversionDataObject {
         example.aShort = new Short((short)1);
         example.aBigDecimal = new java.math.BigDecimal(1.0);
         example.aBigInteger = new java.math.BigInteger("1");
-        example.aNumber = (java.math.BigDecimal)example.aBigDecimal;
+        example.aNumber = example.aBigDecimal;
         example.anSQLDate = Helper.dateFromYearMonthDate(1903, 3, 3);
         Calendar c = Calendar.getInstance();
         c.set(1903, 3, 3);
@@ -160,7 +160,7 @@ public class ConversionDataObject {
         example.aShort = new Short((short)2);
         example.aBigDecimal = new java.math.BigDecimal(2.0);
         example.aBigInteger = new java.math.BigInteger("2");
-        example.aNumber = (java.math.BigDecimal)example.aBigDecimal;
+        example.aNumber = example.aBigDecimal;
         example.anSQLDate = Helper.dateFromYearMonthDate(1906, 6, 6);
         Calendar c = Calendar.getInstance();
         c.set(1906, 6, 6);
@@ -218,7 +218,7 @@ public class ConversionDataObject {
         example.aShort = new Short((short)3);
         example.aBigDecimal = new java.math.BigDecimal(3.0);
         example.aBigInteger = new java.math.BigInteger("3");
-        example.aNumber = (java.math.BigDecimal)example.aBigDecimal;
+        example.aNumber = example.aBigDecimal;
         example.anSQLDate = Helper.dateFromYearMonthDate(1909, 9, 9);
         Calendar c = Calendar.getInstance();
         c.set(1909, 9, 9);

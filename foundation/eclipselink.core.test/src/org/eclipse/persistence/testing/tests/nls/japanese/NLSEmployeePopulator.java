@@ -440,7 +440,7 @@ public class NLSEmployeePopulator {
         try {
             largeProject.setName("\u3066\u30a2\u30b7\u30aa\u30c6 \u3064\u30aa\u30de\u30db\u30c4\u30c8\u30b1\u30bb\u30ad");
             largeProject.setDescription("\u3042 \u30c4\u30aa\u30de\u30db\u30c4\u30c8\u30b1\u30bb\u30ad \u30a2\u30de\u30de\u30b7\u30b1\u30a6\u30a2\u30c8\u30b1\u30db\u30bb \u30c8\u30db \u30c4\u30aa\u30de\u30db\u30c4\u30c8 \u30db\u30bb \u30c8\u30af\u30aa \u30a6\u30db\u30c4\u30de\u30db\u30c4\u30a2\u30c8\u30b1\u30db\u30bb\u30c6 \u30a8\u30a2\u30c8\u30a2\u30a4\u30a2\u30c6\u30aa \u30c8\u30af\u30c4\u30db\u30ca\u30ad\u30af \u3068\u30db\u30de\u3057\u30b1\u30bb\u30b5.");
-            largeProject.setBudget((double)5000);
+            largeProject.setBudget(5000);
             largeProject.setMilestoneVersion(Helper.timestampFromYearMonthDateHourMinuteSecondNanos(1991, 10, 11, 12, 0, 0, 0));
 
         } catch (Exception exception) {

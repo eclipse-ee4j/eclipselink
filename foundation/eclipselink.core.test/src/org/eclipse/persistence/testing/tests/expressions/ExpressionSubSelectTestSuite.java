@@ -85,6 +85,8 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
     }
 
     /**
+     * TODO:
+     * This test was remove because it fails, should be fixed and added back.
      * @bug 3381830
      */
     private void addParallelCorrelatedSubSelectsTest() {
@@ -706,6 +708,11 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         addTest(test);
     }
 
+    /**
+     * TODO:
+     * This test was removed?  Probably because transformation query keys not supported,
+     * should be added back when transformation query keys are added. 
+     */
     private void addTransformationTest() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("gender").equal("Male");
@@ -718,6 +725,10 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         addTest(test);
     }
 
+    /**
+     * TODO:
+     * This test was removed, not sure why?
+     */
     private void addUpperCaseTest() {
         Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0002");
 
@@ -730,6 +741,10 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         addTest(test);
     }
 
+    /**
+     * TODO:
+     * This test was removed?
+     */
     private void addVehicleViewTest1() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = ((builder.get("owner").get("name").equal("ABC")).and(builder.get("owner").get("name").equal("ABC"))).and((builder.get("passengerCapacity").equal(-1)).not());

@@ -98,8 +98,8 @@ public class DiscoveryManager implements Runnable {
             DatagramPacket sendPacket = new DatagramPacket(outBytes, outBytes.length, InetAddress.getByName(multicastGroupAddress), multicastPort);
             getCommunicationSocket().send(sendPacket);
 
-            Object[] args = { rcm.getServiceId() };
-            rcm.logInfo("announcement_sent", (Object[])null);
+            Object[] args = null;
+            rcm.logInfo("announcement_sent", args);
 
         } catch (Exception ex) {
             // We got an exception. Map it to an RCM exception and call the handler

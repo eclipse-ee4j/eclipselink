@@ -310,7 +310,6 @@ public class TransformerFactory {
      */
     private Class getAttributeDeclaringClass(Class theClass, String attributeName) {       
         try {
-            Class sourceClass = null;
             Field field = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
@@ -338,7 +337,7 @@ public class TransformerFactory {
                 if (checkSuperclass){
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
-                            method = (Method)AccessController.doPrivileged(new PrivilegedGetMethod(clz, getterMethod, null, false));
+                            method = AccessController.doPrivileged(new PrivilegedGetMethod(clz, getterMethod, null, false));
                         } catch (PrivilegedActionException exception) {
                         }
                     } else {

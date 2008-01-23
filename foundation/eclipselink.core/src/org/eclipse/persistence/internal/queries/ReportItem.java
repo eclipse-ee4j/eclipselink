@@ -140,7 +140,7 @@ public class ReportItem implements Cloneable, java.io.Serializable {
                         ((QueryKeyExpression)getAttributeExpression()).setShouldUseOuterJoinForMultitableInheritance(true);
                     }
                 } else if (mapping.isAbstractDirectMapping()) {
-                    setMapping((DatabaseMapping)mapping);
+                    setMapping(mapping);
                 } else {
                     throw QueryException.invalidExpressionForQueryItem(getAttributeExpression(), query);
                 }

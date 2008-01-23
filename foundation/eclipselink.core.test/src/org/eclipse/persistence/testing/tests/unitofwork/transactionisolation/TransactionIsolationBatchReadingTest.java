@@ -98,9 +98,9 @@ TransactionIsolationBatchReadingTest extends AutoVerifyTestCase {
         strongAssert(((UnitOfWorkImpl)unitOfWork).getBatchReadObjects().size() == 2, 
                      "unitOfWork batchReadObjects should only be storing the female addresses");
 
-        if (((UnitOfWorkImpl)unitOfWork).getBatchReadObjects().keys().hasMoreElements()) {
+        if (!((UnitOfWorkImpl)unitOfWork).getBatchReadObjects().isEmpty()) {
             DatabaseQuery batchQuery = 
-                (DatabaseQuery)((UnitOfWorkImpl)unitOfWork).getBatchReadObjects().keys().nextElement();
+                (DatabaseQuery)((UnitOfWorkImpl)unitOfWork).getBatchReadObjects().keySet().iterator().next();
             strongAssert(batchQuery.getProperty("batched objects") == null, 
                          "triggering batch query on UOW should not store batched objects on the query.");
         }

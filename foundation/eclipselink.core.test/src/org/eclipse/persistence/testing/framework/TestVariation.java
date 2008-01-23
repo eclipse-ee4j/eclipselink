@@ -171,7 +171,7 @@ public class TestVariation {
             String name = ((String)names.elementAt(i)).toLowerCase();
             for (int j = 0; j < candidateGetters.size(); j++) {
                 if (((String)candidateGettersNames.elementAt(j)).indexOf(name) != -1) {
-                    getter = (Method)candidateGetters.elementAt(j);
+                    getter = candidateGetters.elementAt(j);
                     candidateGetters.remove(j);
                     candidateGettersNames.remove(j);
                     break;
@@ -179,7 +179,7 @@ public class TestVariation {
             }
             for (int j = 0; j < candidateSetters.size(); j++) {
                 if (((String)candidateSettersNames.elementAt(j)).indexOf(name) != -1) {
-                    setter = (Method)candidateSetters.elementAt(j);
+                    setter = candidateSetters.elementAt(j);
                     candidateSetters.remove(j);
                     candidateSettersNames.remove(j);
                     break;
@@ -187,7 +187,7 @@ public class TestVariation {
             }
             for (int j = 0; j < candidateFields.size(); j++) {
                 if (((String)candidateFieldsNames.elementAt(j)).indexOf(name) != -1) {
-                    field = (Field)candidateFields.elementAt(j);
+                    field = candidateFields.elementAt(j);
                     candidateFields.remove(j);
                     candidateFieldsNames.remove(j);
                     break;

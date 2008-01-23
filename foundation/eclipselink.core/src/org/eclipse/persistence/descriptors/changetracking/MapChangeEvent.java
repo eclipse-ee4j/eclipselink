@@ -9,8 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors.changetracking;
 
-import java.beans.PropertyChangeEvent;
-
 /**
  * <p>
  * <b>Purpose</b>: Define a change event for Map types.

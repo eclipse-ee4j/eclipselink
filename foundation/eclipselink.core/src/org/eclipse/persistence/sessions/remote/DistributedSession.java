@@ -203,13 +203,13 @@ public abstract class DistributedSession extends AbstractSession {
      * INTERNAL:
      * Return the corresponding objects from the remote session for the objects read from the server.
      */
-    public abstract Object getObjectCorrespondingTo(Object serverSideDomainObject, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query);
+    public abstract Object getObjectCorrespondingTo(Object serverSideDomainObject, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query);
 
     /**
      * INTERNAL:
      * Return the corresponding objects from the remote session for the objects read from the server.
      */
-    public abstract Object getObjectsCorrespondingToAll(Object serverSideDomainObjects, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query, ContainerPolicy containerPolicy);
+    public abstract Object getObjectsCorrespondingToAll(Object serverSideDomainObjects, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, ContainerPolicy containerPolicy);
 
     /**
      * INTERNAL:

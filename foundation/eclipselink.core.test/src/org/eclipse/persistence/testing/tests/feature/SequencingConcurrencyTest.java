@@ -251,9 +251,9 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
             Arrays.sort(big, this);
 
             // Verify that there are no duplicates or gaps in the array.
-            java.math.BigDecimal previous = (java.math.BigDecimal)big[0];
+            java.math.BigDecimal previous = big[0];
             for (int i = 1; i < (nIterations * nThreads); i++) {
-                java.math.BigDecimal current = (java.math.BigDecimal)big[i];
+                java.math.BigDecimal current = big[i];
                 if ((previous.intValue() + 1) != current.intValue()) {
                     throw new org.eclipse.persistence.testing.framework.TestErrorException("Gap in sequencing, or incorrect sequences generated.");
                 }

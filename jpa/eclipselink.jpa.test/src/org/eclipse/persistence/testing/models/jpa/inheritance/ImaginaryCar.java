@@ -12,7 +12,6 @@
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import javax.persistence.*;
-import static javax.persistence.InheritanceType.*;
 
 @Entity
 @Table(name="CMP3_FUEL_VEH")

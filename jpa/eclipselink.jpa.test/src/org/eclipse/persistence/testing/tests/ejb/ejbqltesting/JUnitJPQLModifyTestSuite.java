@@ -11,20 +11,9 @@
 package org.eclipse.persistence.testing.tests.ejb.ejbqltesting;
 
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 import java.util.Calendar;
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.eclipse.persistence.sessions.Session;
-
-import org.eclipse.persistence.queries.ReadAllQuery;
-import org.eclipse.persistence.queries.ReadObjectQuery;
-
-import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
@@ -34,7 +23,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTimePopulator;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTimeTableCreator;
-import org.eclipse.persistence.sessions.server.Server;
 import javax.persistence.*;
 
 /**

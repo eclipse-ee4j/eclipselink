@@ -12,7 +12,6 @@ package org.eclipse.persistence.testing.tests.employee;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.testing.framework.*;
 
@@ -56,7 +55,7 @@ public class AddDescriptorsTest extends AutoVerifyTestCase {
     }
 
     public void verify() {
-        newProjectDescriptor = (ClassDescriptor)getSession().getDescriptor(SmallProject.class).getInheritancePolicy().getParentDescriptor();
+        newProjectDescriptor = getSession().getDescriptor(SmallProject.class).getInheritancePolicy().getParentDescriptor();
         if (newProjectDescriptor == oldProjectDescriptor) {
             throw (new TestErrorException("The old descriptor for Project.class is referenced from SmallProject.inheritancePolicy "));
         }

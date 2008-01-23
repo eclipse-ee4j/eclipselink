@@ -75,6 +75,6 @@ public class HistoricalQualifiedTableEmployeeSystem extends EmployeeSystem {
         super.createTables(session);
         EmployeeTableCreator creator = new EmployeeTableCreator();
         HistoryFacade.generateHistoricalTableDefinitions(creator, session);
-        creator.replaceTables((DatabaseSession)session);
+        creator.replaceTables(session);
     }
 }

@@ -55,32 +55,32 @@ public class MappingSystem extends TestSystem {
             cubicleDescriptor.setSequenceNumberName(null);
         }
 
-        ((DatabaseSession)session).addDescriptors(project);
+        (session).addDescriptors(project);
 
         // Add the Legacy Test Project.
-        ((DatabaseSession)session).addDescriptors(legacyProject);
+        (session).addDescriptors(legacyProject);
 
         // Add the MultipleTableTest Test Project.
-        ((DatabaseSession)session).addDescriptors(multipleTableProject);
+        (session).addDescriptors(multipleTableProject);
 
         // Add the keyboard project - tests constraints.
-        ((DatabaseSession)session).addDescriptors(keyboardProject);
+        (session).addDescriptors(keyboardProject);
         ClassDescriptor joystickDescriptor = ((ClassDescriptor) keyboardProject.getDescriptors().get(Joystick.class));
         joystickDescriptor.addConstraintDependencies(Keyboard.class);
 
         // Add the insert order project.
-        ((DatabaseSession)session).addDescriptors(bidirectionalProject);
+        (session).addDescriptors(bidirectionalProject);
     }
 
     public void createTables(DatabaseSession session) {
-        SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
 
-        (new LegacyTableMaker()).replaceTables((DatabaseSession)session);
-        (new MultipleTableTestTableMaker()).replaceTables((DatabaseSession)session);
-        (new KeyboardTables()).replaceTables((DatabaseSession)session);
+        (new LegacyTableMaker()).replaceTables(session);
+        (new MultipleTableTestTableMaker()).replaceTables(session);
+        (new KeyboardTables()).replaceTables(session);
 
         //insert order test table creation
-        new BiDirectionInsertOrderTableMaker().replaceTables((DatabaseSession)session);
+        new BiDirectionInsertOrderTableMaker().replaceTables(session);
 
         //TableDefinition emp1Definition = Employee1.tableDefinition();
         TableDefinition empDefinition = Employee.tableDefinition();

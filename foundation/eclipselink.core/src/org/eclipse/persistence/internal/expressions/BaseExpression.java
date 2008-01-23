@@ -54,7 +54,7 @@ public abstract class BaseExpression extends Expression {
      * INTERNAL:
      * Used for cloning.
      */
-    protected void postCopyIn(Dictionary alreadyDone) {
+    protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
         if (this.baseExpression != null) {
             setBaseExpression(this.baseExpression.copiedVersionFrom(alreadyDone));

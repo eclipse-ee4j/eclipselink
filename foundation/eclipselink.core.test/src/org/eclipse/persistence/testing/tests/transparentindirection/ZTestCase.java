@@ -131,7 +131,7 @@ public class ZTestCase extends AutoVerifyTestCase {
             throw new RuntimeException("The method '" + method + "' (and its class) must be public.");
         } catch (InvocationTargetException ite) {
             ite.fillInStackTrace();
-            throw (Throwable)ite.getTargetException();
+            throw ite.getTargetException();
         }
     }
 

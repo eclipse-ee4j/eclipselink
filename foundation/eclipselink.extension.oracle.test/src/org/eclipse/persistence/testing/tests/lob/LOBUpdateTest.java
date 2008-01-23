@@ -55,7 +55,6 @@ public class LOBUpdateTest extends ComplexUpdateTest {
     public String getName() {
         String strUpdated = "Updated " + size + ", " + 2 * size;
         String strOriginal = "Original " + ((Image)originalObjectNotInDB).getPicture().length + ", " + ((Image)originalObjectNotInDB).getScript().length();
-        String usesUOW = "";
         String str = "LOBUpdateTest(" + strUpdated + "; " + strOriginal + ")";
         if (usesUnitOfWork) {
             str = str + " usesUOW";

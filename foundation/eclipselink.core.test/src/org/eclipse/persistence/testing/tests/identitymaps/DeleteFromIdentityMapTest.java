@@ -60,7 +60,7 @@ public class DeleteFromIdentityMapTest extends RegisterInIdentityMapTest {
     public void test() {
         super.test();
         try {
-            EmployeeDeleteTest.deleteDependencies((org.eclipse.persistence.sessions.Session)getSession(), (Employee)employees.lastElement());
+            EmployeeDeleteTest.deleteDependencies(getSession(), (Employee)employees.lastElement());
             getDatabaseSession().deleteObject(employees.lastElement());
         } catch (OptimisticLockException exception) {
             if (isNoIdentityMap()) {

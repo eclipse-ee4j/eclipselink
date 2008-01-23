@@ -11,7 +11,6 @@ package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
 import java.util.Date;
 
-import javax.persistence.Entity;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.AttributeOverride;

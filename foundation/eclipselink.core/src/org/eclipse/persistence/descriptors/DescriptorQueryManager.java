@@ -18,12 +18,11 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 
 /**
- * <p><b>Purpose</b>: The query manager allows for the database opperations that TopLink
+ * <p><b>Purpose</b>: The query manager allows for the database operations that TopLink
  * performs to be customized by the application.  For each descriptor a query can be
  * given that controls how a operation will occur.  A common example is if the application
  * requires a stored procedure to be used to insert the object, it can override the SQL call
@@ -384,7 +383,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
       * If specified this is used by the descriptor to insert itself into the database.
       * If the receiver uses sequence numbers, this query must return the updated sequence value.
       * This gives the user the ability to define exactly how to insert the data into the database,
-      * or access data externel from the database or from some other framework.
+      * or access data external from the database or from some other framework.
       */
     public InsertObjectQuery getInsertQuery() {
         return insertQuery;
@@ -571,7 +570,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
             // BUG#2698755
             // This check was backward, we default the type to Object
-            // Was checking Object is decendent of String not other way.
+            // Was checking Object is descendant of String not other way.
             if (Helper.areTypesAssignable(query.getArgumentTypes(), argumentTypes)) {
                 return query;
             }
@@ -637,7 +636,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * If specified this is used by the descriptor to read itself from the database.
      * The read arguments must be the primary key of the object only.
      * This gives the user the ability to define exactly how to read the object from the database,
-     * or access data externel from the database or from some other framework.
+     * or access data external from the database or from some other framework.
      */
     public ReadObjectQuery getReadObjectQuery() {
         return readObjectQuery;
@@ -666,9 +665,9 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
       * Return the receiver's update query.
       * This should be an instance of a valid subclass of UpdateObjectQuery.
       * If specified this is used by the descriptor to insert itself into the database.
-      * If the receiver uses optimisitic locking this must raise an error on optimisitic lock failure.
+      * If the receiver uses optimistic locking this must raise an error on optimistic lock failure.
       * This gives the user the ability to define exactly how to update the data into the database,
-      * or access data externel from the database or from some other framework.
+      * or access data external from the database or from some other framework.
       */
     public UpdateObjectQuery getUpdateQuery() {
         return updateQuery;
@@ -694,7 +693,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Return if a cutsom join expression is used.
+     * Return if a custom join expression is used.
      */
     public boolean hasCustomMultipleTableJoinExpression() {
         return hasCustomMultipleTableJoinExpression;
@@ -755,7 +754,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     private void populateQueries() {
 
         /* CR2260
-         * Descriptiron:
+         * Description:
          *   NullPointerException accessing null descriptor
          * Fix:
          *   Initialize queries with an instantiated descriptor at this point
@@ -899,7 +898,6 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         ObjectChangeSet changeSet = query.getObjectChangeSet();
         if ((changeSet != null) && (!changeSet.isNew())) {
             List changeRecords = changeSet.getChanges();
-            ObjectBuilder builder = getDescriptor().getObjectBuilder();
             for (Iterator iterator = changeRecords.iterator(); iterator.hasNext(); ) {
                 ChangeRecord record = (ChangeRecord)iterator.next();                
                 record.getMapping().postUpdate(query);
@@ -983,7 +981,6 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         ObjectChangeSet changeSet = query.getObjectChangeSet();
         if ((changeSet != null) && (!changeSet.isNew())) {
             List changeRecords = changeSet.getChanges();
-            ObjectBuilder builder = getDescriptor().getObjectBuilder();
             for (Iterator iterator = changeRecords.iterator(); iterator.hasNext(); ) {
                 ChangeRecord record = (ChangeRecord)iterator.next();
                 record.getMapping().preUpdate(query);
@@ -1033,7 +1030,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
     /**
      * ADVANCED:
-     * Set the additional join expression. Used in conjuction with
+     * Set the additional join expression. Used in conjunction with
      * multiple tables and inheritance relationships.
      * This can also be used if a sub-expression is always required to be
      * appended to all queries.  Such as tables that are shared based on a type field
@@ -1046,7 +1043,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     /**
      * ADVANCED:
      * Set the receiver's delete query.
-     * This should be an instance of a valid subclas of DeleteObjectQuery.
+     * This should be an instance of a valid subclass of DeleteObjectQuery.
      * If specified this is used by the descriptor to delete itself and its private parts from the database.
      * This gives the user the ability to define exactly how to delete the data from the database,
      * or access data external from the database or from some other framework.
@@ -1067,8 +1064,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * This allows the user to override the SQL generated by TopLink, with their own SQL or procedure call.
      * The arguments are translated from the fields of the source row,
      * through replacing the field names marked by '#' with the values for those fields.
- 	 * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this 
+     * method makes your application vulnerable to SQL injection attacks. 
      * <p>
      *    Example, "delete from EMPLOYEE where EMPLOYEE_ID = #EMPLOYEE_ID".
      */
@@ -1111,7 +1108,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     /**
      * ADVANCED:
      * Set the receiver's  does exist query.
-     * This should be an instance of a valid subclas of DoesExistQuery.
+     * This should be an instance of a valid subclass of DoesExistQuery.
      * If specified this is used by the descriptor to query existence of an object in the database.
      * This gives the user the ability to define exactly how to query existence from the database,
      * or access data external from the database or from some other framework.
@@ -1132,8 +1129,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * The arguments are translated from the fields of the source row, through replacing the field names marked by '#'
      * with the values for those fields.
      * This must return null if the object does not exist, otherwise return a database row.
-	 * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this 
+     * method makes your application vulnerable to SQL injection attacks. 
      * <p>
      * Example, "select EMPLOYEE_ID from EMPLOYEE where EMPLOYEE_ID = #EMPLOYEE_ID".
      */
@@ -1177,7 +1174,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
     /**
      * INTENAL:
-     * Set if a cutsom join expression is used.
+     * Set if a custom join expression is used.
      */
     protected void setHasCustomMultipleTableJoinExpression(boolean hasCustomMultipleTableJoinExpression) {
         this.hasCustomMultipleTableJoinExpression = hasCustomMultipleTableJoinExpression;
@@ -1220,8 +1217,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * This allows the user to override the SQL generated by TopLink, with their own SQL or procedure call.
      * The arguments are translated from the fields of the source row,
      * through replacing the field names marked by '#' with the values for those fields.
-	 * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this 
+     * method makes your application vulnerable to SQL injection attacks. 
      * <p>
      * Example, "insert into EMPLOYEE (F_NAME, L_NAME) values (#F_NAME, #L_NAME)".
      */
@@ -1382,8 +1379,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * The arguments are translated from the fields of the read arguments row,
      * through replacing the field names marked by '#' with the values for those fields.
      * Note that this is only used on readAllObjects(Class), and not when an expression is provided.
-	 * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this 
+     * method makes your application vulnerable to SQL injection attacks. 
      * <p>
      * Example, "select * from EMPLOYEE"
      */
@@ -1453,8 +1450,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * The arguments are translated from the fields of the read arguments row,
      * through replacing the field names marked by '#' with the values for those fields.
      * This must accept only the primary key of the object as arguments.
-	 * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this 
+     * method makes your application vulnerable to SQL injection attacks. 
      * <p>
      * Example, "select * from EMPLOYEE where EMPLOYEE_ID = #EMPLOYEE_ID"
      */
@@ -1488,7 +1485,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Set the receiver's update query.
      * This should be an instance of a valid subclass of UpdateObjectQuery.
      * If specified this is used by the descriptor to update itself in the database.
-     * If the receiver uses optimisitic locking this must raise an error on optimisitic lock failure.
+     * If the receiver uses optimistic locking this must raise an error on optimistic lock failure.
      * This gives the user the ability to define exactly how to update the data into the database,
      * or access data external from the database or from some other framework.
      */
@@ -1508,8 +1505,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * The arguments are translated from the fields of the source row,
      * through replacing the field names marked by '#' with the values for those fields.
      * This must check the optimistic lock field and raise an error on optimistic lock failure.
-	 * Warning: Allowing an unverified SQL string to be passed into this 
-	 * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this 
+     * method makes your application vulnerable to SQL injection attacks. 
      * <p>
      * Example, "update EMPLOYEE set F_NAME to #F_NAME, L_NAME to #L_NAME where EMPLOYEE_ID = #EMPLOYEE_ID".
      */

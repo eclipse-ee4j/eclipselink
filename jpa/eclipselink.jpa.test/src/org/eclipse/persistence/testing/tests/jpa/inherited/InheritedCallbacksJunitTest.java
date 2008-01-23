@@ -110,7 +110,7 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
     }
     
     public void testPostLoadOnFind() {
-        BeerConsumer beerConsumer = (BeerConsumer) createEntityManager().find(BeerConsumer.class, m_Id);
+        BeerConsumer beerConsumer = createEntityManager().find(BeerConsumer.class, m_Id);
         
         verifyCalled(0, beerConsumer.post_load_count, "PostLoad");
     }
@@ -121,7 +121,7 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
         em.getTransaction().begin();
 
         try {
-            beerConsumer = (BeerConsumer) em.find(BeerConsumer.class, m_Id);
+            beerConsumer = em.find(BeerConsumer.class, m_Id);
             em.refresh(beerConsumer);
             
             em.getTransaction().commit();
@@ -143,7 +143,7 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
         em.getTransaction().begin();
 
         try {
-            beerConsumer = (BeerConsumer) em.find(BeerConsumer.class, m_Id);
+            beerConsumer = em.find(BeerConsumer.class, m_Id);
             count1 = beerConsumer.pre_update_count;
             beerConsumer.setName("An updated name");
             count2 = beerConsumer.post_update_count;
@@ -167,7 +167,7 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
         em.getTransaction().begin();
 
         try {
-            beerConsumer = (BeerConsumer) em.find(BeerConsumer.class, m_Id);
+            beerConsumer = em.find(BeerConsumer.class, m_Id);
             count1 = beerConsumer.pre_remove_count;
             em.remove(beerConsumer);
             count2 = beerConsumer.post_remove_count;

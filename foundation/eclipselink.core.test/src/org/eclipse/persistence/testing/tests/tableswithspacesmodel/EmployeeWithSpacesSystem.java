@@ -42,7 +42,7 @@ public class EmployeeWithSpacesSystem extends TestSystem {
 
     public void createTables(DatabaseSession session) {
         String quoteChar = session.getPlatform().getIdentifierQuoteCharacter();
-        new EmployeeWithSpacesTableCreator(quoteChar).replaceTables((DatabaseSession)session);
+        new EmployeeWithSpacesTableCreator(quoteChar).replaceTables(session);
     }
 
     /**

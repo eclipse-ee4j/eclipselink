@@ -364,7 +364,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
     public void createTables(DatabaseSession session) {
         super.createTables(session);
         org.eclipse.persistence.internal.databaseaccess.DatabasePlatform platform = session.getLogin().getPlatform();
-        SchemaManager schema = new SchemaManager(((DatabaseSession) session));
+        SchemaManager schema = new SchemaManager((session));
 
         if (platform.isSQLServer()) {
             schema.replaceObject(buildSQLServerDeleteProcedure());

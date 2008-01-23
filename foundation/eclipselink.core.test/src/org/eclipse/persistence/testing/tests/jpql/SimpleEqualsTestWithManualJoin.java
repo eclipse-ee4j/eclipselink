@@ -30,7 +30,7 @@ public class SimpleEqualsTestWithManualJoin extends JPQLTestCase {
         ExpressionBuilder builder = new ExpressionBuilder(Employee.class);
         ExpressionBuilder addressBuilder = new ExpressionBuilder(Address.class);
         Expression whereClause = builder.get("addressId").equal(addressBuilder.get("id"));
-        Vector employees = (Vector)getSession().readAllObjects(Employee.class, whereClause);
+        Vector employees = getSession().readAllObjects(Employee.class, whereClause);
 
         setOriginalOject(employees);
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

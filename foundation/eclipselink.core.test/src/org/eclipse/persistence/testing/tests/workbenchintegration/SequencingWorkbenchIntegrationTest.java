@@ -11,7 +11,6 @@ package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import java.util.Iterator;
 
-import org.eclipse.persistence.Version;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;

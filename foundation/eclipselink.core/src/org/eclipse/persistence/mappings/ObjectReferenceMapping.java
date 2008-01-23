@@ -89,7 +89,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * this is a ObjectReference mapping, a recursive call is made to the buildExpressionFromExample method of
      * ObjectBuilder.
      */
-    public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, IdentityHashtable processedObjects, AbstractSession session) {
+    public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         String attributeName = this.getAttributeName();
         Object attributeValue = this.getRealAttributeValueFromObject(queryObject, session);
 
@@ -237,7 +237,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * ObjectReferenceMappings need to unwrap and wrap the
      * reference object.
      */
-    public void fixRealObjectReferences(Object object, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixRealObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         //bug 4147755 getRealAttribute... / setReal...
         Object attributeValue = getRealAttributeValueFromObject(object, session);
         attributeValue = getReferenceDescriptor().getObjectBuilder().unwrapObject(attributeValue, session);
@@ -677,7 +677,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects){
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         Object attributeValue = getAttributeValueFromObject(object);
         if (attributeValue != null && this.isCascadeRemove() ){
             Object reference = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
@@ -692,7 +692,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         Object attributeValue = getAttributeValueFromObject(object);
         if (attributeValue != null && getIndirectionPolicy().objectIsInstantiated(attributeValue)) {
             Object reference = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);
@@ -704,7 +704,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects){
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         Object attributeValue = getAttributeValueFromObject(object);
         if (attributeValue != null && this.isCascadePersist() && getIndirectionPolicy().objectIsInstantiated(attributeValue)){
             Object reference = getIndirectionPolicy().getRealAttributeValueFromObject(object, attributeValue);

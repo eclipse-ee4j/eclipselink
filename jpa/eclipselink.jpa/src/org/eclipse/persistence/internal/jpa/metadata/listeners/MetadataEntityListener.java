@@ -354,7 +354,7 @@ public class MetadataEntityListener extends DescriptorEventAdapter {
      * INTERNAL:
      */
     protected boolean isSessionPostBuildEvent(DescriptorEvent event) {
-        if (((String) m_eventStrings.get(event.getEventCode())).equals(POST_BUILD)) {
+        if ((m_eventStrings.get(event.getEventCode())).equals(POST_BUILD)) {
             return ! event.getSession().isUnitOfWork();
         }
         

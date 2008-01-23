@@ -17,7 +17,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.GeneratedValue;
 import javax.persistence.TableGenerator;
 import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
 
 @Entity
 @Table(name="CMP3_SERIAL_NUMBER")

@@ -42,7 +42,7 @@ public class RollbackObjectsTest extends AutoVerifyTestCase {
 
 	public void test() {
 		org.eclipse.persistence.sessions.Session hs = getSession().acquireHistoricalSession(pastTime);
-		pastObjects = (Vector)hs.readAllObjects(domainClass);
+		pastObjects = hs.readAllObjects(domainClass);
 		//getSession().getProject().checkDatabaseForDoesExist();
 
 		Vector currentProjects = getSession().readAllObjects(Project.class);
@@ -81,7 +81,7 @@ public class RollbackObjectsTest extends AutoVerifyTestCase {
 
 	public void verify() {
 		try {
-			Vector restoredObjects = (Vector)getSession().readAllObjects(domainClass);
+			Vector restoredObjects = getSession().readAllObjects(domainClass);
 			if (restoredObjects.size() != pastObjects.size()) {
 				throw new TestErrorException("Not all objects were restored.  Restored: " + restoredObjects.size() + " Total: " + pastObjects.size());
 			}

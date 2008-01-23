@@ -74,7 +74,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         }
         Object objectValue;
         while (cp.hasNext(iterator)) {
-            objectValue = cp.next(iterator, (org.eclipse.persistence.internal.sessions.AbstractSession)session);
+            objectValue = cp.next(iterator, session);
             marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
         }
 
@@ -238,8 +238,8 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         Namespace generatedNamespace = null;
         String xpath = originalValue.getLocalName();
         if (originalValue.getNamespaceURI() != null) {
-            xmlRootFragment.setNamespaceURI(((XMLRoot)originalValue).getNamespaceURI());
-            String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(((XMLRoot)originalValue).getNamespaceURI());
+            xmlRootFragment.setNamespaceURI((originalValue).getNamespaceURI());
+            String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI((originalValue).getNamespaceURI());
             if ((prefix == null) || prefix.equals("")) {
                 prefix = marshalRecord.getNamespaceResolver().generatePrefix();
                 generatedNamespace = new Namespace(prefix, xmlRootFragment.getNamespaceURI());
@@ -334,7 +334,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                     addTypeAttribute(descriptor, marshalRecord, typeValue);
                 }
 
-                objectBuilder.buildRow(marshalRecord, value, (AbstractSession)session, marshaller);
+                objectBuilder.buildRow(marshalRecord, value, session, marshaller);
 
                 objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
 

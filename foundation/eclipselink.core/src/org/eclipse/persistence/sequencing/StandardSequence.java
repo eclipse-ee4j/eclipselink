@@ -13,7 +13,6 @@ import java.util.Vector;
 import java.math.*;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 

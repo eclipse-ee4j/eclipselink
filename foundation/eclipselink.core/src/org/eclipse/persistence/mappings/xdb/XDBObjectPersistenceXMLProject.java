@@ -11,13 +11,10 @@ package org.eclipse.persistence.mappings.xdb;
 
 import java.util.*;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.factories.DirectToXMLTypeMappingHelper;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.mappings.*;
 
 /**
  * INTERNAL:

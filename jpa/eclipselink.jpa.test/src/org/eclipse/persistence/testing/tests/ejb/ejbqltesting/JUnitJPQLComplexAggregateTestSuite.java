@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.tests.ejb.ejbqltesting;
 
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,7 +31,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.testing.models.jpa.relationships.Customer;
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsExamples;
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle;
@@ -42,7 +40,6 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import junit.extensions.TestSetup;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.CompositePKTableCreator;
 
 /**
@@ -198,7 +195,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         String ejbqlString3 = "SELECT a.city, COUNT( DISTINCT e ) FROM Address a JOIN a.employees e GROUP BY a.city HAVING a.city =?1";
         Query q = em.createQuery(ejbqlString3);
         q.setParameter(1,havingFilterString);
-        List result = (List) q.getResultList();
+        List result = q.getResultList();
         
         Assert.assertTrue("Complex COUNT test failed", comparer.compareObjects(result, expectedResult));                      
     }
@@ -227,7 +224,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         
         String ejbqlString3 = "SELECT a.city, COUNT( DISTINCT e ) FROM Address a JOIN a.employees e GROUP BY a.city";
         Query q = em.createQuery(ejbqlString3);
-        List result = (List) q.getResultList();
+        List result = q.getResultList();
         
         Assert.assertTrue("Complex COUNT(Distinct) with Group By test failed", comparer.compareObjects(result, expectedResult));                      
     }
@@ -256,7 +253,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         
         String ejbqlString3 = "SELECT a.city, COUNT( e ), COUNT( DISTINCT e.lastName ) FROM Address a JOIN a.employees e GROUP BY a.city";
         Query q = em.createQuery(ejbqlString3);
-        List result = (List) q.getResultList();
+        List result = q.getResultList();
         
         Assert.assertTrue("Complex COUNT(Distinct) with Group By test failed", comparer.compareObjects(result, expectedResult));                      
     }
@@ -356,7 +353,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
         String ejbqlString3 = "SELECT a.city, COUNT( DISTINCT e ) FROM Address a JOIN a.employees e GROUP BY a.city";
         Query q = em.createQuery(ejbqlString3);
-        List result = (List) q.getResultList();
+        List result = q.getResultList();
         
         Assert.assertTrue("Complex COUNT with Group By test failed", comparer.compareObjects(result, expectedResult));                      
     }
@@ -481,14 +478,14 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
         String jpql = "SELECT COUNT(o) FROM Customer c LEFT JOIN c.orders o GROUP BY c.name";
         Query q = em.createQuery(jpql);
-        List result = (List) q.getResultList();
+        List result = q.getResultList();
         Collections.sort(result);
 
         Assert.assertEquals("Complex COUNT on joined variable simple PK", expectedResult, result);
 
         jpql = "SELECT COUNT(DISTINCT o) FROM Customer c LEFT JOIN c.orders o GROUP BY c.name";
         q = em.createQuery(jpql);
-        result = (List) q.getResultList();
+        result = q.getResultList();
         Collections.sort(result);
 
         Assert.assertEquals("Complex COUNT DISTINCT on joined variable simple PK", expectedResult, result);
@@ -509,7 +506,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
         String jpql = "SELECT COUNT(p) FROM Employee e LEFT JOIN e.phoneNumbers p WHERE e.lastName LIKE 'S%' GROUP BY e.lastName";
         Query q = em.createQuery(jpql);
-        List result = (List) q.getResultList();
+        List result = q.getResultList();
         Collections.sort(result);
 
         Assert.assertEquals("Complex COUNT on outer joined variable composite PK", expectedResult, result);
@@ -517,7 +514,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         // COUNT DISTINCT with inner join
         jpql = "SELECT COUNT(DISTINCT p) FROM Employee e JOIN e.phoneNumbers p WHERE e.lastName LIKE 'S%' GROUP BY e.lastName";
         q = em.createQuery(jpql);
-        result = (List) q.getResultList();
+        result = q.getResultList();
         Collections.sort(result);
   
         Assert.assertEquals("Complex DISTINCT COUNT on inner joined variable composite PK", expectedResult, result);
@@ -552,7 +549,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
             // COUNT DISTINCT with inner join
             String jpql = "SELECT COUNT(DISTINCT p) FROM Scientist e JOIN e.cubicle p WHERE e.lastName LIKE 'D%'";
             Query q = em.createQuery(jpql);
-            List result = (List) q.getResultList();
+            List result = q.getResultList();
             Collections.sort(result);
         
             Assert.assertEquals("Complex COUNT on joined variable composite PK", expectedResult, result);
@@ -577,7 +574,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
         String jpql = "SELECT COUNT(cc) FROM Customer c LEFT JOIN c.cCustomers cc GROUP BY c.name";
         Query q = em.createQuery(jpql);
-        List result = (List) q.getResultList();
+        List result = q.getResultList();
 
         Assert.assertEquals("Complex COUNT on joined variable over ManyToMany self refrenceing relationship failed", 
                             expectedResult, result);

@@ -16,7 +16,6 @@ import javax.persistence.EntityManager;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -80,7 +79,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         }catch(Exception e){
             em = createEntityManager();
             em.getTransaction().begin();
-            c = (Customer)em.find(Customer.class, c.getCustomerId());
+            c = em.find(Customer.class, c.getCustomerId());
             em.remove(c);
             try{
                 em.getTransaction().commit();
@@ -130,7 +129,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         }catch(Exception e){
             em = createEntityManager();
             em.getTransaction().begin();
-            c = (Customer)em.find(Customer.class, c.getCustomerId());
+            c = em.find(Customer.class, c.getCustomerId());
             em.remove(c);
             try{
                 em.getTransaction().commit();
@@ -185,7 +184,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         }catch(Exception e){
             em = createEntityManager();
             em.getTransaction().begin();
-            c = (Customer)em.find(Customer.class, c.getCustomerId());
+            c = em.find(Customer.class, c.getCustomerId());
             em.remove(c);
             try{
                 em.getTransaction().commit();
@@ -236,7 +235,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         }catch(Exception e){
             em = createEntityManager();
             em.getTransaction().begin();
-            c = (Customer)em.find(Customer.class, c.getCustomerId());
+            c = em.find(Customer.class, c.getCustomerId());
             em.remove(c);
             try{
                 em.getTransaction().commit();
@@ -291,7 +290,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             em = createEntityManager();
             try{
                 em.getTransaction().begin();
-                i = (Item)em.find(Item.class, i.getItemId());
+                i = em.find(Item.class, i.getItemId());
                 em.remove(i);
                 em.getTransaction().commit();
             }catch (Throwable t){
@@ -345,7 +344,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             em = createEntityManager();
             try{
                 em.getTransaction().begin();
-                i = (Item)em.find(Item.class, i.getItemId());
+                i = em.find(Item.class, i.getItemId());
                 em.remove(i);
                 em.getTransaction().commit();
             }catch (Throwable t){
@@ -394,7 +393,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             em = createEntityManager();
             try{
                 em.getTransaction().begin();
-                i = (Item)em.find(Item.class, i.getItemId());
+                i = em.find(Item.class, i.getItemId());
                 em.remove(i);
                 em.getTransaction().commit();
             }catch (Throwable t){
@@ -443,7 +442,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
             em = createEntityManager();
             try{
                 em.getTransaction().begin();
-                i = (Item)em.find(Item.class, i.getItemId());
+                i = em.find(Item.class, i.getItemId());
                 em.remove(i);
                 em.getTransaction().commit();
             }catch (Throwable t){

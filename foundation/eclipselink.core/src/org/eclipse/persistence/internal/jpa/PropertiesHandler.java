@@ -238,7 +238,7 @@ public class PropertiesHandler {
                 // it's not our property
                 return null; 
             }
-            String value = (String)getPropertyValueFromMap(name, m, useSystemAsDefault);
+            String value = getPropertyValueFromMap(name, m, useSystemAsDefault);
             if(value == null) {
                 return null;
             }
@@ -250,7 +250,7 @@ public class PropertiesHandler {
             if(prop == null) {
                 return null; 
             }
-            String value = (String)getPropertyValueFromMap(name, m, useSystemAsDefault);
+            String value = getPropertyValueFromMap(name, m, useSystemAsDefault);
             if(value == null) {
                 return null;
             }
@@ -265,7 +265,7 @@ public class PropertiesHandler {
             }
             
             // mapps suffixes to property values
-            Map mapIn = (Map)getPrefixValuesFromMap(prefix, m, useSystemAsDefault);
+            Map mapIn = getPrefixValuesFromMap(prefix, m, useSystemAsDefault);
             if(mapIn.isEmpty()) {
                 return mapIn;
             }

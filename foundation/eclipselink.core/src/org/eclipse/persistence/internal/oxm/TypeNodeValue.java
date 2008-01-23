@@ -30,7 +30,7 @@ public class TypeNodeValue extends NodeValue {
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
         Object objectValue = directMapping.getAttributeValueFromObject(object);
-        Object fieldValue = directMapping.getFieldValue(objectValue, (org.eclipse.persistence.internal.sessions.AbstractSession) session);
+        Object fieldValue = directMapping.getFieldValue(objectValue, session);
         if ((null == fieldValue) || (null == namespaceResolver)) {
             return false;
         }
@@ -73,7 +73,7 @@ public class TypeNodeValue extends NodeValue {
         QName nextQName;
         Class javaClass;
         for (int i = 0; i < schemaTypes.size(); i++) {
-            nextQName = (QName)((XMLUnionField)xmlField).getSchemaTypes().get(i);
+            nextQName = (QName)(xmlField).getSchemaTypes().get(i);
             try {
                 if (nextQName != null) {
                     javaClass = xmlField.getJavaClass(nextQName);

@@ -83,7 +83,7 @@ public class EntityManagerFactoryProvider {
             return;
         }
 
-        ddlGeneration = (String)getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION, props, PersistenceUnitProperties.NONE);
+        ddlGeneration = getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION, props, PersistenceUnitProperties.NONE);
         ddlGeneration = ddlGeneration.toLowerCase();
         if(ddlGeneration.equals(PersistenceUnitProperties.NONE)) {
             return;
@@ -98,15 +98,15 @@ public class EntityManagerFactoryProvider {
         } 
         
         if (createTables) {
-            String ddlGenerationMode = (String) getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION_MODE, props, PersistenceUnitProperties.DEFAULT_DDL_GENERATION_MODE);
+            String ddlGenerationMode = getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION_MODE, props, PersistenceUnitProperties.DEFAULT_DDL_GENERATION_MODE);
             // Optimize for cases where the value is explicitly set to NONE 
             if (ddlGenerationMode.equals(PersistenceUnitProperties.NONE)) {                
                 return;
             }
             
-            appLocation = (String)getConfigPropertyAsString(PersistenceUnitProperties.APP_LOCATION, props, PersistenceUnitProperties.DEFAULT_APP_LOCATION);
-            createDDLJdbc = (String)getConfigPropertyAsString(PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, props, PersistenceUnitProperties.DEFAULT_CREATE_JDBC_FILE_NAME);
-            dropDDLJdbc = (String)getConfigPropertyAsString(PersistenceUnitProperties.DROP_JDBC_DDL_FILE, props,  PersistenceUnitProperties.DEFAULT_DROP_JDBC_FILE_NAME);
+            appLocation = getConfigPropertyAsString(PersistenceUnitProperties.APP_LOCATION, props, PersistenceUnitProperties.DEFAULT_APP_LOCATION);
+            createDDLJdbc = getConfigPropertyAsString(PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, props, PersistenceUnitProperties.DEFAULT_CREATE_JDBC_FILE_NAME);
+            dropDDLJdbc = getConfigPropertyAsString(PersistenceUnitProperties.DROP_JDBC_DDL_FILE, props,  PersistenceUnitProperties.DEFAULT_DROP_JDBC_FILE_NAME);
             
             SchemaManager mgr = new SchemaManager(session);
             
@@ -204,9 +204,9 @@ public class EntityManagerFactoryProvider {
      */
     public static EntityManagerSetupImpl getEntityManagerSetupImpl(String emName){
     	if (emName == null){
-    		return (EntityManagerSetupImpl)emSetupImpls.get("");
+    		return emSetupImpls.get("");
     	}
-        return (EntityManagerSetupImpl)emSetupImpls.get(emName);
+        return emSetupImpls.get(emName);
     }
 
     /**

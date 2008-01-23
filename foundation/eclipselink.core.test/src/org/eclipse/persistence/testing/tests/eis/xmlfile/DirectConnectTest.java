@@ -31,7 +31,7 @@ public class DirectConnectTest extends AutoVerifyTestCase {
     }
 
     public Connection connect() throws ResourceException {
-        connectionFactory = (XMLFileConnectionFactory)new XMLFileConnectionFactory();
+        connectionFactory = new XMLFileConnectionFactory();
 
         Connection connection = connectionFactory.getConnection();
         getSession().logMessage(connection.toString());

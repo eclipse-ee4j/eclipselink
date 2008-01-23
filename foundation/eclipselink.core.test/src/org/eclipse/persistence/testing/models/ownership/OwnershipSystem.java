@@ -26,7 +26,7 @@ public class OwnershipSystem extends TestSystem {
         if (project == null) {
             project = new OwnershipProject();
         }
-        ((DatabaseSession)session).addDescriptors(project);
+        (session).addDescriptors(project);
     }
 
     public void createTables(DatabaseSession session) {
@@ -36,7 +36,7 @@ public class OwnershipSystem extends TestSystem {
             session.executeNonSelectingSQL("Alter TABLE OBJECT_C DROP CONSTRAINT OWNER_C_ONE_TO_ONE_");
         } catch (Exception ignore) {
         }
-        SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
 
         schemaManager.dropConstraints(ObjectA.tableDefinition());
         schemaManager.dropConstraints(ObjectB.tableDefinition());

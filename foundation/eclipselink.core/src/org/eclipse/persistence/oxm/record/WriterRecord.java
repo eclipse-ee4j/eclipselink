@@ -380,7 +380,7 @@ public class WriterRecord extends MarshalRecord {
                         getWriter().write(prefix);
                         getWriter().write('=');
                         getWriter().write('"');
-                        getWriter().write((String) prefixMappings.get(prefix));
+                        getWriter().write(prefixMappings.get(prefix));
                         getWriter().write('"');
                     }
                     prefixMappings.clear();

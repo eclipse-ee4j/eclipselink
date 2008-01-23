@@ -194,7 +194,7 @@ public class STI_EmployeePopulator {
         try {
             largeProject.setName("Sales Reporting");
             largeProject.setDescription("A reporting application to report on the corporations database through TopLink.");
-            largeProject.setBudget((double)5000);
+            largeProject.setBudget(5000);
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }

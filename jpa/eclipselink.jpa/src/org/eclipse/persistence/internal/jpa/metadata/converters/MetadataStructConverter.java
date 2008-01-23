@@ -14,8 +14,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.annotations.StructConverter;
 import org.eclipse.persistence.jpa.config.StructConverterType;
-import org.eclipse.persistence.exceptions.EntityManagerSetupException;
-
 import java.sql.Types;
 
 /**

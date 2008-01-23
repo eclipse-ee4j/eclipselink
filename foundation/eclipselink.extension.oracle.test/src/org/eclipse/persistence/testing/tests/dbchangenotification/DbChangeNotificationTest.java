@@ -130,7 +130,7 @@ public class DbChangeNotificationTest extends TestCase {
         // No change notification should be sent
         getAbstractSession().beginTransaction();
         SQLCall updateSmallProjectsCall = new SQLCall("UPDATE PROJECT SET DESCRIP = CONCAT('BLA ', DESCRIP) WHERE PROJ_TYPE = 'S'");
-        int rolledBack = getSession().executeNonSelectingCall(updateSmallProjectsCall);
+        getSession().executeNonSelectingCall(updateSmallProjectsCall);
         getAbstractSession().rollbackTransaction();
 
         // 2 ********************************************************

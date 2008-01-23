@@ -9,15 +9,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
+import java.util.*;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.Vector;
-import java.util.Hashtable;
-import java.util.Enumeration;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
-
-import java.util.IdentityHashMap;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -227,7 +223,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * This method is used to calculate the differences between two collections.
      */
     public void compareCollectionsForChange(Object oldCollection, Object newCollection, CollectionChangeRecord changeRecord, AbstractSession session, ClassDescriptor referenceDescriptor) {
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
+        // 2612538 - the default size of Map (32) is appropriate
         IdentityHashMap originalKeyValues = new IdentityHashMap();
         IdentityHashMap cloneKeyValues = new IdentityHashMap();
 
@@ -639,7 +635,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
     public void mergeChanges(CollectionChangeRecord changeRecord, Object valueOfTarget, boolean shouldMergeCascadeParts, MergeManager mergeManager, AbstractSession parentSession) {
         ObjectChangeSet objectChanges;        
         // Step 1 - iterate over the removed changes and remove them from the container.
-        Enumeration removeObjects = changeRecord.getRemoveObjectList().keys();
+        Iterator removeObjects = changeRecord.getRemoveObjectList().keySet().iterator();
         // Ensure the collection is synchronized while changes are being made,
         // clone also synchronizes on collection (does not have cache key read-lock for indirection).
         // Must synchronize of the real collection as the clone does so.
@@ -648,8 +644,8 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
             synchronizedValueOfTarget = ((IndirectCollection)valueOfTarget).getDelegateObject();
         }
         synchronized (synchronizedValueOfTarget) {
-            while (removeObjects.hasMoreElements()) {
-                objectChanges = (ObjectChangeSet) removeObjects.nextElement();                
+            while (removeObjects.hasNext()) {
+                objectChanges = (ObjectChangeSet) removeObjects.next();                
                 removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager.getSession()), valueOfTarget, parentSession);
                 if (!mergeManager.shouldMergeChangesIntoDistributedCache()) {
                     mergeManager.registerRemovedNewObjectIfRequired(objectChanges.getUnitOfWorkClone());
@@ -657,9 +653,9 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
             }
             
             // Step 2 - iterate over the added changes and add them to the container.
-            Enumeration addObjects = changeRecord.getAddObjectList().keys();                
-            while (addObjects.hasMoreElements()) {
-                objectChanges = (ObjectChangeSet) addObjects.nextElement();
+            Iterator addObjects = changeRecord.getAddObjectList().keySet().iterator();                
+            while (addObjects.hasNext()) {
+                objectChanges = (ObjectChangeSet) addObjects.next();
                 Object object = null;                    
                 if (shouldMergeCascadeParts) {
                     object = mergeCascadeParts(objectChanges, mergeManager, parentSession);

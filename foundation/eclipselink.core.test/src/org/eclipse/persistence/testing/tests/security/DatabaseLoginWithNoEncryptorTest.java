@@ -46,7 +46,7 @@ public class DatabaseLoginWithNoEncryptorTest extends AutoVerifyTestCase {
     protected void setup() throws Throwable {
     exceptionOccurred = false;
 
-    originalSession = (org.eclipse.persistence.sessions.Session) getSession();
+    originalSession = getSession();
     
     DatabaseLogin login = new DatabaseLogin();
     login.setPlatform(originalSession.getLogin().getPlatform());

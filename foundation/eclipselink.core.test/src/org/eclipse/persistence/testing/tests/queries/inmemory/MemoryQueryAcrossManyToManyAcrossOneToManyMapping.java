@@ -48,7 +48,7 @@ public class MemoryQueryAcrossManyToManyAcrossOneToManyMapping extends org.eclip
         getSession().addQuery("getAllEmployees", queryAll);
         allEmployees = (Vector)getSession().executeQuery("getAllEmployees");
         for (Enumeration enumtr = allEmployees.elements(); enumtr.hasMoreElements();) {
-            Vector projects = (Vector)((Employee)enumtr.nextElement()).getProjects();
+            Vector projects = ((Employee)enumtr.nextElement()).getProjects();
             employees.addAll(projects);
             //trigger all the value holders of projects
         }
@@ -61,7 +61,7 @@ public class MemoryQueryAcrossManyToManyAcrossOneToManyMapping extends org.eclip
             //trigger all the value holders of teamLeaders
         }
         for (Enumeration enumtr = leaders.elements(); enumtr.hasMoreElements();) {
-            Vector phones = (Vector)((Employee)enumtr.nextElement()).getPhoneNumbers();
+            Vector phones = ((Employee)enumtr.nextElement()).getPhoneNumbers();
             Vector allPhones = new Vector();
             allPhones.addAll(phones);
 

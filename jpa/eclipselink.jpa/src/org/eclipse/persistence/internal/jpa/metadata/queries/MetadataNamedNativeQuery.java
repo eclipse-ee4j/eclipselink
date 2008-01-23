@@ -9,9 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import java.util.List;
-import java.util.ArrayList;
-
 import javax.persistence.QueryHint;
 import javax.persistence.NamedNativeQuery;
 

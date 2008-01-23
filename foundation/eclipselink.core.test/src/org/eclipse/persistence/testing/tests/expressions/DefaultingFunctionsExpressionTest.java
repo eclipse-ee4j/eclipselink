@@ -37,7 +37,7 @@ public class DefaultingFunctionsExpressionTest extends ReadAllExpressionTest {
         if (op == null) {
             lowerCaseFunctionName = "LOWER";
         } else {
-            String withBracket = (String)op.getDatabaseStrings()[0];
+            String withBracket = op.getDatabaseStrings()[0];
             lowerCaseFunctionName = withBracket.substring(0, withBracket.length() - 1);
         }
 

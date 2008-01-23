@@ -67,7 +67,7 @@ public class MultipleClientBrokersTestModel extends org.eclipse.persistence.test
         tables.dropConstraints(session2);
         new org.eclipse.persistence.tools.schemaframework.SchemaManager(session1).createSequences();
         new org.eclipse.persistence.tools.schemaframework.SchemaManager(session2).createSequences();
-        new EmployeeSystem().populate((DatabaseSession)broker);
+        new EmployeeSystem().populate(broker);
         broker.logout();
     }
 

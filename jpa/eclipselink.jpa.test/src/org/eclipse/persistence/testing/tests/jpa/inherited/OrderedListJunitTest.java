@@ -138,11 +138,11 @@ public class OrderedListJunitTest extends JUnitTestCase {
         Alpine alpine2 = null;
         EntityManager em = createEntityManager();
         try {
-            beerConsumer = (BeerConsumer) em.find(BeerConsumer.class, m_beerConsumerId);
+            beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
             
             em.getTransaction().begin();
         
-            beerConsumer = (BeerConsumer) em.merge(beerConsumer);
+            beerConsumer = em.merge(beerConsumer);
 
             alpine1 = beerConsumer.removeAlpineBeerToConsume(1);
             alpine2 = beerConsumer.removeAlpineBeerToConsume(1);
@@ -157,7 +157,7 @@ public class OrderedListJunitTest extends JUnitTestCase {
         }
             
         // Read the beerConsumer back from the cache.
-        beerConsumer = (BeerConsumer) em.find(BeerConsumer.class, m_beerConsumerId);
+        beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
         Vector alpinesFromCache =  (Vector) beerConsumer.getAlpineBeersToConsume();
         
         assertTrue("Incorrect number of alpines in the list", alpinesFromCache.size() == 3);
@@ -172,11 +172,11 @@ public class OrderedListJunitTest extends JUnitTestCase {
         Alpine alpine2 = null;
         EntityManager em = createEntityManager();
         try {
-            beerConsumer = (BeerConsumer) em.find(BeerConsumer.class, m_beerConsumerId);
+            beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
             
             em.getTransaction().begin();
         
-            beerConsumer = (BeerConsumer) em.merge(beerConsumer);
+            beerConsumer = em.merge(beerConsumer);
 
             alpine1 = beerConsumer.moveAlpineBeerToConsume(2, 4);
             alpine2 = beerConsumer.moveAlpineBeerToConsume(1, 3);
@@ -191,7 +191,7 @@ public class OrderedListJunitTest extends JUnitTestCase {
         }
             
         // Read the beerConsumer back from the cache.
-        beerConsumer = (BeerConsumer) em.find(BeerConsumer.class, m_beerConsumerId);
+        beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
         Vector alpinesFromCache =  (Vector) beerConsumer.getAlpineBeersToConsume();
         
         assertTrue("Incorrect number of alpines in the list", alpinesFromCache.size() == 5);
@@ -206,11 +206,11 @@ public class OrderedListJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         try {
-            beerConsumer = (BeerConsumer) em.find(BeerConsumer.class, m_beerConsumerId);
+            beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
             
             em.getTransaction().begin();
         
-            beerConsumer = (BeerConsumer) em.merge(beerConsumer);
+            beerConsumer = em.merge(beerConsumer);
 
             alpine1 = beerConsumer.moveAlpineBeerToConsume(4, 1);
             
@@ -237,7 +237,7 @@ public class OrderedListJunitTest extends JUnitTestCase {
         }
             
         // Read the beerConsumer back from the cache.
-        beerConsumer = (BeerConsumer) em.find(BeerConsumer.class, m_beerConsumerId);
+        beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
         Vector alpinesFromCache =  (Vector) beerConsumer.getAlpineBeersToConsume();
         
         assertTrue("Incorrect number of alpines in the list", alpinesFromCache.size() == 5);

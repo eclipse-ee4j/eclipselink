@@ -243,8 +243,8 @@ public class InheritancePolicy implements Serializable, Cloneable {
         selectStatement.useDistinct();
         selectStatement.addTable(classIndicatorField.getTable());
         selectStatement.addField(getClassIndicatorField());
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
-        IdentityHashtable clonedExpressions = new IdentityHashtable();
+        // 2612538 - the default size of Map (32) is appropriate
+        Map clonedExpressions = new IdentityHashMap();
         selectStatement.setWhereClause(((ExpressionQueryMechanism)query.getQueryMechanism()).buildBaseSelectionCriteria(false, clonedExpressions));
         appendWithAllSubclassesExpression(selectStatement);
         selectStatement.setTranslationRow(query.getTranslationRow());
@@ -280,8 +280,8 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * selection criteria as the query.
      */
     public SQLSelectStatement buildViewSelectStatement(ObjectLevelReadQuery query) {
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
-        IdentityHashtable clonedExpressions = new IdentityHashtable();
+        // 2612538 - the default size of Map (32) is appropriate
+        Map clonedExpressions = new IdentityHashMap();
         ExpressionQueryMechanism mechanism = (ExpressionQueryMechanism)query.getQueryMechanism();
 
         // CR#3166555 - Have the mechanism build the statement to avoid duplicating code and ensure that lock-mode, hints, hierarchical, etc. are set.

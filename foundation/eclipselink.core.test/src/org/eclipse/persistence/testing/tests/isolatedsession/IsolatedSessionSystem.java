@@ -21,7 +21,7 @@ public class IsolatedSessionSystem extends TestSystem {
     }
 
     public void createTables(DatabaseSession session) {
-        SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
         schemaManager.replaceObject(IsolatedEmployee.buildIsolatedTableDefinition());
         schemaManager.replaceObject(IsolatedPhoneNumber.buildIsolatedTableDefinition());
         schemaManager.replaceObject(IsolatedAddress.buildIsolatedTableDefinition());

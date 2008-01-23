@@ -332,7 +332,7 @@ public class EmbeddedAccessor extends MetadataAccessor {
                 // are specified in the same order as the original joinColumns,
                 // therefore in the same order the foreign keys were added to
                 // the mapping.
-                DatabaseField fkField = (DatabaseField) ((OneToOneMapping) mapping).getForeignKeyFields().elementAt(index++);
+                DatabaseField fkField = ((OneToOneMapping) mapping).getForeignKeyFields().elementAt(index++);
                 aggregateMapping.addFieldNameTranslation(joinColumn.name(), fkField.getName());
             }   
         } else {

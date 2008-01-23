@@ -56,7 +56,7 @@ public class XMLAnyAttributeMappingNodeValue extends XMLSimpleMappingNodeValue i
         List extraNamespaces = new ArrayList();
         NamespaceResolver nr = marshalRecord.getNamespaceResolver();
         while (cp.hasNext(iter)) {
-            Object key = cp.next(iter, (org.eclipse.persistence.internal.sessions.AbstractSession)session);
+            Object key = cp.next(iter, session);
             if (key instanceof QName) {
                 QName name = (QName)key;
                 String value = cp.valueFromKey(key, collection).toString();
@@ -90,7 +90,7 @@ public class XMLAnyAttributeMappingNodeValue extends XMLSimpleMappingNodeValue i
             DirectMapContainerPolicy cp = (DirectMapContainerPolicy)xmlAnyAttributeMapping.getContainerPolicy();
             Object containerInstance = unmarshalRecord.getContainerInstance(this);
             QName key = new QName(namespaceURI, localName);
-            cp.addInto(key, value, containerInstance, (org.eclipse.persistence.internal.sessions.AbstractSession)unmarshalRecord.getSession());
+            cp.addInto(key, value, containerInstance, unmarshalRecord.getSession());
         } catch (Exception ex) {
             ex.printStackTrace();
         }

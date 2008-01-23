@@ -15,9 +15,7 @@ import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import oracle.spatial.geometry.JGeometry;
 import org.eclipse.persistence.queries.ReadAllQuery;
-import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.models.spatial.jgeometry.SimpleSpatial;
 import org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.Spatial;
@@ -66,14 +64,5 @@ public class Query_OrderedHint extends SimpleSpatialTestCase {
         String compareResult = reader.compare(results);
 
         assertNull(compareResult, compareResult);
-    }
-
-
-    private void populateTestGeometry(JGeometry g) {
-        UnitOfWork uow = session.acquireUnitOfWork();
-
-        uow.registerNewObject(new SimpleSpatial(6666, g));
-
-        uow.commit();
     }
 }

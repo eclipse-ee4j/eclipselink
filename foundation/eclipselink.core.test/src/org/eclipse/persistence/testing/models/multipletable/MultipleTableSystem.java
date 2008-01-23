@@ -29,6 +29,6 @@ public class MultipleTableSystem extends TestSystem {
     }
 
     public void createTables(DatabaseSession session) {
-        new MultipleTableTableCreator().replaceTables((DatabaseSession)session);
+        new MultipleTableTableCreator().replaceTables(session);
     }
 }

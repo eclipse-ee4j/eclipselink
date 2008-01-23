@@ -36,10 +36,10 @@ public class ReadNcharTest extends BaseNcharTest {
 
             int i = 1;
             while (resultSet.next()) {
-                String columnName = resultSet.getString("COLUMN_NAME");
+                resultSet.getString("COLUMN_NAME");
 
                 //TYPE_NAME String => Data source dependent type name,
-                String typeName = resultSet.getString("TYPE_NAME");
+                resultSet.getString("TYPE_NAME");
 
                 i++;
             }

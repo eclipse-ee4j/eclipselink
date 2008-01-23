@@ -56,26 +56,26 @@ public class MemoryQueryAcrossOneToManyMapping2 extends TestCase {
         getSession().removeQuery("getAllEmployees");
         getSession().addQuery("getAllEmployees", queryAll);
         allEmployees = (Vector)getSession().executeQuery("getAllEmployees");
-        for (Enumeration enumtr = (Enumeration)allEmployees.elements(); enumtr.hasMoreElements();) {
-            employees = (Vector)((Employee)enumtr.nextElement()).getManagedEmployees();
+        for (Enumeration enumtr = allEmployees.elements(); enumtr.hasMoreElements();) {
+            employees = ((Employee)enumtr.nextElement()).getManagedEmployees();
             allEmps.addAll(employees);
             //trigger all the value holders of employees who have managedEmployees
         }
         verifyEmp = allEmps;
-        for (Enumeration enum2 = (Enumeration)allEmployees.elements(); enum2.hasMoreElements();) {
-            anotherVector = (Vector)((Employee)enum2.nextElement()).getPhoneNumbers();
+        for (Enumeration enum2 = allEmployees.elements(); enum2.hasMoreElements();) {
+            anotherVector = ((Employee)enum2.nextElement()).getPhoneNumbers();
             phones.addAll(anotherVector);
             //trigger all the value holders of managers' phonenumbers
         }
 
-        for (Enumeration enum3 = (Enumeration)allEmps.elements(); enum3.hasMoreElements();) {
-            managedEmpVector = (Vector)((Employee)enum3.nextElement()).getManagedEmployees();
+        for (Enumeration enum3 = allEmps.elements(); enum3.hasMoreElements();) {
+            managedEmpVector = ((Employee)enum3.nextElement()).getManagedEmployees();
             managedEmp.addAll(managedEmpVector);
 
             //trigger all the value holders of managed employees' managed employees
         }
-        for (Enumeration enum4 = (Enumeration)allEmps.elements(); enum4.hasMoreElements();) {
-            phone = (Vector)((Employee)enum4.nextElement()).getPhoneNumbers();
+        for (Enumeration enum4 = allEmps.elements(); enum4.hasMoreElements();) {
+            phone = ((Employee)enum4.nextElement()).getPhoneNumbers();
             allPhones.addAll(phone);
 
             //trigger all the value holders of managed employees' phonenumbers
@@ -101,11 +101,11 @@ public class MemoryQueryAcrossOneToManyMapping2 extends TestCase {
     }
 
     public void verify() {
-        for (Enumeration check = (Enumeration)verifyEmp.elements(); check.hasMoreElements(); ) {
-            if ((employee.getManagedEmployees()).contains((Object)check.nextElement())) {
-                for (Enumeration phoneCheck = (Enumeration)verifyPhone.elements(); phoneCheck.hasMoreElements(); ) {
+        for (Enumeration check = verifyEmp.elements(); check.hasMoreElements(); ) {
+            if ((employee.getManagedEmployees()).contains(check.nextElement())) {
+                for (Enumeration phoneCheck = verifyPhone.elements(); phoneCheck.hasMoreElements(); ) {
 
-                    if ((employee.getPhoneNumbers()).contains((Object)phoneCheck.nextElement())) {
+                    if ((employee.getPhoneNumbers()).contains(phoneCheck.nextElement())) {
                         //?
                     }
                 }

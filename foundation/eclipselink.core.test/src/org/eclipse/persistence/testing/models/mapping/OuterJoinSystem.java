@@ -25,11 +25,11 @@ public class OuterJoinSystem extends TestSystem {
         if (project == null) {
             project = new OuterJoinWithMultipleTablesProject();
         }
-        ((org.eclipse.persistence.sessions.DatabaseSession)session).addDescriptors(project);
+        (session).addDescriptors(project);
     }
 
     public void createTables(DatabaseSession session) {
-        SchemaManager schemaManager = new SchemaManager((org.eclipse.persistence.sessions.DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
 
         //create added tables for outer join with multiple tables testing
         schemaManager.replaceObject(Course.tableDefinition());

@@ -9,10 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
-import java.io.StringWriter;
-
 import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
  *    <B>Purpose</B>: Provides DB2 Mainframe specific behaviour.<P>

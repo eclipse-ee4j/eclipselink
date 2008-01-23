@@ -28,11 +28,11 @@ public class FaultyUnitOfWorkTest extends AutoVerifyTestCase {
 
         // Read some object from the database.
         this.employeeInSession = (Employee)getSession().readAllObjects(Employee.class).firstElement();
-        this.addressOfEmployeeInSession = (Address)employeeInSession.getAddress();
+        this.addressOfEmployeeInSession = employeeInSession.getAddress();
         this.addressOfEmployeeInSession.setCity("LKO");
 
         Employee employee = (Employee)getSession().readAllObjects(Employee.class).lastElement();
-        this.anotherAddress = (Address)employee.getAddress();
+        this.anotherAddress = employee.getAddress();
     }
 
     public void reset() {

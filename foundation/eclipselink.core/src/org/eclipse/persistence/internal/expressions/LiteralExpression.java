@@ -93,7 +93,7 @@ public class LiteralExpression extends Expression {
      * INTERNAL:
      * Used for cloning.
      */
-    protected void postCopyIn(Dictionary alreadyDone) {
+    protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
         localBase = localBase.copiedVersionFrom(alreadyDone);
     }

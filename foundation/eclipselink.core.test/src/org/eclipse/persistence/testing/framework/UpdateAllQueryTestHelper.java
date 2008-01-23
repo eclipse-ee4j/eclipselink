@@ -29,7 +29,6 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.expressions.DataExpression;
-import org.eclipse.persistence.exceptions.QueryException;
  
 public class UpdateAllQueryTestHelper {
             
@@ -61,7 +60,7 @@ public class UpdateAllQueryTestHelper {
         if(descriptor.hasInheritance()) {
             ClassDescriptor parentDescriptor = descriptor;
             while(!parentDescriptor.getInheritancePolicy().isRootParentDescriptor()) {
-                parentDescriptor = (ClassDescriptor) parentDescriptor.getInheritancePolicy().getParentDescriptor();
+                parentDescriptor = parentDescriptor.getInheritancePolicy().getParentDescriptor();
             }
             rootClass = parentDescriptor.getJavaClass();
         }
@@ -105,7 +104,7 @@ public class UpdateAllQueryTestHelper {
                 if(((OneToOneMapping)mapping).getSourceToTargetKeyFields().size() > 1) {
                     errorMsg = "Attribute "+ mapping.getAttributeName() + " mapped with 1to1 mapping that has more than one targetKeyField. UpdateAllQueryTestHelper currently doesn't support that.";
                 }
-                DatabaseField targetField = (DatabaseField)((OneToOneMapping)mapping).getSourceToTargetKeyFields().get(new DatabaseField(keyString));
+                DatabaseField targetField = ((OneToOneMapping)mapping).getSourceToTargetKeyFields().get(new DatabaseField(keyString));
                 if(value instanceof Expression) {
                     valueExpression = ((Expression)(((Expression)value).clone())).getField(targetField);
                 } else {
@@ -243,7 +242,7 @@ public class UpdateAllQueryTestHelper {
     }
     
     static protected Object buildCopy(ClassDescriptor descriptor, Object original, UnitOfWork uow) {
-        Object copy = descriptor.getCopyPolicy().buildClone(original, (org.eclipse.persistence.internal.sessions.UnitOfWorkImpl)uow);
+        Object copy = descriptor.getCopyPolicy().buildClone(original, uow);
         descriptor.getObjectBuilder().copyInto(original, copy, true);
         return copy;
     }
@@ -255,7 +254,7 @@ public class UpdateAllQueryTestHelper {
             String name = (String)key;
             DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(name);
             if(mapping != null) {
-                field = (DatabaseField)mapping.getFields().firstElement();
+                field = mapping.getFields().firstElement();
             }
         } else if(key instanceof DataExpression) {
             DataExpression fieldExpression = (DataExpression)key;

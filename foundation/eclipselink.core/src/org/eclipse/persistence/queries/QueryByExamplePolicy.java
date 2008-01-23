@@ -255,14 +255,14 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * Called by the constructor.
      */
     public void excludeDefaultPrimitiveValues() {
-        excludeValue((int)0);
-        excludeValue((double)0.0);
-        excludeValue((boolean)false);
+        excludeValue(0);
+        excludeValue(0.0);
+        excludeValue(false);
         excludeValue((short)0);
-        excludeValue((char)'\u0000');
+        excludeValue('\u0000');
         excludeValue((long)0);
         excludeValue((byte)0);
-        excludeValue((float)0.0f);
+        excludeValue(0.0f);
         excludeValue(new String(""));
     }
 

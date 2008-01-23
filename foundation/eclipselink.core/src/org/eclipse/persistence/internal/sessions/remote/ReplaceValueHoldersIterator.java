@@ -9,6 +9,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.remote;
 
+import java.util.*;
+
 import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.internal.descriptors.*;
@@ -118,7 +120,7 @@ public class ReplaceValueHoldersIterator extends DescriptorIterator {
      * if we get here, it is a domain object
      */
     protected void iterate(Object object) {
-        ((IdentityHashtable)getResult()).put(object, this.buildObjectDescriptor(object));
+        ((Map)getResult()).put(object, this.buildObjectDescriptor(object));
     }
 
     /**

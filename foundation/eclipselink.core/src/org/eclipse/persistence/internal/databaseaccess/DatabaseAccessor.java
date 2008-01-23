@@ -800,7 +800,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             // if we are called from the ParameterizedBatchWritingMechanism then dbCall will not be null
             //and we should try an release the statement
             if (dbCall != null) {
-                releaseStatement((PreparedStatement)statement, dbCall.getSQLString(), dbCall, session);
+                releaseStatement(statement, dbCall.getSQLString(), dbCall, session);
             } else {
                 closeStatement(statement, session, dbCall);
             }

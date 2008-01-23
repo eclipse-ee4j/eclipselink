@@ -11,7 +11,6 @@ package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
 import java.util.Date;
 import javax.persistence.*;
-import static javax.persistence.TemporalType.DATE;
 
 // The table annotation is overidden in XML, remaining annotation is used
 @Table(name="BIGBAD_CANADIAN")

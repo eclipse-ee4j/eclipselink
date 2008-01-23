@@ -186,7 +186,7 @@ public class QueryKeyExpression extends ObjectExpression {
 
         //"ref" and "structure" mappings, no table printed in the FROM clause, need to get the table alias form the parent table
         if ((mapping != null) && (mapping.isReferenceMapping() || mapping.isStructureMapping())) {
-            DatabaseTable alias = getBaseExpression().aliasForTable((DatabaseTable)mapping.getDescriptor().getTables().firstElement());
+            DatabaseTable alias = getBaseExpression().aliasForTable(mapping.getDescriptor().getTables().firstElement());
             alias.setName(alias.getName() + "." + mapping.getField().getName());
             return alias;
         }

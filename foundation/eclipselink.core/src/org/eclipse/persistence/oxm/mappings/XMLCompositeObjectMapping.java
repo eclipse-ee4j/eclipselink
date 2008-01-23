@@ -350,7 +350,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
 
         if (getConverter() != null) {
             if (getConverter() instanceof XMLConverter) {
-                toReturn = ((XMLConverter)getConverter()).convertDataValueToObjectValue(toReturn, executionSession, ((XMLRecord)nestedRow).getUnmarshaller());
+                toReturn = ((XMLConverter)getConverter()).convertDataValueToObjectValue(toReturn, executionSession, (nestedRow).getUnmarshaller());
             } else {
                 toReturn = getConverter().convertDataValueToObjectValue(toReturn, executionSession);
             }

@@ -136,6 +136,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
             WriteObjectQuery writeQuery = new WriteObjectQuery();
             writeQuery.setIsExecutionClone(true);
             writeQuery.setObject(object);
+            writeQuery.setObjectChangeSet(changeSet);
             writeQuery.setCascadePolicy(query.getCascadePolicy());
             query.getSession().executeQuery(writeQuery);
         }

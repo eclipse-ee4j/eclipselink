@@ -180,7 +180,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * In case Query By Example is used, this method builds and returns an expression that
      * corresponds to a single attribue and it's value.
      */
-    public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, IdentityHashtable processedObjects, AbstractSession session) {
+    public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         return null;
     }
 
@@ -204,19 +204,19 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    abstract public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects);
+    abstract public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects);
 
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    abstract public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects);
+    abstract public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects);
 
     /**
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         // Do nothing by default, (direct and xml mappings do not require anything).
     }
     
@@ -372,7 +372,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    public abstract void fixObjectReferences(Object object, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query, RemoteSession session);
+    public abstract void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session);
 
     /**
      * INTERNAL:
@@ -381,7 +381,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * the corresponding object(s) from the remote session.
      * The default is to do nothing.
      */
-    public void fixRealObjectReferences(Object object, IdentityHashtable objectInformation, IdentityHashtable processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixRealObjectReferences(Object object, Map objectInformation, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         // do nothing
     }
 
@@ -511,7 +511,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * The default is to simply return the object itself, without worrying about
      * maintaining object identity.
      */
-    public Object getObjectCorrespondingTo(Object object, RemoteSession session, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object object, RemoteSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
         return object;
     }
 
@@ -1169,7 +1169,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * replace the value holders in the specified reference object(s)
      */
-    public IdentityHashtable replaceValueHoldersIn(Object object, RemoteSessionController controller) {
+    public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
         // by default, do nothing
         return null;
     }

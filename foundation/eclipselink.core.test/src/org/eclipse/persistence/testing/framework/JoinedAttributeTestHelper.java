@@ -22,7 +22,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.IdentityHashtable;
+import java.util.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -168,7 +168,7 @@ public class JoinedAttributeTestHelper {
     // Note that comparison:
     //   takes into account all objects in collections: pks are extracted, objects with the same pks are compared.
     public static String compareCollections(Collection col1, Collection col2, ClassDescriptor desc, AbstractSession session) {
-        IdentityHashtable processed = new IdentityHashtable();
+        Map processed = new IdentityHashMap();
         return compareCollections(col1, col2, desc, session, processed);
     }
     
@@ -178,11 +178,11 @@ public class JoinedAttributeTestHelper {
     //   doesn't instantiate indirection;
     //   error is reported in case on query has indirection instantiated and the other doesn't.
     public static String compareObjects(Object obj1, Object obj2, AbstractSession session) {
-        IdentityHashtable processed = new IdentityHashtable();
+        Map processed = new IdentityHashMap();
         return compareObjects(obj1, obj2, session, processed);
     }
 
-    protected static String compareCollections(Collection col1, Collection col2, ClassDescriptor desc, AbstractSession session, IdentityHashtable processed) {
+    protected static String compareCollections(Collection col1, Collection col2, ClassDescriptor desc, AbstractSession session, Map processed) {
         if(col1==null && col2==null) {
             return "";
         }
@@ -248,7 +248,7 @@ public class JoinedAttributeTestHelper {
         return errorMsg;
     }
     
-    protected static String compareObjects(Object obj1, Object obj2, AbstractSession session, IdentityHashtable processed) {
+    protected static String compareObjects(Object obj1, Object obj2, AbstractSession session, Map processed) {
         if(obj1==null && obj2==null) {
             return "";
         }
@@ -295,7 +295,7 @@ public class JoinedAttributeTestHelper {
         return errorMsg;
     }
 
-    protected static String compareAttributes(Object obj1, Object obj2, DatabaseMapping mapping, AbstractSession session, IdentityHashtable processed) {
+    protected static String compareAttributes(Object obj1, Object obj2, DatabaseMapping mapping, AbstractSession session, Map processed) {
         String errorMsg = "";
         if(mapping.isForeignReferenceMapping()) {
             ForeignReferenceMapping frm = (ForeignReferenceMapping)mapping;

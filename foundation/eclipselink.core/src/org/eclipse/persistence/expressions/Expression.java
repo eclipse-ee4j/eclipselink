@@ -620,8 +620,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * Clone the expression maintaining clone identity in the inter-connected expression graph.
      */
     public Object clone() {
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
-        Dictionary alreadyDone = new IdentityHashtable();
+        // 2612538 - the default size of Map (32) is appropriate
+        Map alreadyDone = new IdentityHashMap();
         return copiedVersionFrom(alreadyDone);
     }
 
@@ -640,8 +640,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * @bug 2720149 INVALID SQL WHEN USING BATCH READS AND MULTIPLE ANYOFS
      */
     public Expression cloneUsing(Expression newBase) {
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
-        Dictionary alreadyDone = new IdentityHashtable();
+        // 2612538 - the default size of Map (32) is appropriate
+        Map alreadyDone = new IdentityHashMap();
 
         // cloneUsing is identical to cloning save that the primary builder 
         // will be replaced not with its clone but with newBase.
@@ -797,7 +797,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    public Expression copiedVersionFrom(Dictionary alreadyDone) {
+    public Expression copiedVersionFrom(Map alreadyDone) {
         Expression existing = (Expression)alreadyDone.get(this);
         if (existing == null) {
             return registerIn(alreadyDone);
@@ -3206,7 +3206,7 @@ public abstract class Expression implements Serializable, Cloneable {
         return anOperator.expressionForArguments(this, args);
     }
 
-    protected void postCopyIn(Dictionary alreadyDone) {
+    protected void postCopyIn(Map alreadyDone) {
     }
 
     /**
@@ -3288,7 +3288,7 @@ public abstract class Expression implements Serializable, Cloneable {
         return getFunction(ExpressionOperator.Ref);
     }
 
-    protected Expression registerIn(Dictionary alreadyDone) {
+    protected Expression registerIn(Map alreadyDone) {
         Expression copy = shallowClone();
         alreadyDone.put(this, copy);
         copy.postCopyIn(alreadyDone);

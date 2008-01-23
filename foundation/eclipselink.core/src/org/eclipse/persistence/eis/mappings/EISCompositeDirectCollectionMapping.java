@@ -9,8 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.eis.mappings;
 
-import java.util.ArrayList;
-import javax.xml.namespace.QName;
 import org.eclipse.persistence.eis.mappings.EISMapping;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.DatabaseField;

@@ -39,7 +39,7 @@ public class ConcurrentNewObjectTest extends AutoVerifyTestCase {
 
     protected void test() {
         UnitOfWorkImpl unitOfWork1 = (UnitOfWorkImpl)getSession().acquireUnitOfWork();
-        Address address = (Address)new EmployeePopulator().addressExample1();
+        Address address = new EmployeePopulator().addressExample1();
         Employee originalClone = (Employee)unitOfWork1.readObject(Employee.class);
         originalClone.setAddress(address);
         unitOfWork1.issueSQLbeforeCompletion();

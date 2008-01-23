@@ -10,18 +10,12 @@
 package org.eclipse.persistence.logging;
 
 
-/** Java class "JavaLog.java" generated from Poseidon for UML.
- *  Poseidon for UML is developed by <A HREF="http://www.gentleware.com">Gentleware</A>.
- *  Generated with <A HREF="http://jakarta.apache.org/velocity/">velocity</A> template engine.
- */
-import java.io.Writer;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.*;
 import java.io.*;
 import java.util.logging.*;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.internal.localization.i18n.*;
 
 /**
  * PUBLIC:

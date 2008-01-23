@@ -33,7 +33,7 @@ public class TargetInvocationWhileEventExecutionTest extends ExceptionTest {
         descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(TargetInvocationWhileEventExecutionTest.class);
         descriptor.addTableName("DummyTable");
-        eventManager = (DescriptorEventManager)descriptor.getEventManager();
+        eventManager = descriptor.getEventManager();
         eventManager.setPreUpdateSelector("invalidMethod"); //this method throws an exception
         eventManager.initialize((AbstractSession)getSession());
         event = new DescriptorEvent(new TargetInvocationWhileEventExecutionTest());

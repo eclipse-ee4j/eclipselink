@@ -82,7 +82,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
     }
     
     public void testReadBlue() {
-        Blue blue = (Blue) createEntityManager().find(Blue.class, m_blueId);
+        Blue blue = createEntityManager().find(Blue.class, m_blueId);
         
         assertTrue("Error on reading back a Blue beer", blue != null);
     }
@@ -114,7 +114,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         em.getTransaction().begin();
         
         try {    
-            BeerConsumer beerConsumer = (BeerConsumer) em.find(BeerConsumer.class, m_beerConsumerId);
+            BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
             
             // Create a detached object that mirrors the beer consumer from
             // testCreateBeerConsumer.
@@ -123,7 +123,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             beerConsumerDetached.setId(beerConsumer.getId());
             beerConsumerDetached.setVersion(beerConsumer.getVersion());
             
-            Blue blue = (Blue) em.find(Blue.class, m_blueId);
+            Blue blue = em.find(Blue.class, m_blueId);
             beerConsumerDetached.addBlueBeerToConsume(blue);
             
             em.merge(beerConsumerDetached);

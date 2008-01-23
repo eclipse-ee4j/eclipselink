@@ -96,7 +96,7 @@ public class IdentifierTest extends JPQLTestCase {
     }
 
     public void setup() {
-        Vector employees = (Vector)getSession().readAllObjects(Employee.class);
+        Vector employees = getSession().readAllObjects(Employee.class);
 
         setOriginalOject(employees);
 

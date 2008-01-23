@@ -13,12 +13,10 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
 import java.lang.reflect.Constructor;
-import org.eclipse.persistence.Version;
 import org.eclipse.persistence.eis.*;
 import org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.oxm.XMLLogin;
-import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.logging.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.coordination.*;
@@ -837,10 +835,10 @@ public class SessionsFactory {
                     Class serverClass = m_classLoader.loadClass(serverClassName);
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false));
-                        platform = (ServerPlatform)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { (org.eclipse.persistence.sessions.DatabaseSession)session }));
+                        platform = (ServerPlatform)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { session }));
                     }else{
                         Constructor constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false);
-                        platform = (ServerPlatform)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { (org.eclipse.persistence.sessions.DatabaseSession)session });
+                        platform = (ServerPlatform)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { session });
                     }
                 } catch (Throwable e) {
                     throw SessionLoaderException.failedToParseXML("Server platform class is invalid: " + serverClassName, e);

@@ -12,7 +12,6 @@
 package org.eclipse.persistence.testing.tests.jpa.xml.merge.inherited;
 
 import java.sql.Date;
-import java.util.Map;
 import java.util.Iterator;
 import java.util.List;
 
@@ -163,7 +162,7 @@ public class EntityMappingsMergeInheritedJUnitTestCase extends JUnitTestCase {
     }
 
     public void testReadBeerConsumer() {
-        BeerConsumer consumer = (BeerConsumer) createEntityManager("ddlGeneration").find(BeerConsumer.class, beerConsumerId);
+        BeerConsumer consumer = createEntityManager("ddlGeneration").find(BeerConsumer.class, beerConsumerId);
         assertTrue("Error reading BeerConsumer", consumer.getId() == beerConsumerId);
     }
 
@@ -172,7 +171,7 @@ public class EntityMappingsMergeInheritedJUnitTestCase extends JUnitTestCase {
         em.getTransaction().begin();
         try{
         
-            BeerConsumer beerConsumer = (BeerConsumer) em.find(BeerConsumer.class, beerConsumerId);
+            BeerConsumer beerConsumer = em.find(BeerConsumer.class, beerConsumerId);
             beerConsumer.setName("Joe White");
             
             em.getTransaction().commit();
@@ -184,7 +183,7 @@ public class EntityMappingsMergeInheritedJUnitTestCase extends JUnitTestCase {
         }
         clearCache("ddlGeneration");
 
-        BeerConsumer newBeerConsumer = (BeerConsumer) em.find(BeerConsumer.class, beerConsumerId);
+        BeerConsumer newBeerConsumer = em.find(BeerConsumer.class, beerConsumerId);
         em.close();
         assertTrue("Error updating BeerConsumer name", newBeerConsumer.getName().equals("Joe White"));
     }
@@ -251,14 +250,14 @@ public class EntityMappingsMergeInheritedJUnitTestCase extends JUnitTestCase {
     
     // Verify transient property from mapped superclass is not persisted
     public void testMappedSuperclassTransientField() {
-        Canadian canadianBeer = (Canadian) createEntityManager("ddlGeneration").find(Canadian.class, canadianId);
+        Canadian canadianBeer = createEntityManager("ddlGeneration").find(Canadian.class, canadianId);
         assertTrue("Error reading Canadian", canadianBeer.getId() == canadianId);
         assertTrue("Mapped superclass transientString was persisted to the database", canadianBeer.getTransientString() == null);
     }
 
     // Verify transient property is not persisted
     public void testTransientField() {
-        Alpine alpineBeer = (Alpine) createEntityManager("ddlGeneration").find(Alpine.class, alpineId);
+        Alpine alpineBeer = createEntityManager("ddlGeneration").find(Alpine.class, alpineId);
         assertTrue("Error reading Alpine", alpineBeer.getId() == alpineId);
         assertTrue("localTransientString was persisted to the database", alpineBeer.getLocalTransientString() == null);
     }
@@ -268,7 +267,7 @@ public class EntityMappingsMergeInheritedJUnitTestCase extends JUnitTestCase {
         // including lifecycle methods should be ignored.
         int beerPrePersistCount = Beer.BEER_PRE_PERSIST_COUNT;
         EntityManager em = createEntityManager("ddlGeneration");
-        BeerConsumer consumer = (BeerConsumer) createEntityManager("ddlGeneration").find(BeerConsumer.class, beerConsumerId);
+        BeerConsumer consumer = createEntityManager("ddlGeneration").find(BeerConsumer.class, beerConsumerId);
 
         try {
             em.getTransaction().begin();
@@ -293,7 +292,7 @@ public class EntityMappingsMergeInheritedJUnitTestCase extends JUnitTestCase {
     public void testMappedSuperclassEntityListener() {
         int listenerPostPersistCount = BeerListener.POST_PERSIST_COUNT;
         EntityManager em = createEntityManager("ddlGeneration");
-        BeerConsumer consumer = (BeerConsumer) createEntityManager("ddlGeneration").find(BeerConsumer.class, beerConsumerId);
+        BeerConsumer consumer = createEntityManager("ddlGeneration").find(BeerConsumer.class, beerConsumerId);
 
         try {
             em.getTransaction().begin();

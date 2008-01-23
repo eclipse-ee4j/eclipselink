@@ -49,7 +49,7 @@ public class ConformResultsAcrossOneToManyTest extends org.eclipse.persistence.t
         queryAll.conformResultsInUnitOfWork();
         allEmployees = (Vector)getSession().executeQuery(queryAll);
         for (Enumeration enumtr = allEmployees.elements(); enumtr.hasMoreElements(); ) {
-            Vector phones = (Vector)((Employee)enumtr.nextElement()).getPhoneNumbers();
+            Vector phones = ((Employee)enumtr.nextElement()).getPhoneNumbers();
             allPhones.addAll(phones);
             //trigger all the value holders of phoneNumbers
         }

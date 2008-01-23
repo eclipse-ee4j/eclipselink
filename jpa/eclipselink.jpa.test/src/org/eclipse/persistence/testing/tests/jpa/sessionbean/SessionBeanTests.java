@@ -10,7 +10,6 @@ import javax.rmi.PortableRemoteObject;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;

@@ -13,7 +13,6 @@ import java.util.*;
 import java.util.logging.XMLFormatter;
 import java.util.logging.LogRecord;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * <p>

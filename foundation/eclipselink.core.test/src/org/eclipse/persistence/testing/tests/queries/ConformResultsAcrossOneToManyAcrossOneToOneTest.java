@@ -50,38 +50,38 @@ public class ConformResultsAcrossOneToManyAcrossOneToOneTest extends org.eclipse
         queryAll.setReferenceClass(Employee.class);
         queryAll.setSelectionCriteria(new ExpressionBuilder().anyOf("managedEmployees").get("address").get("city").equal("Perth"));
         allEmployees = (Vector)getSession().executeQuery(queryAll);
-        for (Enumeration enumtr = (Enumeration)allEmployees.elements(); enumtr.hasMoreElements();) {
-            employees = (Vector)((Employee)enumtr.nextElement()).getManagedEmployees();
+        for (Enumeration enumtr = allEmployees.elements(); enumtr.hasMoreElements();) {
+            employees = ((Employee)enumtr.nextElement()).getManagedEmployees();
             allEmps.addAll(employees);
             //trigger all the value holders of employees who have managedEmployees
         }
 
-        for (Enumeration enum2 = (Enumeration)allEmployees.elements(); enum2.hasMoreElements();) {
+        for (Enumeration enum2 = allEmployees.elements(); enum2.hasMoreElements();) {
             Address addr = ((Employee)enum2.nextElement()).getAddress();
             allAdds.add(addr);
             //trigger all the value holders of employees' addresses
         }
 
-        for (Enumeration enum3 = (Enumeration)allEmps.elements(); enum3.hasMoreElements();) {
+        for (Enumeration enum3 = allEmps.elements(); enum3.hasMoreElements();) {
             Address anotherAddress = ((Employee)enum3.nextElement()).getAddress();
             allAddresses.add(anotherAddress);
 
             //trigger all the value holders of managed employees' address
         }
-        for (Enumeration enum4 = (Enumeration)allEmps.elements(); enum4.hasMoreElements();) {
-            managedEmpVector = (Vector)((Employee)enum4.nextElement()).getManagedEmployees();
+        for (Enumeration enum4 = allEmps.elements(); enum4.hasMoreElements();) {
+            managedEmpVector = ((Employee)enum4.nextElement()).getManagedEmployees();
             managedEmp.addAll(managedEmpVector);
 
             //trigger all the value holders of managed employees' managed employees, we don't really need this, but it doesn't hurt
         }
 
-        for (Enumeration enum5 = (Enumeration)managedEmp.elements(); enum5.hasMoreElements();) {
+        for (Enumeration enum5 = managedEmp.elements(); enum5.hasMoreElements();) {
             Address anAddress = ((Employee)enum5.nextElement()).getAddress();
             address.add(anAddress);
             //trigger all the value holders of managers' addresses. we don't really need this, but it doesn't hurt
         }
-        for (Enumeration enum6 = (Enumeration)managedEmp.elements(); enum6.hasMoreElements();) {
-            Vector otherEmployees = (Vector)((Employee)enum6.nextElement()).getManagedEmployees();
+        for (Enumeration enum6 = managedEmp.elements(); enum6.hasMoreElements();) {
+            Vector otherEmployees = ((Employee)enum6.nextElement()).getManagedEmployees();
             allOtherEmps.add(otherEmployees);
 
             //trigger all the value holders of managed employees' managedEmps, we don't really need this, but it doesn't hurt

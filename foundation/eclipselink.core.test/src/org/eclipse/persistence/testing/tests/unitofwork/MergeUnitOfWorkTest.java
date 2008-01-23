@@ -139,7 +139,7 @@ public class MergeUnitOfWorkTest extends org.eclipse.persistence.testing.framewo
             }
         }
 
-        this.compareForProperMerge((Employee)this.objectBeforeMerge, (Employee)employeeToBeWritten);
+        this.compareForProperMerge((Employee)this.objectBeforeMerge, employeeToBeWritten);
 
     }
 }

@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.IdentityHashtable;
+import java.util.*;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
@@ -191,7 +191,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
-    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
     }
@@ -200,7 +200,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
       * INTERNAL:
       * Cascade registerNew for Create through mappings that require the cascade
       */
-    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //Our current XML support does not make use of the UNitOfWork.
     }
 
@@ -236,7 +236,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
     * Replace the transient attributes of the remote value holders
     * with client-side objects.
     */
-    public void fixObjectReferences(Object object, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         throw DescriptorException.invalidMappingOperation(this, "fixObjectReferences");
     }
 
@@ -437,7 +437,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
             return;
         }
         if (field != null) {
-            root = (Element)XPathEngine.getInstance().create((XMLField)getField(), record.getDOM());
+            root = XPathEngine.getInstance().create((XMLField)getField(), record.getDOM());
             DOMRecord rootRecord = new DOMRecord(root);
             rootRecord.setDocPresPolicy(record.getDocPresPolicy());
             rootRecord.setNamespaceResolver(record.getNamespaceResolver());
@@ -494,7 +494,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
                 }
 
                 if (xmlRootField != null) {
-                    XPathEngine.getInstance().create(xmlRootField, root, (String)element);
+                    XPathEngine.getInstance().create(xmlRootField, root, element);
                 } else {
                     Text textNode = doc.createTextNode((String)element);
                     root.replaceChild(textNode, nextChild);

@@ -274,8 +274,8 @@ public class DescriptorEvent extends EventObject {
     /**
      * ADVANCED:
      * Use this method when updating object attribute values, with unmapped objects Integer, String or others. in events to ensure that all
-     * required objects are updated.  TopLink will automaticaly update all objects and changesets
-     * envolved.  TopLink will update the field, in the row, to have the new value for the field
+     * required objects are updated.  TopLink will automatically update all objects and changesets
+     * involved.  TopLink will update the field, in the row, to have the new value for the field
      * that this mapping maps to.
      */
     public void updateAttributeWithObject(String attributeName, Object value) {
@@ -288,12 +288,13 @@ public class DescriptorEvent extends EventObject {
         Object cloneValue = value;
         Object original = null;
 
-        //only set the original object if we need to update it, ie before the merge takes place
+        //only set the original object if we need to update it, i.e. before the merge takes place
         if ((this.eventCode == DescriptorEventManager.PostCloneEvent) || (this.eventCode == DescriptorEventManager.PostMergeEvent)) {
             original = this.getOriginalObject();
         }
         Object originalValue = value;
         ObjectChangeSet eventChangeSet = this.getChangeSet();
+        // TODO: valueForChangeSet is never used, but seems it should be?  The compareForChange is only valid with a backup clone.
         Object valueForChangeSet = value;
 
         if ((this.query != null) && this.query.isObjectLevelModifyQuery()) {
@@ -303,7 +304,7 @@ public class DescriptorEvent extends EventObject {
         ClassDescriptor descriptor = getSession().getDescriptor(value.getClass());
 
         if (descriptor != null) {
-            //There is a descriptor for the value being passed in so we must be carefull
+            //There is a descriptor for the value being passed in so we must be careful
             // to convert the value before assigning it.
             if (eventChangeSet != null) {
                 valueForChangeSet = descriptor.getObjectBuilder().createObjectChangeSet(value, (UnitOfWorkChangeSet)eventChangeSet.getUOWChangeSet(), getSession());
@@ -337,8 +338,8 @@ public class DescriptorEvent extends EventObject {
     /**
     * ADVANCED:
     * Use this method when updating object attribute values, with unmapped objects Integer, String or others. in events to ensure that all
-    * required objects are updated.  TopLink will automaticaly update all objects and changesets
-    * envolved.  TopLink will update the field, in the row, to have the new value for the field
+    * required objects are updated.  TopLink will automatically update all objects and changesets
+    * involved.  TopLink will update the field, in the row, to have the new value for the field
     * that this mapping maps to.  If the attribute being updated is within an aggregate then pass the updated aggregate
     * and the attribute of the aggregate mapping into this method.
     */

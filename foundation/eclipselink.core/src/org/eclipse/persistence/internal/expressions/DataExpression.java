@@ -119,7 +119,7 @@ public abstract class DataExpression extends BaseExpression {
         tableAliases = null;
     }
 
-    public Vector copyCollection(Vector in, Dictionary alreadyDone) {
+    public Vector copyCollection(Vector in, Map alreadyDone) {
         if (in == null) {
             return null;
         }
@@ -362,7 +362,7 @@ public abstract class DataExpression extends BaseExpression {
      * INTERNAL:
      * Used for cloning.
      */
-    protected void postCopyIn(Dictionary alreadyDone) {
+    protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
         clearAliases();
         derivedFields = copyCollection(derivedFields, alreadyDone);

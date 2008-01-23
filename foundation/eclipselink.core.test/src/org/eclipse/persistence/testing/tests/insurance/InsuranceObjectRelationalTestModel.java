@@ -12,7 +12,6 @@ package org.eclipse.persistence.testing.tests.insurance;
 import java.util.*;
 
 import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.tests.expressions.*;
 import org.eclipse.persistence.testing.models.insurance.*;

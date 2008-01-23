@@ -398,7 +398,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
             while (keysEnum.hasNext()) {
                 Object key = keysEnum.next();
                 Object value = valuesEnum.next();
-                Class theClass = (Class)ConversionManager.getDefaultManager().convertObject((String)key, ClassConstants.CLASS);
+                Class theClass = (Class)ConversionManager.getDefaultManager().convertObject(key, ClassConstants.CLASS);
                 typeIndicatorTranslation.put(theClass, value);
                 typeIndicatorTranslation.put(value, theClass);
             }

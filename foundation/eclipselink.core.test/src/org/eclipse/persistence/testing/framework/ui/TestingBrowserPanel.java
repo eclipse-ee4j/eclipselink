@@ -18,7 +18,6 @@ import javax.swing.tree.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.sessionconsole.SessionConsolePanel;
 
@@ -1027,7 +1026,7 @@ public class TestingBrowserPanel extends JPanel implements ItemListener, TestEve
             LoadBuildSystem.loadBuild.loginChoice = login.getConnectionString();
         }
         LoadBuildSystem.loadBuild.databaseLogin = 
-                (DatabaseLogin)getSessionInspectorPanel().getSession().getProject().getLogin();
+                getSessionInspectorPanel().getSession().getProject().getLogin();
     }
 
     /**

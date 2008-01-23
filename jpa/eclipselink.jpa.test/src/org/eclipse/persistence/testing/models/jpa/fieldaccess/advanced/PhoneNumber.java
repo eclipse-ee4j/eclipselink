@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Vector;
 
 import javax.persistence.*;
-import static javax.persistence.FetchType.*;
 import static javax.persistence.EnumType.STRING;
 
 import org.eclipse.persistence.annotations.BasicCollection;

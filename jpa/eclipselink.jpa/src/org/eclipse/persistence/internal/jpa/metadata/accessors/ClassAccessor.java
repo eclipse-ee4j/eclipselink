@@ -22,7 +22,6 @@ import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -61,8 +60,6 @@ import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.annotations.ReadOnly;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-
-import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 
@@ -107,7 +104,6 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLConstants;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLHelper;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 
 import org.eclipse.persistence.queries.ColumnResult;

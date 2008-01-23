@@ -157,7 +157,7 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
     }
 
     public void testReadBeerConsumer() {
-        BeerConsumer consumer = (BeerConsumer) createEntityManager().find(BeerConsumer.class, beerConsumerId);
+        BeerConsumer consumer = createEntityManager().find(BeerConsumer.class, beerConsumerId);
         assertTrue("Error reading BeerConsumer", consumer.getId() == beerConsumerId);
     }
 
@@ -166,7 +166,7 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         em.getTransaction().begin();
         try{
         
-            BeerConsumer beerConsumer = (BeerConsumer) em.find(BeerConsumer.class, beerConsumerId);
+            BeerConsumer beerConsumer = em.find(BeerConsumer.class, beerConsumerId);
             beerConsumer.setName("Joe White");
             
             em.getTransaction().commit();
@@ -178,7 +178,7 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         }
         clearCache();
 
-        BeerConsumer newBeerConsumer = (BeerConsumer) em.find(BeerConsumer.class, beerConsumerId);
+        BeerConsumer newBeerConsumer = em.find(BeerConsumer.class, beerConsumerId);
         em.close();
         assertTrue("Error updating BeerConsumer name", newBeerConsumer.getName().equals("Joe White"));
     }

@@ -83,7 +83,7 @@ public class HistoricalEmployeeSystem extends EmployeeSystem {
         
 		EmployeeTableCreator creator = new EmployeeTableCreator();
 		HistoryFacade.generateHistoricalTableDefinitions(creator, session);
-		creator.replaceTables((DatabaseSession) session);
+		creator.replaceTables(session);
 	}
     
     private void executeCall(DatabaseSession session, String call) {

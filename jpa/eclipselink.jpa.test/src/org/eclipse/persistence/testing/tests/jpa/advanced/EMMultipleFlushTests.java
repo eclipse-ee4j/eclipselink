@@ -11,7 +11,6 @@ package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.util.*;
 import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
@@ -112,16 +111,16 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
     public void test(){
         try {
             beginTransaction();
-            Employee employee = (Employee)getEntityManager().find(Employee.class, empIDs[1]);
-            Employee employee4 = (Employee)getEntityManager().find(Employee.class, empIDs[3]);
-            Project project = (Project)getEntityManager().find(Project.class, projIDs[1]);
-            Address address = (Address)getEntityManager().find(Address.class, addrIDs[0]);
-            Address address5 = (Address)getEntityManager().find(Address.class, addrIDs[1]);
+            Employee employee = getEntityManager().find(Employee.class, empIDs[1]);
+            Employee employee4 = getEntityManager().find(Employee.class, empIDs[3]);
+            Project project = getEntityManager().find(Project.class, projIDs[1]);
+            Address address = getEntityManager().find(Address.class, addrIDs[0]);
+            Address address5 = getEntityManager().find(Address.class, addrIDs[1]);
             
             address5.getEmployees().size();
             project.addTeamMember(employee);
             employee.addProject(project);
-            PhoneNumber phone = (PhoneNumber)employee.getPhoneNumbers().iterator().next();
+            PhoneNumber phone = employee.getPhoneNumbers().iterator().next();
             employee.getPhoneNumbers().remove(phone);
             phones.add(phone.buildPK());
             removedPhone.put("before remove", getEntityManager().find(PhoneNumber.class, phones.get(0)));
@@ -134,7 +133,7 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
             getEntityManager().flush();
             removedPhone.put("after first flush", getEntityManager().find(PhoneNumber.class, phones.get(0)));
             removedAddress.put("after first flush", getEntityManager().find(Address.class, addrIDs[0]));
-            phone = (PhoneNumber)employee.getPhoneNumbers().iterator().next();
+            phone = employee.getPhoneNumbers().iterator().next();
             employee.getPhoneNumbers().remove(phone);
             phones.add(phone.buildPK());
             getEntityManager().remove(phone);
@@ -153,7 +152,7 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
     }
 
     public void verify(){
-        Employee employee = (Employee)getEntityManager().find(Employee.class, empIDs[1]);
+        Employee employee = getEntityManager().find(Employee.class, empIDs[1]);
         if ( (!employee.getLastName().equals("Fourlang"))){
             throw new TestErrorException("Employee ID :" + empIDs[1] + " Last Name not Updated");
         }
@@ -161,7 +160,7 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
             throw new TestErrorException("Employee ID :" + empIDs[1] + " Salary Not Updated");
         }
 
-        if (((Project)employee.getProjects().iterator().next()).getId().equals(projIDs[1])){
+        if ((employee.getProjects().iterator().next()).getId().equals(projIDs[1])){
             throw new TestErrorException("Employee ID :" + empIDs[1] + " Project not added");
         }
         
@@ -169,11 +168,11 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
             throw new TestErrorException("Employee ID :" + empIDs[1] + " Phones Not Deleted");
         }
         
-        PhoneNumber phone = (PhoneNumber)getEntityManager().find(PhoneNumber.class, phones.get(0));
+        PhoneNumber phone = getEntityManager().find(PhoneNumber.class, phones.get(0));
         if (phone != null){
             throw new TestErrorException("Phone ID :" + phones.get(0) + " not deleted");
         }
-        phone = (PhoneNumber)getEntityManager().find(PhoneNumber.class, phones.get(1));
+        phone = getEntityManager().find(PhoneNumber.class, phones.get(1));
         if (phone != null){
             throw new TestErrorException("Phone ID :" + phones.get(1) + " not deleted");
         }
@@ -181,7 +180,7 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
         //lets initialize the identity map to make sure they were persisted
         ((JpaEntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
             
-        employee = (Employee)getEntityManager().find(Employee.class, empIDs[1]);
+        employee = getEntityManager().find(Employee.class, empIDs[1]);
         if ( (!employee.getLastName().equals("Fourlang"))){
             throw new TestErrorException("Employee ID :" + empIDs[1] + " Last Name not Updated on Database");
         }
@@ -197,11 +196,11 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
             throw new TestErrorException("Employee ID :" + empIDs[1] + " Phones Not Deleted on Database");
         }
         
-        phone = (PhoneNumber)getEntityManager().find(PhoneNumber.class, phones.get(0));
+        phone = getEntityManager().find(PhoneNumber.class, phones.get(0));
         if (phone != null){
             throw new TestErrorException("Phone ID :" + phones.get(0) + " not deleted on Database");
         }
-        phone = (PhoneNumber)getEntityManager().find(PhoneNumber.class, phones.get(1));
+        phone = getEntityManager().find(PhoneNumber.class, phones.get(1));
         if (phone != null){
             throw new TestErrorException("Phone ID :" + phones.get(1) + " not deleted on Database");
         }

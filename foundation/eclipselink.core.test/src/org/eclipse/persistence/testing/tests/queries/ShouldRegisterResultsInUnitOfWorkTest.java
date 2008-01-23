@@ -66,7 +66,7 @@ public class ShouldRegisterResultsInUnitOfWorkTest extends ConformResultsInUnitO
     public void verify() {
         try {
             // Check that no employees were registered and put in the UOW cache.
-            Vector registeredEmployees = ((org.eclipse.persistence.sessions.UnitOfWork)unitOfWork).getIdentityMapAccessor().getAllFromIdentityMap(null, Employee.class, null, null);
+            Vector registeredEmployees = (unitOfWork).getIdentityMapAccessor().getAllFromIdentityMap(null, Employee.class, null, null);
             if (registeredEmployees.size() != 2) {
                 throw new TestErrorException("Should be only two employees registered in UOW cache, not: " + registeredEmployees.size());
             }
@@ -88,7 +88,7 @@ public class ShouldRegisterResultsInUnitOfWorkTest extends ConformResultsInUnitO
             }
 
             // Check that unwrapping triggered all the objects to be cloned.
-            registeredEmployees = ((org.eclipse.persistence.sessions.UnitOfWork)unitOfWork).getIdentityMapAccessor().getAllFromIdentityMap(null, Employee.class, null, null);
+            registeredEmployees = (unitOfWork).getIdentityMapAccessor().getAllFromIdentityMap(null, Employee.class, null, null);
             if (registeredEmployees.size() != 12) {
                 throw new TestErrorException("Should now be 12 employees registered in UOW cache, not: " + registeredEmployees.size());
             }

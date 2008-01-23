@@ -12,7 +12,6 @@
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
 import javax.persistence.*;
-import static javax.persistence.CascadeType.*;
 import static javax.persistence.GenerationType.*;
 
 public class Certification  {

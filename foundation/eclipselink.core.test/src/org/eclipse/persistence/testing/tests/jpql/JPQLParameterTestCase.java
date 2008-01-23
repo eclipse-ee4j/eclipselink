@@ -20,7 +20,7 @@ public class JPQLParameterTestCase extends JPQLTestCase {
         try {
             populateQuery();
             getSession().logMessage("Running EJBQL -> " + getEjbqlString());
-            setReturnedObjects((Vector)getSession().executeQuery(getQuery(), getArguments()));
+            setReturnedObjects(getSession().executeQuery(getQuery(), getArguments()));
         } catch (Exception e) {
             throw new TestErrorException(e.getMessage());
         }

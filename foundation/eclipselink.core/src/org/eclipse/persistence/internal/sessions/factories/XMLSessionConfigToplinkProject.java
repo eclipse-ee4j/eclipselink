@@ -2,12 +2,7 @@ package org.eclipse.persistence.internal.sessions.factories;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.log.JavaLogConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.log.LogConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.log.ServerLogConfig;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 /**
  * INTERNAL:
  * OX mapping project provides back compatibility for toplink 

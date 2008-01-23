@@ -9,8 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
-import java.util.ListResourceBundle;
-
 /**
  * English ResourceBundle for EclipseLinkLocalization messages.
  *

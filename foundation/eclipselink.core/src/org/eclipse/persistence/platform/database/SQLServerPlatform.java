@@ -408,10 +408,10 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
 
         values.put(Integer.class, new Integer(Integer.MIN_VALUE));
         values.put(Long.class, new Long(Long.MIN_VALUE));
-        values.put(Double.class, new Double((double)-9));
+        values.put(Double.class, new Double(-9));
         values.put(Short.class, new Short(Short.MIN_VALUE));
         values.put(Byte.class, new Byte(Byte.MIN_VALUE));
-        values.put(Float.class, new Float((float)-9));
+        values.put(Float.class, new Float(-9));
         values.put(java.math.BigInteger.class, new java.math.BigInteger("-9999999999999999999999999999"));
         values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-999999999.9999999999999999999"));
         return values;

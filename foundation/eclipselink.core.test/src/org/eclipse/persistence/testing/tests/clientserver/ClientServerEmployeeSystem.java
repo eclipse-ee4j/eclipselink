@@ -27,7 +27,7 @@ public class ClientServerEmployeeSystem extends TestSystem {
     }
 
     public void createTables(DatabaseSession session) {
-        SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
         schemaManager.replaceObject(EmployeeForClientServerSession.tableDefinition());
         new DeadLockEmployeeTableCreator().replaceTables(session);
         schemaManager.createSequences();

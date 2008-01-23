@@ -19,7 +19,6 @@ import java.util.Enumeration;
 import javax.persistence.*;
 import static javax.persistence.FetchType.*;
 import static javax.persistence.CascadeType.*;
-import static javax.persistence.GenerationType.*;
 
 public class BeerConsumer {
     public int post_load_count = 0;
@@ -165,7 +164,7 @@ public class BeerConsumer {
         Enumeration keys = ((Hashtable) telephoneNumbers).keys();
         while (keys.hasMoreElements()) {
             Object key = keys.nextElement();
-            TelephoneNumber potentialTelephoneNumber = (TelephoneNumber) telephoneNumbers.get(key);
+            TelephoneNumber potentialTelephoneNumber = telephoneNumbers.get(key);
             
             if (potentialTelephoneNumber.equals(telephoneNumber)) {
                 telephoneNumbers.remove(key);

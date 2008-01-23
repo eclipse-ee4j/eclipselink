@@ -71,7 +71,7 @@ public final class CommandDataHelper implements org.omg.CORBA.portable.BoxedValu
         int _len0 = istream.read_long();
         tmp = new byte[_len0];
         istream.read_octet_array(tmp, 0, _len0);
-        return (java.io.Serializable)tmp;
+        return tmp;
     }
 
     public static void write(org.omg.CORBA.portable.OutputStream ostream, byte[] value) {

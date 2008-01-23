@@ -24,12 +24,11 @@ public abstract class BaseNcharTest extends TestCase {
     }
 
     protected void setup() {
-        Oracle9Platform platform9;
         if (!getSession().getPlatform().isOracle()) {
             throw new TestWarningException("This test case works on Oracle only");
         }
         try {
-            platform9 = getOracle9Platform();
+            getOracle9Platform();
         } catch (ClassCastException ex) {
             DatabasePlatform platform = getSession().getPlatform();
             try {
@@ -37,7 +36,7 @@ public abstract class BaseNcharTest extends TestCase {
                 getDatabaseSession().logout();
                 getDatabaseSession().login();
                 platformOriginal = platform;
-                platform9 = getOracle9Platform();
+                getOracle9Platform();
             } catch (Exception ex2) {
                 throw new TestWarningException("This test case works with Oracle9 platform or higher");
             }

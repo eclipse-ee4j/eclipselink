@@ -11,7 +11,6 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
 import java.io.*;
-import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
@@ -32,11 +31,11 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
 
     //This collection holds the new objects which will have no real identity until inserted
     transient protected java.util.Hashtable newObjectChangeSets;
-    transient protected org.eclipse.persistence.internal.helper.IdentityHashtable cloneToObjectChangeSet;
-    transient protected org.eclipse.persistence.internal.helper.IdentityHashtable objectChangeSetToUOWClone;
-    protected IdentityHashtable aggregateList;
-    protected IdentityHashtable allChangeSets;
-    protected IdentityHashtable deletedObjects;
+    transient protected Map cloneToObjectChangeSet;
+    transient protected Map objectChangeSetToUOWClone;
+    protected Map aggregateList;
+    protected Map allChangeSets;
+    protected Map deletedObjects;
 
     /** This attribute is set to true if a changeSet with changes has been added */
     protected boolean hasChanges;
@@ -63,29 +62,26 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     public UnitOfWorkChangeSet(byte[] bytes) throws java.io.IOException, ClassNotFoundException {
         java.io.ByteArrayInputStream byteIn = new java.io.ByteArrayInputStream(bytes);
         ObjectInputStream objectIn = new ObjectInputStream(byteIn);
-		//bug 4416412: allChangeSets set directly instead of using setInternalAllChangeSets
-        allChangeSets = (IdentityHashtable)objectIn.readObject();
-        deletedObjects = (IdentityHashtable)objectIn.readObject();
+	// bug 4416412: allChangeSets set directly instead of using setInternalAllChangeSets
+        allChangeSets = (Map)objectIn.readObject();
+        deletedObjects = (Map)objectIn.readObject();
     }
 
     /**
      * INTERNAL:
-     * Add the Deleted objects to the changeSet
-     * @param objectChanges prototype.changeset.ObjectChanges
+     * Add the Deleted objects to the changeSet.
      */
-    public void addDeletedObjects(IdentityHashtable deletedObjects, AbstractSession session) {
-        Enumeration enumtr = deletedObjects.keys();
-        while (enumtr.hasMoreElements()) {
-            Object object = enumtr.nextElement();
-
+    public void addDeletedObjects(Map deletedObjects, AbstractSession session) {
+        Iterator enumtr = deletedObjects.keySet().iterator();
+        while (enumtr.hasNext()) {
+            Object object = enumtr.next();
             this.addDeletedObject(object, session);
         }
     }
     
     /**
      * INTERNAL:
-     * Add the Deleted object to the changeSet
-     * @param objectChanges prototype.changeset.ObjectChanges
+     * Add the Deleted object to the changeSet.
      */
     public void addDeletedObject(Object object, AbstractSession session) {
         //CR 4080 - must prevent aggregate objects added to DeletedObjects list
@@ -105,8 +101,6 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * will not add to the lists that are used for identity lookups.
      * The passed change set *must* either have changes or forced changes.
      * @see addObjectChangeSetForIdentity()
-     * @param objectChanges prototype.changeset.ObjectChanges
-     * @param object java.lang.Object
      * @param forceToNewObjectList - Any pre commit actions should pass in true 
      * since new objects have extra-handling. Anything post commit, pass in 
      * false.
@@ -174,10 +168,10 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * @param objectChanges the new object change set
      */
     protected void addNewObjectChangeSet(ObjectChangeSet objectChanges, AbstractSession session) {
-        IdentityHashtable changeSetTable = (IdentityHashtable)getNewObjectChangeSets().get(objectChanges.getClassType(session));
+        Map changeSetTable = (Map)getNewObjectChangeSets().get(objectChanges.getClassType(session));
         if (changeSetTable == null) {
-            // 2612538 - the default size of IdentityHashtable (32) is appropriate
-            changeSetTable = new IdentityHashtable();
+            // 2612538 - the default size of Map (32) is appropriate
+            changeSetTable = new IdentityHashMap();
             getNewObjectChangeSets().put(objectChanges.getClassType(session), changeSetTable);
         }
         changeSetTable.put(objectChanges, objectChanges);
@@ -242,11 +236,11 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     /**
      * INTERNAL:
      * Get the Aggregate list.  Lazy initialises the hashtable if required
-     * @return org.eclipse.persistence.internal.helper.IdentityHashtable
+     * @return Map
      */
-    protected IdentityHashtable getAggregateList() {
+    protected Map getAggregateList() {
         if (aggregateList == null) {
-            aggregateList = new IdentityHashtable();
+            aggregateList = new IdentityHashMap();
         }
         return aggregateList;
     }
@@ -254,12 +248,12 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     /**
      * INTERNAL:
      * This method returns a reference to the collection
-     * @return org.eclipse.persistence.internal.helper.IdentityHashtable
+     * @return Map
      */
-    public org.eclipse.persistence.internal.helper.IdentityHashtable getAllChangeSets() {
+    public Map getAllChangeSets() {
         if (this.allChangeSets == null) {
-            // 2612538 - the default size of IdentityHashtable (32) is appropriate
-            this.allChangeSets = new IdentityHashtable();
+            // 2612538 - the default size of Map (32) is appropriate
+            this.allChangeSets = new IdentityHashMap();
         }
         return allChangeSets;
     }
@@ -272,12 +266,12 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     public byte[] getByteArrayRepresentation(AbstractSession session) throws java.io.IOException {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);
-		//bug 4416412: IdentityHashtable sent instead of Vector
-        IdentityHashtable writableChangeSets = new IdentityHashtable();
+		//bug 4416412: Map sent instead of Vector
+        Map writableChangeSets = new IdentityHashMap();
 
-        Enumeration enumtr = getAllChangeSets().elements();
-        while (enumtr.hasMoreElements()) {
-            ObjectChangeSet changeSet = (ObjectChangeSet)enumtr.nextElement();
+        Iterator enumtr = getAllChangeSets().values().iterator();
+        while (enumtr.hasNext()) {
+            ObjectChangeSet changeSet = (ObjectChangeSet)enumtr.next();
 
             // navigate through the related change sets here and set their cache synchronization type as well
             ClassDescriptor descriptor = session.getDescriptor(changeSet.getClassType(session));
@@ -292,10 +286,10 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
                 writableChangeSets.put(changeSet, changeSet);
             }
         }
-        IdentityHashtable sendableDeletedObjects = new IdentityHashtable();
-        enumtr = getDeletedObjects().keys();
-        while (enumtr.hasMoreElements()) {
-            ObjectChangeSet changeSet = (ObjectChangeSet)enumtr.nextElement();
+        Map sendableDeletedObjects = new IdentityHashMap();
+        enumtr = getDeletedObjects().keySet().iterator();
+        while (enumtr.hasNext()) {
+            ObjectChangeSet changeSet = (ObjectChangeSet)enumtr.next();
 
             // navigate through the related change sets here and set their cache synchronization type as well
             ClassDescriptor descriptor = session.getDescriptor(changeSet.getClassType(session));
@@ -323,11 +317,11 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     /**
      * INTERNAL:
      * Get the clone to object change hash table.  Lazy initialises the hashtable if required
-     * @return org.eclipse.persistence.internal.helper.IdentityHashtable
+     * @return Map
      */
-    public org.eclipse.persistence.internal.helper.IdentityHashtable getCloneToObjectChangeSet() {
+    public Map getCloneToObjectChangeSet() {
         if (cloneToObjectChangeSet == null) {
-            cloneToObjectChangeSet = new IdentityHashtable();
+            cloneToObjectChangeSet = new IdentityHashMap();
         }
         return cloneToObjectChangeSet;
     }
@@ -335,12 +329,12 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     /**
      * INTERNAL:
      * This method returns the reference to the deleted objects from the changeSet
-     * @return org.eclipse.persistence.internal.helper.IdentityHashtable
+     * @return Map
      */
-    public org.eclipse.persistence.internal.helper.IdentityHashtable getDeletedObjects() {
+    public Map getDeletedObjects() {
         if (this.deletedObjects == null) {
-            // 2612538 - the default size of IdentityHashtable (32) is appropriate
-            this.deletedObjects = new IdentityHashtable();
+            // 2612538 - the default size of Map (32) is appropriate
+            this.deletedObjects = new IdentityHashMap();
         }
         return deletedObjects;
     }
@@ -400,12 +394,12 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     /**
      * INTERNAL:
      * This method returns a reference to the collection
-     * @return org.eclipse.persistence.internal.helper.IdentityHashtable
+     * @return Map
      */
-    protected org.eclipse.persistence.internal.helper.IdentityHashtable getObjectChangeSetToUOWClone() {
+    protected Map getObjectChangeSetToUOWClone() {
         if (this.objectChangeSetToUOWClone == null) {
-            // 2612538 - the default size of IdentityHashtable (32) is appropriate
-            this.objectChangeSetToUOWClone = new IdentityHashtable();
+            // 2612538 - the default size of Map (32) is appropriate
+            this.objectChangeSetToUOWClone = new IdentityHashMap();
         }
         return objectChangeSetToUOWClone;
     }
@@ -485,9 +479,9 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
 
         //merging a serialized UnitOfWorkChangeSet can result in duplicate deletes
         //if a delete for the same object already exists in this UOWChangeSet.
-        Enumeration deletedEnum = mergeFromChangeSet.getDeletedObjects().elements();
-        while (deletedEnum.hasMoreElements()) {
-            ObjectChangeSet objectChangeSet = (ObjectChangeSet)deletedEnum.nextElement();
+        Iterator deletedEnum = mergeFromChangeSet.getDeletedObjects().values().iterator();
+        while (deletedEnum.hasNext()) {
+            ObjectChangeSet objectChangeSet = (ObjectChangeSet)deletedEnum.next();
             ObjectChangeSet localObjectChangeSet = findObjectChangeSet(objectChangeSet, mergeFromChangeSet);
             if (localObjectChangeSet == null) {
                 localObjectChangeSet = objectChangeSet;
@@ -512,7 +506,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * inserted and added to the objectChangesList
      */
     public void removeObjectChangeSetFromNewList(ObjectChangeSet objectChangeSet, AbstractSession session) {
-        IdentityHashtable table = (IdentityHashtable)getNewObjectChangeSets().get(objectChangeSet.getClassType(session));
+        Map table = (Map)getNewObjectChangeSets().get(objectChangeSet.getClassType(session));
         if (table != null) {
             table.remove(objectChangeSet);
         }
@@ -520,8 +514,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
 
     /**
      * INTERNAL:
-     * Add the changed Object's records to the ChangeSet
-     * @param objectChanges prototype.changeset.ObjectChanges
+     * Add the changed Object's records to the ChangeSet.
      */
     public void removeObjectChangeSet(ObjectChangeSet objectChanges) {
         if (objectChanges == null) {
@@ -565,16 +558,15 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     /**
      * INTERNAL:
      * This method is used to set the hashtable for cloneToObject reference
-     * @param newCloneToObjectChangeSet org.eclipse.persistence.internal.helper.IdentityHashtable
+     * @param newCloneToObjectChangeSet Map
      */
-    protected void setCloneToObjectChangeSet(org.eclipse.persistence.internal.helper.IdentityHashtable newCloneToObjectChangeSet) {
+    protected void setCloneToObjectChangeSet(Map newCloneToObjectChangeSet) {
         cloneToObjectChangeSet = newCloneToObjectChangeSet;
     }
 
     /**
      * INTERNAL:
-     * Sets the collection of ObjectChanges in the change Set
-     * @param newValue prototype.changeset.ObjectChanges
+     * Sets the collection of ObjectChanges in the change Set.
      */
     protected void setObjectChanges(Hashtable objectChanges) {
         this.objectChanges = objectChanges;
@@ -583,9 +575,9 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     /**
      * INTERNAL:
      * This method is used to insert a new collection into the UOWChangeSet.
-     * @param newObjectChangeSetToUOWClone org.eclipse.persistence.internal.helper.IdentityHashtable
+     * @param newObjectChangeSetToUOWClone Map
      */
-    protected void setObjectChangeSetToUOWClone(org.eclipse.persistence.internal.helper.IdentityHashtable newObjectChangeSetToUOWClone) {
+    protected void setObjectChangeSetToUOWClone(Map newObjectChangeSetToUOWClone) {
         objectChangeSetToUOWClone = newObjectChangeSetToUOWClone;
     }
 

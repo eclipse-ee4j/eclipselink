@@ -1,7 +1,5 @@
 package org.eclipse.persistence.testing.tests.clientserver;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.SessionEvent;

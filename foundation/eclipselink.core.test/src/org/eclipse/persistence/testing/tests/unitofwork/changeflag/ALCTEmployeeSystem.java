@@ -45,7 +45,7 @@ public class ALCTEmployeeSystem extends TestSystem {
 
     public void createTables(DatabaseSession session) {
         dropTableConstraints(session);
-        new ALCTEmployeeTableCreator().replaceTables((DatabaseSession)session);
+        new ALCTEmployeeTableCreator().replaceTables(session);
     }
 
     /**

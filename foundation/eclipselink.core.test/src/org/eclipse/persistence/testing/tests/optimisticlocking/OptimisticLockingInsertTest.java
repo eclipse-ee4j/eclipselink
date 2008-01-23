@@ -32,7 +32,7 @@ public class OptimisticLockingInsertTest extends AutoVerifyTestCase {
     protected void setup() {
         beginTransaction();
 
-        ((LockObject)originalObject).value = "this Value";
+        (originalObject).value = "this Value";
 
     }
 

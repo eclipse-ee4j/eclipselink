@@ -12,11 +12,7 @@
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import java.io.*;
-import org.eclipse.persistence.tools.schemaframework.*;
 import javax.persistence.*;
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
-import static javax.persistence.InheritanceType.*;
 
 @Entity
 @Table(name="CMP3_TIRE")

@@ -13,7 +13,6 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships;
 import javax.persistence.*;
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
 import java.util.Collection;
 
 @Entity(name="FieldAccessSalesPerson")

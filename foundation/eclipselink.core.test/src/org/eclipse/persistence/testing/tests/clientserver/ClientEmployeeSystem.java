@@ -22,11 +22,11 @@ public class ClientEmployeeSystem extends TestSystem {
             project = new ClientServerEmployeeProject();
         }
 
-        ((DatabaseSession)session).addDescriptors(project);
+        (session).addDescriptors(project);
     }
 
     public void createTables(DatabaseSession session) {
-        SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
         schemaManager.replaceObject(EmployeeForClientServerSession.tableDefinition());
         schemaManager.createSequences();
     }

@@ -33,7 +33,7 @@ public class LOBImageModelSystem extends TestSystem {
     }
 
     public void createTables(DatabaseSession session) {
-        new LOBImageModelTableCreator().replaceTables((DatabaseSession)session);
+        new LOBImageModelTableCreator().replaceTables(session);
     }
 
 }

@@ -37,7 +37,7 @@ public class _CORBAServerManagerStub extends org.omg.CORBA.portable.ObjectImpl i
   }  
   public String[] _ids ()
   {
-	return (String[])__ids.clone ();
+	return __ids.clone ();
   }  
   public org.eclipse.persistence.sessions.remote.corba.sun.CORBARemoteSessionController createRemoteSessionController ()
   {

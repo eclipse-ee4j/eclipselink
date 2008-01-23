@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.stress;
 
-import java.util.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.*;
@@ -30,7 +29,7 @@ public class ClientThread extends Thread {
         Session client = server.acquireClientSession("default");
         client.readAllObjects(Employee.class);
         client.readAllObjects(org.eclipse.persistence.testing.models.employee.domain.Project.class);
-        org.eclipse.persistence.testing.models.employee.domain.Project edit = (org.eclipse.persistence.testing.models.employee.domain.Project)((Vector)client.readAllObjects(LargeProject.class)).firstElement();
+        org.eclipse.persistence.testing.models.employee.domain.Project edit = (org.eclipse.persistence.testing.models.employee.domain.Project)(client.readAllObjects(LargeProject.class)).firstElement();
         UnitOfWork uow = client.acquireUnitOfWork();
         uow.readAllObjects(SmallProject.class);
         edit = (org.eclipse.persistence.testing.models.employee.domain.Project)uow.registerObject(edit);

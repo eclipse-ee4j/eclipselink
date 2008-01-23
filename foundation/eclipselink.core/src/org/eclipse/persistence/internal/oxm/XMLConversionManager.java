@@ -725,7 +725,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
     private String stringFromTimestamp(Timestamp sourceDate) {
         String string = dateTimeFormatter.get().format(sourceDate);
-		int ns = (int) sourceDate.getNanos();
+		int ns = sourceDate.getNanos();
 		if(0 == ns) {
 			string += ".0";
 		} else {

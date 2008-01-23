@@ -41,7 +41,6 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.ValueReadQuery;
-import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.platform.database.oracle.TIMESTAMPHelper;
 import org.eclipse.persistence.internal.platform.database.oracle.TIMESTAMPLTZWrapper;
@@ -328,7 +327,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * This is added as a workaround for bug 4565190
      */
     public Connection getConnection(AbstractSession session, Connection connection) {
-        if (session.getServerPlatform() != null && ((DatabaseLogin)session.getLogin()).shouldUseExternalConnectionPooling()){
+        if (session.getServerPlatform() != null && (session.getLogin()).shouldUseExternalConnectionPooling()){
         // This is added as a workaround for bug 4460996
             return session.getServerPlatform().unwrapConnection(connection);
         }

@@ -93,7 +93,7 @@ public class CallbackEventTest extends EntityContainerTestBase  {
     
     protected void updateEmployee() throws Exception {
         beginTransaction();
-        Employee emp = (Employee) getEntityManager().find(Employee.class, m_employee.getId());
+        Employee emp = getEntityManager().find(Employee.class, m_employee.getId());
         emp.setFirstName("New name");
         commitTransaction();
     }
@@ -101,7 +101,7 @@ public class CallbackEventTest extends EntityContainerTestBase  {
     protected void updateEmployeePhoneNumber() throws Exception {
         beginTransaction();
         try{
-            Employee emp = (Employee) getEntityManager().find(Employee.class, m_employee.getId());
+            Employee emp = getEntityManager().find(Employee.class, m_employee.getId());
             PhoneNumber phone = ModelExamples.phoneExample1();
             phone.setOwner(emp);
             emp.getPhoneNumbers().add(phone);
@@ -132,7 +132,7 @@ public class CallbackEventTest extends EntityContainerTestBase  {
         Project project = null;
         beginTransaction();
         try{
-            project = (Project) getEntityManager().find(Project.class, m_project.getId());
+            project = getEntityManager().find(Project.class, m_project.getId());
             getEntityManager().remove(project);
             commitTransaction();
         }catch (RuntimeException ex){
@@ -146,7 +146,7 @@ public class CallbackEventTest extends EntityContainerTestBase  {
         Project project = null;
         beginTransaction();
         try{
-            project = (Project) getEntityManager().find(Project.class, m_project.getId());
+            project = getEntityManager().find(Project.class, m_project.getId());
             project.setDescription("Now a tough project");
             commitTransaction();
         }catch (RuntimeException ex){

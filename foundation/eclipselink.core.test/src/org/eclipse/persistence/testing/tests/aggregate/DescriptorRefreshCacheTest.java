@@ -36,7 +36,7 @@ public class DescriptorRefreshCacheTest extends ReadObjectTest {
 
     protected void changeObject(Employee employee) {
         employee.setFirstName("Zack");
-        ProjectDescription projectDescription = (ProjectDescription)employee.getProjectDescription();
+        ProjectDescription projectDescription = employee.getProjectDescription();
         projectDescription.setDescription("FBI Project");
         ((Vector)projectDescription.getResponsibilities().getValue()).removeElement(((Vector)projectDescription.getResponsibilities().getValue()).firstElement());
         ((Vector)projectDescription.getResponsibilities().getValue()).addElement(Responsibility.example1(employee));

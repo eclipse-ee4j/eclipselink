@@ -267,7 +267,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
 
         // INHERITANCE
         if (xmlDescriptor.hasInheritance()) {
-            InheritancePolicy inheritancePolicy = (InheritancePolicy)xmlDescriptor.getInheritancePolicy();
+            InheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
             
             if (!inheritancePolicy.hasClassExtractor()) {
                 XMLField classIndicatorField = new XMLField(inheritancePolicy.getClassIndicatorFieldName());

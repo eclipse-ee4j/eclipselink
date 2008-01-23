@@ -22,7 +22,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.IdentityHashtable;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -57,7 +56,7 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
  * When any of these elements are encountered in the XML Document, they are read in as the correct
  * type and added to the collection.
  * <p><b>Setting up XPath mappings:</b>Unlike other OXM Mappings, instead of setting a single xpath,
- * the addChoiceElement method is used to specify an xpath and the type assocated with this xpath.
+ * the addChoiceElement method is used to specify an xpath and the type associated with this xpath.
  * <br>
  * xmlChoiceCollectionMapping.addChoiceElement("mystring/text()", String.class);
  * <br>
@@ -105,7 +104,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
       * INTERNAL:
       * Cascade perform delete through mappings that require the cascade
       */
-     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
          //objects referenced by this mapping are not registered as they have
          // no identity, this is a no-op.
      }
@@ -114,7 +113,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
       * INTERNAL:
       * Cascade registerNew for Create through mappings that require the cascade
       */
-     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
          //Our current XML support does not make use of the UNitOfWork.
      }
 
@@ -141,7 +140,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
       * Replace the transient attributes of the remote value holders
       * with client-side objects.
       */
-      public void fixObjectReferences(Object object, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+      public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
           throw DescriptorException.invalidMappingOperation(this, "fixObjectReferences");
       }
 

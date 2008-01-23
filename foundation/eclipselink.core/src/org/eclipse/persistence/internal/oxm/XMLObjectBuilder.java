@@ -130,7 +130,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             newNode = (Element)policy.getNodeForObject(attributeValue);
         }
         if(newNode == null) {
-           newNode = XPathEngine.getInstance().createUnownedElement(parentRecord.getDOM(), (XMLField)xmlField);
+           newNode = XPathEngine.getInstance().createUnownedElement(parentRecord.getDOM(), xmlField);
            if(xmlField.isSelfField()) {
                policy.addObjectToCache(attributeValue, newNode, mapping);
            } else {
@@ -343,7 +343,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             addPrimaryKeyForNonDefaultTable(row);
         }
 
-        addNamespaceDeclarations(((XMLRecord)row).getDocument());
+        addNamespaceDeclarations((row).getDocument());
 
         if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
             marshaller.getMarshalListener().afterMarshal(object);
@@ -478,7 +478,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         if (xsiPrefix == null) {
             xsiPrefix = xmlDescriptor.getNonNullNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
             generated = true;
-            writeXsiNamespace((DOMRecord)row, xsiPrefix);
+            writeXsiNamespace(row, xsiPrefix);
         }
         XMLField xmlField = (XMLField)xmlDescriptor.buildField("@" + xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
         if (generated) {

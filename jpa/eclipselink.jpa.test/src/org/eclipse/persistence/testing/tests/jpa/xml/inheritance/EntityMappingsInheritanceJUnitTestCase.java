@@ -18,7 +18,6 @@ import junit.framework.*;
 import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.Boat;
@@ -246,12 +245,12 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     }
 
     public void testReadFueledVehicle() {
-        SportsCar car = (SportsCar) createEntityManager().find(SportsCar.class, sportsCarId);
+        SportsCar car = createEntityManager().find(SportsCar.class, sportsCarId);
         assertTrue("Error reading FueledVehicle [SportsCar]", car.getId() == sportsCarId);
     }
 
     public void testReadNonFueledVehicle() {
-        Boat boat = (Boat) createEntityManager().find(Boat.class, boatId);
+        Boat boat = createEntityManager().find(Boat.class, boatId);
         assertTrue("Error reading NonFueledVehicle [Boat]", boat.getId() == boatId);
     }
 
@@ -265,7 +264,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         Bus bus;
         
         try {
-            bus = (Bus) em.find(Bus.class, busId);
+            bus = em.find(Bus.class, busId);
             bus.setDescription("A crappy bus");
             em.merge(bus);
             em.getTransaction().commit();
@@ -310,7 +309,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         EntityManager em = createEntityManager();
         em.getTransaction().begin();
         try {
-            SportsCar car = (SportsCar) em.find(SportsCar.class, sportsCarId);
+            SportsCar car = em.find(SportsCar.class, sportsCarId);
             car.setDescription("Corvette");
             em.merge(car);
             em.getTransaction().commit();
@@ -322,7 +321,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
             throw e;
         }
         clearCache();
-        SportsCar newCar = (SportsCar) em.find(SportsCar.class, sportsCarId);
+        SportsCar newCar = em.find(SportsCar.class, sportsCarId);
         assertTrue("Error updating FueledVehicle [SportsCar]", newCar.getDescription().equals("Corvette"));
     }
 
@@ -330,7 +329,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         EntityManager em = createEntityManager();
         em.getTransaction().begin();
         try {
-            Boat boat = (Boat) em.find(Boat.class, boatId);
+            Boat boat = em.find(Boat.class, boatId);
             Company co = boat.getOwner();
             co.setName("XYZ");
             em.merge(boat);
@@ -343,7 +342,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
             throw e;
         }
         clearCache();
-        Boat newBoat = (Boat) em.find(Boat.class, boatId);
+        Boat newBoat = em.find(Boat.class, boatId);
         assertTrue("Error updating NonFueledVehicle [Boat]", newBoat.getOwner().getName().equals("XYZ"));
     }
 

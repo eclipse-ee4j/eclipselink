@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.complexaggregate;
 
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.tests.jpa.CMP3TestModel;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.ComplexAggregateTableCreator;
 

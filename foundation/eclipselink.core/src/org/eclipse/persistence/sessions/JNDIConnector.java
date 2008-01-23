@@ -13,7 +13,6 @@ import java.util.*;
 import java.sql.*;
 import javax.naming.*;
 import javax.sql.*;
-import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.localization.*;

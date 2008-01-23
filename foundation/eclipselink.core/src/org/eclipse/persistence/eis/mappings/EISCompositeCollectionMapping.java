@@ -22,7 +22,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
-import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
 /**
  * <p>EIS Composite Collection Mappings map a java.util.Map or java.util.Collection of Java objects 

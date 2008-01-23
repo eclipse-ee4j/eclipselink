@@ -251,7 +251,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
             //assumes a vector
             if (dbCall.areManyRowsReturned()) {
                 Vector tempResult = new Vector();
-                ((Vector)tempResult).add(result);
+                (tempResult).add(result);
                 result = tempResult;
             }
         } else {
@@ -457,7 +457,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
 
         values.put(Integer.class, new Integer(Integer.MAX_VALUE));
         values.put(Long.class, new Long(Long.MAX_VALUE));
-        values.put(Double.class, new Double((double)Float.MAX_VALUE));
+        values.put(Double.class, new Double(Float.MAX_VALUE));
         values.put(Short.class, new Short(Short.MAX_VALUE));
         values.put(Byte.class, new Byte(Byte.MAX_VALUE));
         values.put(Float.class, new Float(Float.MAX_VALUE));
@@ -476,7 +476,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
 
         values.put(Integer.class, new Integer(Integer.MIN_VALUE));
         values.put(Long.class, new Long(Long.MIN_VALUE));
-        values.put(Double.class, new Double((double)1.4012984643247149E-44));// The double values are weird. They lose precision at E-45
+        values.put(Double.class, new Double(1.4012984643247149E-44));// The double values are weird. They lose precision at E-45
         values.put(Short.class, new Short(Short.MIN_VALUE));
         values.put(Byte.class, new Byte(Byte.MIN_VALUE));
         values.put(Float.class, new Float(Float.MIN_VALUE));

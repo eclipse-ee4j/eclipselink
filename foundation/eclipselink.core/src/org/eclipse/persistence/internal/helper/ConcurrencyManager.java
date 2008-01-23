@@ -308,7 +308,7 @@ public class ConcurrencyManager implements Serializable {
     /**
      * Check if the deferred locks of a thread are all released
      */
-    public static boolean isBuildObjectOnThreadComplete(Thread thread, IdentityHashtable recursiveSet) {
+    public static boolean isBuildObjectOnThreadComplete(Thread thread, Map recursiveSet) {
         if (recursiveSet.containsKey(thread)) {
             return true;
         }
@@ -414,8 +414,8 @@ public class ConcurrencyManager implements Serializable {
         // and a third when they and all the threads they are waiting on are done.
         // This is essentially a busy wait to determine if all the other threads are done.
         while (true) {
-            // 2612538 - the default size of IdentityHashtable (32) is appropriate
-            IdentityHashtable recursiveSet = new IdentityHashtable();
+            // 2612538 - the default size of Map (32) is appropriate
+            Map recursiveSet = new IdentityHashMap();
             if (isBuildObjectOnThreadComplete(currentThread, recursiveSet)) {// Thread job done.
                 lockManager.releaseActiveLocksOnThread();
                 removeDeferredLockManager(currentThread);

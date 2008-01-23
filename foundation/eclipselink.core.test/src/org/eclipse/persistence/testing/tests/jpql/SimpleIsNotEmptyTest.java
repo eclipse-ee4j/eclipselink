@@ -26,7 +26,7 @@ public class SimpleIsNotEmptyTest extends org.eclipse.persistence.testing.tests.
         raq.setReferenceClass(Employee.class);
         raq.setSelectionCriteria(whereClause);
 
-        setOriginalOject((Vector)getSession().executeQuery(raq));
+        setOriginalOject(getSession().executeQuery(raq));
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.phoneNumbers IS NOT EMPTY";
 

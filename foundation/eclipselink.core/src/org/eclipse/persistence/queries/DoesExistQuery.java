@@ -242,7 +242,7 @@ public class DoesExistQuery extends DatabaseQuery {
      * Return the write lock field or the first primary key field if not using locking.
      */
     protected DatabaseField getDoesExistField() {
-        return (DatabaseField)(getDescriptor().getPrimaryKeyFields().get(0));
+        return (getDescriptor().getPrimaryKeyFields().get(0));
     }
 
     /**

@@ -10,13 +10,8 @@
 package org.eclipse.persistence.testing.framework.junit;
 
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.io.File;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
@@ -27,7 +22,6 @@ import junit.framework.*;
 
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.testing.framework.server.JEEPlatform;
 import org.eclipse.persistence.testing.framework.server.ServerPlatform;
 import org.eclipse.persistence.testing.framework.server.TestRunner;

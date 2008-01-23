@@ -14,7 +14,6 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.testing.models.forceupdate.*;
 import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.internal.sessions.*;
 
 /**
     Scenario:

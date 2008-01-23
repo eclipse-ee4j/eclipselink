@@ -38,7 +38,7 @@ public class QueryOptionSystem extends TestSystem {
     }
 
   public void createTables(DatabaseSession session) {
-        SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
         schemaManager.replaceObject(QueryOptionEmployee.tableDefinition());
         schemaManager.replaceObject(QueryOptionHistory.tableDefinition());
         schemaManager.createSequences();

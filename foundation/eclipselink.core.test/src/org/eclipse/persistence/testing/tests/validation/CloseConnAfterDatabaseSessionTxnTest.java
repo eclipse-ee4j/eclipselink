@@ -10,14 +10,11 @@
 package org.eclipse.persistence.testing.tests.validation;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.DatasourceLogin;
-import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.EmployeePopulator;
-import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
 
 /**
  * for bug 6065882, Verify databaseSession connection should close after txn was finished(either commit or rollback txn).

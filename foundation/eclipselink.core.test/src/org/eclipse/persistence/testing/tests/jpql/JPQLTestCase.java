@@ -113,9 +113,9 @@ public class JPQLTestCase extends TransactionalTestCase {
     public void executeEJBQLQuery() throws Exception {
         if (hasArguments()) {
             addArgumentNamesToQuery();
-            setReturnedObjects((Vector)getSession().executeQuery(getQuery(), getArguments()));
+            setReturnedObjects(getSession().executeQuery(getQuery(), getArguments()));
         } else {
-            setReturnedObjects((Vector)getSession().executeQuery(getQuery()));
+            setReturnedObjects(getSession().executeQuery(getQuery()));
         }
     }
 

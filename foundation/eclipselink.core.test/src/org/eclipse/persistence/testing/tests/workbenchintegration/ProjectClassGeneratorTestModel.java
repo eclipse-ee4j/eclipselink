@@ -9,9 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import org.eclipse.persistence.Version;
 import org.eclipse.persistence.testing.framework.TestSuite;
-import org.eclipse.persistence.testing.framework.TestWarningException;
 
 /**
  *  This model tests mapping workbench integration with the foundation library 

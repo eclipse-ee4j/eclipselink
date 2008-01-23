@@ -365,7 +365,7 @@ public class DOMReader extends XMLReader {
         }
         
         public String getValue(int index) {
-            return ((Attr)attrs.get(index)).getValue();
+            return (attrs.get(index)).getValue();
         }
         
         public String getValue(String qname) {

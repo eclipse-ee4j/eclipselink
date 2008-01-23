@@ -103,7 +103,7 @@ public class ProxyAuthenticationInternalTestModel extends TestModel {
 
                 // normally user would set ProxyConnector into the login in preLogin event
                 try {
-                    proxyTestHelper.setProxyConnectorIntoLogin(login, (org.eclipse.persistence.sessions.Session)oldSession);
+                    proxyTestHelper.setProxyConnectorIntoLogin(login, oldSession);
                 } catch (SQLException sqlException) {
                     throw new TestProblemException("Failed to create ProxyConnector ", sqlException);
                 }

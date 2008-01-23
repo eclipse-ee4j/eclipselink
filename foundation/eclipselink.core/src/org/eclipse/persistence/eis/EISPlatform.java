@@ -23,7 +23,6 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.eis.interactions.*;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -326,7 +325,7 @@ public class EISPlatform extends DatasourcePlatform {
 
             // May be a collection of record.
             for (int index = 0; index < records.size(); index++) {
-                appendParameter(call, writer, ((Vector)records).elementAt(index));
+                appendParameter(call, writer, (records).elementAt(index));
             }
         } else if (parameter instanceof org.eclipse.persistence.oxm.record.DOMRecord) {
             String xml = ((org.eclipse.persistence.oxm.record.DOMRecord)parameter).transformToXML();

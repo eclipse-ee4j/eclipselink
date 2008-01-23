@@ -13,7 +13,7 @@ import java.lang.reflect.Proxy;
 import java.security.AccessController;
 
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
-import org.eclipse.persistence.internal.helper.IdentityHashtable;
+import java.util.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -95,22 +95,20 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      * This will be a proxy object.
      */
     public Object valueFromQuery(ReadQuery query, AbstractRecord row, AbstractSession session) {
-        Object object;
-
-        ClassDescriptor d = null;
+        ClassDescriptor descriptor = null;
         try {
             // Need an instance of the implementing class
             //CR#3838
-            d = (ClassDescriptor)session.getDescriptor(query.getReferenceClass());
-            if (d.isDescriptorForInterface()) {
-                d = (ClassDescriptor)d.getInterfacePolicy().getChildDescriptors().firstElement();
+            descriptor = session.getDescriptor(query.getReferenceClass());
+            if (descriptor.isDescriptorForInterface()) {
+                descriptor = (ClassDescriptor)descriptor.getInterfacePolicy().getChildDescriptors().firstElement();
             }
         } catch (Exception e) {
             return null;
         }
         ValueHolderInterface valueHolder = new QueryBasedValueHolder(query, row, session);
 
-        return ProxyIndirectionHandler.newProxyInstance(d.getJavaClass(), targetInterfaces, valueHolder);
+        return ProxyIndirectionHandler.newProxyInstance(descriptor.getJavaClass(), targetInterfaces, valueHolder);
     }
 
     /**
@@ -136,7 +134,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
 
         try {
             // Need an instance of the implementing class
-            ClassDescriptor d = (ClassDescriptor)originalQuery.getDescriptor();
+            ClassDescriptor d = originalQuery.getDescriptor();
             if (d.isDescriptorForInterface()) {
                 d = (ClassDescriptor)originalQuery.getDescriptor().getInterfacePolicy().getChildDescriptors().firstElement();
             }
@@ -246,7 +244,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      * An object has been serialized from the server to the client.  Replace the transient attributes of the
      * remote value holders with client-side objects.
      */
-    public void fixObjectReferences(Object object, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         //org.eclipse.persistence.internal.helper.Helper.toDo("*** Something tells me this isn't going to work. *** [X]");
     }
 

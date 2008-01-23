@@ -84,7 +84,7 @@ public class ExpressionNormalizer {
      * Assumes encounteredSubSelectExpressions() true.
      * For CR#4223.
      */
-    public void normalizeSubSelects(Dictionary clonedExpressions) {
+    public void normalizeSubSelects(Map clonedExpressions) {
         for (Enumeration enumtr = subSelectExpressions.elements(); enumtr.hasMoreElements();) {
             SubSelectExpression next = (SubSelectExpression)enumtr.nextElement();
             next.normalizeSubSelect(this, clonedExpressions);

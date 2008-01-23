@@ -10,7 +10,6 @@
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.sql.*;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;

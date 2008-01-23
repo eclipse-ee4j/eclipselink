@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
-import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.JPQLCall;
 import org.eclipse.persistence.queries.*;

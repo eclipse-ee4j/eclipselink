@@ -2944,7 +2944,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * The objects will be commited through a single transactions and any
      * foreign keys/circular references between the objects will be resolved.
      */
-    protected void writeAllObjects(IdentityHashtable domainObjects) throws DatabaseException, OptimisticLockException {
+    protected void writeAllObjects(Map domainObjects) throws DatabaseException, OptimisticLockException {
         getCommitManager().commitAllObjects(domainObjects);
     }
 

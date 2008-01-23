@@ -9,9 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server;
 
-import java.sql.Connection;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 
 /**

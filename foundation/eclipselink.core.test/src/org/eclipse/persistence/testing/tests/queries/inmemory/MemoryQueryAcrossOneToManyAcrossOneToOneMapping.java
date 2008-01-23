@@ -56,32 +56,32 @@ public class MemoryQueryAcrossOneToManyAcrossOneToOneMapping extends TestCase {
         getSession().removeQuery("getAllEmployees");
         getSession().addQuery("getAllEmployees", queryAll);
         allEmployees = (Vector)getSession().executeQuery("getAllEmployees");
-        for (Enumeration enumtr = (Enumeration)allEmployees.elements(); enumtr.hasMoreElements();) {
-            employees = (Vector)((Employee)enumtr.nextElement()).getManagedEmployees();
+        for (Enumeration enumtr = allEmployees.elements(); enumtr.hasMoreElements();) {
+            employees = ((Employee)enumtr.nextElement()).getManagedEmployees();
             allEmps.addAll(employees);
             //trigger all the value holders of employees who have managedEmployees
         }
 
-        for (Enumeration enum2 = (Enumeration)allEmps.elements(); enum2.hasMoreElements();) {
+        for (Enumeration enum2 = allEmps.elements(); enum2.hasMoreElements();) {
             Address anotherAddress = ((Employee)enum2.nextElement()).getAddress();
             allAddresses.add(anotherAddress);
 
             //trigger all the value holders of managed employees' address
         }
-        for (Enumeration enum3 = (Enumeration)allEmps.elements(); enum3.hasMoreElements();) {
-            managedEmpVector = (Vector)((Employee)enum3.nextElement()).getManagedEmployees();
+        for (Enumeration enum3 = allEmps.elements(); enum3.hasMoreElements();) {
+            managedEmpVector = ((Employee)enum3.nextElement()).getManagedEmployees();
             managedEmp.addAll(managedEmpVector);
 
             //trigger all the value holders of managed employees' managed employees
         }
         verifyEmp = allEmps;
-        for (Enumeration enum2 = (Enumeration)managedEmp.elements(); enum2.hasMoreElements();) {
+        for (Enumeration enum2 = managedEmp.elements(); enum2.hasMoreElements();) {
             Address anAddress = ((Employee)enum2.nextElement()).getAddress();
             address.add(anAddress);
             //trigger all the value holders of managers' addresses
         }
-        for (Enumeration enum4 = (Enumeration)managedEmp.elements(); enum4.hasMoreElements();) {
-            Vector otherEmployees = (Vector)((Employee)enum4.nextElement()).getManagedEmployees();
+        for (Enumeration enum4 = managedEmp.elements(); enum4.hasMoreElements();) {
+            Vector otherEmployees = ((Employee)enum4.nextElement()).getManagedEmployees();
             allOtherEmps.add(otherEmployees);
 
             //trigger all the value holders of managed employees' managedEmps

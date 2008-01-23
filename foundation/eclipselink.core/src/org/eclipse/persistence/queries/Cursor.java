@@ -51,7 +51,7 @@ public abstract class Cursor implements Enumeration, java.io.Serializable {
     protected Vector objectCollection;
 
     /** Conforming instances found in memory when building the result. */
-    protected IdentityHashtable initiallyConformingIndex;
+    protected Map initiallyConformingIndex;
 
     /** SelectionCriteria & translation row ready for incremental conforming. */
     protected Expression selectionCriteriaClone;
@@ -171,7 +171,7 @@ public abstract class Cursor implements Enumeration, java.io.Serializable {
      * is needed to make sure the same objects appearing in the cursor are
      * filtered out.
      */
-    public IdentityHashtable getInitiallyConformingIndex() {
+    public Map getInitiallyConformingIndex() {
         return initiallyConformingIndex;
     }
 
@@ -370,7 +370,7 @@ public abstract class Cursor implements Enumeration, java.io.Serializable {
      * is needed to make sure the same objects appearing in the cursor are
      * filtered out.
      */
-    public void setInitiallyConformingIndex(IdentityHashtable index) {
+    public void setInitiallyConformingIndex(Map index) {
         this.initiallyConformingIndex = index;
     }
 

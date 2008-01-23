@@ -64,7 +64,7 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
             this.localUOW = new RepeatableWriteUnitOfWork(entityManager.getServerSession().acquireClientSession());
             this.localUOW.setShouldCascadeCloneToJoinedRelationship(true);
         }
-        return (RepeatableWriteUnitOfWork)this.localUOW;
+        return this.localUOW;
     }
     
     public EntityManagerImpl getEntityManager(){
@@ -79,7 +79,7 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
           if (entityTransaction == null){
               entityTransaction = new EntityTransactionImpl(this);
           }
-          return (EntityTransaction)entityTransaction;
+          return entityTransaction;
       }
       
     public void registerUnitOfWorkWithTxn(UnitOfWorkImpl uow){

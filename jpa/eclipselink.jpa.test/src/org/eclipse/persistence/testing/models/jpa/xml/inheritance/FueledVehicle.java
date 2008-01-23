@@ -10,7 +10,6 @@
 package org.eclipse.persistence.testing.models.jpa.xml.inheritance;
 
 import javax.persistence.*;
-import static javax.persistence.InheritanceType.*;
 
 @Entity(name="XMLFueledVehicle")
 @EntityListeners(org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.FueledVehicleListener.class)

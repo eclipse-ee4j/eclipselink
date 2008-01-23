@@ -195,7 +195,7 @@ public class EntityResult extends SQLResult {
             DatabaseField dbfield = processValueFromRecordForMapping(currentDescriptor,fieldResult.getMultipleFieldIdentifiers(),1);
             /** If it is a 1:1 mapping we need to do the target to source field conversion.  If it is an aggregate, it is fine as it is*/
             if (mapping.isOneToOneMapping()){
-                dbfield = (DatabaseField)(((OneToOneMapping)mapping).getTargetToSourceKeyFields().get(dbfield));
+                dbfield = (((OneToOneMapping)mapping).getTargetToSourceKeyFields().get(dbfield));
             }
             entityRecord.put(dbfield, databaseRecord.get(fieldResult.getColumnName()));
             return;
@@ -206,7 +206,7 @@ public class EntityResult extends SQLResult {
             FieldResult tempFieldResult = ((FieldResult)fieldResults.next());
             DatabaseField dbfield = processValueFromRecordForMapping(currentDescriptor,tempFieldResult.getMultipleFieldIdentifiers(),1);
              if (mapping.isOneToOneMapping()){
-                dbfield = (DatabaseField)(((OneToOneMapping)mapping).getTargetToSourceKeyFields().get(dbfield));
+                dbfield = (((OneToOneMapping)mapping).getTargetToSourceKeyFields().get(dbfield));
             }
             entityRecord.put(dbfield, databaseRecord.get(tempFieldResult.getColumnName()));
         }
@@ -224,12 +224,12 @@ public class EntityResult extends SQLResult {
             ClassDescriptor currentDescriptor = mapping.getReferenceDescriptor();
             DatabaseField df= processValueFromRecordForMapping(currentDescriptor, attributeNames, currentLoc);
             if (mapping.isOneToOneMapping()){
-                return (DatabaseField)(((OneToOneMapping)mapping).getTargetToSourceKeyFields().get(df));
+                return (((OneToOneMapping)mapping).getTargetToSourceKeyFields().get(df));
             }
             return df;
         }else{
             //this is it.. return this mapping's field
-            return (DatabaseField) mapping.getFields().firstElement();
+            return mapping.getFields().firstElement();
         }
     }
     

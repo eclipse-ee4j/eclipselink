@@ -176,7 +176,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      * the subclasses if different login is required.
      */
     public Session defaultLogin() {
-        return (Session)(new TestSystem()).login();
+        return (new TestSystem()).login();
     }
 
     /**
@@ -229,7 +229,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      * Return the session.
      */
     protected org.eclipse.persistence.sessions.Session getSession() {
-        return (org.eclipse.persistence.sessions.Session)getExecutor().getSession();
+        return getExecutor().getSession();
     }
 
     /**

@@ -54,11 +54,11 @@ public class SingleInheritanceTest extends TestCase {
          * to remove + restore the log so that printIdentityMaps does not display output
          */
         originalLogWriter = getSession().getLog();
-        getSession().setLog((Writer)new java.io.CharArrayWriter());
+        getSession().setLog(new java.io.CharArrayWriter());
 
-        vehicleDescriptor = (ClassDescriptor)getSession().getDescriptor(org.eclipse.persistence.testing.models.inheritance.Vehicle.class);
+        vehicleDescriptor = getSession().getDescriptor(org.eclipse.persistence.testing.models.inheritance.Vehicle.class);
         originalDescriptors = getSession().getProject().getDescriptors();
-        originalInheritancePolicy = (InheritancePolicy) vehicleDescriptor.getInheritancePolicy();
+        originalInheritancePolicy = vehicleDescriptor.getInheritancePolicy();
         originalDbMapping = vehicleDescriptor.getMappingForAttributeName("owner");
         //remove the 1:1 "owner" mapping
         vehicleDescriptor.getMappings().remove(originalDbMapping);

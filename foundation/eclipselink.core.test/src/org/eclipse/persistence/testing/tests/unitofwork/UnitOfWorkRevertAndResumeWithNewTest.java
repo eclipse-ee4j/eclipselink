@@ -37,7 +37,7 @@ public class UnitOfWorkRevertAndResumeWithNewTest extends AutoVerifyTestCase {
         }
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
-        Vector results = (Vector)uow.readAllObjects(Employee.class);
+        Vector results = uow.readAllObjects(Employee.class);
 
         Address address = new Address();
         address.setId(this.addressId);
@@ -55,7 +55,7 @@ public class UnitOfWorkRevertAndResumeWithNewTest extends AutoVerifyTestCase {
             uow.revertAndResume();
         }
 
-        results = (Vector)uow.readAllObjects(Employee.class);
+        results = uow.readAllObjects(Employee.class);
 
         address = new Address();
         address.setStreet("Wallace2");

@@ -24,9 +24,7 @@ import java.util.*;
 import java.io.Serializable;
 import javax.persistence.*;
 import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
 import static javax.persistence.InheritanceType.*;
-import static javax.persistence.FetchType.*;
 import static javax.persistence.DiscriminatorType.*;
 
 /**

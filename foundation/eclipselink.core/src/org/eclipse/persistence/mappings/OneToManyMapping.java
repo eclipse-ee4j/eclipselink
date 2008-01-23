@@ -14,12 +14,10 @@ import java.util.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 
@@ -121,7 +119,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         for (Iterator keys = getTargetForeignKeysToSourceKeys().keySet().iterator();
                  keys.hasNext();) {
             DatabaseField targetForeignKey = (DatabaseField)keys.next();
-            DatabaseField sourceKey = (DatabaseField)getTargetForeignKeysToSourceKeys().get(targetForeignKey);
+            DatabaseField sourceKey = getTargetForeignKeysToSourceKeys().get(targetForeignKey);
 
             Expression partialSelectionCriteria = builder.getField(targetForeignKey).equal(builder.getParameter(sourceKey));
             selectionCriteria = partialSelectionCriteria.and(selectionCriteria);
@@ -439,12 +437,12 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
 
         for (int index = 0; index < getTargetForeignKeyFields().size(); index++) {
-            DatabaseField field = getReferenceDescriptor().buildField((DatabaseField)getTargetForeignKeyFields().get(index));
+            DatabaseField field = getReferenceDescriptor().buildField(getTargetForeignKeyFields().get(index));
             getTargetForeignKeyFields().set(index, field);
         }
 
         for (int index = 0; index < getSourceKeyFields().size(); index++) {
-            DatabaseField field = getDescriptor().buildField((DatabaseField)getSourceKeyFields().get(index));
+            DatabaseField field = getDescriptor().buildField(getSourceKeyFields().get(index));
             getSourceKeyFields().set(index, field);
         }
 
@@ -510,16 +508,10 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                 insertQuery.setCascadePolicy(query.getCascadePolicy());
                 query.getSession().executeQuery(insertQuery);
             } else {
-                // This will happen in a unit of work or cascaded query.
+                // This will happen in a cascaded query.
                 // This is done only for persistence by reachability and is not required if the targets are in the queue anyway
                 // Avoid cycles by checking commit manager, this is allowed because there is no dependency.
                 if (!query.getSession().getCommitManager().isCommitInPreModify(object)) {
-                    ObjectChangeSet changeSet = null;
-                    UnitOfWorkChangeSet uowChangeSet = null;
-                    if (query.getSession().isUnitOfWork() && (((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet() != null)) {
-                        uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet();
-                        changeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(object);
-                    }
                     WriteObjectQuery writeQuery = new WriteObjectQuery();
                     writeQuery.setIsExecutionClone(true);
                     writeQuery.setObject(object);

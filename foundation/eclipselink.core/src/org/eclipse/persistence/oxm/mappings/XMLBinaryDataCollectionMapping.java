@@ -358,7 +358,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                     fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler((String)element);
                 } else if (!this.isSwaRef()) {
                     //should be base64
-                    byte[] bytes = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray((String)element);
+                    byte[] bytes = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(element);
                     fieldValue = bytes;
                 }
             } else {
@@ -400,9 +400,9 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                         fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(refValue);
                     }
                 } else {
-                    fieldValue = (String)record.get("text()");
+                    fieldValue = record.get("text()");
                     //should be a base64 string
-                    fieldValue = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray((String)fieldValue);
+                    fieldValue = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(fieldValue);
                 }
             }
             Object attributeValue = fieldValue;

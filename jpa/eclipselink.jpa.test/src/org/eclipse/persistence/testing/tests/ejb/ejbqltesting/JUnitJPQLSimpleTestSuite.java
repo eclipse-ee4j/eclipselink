@@ -1520,7 +1520,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         expectedResult.setPostalCode("Y3Q2N9");
         expectedResult.setStreet("234 Wandering _Way");
 
-        Server serverSession = (Server)JUnitTestCase.getServerSession();
+        Server serverSession = JUnitTestCase.getServerSession();
         Session clientSession = serverSession.acquireClientSession();
         UnitOfWork uow = clientSession.acquireUnitOfWork();
         uow.registerObject(expectedResult);
@@ -1615,7 +1615,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         //setup the EJBQL to do the same
         String ejbqlString = "SELECT COUNT(DISTINCT phone.owner) FROM PhoneNumber phone";
 
-        List result = (List)em.createQuery(ejbqlString).getResultList();
+        List result = em.createQuery(ejbqlString).getResultList();
 
         Assert.assertTrue("Simple Select Count One To One test failed", expectedResult.elementAt(0).equals(result.get(0)));
 
@@ -1637,7 +1637,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         //setup the EJBQL to do the same
         String ejbqlString = "SELECT DISTINCT employee.address FROM Employee employee WHERE employee.lastName LIKE '%Way%'";
 
-        List result = (List)em.createQuery(ejbqlString).getResultList();
+        List result = em.createQuery(ejbqlString).getResultList();
 
         Assert.assertTrue("Simple Select One To One test failed", comparer.compareObjects(result, expectedResult));
 

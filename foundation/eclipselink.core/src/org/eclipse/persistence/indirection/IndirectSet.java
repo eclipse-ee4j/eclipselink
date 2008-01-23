@@ -13,7 +13,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
 import java.io.*;
-import java.lang.reflect.Method;
 import java.beans.PropertyChangeListener;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;

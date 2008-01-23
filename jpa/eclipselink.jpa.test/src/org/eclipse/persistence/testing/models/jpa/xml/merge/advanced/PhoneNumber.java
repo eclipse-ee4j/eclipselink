@@ -11,7 +11,6 @@ package org.eclipse.persistence.testing.models.jpa.xml.merge.advanced;
 
 import java.io.*;
 import javax.persistence.*;
-import static javax.persistence.FetchType.*;
 
 /**
  * <p><b>Purpose</b>: Describes an Employee's phone number.

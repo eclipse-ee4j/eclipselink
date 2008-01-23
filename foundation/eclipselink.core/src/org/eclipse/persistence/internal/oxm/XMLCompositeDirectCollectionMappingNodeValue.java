@@ -117,7 +117,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         Object collection = unmarshalRecord.getContainerInstance(this);
         if (xmlCompositeDirectCollectionMapping.usesSingleNode()) {
-            StringTokenizer stringTokenizer = new StringTokenizer((String)value);
+            StringTokenizer stringTokenizer = new StringTokenizer(value);
             while (stringTokenizer.hasMoreTokens()) {
                 addUnmarshalValue(unmarshalRecord, stringTokenizer.nextToken(), collection);
             }
@@ -203,7 +203,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
             }
         }
 
-        xmlCompositeDirectCollectionMapping.getContainerPolicy().addInto(value, collection, (org.eclipse.persistence.internal.sessions.AbstractSession)unmarshalRecord.getSession());
+        xmlCompositeDirectCollectionMapping.getContainerPolicy().addInto(value, collection, unmarshalRecord.getSession());
     }
 
     public Object getContainerInstance() {

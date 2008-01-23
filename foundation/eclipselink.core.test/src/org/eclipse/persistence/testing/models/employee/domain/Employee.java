@@ -391,11 +391,11 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
         //fire a remove event for each element in the old collection, and an add event for each element
         //in the new collection
         for (int index = 0; index < getManagedEmployees().size(); index++) {
-            collectionChange("managedEmployees", this.managedEmployees, (Employee)getManagedEmployees().get(index), 1);
+            collectionChange("managedEmployees", this.managedEmployees, getManagedEmployees().get(index), 1);
         }
         if (managedEmployees != null) {
             for (int index = 0; index < managedEmployees.size(); index++) {
-                collectionChange("managedEmployees", this.managedEmployees, (Employee)managedEmployees.get(index), 0);
+                collectionChange("managedEmployees", this.managedEmployees, managedEmployees.get(index), 0);
             }
         }
         this.managedEmployees.setValue(managedEmployees);
@@ -431,11 +431,11 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
         //fire a remove event for each element in the old collection, and an add event for each element
         //in the new collection
         for (int index = 0; index < getPhoneNumbers().size(); index++) {
-            collectionChange("phoneNumbers", this.phoneNumbers, (PhoneNumber)getPhoneNumbers().get(index), 1);
+            collectionChange("phoneNumbers", this.phoneNumbers, getPhoneNumbers().get(index), 1);
         }
         if (phoneNumbers != null) {
             for (int index = 0; index < phoneNumbers.size(); index++) {
-                collectionChange("phoneNumbers", this.phoneNumbers, (PhoneNumber)phoneNumbers.get(index), 0);
+                collectionChange("phoneNumbers", this.phoneNumbers, phoneNumbers.get(index), 0);
             }
         }
         this.phoneNumbers.setValue(phoneNumbers);
@@ -450,11 +450,11 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
         //fire a remove event for each element in the old collection, and an add event for each element
         //in the new collection
         for (int index = 0; index < getProjects().size(); index++) {
-            collectionChange("projects", this.projects, (Project)getProjects().get(index), 1);
+            collectionChange("projects", this.projects, getProjects().get(index), 1);
         }
         if (projects != null) {
             for (int index = 0; index < projects.size(); index++) {
-                collectionChange("projects", this.projects, (Project)projects.get(index), 0);
+                collectionChange("projects", this.projects, projects.get(index), 0);
             }
         }
         this.projects.setValue(projects);

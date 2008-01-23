@@ -20,10 +20,8 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.oxm.*;
-import org.eclipse.persistence.internal.sessions.factories.*;
 
 /**
  * <p><b>Purpose</b>: Allow for a TopLink Mapping Workbench generated deployment XML project file to be read.

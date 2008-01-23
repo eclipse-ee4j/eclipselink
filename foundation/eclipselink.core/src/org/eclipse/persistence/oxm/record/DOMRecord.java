@@ -375,7 +375,7 @@ public class DOMRecord extends XMLRecord {
         // Assumption:  NodeList contains nodes of the same type
         Node firstNode = nodeList.item(0);
         if ((firstNode == null) || (firstNode.getNodeType() != Node.ELEMENT_NODE)) {
-            if (((XMLField)field).usesSingleNode() && (resultSize == 1)) {
+            if ((field).usesSingleNode() && (resultSize == 1)) {
                 Node next = nodeList.item(0);
                 if (next == null) {
                     result.add(null);
@@ -383,7 +383,7 @@ public class DOMRecord extends XMLRecord {
                     Vector list = new Vector();
                     String sourceObject = next.getNodeValue();
 
-                    StringTokenizer tokenizer = new StringTokenizer((String)sourceObject, " ");
+                    StringTokenizer tokenizer = new StringTokenizer(sourceObject, " ");
                     while (tokenizer.hasMoreElements()) {
                         String token = tokenizer.nextToken();
                         Object nextItem = convertValue((Element)next.getParentNode(), field, token);

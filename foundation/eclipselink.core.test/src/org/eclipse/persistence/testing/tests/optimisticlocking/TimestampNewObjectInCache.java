@@ -41,7 +41,7 @@ public class TimestampNewObjectInCache extends TestCase {
             Expression exp = bldr.get("id").equal(tio.id);
             queryObject.setSelectionCriteria(exp);
             queryObject.setReferenceClass(TimestampInObject.class);
-            objectToBeRead = (TimestampInObject)getSession().executeQuery(queryObject);
+            objectToBeRead = getSession().executeQuery(queryObject);
 
         } else if (lockingObject instanceof LockInObject) {
             isTio = false;
@@ -51,7 +51,7 @@ public class TimestampNewObjectInCache extends TestCase {
             Expression exp = bldr.get("id").equal(ov.id);
             queryObject.setSelectionCriteria(exp);
             queryObject.setReferenceClass(LockInObject.class);
-            objectToBeRead = (LockInObject)getSession().executeQuery(queryObject);
+            objectToBeRead = getSession().executeQuery(queryObject);
         }
     }
 

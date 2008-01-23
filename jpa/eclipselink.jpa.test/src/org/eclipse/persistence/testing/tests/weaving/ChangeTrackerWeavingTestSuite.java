@@ -25,14 +25,12 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.weaving.PersistenceWeavedChangeTracking;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaver;
 import org.eclipse.persistence.internal.weaving.TransformerFactory;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.testing.models.weaving.Customer;
 import org.eclipse.persistence.testing.models.weaving.Item;
 import org.eclipse.persistence.testing.models.weaving.Order;
@@ -123,16 +121,16 @@ public class ChangeTrackerWeavingTestSuite  extends TestCase {
 
         try {
             // ensure ChangeTracker interface has been added
-            newOrder = (ChangeTracker)newOrderClass.newInstance();
+            newOrder = newOrderClass.newInstance();
             
             // ensure TopLinkWeavedChangeTracking interface has been added
-            newOrder = (PersistenceWeavedChangeTracking)newOrderClass.newInstance();
+            newOrder = newOrderClass.newInstance();
             
             // ensure ChangeTracker interface has been added
-            newItem = (ChangeTracker)newItemClass.newInstance();
+            newItem = newItemClass.newInstance();
             
             // ensure TopLinkWeavedChangeTracking interface has been added
-            newItem = (PersistenceWeavedChangeTracking)newItemClass.newInstance();
+            newItem = newItemClass.newInstance();
 
         }
         catch (Exception e) {

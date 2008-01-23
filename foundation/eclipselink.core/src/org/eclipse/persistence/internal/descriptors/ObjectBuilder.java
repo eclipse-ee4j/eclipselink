@@ -212,13 +212,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if ((handledMappings != null) && handledMappings.contains(mapping)) {
             return;
         }
-        Object attributeValue;
         if (mapping.isDirectToFieldMapping()) {
-            attributeValue = mapping.readFromRowIntoObject(row, null, object, query);
+            mapping.readFromRowIntoObject(row, null, object, query);
         } else if (mapping.isAggregateObjectMapping()) {
-            attributeValue = ((AggregateObjectMapping)mapping).readFromReturnRowIntoObject(row, object, query, handledMappings);
+            ((AggregateObjectMapping)mapping).readFromReturnRowIntoObject(row, object, query, handledMappings);
         } else if (mapping.isTransformationMapping()) {
-            attributeValue = ((AbstractTransformationMapping)mapping).readFromReturnRowIntoObject(row, object, query, handledMappings);
+            ((AbstractTransformationMapping)mapping).readFromReturnRowIntoObject(row, object, query, handledMappings);
         } else {
             query.getSession().log(SessionLog.FINEST, SessionLog.QUERY, "field_for_unsupported_mapping_returned", field, getDescriptor());
         }
@@ -354,7 +353,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * calls the specific buildExpression method corresponding to the type of mapping.  It then generates a
      * complete Expression by joining the individual Expressions.
      */
-    public Expression buildExpressionFromExample(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, IdentityHashtable processedObjects, AbstractSession session) {
+    public Expression buildExpressionFromExample(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         if (processedObjects.containsKey(queryObject)) {
             //this object has already been queried on
             return null;
@@ -612,7 +611,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     //the cached partial object is not invalidated and does not contain all data for the fetch group.	
                     if (concreteDescriptor.hasFetchGroupManager() && concreteDescriptor.getFetchGroupManager().isPartialObject(domainObject)) {
                         //only ObjectLevelReadQuery and above support partial objects
-                        revertFetchGroupData(domainObject, concreteDescriptor, cacheKey, ((ObjectLevelReadQuery)query), joinManager, databaseRow, session);
+                        revertFetchGroupData(domainObject, concreteDescriptor, cacheKey, (query), joinManager, databaseRow, session);
                     } else {
                         boolean refreshRequired = true;
                         if (concreteDescriptor.usesOptimisticLocking()) {
@@ -1398,7 +1397,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * This method is used by the UnitOfWork to cascade registration of new objects.
      * It may raise exceptions as described inthe EJB3 specification
      */
-    public void cascadePerformRemove(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+    public void cascadePerformRemove(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // PERF: Avoid iterator.
         List mappings = getDescriptor().getMappings();
         for (int index = 0; index < mappings.size(); index++) {
@@ -1412,7 +1411,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Cascade discover and persist new objects during commit.
      * It may raise exceptions as described inthe EJB3 specification
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         // PERF: Avoid iterator.
         List mappings = getDescriptor().getMappings();
         for (int index = 0; index < mappings.size(); index++) {
@@ -1426,7 +1425,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * This method is used by the UnitOfWork to cascade registration of new objects.
      * It may raise exceptions as described inthe EJB3 specification
      */
-    public void cascadeRegisterNewForCreate(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+    public void cascadeRegisterNewForCreate(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // PERF: Avoid iterator.
         List mappings = getDescriptor().getMappings();
         for (int index = 0; index < mappings.size(); index++) {
@@ -1832,7 +1831,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    public void fixObjectReferences(Object object, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
         Vector mappings = getDescriptor().getMappings();
         for (int index = 0; index < mappings.size(); index++) {

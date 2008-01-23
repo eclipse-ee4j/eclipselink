@@ -182,7 +182,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
      * In case Query By Example is used, this method builds and returns an expression that
      * corresponds to a single attribue and it's value for a directToField mapping.
      */
-    public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, IdentityHashtable processedObjects, AbstractSession session) {
+    public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         String attributeName = this.getAttributeName();
         Object attributeValue = this.getAttributeValueFromObject(queryObject);
 
@@ -205,7 +205,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
-    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
     }
@@ -214,7 +214,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
     }
@@ -376,7 +376,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    public void fixObjectReferences(Object object, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
     }
 
     /**

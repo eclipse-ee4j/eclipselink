@@ -12,7 +12,6 @@ package org.eclipse.persistence.platform.server;
 import java.sql.SQLException;
 
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.DatabaseSession;
 

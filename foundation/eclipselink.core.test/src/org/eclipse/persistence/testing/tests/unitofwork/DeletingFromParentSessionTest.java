@@ -39,7 +39,7 @@ public class DeletingFromParentSessionTest extends DeleteObjectTest {
 
         originalObject = 
                 uow.readObject(Employee.class, new org.eclipse.persistence.expressions.ExpressionBuilder().get("firstName").equal("John"));
-        this.address = (Address)((Employee)originalObject).getAddress();
+        this.address = ((Employee)originalObject).getAddress();
         // Instantiate stuff
         ((Employee)originalObject).getManagedEmployees();
         ((Employee)originalObject).getPhoneNumbers();

@@ -10,8 +10,6 @@
 package org.eclipse.persistence.testing.tests.identitymaps;
 
 import java.util.*;
-import java.math.BigDecimal;
-
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.testing.framework.*;
 

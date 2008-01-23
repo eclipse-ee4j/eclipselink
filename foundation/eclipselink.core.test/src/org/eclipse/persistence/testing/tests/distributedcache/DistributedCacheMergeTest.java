@@ -31,7 +31,6 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.sessions.server.ClientSession;
 
 public abstract class DistributedCacheMergeTest extends TestCase {
     private OptimisticLockingPolicy policy1 = null;
@@ -47,7 +46,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
     }
 
     protected void setup() throws Exception {
-        originalSession = (org.eclipse.persistence.sessions.Session)getExecutor().getSession();
+        originalSession = getExecutor().getSession();
         createObject();
 
         try {
@@ -56,10 +55,10 @@ public abstract class DistributedCacheMergeTest extends TestCase {
             //hopefully this exception is just because the registry already exists            
         }
 
-        cluster1Session = (Server)buildSession("cluster1");
+        cluster1Session = buildSession("cluster1");
         cluster1Session.login();
 
-        cluster2Session = (Server)buildSession("cluster2");
+        cluster2Session = buildSession("cluster2");
         cluster2Session.login();
         Thread.sleep(5000);// Let the Cache-sync get configured.  
 

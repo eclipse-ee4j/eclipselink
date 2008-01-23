@@ -18,7 +18,6 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.DBPlatformHelper;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
-import org.eclipse.persistence.internal.sequencing.SequencingCallback;
 import org.eclipse.persistence.internal.sequencing.SequencingHome;
 import org.eclipse.persistence.internal.sequencing.SequencingFactory;
 import org.eclipse.persistence.sequencing.SequencingControl;

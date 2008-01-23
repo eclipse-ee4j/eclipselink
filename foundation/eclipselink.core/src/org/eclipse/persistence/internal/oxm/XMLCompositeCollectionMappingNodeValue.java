@@ -66,7 +66,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         }
         Object objectValue;
         while (cp.hasNext(iterator)) {
-            objectValue = cp.next(iterator, (AbstractSession)session);
+            objectValue = cp.next(iterator, session);
             marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
         }
         return true;
@@ -161,7 +161,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
 
         List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
         writeExtraNamespaces(extraNamespaces, marshalRecord, session);
-        objectBuilder.buildRow(marshalRecord, value, (AbstractSession)session, marshaller);
+        objectBuilder.buildRow(marshalRecord, value, session, marshaller);
         marshalRecord.endElement(xPathFragment, namespaceResolver);
         objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
 

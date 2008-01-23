@@ -4,7 +4,6 @@ package org.eclipse.persistence.testing.tests.queries.options;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.internal.databaseaccess.*;

@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.server;
 
-import java.util.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.exceptions.*;

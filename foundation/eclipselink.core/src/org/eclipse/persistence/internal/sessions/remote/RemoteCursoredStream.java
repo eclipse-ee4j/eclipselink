@@ -88,7 +88,7 @@ public class RemoteCursoredStream extends CursoredStream {
             return null;
         }
 
-        Vector nextPageObjects = (Vector)(((RemoteSession)getSession()).getRemoteConnection()).cursoredStreamNextPage(this, getPolicy().getQuery(), (RemoteSession)getSession(), getPageSize());
+        Vector nextPageObjects = (((RemoteSession)getSession()).getRemoteConnection()).cursoredStreamNextPage(this, getPolicy().getQuery(), (RemoteSession)getSession(), getPageSize());
         if ((nextPageObjects == null) || nextPageObjects.isEmpty()) {
             return null;
         }

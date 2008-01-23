@@ -70,7 +70,7 @@ public class QueryAccrossV11ProxyIndirectionTest extends AutoVerifyTestCase {
 
     public void test() {
         try {
-            java.util.Vector actors = (java.util.Vector)getSession().readAllObjects(Actor.class);
+            java.util.Vector actors = getSession().readAllObjects(Actor.class);
             for (int x = 0; x < actors.size(); x++) {
                 Actor actor = (Actor)actors.elementAt(x);
                 //trigger indirection

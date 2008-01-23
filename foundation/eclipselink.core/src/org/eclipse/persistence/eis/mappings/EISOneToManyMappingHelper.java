@@ -316,7 +316,7 @@ public class EISOneToManyMappingHelper {
      * Return the mapping, casted a bit more generally.
      */
     public DatabaseMapping getDatabaseMapping() {
-        return (DatabaseMapping)this.getMapping();
+        return this.getMapping();
     }
 
     /**

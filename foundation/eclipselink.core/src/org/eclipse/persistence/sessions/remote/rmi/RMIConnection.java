@@ -154,8 +154,8 @@ public class RMIConnection extends RemoteConnection {
         if (query.isReadAllQuery() && (!query.isReportQuery())) {// could be DataReadQuery
             clientNextPageObjects = new Vector(serverNextPageObjects.size());
             for (Enumeration objEnum = serverNextPageObjects.elements(); objEnum.hasMoreElements();) {
-                // 2612538 - the default size of IdentityHashtable (32) is appropriate
-                Object clientObject = session.getObjectCorrespondingTo(objEnum.nextElement(), transporter.getObjectDescriptors(), new IdentityHashtable(), (ObjectLevelReadQuery)query);
+                // 2612538 - the default size of Map (32) is appropriate
+                Object clientObject = session.getObjectCorrespondingTo(objEnum.nextElement(), transporter.getObjectDescriptors(), new IdentityHashMap(), (ObjectLevelReadQuery)query);
                 clientNextPageObjects.addElement(clientObject);
             }
         }
@@ -193,7 +193,7 @@ public class RMIConnection extends RemoteConnection {
             }
 
             RemoteCursoredStream remoteCursoredStream = (RemoteCursoredStream)transporter.getObject();
-            remoteCursoredStream.setSession((RemoteSession)session);
+            remoteCursoredStream.setSession(session);
             remoteCursoredStream.setPolicy(policy);
 
             if (policy.getQuery().isReadAllQuery() && (!policy.getQuery().isReportQuery())) {// could be DataReadQuery
@@ -217,7 +217,7 @@ public class RMIConnection extends RemoteConnection {
             }
 
             RemoteScrollableCursor remoteScrollableCursor = (RemoteScrollableCursor)transporter.getObject();
-            remoteScrollableCursor.setSession((RemoteSession)session);
+            remoteScrollableCursor.setSession(session);
             remoteScrollableCursor.setPolicy(policy);
 
             return remoteScrollableCursor;
@@ -234,12 +234,12 @@ public class RMIConnection extends RemoteConnection {
      */
     public void fixObjectReferences(Transporter remoteCursoredStream, ObjectLevelReadQuery query, RemoteSession session) {
         RemoteCursoredStream stream = (RemoteCursoredStream)remoteCursoredStream.getObject();
-        Vector remoteObjectCollection = (Vector)stream.getObjectCollection();
+        Vector remoteObjectCollection = stream.getObjectCollection();
         if (query.isReadAllQuery() && (!query.isReportQuery())) {// could be DataReadQuery
             Vector clientObjectCollection = new Vector(remoteObjectCollection.size());
 
             // find next power-of-2 size
-            IdentityHashtable recursiveSet = new IdentityHashtable(remoteObjectCollection.size() + 1);
+            Map recursiveSet = new IdentityHashMap(remoteObjectCollection.size() + 1);
             for (Enumeration enumtr = remoteObjectCollection.elements(); enumtr.hasMoreElements();) {
                 Object serverSideDomainObject = enumtr.nextElement();
                 clientObjectCollection.addElement(session.getObjectCorrespondingTo(serverSideDomainObject, remoteCursoredStream.getObjectDescriptors(), recursiveSet, query));
@@ -642,7 +642,7 @@ public class RMIConnection extends RemoteConnection {
         }
 
         if (query.isReadAllQuery() && (!query.isReportQuery())) {// could be DataReadQuery
-            object = session.getObjectCorrespondingTo(object, transporter.getObjectDescriptors(), new org.eclipse.persistence.internal.helper.IdentityHashtable(), (ObjectLevelReadQuery)query);
+            object = session.getObjectCorrespondingTo(object, transporter.getObjectDescriptors(), new IdentityHashMap(), (ObjectLevelReadQuery)query);
         }
         return object;
     }
@@ -673,7 +673,7 @@ public class RMIConnection extends RemoteConnection {
         }
 
         if (query.isReadAllQuery() && (!query.isReportQuery())) {// could be DataReadQuery
-            object = session.getObjectCorrespondingTo(object, transporter.getObjectDescriptors(), new org.eclipse.persistence.internal.helper.IdentityHashtable(), (ObjectLevelReadQuery)query);
+            object = session.getObjectCorrespondingTo(object, transporter.getObjectDescriptors(), new IdentityHashMap(), (ObjectLevelReadQuery)query);
         }
         return object;
 

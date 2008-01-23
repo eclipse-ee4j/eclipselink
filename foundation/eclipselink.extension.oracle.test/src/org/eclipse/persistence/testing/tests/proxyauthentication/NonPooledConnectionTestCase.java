@@ -47,7 +47,7 @@ public class NonPooledConnectionTestCase extends ProxyAuthenticationConnectionTe
             listener = new SessionEventAdapter() {
                         public void postAcquireClientSession(SessionEvent event) {
                             ClientSession cs = (ClientSession)event.getSession();
-                            ConnectionPolicy policy = (ConnectionPolicy)cs.getConnectionPolicy(); //.clone();
+                            ConnectionPolicy policy = cs.getConnectionPolicy(); //.clone();
                             cs.setConnectionPolicy(policy);
                             addProxyPropertiesToLogin(policy.getLogin());
                             // the following alters ConnectionPolicy and ClientSession

@@ -39,14 +39,10 @@ import org.eclipse.persistence.internal.expressions.ParameterExpression;
  */
 public class StoredProcedureGenerator {
     public SchemaManager schemaManager;
-    /** Used to insure proper sequence of method calls. */
-    private int state;
     /** This hashtable is used to store the storedProcedure referenced by the class name. */
     private Hashtable storedProcedures;
     /** This hashtable is used to store the storedProcedure referenced by the mapping name. */
     private Hashtable mappingStoredProcedures;
-    /** Stores the fields of individual tables. */
-    private Hashtable tableFields;
     private Hashtable intToTypeConverterHash;
     private Writer writer;
     private String prefix;
@@ -58,8 +54,6 @@ public class StoredProcedureGenerator {
         super();
         this.schemaManager = schemaMngr;
         this.sequenceProcedures = new Hashtable();
-        this.state = 0;
-        this.tableFields = new Hashtable();
         this.storedProcedures = new Hashtable();
         this.mappingStoredProcedures = new Hashtable();
         this.buildIntToTypeConverterHash();
@@ -423,8 +417,6 @@ public class StoredProcedureGenerator {
      */
     protected StoredProcedureDefinition generateOneToManyMappingProcedures(OneToManyMapping mapping, DatabaseQuery query, Map fields, String namePrefix) {
         String sourceClassName = Helper.getShortClassName(mapping.getDescriptor().getJavaClass());
-
-        Iterator fieldsEnum = mapping.getTargetForeignKeyToSourceKeys().values().iterator();
         return generateStoredProcedure(query, new ArrayList(fields.values()), getPrefix() + namePrefix + sourceClassName + "_" + mapping.getAttributeName());
     }
 
@@ -524,7 +516,6 @@ public class StoredProcedureGenerator {
             }
         }
         Enumeration enumtr = callVector.elements();
-        StringWriter stringWriter = new StringWriter();
         while (enumtr.hasMoreElements()) {
             SQLCall call = (SQLCall)enumtr.nextElement();
             statementVector.addElement(this.buildProcedureString(call));

@@ -11,7 +11,6 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import javax.persistence.ManyToMany;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import java.util.List;

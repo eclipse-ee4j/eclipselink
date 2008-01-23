@@ -33,7 +33,7 @@ public class UpdateChangeNothingTest extends ComplexUpdateTest {
         // Object type
         employee.setGender(new String(employee.getGender().getBytes()));
         // Transformation
-        employee.setNormalHours((java.sql.Time[])employee.getNormalHours().clone());
+        employee.setNormalHours(employee.getNormalHours().clone());
         // Aggregate
         employee.setPeriod(new org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod(employee.getPeriod().getStartDate(), employee.getPeriod().getEndDate()));
         // Direct collection

@@ -9,6 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.changesets;
 
+import java.util.*;
 
 /**
  * <p>
@@ -22,16 +23,16 @@ public interface UnitOfWorkChangeSet {
     /**
      * ADVANCED:
      * This method returns a reference to the collection.  Not All ChangeSets that Exist in this list may have changes
-     * @return org.eclipse.persistence.internal.helper.IdentityHashtable
+     * @return Map
      */
-    public org.eclipse.persistence.internal.helper.IdentityHashtable getAllChangeSets();
+    public Map getAllChangeSets();
 
     /**
      * ADVANCED:
      * This method returns the reference to the deleted objects from the changeSet
-     * @return org.eclipse.persistence.internal.helper.IdentityHashtable
+     * @return Map
      */
-    public org.eclipse.persistence.internal.helper.IdentityHashtable getDeletedObjects();
+    public Map getDeletedObjects();
 
     /**
      * ADVANCED:

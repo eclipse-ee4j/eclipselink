@@ -516,7 +516,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    public void fixObjectReferences(Object object, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         getIndirectionPolicy().fixObjectReferences(object, objectDescriptors, processedObjects, query, session);
     }
 
@@ -577,7 +577,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * ForeignReferenceMappings have to worry about
      * maintaining object identity.
      */
-    public Object getObjectCorrespondingTo(Object object, RemoteSession session, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object object, RemoteSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
         return session.getObjectCorrespondingTo(object, objectDescriptors, processedObjects, query);
     }
 
@@ -877,7 +877,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * replace the value holders in the specified reference object(s)
      */
-    public IdentityHashtable replaceValueHoldersIn(Object object, RemoteSessionController controller) {
+    public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
         return controller.replaceValueHoldersIn(object);
     }
 

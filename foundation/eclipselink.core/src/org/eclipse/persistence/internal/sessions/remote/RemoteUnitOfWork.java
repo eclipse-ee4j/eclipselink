@@ -88,11 +88,11 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
 
         // Must clone the clone mapping because entries can be added to it during the merging,
         // and that can lead to concurrency problems.
-        Enumeration clones = ((IdentityHashtable)getCloneMapping().clone()).keys();
+        Iterator clones = new IdentityHashMap(getCloneMapping()).keySet().iterator();
 
         // Iterate over each clone and let the object build merge to clones into the originals.
-        while (clones.hasMoreElements()) {
-            manager.mergeChanges(clones.nextElement(), null);
+        while (clones.hasNext()) {
+            manager.mergeChanges(clones.next(), null);
         }
     }
 
@@ -157,35 +157,35 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
      * Merges remote unit of work to parent remote session.
      */
     protected void commitRootUnitOfWorkOnClient() {
-        IdentityHashtable allObjects = collectAndPrepareObjectsForNestedMerge();
+        Map allObjects = collectAndPrepareObjectsForNestedMerge();
 
         // I must clone because the commitManager will remove the objects from the collection
         // as the objects are written to the database.
         setAllClonesCollection(allObjects);
 
-        //calculate the change set here as we have special behaviour for remote
+        //calculate the change set here as we have special behavior for remote
         // in that the new changesets must be updated within the UOWChangeSet as the
         // primary keys have already been assigned.  This was modified for updating
-        // new object change set behaviour.
+        // new object change set behavior.
         UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
         if (uowChangeSet == null) {
-            //may be using the old commit prosess usesOldCommit()
+            //may be using the old commit process usesOldCommit()
             setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
             uowChangeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
             calculateChanges(getAllClones(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
         }
         Enumeration classes = uowChangeSet.getNewObjectChangeSets().elements();
         while (classes.hasMoreElements()) {
-            IdentityHashtable newList = (IdentityHashtable)classes.nextElement();
-            Enumeration newChangeSets = newList.keys();
-            while (newChangeSets.hasMoreElements()) {
-                uowChangeSet.putNewObjectInChangesList((ObjectChangeSet)newChangeSets.nextElement(), this);
+            Map newList = (Map)classes.nextElement();
+            Iterator newChangeSets = new IdentityHashMap(newList).keySet().iterator();
+            while (newChangeSets.hasNext()) {
+                uowChangeSet.putNewObjectInChangesList((ObjectChangeSet)newChangeSets.next(), this);
             }
         }
         
         //add the deleted objects
-        for (Enumeration iterator = getObjectsDeletedDuringCommit().keys(); iterator.hasMoreElements(); ){
-            ((UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).addDeletedObject(iterator.nextElement(), this);
+        for (Iterator iterator = getObjectsDeletedDuringCommit().keySet().iterator(); iterator.hasNext(); ){
+            ((UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).addDeletedObject(iterator.next(), this);
         }
 
         mergeChangesIntoParent();
@@ -375,8 +375,8 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
      * The returned remote unit of work from the server is prepared to merge with local remote unit of work.
      */
     protected void prepareForMergeIntoRemoteUnitOfWork() {
-        IdentityHashtable originalToClone = new IdentityHashtable();
-        IdentityHashtable cloneToOriginal = new IdentityHashtable();
+        Map originalToClone = new IdentityHashMap();
+        Map cloneToOriginal = new IdentityHashMap();
 
         // For new and unregistered objects the clone from the parent remote unit of work is picked and store as original
         // in the remote unit of work. This is done so that changes are merged into the clone of the parent.
@@ -410,10 +410,10 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
 
         // Get the corresponding deleted objects from the original remote unit of work,
         // and set them in the remote unit of work, this is the parent.
-        IdentityHashtable objectsDeletedDuringCommit = new IdentityHashtable();
-        for (Enumeration deletedObjects = getObjectsDeletedDuringCommit().keys();
-                 deletedObjects.hasMoreElements();) {
-            Object deletedObject = deletedObjects.nextElement();
+        Map objectsDeletedDuringCommit = new IdentityHashMap();
+        for (Iterator deletedObjects = getObjectsDeletedDuringCommit().keySet().iterator();
+                 deletedObjects.hasNext();) {
+            Object deletedObject = deletedObjects.next();
             Vector primaryKey = keyFromObject(deletedObject);
             Object cloneFromParent = getParent().getIdentityMapAccessor().getFromIdentityMap(primaryKey, deletedObject.getClass());
 

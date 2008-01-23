@@ -11,8 +11,6 @@ package org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.
 
 import java.io.*;
 import javax.persistence.*;
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
 
 /**
  * <p><b>Purpose</b>: Describes an Employee's phone number.

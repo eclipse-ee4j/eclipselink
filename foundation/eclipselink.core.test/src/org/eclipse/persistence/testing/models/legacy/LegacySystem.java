@@ -22,11 +22,11 @@ public class LegacySystem extends TestSystem {
         if (project == null) {
             project = new LegacyProject();
         }
-        ((DatabaseSession)session).addDescriptors(project);
+        (session).addDescriptors(project);
     }
 
     public void createTables(DatabaseSession session) {
-        new LegacyTables().replaceTables((DatabaseSession)session);
+        new LegacyTables().replaceTables(session);
     }
 
     public void populate(DatabaseSession session) {

@@ -22,14 +22,14 @@ public class BarSystem extends TestSystem {
   
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
-            project = new BarProject((DatabaseSession) session);
+            project = new BarProject(session);
         }
     
-        ((DatabaseSession) session).addDescriptors(project);
+        (session).addDescriptors(project);
     }
     
     public void createTables(DatabaseSession session) {
-        new BarTableCreator().replaceTables((DatabaseSession) session);
+        new BarTableCreator().replaceTables(session);
     }
     
     public void populate(DatabaseSession session) {

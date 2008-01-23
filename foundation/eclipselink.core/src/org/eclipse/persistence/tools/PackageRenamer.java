@@ -471,7 +471,7 @@ public class PackageRenamer {
         int index = aStringArrayOfSortedKeyPackageName.length;
         for (Enumeration enumtr = properties.keys(); enumtr.hasMoreElements();) {
             String garbage = (String)enumtr.nextElement();
-            String key = (String)aStringArrayOfSortedKeyPackageName[index - 1];
+            String key = aStringArrayOfSortedKeyPackageName[index - 1];
             String value = (String)properties.get(key);
             index -= 1;
 
@@ -555,7 +555,7 @@ public class PackageRenamer {
             java.io.File fileOrDirectory = filesAndDirectories[i];
             if (fileOrDirectory.isDirectory()) {
                 String sourceDirectoryName = fileOrDirectory.toString();
-                String destinationDirectoryName = destinationRootDir.toString() + sourceDirectoryName.substring((int)sourceRootDirFile.toString().length(), (int)sourceDirectoryName.length());
+                String destinationDirectoryName = destinationRootDir.toString() + sourceDirectoryName.substring(sourceRootDirFile.toString().length(), sourceDirectoryName.length());
                 createDestinationDirectory(new java.io.File(destinationDirectoryName));
                 traverseSourceDirectory(fileOrDirectory);
             } else {

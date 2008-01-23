@@ -203,7 +203,7 @@ public class JAXPPlatform implements XMLPlatform {
 
         Node parentNode = contextNode.getParentNode();
         if (parentNode!=null && parentNode.getNodeType() == Node.ELEMENT_NODE) {
-            return resolveNamespacePrefix((Element)parentNode, namespacePrefix);
+            return resolveNamespacePrefix(parentNode, namespacePrefix);
         }
 
         return null;
@@ -241,7 +241,7 @@ public class JAXPPlatform implements XMLPlatform {
             //see if this prefix is already declared if yes - do nothing, if no declare
             Attr namespaceDeclaration = next.getAttributeNode(XMLConstants.XMLNS +":" + elementPrefix);
             if ((null == namespaceDeclaration) && !declaredPrefixes.contains(elementPrefix)) {
-                ((Element)next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + elementPrefix, elementUri);
+                (next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + elementPrefix, elementUri);
                 declaredPrefixes.add(elementPrefix);
             }
         }
@@ -260,7 +260,7 @@ public class JAXPPlatform implements XMLPlatform {
                     Attr namespaceDeclaration = next.getAttributeNode(XMLConstants.XMLNS +":" + attributePrefix);
                     if ((null == namespaceDeclaration) && !declaredPrefixes.contains(attributePrefix)) {
                         String attributeUri = nextAttribute.getNamespaceURI();
-                        ((Element)next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + attributePrefix, attributeUri);
+                        (next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + attributePrefix, attributeUri);
                         declaredPrefixes.add(attributePrefix);
                     }
 
@@ -273,7 +273,7 @@ public class JAXPPlatform implements XMLPlatform {
                             namespaceDeclaration = next.getAttributeNode(XMLConstants.XMLNS +":" + prefix);
                             if ((null == namespaceDeclaration) && !declaredPrefixes.contains(prefix)) {                                
                                 String uri = XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(next, prefix);
-                                ((Element)next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, uri);
+                                (next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, uri);
                                 declaredPrefixes.add(prefix);
                             }
                         }
@@ -284,7 +284,7 @@ public class JAXPPlatform implements XMLPlatform {
 
         NodeList children = next.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
-            Node nextNode = (Node)children.item(i);
+            Node nextNode = children.item(i);
             if (nextNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element child = (Element)nextNode;
                 namespaceQualifyFragment(child, declaredPrefixes);

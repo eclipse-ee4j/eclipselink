@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
 import javax.xml.transform.Source;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;

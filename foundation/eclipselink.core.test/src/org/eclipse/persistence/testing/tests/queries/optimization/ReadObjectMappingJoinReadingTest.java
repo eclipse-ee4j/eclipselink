@@ -27,7 +27,7 @@ public class ReadObjectMappingJoinReadingTest extends org.eclipse.persistence.te
     int oldJoinFetch;
 
     protected void setup() {
-        ClassDescriptor descriptor = (ClassDescriptor)getSession().getDescriptor(Employee.class);
+        ClassDescriptor descriptor = getSession().getDescriptor(Employee.class);
         oldJoinFetch = ((OneToOneMapping)descriptor.getMappingForAttributeName("address")).getJoinFetch();
         ((OneToOneMapping)descriptor.getMappingForAttributeName("address")).useInnerJoinFetch();
         descriptor.reInitializeJoinedAttributes();
@@ -54,7 +54,7 @@ public class ReadObjectMappingJoinReadingTest extends org.eclipse.persistence.te
     }
 
     public void reset() {
-        ClassDescriptor descriptor = (ClassDescriptor)getSession().getDescriptor(Employee.class);
+        ClassDescriptor descriptor = getSession().getDescriptor(Employee.class);
         ((OneToOneMapping)descriptor.getMappingForAttributeName("address")).setJoinFetch(oldJoinFetch);
         descriptor.reInitializeJoinedAttributes();
         // Must reset the descriptor's read-object query.

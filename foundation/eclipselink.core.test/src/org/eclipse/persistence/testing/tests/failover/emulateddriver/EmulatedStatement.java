@@ -12,7 +12,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.sql.Statement;
 import java.util.Calendar;
 
 public class EmulatedStatement implements PreparedStatement {
@@ -31,7 +30,7 @@ public class EmulatedStatement implements PreparedStatement {
 
 
     public void checkForError() throws SQLException{
-        if (((EmulatedConnection)connection).isInFailureState()){
+        if ((connection).isInFailureState()){
             SQLException exception = new SQLException("Communication Failure occured", "", 17004);
             throw exception;
         }

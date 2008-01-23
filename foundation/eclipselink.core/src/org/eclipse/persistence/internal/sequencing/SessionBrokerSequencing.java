@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sequencing;
 
-import java.util.Enumeration;
 import java.util.Iterator;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractSession;

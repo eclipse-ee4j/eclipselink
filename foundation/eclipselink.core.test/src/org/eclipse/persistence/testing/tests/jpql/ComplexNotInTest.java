@@ -36,7 +36,7 @@ public class ComplexNotInTest extends org.eclipse.persistence.testing.tests.jpql
         raq.setReferenceClass(Employee.class);
         raq.setSelectionCriteria(whereClause);
 
-        setOriginalOject((Vector)getSession().executeQuery(raq));
+        setOriginalOject(getSession().executeQuery(raq));
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id NOT IN (";

@@ -25,11 +25,11 @@ public class SequenceTestSystem extends TestSystem {
         if (project == null) {
             project = new TestProjectForSequenceChecking();
         }
-        ((DatabaseSession)session).addDescriptors(project);
+        (session).addDescriptors(project);
     }
 
     public void createTables(DatabaseSession session) {
-        SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
 
 	schemaManager.replaceObject(SeqTestClass1.tableDefinition());
 	schemaManager.replaceObject(SeqTestClass2.tableDefinition());

@@ -10,7 +10,6 @@
 package org.eclipse.persistence.testing.framework;
 
 import java.util.*;
-import java.net.URL;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.platform.database.TimesTenPlatform;
 import org.eclipse.persistence.sessions.DatabaseLogin;
@@ -74,7 +73,7 @@ public class TestSystem {
      */
     public void createTables(DatabaseSession session) throws Exception {
         Vector tables = buildTables();
-        SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
         for (Enumeration dropForeignKeyEnum = tables.elements();
                  dropForeignKeyEnum.hasMoreElements();) {
             TableDefinition table = (TableDefinition)dropForeignKeyEnum.nextElement();

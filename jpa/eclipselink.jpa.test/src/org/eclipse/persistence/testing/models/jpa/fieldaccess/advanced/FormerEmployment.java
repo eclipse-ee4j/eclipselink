@@ -20,7 +20,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
-import java.sql.Date;
 import java.io.*;
 import javax.persistence.*;
 

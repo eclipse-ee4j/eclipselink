@@ -46,7 +46,7 @@ public class EMCascadingModifyAndRefreshTest extends EntityContainerTestBase  {
             beginTransaction();
             Employee employee = getEntityManager().find(Employee.class, empIDs[0]);
             employee.setFirstName("Tobin");
-            PhoneNumber phone = (PhoneNumber)employee.getPhoneNumbers().iterator().next();
+            PhoneNumber phone = employee.getPhoneNumbers().iterator().next();
             phone.setAreaCode("416");
             phone.setNumber("9876543");
             employee.addPhoneNumber(ModelExamples.phoneExample7());           
@@ -68,7 +68,7 @@ public class EMCascadingModifyAndRefreshTest extends EntityContainerTestBase  {
         if(employee.getPhoneNumbers().size() > 1) {
             throw new TestErrorException("Employee ID :" + empIDs[0] + " phone number added after refresh");
         }
-        PhoneNumber phone = (PhoneNumber)employee.getPhoneNumbers().iterator().next();
+        PhoneNumber phone = employee.getPhoneNumbers().iterator().next();
         if(phone.getAreaCode().equals("416")) {
             throw new TestErrorException("Employee ID :" + empIDs[0] + " phone number areacode modified after refresh");
         }
@@ -86,7 +86,7 @@ public class EMCascadingModifyAndRefreshTest extends EntityContainerTestBase  {
         if(employee.getPhoneNumbers().size() > 1) {
             throw new TestErrorException("Employee ID :" + empIDs[0] + " phone number added after refresh");
         }
-        phone = (PhoneNumber)employee.getPhoneNumbers().iterator().next();
+        phone = employee.getPhoneNumbers().iterator().next();
         if(phone.getAreaCode().equals("416")) {
             throw new TestErrorException("Employee ID :" + empIDs[0] + " phone number areacode modified after refresh");
         }

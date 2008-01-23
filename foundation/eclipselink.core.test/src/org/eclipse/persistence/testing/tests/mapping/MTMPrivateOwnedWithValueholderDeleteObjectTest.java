@@ -44,7 +44,7 @@ public class MTMPrivateOwnedWithValueholderDeleteObjectTest extends org.eclipse.
 
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        originalObject = (Employee)uow.readObject(Employee.class);
+        originalObject = uow.readObject(Employee.class);
         Employee emp = (Employee)originalObject;
         uow.deleteObject(emp);
         for (Enumeration enumtr = emp.getShipments().elements(); enumtr.hasMoreElements();) {

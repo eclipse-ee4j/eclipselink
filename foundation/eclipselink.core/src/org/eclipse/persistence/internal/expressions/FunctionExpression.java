@@ -16,7 +16,6 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -370,12 +369,12 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      * Used for cloning.
      */
-    protected void postCopyIn(Dictionary alreadyDone) {
+    protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
         Vector oldChildren = children;
         children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
         for (int i = 0; i < oldChildren.size(); i++) {
-            addChild((Expression)(((Expression)oldChildren.elementAt(i)).copiedVersionFrom(alreadyDone)));
+            addChild((((Expression)oldChildren.elementAt(i)).copiedVersionFrom(alreadyDone)));
         }
     }
 

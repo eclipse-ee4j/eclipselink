@@ -87,7 +87,7 @@ public class CodeGenerator {
                     if (c < 127) {
                         escapedStr.append(c);
                     } else {
-                        String escapedChar = Long.toHexString((long)(c)).toUpperCase();
+                        String escapedChar = Long.toHexString((c)).toUpperCase();
                         switch (escapedChar.length()) {
                         case 1:
                             escapedStr.append("\\u000" + escapedChar);

@@ -10,8 +10,6 @@
 package org.eclipse.persistence.sessions;
 
 import java.util.*;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 /**
  * <p>

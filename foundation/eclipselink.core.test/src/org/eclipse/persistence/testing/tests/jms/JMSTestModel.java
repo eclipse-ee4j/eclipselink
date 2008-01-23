@@ -9,13 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jms;
 
-import java.util.*;
-
-import java.rmi.server.*;
-
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.testing.framework.*;
 
 public class JMSTestModel extends TestModel {

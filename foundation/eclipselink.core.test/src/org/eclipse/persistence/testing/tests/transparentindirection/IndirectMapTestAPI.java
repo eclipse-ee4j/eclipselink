@@ -30,18 +30,18 @@ public class IndirectMapTestAPI extends ZTestCase {
      * Assert that the elements in two dictionaries are equal. If they are not,
      * throw an AssertionFailedError. Order of the elements is significant.
      * @param message the error message
-     * @param expected the expected value of a dictionary
-     * @param actual the actual value of a dictionary
+     * @param expected the expected value of a Map
+     * @param actual the actual value of a Map
      */
-    protected void assertElementsEqual(String message, Dictionary expected, Dictionary actual) {
+    protected void assertElementsEqual(String message, Map expected, Map actual) {
         if (expected == actual) {
             return;
         }
         if (expected.size() != actual.size()) {
             this.assertTrue(this.notEqualsMessage(message, expected, actual), false);
         }
-        for (Enumeration stream = expected.keys(); stream.hasMoreElements();) {
-            Object key = stream.nextElement();
+        for (Iterator stream = expected.keySet().iterator(); stream.hasNext();) {
+            Object key = stream.next();
             if (!expected.get(key).equals(actual.get(key))) {
                 this.assertTrue(this.notEqualsMessage(message, expected, actual), false);
             }
@@ -51,10 +51,10 @@ public class IndirectMapTestAPI extends ZTestCase {
     /**
      * Assert that the elements in two dictionaries are equal. If they are not,
      * throw an AssertionFailedError.
-     * @param expected the expected value of a dictionary
-     * @param actual the actual value of a dictionary
+     * @param expected the expected value of a Map
+     * @param actual the actual value of a Map
      */
-    protected void assertElementsEqual(Dictionary expected, Dictionary actual) {
+    protected void assertElementsEqual(Map expected, Map actual) {
         this.assertElementsEqual("", expected, actual);
     }
 

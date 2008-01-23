@@ -14,7 +14,6 @@ import javax.persistence.EntityManager;
 import junit.framework.*;
 import junit.extensions.TestSetup;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
@@ -65,7 +64,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         int vehiclePostLoadCountBefore = VehicleListener.POST_LOAD_COUNT;
         int defaultListenerPostLoadCountBefore = DefaultListener.POST_LOAD_COUNT;
         
-        Bus bus = (Bus) createEntityManager().find(Bus.class, m_busID);
+        Bus bus = createEntityManager().find(Bus.class, m_busID);
         
         int vehiclePostLoadCountAfter = VehicleListener.POST_LOAD_COUNT;
         int defaultListenerPostLoadCountAfter = DefaultListener.POST_LOAD_COUNT;

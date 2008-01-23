@@ -17,7 +17,7 @@ import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.IdentityHashtable;
+import java.util.*;
 
 /**
  * INTERNAL:
@@ -74,7 +74,7 @@ public interface ObjectChangePolicy extends Serializable {
      * INTERNAL:
      * This method is used to revert an object within the unit of work
      */
-    public void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, IdentityHashtable cloneMapping);
+    public void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, Map cloneMapping);
 
     /**
      * INTERNAL:

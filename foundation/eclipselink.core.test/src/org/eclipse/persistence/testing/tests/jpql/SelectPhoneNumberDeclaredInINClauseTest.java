@@ -9,10 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpql;
 
-
-// Java imports
-import java.util.*;
-
 // Domain imports
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
@@ -39,7 +35,7 @@ public class SelectPhoneNumberDeclaredInINClauseTest extends JPQLTestCase {
         query.addAscendingOrdering("number");
         query.addAscendingOrdering("areaCode");
 
-        setOriginalOject((Vector)getSession().executeQuery(query));
+        setOriginalOject(getSession().executeQuery(query));
         useReportQuery();
         setReferenceClass(Employee.class);
 

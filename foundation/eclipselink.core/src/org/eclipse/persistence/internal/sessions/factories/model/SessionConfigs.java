@@ -10,7 +10,6 @@
 package org.eclipse.persistence.internal.sessions.factories.model;
 
 import java.util.Vector;
-import java.util.Enumeration;
 import org.eclipse.persistence.internal.sessions.factories.model.session.SessionConfig;
 
 /**

@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 

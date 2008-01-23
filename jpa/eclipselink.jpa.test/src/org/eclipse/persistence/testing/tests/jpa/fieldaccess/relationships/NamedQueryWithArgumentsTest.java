@@ -58,11 +58,11 @@ public class NamedQueryWithArgumentsTest extends EntityContainerTestBase {
     public void reset (){
         try {
           beginTransaction();
-          Customer cus1 = (Customer)getEntityManager().find(Customer.class, cusIDs[0]);
+          Customer cus1 = getEntityManager().find(Customer.class, cusIDs[0]);
           getEntityManager().remove(cus1);
-          Order ord1 = (Order)getEntityManager().find(Order.class, orderIDs[0]);
+          Order ord1 = getEntityManager().find(Order.class, orderIDs[0]);
           getEntityManager().remove(ord1);
-          Item it1 = (Item)getEntityManager().find(Item.class, itemIDs[0]);
+          Item it1 = getEntityManager().find(Item.class, itemIDs[0]);
           getEntityManager().remove(it1);
           commitTransaction();
         } catch (Exception ex) {

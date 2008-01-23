@@ -9,25 +9,17 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.jpa.config.FlushClearCache;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
-import org.eclipse.persistence.internal.helper.IdentityHashtable;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
 
 
@@ -36,7 +28,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     /** Used to store the final UnitOfWorkChangeSet for merge into the shared cache */
     protected UnitOfWorkChangeSet cumulativeUOWChangeSet;
     /** Used to store objects already deleted from the db and unregistered */
-    protected IdentityHashtable unregisteredDeletedObjectsCloneToBackupAndOriginal;
+    protected Map unregisteredDeletedObjectsCloneToBackupAndOriginal;
     
     /** Used to determine if UnitOfWork should commit and rollback transactions 
      * This is used when an EntityTransaction is controlling the transaction
@@ -104,10 +96,10 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                     if(classesToBeInvalidated == null) {
                         classesToBeInvalidated = new HashSet<Class>();
                     }
-                    Enumeration enumDeleted = unregisteredDeletedObjectsCloneToBackupAndOriginal.keys();
+                    Iterator enumDeleted = unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
                     // classes of the deleted objects should be invalidated in the shared cache
-                    while(enumDeleted.hasMoreElements()) {
-                        classesToBeInvalidated.add(enumDeleted.nextElement().getClass());
+                    while(enumDeleted.hasNext()) {
+                        classesToBeInvalidated.add(enumDeleted.next().getClass());
                     }
                 }
                 cumulativeUOWChangeSet = null;
@@ -118,7 +110,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     
     /**
      * INTERNAL:
-     * Call this method if the uow will no longer used for comitting transactions:
+     * Call this method if the uow will no longer used for committing transactions:
      * all the changes sets will be dereferenced, and (optionally) the cache cleared.
      * If the uow is not released, but rather kept around for ValueHolders, then identity maps shouldn't be cleared:
      * the parameter value should be 'false'. The lifecycle set to Birth so that uow ValueHolder still could be used.
@@ -167,20 +159,20 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * Any unregistered new objects found will be persisted or an error will be thrown depending on the mapping's cascade persist.
      * References to deleted objects will also currently cause them to be undeleted.
      */
-    public void discoverUnregisteredNewObjects(IdentityHashtable clones, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects) {
-        for (Enumeration clonesEnum = clones.keys(); clonesEnum.hasMoreElements(); ) {        
-            discoverAndPersistUnregisteredNewObjects(clonesEnum.nextElement(), false, newObjects, unregisteredExistingObjects, visitedObjects);
+    public void discoverUnregisteredNewObjects(Map clones, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects) {
+        for (Iterator clonesEnum = clones.keySet().iterator(); clonesEnum.hasNext(); ) {        
+            discoverAndPersistUnregisteredNewObjects(clonesEnum.next(), false, newObjects, unregisteredExistingObjects, visitedObjects);
         }
     }
     
     /**
      * INTERNAL:
      * Has writeChanges() been attempted on this UnitOfWork?  It may have
-     * either suceeded or failed but either way the UnitOfWork is in a highly
+     * either succeeded or failed but either way the UnitOfWork is in a highly
      * restricted state.
      */
     public boolean isAfterWriteChangesButBeforeCommit() {
-        //dont' check for writechanges failure.
+        //don't check for writechanges failure.
         return (getLifecycle() == CommitTransactionPending);
     }
 
@@ -275,7 +267,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     public void writeChanges() {
             if (unregisteredDeletedObjectsCloneToBackupAndOriginal == null) {
-                unregisteredDeletedObjectsCloneToBackupAndOriginal = new IdentityHashtable(2);
+                unregisteredDeletedObjectsCloneToBackupAndOriginal = new IdentityHashMap(2);
             }
             if (getUnitOfWorkChangeSet() == null) {
                 setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
@@ -296,9 +288,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                 throw exception;
             }
 
-            Enumeration enumtr = getNewObjectsCloneToOriginal().keys();
-            while (enumtr.hasMoreElements()) {
-                Object clone = enumtr.nextElement();
+            Iterator enumtr = getNewObjectsCloneToOriginal().keySet().iterator();
+            while (enumtr.hasNext()) {
+                Object clone = enumtr.next();
                 Object original = getNewObjectsCloneToOriginal().get(clone);
                 if (original != null) {
                     // No longer new to this unit of work, so need to store original.
@@ -312,9 +304,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             getDeletedObjects().clear();
             // Unregister all deleted objects,
             // keep them along with their original and backup values in unregisteredDeletedObjectsCloneToBackupAndOriginal.
-            Enumeration enumDeleted = getObjectsDeletedDuringCommit().keys();
-            while (enumDeleted.hasMoreElements()) {
-                Object deletedObject = enumDeleted.nextElement();
+            Iterator enumDeleted = getObjectsDeletedDuringCommit().keySet().iterator();
+            while (enumDeleted.hasNext()) {
+                Object deletedObject = enumDeleted.next();
                 Object[] backupAndOriginal = {getCloneMapping().get(deletedObject), getCloneToOriginals().get(deletedObject)};
                 unregisteredDeletedObjectsCloneToBackupAndOriginal.put(deletedObject, backupAndOriginal);
                 unregisterObject(deletedObject);
@@ -395,14 +387,14 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * Return unregisteredDeletedClone corresponding to the passed original, or null
      */
     public Object getUnregisteredDeletedCloneForOriginal(Object original) {
-        if(unregisteredDeletedObjectsCloneToBackupAndOriginal != null) {
-            Enumeration keys = unregisteredDeletedObjectsCloneToBackupAndOriginal.keys();
-            Enumeration values = unregisteredDeletedObjectsCloneToBackupAndOriginal.elements();
-            while(keys.hasMoreElements()) {
-                Object deletedObjectClone = keys.nextElement();
-                Object[] backupAndOriginal = (Object[])values.nextElement();
+        if (unregisteredDeletedObjectsCloneToBackupAndOriginal != null) {
+            Iterator keys = unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
+            Iterator values = unregisteredDeletedObjectsCloneToBackupAndOriginal.values().iterator();
+            while(keys.hasNext()) {
+                Object deletedObjectClone = keys.next();
+                Object[] backupAndOriginal = (Object[])values.next();
                 Object currentOriginal = backupAndOriginal[1];
-                if(original == currentOriginal) {
+                if (original == currentOriginal) {
                     return deletedObjectClone;
                 }
             }

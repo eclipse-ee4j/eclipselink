@@ -28,13 +28,13 @@ public class OptimisticLockingSystem extends TestSystem {
         descriptors.addElement(LockInAggregateObject.descriptor());
         //
         descriptors.addElement(ChangedRow.descriptor());
-        ((DatabaseSession)session).addDescriptors(descriptors);
-        ((DatabaseSession)session).addDescriptors(new RockBandProject());
+        (session).addDescriptors(descriptors);
+        (session).addDescriptors(new RockBandProject());
 
     }
 
     public void createTables(DatabaseSession session) {
-        SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
 
         schemaManager.replaceObject(LockInCache.tableDefinition());
         schemaManager.replaceObject(LockInObject.tableDefinition());
@@ -44,7 +44,7 @@ public class OptimisticLockingSystem extends TestSystem {
         schemaManager.replaceObject(TimestampInCache.tableDefinition());
         schemaManager.replaceObject(ChangedRow.tableDefinition());
         schemaManager.createSequences();
-        new RockBandTableCreator().replaceTables((DatabaseSession)session);
+        new RockBandTableCreator().replaceTables(session);
     }
 
     public void populate(DatabaseSession session) {

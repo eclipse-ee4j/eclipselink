@@ -530,7 +530,7 @@ public class ExpressionOperator implements Serializable {
         } else if ((left instanceof String) && (start instanceof String) && (end instanceof String)) {
             return ((((String)left).compareTo(((String)start)) > 0) || (((String)left).compareTo(((String)start)) == 0)) && ((((String)left).compareTo(((String)end)) < 0) || (((String)left).compareTo(((String)end)) == 0));
         } else if ((left instanceof java.util.Date) && (start instanceof java.util.Date) && (end instanceof java.util.Date)) {
-            return (((java.util.Date)left).after(((java.util.Date)start)) || ((java.util.Date)left).equals(((java.util.Date)start))) && (((java.util.Date)left).before(((java.util.Date)end)) || ((java.util.Date)left).equals(((java.util.Date)end)));
+            return (((java.util.Date)left).after(((java.util.Date)start)) || ((java.util.Date)left).equals((start))) && (((java.util.Date)left).before(((java.util.Date)end)) || ((java.util.Date)left).equals((end)));
         }
 
         throw QueryException.cannotConformExpression();
@@ -789,7 +789,7 @@ public class ExpressionOperator implements Serializable {
                 int compareValue = ((String)left).compareTo(((String)right));
                 return (compareValue < 0) || (compareValue == 0);
             } else if ((left instanceof java.util.Date) && (right instanceof java.util.Date)) {
-                return ((java.util.Date)left).equals(((java.util.Date)right)) || ((java.util.Date)left).before(((java.util.Date)right));
+                return ((java.util.Date)left).equals((right)) || ((java.util.Date)left).before(((java.util.Date)right));
             }
         } else if (this.selector == GreaterThan) {
             if ((left == null) || (right == null)) {
@@ -815,7 +815,7 @@ public class ExpressionOperator implements Serializable {
                 int compareValue = ((String)left).compareTo(((String)right));
                 return (compareValue > 0) || (compareValue == 0);
             } else if ((left instanceof java.util.Date) && (right instanceof java.util.Date)) {
-                return ((java.util.Date)left).equals(((java.util.Date)right)) || ((java.util.Date)left).after(((java.util.Date)right));
+                return ((java.util.Date)left).equals((right)) || ((java.util.Date)left).after(((java.util.Date)right));
             }
         }
         // Between
@@ -1763,7 +1763,7 @@ public class ExpressionOperator implements Serializable {
             }
             Expression item = (Expression)items.elementAt(index);
             if ((getSelector() == Ref) || ((getSelector() == Deref) && (item.isObjectExpression()))) {
-                DatabaseTable alias = ((ObjectExpression)item).aliasForTable((DatabaseTable)((ObjectExpression)item).getDescriptor().getTables().firstElement());
+                DatabaseTable alias = ((ObjectExpression)item).aliasForTable(((ObjectExpression)item).getDescriptor().getTables().firstElement());
                 printer.printString(alias.getName());
             } else if ((getSelector() == Count) && (item.isExpressionBuilder())) {
                 printer.printString("*");

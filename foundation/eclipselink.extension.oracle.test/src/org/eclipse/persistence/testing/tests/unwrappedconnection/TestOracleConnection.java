@@ -18,12 +18,7 @@ import java.sql.SQLWarning;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Map;
-import java.util.Properties;
-
 import oracle.jdbc.OracleConnection;
-import oracle.jdbc.OracleOCIFailover;
-import oracle.jdbc.OracleSavepoint;
-import oracle.jdbc.pool.OracleConnectionCacheCallback;
 
 /**
  * This class provid wrapper around real Oracle Connection to allow toplink

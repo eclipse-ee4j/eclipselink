@@ -72,8 +72,6 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
-import org.eclipse.persistence.exceptions.EntityManagerSetupException;
-
 /**
  * Top level metatata accessor.
  * 

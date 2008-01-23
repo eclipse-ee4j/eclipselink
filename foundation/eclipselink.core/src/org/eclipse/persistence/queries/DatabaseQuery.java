@@ -1563,7 +1563,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL:
      * replace the value holders in the specified result object(s)
      */
-    public IdentityHashtable replaceValueHoldersIn(Object object, RemoteSessionController controller) {
+    public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
         // by default, do nothing
         return null;
     }

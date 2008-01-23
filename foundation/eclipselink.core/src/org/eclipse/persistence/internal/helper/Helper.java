@@ -162,7 +162,7 @@ public class Helper implements Serializable {
      * HEX allows for binary data to be printed.
      */
     public static byte[] buildBytesFromHexString(String hex) {
-        String tmpString = (String)hex;
+        String tmpString = hex;
         if ((tmpString.length() % 2) != 0) {
             throw ConversionException.couldNotConvertToByteArray(hex);
         }
@@ -206,8 +206,8 @@ public class Helper implements Serializable {
         char[] hexArray = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
         StringBuffer stringBuffer = new StringBuffer();
         int tempByte;
-        for (int byteIndex = 0; byteIndex < ((byte[])bytes).length; byteIndex++) {
-            tempByte = ((byte[])bytes)[byteIndex];
+        for (int byteIndex = 0; byteIndex < (bytes).length; byteIndex++) {
+            tempByte = (bytes)[byteIndex];
             if (tempByte < 0) {
                 tempByte = tempByte + 256;//compensate for the fact that byte is signed in Java
             }
@@ -217,7 +217,7 @@ public class Helper implements Serializable {
             }
             stringBuffer.append(hexArray[tempByte]);
 
-            tempByte = ((byte[])bytes)[byteIndex];
+            tempByte = (bytes)[byteIndex];
             if (tempByte < 0) {
                 tempByte = tempByte + 256;
             }
@@ -260,15 +260,14 @@ public class Helper implements Serializable {
     }
 
     /**
-      * Create a new Vector containing all of the hashtable elements
-      *
-      */
-    public static Vector buildVectorFromHashtableElements(IdentityHashtable hashtable) {
+     * Create a new Vector containing all of the hashtable elements.
+     */
+    public static Vector buildVectorFromHashtableElements(Map hashtable) {
         Vector vector = new Vector(hashtable.size());
-        Enumeration enumeration = hashtable.elements();
+        Iterator enumeration = hashtable.values().iterator();
 
-        while (enumeration.hasMoreElements()) {
-            vector.addElement(enumeration.nextElement());
+        while (enumeration.hasNext()) {
+            vector.addElement(enumeration.next());
         }
 
         return vector;
@@ -408,8 +407,8 @@ public class Helper implements Serializable {
      */
     public static boolean compareBigDecimals(java.math.BigDecimal one, java.math.BigDecimal two) {
         if (one.scale() != two.scale()) {
-            double doubleOne = ((java.math.BigDecimal)one).doubleValue();
-            double doubleTwo = ((java.math.BigDecimal)two).doubleValue();
+            double doubleOne = (one).doubleValue();
+            double doubleTwo = (two).doubleValue();
             if ((doubleOne != Double.POSITIVE_INFINITY) && (doubleOne != Double.NEGATIVE_INFINITY) && (doubleTwo != Double.POSITIVE_INFINITY) && (doubleTwo != Double.NEGATIVE_INFINITY)) {
                 return doubleOne == doubleTwo;
             }
@@ -1503,9 +1502,6 @@ public class Helper implements Serializable {
         calendar.setTime(timestamp);
 
         String nanosString;
-
-        //	String zeros = "000000000";
-        String yearZeros = "0000";
 
         if (timestamp.getNanos() == 0) {
             nanosString = "0";

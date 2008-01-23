@@ -29,7 +29,7 @@ public void test( )
 	Server server = null;
 	try {
 	server = new Project(getSession().getDatasourceLogin()).createServerSession();
-	new EmployeeSystem().addDescriptors((org.eclipse.persistence.sessions.DatabaseSession) server);
+	new EmployeeSystem().addDescriptors(server);
 	server.addConnectionPool("default", getSession().getDatasourceLogin(), 3, 5);
 	server.useReadConnectionPool(3, 3);
 	server.login();

@@ -33,14 +33,9 @@ package org.eclipse.persistence.testing.tests.jpa.xml.relationships.unidirection
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
-
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
-
 import junit.framework.*;
 import junit.extensions.TestSetup;
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectional.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectional.Project;
@@ -300,7 +295,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         try {
             Employee employee1 = em.find(Employee.class, mtoEmployee1Id);
             Employee employee2 = em.find(Employee.class, mtoEmployee2Id);
-            Address address = (Address) em.find(Address.class, mtoAddressId);
+            Address address = em.find(Address.class, mtoAddressId);
             employee1.setAddress(null);
             employee2.setAddress(null);
             em.remove(address);

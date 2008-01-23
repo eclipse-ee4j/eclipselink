@@ -48,7 +48,7 @@ EmployeeSystem extends TestSystem {
     }
 
     public void createTables(DatabaseSession session) {
-        new EmployeeTableCreator().replaceTables((DatabaseSession)session);
+        new EmployeeTableCreator().replaceTables(session);
     }
 
     /**

@@ -24,7 +24,6 @@ import static javax.persistence.InheritanceType.JOINED;
 import javax.persistence.Inheritance;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.InheritanceType;
 import javax.persistence.EmbeddedId;
 import java.io.Serializable;
 

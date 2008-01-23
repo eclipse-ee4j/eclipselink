@@ -21,7 +21,6 @@ import javax.persistence.IdClass;
 import javax.persistence.OneToMany;
 
 import static javax.persistence.FetchType.EAGER;
-import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @Table(name="CMP3_DEPARTMENT")

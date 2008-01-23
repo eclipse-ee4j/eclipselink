@@ -198,7 +198,7 @@ public class RemoteSessionController {
     public Transporter cursoredStreamNextpage(Transporter remoteCursoredId, int pageSize) {
         Transporter transporter = new Transporter();
         Vector nextPagesObjects = null;
-        IdentityHashtable objectDescriptors = new IdentityHashtable(pageSize);
+        Map objectDescriptors = new IdentityHashMap(pageSize);
         try {
             CursoredStream stream = (CursoredStream)getRemoteCursors().get(remoteCursoredId.getObject());
             if (stream != null) {
@@ -497,9 +497,9 @@ public class RemoteSessionController {
      * value holders with remote value holders.
      * And build up a collection of object descriptors.
      */
-    public IdentityHashtable replaceValueHoldersIn(Object object) {
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
-        IdentityHashtable result = new IdentityHashtable();
+    public Map replaceValueHoldersIn(Object object) {
+        // 2612538 - the default size of Map (32) is appropriate
+        Map result = new IdentityHashMap();
         replaceValueHoldersIn(object, result);
         return result;
     }
@@ -510,7 +510,7 @@ public class RemoteSessionController {
      * Add the resulting object descriptors to the
      * "collecting parm".
      */
-    public void replaceValueHoldersIn(Object object, IdentityHashtable objectDescriptors) {
+    public void replaceValueHoldersIn(Object object, Map objectDescriptors) {
         if (object == null) {
             return;
         }
@@ -527,9 +527,9 @@ public class RemoteSessionController {
      * value holders with remote value holders.
      * And build up a collection of object descriptors.
      */
-    public IdentityHashtable replaceValueHoldersInAll(Object container, ContainerPolicy policy) {
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
-        IdentityHashtable result = new IdentityHashtable();
+    public Map replaceValueHoldersInAll(Object container, ContainerPolicy policy) {
+        // 2612538 - the default size of Map (32) is appropriate
+        Map result = new IdentityHashMap();
         for (Object iter = policy.iteratorFor(container); policy.hasNext(iter);) {
             replaceValueHoldersIn(policy.next(iter, getSession()), result);
         }
@@ -772,8 +772,8 @@ public class RemoteSessionController {
                     objectNext = stream.next();
                 }
                 if (objectNext == null) {
-                    // 2612538 - the default size of IdentityHashtable (32) is appropriate
-                    transporter.setObjectDescriptors(new IdentityHashtable());
+                    // 2612538 - the default size of Map (32) is appropriate
+                    transporter.setObjectDescriptors(new IdentityHashMap());
                 } else {
                     if (stream.getQuery().isReadAllQuery() && (!stream.getQuery().isReportQuery())) {
                         transporter.setObjectDescriptors(replaceValueHoldersIn(objectNext));
@@ -802,8 +802,8 @@ public class RemoteSessionController {
                     objectPrevious = stream.previous();
                 }
                 if (objectPrevious == null) {
-                    // 2612538 - the default size of IdentityHashtable (32) is appropriate
-                    transporter.setObjectDescriptors(new IdentityHashtable());
+                    // 2612538 - the default size of Map (32) is appropriate
+                    transporter.setObjectDescriptors(new IdentityHashMap());
                 } else {
                     if (stream.getQuery().isReadAllQuery() && (!stream.getQuery().isReportQuery())) {
                         transporter.setObjectDescriptors(replaceValueHoldersIn(objectPrevious));

@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.complexaggregate;
 
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.*;
 import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
@@ -63,8 +62,8 @@ public class AggregatePrimaryKeyTest extends EntityContainerTestBase {
             // Now read them back in and delete them.
             beginTransaction();
             
-            CitySlicker cs = (CitySlicker) getEntityManager().find(CitySlicker.class, name);
-            CountryDweller cd = (CountryDweller) getEntityManager().merge(countryDweller);
+            CitySlicker cs = getEntityManager().find(CitySlicker.class, name);
+            CountryDweller cd = getEntityManager().merge(countryDweller);
             
             getEntityManager().remove(cs);
             getEntityManager().remove(cd);

@@ -117,7 +117,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
         language = (Language)languages.firstElement();
         language.setLanguage("ModifiedLanguage" + suffix);
         // 1 level aggregate's M:M mapping, adding a new element
-        languages.addElement((Language)Language.example7());
+        languages.addElement(Language.example7());
 
         // Update the change version.
         changeVersion++;

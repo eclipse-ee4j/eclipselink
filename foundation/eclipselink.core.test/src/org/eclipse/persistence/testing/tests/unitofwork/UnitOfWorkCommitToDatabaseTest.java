@@ -48,7 +48,7 @@ public class UnitOfWorkCommitToDatabaseTest extends AutoVerifyTestCase {
     protected void test() {
         try {
             // Test object
-            ObjectA testObject = (ObjectA)ObjectA.example3();
+            ObjectA testObject = ObjectA.example3();
             testObject.setName(OBJECT_NAME);
 
             UnitOfWorkImpl uow = (UnitOfWorkImpl)getSession().acquireUnitOfWork();

@@ -49,7 +49,7 @@ public class ConstructingDescriptorExceptionTests extends AutoVerifyTestCase {
             descriptor.setJavaClass(javaClass);
             TestErrorException dummyException = new TestErrorException("no ERROR");
             DirectToFieldMapping mapping = new DirectToFieldMapping();
-            ForeignReferenceMapping mappingFR = (ForeignReferenceMapping)new OneToOneMapping();
+            ForeignReferenceMapping mappingFR = new OneToOneMapping();
             IndirectListContainerPolicy policy = new IndirectListContainerPolicy();
             Object object = new Object();
             DatabaseRecord row = new DatabaseRecord();

@@ -20,9 +20,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectional;
 
-import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
 
 /**
  * Bean class: ProjectBean

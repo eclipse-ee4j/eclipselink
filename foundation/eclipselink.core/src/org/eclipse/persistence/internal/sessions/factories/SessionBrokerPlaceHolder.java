@@ -9,10 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.factories;
 
-import org.eclipse.persistence.sessions.broker.*;
 import java.util.Vector;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.exceptions.*;
 
 /**
  * INTERNAL:

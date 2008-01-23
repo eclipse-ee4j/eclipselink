@@ -69,7 +69,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         }
         XMLDescriptor descriptor = (XMLDescriptor)session.getDescriptor(objectValue);
         TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
-        return objectBuilder.marshalAttributes(marshalRecord, objectValue, (org.eclipse.persistence.internal.sessions.AbstractSession)session);
+        return objectBuilder.marshalAttributes(marshalRecord, objectValue, session);
     }
     
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
@@ -116,7 +116,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         if ((xmlCompositeObjectMapping.getReferenceDescriptor() == null) && (descriptor.getSchemaReference() != null)) {
             addTypeAttributeIfNeeded(descriptor, xmlCompositeObjectMapping, marshalRecord);
         }
-        objectBuilder.buildRow(marshalRecord, objectValue, (org.eclipse.persistence.internal.sessions.AbstractSession)session, marshaller);
+        objectBuilder.buildRow(marshalRecord, objectValue, session, marshaller);
         if (!xPathFragment.isSelfFragment()) {
             marshalRecord.endElement(xPathFragment, namespaceResolver);
         }
@@ -202,7 +202,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             XMLDescriptor xmlDescriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();
             if (xmlDescriptor.hasInheritance()) {
                 unmarshalRecord.setAttributes(atts);
-                Class clazz = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, (org.eclipse.persistence.internal.sessions.AbstractSession)unmarshalRecord.getSession());
+                Class clazz = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, unmarshalRecord.getSession());
                 if (clazz == null) {
                     // no xsi:type attribute - look for type indicator on the default root element
                     QName leafElementType = unmarshalRecord.getLeafElementType();

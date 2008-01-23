@@ -21,10 +21,7 @@
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
 import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.persistence.Id;
-import javax.persistence.Column;
 import java.io.Serializable;
 
 /**

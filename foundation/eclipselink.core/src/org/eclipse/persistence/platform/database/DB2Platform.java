@@ -17,7 +17,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.queries.*;
@@ -380,9 +379,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         Hashtable values = new Hashtable();
 
         values.put(Integer.class, new Integer(Integer.MAX_VALUE));
-        values.put(Long.class, new Long((long)Integer.MAX_VALUE));
+        values.put(Long.class, new Long(Integer.MAX_VALUE));
         values.put(Float.class, new Float(123456789));
-        values.put(Double.class, new Double((double)Float.MAX_VALUE));
+        values.put(Double.class, new Double(Float.MAX_VALUE));
         values.put(Short.class, new Short(Short.MAX_VALUE));
         values.put(Byte.class, new Byte(Byte.MAX_VALUE));
         values.put(java.math.BigInteger.class, new java.math.BigInteger("999999999999999"));
@@ -399,9 +398,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         Hashtable values = new Hashtable();
 
         values.put(Integer.class, new Integer(Integer.MIN_VALUE));
-        values.put(Long.class, new Long((long)Integer.MIN_VALUE));
+        values.put(Long.class, new Long(Integer.MIN_VALUE));
         values.put(Float.class, new Float(-123456789));
-        values.put(Double.class, new Double((double)Float.MIN_VALUE));
+        values.put(Double.class, new Double(Float.MIN_VALUE));
         values.put(Short.class, new Short(Short.MIN_VALUE));
         values.put(Byte.class, new Byte(Byte.MIN_VALUE));
         values.put(java.math.BigInteger.class, new java.math.BigInteger("-999999999999999"));

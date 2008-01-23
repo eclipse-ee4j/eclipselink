@@ -13,7 +13,6 @@ import java.io.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.internal.sessions.factories.*;
 
 /**
  * <p><b>Purpose</b>: Write the deployment XML (object persistence meta-data) for the TopLink project instance to a file.

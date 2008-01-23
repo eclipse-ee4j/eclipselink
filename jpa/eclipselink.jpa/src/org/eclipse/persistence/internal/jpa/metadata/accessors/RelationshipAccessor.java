@@ -24,7 +24,6 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataJoinColumn;

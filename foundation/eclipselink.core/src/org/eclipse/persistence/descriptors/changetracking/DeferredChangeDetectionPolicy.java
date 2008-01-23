@@ -23,7 +23,6 @@ import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.helper.IdentityHashtable;
 
 /**
  * PUBLIC:
@@ -59,7 +58,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
     
         // PERF: Avoid events if no listeners.
         if (descriptor.getEventManager().hasAnyEventListeners() && shouldRaiseEvent) {
-            // The query is built for compatability to old event mechanism.
+            // The query is built for compatibility to old event mechanism.
             WriteObjectQuery writeQuery = new WriteObjectQuery(clone.getClass());
             writeQuery.setObject(clone);
             writeQuery.setBackupClone(backUp);
@@ -227,7 +226,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * This method is used to revert an object within the unit of work
      * @param cloneMapping may not be the same as whats in the uow
      */
-    public void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, IdentityHashtable cloneMapping) {
+    public void revertChanges(Object clone, ClassDescriptor descriptor, UnitOfWorkImpl uow, Map cloneMapping) {
         cloneMapping.put(clone, buildBackupClone(clone, descriptor.getObjectBuilder(), uow));
         clearChanges(clone, uow, descriptor);
     }

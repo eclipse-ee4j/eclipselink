@@ -26,7 +26,7 @@ public class InheritanceWorkbenchIntegrationSystem extends InheritanceSystem {
         super();
         
         // Must clear 1-way transformation added in amendment, otherwise will be added twice.
-        ClassDescriptor descriptor = (ClassDescriptor)project.getDescriptor(Animal.class);
+        ClassDescriptor descriptor = project.getDescriptor(Animal.class);
         for (Iterator mappings = descriptor.getMappings().iterator(); mappings.hasNext(); ) {
             DatabaseMapping mapping = (DatabaseMapping) mappings.next();
             if (mapping.isWriteOnly()) {

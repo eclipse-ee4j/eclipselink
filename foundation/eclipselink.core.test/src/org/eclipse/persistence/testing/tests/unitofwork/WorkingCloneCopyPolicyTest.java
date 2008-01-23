@@ -38,7 +38,7 @@ public class WorkingCloneCopyPolicyTest extends AutoVerifyTestCase {
     }
 
     protected void setup() {
-        this.descriptor = (ClassDescriptor)getSession().getDescriptor(Address.class);
+        this.descriptor = getSession().getDescriptor(Address.class);
         this.originalPolicy = this.descriptor.getCopyPolicy();
         this.descriptor.setCopyPolicy(new WorkingCloneCopyPolicy());
         this.descriptor.getCopyPolicy().initialize(getSession());

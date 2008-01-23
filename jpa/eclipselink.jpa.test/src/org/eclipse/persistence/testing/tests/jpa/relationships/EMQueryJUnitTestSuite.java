@@ -49,7 +49,7 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
         Customer customer=null;
         Exception exception= null;
         try{
-            customer = (Customer)createEntityManager().getReference(Customer.class,nonExistingCustomerId );
+            customer = createEntityManager().getReference(Customer.class,nonExistingCustomerId );
         }catch(Exception e){
             exception=e;
         }

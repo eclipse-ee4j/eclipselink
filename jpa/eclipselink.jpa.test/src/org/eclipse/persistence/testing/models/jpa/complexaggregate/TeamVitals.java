@@ -12,7 +12,6 @@ package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 import javax.persistence.*;
 import java.io.Serializable;
 import static javax.persistence.FetchType.*;
-import static javax.persistence.CascadeType.*;
 
 @Embeddable
 public class TeamVitals implements Serializable {

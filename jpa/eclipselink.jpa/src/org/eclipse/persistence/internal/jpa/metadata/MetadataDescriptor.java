@@ -640,7 +640,7 @@ public class MetadataDescriptor {
      * defined exactly once in an entity hierarchy.
      */
     public DatabaseTable getPrimaryKeyTable() {
-        return ((DatabaseField)(getPrimaryKeyFields().iterator().next())).getTable();
+        return ((getPrimaryKeyFields().iterator().next())).getTable();
     }
     
     /**

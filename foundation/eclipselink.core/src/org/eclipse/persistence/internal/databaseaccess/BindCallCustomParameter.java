@@ -17,7 +17,6 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
@@ -103,7 +102,7 @@ public class BindCallCustomParameter {
         ObjectRelationalDatabaseField ordField = ((ObjectRelationalDatabaseField)dbField);
         if (dbField.getSqlType()==Types.STRUCT){
             if (!(parameter instanceof Struct)){
-                ClassDescriptor descriptor=(ClassDescriptor)session.getDescriptor(parameter);
+                ClassDescriptor descriptor=session.getDescriptor(parameter);
                 if ((descriptor!=null) && (descriptor.isObjectRelationalDataTypeDescriptor())){
                     //this is used to convert non-null objects passed through stored procedures and custom SQL to structs 
                     ObjectRelationalDataTypeDescriptor ord=(ObjectRelationalDataTypeDescriptor)descriptor;

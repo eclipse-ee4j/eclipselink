@@ -33,7 +33,7 @@ public class InterfaceProxyInvocationTest extends AutoVerifyTestCase {
         // rows from the employee table - this is the crux of this test
         getAbstractSession().beginTransaction();
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        Vector theCondemned = (Vector)uow.readAllObjects(Employee.class);
+        Vector theCondemned = uow.readAllObjects(Employee.class);
         uow.deleteAllObjects(theCondemned);
         uow.commit();
 

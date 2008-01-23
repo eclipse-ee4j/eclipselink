@@ -22,7 +22,6 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.history.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.querykeys.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -677,7 +676,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * row
      * @return a clone, or null if result does not conform.
      */
-    protected Object conformIndividualResult(Object result, UnitOfWorkImpl unitOfWork, AbstractRecord arguments, Expression selectionCriteriaClone, IdentityHashtable alreadyReturned, boolean buildDirectlyFromRows) {
+    protected Object conformIndividualResult(Object result, UnitOfWorkImpl unitOfWork, AbstractRecord arguments, Expression selectionCriteriaClone, Map alreadyReturned, boolean buildDirectlyFromRows) {
         // First register the object.  Since object is presently unwrapped the
         // exact objects stored in the cache will be returned.
         // The object is known to exist.
@@ -1627,8 +1626,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 JoinedAttributeManager queryManager = objectQuery.getJoinedAttributeManager();
                 thisManager.setJoinedAttributeExpressions_(queryManager.getJoinedAttributeExpressions());
                 thisManager.setJoinedMappingExpressions_(queryManager.getJoinedMappingExpressions());
-                thisManager.setJoinedMappingIndexes_((HashMap)queryManager.getJoinedMappingIndexes_());
-                thisManager.setJoinedMappingQueries_((HashMap)queryManager.getJoinedMappingQueries_());
+                thisManager.setJoinedMappingIndexes_(queryManager.getJoinedMappingIndexes_());
+                thisManager.setJoinedMappingQueries_(queryManager.getJoinedMappingQueries_());
             }
             this.nonFetchJoinAttributeExpressions = objectQuery.nonFetchJoinAttributeExpressions;
             this.defaultBuilder = objectQuery.defaultBuilder;

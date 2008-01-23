@@ -87,7 +87,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends NodeValue implement
         ContainerPolicy cp = getContainerPolicy();
         Object iterator = cp.iteratorFor(collection);
         while(cp.hasNext(iterator)) {
-            Object objectValue = cp.next(iterator, (AbstractSession)session);
+            Object objectValue = cp.next(iterator, session);
             marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
                 }
         
@@ -168,7 +168,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends NodeValue implement
         value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, xmlBinaryDataCollectionMapping.getAttributeClassification());
         if(value != null) {
             Object container = unmarshalRecord.getContainerInstance(this);
-            this.xmlBinaryDataCollectionMapping.getContainerPolicy().addInto(value, container, (AbstractSession)unmarshalRecord.getSession());
+            this.xmlBinaryDataCollectionMapping.getContainerPolicy().addInto(value, container, unmarshalRecord.getSession());
         }
 
     }

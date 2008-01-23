@@ -147,7 +147,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
-    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects){
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         Object cloneAttribute = null;
         cloneAttribute = getAttributeValueFromObject(object);
         if ( cloneAttribute == null ) {
@@ -172,7 +172,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         Object cloneAttribute = getAttributeValueFromObject(object);
         if (cloneAttribute == null ) {
             return;
@@ -193,7 +193,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects){
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         //aggregate objects are not registered but their mappings should be.
         Object cloneAttribute = null;
         cloneAttribute = getAttributeValueFromObject(object);
@@ -397,7 +397,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    protected void fixAttributeValue(Object attributeValue, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    protected void fixAttributeValue(Object attributeValue, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         if (attributeValue == null) {
             return;
         }

@@ -405,16 +405,10 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
                 insertQuery.setCascadePolicy(query.getCascadePolicy());
                 query.getSession().executeQuery(insertQuery);
             } else {
-                // This will happen in a unit of work or cascaded query.
+                // This will happen in a or cascaded query.
                 // This is done only for persistence by reachability and is not required if the targets are in the queue anyway
                 // Avoid cycles by checking commit manager, this is allowed because there is no dependency.
                 if (!query.getSession().getCommitManager().isCommitInPreModify(object)) {
-                    ObjectChangeSet changeSet = null;
-                    UnitOfWorkChangeSet uowChangeSet = null;
-                    if (query.getSession().isUnitOfWork() && (((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet() != null)) {
-                        uowChangeSet = (UnitOfWorkChangeSet)((UnitOfWorkImpl)query.getSession()).getUnitOfWorkChangeSet();
-                        changeSet = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(object);
-                    }
                     WriteObjectQuery writeQuery = new WriteObjectQuery();
                     writeQuery.setIsExecutionClone(true);
                     writeQuery.setObject(object);

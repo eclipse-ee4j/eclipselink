@@ -12,7 +12,6 @@ package org.eclipse.persistence.testing.tests.jpa;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.NamedNativeQueryJUnitTest;
@@ -61,7 +60,6 @@ import org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLInheritan
 import org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.JPAAdvPropertiesJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLInheritanceTestSuite;
 
 public class FullRegressionTestSuite extends TestSuite{
     

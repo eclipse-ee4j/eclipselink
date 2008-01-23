@@ -63,7 +63,7 @@ public class EMCascadingRemoveAndFlushTest extends EntityContainerTestBase  {
 
             persistedItems.put("after flush Employee", getEntityManager().find(Employee.class, empIDs[0]));
             for (Iterator<PhoneNumberPK> ids = this.phoneIDs.iterator(); ids.hasNext();){
-                PhoneNumber phone = (PhoneNumber)getEntityManager().find(PhoneNumber.class, ids.next());
+                PhoneNumber phone = getEntityManager().find(PhoneNumber.class, ids.next());
                 if (phone != null){
                     persistedItems.put("after flush PhoneNumber", phone);
                 }

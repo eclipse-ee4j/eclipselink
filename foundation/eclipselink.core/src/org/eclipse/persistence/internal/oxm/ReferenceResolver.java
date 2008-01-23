@@ -84,7 +84,7 @@ public class ReferenceResolver extends SessionEventAdapter {
     	
     	// for each primary key field name
     	for (Iterator pkFieldNameIt = pkFields.iterator(); pkFieldNameIt.hasNext(); ) {
-    		pkVals = (Vector) reference.getPrimaryKeyMap().get((String) pkFieldNameIt.next());
+    		pkVals = (Vector) reference.getPrimaryKeyMap().get(pkFieldNameIt.next());
     		
     		if (pkVals == null) {
     			return;

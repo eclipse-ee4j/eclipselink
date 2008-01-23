@@ -173,7 +173,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         //aggregate objects are not registered but their mappings should be.
         Object cloneAttribute = null;
         cloneAttribute = getAttributeValueFromObject(object);
@@ -199,7 +199,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects){
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         //aggregate objects are not registered but their mappings should be.
         Object cloneAttribute = null;
         cloneAttribute = getAttributeValueFromObject(object);
@@ -226,7 +226,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects){
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         //aggregate objects are not registered but their mappings should be.
         Object cloneAttribute = null;
         cloneAttribute = getAttributeValueFromObject(object);
@@ -491,7 +491,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         ReadAllQuery aggregateBatchQuery = (ReadAllQuery)batchQuery;
         aggregateBatchQuery.setShouldIncludeData(true);
         for (Enumeration relationFieldsEnum = getTargetForeignKeyFields().elements(); relationFieldsEnum.hasMoreElements();) {
-            aggregateBatchQuery.getAdditionalFields().addElement((DatabaseField)relationFieldsEnum.nextElement());
+            aggregateBatchQuery.getAdditionalFields().addElement(relationFieldsEnum.nextElement());
         }
     }
     
@@ -1387,7 +1387,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
             //Now duplicate the source key field values with target key fields, so children aggregate collections can later access them.
             //This will enable the later execution of the above line x.
-            row.add((DatabaseField)getTargetForeignKeyFields().elementAt(i), value);
+            row.add(getTargetForeignKeyFields().elementAt(i), value);
         }
         return super.valueFromRow(row, joinManager, sourceQuery, executionSession);
     }

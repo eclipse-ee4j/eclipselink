@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.workbenchintegration.ExpressionPersistence;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -39,7 +38,7 @@ public class ExpressionPersistenceTest extends AutoVerifyTestCase {
         }
         getSession().executeQuery(basicQuery);
         systemQuery = 
-                (DatabaseQuery)((ClassDescriptor)getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class)).getQueryManager().getQuery(queryName);
+                (getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class)).getQueryManager().getQuery(queryName);
         getSession().executeQuery(systemQuery);
     }
 

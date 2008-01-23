@@ -210,7 +210,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
-    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         Object cloneAttribute = null;
         cloneAttribute = getAttributeValueFromObject(object);
         if ((cloneAttribute == null) || (!this.isCascadeRemove())) {
@@ -234,7 +234,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         Object cloneAttribute = getAttributeValueFromObject(object);
         if ((cloneAttribute == null) || (!getIndirectionPolicy().objectIsInstantiated(cloneAttribute))) {
             return;
@@ -254,7 +254,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         Object cloneAttribute = null;
         cloneAttribute = getAttributeValueFromObject(object);
         if ((cloneAttribute == null) || (!this.isCascadePersist()) || (!getIndirectionPolicy().objectIsInstantiated(cloneAttribute))) {
@@ -274,7 +274,8 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     /**
      * INTERNAL:
      * Common validation for a collection mapping using a Map class.
-     */
+     * This method is no longer used? Not sure why, but seems it should be.
+     */    
     private void checkMapClass(Class concreteClass) {
         // the reference class has to be specified before coming here
         if (getReferenceClass() == null) {
@@ -387,14 +388,14 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             if (record != null) {
                 ObjectChangeSet removedChangeSet = null;
                 ObjectChangeSet addedChangeSet = null;
-                Enumeration removedObjects = record.getRemoveObjectList().elements();
-                while (removedObjects.hasMoreElements()) {
-                    removedChangeSet = (ObjectChangeSet)removedObjects.nextElement();
+                Iterator removedObjects = record.getRemoveObjectList().values().iterator();
+                while (removedObjects.hasNext()) {
+                    removedChangeSet = (ObjectChangeSet)removedObjects.next();
                     objectRemovedDuringUpdate(query, removedChangeSet.getUnitOfWorkClone());
                 }
-                Enumeration addedObjects = record.getAddObjectList().elements();
-                while (addedObjects.hasMoreElements()) {
-                    addedChangeSet = (ObjectChangeSet)addedObjects.nextElement();
+                Iterator addedObjects = record.getAddObjectList().values().iterator();
+                while (addedObjects.hasNext()) {
+                    addedChangeSet = (ObjectChangeSet)addedObjects.next();
                     objectAddedDuringUpdate(query, addedChangeSet.getUnitOfWorkClone(), addedChangeSet);
                 }
             }
@@ -405,7 +406,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         Hashtable previousObjectsByKey = new Hashtable(cp.sizeFor(previousObjects) + 2); // Read from db or from backup in uow.
         Hashtable currentObjectsByKey = new Hashtable(cp.sizeFor(currentObjects) + 2); // Current value of object's attribute (clone in uow).
 
-        IdentityHashtable cacheKeysOfCurrentObjects = new IdentityHashtable(cp.sizeFor(currentObjects) + 1);
+        Map cacheKeysOfCurrentObjects = new IdentityHashMap(cp.sizeFor(currentObjects) + 1);
 
         // First index the current objects by their primary key.
         for (Object currentObjectsIter = cp.iteratorFor(currentObjects);
@@ -551,7 +552,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * so we need to replace the reference object(s) with
      * the corresponding object(s) from the remote session.
      */
-    public void fixRealObjectReferences(Object object, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixRealObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         //bug 4147755 getRealAttribute... / setReal
         Object attributeValue = getRealAttributeValueFromObject(object, session);
 
@@ -595,7 +596,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * CollectionMappings have to worry about
      * maintaining object identity.
      */
-    public Object getObjectCorrespondingTo(Object object, RemoteSession session, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object object, RemoteSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
         return session.getObjectsCorrespondingToAll(object, objectDescriptors, processedObjects, query, getContainerPolicy());
     }
 
@@ -1019,7 +1020,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * replace the value holders in the specified reference object(s)
      */
-    public IdentityHashtable replaceValueHoldersIn(Object object, RemoteSessionController controller) {
+    public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
         return controller.replaceValueHoldersInAll(object, getContainerPolicy());
     }
 
@@ -1383,7 +1384,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * until absolutely necessary. (Any message sent to the map will cause
      * the contents to be faulted in from the database.)
      * This can result in rather significant performance gains, without having to change
-     * the source object's attribute from Map (or Dictionary or Hashtable) to
+     * the source object's attribute from Map (or Map or Hashtable) to
      * ValueHolderInterface.<p>
      * The key used in the Map is the value returned by a call to the zero parameter
      * method named methodName. The method should be a zero argument method implemented (or
@@ -1510,7 +1511,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             return null;
         }
 
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
+        // 2612538 - the default size of Map (32) is appropriate
         IdentityHashMap cloneKeyValues = new IdentityHashMap();
         ContainerPolicy cp = getContainerPolicy();
         Object cloneObjectCollection = null;

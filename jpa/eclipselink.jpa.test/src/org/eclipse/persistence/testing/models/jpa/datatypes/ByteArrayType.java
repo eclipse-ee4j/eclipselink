@@ -10,8 +10,6 @@
 package org.eclipse.persistence.testing.models.jpa.datatypes;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 
 @Entity
 @Table(name = "CMP3_BYTEARRAY_TYPE")

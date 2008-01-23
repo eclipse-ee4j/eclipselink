@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpql;
 
-import java.util.*;
 import java.math.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.queries.*;
@@ -29,7 +28,7 @@ class SelectSimpleBetweenAndTest extends org.eclipse.persistence.testing.tests.j
         ReadAllQuery raq = new ReadAllQuery();
         raq.setReferenceClass(Employee.class);
         raq.setSelectionCriteria(whereClause);
-        setOriginalOject((Vector)getSession().executeQuery(raq));
+        setOriginalOject(getSession().executeQuery(raq));
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id BETWEEN " + emp1 + "AND " + emp2.id;
         setEjbqlString(ejbqlString);

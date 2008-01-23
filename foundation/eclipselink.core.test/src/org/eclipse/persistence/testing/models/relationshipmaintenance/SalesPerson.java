@@ -61,7 +61,7 @@ public class SalesPerson {
     }
 
     public Collection getCustomers() {
-        return (Collection)this.customers;
+        return this.customers;
     }
 
     public FieldOffice getFieldOffice() {

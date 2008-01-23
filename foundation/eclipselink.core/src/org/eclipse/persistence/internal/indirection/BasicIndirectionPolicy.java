@@ -146,7 +146,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    public void fixObjectReferences(Object object, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         Object attributeValue = this.getMapping().getAttributeValueFromObject(object);
         //bug 4147755 if it is not a Remote Valueholder then treat as if there was no VH...
         if (attributeValue instanceof RemoteValueHolder){

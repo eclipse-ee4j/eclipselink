@@ -26,7 +26,7 @@ public class XMLTypeEmployeeSystem extends TestSystem {
     }
 
     public void createTables(DatabaseSession session) {
-        SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
 
         schemaManager.replaceObject(Employee_XML.tableDefinition());
         schemaManager.createSequences();

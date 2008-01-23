@@ -34,7 +34,7 @@ public class NcharTestSystem extends TestSystem {
     }
 
     public void createTables(DatabaseSession session) {
-        new CharNcharTableCreator().replaceTables((DatabaseSession)session);
+        new CharNcharTableCreator().replaceTables(session);
     }
 
 }

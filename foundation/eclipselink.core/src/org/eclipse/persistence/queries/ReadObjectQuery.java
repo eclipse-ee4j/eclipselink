@@ -507,7 +507,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Extract the correct query result from the transporter.
      */
     public Object extractRemoteResult(Transporter transporter) {
-        return ((RemoteSession)getSession()).getObjectCorrespondingTo(transporter.getObject(), transporter.getObjectDescriptors(), new IdentityHashtable(), this);
+        return ((RemoteSession)getSession()).getObjectCorrespondingTo(transporter.getObject(), transporter.getObjectDescriptors(), new IdentityHashMap(), this);
     }
 
     /**
@@ -724,7 +724,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * replace the value holders in the specified result object(s)
      */
-    public IdentityHashtable replaceValueHoldersIn(Object object, RemoteSessionController controller) {
+    public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
         return controller.replaceValueHoldersIn(object);
     }
 

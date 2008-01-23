@@ -68,7 +68,7 @@ public class NamedQueryGetQueryNoArgumentsTest extends MultiNameQueriesTestCase 
         ReadAllQuery queryFirstAndLastNameNoArguments = (ReadAllQuery)descriptor.getQueryManager().getQuery("namedQuerySameName");
 
         //descriptor.getQueryManager().getQuery("namedQuerySameName", null);
-        Vector empsByFirstAndLastNameNoArguments = (Vector)getSession().executeQuery((DatabaseQuery)queryFirstAndLastNameNoArguments);
+        Vector empsByFirstAndLastNameNoArguments = (Vector)getSession().executeQuery(queryFirstAndLastNameNoArguments);
     }
 
     // end of useNamedQueryFirstAndLastName

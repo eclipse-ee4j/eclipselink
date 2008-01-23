@@ -82,7 +82,7 @@ public class DomainObjectComparer {
                 allMatched = allMatched && compareObjects(phone1, phone2);
             }
             if (obj1.getClass().equals(String.class)) {
-                allMatched = allMatched && (objects2.indexOf((String)obj1) != -1);
+                allMatched = allMatched && (objects2.indexOf(obj1) != -1);
             }
         }
         return allMatched;

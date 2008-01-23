@@ -35,8 +35,8 @@ public class InheritanceSystem extends TestSystem {
         // For using read all subclasses views.
         DatabasePlatform platform = session.getLogin().getPlatform();
         if (platform.isOracle() || platform.isSybase()/* || platform.isMySQL() Uncomment it when we support MySQL 5*/) {
-            ClassDescriptor computerDescriptor = (ClassDescriptor) session.getDescriptor(Computer.class);
-            ClassDescriptor vehicleDescriptor = (ClassDescriptor) session.getDescriptor(Vehicle.class);
+            ClassDescriptor computerDescriptor = session.getDescriptor(Computer.class);
+            ClassDescriptor vehicleDescriptor = session.getDescriptor(Vehicle.class);
             computerDescriptor.getInheritancePolicy().setReadAllSubclassesViewName("AllComputers");
             vehicleDescriptor.getInheritancePolicy().setReadAllSubclassesViewName("AllVehicles");
         }

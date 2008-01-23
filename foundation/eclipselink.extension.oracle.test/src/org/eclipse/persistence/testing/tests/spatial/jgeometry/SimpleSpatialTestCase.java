@@ -13,12 +13,9 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.testing.models.spatial.jgeometry.SimpleSpatial;
 import org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.MyGeometryConverter;
-import org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.WrappedSpatial;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.testing.models.spatial.jgeometry.JGeometryProject;
 import org.eclipse.persistence.testing.models.spatial.jgeometry.JGeometryTableCreator;
-import org.eclipse.persistence.testing.models.spatial.jgeometry.wrapped.WrappedJGeometryTableCreator;
-import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.platform.database.oracle.converters.JGeometryConverter;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 import org.eclipse.persistence.sessions.JNDIConnector;
@@ -72,7 +69,7 @@ public abstract class SimpleSpatialTestCase extends TestCase {
                 MyGeometryConverter.MY_GEOMETRY_TYPE = userName + "." + MyGeometryConverter.MY_GEOMETRY_TYPE_NAME;
                 MyGeometryConverter.MY_GEOMETRY_TYPE = MyGeometryConverter.MY_GEOMETRY_TYPE.toUpperCase();
                 spatialSession.getPlatform().addStructConverter(new MyGeometryConverter());
-                ((DatabaseSession)spatialSession).login();
+                (spatialSession).login();
                 SessionManager.getManager().addSession(SPATIAL_SESSION_NAME, spatialSession);
             }
             spatialSession.setSessionLog(SimpleJGeometryTestModel.getConfigSession().getSessionLog());

@@ -11,7 +11,6 @@ package org.eclipse.persistence.testing.tests.queries.inmemory;
 
 import java.util.*;
 
-import org.eclipse.persistence.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.*;
 

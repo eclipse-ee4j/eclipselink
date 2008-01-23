@@ -9,7 +9,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
-import org.eclipse.persistence.internal.helper.*;
+import java.util.*;
+
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;
@@ -71,7 +72,7 @@ public class QueryByExampleMechanism extends ExpressionQueryMechanism {
         }
 
         if (query.getReferenceClass().isInstance(getExampleObject())) {
-            Expression exampleExpression = query.getDescriptor().getObjectBuilder().buildExpressionFromExample(getExampleObject(), policy, query.getExpressionBuilder(), new IdentityHashtable(), session);
+            Expression exampleExpression = query.getDescriptor().getObjectBuilder().buildExpressionFromExample(getExampleObject(), policy, query.getExpressionBuilder(), new IdentityHashMap(), session);
 
             if (getSelectionCriteria() != null) {
                 setSelectionCriteria(getSelectionCriteria().and(exampleExpression));

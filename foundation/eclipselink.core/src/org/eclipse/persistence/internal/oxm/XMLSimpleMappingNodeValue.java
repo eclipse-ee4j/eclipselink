@@ -39,7 +39,7 @@ public abstract class XMLSimpleMappingNodeValue extends NodeValue {
         QName nextQName;
         Class javaClass;
         for (int i = 0; i < schemaTypes.size(); i++) {
-            nextQName = (QName)((XMLUnionField)xmlField).getSchemaTypes().get(i);
+            nextQName = (QName)(xmlField).getSchemaTypes().get(i);
             try {
                 if (nextQName != null) {
                     javaClass = xmlField.getJavaClass(nextQName);

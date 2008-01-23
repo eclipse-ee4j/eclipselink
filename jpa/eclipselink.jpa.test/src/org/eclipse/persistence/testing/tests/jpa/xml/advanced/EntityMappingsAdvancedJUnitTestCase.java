@@ -132,7 +132,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
     }
 
     public void testReadEmployee() {
-        Employee employee = (Employee) createEntityManager().find(Employee.class, employeeId);
+        Employee employee = createEntityManager().find(Employee.class, employeeId);
         assertTrue("Error reading Employee", employee.getId() == employeeId);
     }
 
@@ -141,7 +141,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         em.getTransaction().begin();
         int version = 0;
         try {
-            Employee employee = (Employee) em.find(Employee.class, employeeId);
+            Employee employee = em.find(Employee.class, employeeId);
             version = employee.getVersion();
             employee.setSalary(50000);
             em.merge(employee);
@@ -154,7 +154,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             throw e;
         }
         clearCache();
-        Employee newEmployee = (Employee) em.find(Employee.class, employeeId);
+        Employee newEmployee = em.find(Employee.class, employeeId);
         assertTrue("Error updating Employee", newEmployee.getSalary() == 50000);
         assertTrue("Version field not updated", newEmployee.getVersion() == version + 1);
     }

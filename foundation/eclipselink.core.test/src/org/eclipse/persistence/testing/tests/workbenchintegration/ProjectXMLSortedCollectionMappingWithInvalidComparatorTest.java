@@ -9,28 +9,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import java.util.Comparator;
-import java.util.TreeSet;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.mappings.CollectionMapping;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.collections.Location;
-import org.eclipse.persistence.testing.models.employee.domain.Address;
-import org.eclipse.persistence.testing.models.employee.domain.Employee;
-import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
-import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
-import org.eclipse.persistence.testing.models.collections.CollectionsProject;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.queries.SortedCollectionContainerPolicy;
 
 
 /*

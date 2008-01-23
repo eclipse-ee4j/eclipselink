@@ -49,7 +49,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
-    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, however mappings from the referenced object may need cascading.
         Object objectReferenced = getRealAttributeValueFromObject(object, uow);
@@ -67,7 +67,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         Object objectReferenced = getRealAttributeValueFromObject(object, uow);
         if (objectReferenced != null) {
             ObjectBuilder builder = getReferenceDescriptor(objectReferenced.getClass(), uow).getObjectBuilder();
@@ -79,7 +79,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //aggregate objects are not registered but their mappings should be.
         Object objectReferenced = getRealAttributeValueFromObject(object, uow);
         if (objectReferenced == null) {

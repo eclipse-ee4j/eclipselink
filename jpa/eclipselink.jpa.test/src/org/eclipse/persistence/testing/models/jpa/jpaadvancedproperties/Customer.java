@@ -12,9 +12,6 @@ package org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties;
 import java.util.Vector;
 import java.util.HashSet;
 import java.util.Collection;
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
 
 public class Customer implements java.io.Serializable{
 	private Integer customerId;

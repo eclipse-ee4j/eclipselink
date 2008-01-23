@@ -371,8 +371,6 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * Check for batch + aggregation reading.
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession session) throws DatabaseException {
-        Object referenceObject;
-
         // If any field in the foreign key is null then it means there are no referenced objects
         // Skip for partial objects as fk may not be present.
         if (!query.hasPartialAttributeExpressions()) {
@@ -420,7 +418,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
             Object referenceObject = getRealAttributeValueFromObject(object, session);
 
             for (int i = 0; i < getForeignKeyFields().size(); i++) {
-                DatabaseField sourceKey = (DatabaseField)getForeignKeyFields().get(i);
+                DatabaseField sourceKey = getForeignKeyFields().get(i);
                 DatabaseField targetKey = (DatabaseField)getSourceToTargetKeyFields().get(sourceKey);
 
                 Object referenceValue = null;
@@ -433,7 +431,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
             }
         } else {
             for (int i = 0; i < getForeignKeyFields().size(); i++) {
-                DatabaseField sourceKey = (DatabaseField)getForeignKeyFields().get(i);
+                DatabaseField sourceKey = getForeignKeyFields().get(i);
                 Record.add(sourceKey, referenceRow.get(sourceKey));
             }
         }

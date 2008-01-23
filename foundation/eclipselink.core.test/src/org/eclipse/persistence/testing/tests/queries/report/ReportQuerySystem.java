@@ -26,7 +26,7 @@ public class ReportQuerySystem extends TestSystem {
     }
 
     public void createTables(DatabaseSession session) {
-        SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
         schemaManager.replaceObject(ReportEmployee.tableDefinition());
         schemaManager.replaceObject(History.tableDefinition());
         schemaManager.replaceObject(Beer.tableDefinition());

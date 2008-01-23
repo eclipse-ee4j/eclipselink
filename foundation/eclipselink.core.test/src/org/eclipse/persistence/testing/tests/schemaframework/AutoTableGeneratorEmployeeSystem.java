@@ -28,6 +28,6 @@ public class AutoTableGeneratorEmployeeSystem extends EmployeeSystem {
     public void createTables(DatabaseSession session) {
         dropTableConstraints(session);
         //drop tables and then create 'default' tables.
-        new SchemaManager((DatabaseSession)session).replaceDefaultTables();
+        new SchemaManager(session).replaceDefaultTables();
     }
 }

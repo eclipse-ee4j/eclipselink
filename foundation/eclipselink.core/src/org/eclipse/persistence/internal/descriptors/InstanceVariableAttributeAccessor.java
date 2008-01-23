@@ -112,9 +112,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
      * Sets the value of the instance variable in the object to the value.
      */
     public void setAttributeValueInObject(Object anObject, Object value) throws DescriptorException {
-        DescriptorException descriptorException;
-
-        try {
+         try {
             // PERF: Direct variable access.
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -131,9 +129,9 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
             try {
                 // This is done to overcome VA Java bug because VA Java does not allow null to be set reflectively.
                 // Bug2910086 In JDK1.4, IllegalArgumentException is thrown if value is null.
-                // TODO: This code should be removed, it should not be required and may cause unwanted sideeffects.
+                // TODO: This code should be removed, it should not be required and may cause unwanted side-effects.
                 if (value == null) {
-                    // cr 3737  If a null pointer was thrown because toplink attempted to set a null referece into a
+                    // cr 3737  If a null pointer was thrown because we attempted to set a null reference into a
                     // primitive create a primitive of value 0 to set in the object.
                     Class fieldClass = getAttributeClass();
                     if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass)) {
@@ -153,7 +151,7 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
                 throw DescriptorException.nullPointerWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), value, exception);
             }
 
-            // TODO: This code should be removed, it should not be required and may cause unwanted sideeffects.
+            // TODO: This code should be removed, it should not be required and may cause unwanted side-effects.
             // Allow XML change set to merge correctly since new value in XML change set is always String
             try {
                 if (value instanceof String) {
@@ -179,10 +177,10 @@ public class InstanceVariableAttributeAccessor extends AttributeAccessor {
             throw DescriptorException.illegalAccessWhileSettingValueThruInstanceVariableAccessor(getAttributeName(), anObject.getClass().getName(), value, exception);
         } catch (NullPointerException exception) {
             try {
-                // TODO: This code should be removed, it should not be required and may cause unwanted sideeffects.
+                // TODO: This code should be removed, it should not be required and may cause unwanted side-effects.
                 //Bug2910086 In JDK1.3, NullPointerException is thrown if value is null.  Add a null pointer check so that the TopLink exception is thrown if anObject is null.
                 if (anObject != null) {
-                    // cr 3737  If a null pointer was thrown because toplink attempted to set a null referece into a
+                    // cr 3737  If a null pointer was thrown because we attempted to set a null reference into a
                     // primitive create a primitive of value 0 to set in the object.
                     Class fieldClass = getAttributeClass();
                     if (org.eclipse.persistence.internal.helper.Helper.isPrimitiveWrapper(fieldClass) && (value == null)) {

@@ -11,9 +11,6 @@ package org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectio
 
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
 
 /**
  * Bean class: EmployeeBean

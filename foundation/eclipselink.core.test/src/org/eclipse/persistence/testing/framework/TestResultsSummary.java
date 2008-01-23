@@ -101,7 +101,7 @@ public class TestResultsSummary implements ResultInterface, Comparable, Serializ
         } else {
             throw new Error("Wrong test result");
         }
-        getResults().addElement((Object)testCase.getTestResult());
+        getResults().addElement(testCase.getTestResult());
         testCase.getTestResult().setSummary(this);
         LoadBuildSystem.loadBuild.addSummary(this);
     }

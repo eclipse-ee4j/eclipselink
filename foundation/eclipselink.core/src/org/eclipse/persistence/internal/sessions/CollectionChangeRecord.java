@@ -11,7 +11,6 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.IdentityHashtable;
 
 /**
  * <p>
@@ -26,7 +25,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     /**
      * Contains the added values to the collection and their corresponding ChangeSets.
      */
-    protected IdentityHashtable addObjectList;
+    protected Map addObjectList;
     
     /** 
      * Contains the added values to the collection and their corresponding ChangeSets in order.
@@ -36,7 +35,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     /**
      * Contains the added values index to the collection. 
      */
-    protected IdentityHashtable orderedAddObjectIndices;
+    protected Map orderedAddObjectIndices;
     
     /** 
      * Contains the removed values to the collection and their corresponding ChangeSets.
@@ -58,7 +57,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     /**
      * Contains the removed values from the collection and their corresponding ChangeSets.
      */
-    protected IdentityHashtable removeObjectList;
+    protected Map removeObjectList;
         
     /**
      * This default constructor.
@@ -76,7 +75,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     }
     
     /**
-     * This method takes a IdentityHashtable of objects, converts these into ObjectChangeSets.
+     * This method takes a Map of objects, converts these into ObjectChangeSets.
      */
     public void addAdditionChange(IdentityHashMap objectChanges, UnitOfWorkChangeSet changeSet, AbstractSession session) {
         Iterator enumtr = objectChanges.keySet().iterator();
@@ -102,9 +101,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * This method takes a Vector of objects and converts them into 
      * ObjectChangeSets. This method should only be called from a 
      * ListContainerPolicy. Additions to the list are made by index, hence,
-     * the second IdentityHashtable of objectChangesIndices.
+     * the second Map of objectChangesIndices.
      */
-    public void addOrderedAdditionChange(Vector objectChanges, IdentityHashtable objectChangesIndices, UnitOfWorkChangeSet changeSet, AbstractSession session) {
+    public void addOrderedAdditionChange(Vector objectChanges, Map objectChangesIndices, UnitOfWorkChangeSet changeSet, AbstractSession session) {
         Enumeration e = objectChanges.elements();
         
         while (e.hasMoreElements()) {
@@ -136,7 +135,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     }
 
     /**
-     * This method takes a IdentityHashtable of objects, converts these into ObjectChangeSets.
+     * This method takes a Map of objects, converts these into ObjectChangeSets.
      */
     public void addRemoveChange(IdentityHashMap objectChanges, UnitOfWorkChangeSet changeSet, AbstractSession session) {
         // There is no need to keep track of removed new objects because it will not be in the backup,
@@ -165,9 +164,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * ADVANCED:
      * This method returns the collection of ChangeSets that were added to the collection.
      */
-    public IdentityHashtable getAddObjectList() {
+    public Map getAddObjectList() {
         if (addObjectList == null) {
-            addObjectList = new IdentityHashtable(10);
+            addObjectList = new IdentityHashMap(10);
         }
         return addObjectList;
     }
@@ -175,7 +174,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     /**
      * Returns a list of extra adds.
      * These extra adds are used by attribute change tracking
-     * to replicate behaviour when someone adds the same object to a list and removes it once.
+     * to replicate behavior when someone adds the same object to a list and removes it once.
      * In this case the object should still appear once in the change set.
      */
     public List getAddOverFlow() {
@@ -187,12 +186,12 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
 
    /**
      * PUBLIC:
-     * This method returns the IdentityHashtable that contains the removed values from the collection
+     * This method returns the Map that contains the removed values from the collection
      * and their corresponding ChangeSets.
      */
-    public IdentityHashtable getRemoveObjectList() {
+    public Map getRemoveObjectList() {
         if (removeObjectList == null) {
-            removeObjectList = new IdentityHashtable(10);
+            removeObjectList = new IdentityHashMap(10);
         }
         return removeObjectList;
     }
@@ -213,9 +212,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * This method will be used to merge one record into another.
      */
     public void mergeRecord(ChangeRecord mergeFromRecord, UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
-        Enumeration addEnum = ((CollectionChangeRecord)mergeFromRecord).getAddObjectList().keys();
-        while (addEnum.hasMoreElements()) {
-            ObjectChangeSet mergingObject = (ObjectChangeSet)addEnum.nextElement();
+        Iterator addEnum = ((CollectionChangeRecord)mergeFromRecord).getAddObjectList().keySet().iterator();
+        while (addEnum.hasNext()) {
+            ObjectChangeSet mergingObject = (ObjectChangeSet)addEnum.next();
             ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(mergingObject, mergeFromChangeSet);
             if (getRemoveObjectList().containsKey(localChangeSet)) {
                 getRemoveObjectList().remove(localChangeSet);
@@ -223,9 +222,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
                 getAddObjectList().put(localChangeSet, localChangeSet);
             }
         }
-        Enumeration removeEnum = ((CollectionChangeRecord)mergeFromRecord).getRemoveObjectList().keys();
-        while (removeEnum.hasMoreElements()) {
-            ObjectChangeSet mergingObject = (ObjectChangeSet)removeEnum.nextElement();
+        Iterator removeEnum = ((CollectionChangeRecord)mergeFromRecord).getRemoveObjectList().keySet().iterator();
+        while (removeEnum.hasNext()) {
+            ObjectChangeSet mergingObject = (ObjectChangeSet)removeEnum.next();
             ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(mergingObject, mergeFromChangeSet);
             if (getAddObjectList().containsKey(localChangeSet)) {
                 getAddObjectList().remove(localChangeSet);
@@ -241,9 +240,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * associated with this ChangeRecord.
      */
     public void prepareForSynchronization(AbstractSession session) {
-        Enumeration changes = getAddObjectList().elements();
-        while (changes.hasMoreElements()) {
-            ObjectChangeSet changedObject = (ObjectChangeSet)changes.nextElement();
+        Iterator changes = getAddObjectList().values().iterator();
+        while (changes.hasNext()) {
+            ObjectChangeSet changedObject = (ObjectChangeSet)changes.next();
             if (changedObject.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
                 ClassDescriptor descriptor = session.getDescriptor(changedObject.getClassType(session));
                 int syncType = descriptor.getCacheSynchronizationType();
@@ -251,9 +250,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
                 changedObject.prepareChangeRecordsForSynchronization(session);
             }
         }
-        changes = getRemoveObjectList().elements();
-        while (changes.hasMoreElements()) {
-            ObjectChangeSet changedObject = (ObjectChangeSet)changes.nextElement();
+        changes = getRemoveObjectList().values().iterator();
+        while (changes.hasNext()) {
+            ObjectChangeSet changedObject = (ObjectChangeSet)changes.next();
             if (changedObject.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
                 ClassDescriptor descriptor = session.getDescriptor(changedObject.getClassType(session));
                 int syncType = descriptor.getCacheSynchronizationType();
@@ -261,9 +260,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
                 changedObject.prepareChangeRecordsForSynchronization(session);
             }
         }
-        changes = getOrderedAddObjects().elements();
-        while (changes.hasMoreElements()) {
-            ObjectChangeSet changedObject = (ObjectChangeSet)changes.nextElement();
+        changes = getOrderedAddObjects().iterator();
+        while (changes.hasNext()) {
+            ObjectChangeSet changedObject = (ObjectChangeSet)changes.next();
             if (changedObject.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
                 ClassDescriptor descriptor = session.getDescriptor(changedObject.getClassType(session));
                 int syncType = descriptor.getCacheSynchronizationType();
@@ -271,9 +270,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
                 changedObject.prepareChangeRecordsForSynchronization(session);
             }
         }
-        changes = getOrderedRemoveObjects().elements();
-        while (changes.hasMoreElements()) {
-            ObjectChangeSet changedObject = (ObjectChangeSet)changes.nextElement();
+        changes = getOrderedRemoveObjects().values().iterator();
+        while (changes.hasNext()) {
+            ObjectChangeSet changedObject = (ObjectChangeSet)changes.next();
             if (changedObject.getSynchronizationType() == ClassDescriptor.UNDEFINED_OBJECT_CHANGE_BEHAVIOR) {
                 ClassDescriptor descriptor = session.getDescriptor(changedObject.getClassType(session));
                 int syncType = descriptor.getCacheSynchronizationType();
@@ -286,14 +285,14 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     /**
      * Sets the Added objects list.
      */
-    public void setAddObjectList(IdentityHashtable objectChangesList) {
+    public void setAddObjectList(Map objectChangesList) {
         this.addObjectList = objectChangesList;
     }
 
     /**
      * Sets the removed objects list.
      */
-    public void setRemoveObjectList(IdentityHashtable objectChangesList) {
+    public void setRemoveObjectList(Map objectChangesList) {
         this.removeObjectList = objectChangesList;
     }
 
@@ -301,13 +300,13 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * This method will be used to update the objectsChangeSets references.
      */
     public void updateReferences(UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
-        IdentityHashtable addList = new IdentityHashtable(this.getAddObjectList().size() + 1);
-        IdentityHashtable removeList = new IdentityHashtable(this.getRemoveObjectList().size() + 1);
+        Map addList = new IdentityHashMap(this.getAddObjectList().size() + 1);
+        Map removeList = new IdentityHashMap(this.getRemoveObjectList().size() + 1);
         // If we have ordered lists we need to iterate through those.
         if (getOrderedAddObjects().size() > 0 || getOrderedRemoveObjectIndices().size() > 0) {
             // Do the ordered adds first ...
             Vector orderedAddList = new Vector(getOrderedAddObjects().size());
-            IdentityHashtable orderedAddListIndices = new IdentityHashtable(getOrderedAddObjectIndices().size());
+            Map orderedAddListIndices = new IdentityHashMap(getOrderedAddObjectIndices().size());
             
             for (int i = 0; i < getOrderedAddObjects().size(); i++) {
                 ObjectChangeSet changeSet = (ObjectChangeSet) getOrderedAddObjects().elementAt(i);
@@ -345,15 +344,15 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
             setOrderedRemoveObjects(orderedRemoveList);
             // Don't need to worry about the vector of indices (Integer's), just leave them as is.
         } else {
-            Enumeration changes = getAddObjectList().elements();
-            while (changes.hasMoreElements()) {
-                ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet((ObjectChangeSet)changes.nextElement(), mergeFromChangeSet);
+            Iterator changes = getAddObjectList().values().iterator();
+            while (changes.hasNext()) {
+                ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet((ObjectChangeSet)changes.next(), mergeFromChangeSet);
                 addList.put(localChangeSet, localChangeSet);
             }
         
-            changes = getRemoveObjectList().elements();
-            while (changes.hasMoreElements()) {
-                ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet((ObjectChangeSet)changes.nextElement(), mergeFromChangeSet);
+            changes = getRemoveObjectList().values().iterator();
+            while (changes.hasNext()) {
+                ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet((ObjectChangeSet)changes.next(), mergeFromChangeSet);
                 removeList.put(localChangeSet, localChangeSet);
             }
         }
@@ -386,9 +385,9 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * This method returns the collection of ChangeSets that they were 
      * added to the collection.
      */
-    public IdentityHashtable getOrderedAddObjectIndices() {
+    public Map getOrderedAddObjectIndices() {
         if (orderedAddObjectIndices == null) {
-            orderedAddObjectIndices = new IdentityHashtable();
+            orderedAddObjectIndices = new IdentityHashMap();
         }
         
         return orderedAddObjectIndices;
@@ -428,7 +427,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      * Sets collection of ChangeSets (and their respective index) that they 
      * were added to the collection.
      */
-    public void setOrderedAddObjectIndices(IdentityHashtable orderedAddObjectIndices) {
+    public void setOrderedAddObjectIndices(Map orderedAddObjectIndices) {
         this.orderedAddObjectIndices = orderedAddObjectIndices;
     }
     

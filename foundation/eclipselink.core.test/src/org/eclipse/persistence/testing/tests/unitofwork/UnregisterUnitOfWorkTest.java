@@ -52,7 +52,7 @@ public class UnregisterUnitOfWorkTest extends AutoVerifyTestCase {
         uow.commit();
 
         uow = (UnitOfWorkImpl)getSession().acquireUnitOfWork();
-        Vector workingCopies = (Vector)uow.readAllObjects(Employee.class);
+        Vector workingCopies = uow.readAllObjects(Employee.class);
 
         for (Enumeration enumtr = workingCopies.elements(); enumtr.hasMoreElements(); ) {
             uow.deepUnregisterObject(enumtr.nextElement());

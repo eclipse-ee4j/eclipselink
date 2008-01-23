@@ -322,7 +322,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Let c be objects from cache.
         // Presently p intersect c = empty set, but later p subset c.
         // By checking cache now doesConform will be called p fewer times.
-        IdentityHashtable indexedInterimResult = unitOfWork.scanForConformingInstances(getSelectionCriteria(), getReferenceClass(), arguments, this);
+        Map indexedInterimResult = unitOfWork.scanForConformingInstances(getSelectionCriteria(), getReferenceClass(), arguments, this);
         
         Cursor cursor = null;
         // In the case of cursors just conform/register the initially read collection.
@@ -377,8 +377,8 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Make sure a vector of exactly the right size is returned.
         Object conformedResult = cp.containerInstance(indexedInterimResult.size() + fromDatabase.size());
         Object eachClone;
-        for (Enumeration enumtr = indexedInterimResult.elements(); enumtr.hasMoreElements();) {
-            eachClone = enumtr.nextElement();
+        for (Iterator enumtr = indexedInterimResult.values().iterator(); enumtr.hasNext();) {
+            eachClone = enumtr.next();
             cp.addInto(eachClone, conformedResult, unitOfWork);
         }
         for (Enumeration enumtr = fromDatabase.elements(); enumtr.hasMoreElements();) {
@@ -553,7 +553,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * Extract the correct query result from the transporter.
      */
     public Object extractRemoteResult(Transporter transporter) {
-        return ((RemoteSession)getSession()).getObjectsCorrespondingToAll(transporter.getObject(), transporter.getObjectDescriptors(), new IdentityHashtable(), this, getContainerPolicy());
+        return ((RemoteSession)getSession()).getObjectsCorrespondingToAll(transporter.getObject(), transporter.getObjectDescriptors(), new IdentityHashMap(), this, getContainerPolicy());
     }
 
     /**
@@ -941,7 +941,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * INTERNAL:
      * replace the value holders in the specified result object(s)
      */
-    public IdentityHashtable replaceValueHoldersIn(Object object, RemoteSessionController controller) {
+    public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
         return controller.replaceValueHoldersInAll(object, getContainerPolicy());
     }
 

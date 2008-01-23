@@ -99,7 +99,7 @@ public class UnitOfWorkTest extends WriteObjectTest {
         language = (Language)languages.firstElement();
         language.setLanguage("ModifiedLanguage");
         // 1 level aggregate's M:M mapping, adding a new element
-        languages.addElement((Language)Language.example7());
+        languages.addElement(Language.example7());
     }
 
     protected void setup() {

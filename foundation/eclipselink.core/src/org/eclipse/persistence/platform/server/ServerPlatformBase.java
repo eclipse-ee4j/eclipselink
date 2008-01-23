@@ -24,7 +24,6 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.databaseaccess.Platform;
 
 /**
  * PUBLIC:

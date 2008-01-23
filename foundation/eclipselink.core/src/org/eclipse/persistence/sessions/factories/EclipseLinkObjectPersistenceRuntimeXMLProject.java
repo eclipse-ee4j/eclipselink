@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
-import org.xml.sax.Attributes;
 import static java.lang.Integer.MIN_VALUE;
 
 // Java extension imports

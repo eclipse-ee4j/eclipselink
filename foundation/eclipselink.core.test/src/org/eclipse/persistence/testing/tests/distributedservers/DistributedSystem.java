@@ -37,11 +37,11 @@ DistributedSystem extends TestSystem {
 
     public void addDescriptors(DatabaseSession session) {
         session.logMessage("Project is from generated code");
-        ((DatabaseSession)session).addDescriptors(project);
+        (session).addDescriptors(project);
     }
 
     public void createTables(DatabaseSession session) {
-        SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
 
         // Start Build fieldTypes
         schemaManager.buildFieldTypes(Dist_Employee.tableDefinition());

@@ -81,6 +81,10 @@ public class ExpressionTestSuite extends TestSuite {
         addTest(test);
     }
 
+    /**
+     * TODO:
+     * This tests seems to have been removed?  Should be added back, for DB2 platform.
+     */
     private void addAdvancedDB2ExpressionFunctionTest() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression exp = builder.get("salary").lessThan(100000);

@@ -45,8 +45,8 @@ public class PostCommitEventPrimaryKeyTest extends AutoVerifyTestCase {
     public void commitOccurred(SessionEvent event) {
         org.eclipse.persistence.sessions.UnitOfWork uow = (org.eclipse.persistence.sessions.UnitOfWork)event.getSession();
         UnitOfWorkChangeSet uowChangeSet = uow.getUnitOfWorkChangeSet();
-        for (Enumeration changes = uowChangeSet.getAllChangeSets().keys(); changes.hasMoreElements(); ) {
-            ObjectChangeSet objChangeSet = (ObjectChangeSet)changes.nextElement();
+        for (Iterator changes = uowChangeSet.getAllChangeSets().keySet().iterator(); changes.hasNext(); ) {
+            ObjectChangeSet objChangeSet = (ObjectChangeSet)changes.next();
             Vector objKey = objChangeSet.getPrimaryKeys();
 
             if (objKey == null || objKey.isEmpty()) {

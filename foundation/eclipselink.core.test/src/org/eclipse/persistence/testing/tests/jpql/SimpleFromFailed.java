@@ -9,8 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpql;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 class SimpleFromFailed extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
@@ -27,7 +25,7 @@ class SimpleFromFailed extends org.eclipse.persistence.testing.tests.jpql.JPQLTe
         errorMessage = null;
         try {
             getSession().logMessage("Running EJBQL -> " + getEjbqlString());
-            setReturnedObjects((Vector)getSession().executeQuery(getQuery()));
+            setReturnedObjects(getSession().executeQuery(getQuery()));
         } catch (Exception e) {
             errorMessage = e.getMessage();
         }

@@ -129,7 +129,7 @@ public class MappedInteraction extends EISInteraction {
                     record = (MappedRecord)createRecordElement(getInputRecordName(), getInputRow(), accessor);
                 } else {
                     record = accessor.getRecordFactory().createMappedRecord(getInputRecordName());
-                    Object nestedRecord = (MappedRecord)createRecordElement(getInputResultPath(), getInputRow(), accessor);
+                    Object nestedRecord = createRecordElement(getInputResultPath(), getInputRow(), accessor);
                     accessor.getEISPlatform().setValueInRecord(getInputResultPath(), nestedRecord, record, accessor);
                 }
             } else {

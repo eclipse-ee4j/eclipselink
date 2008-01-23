@@ -66,7 +66,7 @@ public class CustomIndirectContainerSystem extends TestSystem {
         tabledefinition.addField(field);
 
         tableCreator.addTableDefinition(tabledefinition);
-        tableCreator.replaceTables((DatabaseSession)session);
+        tableCreator.replaceTables(session);
     }
 
     public Dog dogExample1() {
@@ -77,16 +77,16 @@ public class CustomIndirectContainerSystem extends TestSystem {
         PopulationManager manager = PopulationManager.getDefaultManager();
 
         SalesRep srep = salesRepExample1();
-        ((DatabaseSession)session).writeObject(srep);
+        (session).writeObject(srep);
         manager.registerObject(srep, srep.getKey());
 
         Dog dog = dogExample1();
         dog.setOwner(srep);
-        ((DatabaseSession)session).writeObject(dog);
+        (session).writeObject(dog);
         manager.registerObject(dog, dog.getName());
 
         srep = salesRepExample2();
-        ((DatabaseSession)session).writeObject(srep);
+        (session).writeObject(srep);
         manager.registerObject(srep, srep.getKey());
     }
 

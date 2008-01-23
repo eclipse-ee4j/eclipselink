@@ -16,8 +16,6 @@ import java.io.*;
 import javax.persistence.*;
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
-import static javax.persistence.InheritanceType.*;
 
 @Entity
 @Table(name="CMP3_COMPANY")

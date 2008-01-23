@@ -9,8 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.querykeys;
 
-import org.eclipse.persistence.expressions.*;
-
 /**
  * <p>
  * <b>Purpose</b>: Define an alias to a foreign one to one object.

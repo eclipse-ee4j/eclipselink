@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import static javax.persistence.GenerationType.TABLE;
 import javax.persistence.*;
 import java.util.Collection;
 

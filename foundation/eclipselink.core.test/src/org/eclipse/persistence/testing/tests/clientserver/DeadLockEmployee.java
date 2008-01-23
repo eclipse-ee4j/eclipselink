@@ -52,7 +52,7 @@ public class DeadLockEmployee implements Serializable {
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
     public DeadLockAddress getAddress() {
-        return (DeadLockAddress)address;
+        return address;
     }
 
     public String getFirstName() {

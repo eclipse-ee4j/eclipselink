@@ -11,8 +11,6 @@ package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
 import java.util.EventListener;
 
-import javax.persistence.PostPersist;
-
 public class BeerListener implements EventListener {
     // Listener class used to test the mapped-superclass entity-listener XML
     // element.

@@ -45,9 +45,9 @@ public class PredefinedInQueryReadAllTest extends ReadAllTest {
         Vector args = new Vector();
         args.addElement(sals);
 
-        this.objectsFromDatabase = (Vector)getSession().executeQuery("getAllEmployeesIn", args);
+        this.objectsFromDatabase = getSession().executeQuery("getAllEmployeesIn", args);
         // Test execution twice to ensure query is cloned correctly
-        this.objectsFromDatabase = (Vector)getSession().executeQuery("getAllEmployeesIn", args);
+        this.objectsFromDatabase = getSession().executeQuery("getAllEmployeesIn", args);
         
         // Also execute the query using a collection type other than vector.
         Collection collection = new HashSet();
@@ -57,8 +57,8 @@ public class PredefinedInQueryReadAllTest extends ReadAllTest {
         args = new Vector();
         args.addElement(collection);
 
-        this.objectsFromDatabase = (Vector)getSession().executeQuery("getAllEmployeesIn", args);
+        this.objectsFromDatabase = getSession().executeQuery("getAllEmployeesIn", args);
         // Test execution twice to ensure query is cloned correctly
-        this.objectsFromDatabase = (Vector)getSession().executeQuery("getAllEmployeesIn", args);
+        this.objectsFromDatabase = getSession().executeQuery("getAllEmployeesIn", args);
     }
 }

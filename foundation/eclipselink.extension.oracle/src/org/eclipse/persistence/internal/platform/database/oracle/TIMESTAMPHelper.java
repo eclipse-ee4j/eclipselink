@@ -13,7 +13,6 @@ import java.io.StringWriter;
 import java.sql.*;
 import java.util.*;
 import oracle.sql.*;
-import org.eclipse.persistence.Version;
 import org.eclipse.persistence.internal.helper.Helper;
 
 /**
@@ -101,8 +100,8 @@ public class TIMESTAMPHelper {
             regionCode += ((bytes[12] & 252) >> 2);
             regionName = new String(ZONEIDMAP.getRegion(regionCode));
         } else {
-            int hourOffset = (int)bytes[11] - 20;
-            int minuteOffset = (int)bytes[12] - 60;
+            int hourOffset = bytes[11] - 20;
+            int minuteOffset = bytes[12] - 60;
             String offset = Helper.buildZeroPrefix(hourOffset, 2) + ":" + Helper.buildZeroPrefix(minuteOffset, 2);
             regionName = "GMT" + offset;
         }

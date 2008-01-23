@@ -12,7 +12,6 @@ package org.eclipse.persistence.testing.tests.jpql;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.queries.*;
-import java.util.*;
 
 public class ComplexNestedOneToManyUsingInClause extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
     public void setup() {
@@ -28,7 +27,7 @@ public class ComplexNestedOneToManyUsingInClause extends org.eclipse.persistence
         readQuery.setReferenceClass(Employee.class);
         readQuery.setSelectionCriteria(whereClause);
 
-        setOriginalOject((Vector)getSession().executeQuery(readQuery));
+        setOriginalOject(getSession().executeQuery(readQuery));
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         String ejbqlString;

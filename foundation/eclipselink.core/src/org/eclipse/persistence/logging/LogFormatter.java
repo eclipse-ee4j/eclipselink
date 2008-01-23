@@ -12,7 +12,6 @@ package org.eclipse.persistence.logging;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.LogRecord;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.io.*;
 import java.text.*;
 import java.util.Date;
@@ -32,7 +31,7 @@ public class LogFormatter extends SimpleFormatter {
 
     // Line separator string.  This is the value of the line.separator
     // property at the moment that the SimpleFormatter was created.
-    private String lineSeparator = (String)PrivilegedAccessHelper.getLineSeparator();
+    private String lineSeparator = PrivilegedAccessHelper.getLineSeparator();
 
     /**
      * Format the given LogRecord.

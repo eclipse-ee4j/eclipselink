@@ -13,7 +13,6 @@ package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import static javax.persistence.CascadeType.*;
 import javax.persistence.*;
-import static javax.persistence.InheritanceType.*;
 import java.util.List;
 
 @Entity

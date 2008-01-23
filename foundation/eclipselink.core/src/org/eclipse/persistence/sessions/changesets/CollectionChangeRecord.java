@@ -9,7 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.changesets;
 
-import org.eclipse.persistence.internal.helper.IdentityHashtable;
+import java.util.*;
 
 /**
  * <p>
@@ -23,19 +23,19 @@ public interface CollectionChangeRecord extends ChangeRecord {
 
     /**
      * ADVANCED:
-     * This method returns the IdentityHashtable that contains the added values to the collection
+     * This method returns the Map that contains the added values to the collection
      * and their corresponding ChangeSets.
      * @return java.util.Vector
      */
-    public IdentityHashtable getAddObjectList();
+    public Map getAddObjectList();
 
     /**
      * ADVANCED:
-     * This method returns the IdentityHashtable that contains the removed values from the collection
+     * This method returns the Map that contains the removed values from the collection
      * and their corresponding ChangeSets.
      * @return java.util.Vector
      */
-    public IdentityHashtable getRemoveObjectList();
+    public Map getRemoveObjectList();
 
     /**
      * ADVANCED:

@@ -311,7 +311,7 @@ public class XMLClassAccessor extends ClassAccessor implements XMLAccessor {
             //Bug#5990636 Cover the case when the given descriptor defined in the separate mapping XML file rather than 
             //the one referred by m_helper. 
             for (Map.Entry<URL, Document> urlToDocPair : m_project.getMappingFiles().entrySet()) {
-                Document document = (Document)urlToDocPair.getValue();
+                Document document = urlToDocPair.getValue();
                 xmlhelper = new XMLHelper(document, urlToDocPair.getKey().getFile(), m_helper.getClassLoader());
                 node = xmlhelper.locateEntityNode(descriptor.getJavaClass());
                 if(node!=null){

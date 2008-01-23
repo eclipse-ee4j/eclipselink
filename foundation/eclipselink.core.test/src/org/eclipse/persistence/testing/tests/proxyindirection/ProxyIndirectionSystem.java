@@ -25,12 +25,12 @@ public class ProxyIndirectionSystem extends TestSystem {
             project = new ProxyIndirectionProject();
         }
 
-        ((DatabaseSession)session).addDescriptors(project);
+        (session).addDescriptors(project);
     }
 
     public void createTables(DatabaseSession session) {
         ProxyIndirectionTableCreator creator = new ProxyIndirectionTableCreator();
-        creator.replaceTables((DatabaseSession)session);
+        creator.replaceTables(session);
     }
 
     public void populate(DatabaseSession session) {

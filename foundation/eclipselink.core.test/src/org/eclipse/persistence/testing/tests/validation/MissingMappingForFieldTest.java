@@ -36,7 +36,7 @@ public class MissingMappingForFieldTest extends ExceptionTest {
         org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems person = new org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems();
 
         OneToOneMapping dMapping = (OneToOneMapping)descriptor.getMappingForAttributeName("manager");
-        DatabaseField dField = (DatabaseField)dMapping.getForeignKeyFields().firstElement();
+        DatabaseField dField = dMapping.getForeignKeyFields().firstElement();
         //the following causes the correct error to occure. 
         descriptor.getObjectBuilder().getMappingsByField().remove(dField);
 

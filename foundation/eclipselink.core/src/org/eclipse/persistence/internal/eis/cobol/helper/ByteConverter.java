@@ -332,10 +332,9 @@ public class ByteConverter {
     * <code>offset</code> and ending at <code>offset + length</code>
     */
     protected void twosComplement(int offset, int length) {
-        int mask = 0xff;
         int i;
 
-        //perform a twos complemtent on the bytes in record data
+        //perform a twos complement on the bytes in record data
         for (i = offset; i < (offset + length); i++) {
             myRecordData[i] = Helper.byteFromInt(~(Helper.intFromByte(myRecordData[i])));
         }

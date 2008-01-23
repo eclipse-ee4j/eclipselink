@@ -11,7 +11,6 @@ package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
 import java.util.*;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;

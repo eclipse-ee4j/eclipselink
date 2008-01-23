@@ -12,7 +12,6 @@
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
 import javax.persistence.TableGenerator;
 import javax.persistence.MappedSuperclass;

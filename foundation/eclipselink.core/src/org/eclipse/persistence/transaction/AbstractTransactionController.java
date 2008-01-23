@@ -281,7 +281,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
         UnitOfWorkImpl activeUnitOfWork = lookupActiveUnitOfWork(transaction);
         if (activeUnitOfWork == null) {
             // Txn is active but no UoW has been associated with it yet, so create one.
-            activeUnitOfWork = (UnitOfWorkImpl) getSession().acquireUnitOfWork();
+            activeUnitOfWork = getSession().acquireUnitOfWork();
             Object transactionKey = getTransactionKey(transaction);
             addUnitOfWork(transactionKey, activeUnitOfWork);
             activeUnitOfWork.setTransaction(transaction);

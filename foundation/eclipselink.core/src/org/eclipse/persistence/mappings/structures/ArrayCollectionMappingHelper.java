@@ -5,14 +5,12 @@ import java.util.Vector;
 
 import org.eclipse.persistence.eis.EISCollectionChangeRecord;
 import org.eclipse.persistence.eis.EISOrderedCollectionChangeRecord;
-import org.eclipse.persistence.eis.mappings.EISOneToManyMapping;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**

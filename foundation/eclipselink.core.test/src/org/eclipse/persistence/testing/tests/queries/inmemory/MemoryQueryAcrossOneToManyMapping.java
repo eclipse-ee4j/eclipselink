@@ -47,7 +47,7 @@ public class MemoryQueryAcrossOneToManyMapping extends TestCase {
         getSession().addQuery("getAllEmployees", queryAll);
         allEmployees = (Vector)getSession().executeQuery("getAllEmployees");
         for (Enumeration enumtr = allEmployees.elements(); enumtr.hasMoreElements();) {
-            Vector phones = (Vector)((Employee)enumtr.nextElement()).getPhoneNumbers();
+            Vector phones = ((Employee)enumtr.nextElement()).getPhoneNumbers();
             employees.addAll(phones);
             //trigger all the value holders of phoneNumbers
         }

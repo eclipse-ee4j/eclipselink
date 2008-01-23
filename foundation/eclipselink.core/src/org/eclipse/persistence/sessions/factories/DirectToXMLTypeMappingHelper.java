@@ -13,7 +13,6 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.codegen.NonreflectiveMethodDefinition;
 import org.eclipse.persistence.sessions.Project;
 

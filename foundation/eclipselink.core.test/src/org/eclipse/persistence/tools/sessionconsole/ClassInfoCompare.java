@@ -11,8 +11,6 @@ package org.eclipse.persistence.tools.sessionconsole;
 
 import java.util.Comparator;
 
-import org.eclipse.persistence.internal.helper.*;
-
 /**
  * Use to sort vectors of descriptors.
  */

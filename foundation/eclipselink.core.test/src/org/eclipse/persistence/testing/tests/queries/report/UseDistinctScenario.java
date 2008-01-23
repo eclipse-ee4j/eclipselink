@@ -34,7 +34,7 @@ public class UseDistinctScenario extends ReportQueryTestCase {
         Vector distinctEmployees = new Vector();
 
         // initialize distinctEmployees
-        distinctEmployees.addElement((Employee)employees.elementAt(0));
+        distinctEmployees.addElement(employees.elementAt(0));
 
         // check employees with duplicate province and add only distinct employees to distinctEmployees
         for (int i = 1; i < employees.size(); i++) {
@@ -47,7 +47,7 @@ public class UseDistinctScenario extends ReportQueryTestCase {
                 }
             }
             if (!duplicateFound) {
-                distinctEmployees.addElement((Employee)employees.elementAt(i));
+                distinctEmployees.addElement(employees.elementAt(i));
             }
         }
 

@@ -11,10 +11,8 @@ package org.eclipse.persistence.platform.database.oracle;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import javax.sql.DataSource;
 import java.util.Properties;
 import javax.naming.Context;
-import javax.naming.Name;
 import javax.naming.NamingException;
 
 import oracle.jdbc.pool.OracleOCIConnectionPool;

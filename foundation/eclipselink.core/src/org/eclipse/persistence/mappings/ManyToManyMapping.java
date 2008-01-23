@@ -146,8 +146,8 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         Vector key = new Vector(getSourceRelationKeyFields().size());
 
         for (int index = 0; index < getSourceRelationKeyFields().size(); index++) {
-            DatabaseField relationField = (DatabaseField)getSourceRelationKeyFields().elementAt(index);
-            DatabaseField sourceField = (DatabaseField)getSourceKeyFields().elementAt(index);
+            DatabaseField relationField = getSourceRelationKeyFields().elementAt(index);
+            DatabaseField sourceField = getSourceKeyFields().elementAt(index);
             Object value = row.get(relationField);
 
             // Must ensure the classificatin to get a cache hit.
@@ -510,8 +510,8 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
         // Construct an expression to delete from the relation table.
         for (int index = 0; index < getSourceRelationKeyFields().size(); index++) {
-            DatabaseField sourceRelationKey = (DatabaseField)getSourceRelationKeyFields().elementAt(index);
-            DatabaseField sourceKey = (DatabaseField)getSourceKeyFields().elementAt(index);
+            DatabaseField sourceRelationKey = getSourceRelationKeyFields().elementAt(index);
+            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
 
             subExpression = builder.getField(sourceRelationKey).equal(builder.getParameter(sourceKey));
             expression = subExpression.and(expression);
@@ -677,7 +677,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      */
     protected void initializeSourceKeys(AbstractSession session) {
         for (int index = 0; index < getSourceKeyFields().size(); index++) {
-            DatabaseField field = getDescriptor().buildField((DatabaseField)getSourceKeyFields().get(index));
+            DatabaseField field = getDescriptor().buildField(getSourceKeyFields().get(index));
             getSourceKeyFields().set(index, field);
         }
     }
@@ -717,7 +717,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
      */
     protected void initializeTargetKeys(AbstractSession session) {
         for (int index = 0; index < getTargetKeyFields().size(); index++) {
-            DatabaseField field = getReferenceDescriptor().buildField((DatabaseField)getTargetKeyFields().get(index));
+            DatabaseField field = getReferenceDescriptor().buildField(getTargetKeyFields().get(index));
             getTargetKeyFields().set(index, field);
         }
     }
@@ -764,16 +764,16 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
         // Extract primary key and value from the source.
         for (int index = 0; index < getSourceRelationKeyFields().size(); index++) {
-            DatabaseField sourceRelationKey = (DatabaseField)getSourceRelationKeyFields().elementAt(index);
-            DatabaseField sourceKey = (DatabaseField)getSourceKeyFields().elementAt(index);
+            DatabaseField sourceRelationKey = getSourceRelationKeyFields().elementAt(index);
+            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
             Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
             databaseRow.put(sourceRelationKey, sourceKeyValue);
         }
 
         // Extract target field and its value. Construct insert statement and execute it
         for (int index = 0; index < getTargetRelationKeyFields().size(); index++) {
-            DatabaseField targetRelationKey = (DatabaseField)getTargetRelationKeyFields().elementAt(index);
-            DatabaseField targetKey = (DatabaseField)getTargetKeyFields().elementAt(index);
+            DatabaseField targetRelationKey = getTargetRelationKeyFields().elementAt(index);
+            DatabaseField targetKey = getTargetKeyFields().elementAt(index);
             Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(objectAdded, targetKey, query.getSession());
             databaseRow.put(targetRelationKey, targetKeyValue);
         }
@@ -809,8 +809,8 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
         // Extract primary key and value from the source.
         for (int index = 0; index < getSourceRelationKeyFields().size(); index++) {
-            DatabaseField sourceRelationKey = (DatabaseField)getSourceRelationKeyFields().elementAt(index);
-            DatabaseField sourceKey = (DatabaseField)getSourceKeyFields().elementAt(index);
+            DatabaseField sourceRelationKey = getSourceRelationKeyFields().elementAt(index);
+            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
             Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
             databaseRow.put(sourceRelationKey, sourceKeyValue);
         }
@@ -819,8 +819,8 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
             Object object = cp.next(iter, query.getSession());
             for (int index = 0; index < getTargetRelationKeyFields().size(); index++) {
-                DatabaseField targetRelationKey = (DatabaseField)getTargetRelationKeyFields().elementAt(index);
-                DatabaseField targetKey = (DatabaseField)getTargetKeyFields().elementAt(index);
+                DatabaseField targetRelationKey = getTargetRelationKeyFields().elementAt(index);
+                DatabaseField targetKey = getTargetKeyFields().elementAt(index);
                 Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, targetKey, query.getSession());
                 databaseRow.put(targetRelationKey, targetKeyValue);
             }
@@ -942,16 +942,16 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
 
         // Extract primary key and value from the source.
         for (int index = 0; index < getSourceRelationKeyFields().size(); index++) {
-            DatabaseField sourceRelationKey = (DatabaseField)getSourceRelationKeyFields().elementAt(index);
-            DatabaseField sourceKey = (DatabaseField)getSourceKeyFields().elementAt(index);
+            DatabaseField sourceRelationKey = getSourceRelationKeyFields().elementAt(index);
+            DatabaseField sourceKey = getSourceKeyFields().elementAt(index);
             Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
             databaseRow.put(sourceRelationKey, sourceKeyValue);
         }
 
         // Extract target field and its value. Construct insert statement and execute it
         for (int index = 0; index < getTargetRelationKeyFields().size(); index++) {
-            DatabaseField targetRelationKey = (DatabaseField)getTargetRelationKeyFields().elementAt(index);
-            DatabaseField targetKey = (DatabaseField)getTargetKeyFields().elementAt(index);
+            DatabaseField targetRelationKey = getTargetRelationKeyFields().elementAt(index);
+            DatabaseField targetKey = getTargetKeyFields().elementAt(index);
             Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(objectDeleted, targetKey, query.getSession());
             databaseRow.put(targetRelationKey, targetKeyValue);
         }
@@ -1362,7 +1362,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
             } else if (((ObjectLevelReadQuery)targetQuery).getAsOfClause() == null) {
                 ((ObjectLevelReadQuery)targetQuery).setAsOfClause(AsOfClause.NO_CLAUSE);
             }
-            Expression temporalExpression = ((ManyToManyMapping)this).getHistoryPolicy().additionalHistoryExpression(targetQuery.getSelectionCriteria().getBuilder());
+            Expression temporalExpression = (this).getHistoryPolicy().additionalHistoryExpression(targetQuery.getSelectionCriteria().getBuilder());
             targetQuery.setSelectionCriteria(targetQuery.getSelectionCriteria().and(temporalExpression));
         }
         return targetQuery;

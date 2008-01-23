@@ -329,7 +329,7 @@ public class ExpressionBuilder extends ObjectExpression {
      * @see org.eclipse.persistence.expressions.Expression#cloneUsing(Expression)
      * @bug  2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
      */
-    protected Expression registerIn(Dictionary alreadyDone) {
+    protected Expression registerIn(Map alreadyDone) {
         // Here do a special check to see if this a cloneUsing(newBase) call.
         Object value = alreadyDone.get(alreadyDone);
         if ((value == null) || (value == alreadyDone)) {

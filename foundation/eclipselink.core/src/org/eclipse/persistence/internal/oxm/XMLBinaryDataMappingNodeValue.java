@@ -222,7 +222,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     }
 
     public void setNullValue(Object object, Session session) {
-        Object value = xmlBinaryDataMapping.getAttributeValue(null, (AbstractSession)session);
+        Object value = xmlBinaryDataMapping.getAttributeValue(null, session);
         xmlBinaryDataMapping.setAttributeValueInObject(object, value);
     }
 

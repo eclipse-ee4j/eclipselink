@@ -115,7 +115,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * the subclasses if different login is required.
      */
     public Session defaultLogin() {
-        return (Session)(new TestSystem()).login();
+        return (new TestSystem()).login();
     }
 
     /**
@@ -333,7 +333,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * Return the database session.
      */
     public org.eclipse.persistence.sessions.Session getSession() {
-        return (org.eclipse.persistence.sessions.Session)getExecutor().getSession();
+        return getExecutor().getSession();
     }
 
     /**

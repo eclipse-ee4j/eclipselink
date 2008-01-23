@@ -11,7 +11,6 @@ package org.eclipse.persistence.internal.helper;
 
 import java.io.*;
 import java.util.Vector;
-import java.util.Collection;
 import org.eclipse.persistence.internal.databaseaccess.*;
 
 /**

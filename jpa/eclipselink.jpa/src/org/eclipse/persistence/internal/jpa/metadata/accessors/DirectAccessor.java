@@ -34,7 +34,6 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
 /**
  * A direct accessor.

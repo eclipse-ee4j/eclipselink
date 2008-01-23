@@ -57,7 +57,7 @@ public class TestSystemAdapted extends TestSystem {
                     // (typically because during the second call project value is no longer null,
                     // which causes problems in case more than one project is used).
                     // Therefore another instance of TestSystem is created - not to spoil the original.
-                    TestSystem tempTestSystem = (TestSystem)getTestSystem().getClass().newInstance();
+                    TestSystem tempTestSystem = getTestSystem().getClass().newInstance();
                     tempTestSystem.addDescriptors(session);
                     try {
                         tempTestSystem.createTables(session);
@@ -70,18 +70,18 @@ public class TestSystemAdapted extends TestSystem {
             }
             // This trick stores all descriptors used by testSystem into project
             DatabaseSession dummyDatabaseSession = new Project((Login)session.getLogin().clone()).createDatabaseSession();
-            getTestSystem().addDescriptors((DatabaseSession)dummyDatabaseSession);
+            getTestSystem().addDescriptors(dummyDatabaseSession);
             project = dummyDatabaseSession.getProject();
 
-            getAdapter().updateProject(project, (org.eclipse.persistence.sessions.Session)session);
+            getAdapter().updateProject(project, session);
         }
-        ((DatabaseSession)session).addDescriptors(project);
+        (session).addDescriptors(project);
         afterAddDescriptors(session, getTestSystem());
     }
 
     public void createTables(DatabaseSession session) throws Exception {
         getTestSystem().createTables(session);
-        getAdapter().updateDatabase((org.eclipse.persistence.sessions.Session)session);
+        getAdapter().updateDatabase(session);
     }
 
     public String toString() {

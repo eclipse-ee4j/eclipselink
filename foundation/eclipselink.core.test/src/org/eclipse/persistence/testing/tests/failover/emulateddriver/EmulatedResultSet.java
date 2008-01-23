@@ -44,19 +44,19 @@ public class EmulatedResultSet implements ResultSet {
 	}
 
 	public boolean getBoolean(int columnIndex) {
-		return (boolean) ((Boolean) getObject(columnIndex)).booleanValue();
+		return ((Boolean) getObject(columnIndex)).booleanValue();
 	}
 
 	public byte getByte(int columnIndex) {
-		return (byte) ((Number) getObject(columnIndex)).byteValue();
+		return ((Number) getObject(columnIndex)).byteValue();
 	}
 
 	public short getShort(int columnIndex) {
-		return (short) ((Number) getObject(columnIndex)).shortValue();
+		return ((Number) getObject(columnIndex)).shortValue();
 	}
 
 	public int getInt(int columnIndex) {
-		return (int) ((Number) getObject(columnIndex)).intValue();
+		return ((Number) getObject(columnIndex)).intValue();
 	}
 
 	public long getLong(int columnIndex) {
@@ -69,11 +69,11 @@ public class EmulatedResultSet implements ResultSet {
 	}
 
 	public float getFloat(int columnIndex) {
-		return (float) ((Number) getObject(columnIndex)).floatValue();
+		return ((Number) getObject(columnIndex)).floatValue();
 	}
 
 	public double getDouble(int columnIndex) {
-		return (double) ((Number) getObject(columnIndex)).doubleValue();
+		return ((Number) getObject(columnIndex)).doubleValue();
 	}
 
 	public BigDecimal getBigDecimal(int columnIndex, int scale) {
@@ -113,31 +113,31 @@ public class EmulatedResultSet implements ResultSet {
 	}
 
 	public boolean getBoolean(String columnName) {
-		return (boolean) ((Boolean) getObject(columnName)).booleanValue();
+		return ((Boolean) getObject(columnName)).booleanValue();
 	}
 
 	public byte getByte(String columnName) {
-		return (byte) ((Number) getObject(columnName)).byteValue();
+		return ((Number) getObject(columnName)).byteValue();
 	}
 
 	public short getShort(String columnName) {
-		return (short) ((Number) getObject(columnName)).shortValue();
+		return ((Number) getObject(columnName)).shortValue();
 	}
 
 	public int getInt(String columnName) {
-		return (int) ((Number) getObject(columnName)).intValue();
+		return ((Number) getObject(columnName)).intValue();
 	}
 
 	public long getLong(String columnName) {
-		return (long) ((Number) getObject(columnName)).longValue();
+		return ((Number) getObject(columnName)).longValue();
 	}
 
 	public float getFloat(String columnName) {
-		return (float) ((Number) getObject(columnName)).floatValue();
+		return ((Number) getObject(columnName)).floatValue();
 	}
 
 	public double getDouble(String columnName) {
-		return (double) ((Number) getObject(columnName)).doubleValue();
+		return ((Number) getObject(columnName)).doubleValue();
 	}
 
 	public BigDecimal getBigDecimal(String columnName, int scale) {

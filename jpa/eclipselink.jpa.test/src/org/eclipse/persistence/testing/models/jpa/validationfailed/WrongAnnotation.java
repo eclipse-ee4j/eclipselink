@@ -20,12 +20,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.validationfailed;
 
-import java.util.*;
-import java.io.Serializable;
 import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
 
 
 @Entity

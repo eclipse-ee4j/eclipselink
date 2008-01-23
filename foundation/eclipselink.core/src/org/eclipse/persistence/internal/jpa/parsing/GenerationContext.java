@@ -17,7 +17,6 @@ import java.util.Set;
 // TopLink imports
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
 
 /**
  * INTERNAL

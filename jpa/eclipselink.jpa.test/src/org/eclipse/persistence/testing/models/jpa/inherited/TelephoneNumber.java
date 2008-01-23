@@ -11,7 +11,6 @@ package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import java.io.*;
 import javax.persistence.*;
-import static javax.persistence.FetchType.*;
 
 /**
  * <p><b>Purpose</b>: Describes an BeerConsumers's telephone number.

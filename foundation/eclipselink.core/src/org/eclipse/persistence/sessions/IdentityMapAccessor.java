@@ -13,7 +13,6 @@ import java.util.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
 
 /**
  * PUBLIC:

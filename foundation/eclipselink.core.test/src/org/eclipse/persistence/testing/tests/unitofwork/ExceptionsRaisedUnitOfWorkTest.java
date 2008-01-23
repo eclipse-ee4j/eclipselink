@@ -71,7 +71,7 @@ public class ExceptionsRaisedUnitOfWorkTest extends AutoVerifyTestCase {
         UnitOfWork firstUOW = getSession().acquireUnitOfWork();
 
         // Read some object from the database.
-        Vector employees = (Vector)firstUOW.readAllObjects(Employee.class);
+        Vector employees = firstUOW.readAllObjects(Employee.class);
         Employee uowEmployee = (Employee)employees.elementAt(2);
         uowEmployee.setAddress(employee.getAddress());
 

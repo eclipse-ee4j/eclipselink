@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.transaction;
 
-import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.internal.jpa.*;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 

@@ -33,7 +33,7 @@ public class QualifiedTableTest extends AutoVerifyTestCase {
         String user = getSession().getLogin().getUserName();
 
         org.eclipse.persistence.sessions.Session hs = getSession().acquireHistoricalSession(pastTime);
-        Vector objects = (Vector)hs.readAllObjects(Employee.class);
+        Vector objects = hs.readAllObjects(Employee.class);
 
         for (Enumeration enumtr = objects.elements(); enumtr.hasMoreElements();) {
             Employee emp = (Employee)enumtr.nextElement();

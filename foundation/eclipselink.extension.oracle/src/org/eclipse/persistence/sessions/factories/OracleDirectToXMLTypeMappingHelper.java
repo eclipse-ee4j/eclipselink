@@ -14,7 +14,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.mappings.xdb.DirectToXMLTypeMapping;
 import org.eclipse.persistence.sessions.Project;
 

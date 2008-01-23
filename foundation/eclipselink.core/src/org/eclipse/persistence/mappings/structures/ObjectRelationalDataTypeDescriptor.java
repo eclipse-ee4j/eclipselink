@@ -28,7 +28,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * <p><b>Purpose:</b>
- * Differenciates object-relational descriptors from normal relational descriptors.
+ * Differentiates object-relational descriptors from normal relational descriptors.
  * The object-relational descriptor describes a type not a table, (although there
  * is normally a table associated with the type, unless it is aggregate).
  */
@@ -250,11 +250,10 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
 
     /**
      * INTERNAL:
-     * Build a row representation from the ADT strcuture field array.
+     * Build a row representation from the ADT structure field array.
      * TopLink will then build the object from the row.
      */
     public AbstractRecord buildRowFromStructure(Struct structure) throws DatabaseException {
-    	AbstractRecord row = new DatabaseRecord();
         Object[] attributes;
         try {
             attributes = structure.getAttributes();
@@ -328,10 +327,10 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
         } else {
             for (int i=0;i<objects.length;i++){
                 if (objects[i] instanceof Array){
-                    objects[i] = buildArrayObjectFromArray((Array)objects[i]);
+                    objects[i] = buildArrayObjectFromArray(objects[i]);
                 }
                 if (objects[i] instanceof Struct){
-                    objects[i] = buildArrayObjectFromStruct((Struct)objects[i]);
+                    objects[i] = buildArrayObjectFromStruct(objects[i]);
                 }
             }
         }
@@ -358,10 +357,10 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
         } else {
             for(int i=0;i<attributes.length;i++){
                 if (attributes[i] instanceof Array){
-                    attributes[i] = buildArrayObjectFromArray((Array)attributes[i]);
+                    attributes[i] = buildArrayObjectFromArray(attributes[i]);
                 }
                 if (attributes[i] instanceof Struct){
-                    attributes[i] = buildArrayObjectFromStruct((Struct)attributes[i]);
+                    attributes[i] = buildArrayObjectFromStruct(attributes[i]);
                 }
             }
         }
@@ -396,7 +395,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      */
     public Ref getRef(Object object, AbstractSession session) {
         SQLSelectStatement statement = new SQLSelectStatement();
-        statement.addTable((DatabaseTable)getTables().firstElement());// Assumed only one for obj-rel descriptors.
+        statement.addTable(getTables().firstElement());// Assumed only one for obj-rel descriptors.
         statement.getFields().addElement(new org.eclipse.persistence.expressions.ExpressionBuilder().ref());
         statement.setWhereClause(getObjectBuilder().buildPrimaryKeyExpressionFromObject(object, session));
         statement.setRequiresAliases(true);

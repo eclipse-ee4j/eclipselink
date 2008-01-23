@@ -11,21 +11,13 @@
 
 package org.eclipse.persistence.testing.tests.jpa.validation;
 
-import java.util.List;
-
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import junit.extensions.TestSetup;
-import org.eclipse.persistence.testing.tests.jpa.advanced.SQLResultSetMappingTestSuite;
-import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 
 public class QueryParameterValidationTestSuite extends JUnitTestCase {
         

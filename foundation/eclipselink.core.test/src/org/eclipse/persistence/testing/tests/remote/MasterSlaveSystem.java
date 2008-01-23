@@ -25,7 +25,7 @@ public class MasterSlaveSystem extends TestSystem {
 
     public void createTables(DatabaseSession session) {
         org.eclipse.persistence.tools.schemaframework.TableCreator tableCreator = new MasterSlaveTableCreator();
-        tableCreator.replaceTables((DatabaseSession)session);
+        tableCreator.replaceTables(session);
     }
 
     public void populate(DatabaseSession session) {

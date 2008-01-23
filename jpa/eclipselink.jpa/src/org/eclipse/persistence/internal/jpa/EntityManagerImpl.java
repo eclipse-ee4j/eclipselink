@@ -33,7 +33,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.helper.IdentityHashtable;
+import java.util.*;
 import org.eclipse.persistence.internal.jpa.transaction.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.MergeManager;
@@ -182,7 +182,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
             try {
-                getActivePersistenceContext(checkForTransaction(!isExtended())).registerNewObjectForPersist(entity, new IdentityHashtable());
+                getActivePersistenceContext(checkForTransaction(!isExtended())).registerNewObjectForPersist(entity, new IdentityHashMap());
             } catch (RuntimeException e) {
                 if (ValidationException.class.isAssignableFrom(e.getClass())) {
                     throw new EntityExistsException(e.getLocalizedMessage(), e);
@@ -247,7 +247,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_an_entity", new Object[] { entity }));
             }
             try {
-                getActivePersistenceContext(checkForTransaction(!isExtended())).performRemove(entity, new IdentityHashtable());
+                getActivePersistenceContext(checkForTransaction(!isExtended())).performRemove(entity, new IdentityHashMap());
             } catch (RuntimeException e) {
                 throw e;
             }

@@ -42,7 +42,6 @@ import junit.framework.*;
 
 import org.eclipse.persistence.jpa.config.CacheUsage;
 import org.eclipse.persistence.jpa.config.CascadePolicy;
-import org.eclipse.persistence.jpa.config.FlushClearCache;
 import org.eclipse.persistence.jpa.config.PessimisticLock;
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.jpa.config.EclipseLinkQueryHints;
@@ -3088,7 +3087,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertNotNull("The correct exception was not thrown while traversing an uninstantiated lazy relationship on a serialized object: " + exception, exception);
         }
         em.getTransaction().begin();
-        emp = (Employee)em.find(Employee.class, emp.getId());
+        emp = em.find(Employee.class, emp.getId());
         em.remove(emp);
         em.getTransaction().commit();
     }
@@ -3757,7 +3756,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         clearCache();
         
-        employee = (Employee)em.find(Employee.class, new Integer(id));
+        employee = em.find(Employee.class, new Integer(id));
         address = employee.getAddress();
         
         assertTrue("The address was not persisted.", employee.getAddress() != null);
@@ -3795,7 +3794,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         int addressId = address.getId();
         
         em.getTransaction().begin();
-        employee = (Employee)em.find(Employee.class, new Integer(id));
+        employee = em.find(Employee.class, new Integer(id));
         employee.getAddress();
 
         address = new Address();
@@ -3812,7 +3811,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         clearCache();
         
-        employee = (Employee)em.find(Employee.class, new Integer(id));
+        employee = em.find(Employee.class, new Integer(id));
         address = employee.getAddress();
 
         assertTrue("The address was not persisted.", employee.getAddress() != null);
@@ -3868,13 +3867,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         clearCache();
         
-        employee = (Employee)em.find(Employee.class, new Integer(id));
+        employee = em.find(Employee.class, new Integer(id));
         address = employee.getAddress();
 
         assertTrue("The address was not persisted.", employee.getAddress() != null);
         assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
     
-        Address initialAddress = (Address)em.find(Address.class, new Integer(addressId));
+        Address initialAddress = em.find(Address.class, new Integer(addressId));
         em.getTransaction().begin();
         employee.setAddress((Address)null);
         em.remove(address);
@@ -4990,7 +4989,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             PhoneNumber phoneNumber2 = new PhoneNumber("work", "613", "2222222");
             manager.addPhoneNumber(phoneNumber2);
             
-            Employee employee = (Employee)em.find(Employee.class, employeeId);
+            Employee employee = em.find(Employee.class, employeeId);
             manager.addManagedEmployee(employee);
             em.getTransaction().commit();
 
@@ -5023,11 +5022,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.getTransaction().begin();
         try {
             if(managerId != 0) {
-                Employee manager = (Employee)em.find(Employee.class, managerId);
+                Employee manager = em.find(Employee.class, managerId);
                 em.remove(manager);
             } else if(employeeId != 0) {
                 // if Manager hasn't been created - delete Employee
-                Employee employee = (Employee)em.find(Employee.class, employeeId);
+                Employee employee = em.find(Employee.class, employeeId);
                 em.remove(employee);
             }
         } finally {

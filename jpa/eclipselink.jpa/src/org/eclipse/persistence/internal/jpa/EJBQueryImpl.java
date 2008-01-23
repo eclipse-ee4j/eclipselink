@@ -459,7 +459,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
      * Return the entityManager this query is tied to.
      */
     public JpaEntityManager getEntityManager() {
-        return (JpaEntityManager)entityManager;
+        return entityManager;
     }
 
     /**

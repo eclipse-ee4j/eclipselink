@@ -9,6 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.remote;
 
+import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.queries.*;
@@ -25,7 +26,7 @@ public class Transporter implements Serializable {
     public boolean wasOperationSuccessful;
 
     // Changed to public to allow access to TransporterHolder and TransporterHepler in org.eclipse.persistence.sessions.remote.corba.orbix.
-    protected IdentityHashtable objectDescriptors;
+    protected Map objectDescriptors;
     protected DatabaseQuery query;
 
     public Transporter() {
@@ -59,7 +60,7 @@ public class Transporter implements Serializable {
     /**
      * Returns a hashtable of object descriptors.
      */
-    public IdentityHashtable getObjectDescriptors() {
+    public Map getObjectDescriptors() {
         return objectDescriptors;
     }
 
@@ -90,7 +91,7 @@ public class Transporter implements Serializable {
     /**
      * Get object to object descriptor
      */
-    public void setObjectDescriptors(IdentityHashtable objectDescriptors) {
+    public void setObjectDescriptors(Map objectDescriptors) {
         this.objectDescriptors = objectDescriptors;
     }
 

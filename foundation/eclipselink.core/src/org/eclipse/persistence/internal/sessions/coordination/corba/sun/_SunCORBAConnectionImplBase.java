@@ -56,6 +56,6 @@ public abstract class _SunCORBAConnectionImplBase extends org.omg.CORBA.portable
     private static String[] __ids = { "IDL:org/eclipse/persistence/internal/remotecommand/corba/sun/SunCORBAConnection:1.0" };
 
     public String[] _ids() {
-        return (String[])__ids.clone();
+        return __ids.clone();
     }
 }// class _SunCORBAConnectionImplBase

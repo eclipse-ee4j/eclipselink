@@ -38,7 +38,7 @@ public class QBEObjectWithAllFieldsFilled extends TestCase {
 
     public void test() {
         ReadObjectQuery query = new ReadObjectQuery();
-        query.setExampleObject((Object)employee);
+        query.setExampleObject(employee);
         query.setQueryByExamplePolicy(policy);
         Employee emp = new Employee();
         emp = (Employee)getSession().executeQuery(query);

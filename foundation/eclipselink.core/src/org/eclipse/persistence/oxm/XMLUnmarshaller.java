@@ -99,7 +99,7 @@ public class XMLUnmarshaller {
                 URL schemaURL;
                 while (xmlDescriptors.hasNext()) {
                     xmlDescriptor = (XMLDescriptor)xmlDescriptors.next();
-                    xmlSchemaReference = (XMLSchemaReference)xmlDescriptor.getSchemaReference();
+                    xmlSchemaReference = xmlDescriptor.getSchemaReference();
                     if (null != xmlSchemaReference) {
                         schemaURL = xmlSchemaReference.getURL();
                         if (null != schemaURL) {

@@ -24,7 +24,7 @@ public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = new NoIdentityMapProject();
         }
-        ((org.eclipse.persistence.sessions.DatabaseSession)session).addDescriptors(project);
+        (session).addDescriptors(project);
 
         //project = new Project_case2();
         //((DatabaseSession)session).addDescriptors(project);
@@ -70,7 +70,7 @@ public void addDescriptors(DatabaseSession session) {
 
 public void createTables(DatabaseSession session)
 {
-        SchemaManager schemaManager = new SchemaManager((org.eclipse.persistence.sessions.DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
 
         //create added tables for no identity map testing
         schemaManager.replaceObject(TestClass1.tableDefinition());

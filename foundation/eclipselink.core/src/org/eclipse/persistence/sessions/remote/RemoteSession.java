@@ -18,7 +18,6 @@ import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sequencing.SequencingFactory;
@@ -119,7 +118,7 @@ public class RemoteSession extends DistributedSession {
      * INTERNAL:
      * Return the corresponding objects from the remote session for the objects read from the server.
      */
-    public Object getObjectCorrespondingTo(Object serverSideDomainObject, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object serverSideDomainObject, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
         if (serverSideDomainObject == null) {
             return null;
         }
@@ -193,7 +192,7 @@ public class RemoteSession extends DistributedSession {
      * INTERNAL:
      * Return the corresponding objects from the remote session for the objects read from the server.
      */
-    public Object getObjectsCorrespondingToAll(Object serverSideDomainObjects, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query, ContainerPolicy containerPolicy) {
+    public Object getObjectsCorrespondingToAll(Object serverSideDomainObjects, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, ContainerPolicy containerPolicy) {
         Object clientSideDomainObjects = containerPolicy.containerInstance(containerPolicy.sizeFor(serverSideDomainObjects));
 
         for (Object iter = containerPolicy.iteratorFor(serverSideDomainObjects);
@@ -211,7 +210,7 @@ public class RemoteSession extends DistributedSession {
      */
     public Object instantiateRemoteValueHolderOnServer(RemoteValueHolder remoteValueHolder) {
         Transporter transporter = getRemoteConnection().instantiateRemoteValueHolderOnServer(remoteValueHolder);
-        return remoteValueHolder.getMapping().getObjectCorrespondingTo(transporter.getObject(), this, transporter.getObjectDescriptors(), new IdentityHashtable(), remoteValueHolder.getQuery());
+        return remoteValueHolder.getMapping().getObjectCorrespondingTo(transporter.getObject(), this, transporter.getObjectDescriptors(), new IdentityHashMap(), remoteValueHolder.getQuery());
     }
 
     /**

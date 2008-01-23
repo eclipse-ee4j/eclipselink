@@ -9,11 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties;
 
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
-
 public class Order implements java.io.Serializable {
 	private Integer orderId;
 	private int version;

@@ -62,7 +62,7 @@ public class JMSPlatform extends EISPlatform {
     public InteractionSpec buildInteractionSpec(EISInteraction interaction) {
         String property;
 
-        InteractionSpec spec = (InteractionSpec)interaction.getInteractionSpec();
+        InteractionSpec spec = interaction.getInteractionSpec();
         if (spec == null) {
             CciJMSInteractionSpec jmsSpec;
             if (interaction.getProperty(MODE) == null) {

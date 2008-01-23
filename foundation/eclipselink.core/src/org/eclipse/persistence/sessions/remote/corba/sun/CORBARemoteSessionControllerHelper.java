@@ -49,7 +49,7 @@ abstract public class CORBARemoteSessionControllerHelper {
     }
 
     public static void write(org.omg.CORBA.portable.OutputStream ostream, org.eclipse.persistence.sessions.remote.corba.sun.CORBARemoteSessionController value) {
-        ostream.write_Object((org.omg.CORBA.Object)value);
+        ostream.write_Object(value);
     }
 
     public static org.eclipse.persistence.sessions.remote.corba.sun.CORBARemoteSessionController narrow(org.omg.CORBA.Object obj) {

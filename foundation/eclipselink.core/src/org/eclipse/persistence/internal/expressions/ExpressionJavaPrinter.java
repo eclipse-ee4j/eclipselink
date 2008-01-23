@@ -91,10 +91,10 @@ public class ExpressionJavaPrinter {
             printString("new byte[] {");
             byte[] bytes = (byte[])object;
             if (bytes.length > 0) {
-                printString(String.valueOf((int)bytes[0]));                
+                printString(String.valueOf(bytes[0]));                
                 for (int index = 1; index < bytes.length; index++) {
                     printString(",");                
-                    printString(String.valueOf((int)bytes[index]));                
+                    printString(String.valueOf(bytes[index]));                
                 }
             }
             printString("}");

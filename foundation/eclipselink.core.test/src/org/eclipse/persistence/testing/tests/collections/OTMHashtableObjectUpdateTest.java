@@ -32,7 +32,7 @@ public class OTMHashtableObjectUpdateTest extends org.eclipse.persistence.testin
 
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
-        originalObject = (Restaurant)getSession().readObject(Restaurant.class, new ExpressionBuilder().anyOf("menus").get("type").equalsIgnoreCase("dinner"));
+        originalObject = getSession().readObject(Restaurant.class, new ExpressionBuilder().anyOf("menus").get("type").equalsIgnoreCase("dinner"));
         Restaurant rest = (Restaurant)uow.registerObject(originalObject);
         Hashtable menus = (Hashtable)rest.getMenus();
         for (Enumeration enumtr = menus.elements(); enumtr.hasMoreElements();) {

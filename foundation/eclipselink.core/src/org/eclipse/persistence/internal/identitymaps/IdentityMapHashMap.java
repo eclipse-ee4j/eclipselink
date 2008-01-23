@@ -758,10 +758,8 @@ public class IdentityMapHashMap<K, V> extends AbstractMap<K, V> implements Concu
 
         // Try a few times without locking
         for (int k = 0; k < RETRIES_BEFORE_LOCK; ++k) {
-            int sum = 0;
             int mcsum = 0;
             for (int i = 0; i < segments.length; ++i) {
-                int c = segments[i].count;
                 mcsum += mc[i] = segments[i].modCount;
                 if (segments[i].containsValue(value))
                     return true;
@@ -769,7 +767,6 @@ public class IdentityMapHashMap<K, V> extends AbstractMap<K, V> implements Concu
             boolean cleanSweep = true;
             if (mcsum != 0) {
                 for (int i = 0; i < segments.length; ++i) {
-                    int c = segments[i].count;
                     if (mc[i] != segments[i].modCount) {
                         cleanSweep = false;
                         break;

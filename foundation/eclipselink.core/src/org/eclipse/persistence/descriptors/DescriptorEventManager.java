@@ -143,7 +143,7 @@ public class DescriptorEventManager implements Cloneable, Serializable {
             clone = (DescriptorEventManager)super.clone();
             clone.setEventSelectors((Vector)getEventSelectors().clone());
             clone.setEventMethods((Vector)getEventMethods().clone());
-            clone.setEventListeners((Vector)getEventListeners());
+            clone.setEventListeners(getEventListeners());
         } catch (Exception exception) {
             ;
         }

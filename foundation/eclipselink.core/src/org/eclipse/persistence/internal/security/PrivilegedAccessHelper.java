@@ -155,7 +155,7 @@ public class PrivilegedAccessHelper {
      * @throws java.lang.NoSuchFieldException
      */
     public static Field getField(final Class javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
-        Field field = (Field)findDeclaredField(javaClass, fieldName);
+        Field field = findDeclaredField(javaClass, fieldName);
         if (shouldSetAccessible) {
             field.setAccessible(true);
         }

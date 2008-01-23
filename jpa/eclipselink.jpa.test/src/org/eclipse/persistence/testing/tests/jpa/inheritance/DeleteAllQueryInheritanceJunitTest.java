@@ -17,7 +17,6 @@ import junit.extensions.TestSetup;
 import junit.framework.*;
 
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;

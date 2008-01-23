@@ -294,7 +294,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                 }
             } else if (!this.isSwaRef()) {
                 //should be base64
-                byte[] bytes = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray((String)value);
+                byte[] bytes = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(value);
                 fieldValue = bytes;
             }
         } else {
@@ -337,9 +337,9 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                     fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(refValue);
                 }
             } else {
-                fieldValue = (String)record.get("text()");
+                fieldValue = record.get("text()");
                 //should be a base64 string
-                fieldValue = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray((String)fieldValue);
+                fieldValue = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(fieldValue);
             }
         }
         Object attributeValue = fieldValue;

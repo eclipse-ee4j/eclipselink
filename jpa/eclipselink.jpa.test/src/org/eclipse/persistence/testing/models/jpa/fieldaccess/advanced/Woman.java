@@ -12,7 +12,6 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 import javax.persistence.*;
 
 import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
 
 @Entity(name="Woman")
 @Table(name="CMP3_FA_WOMAN")

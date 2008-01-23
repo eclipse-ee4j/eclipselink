@@ -34,7 +34,7 @@ public abstract class XMLRelationshipMappingNodeValue extends NodeValue {
     public void processChild(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, XMLDescriptor xmlDescriptor) throws SAXException {
         if (xmlDescriptor.hasInheritance()) {
             unmarshalRecord.setAttributes(atts);
-            Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, (org.eclipse.persistence.internal.sessions.AbstractSession)unmarshalRecord.getSession());
+            Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, unmarshalRecord.getSession());
             if (classValue == null) {
                 // no xsi:type attribute - look for type indicator on the default root element
                 QName leafElementType = unmarshalRecord.getLeafElementType();

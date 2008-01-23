@@ -128,18 +128,14 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
     }
 
     protected void internalDestroyFactory() throws Exception {
-        java.sql.SQLException exception1 = null;
-        java.sql.SQLException exception2 = null;
         try {
             stopInDb();
             destroyInDb();
         } catch (java.sql.SQLException ex) {
-            exception1 = ex;
         } finally {
             try {
                 oracleDataSource.close();
             } catch (java.sql.SQLException ex) {
-                exception2 = ex;
             } finally {
                 oracleDataSource = null;
             }

@@ -98,7 +98,7 @@ public class SubSelectExpression extends BaseExpression {
      * Normalize this expression now that the parent statment has been normalized.
      * For CR#4223
      */
-    public Expression normalizeSubSelect(ExpressionNormalizer normalizer, Dictionary clonedExpressions) {
+    public Expression normalizeSubSelect(ExpressionNormalizer normalizer, Map clonedExpressions) {
         // Anonymous subqueries: The following is to support sub-queries created
         // on the fly by OSQL Expressions isEmpty(), isNotEmpty(), size().
         if (!getSubQuery().isCallQuery() && (getSubQuery().getReferenceClass() == null)) {
@@ -136,7 +136,7 @@ public class SubSelectExpression extends BaseExpression {
     /**
      * The query must be cloned, and the sub-expression must be cloned using the same outer expression identity.
      */
-    protected void postCopyIn(Dictionary alreadyDone) {
+    protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
         ReportQuery clonedQuery = (ReportQuery)getSubQuery().clone();
         if (!clonedQuery.isCallQuery()) {

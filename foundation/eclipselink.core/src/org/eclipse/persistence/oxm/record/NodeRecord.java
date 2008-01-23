@@ -353,7 +353,7 @@ public class NodeRecord extends MarshalRecord {
             if (!prefixMappings.isEmpty()) {
                 for (java.util.Iterator<String> keys = prefixMappings.keySet().iterator(); keys.hasNext();) {
                     String prefix = keys.next();
-                    element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, (String) prefixMappings.get(prefix));
+                    element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, prefixMappings.get(prefix));
                 }
                 prefixMappings.clear();
             }

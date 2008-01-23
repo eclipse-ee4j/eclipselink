@@ -391,8 +391,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
         
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
         for(int i=0; i<fkFieldNames.size(); i++) {
-            fkConstraint.getSourceFields().add((String)fkFieldNames.get(i));
-            fkConstraint.getTargetFields().add((String)pkFieldNames.get(i));
+            fkConstraint.getSourceFields().add(fkFieldNames.get(i));
+            fkConstraint.getTargetFields().add(pkFieldNames.get(i));
         }
 
         fkConstraint.setTargetTable(targetTable.getFullName());

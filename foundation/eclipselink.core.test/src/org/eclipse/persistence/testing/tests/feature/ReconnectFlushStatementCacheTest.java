@@ -40,7 +40,7 @@ public class ReconnectFlushStatementCacheTest extends AutoVerifyTestCase {
         // any project that uses sequencing will do
         org.eclipse.persistence.sessions.Project project = new EmployeeProject();
         project.setLogin(login);
-        session = (DatabaseSession)project.createDatabaseSession();
+        session = project.createDatabaseSession();
         session.setSessionLog(getSession().getSessionLog());
         session.login();
     }

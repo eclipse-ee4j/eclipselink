@@ -327,11 +327,10 @@ public abstract class DatasourceCall implements Call {
         }
 
         int lastIndex = 0;
-        int litteralIndex = 0;// This index is used to determine the position of litterals
         String queryString = getQueryString();
         Writer writer = new CharArrayWriter(queryString.length() + 50);
         try {
-            // ** This method is heavily optimized do not touch anyhthing unless you "know" what your doing.
+            // ** This method is heavily optimized do not touch anything unless you "know" what your doing.
             while (lastIndex != -1) {
                 int poundIndex = queryString.indexOf('#', lastIndex);
                 String token;

@@ -122,7 +122,7 @@ public class IsolatedSessionHistoricalTest extends AutoVerifyTestCase {
             throw new TestErrorException("Failed to execute query correctly within the Isolated Historic Session's exclusive connection");
         }
         //read the non-isolated employee
-        employees = (Vector)history.readAllObjects(Employee.class);
+        employees = history.readAllObjects(Employee.class);
         if (employees.size() != 0) {
             throw new TestErrorException("Failed to exclude the data from non VPD clients");
         }

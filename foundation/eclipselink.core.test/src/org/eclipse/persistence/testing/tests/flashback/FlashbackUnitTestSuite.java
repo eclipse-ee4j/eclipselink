@@ -54,7 +54,7 @@ public class FlashbackUnitTestSuite extends TestSuite {
         long sCNNow = ((BigDecimal)getSession().executeQuery(scnQuery)).longValue();
         long testSCN = ((Number)getAsOfClause().getValue()).longValue();
         ExpressionBuilder builder = new ExpressionBuilder(Employee.class);
-        AsOfClause sCNClause = new AsOfSCNClause(builder.value("" + sCNNow + " - " + (long)(sCNNow - testSCN)));
+        AsOfClause sCNClause = new AsOfSCNClause(builder.value("" + sCNNow + " - " + (sCNNow - testSCN)));
 
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         query.setAsOfClause(sCNClause);

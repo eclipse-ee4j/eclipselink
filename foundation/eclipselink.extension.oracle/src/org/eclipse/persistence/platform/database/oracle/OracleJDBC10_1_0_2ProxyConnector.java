@@ -14,9 +14,6 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import java.util.Properties;
 import javax.naming.Context;
-import javax.naming.Name;
-import javax.naming.NamingException;
-
 import oracle.jdbc.OracleConnection;
 
 import org.eclipse.persistence.exceptions.DatabaseException;

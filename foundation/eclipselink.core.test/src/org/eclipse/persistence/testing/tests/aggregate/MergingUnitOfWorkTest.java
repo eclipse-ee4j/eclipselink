@@ -40,8 +40,8 @@ public class MergingUnitOfWorkTest extends WriteObjectTest {
     }
 
     protected void changeWorkingCopy1() {
-        ((Employee)this.workingCopy1).setFirstName("Kevin");
-        ProjectDescription projectDescription = (ProjectDescription)((Employee)this.workingCopy1).getProjectDescription();
+        (this.workingCopy1).setFirstName("Kevin");
+        ProjectDescription projectDescription = (this.workingCopy1).getProjectDescription();
         projectDescription.setDescription("Quality Assurance project");
         ((Vector)projectDescription.getResponsibilities().getValue()).removeElement(((Vector)projectDescription.getResponsibilities().getValue()).firstElement());
         ((Vector)projectDescription.getResponsibilities().getValue()).addElement(Responsibility.example1(this.workingCopy1));

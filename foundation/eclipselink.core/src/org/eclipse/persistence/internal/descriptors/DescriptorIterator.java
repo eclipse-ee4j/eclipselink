@@ -35,7 +35,7 @@ public abstract class DescriptorIterator {
     public static final int NoCascading = 1;
     public static final int CascadePrivateParts = 2;
     public static final int CascadeAllParts = 3;
-    protected IdentityHashtable visitedObjects;
+    protected Map visitedObjects;
     protected Stack visitedStack;
     protected AbstractSession session;
     protected DatabaseMapping currentMapping;
@@ -61,8 +61,8 @@ public abstract class DescriptorIterator {
      *    skip primitives (Strings, Dates, Integers, etc.)
      */
     public DescriptorIterator() {
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
-        this.visitedObjects = new IdentityHashtable();
+        // 2612538 - the default size of Map (32) is appropriate
+        this.visitedObjects = new IdentityHashMap();
         this.visitedStack = new Stack();
         this.cascadeDepth = CascadeAllParts;
         this.shouldIterateOverIndirectionObjects = true;// process the objects contained by ValueHolders...
@@ -115,7 +115,7 @@ public abstract class DescriptorIterator {
         return result;
     }
 
-    public IdentityHashtable getVisitedObjects() {
+    public Map getVisitedObjects() {
         return visitedObjects;
     }
 
@@ -378,7 +378,7 @@ public abstract class DescriptorIterator {
         this.shouldIterateOverWrappedObjects = shouldIterateOverWrappedObjects;
     }
 
-    public void setVisitedObjects(IdentityHashtable visitedObjects) {
+    public void setVisitedObjects(Map visitedObjects) {
         this.visitedObjects = visitedObjects;
     }
 

@@ -77,7 +77,7 @@ public class Customer {
     }
 
     public Collection getSalespeople() {
-        return (Collection)this.salespeople;
+        return this.salespeople;
     }
 
     /**

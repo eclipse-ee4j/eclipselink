@@ -9,29 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
-import java.sql.*;
-import java.util.*;
-import java.math.*;
-import java.io.*;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.mappings.structures.*;
-import org.eclipse.persistence.internal.databaseaccess.AppendCallCustomParameter;
-import org.eclipse.persistence.internal.databaseaccess.BindCallCustomParameter;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.expressions.ParameterExpression;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.sequencing.*;
-import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
-import org.eclipse.persistence.tools.schemaframework.TableDefinition;
-import org.eclipse.persistence.internal.sequencing.Sequencing;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-
 /**
  * DatabasePlatform is private to TopLink. It encapsulates behavior specific to a database platform
  * (eg. Oracle, Sybase, DBase), and provides protocol for TopLink to access this behavior. The behavior categories

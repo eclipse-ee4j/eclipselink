@@ -101,7 +101,7 @@ public class BeerConsumer extends Consumer {
         Enumeration keys = ((Hashtable) telephoneNumbers).keys();
         while (keys.hasMoreElements()) {
             Object key = keys.nextElement();
-            TelephoneNumber potentialTelephoneNumber = (TelephoneNumber) telephoneNumbers.get(key);
+            TelephoneNumber potentialTelephoneNumber = telephoneNumbers.get(key);
             
             if (potentialTelephoneNumber.equals(telephoneNumber)) {
                 telephoneNumbers.remove(key);

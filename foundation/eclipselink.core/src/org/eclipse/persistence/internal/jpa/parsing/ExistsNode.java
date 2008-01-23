@@ -11,8 +11,6 @@ package org.eclipse.persistence.internal.jpa.parsing;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
-
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.queries.ReportItem;

@@ -64,6 +64,6 @@ abstract public class CORBAServerManagerHelper
   }  
   public static void write (org.omg.CORBA.portable.OutputStream ostream, org.eclipse.persistence.testing.tests.remote.suncorba.CORBAServerManager value)
   {
-	ostream.write_Object ((org.omg.CORBA.Object) value);
+	ostream.write_Object (value);
   }  
 }

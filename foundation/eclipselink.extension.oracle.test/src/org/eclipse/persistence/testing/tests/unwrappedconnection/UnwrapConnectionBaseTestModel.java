@@ -13,7 +13,6 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.sessions.Connector;
@@ -49,7 +48,6 @@ public class UnwrapConnectionBaseTestModel extends TestModel{
         
         originalConnector = session.getLogin().getConnector();// save the connector to restore later
         
-        String dataSourceName = "JNDI Test OracleDataSource";
         DataSource dataSource = new TestOracleDataSource(session.getLogin().getDriverClassName(), session.getLogin().getConnectionString(), (Properties)session.getLogin().getProperties().clone());
         session.getLogin().setConnector(new JNDIConnector(dataSource));
         

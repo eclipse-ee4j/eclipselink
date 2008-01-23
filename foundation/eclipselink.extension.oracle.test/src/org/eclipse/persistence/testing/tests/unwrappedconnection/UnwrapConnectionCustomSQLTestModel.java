@@ -13,14 +13,11 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.sessions.Connector;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
 import org.eclipse.persistence.testing.tests.customsqlstoredprocedures.CustomSQLTestModel;
-import org.eclipse.persistence.testing.tests.customsqlstoredprocedures.EmployeeCustomSQLSystem;
 import org.eclipse.persistence.testing.framework.TestWarningException;
 
 public class UnwrapConnectionCustomSQLTestModel extends CustomSQLTestModel{
@@ -59,7 +56,6 @@ public class UnwrapConnectionCustomSQLTestModel extends CustomSQLTestModel{
         
         originalConnector = session.getLogin().getConnector();// save the connector to restore later
         
-        String dataSourceName = "JNDI Test OracleDataSource";
         DataSource dataSource = new TestOracleDataSource(session.getLogin().getDriverClassName(), session.getLogin().getConnectionString(), (Properties)session.getLogin().getProperties().clone());
         session.getLogin().setConnector(new JNDIConnector(dataSource));
         

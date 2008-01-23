@@ -184,7 +184,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         String firstNameExpectedAfterCommit = "";
         em.getTransaction().begin();
         try{
-            emp = (Employee) em.find(Employee.class, new_emp.getId());
+            emp = em.find(Employee.class, new_emp.getId());
             originalVersion = getVersion(emp);
             if(shouldUseOriginalName) {
                 firstNameExpectedAfterCommit = emp.getFirstName();
@@ -285,7 +285,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
             EntityManager em = createEntityManager();
             em.getTransaction().begin();
             try{
-                Employee emp = (Employee)em.find(Employee.class, new_emp.getId());
+                Employee emp = em.find(Employee.class, new_emp.getId());
                 em.remove(emp);
                 em.getTransaction().commit();
             }catch (RuntimeException ex){

@@ -54,7 +54,7 @@ public class CacheInvalidationRunnable extends CacheInvalidationHandler implemen
         Message msg = null;
         do {
             try {
-                msg = (Message)messageConsumer.receive(timeToWait);
+                msg = messageConsumer.receive(timeToWait);
                 if (msg != null) {
                     invalidator.invalidateObject(session, msg);
                     messageCount++;

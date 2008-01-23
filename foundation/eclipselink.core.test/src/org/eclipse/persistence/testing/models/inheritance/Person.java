@@ -50,7 +50,7 @@ public class Person implements Serializable {
         example.getCar().setValue(Car.example2());
         example.bestFriend = example5();
         ((SoftwareEngineer)example.bestFriend).boss = example;
-        example.representitive = (SalesRep)example4();
+        example.representitive = example4();
         return example;
     }
 

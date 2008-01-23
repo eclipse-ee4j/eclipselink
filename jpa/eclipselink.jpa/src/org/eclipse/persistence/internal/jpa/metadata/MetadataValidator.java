@@ -163,7 +163,7 @@ public class MetadataValidator  {
      * INTERNAL:
      */
     public void throwExcessiveJoinColumnsSpecified(Class entityClass, Object element) {
-        throw ValidationException.excessiveJoinColumnsSpecified((AnnotatedElement) element, entityClass);
+        throw ValidationException.excessiveJoinColumnsSpecified(element, entityClass);
     }
     
     /**
@@ -177,7 +177,7 @@ public class MetadataValidator  {
      * INTERNAL:
      */
     public void throwIncompleteJoinColumnsSpecified(Class entityClass, Object element) {
-        throw ValidationException.incompleteJoinColumnsSpecified((AnnotatedElement) element, entityClass);
+        throw ValidationException.incompleteJoinColumnsSpecified(element, entityClass);
     }  
     
     /**

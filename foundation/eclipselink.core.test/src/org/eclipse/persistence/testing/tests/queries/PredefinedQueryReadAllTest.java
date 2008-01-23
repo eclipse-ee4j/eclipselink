@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.testing.framework.ReadAllTest;
@@ -35,8 +34,8 @@ public class PredefinedQueryReadAllTest extends ReadAllTest {
     }
 
     protected void test() {
-        this.objectsFromDatabase = (Vector)getSession().executeQuery("getAllEmployees");
+        this.objectsFromDatabase = getSession().executeQuery("getAllEmployees");
         // Test execution twice to ensure query is cloned correctly
-        this.objectsFromDatabase = (Vector)getSession().executeQuery("getAllEmployees");
+        this.objectsFromDatabase = getSession().executeQuery("getAllEmployees");
     }
 }

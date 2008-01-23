@@ -163,7 +163,7 @@ public class CciJMSInteraction implements Interaction {
                 receiver = qSession.createReceiver(queue);
             }
 
-            Message msg = (Message)receiver.receive(spec.getTimeout());
+            Message msg = receiver.receive(spec.getTimeout());
 
             // check for timeout
             if (msg == null) {
@@ -231,7 +231,7 @@ public class CciJMSInteraction implements Interaction {
                 receiveQueue = qSession.createQueue(spec.getReplyToDestination());
             }
 
-            msg = (Message)qSession.createReceiver(receiveQueue, spec.getFormattedMessageSelector()).receive(spec.getTimeout());
+            msg = qSession.createReceiver(receiveQueue, spec.getFormattedMessageSelector()).receive(spec.getTimeout());
 
             // check for timeout
             if (msg == null) {

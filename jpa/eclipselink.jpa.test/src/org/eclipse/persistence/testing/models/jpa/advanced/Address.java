@@ -12,7 +12,6 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 import java.util.*;
 import java.io.Serializable;
 import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
 
 import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;

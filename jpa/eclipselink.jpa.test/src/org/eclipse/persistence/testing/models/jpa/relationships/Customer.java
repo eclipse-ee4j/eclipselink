@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
-import java.util.Vector;
 import java.util.HashSet;
 import java.util.Collection;
 import javax.persistence.*;

@@ -17,7 +17,7 @@ import java.util.Enumeration;
 import java.util.IdentityHashMap;
 import java.util.ListIterator;
 import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.internal.helper.IdentityHashtable;
+import java.util.*;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
@@ -102,7 +102,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
         Hashtable oldListIndexValue = new Hashtable();
         IdentityHashMap oldListValueIndex = new IdentityHashMap();
         IdentityHashMap objectsToAdd = new IdentityHashMap();
-        IdentityHashtable newListValueIndex = new IdentityHashtable();
+        Map newListValueIndex = new IdentityHashMap();
         
         // Step 1 - Go through the old list.
         if (oldList != null) {
@@ -244,10 +244,10 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             if (removedIndices.isEmpty()) {
                 // Check if we have removed objects via a 
                 // simpleRemoveFromCollectionChangeRecord API call.
-                Enumeration removedObjects = changeRecord.getRemoveObjectList().keys();
+                Iterator removedObjects = changeRecord.getRemoveObjectList().keySet().iterator();
             
-                while (removedObjects.hasMoreElements()) {
-                    objectChanges = (ObjectChangeSet) removedObjects.nextElement();
+                while (removedObjects.hasNext()) {
+                    objectChanges = (ObjectChangeSet) removedObjects.next();
                     removeFrom(objectChanges.getOldKey(), objectChanges.getTargetVersionOfSourceObject(mergeManager.getSession()), valueOfTarget, parentSession);
                     registerRemoveNewObjectIfRequired(objectChanges, mergeManager);
                 }

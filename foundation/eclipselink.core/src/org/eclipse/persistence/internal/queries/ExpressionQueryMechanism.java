@@ -100,7 +100,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * Since this is where the selection criteria gets cloned for the first time
      * (long after the owning query has been) many interesting things happen here.
      */
-    public Expression buildBaseSelectionCriteria(boolean isSubSelect, Dictionary clonedExpressions) {
+    public Expression buildBaseSelectionCriteria(boolean isSubSelect, Map clonedExpressions) {
         Expression expression = getSelectionCriteria();
 
         // For Flashback: builder.asOf(value) counts as a non-trivial selection criteria.
@@ -151,7 +151,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     /**
      * Return the appropriate select statement containing the fields in the table.
      */
-    public SQLSelectStatement buildBaseSelectStatement(boolean isSubSelect, Dictionary clonedExpressions) {
+    public SQLSelectStatement buildBaseSelectStatement(boolean isSubSelect, Map clonedExpressions) {
         SQLSelectStatement selectStatement = new SQLSelectStatement();
         ObjectLevelReadQuery query = (ObjectLevelReadQuery)getQuery();
         selectStatement.setQuery(query);
@@ -179,8 +179,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * This is used as a second read to a concrete class with subclasses in an abstract-multiple table read.
      */
     protected SQLSelectStatement buildConcreteSelectStatement() {
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
-        IdentityHashtable clonedExpressions = new IdentityHashtable();
+        // 2612538 - the default size of Map (32) is appropriate
+        Map clonedExpressions = new IdentityHashMap();
         SQLSelectStatement selectStatement = buildBaseSelectStatement(false, clonedExpressions);
 
         // Case of class with subclasses that also has instances on abstract-multiple table read.	
@@ -304,13 +304,10 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             DatabaseMapping mapping = (DatabaseMapping)itMappings.next();
             if(mapping.isManyToManyMapping() || mapping.isDirectCollectionMapping()) {
                 if(dontCheckDescriptor || mapping.getDescriptor().equals(descriptor)) {
-                    Vector sourceFields = null;
                     Vector targetFields = null;
                     if(mapping.isManyToManyMapping()) {
-                        sourceFields = ((ManyToManyMapping)mapping).getSourceKeyFields();
                         targetFields = ((ManyToManyMapping)mapping).getSourceRelationKeyFields();
                     } else if(mapping.isDirectCollectionMapping()) {
-                        sourceFields = ((DirectCollectionMapping)mapping).getSourceKeyFields();
                         targetFields = ((DirectCollectionMapping)mapping).getReferenceKeyFields();
                     }
 
@@ -439,8 +436,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     protected SQLSelectStatement buildNormalSelectStatement() {
         // From bug 2612185 Remember the identity hashtable used in cloning the selection criteria even in the normal case
         // for performance, in case subqueries need it, or for order by expressions.
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
-        IdentityHashtable clonedExpressions = new IdentityHashtable();
+        // 2612538 - the default size of Map (32) is appropriate
+        Map clonedExpressions = new IdentityHashMap();
         SQLSelectStatement selectStatement = buildBaseSelectStatement(false, clonedExpressions);
 
         ObjectLevelReadQuery query = ((ObjectLevelReadQuery)getQuery());
@@ -477,8 +474,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     protected SQLSelectStatement buildReportQuerySelectStatement(boolean isSubSelect, boolean useCustomaryInheritanceExpression, Expression inheritanceExpression) {
         // For bug 2612185: Need to know which original bases were mapped to which cloned bases.
         // Note: subSelects are already cloned so this table is not needed.
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
-        IdentityHashtable clonedExpressions = isSubSelect ? null : new IdentityHashtable();
+        // 2612538 - the default size of Map (32) is appropriate
+        Map clonedExpressions = isSubSelect ? null : new IdentityHashMap();
         SQLSelectStatement selectStatement = buildBaseSelectStatement(isSubSelect, clonedExpressions);
         selectStatement.setGroupByExpressions(((ReportQuery)getQuery()).getGroupByExpressions());
         selectStatement.setHavingExpression(((ReportQuery)getQuery()).getHavingExpression());
@@ -560,7 +557,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         return itemOffset;
     }
     
-    public void extractStatementFromItem(ReportItem item, IdentityHashtable clonedExpressions, SQLSelectStatement selectStatement, Vector fieldExpressions ){
+    public void extractStatementFromItem(ReportItem item, Map clonedExpressions, SQLSelectStatement selectStatement, Vector fieldExpressions ){
         if (item.getAttributeExpression() != null) {
                 // this allows us to modify the item expression without modifying the original in case of re-prepare
                 Expression attributeExpression = item.getAttributeExpression(); 
@@ -1418,7 +1415,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * @param clonedExpressions
      * @return Vector
      */
-    private Vector cloneExpressions(Vector originalExpressions,Dictionary clonedExpressions){
+    private Vector cloneExpressions(Vector originalExpressions,Map clonedExpressions){
         if(originalExpressions==null || originalExpressions.size()==0){
             return originalExpressions;
         }
@@ -2103,7 +2100,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         updateAllStatement.setTables_databaseFieldsToValues(tables_databaseFieldsToValues);
         updateAllStatement.setTablesToPrimaryKeyFields(tablesToPrimaryKeyFields);
         
-        updateAllStatement.setTable((DatabaseTable)getDescriptor().getTables().firstElement());
+        updateAllStatement.setTable(getDescriptor().getTables().firstElement());
 
         return updateAllStatement;
     }

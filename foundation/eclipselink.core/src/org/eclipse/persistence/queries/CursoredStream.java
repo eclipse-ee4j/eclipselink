@@ -135,13 +135,13 @@ public class CursoredStream extends Cursor {
             // Construct the select statement
             SQLSelectStatement selectStatement = new SQLSelectStatement();
 
-            // 2612538 - the default size of IdentityHashtable (32) is appropriate
-            IdentityHashtable clonedExpressions = new IdentityHashtable();
+            // 2612538 - the default size of Map (32) is appropriate
+            Map clonedExpressions = new IdentityHashMap();
             selectStatement.setWhereClause(((ExpressionQueryMechanism)getQuery().getQueryMechanism()).buildBaseSelectionCriteria(false, clonedExpressions));
 
             // Case, normal read for branch inheritence class that reads subclasses all in its own table(s).
             if (getQuery().getDescriptor().hasInheritance() && (getQuery().getDescriptor().getInheritancePolicy().getWithAllSubclassesExpression() != null)) {
-                Expression branchIndicator = (Expression)getQuery().getDescriptor().getInheritancePolicy().getWithAllSubclassesExpression();
+                Expression branchIndicator = getQuery().getDescriptor().getInheritancePolicy().getWithAllSubclassesExpression();
                 if ((branchIndicator != null) && (selectStatement.getWhereClause() != null)) {
                     selectStatement.setWhereClause(selectStatement.getWhereClause().and(branchIndicator));
                 } else if (branchIndicator != null) {

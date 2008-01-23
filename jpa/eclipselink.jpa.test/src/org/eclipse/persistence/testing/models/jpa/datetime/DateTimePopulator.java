@@ -20,8 +20,6 @@ import java.util.Vector;
 
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.testing.models.jpa.advanced.Address;
-import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 public class DateTimePopulator {
     public DateTimePopulator() {

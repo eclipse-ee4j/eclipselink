@@ -87,7 +87,7 @@ public class EmployeeWithProblems extends org.eclipse.persistence.testing.models
     public
 
     org.eclipse.persistence.testing.models.employee.domain.Address getAddressWithProblems() {
-        return (org.eclipse.persistence.testing.models.employee.domain.Address)addressWithProblems; //.getValue();
+        return addressWithProblems; //.getValue();
     }
 
     /**

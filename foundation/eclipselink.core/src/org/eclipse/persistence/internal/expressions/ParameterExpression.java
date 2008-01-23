@@ -259,7 +259,7 @@ public class ParameterExpression extends BaseExpression {
      * INTERNAL:
      * Used for cloning.
      */
-    protected void postCopyIn(Dictionary alreadyDone) {
+    protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
         if (getLocalBase() != null) {
             setLocalBase(getLocalBase().copiedVersionFrom(alreadyDone));

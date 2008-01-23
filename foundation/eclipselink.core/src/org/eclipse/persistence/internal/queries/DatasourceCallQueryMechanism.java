@@ -290,7 +290,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * @exception  DatabaseException - an error has occurred on the database
      */
     public void insertObject() throws DatabaseException {
-        Class cls = ((DatabaseQuery)getQuery()).getReferenceClass();
+        Class cls = (getQuery()).getReferenceClass();
         boolean usesSequencing = getDescriptor().usesSequenceNumbers();
         boolean shouldAcquireValueAfterInsert = false;
         if (usesSequencing) {

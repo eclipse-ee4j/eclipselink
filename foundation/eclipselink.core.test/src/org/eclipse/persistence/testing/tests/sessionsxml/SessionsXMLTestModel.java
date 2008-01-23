@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
-import org.eclipse.persistence.Version;
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.TestProblemException;

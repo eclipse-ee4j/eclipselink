@@ -95,7 +95,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
         if (this.entityManager.shouldPropagatePersistenceContext()){
             Object newTxnKey = this.txnController.getTransactionKey(transaction);
             if (this.txnKey == newTxnKey){
-                return (RepeatableWriteUnitOfWork)this.localUOW;
+                return this.localUOW;
             }
             this.txnKey = newTxnKey;
             this.localUOW = (RepeatableWriteUnitOfWork)this.txnController.lookupActiveUnitOfWork(transaction);
@@ -110,7 +110,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
             this.localUOW.registerWithTransactionIfRequired();
             this.localUOW.setShouldCascadeCloneToJoinedRelationship(true);
         }
-        return (RepeatableWriteUnitOfWork)this.localUOW;
+        return this.localUOW;
     }
     
     protected void throwUserTransactionException() {

@@ -483,7 +483,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         Hashtable classTypeMapping;
 
         classTypeMapping = new Hashtable();
-        //Key the dictionary the other way for table creation
+        //Key the Map the other way for table creation
         classTypeMapping.put("NUMBER", java.math.BigInteger.class);
         classTypeMapping.put("DECIMAL", java.math.BigDecimal.class);
         classTypeMapping.put("INTEGER", Integer.class);

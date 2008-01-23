@@ -30,7 +30,7 @@ import org.eclipse.persistence.sessions.server.*;
  */
 public class HistoryFacade {
 
-    private static IdentityHashtable timeOffsetsMap = new IdentityHashtable();
+    private static Map timeOffsetsMap = new IdentityHashMap();
 
     protected HistoryFacade() {
     }
@@ -82,7 +82,7 @@ public class HistoryFacade {
      */
     public static long currentDatabaseTimeMillis(org.eclipse.persistence.sessions.Session session, 
                                    Class domainClass) {
-        Session rootSession = (Session)session;
+        Session rootSession = session;
         while (rootSession.isUnitOfWork() || rootSession.isClientSession() || 
                rootSession instanceof HistoricalSession || 
                rootSession.isSessionBroker()) {

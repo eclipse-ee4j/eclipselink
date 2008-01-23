@@ -15,7 +15,6 @@ import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sequencing.SequencingFactory;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
@@ -296,7 +295,7 @@ public class ClientSession extends AbstractSession {
      * This allows for common queries to be pre-defined, reused and executed by name.
      */
     public DatabaseQuery getQuery(String name) {
-        DatabaseQuery query = (DatabaseQuery)super.getQuery(name);
+        DatabaseQuery query = super.getQuery(name);
         if (query == null) {
             query = getParent().getQuery(name);
         }

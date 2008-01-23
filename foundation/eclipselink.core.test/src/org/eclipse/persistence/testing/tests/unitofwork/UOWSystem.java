@@ -32,7 +32,7 @@ public class UOWSystem extends TestSystem {
     }
 
     public void createTables(DatabaseSession session) {
-        SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
 
         schemaManager.replaceObject(Contact.tableDefinition());
         schemaManager.replaceObject(Person.tableDefinition());

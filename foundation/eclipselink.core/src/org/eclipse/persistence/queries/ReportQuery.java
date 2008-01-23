@@ -685,7 +685,7 @@ public class ReportQuery extends ReadAllQuery {
      * Each call to copiedVersionFrom() will take O(1) time as the expression was
      * already cloned.
      */
-    public void copyReportItems(Dictionary alreadyDone) {
+    public void copyReportItems(Map alreadyDone) {
         items = (Vector)items.clone();
         for (int i = items.size() - 1; i >= 0; i--) {
             ReportItem item = (ReportItem)items.elementAt(i);
@@ -1078,11 +1078,11 @@ public class ReportQuery extends ReadAllQuery {
      * Prepare a report query with a count defined on an object attribute.
      * Added to fix bug 3268040, addCount(objectAttribute) not supported.
      */
-    protected void prepareObjectAttributeCount(Dictionary clonedExpressions) {
+    protected void prepareObjectAttributeCount(Map clonedExpressions) {
         prepareObjectAttributeCount(getItems(), clonedExpressions);
     }
     
-    private void prepareObjectAttributeCount(List items, Dictionary clonedExpressions) {
+    private void prepareObjectAttributeCount(List items, Map clonedExpressions) {
         int numOfReportItems = items.size();
         //gf675: need to loop through all items to fix all count(..) instances
         for (int i =0;i<numOfReportItems; i++){
@@ -1147,9 +1147,9 @@ public class ReportQuery extends ReadAllQuery {
                             // and will miss out if moved now from items into a selection criteria.
                             if (clonedExpressions != null) {
                                 if (clonedExpressions.get(baseExp.getBuilder()) != null) {
-                                    baseExp = (QueryKeyExpression)baseExp.copiedVersionFrom(clonedExpressions);
+                                    baseExp = baseExp.copiedVersionFrom(clonedExpressions);
                                 } else {
-                                    baseExp = (QueryKeyExpression)baseExp.rebuildOn(getExpressionBuilder());
+                                    baseExp = baseExp.rebuildOn(getExpressionBuilder());
                                 }
                             }
                             
@@ -1214,7 +1214,7 @@ public class ReportQuery extends ReadAllQuery {
      * Prepare the receiver for being printed inside a subselect.
      * This prepares the statement but not the call.
      */
-    public synchronized void prepareSubSelect(AbstractSession session, AbstractRecord translationRow, Dictionary clonedExpressions) throws QueryException {
+    public synchronized void prepareSubSelect(AbstractSession session, AbstractRecord translationRow, Map clonedExpressions) throws QueryException {
         if (isPrepared()) {
             return;
         }
@@ -1259,7 +1259,7 @@ public class ReportQuery extends ReadAllQuery {
      * INTERNAL:
      * replace the value holders in the specified result object(s)
      */
-    public IdentityHashtable replaceValueHoldersIn(Object object, RemoteSessionController controller) {
+    public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
         // do nothing, since report queries do not return domain objects
         return null;
     }

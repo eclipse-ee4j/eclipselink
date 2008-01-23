@@ -16,7 +16,6 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.Expression;
 import java.util.Collection;
 import java.util.Iterator;
-import java.math.BigDecimal;
 
 public class AggregateTest extends JPQLTestCase {
     private ReportQuery reportQuery;

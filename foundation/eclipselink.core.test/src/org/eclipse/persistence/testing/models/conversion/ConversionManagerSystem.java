@@ -86,11 +86,11 @@ public class ConversionManagerSystem extends TestSystem {
             objDescriptor.getMappings().removeElement(objDescriptor.getMappingForAttributeName("intToShort"));
         }
 
-        ((DatabaseSession)session).addDescriptors(project);
+        (session).addDescriptors(project);
     }
 
     public void createTables(DatabaseSession session) {
-        SchemaManager schemaManager = new SchemaManager((DatabaseSession)session);
+        SchemaManager schemaManager = new SchemaManager(session);
         TableDefinition definition = ConversionDataObject.tableDefinition();
 
         DatabasePlatform platform = session.getLogin().getPlatform();

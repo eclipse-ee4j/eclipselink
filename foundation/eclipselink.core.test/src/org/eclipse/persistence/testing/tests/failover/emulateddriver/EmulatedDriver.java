@@ -3,7 +3,6 @@ package org.eclipse.persistence.testing.tests.failover.emulateddriver;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 

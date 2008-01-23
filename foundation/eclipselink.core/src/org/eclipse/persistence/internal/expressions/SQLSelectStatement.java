@@ -175,16 +175,16 @@ public class SQLSelectStatement extends SQLStatement {
             if (outerExpression.getMapping().isDirectCollectionMapping()) {
                 targetTable = ((DirectCollectionMapping)outerExpression.getMapping()).getReferenceTable();
             } else {
-                targetTable = (DatabaseTable)outerExpression.getMapping().getReferenceDescriptor().getTables().firstElement();
+                targetTable = outerExpression.getMapping().getReferenceDescriptor().getTables().firstElement();
             }
             // Grab the source table from the mapping not just the first table 
             // from the descriptor. In an joined inheritance hierarchy, the
             // fk used in the outer join may be from a subclasses's table .
             DatabaseTable sourceTable;
             if (outerExpression.getMapping().isObjectReferenceMapping() && ((ObjectReferenceMapping) outerExpression.getMapping()).isForeignKeyRelationship()) {
-                sourceTable = (DatabaseTable)((DatabaseField) outerExpression.getMapping().getFields().firstElement()).getTable();
+                sourceTable = (outerExpression.getMapping().getFields().firstElement()).getTable();
             } else {
-                sourceTable = (DatabaseTable)((ObjectExpression)outerExpression.getBaseExpression()).getDescriptor().getTables().firstElement();    
+                sourceTable = ((ObjectExpression)outerExpression.getBaseExpression()).getDescriptor().getTables().firstElement();    
             }
 
             DatabaseTable sourceAlias = outerExpression.getBaseExpression().aliasForTable(sourceTable);
@@ -262,22 +262,22 @@ public class SQLSelectStatement extends SQLStatement {
                 if (outerExpression.getMapping().isDirectCollectionMapping()) {
                     targetTable = ((DirectCollectionMapping)outerExpression.getMapping()).getReferenceTable();
                 } else {
-                    targetTable = (DatabaseTable)outerExpression.getMapping().getReferenceDescriptor().getTables().firstElement();
+                    targetTable = outerExpression.getMapping().getReferenceDescriptor().getTables().firstElement();
                 }
                 
                 // Grab the source table from the mapping not just the first table 
                 // from the descriptor. In an joined inheritance hierarchy, the
                 // fk used in the outer join may be from a subclasses's table.
                 if (outerExpression.getMapping().isObjectReferenceMapping() && ((ObjectReferenceMapping) outerExpression.getMapping()).isForeignKeyRelationship()) {
-                    sourceTable = (DatabaseTable)((DatabaseField) outerExpression.getMapping().getFields().firstElement()).getTable();
+                    sourceTable = (outerExpression.getMapping().getFields().firstElement()).getTable();
                 } else {
-                    sourceTable = (DatabaseTable)((ObjectExpression)outerExpression.getBaseExpression()).getDescriptor().getTables().firstElement();    
+                    sourceTable = ((ObjectExpression)outerExpression.getBaseExpression()).getDescriptor().getTables().firstElement();    
                 }
                 
                 sourceAlias = outerExpression.getBaseExpression().aliasForTable(sourceTable);
                 targetAlias = outerExpression.aliasForTable(targetTable);
             } else {
-                sourceTable = (DatabaseTable)((ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index)).getTables().firstElement();
+                sourceTable = ((ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index)).getTables().firstElement();
                 targetTable = (DatabaseTable)((ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index)).getInheritancePolicy().getChildrenTables().get(0);
                 Expression exp = (Expression)((Map)getOuterJoinedAdditionalJoinCriteria().elementAt(index)).get(targetTable);
                 sourceAlias = exp.aliasForTable(sourceTable);
@@ -1143,8 +1143,8 @@ public class SQLSelectStatement extends SQLStatement {
      * @param clonedExpressions
      */
     public final void normalize(AbstractSession session, ClassDescriptor descriptor) {
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
-        normalize(session, descriptor, new IdentityHashtable());
+        // 2612538 - the default size of Map (32) is appropriate
+        normalize(session, descriptor, new IdentityHashMap());
     }
 
     /**
@@ -1155,7 +1155,7 @@ public class SQLSelectStatement extends SQLStatement {
      * @param clonedExpressions With 2612185 allows additional expressions
      * from multiple bases to be rebuilt on the correct cloned base.
      */
-    public void normalize(AbstractSession session, ClassDescriptor descriptor, Dictionary clonedExpressions) {
+    public void normalize(AbstractSession session, ClassDescriptor descriptor, Map clonedExpressions) {
         // Initialize the builder.
         if (getBuilder() == null) {
             if (getWhereClause() == null) {
@@ -1375,7 +1375,7 @@ public class SQLSelectStatement extends SQLStatement {
      * This is used in the multiple table and subclasses read so all of the descriptor's
      * possible tables must be mapped to the view.
      */
-    public void normalizeForView(AbstractSession theSession, ClassDescriptor theDescriptor, Dictionary clonedExpressions) {
+    public void normalizeForView(AbstractSession theSession, ClassDescriptor theDescriptor, Map clonedExpressions) {
         ExpressionBuilder builder;
 
         // bug 3878553 - alias all view selects. 
@@ -1455,7 +1455,7 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * Rebuild the expressions with the correct expression builder if using a different one.
      */
-    public void rebuildAndAddExpressions(Vector expressions, Vector allExpressions, ExpressionBuilder primaryBuilder, Dictionary clonedExpressions) {
+    public void rebuildAndAddExpressions(Vector expressions, Vector allExpressions, ExpressionBuilder primaryBuilder, Map clonedExpressions) {
         for (int index = 0; index < expressions.size(); index++) {
             Object fieldOrExpression = expressions.elementAt(index);
 
@@ -1487,7 +1487,7 @@ public class SQLSelectStatement extends SQLStatement {
      * Exact copy of the another rebuildAndAddExpressions adopted to a Map with Expression values
      * as the first parameter (instead of Vector in the original method)
      */
-    public void rebuildAndAddExpressions(Map expressions, Vector allExpressions, ExpressionBuilder primaryBuilder, Dictionary clonedExpressions) {
+    public void rebuildAndAddExpressions(Map expressions, Vector allExpressions, ExpressionBuilder primaryBuilder, Map clonedExpressions) {
         Iterator it = expressions.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry)it.next();

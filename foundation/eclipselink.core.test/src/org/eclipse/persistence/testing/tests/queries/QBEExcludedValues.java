@@ -37,7 +37,7 @@ public class QBEExcludedValues extends TestCase {
     public void test() {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(Employee.class);
-        query.setExampleObject((Object)employee);
+        query.setExampleObject(employee);
         query.setQueryByExamplePolicy(policy);
         Employee emp = new Employee();
         emp = (Employee)getSession().executeQuery(query);

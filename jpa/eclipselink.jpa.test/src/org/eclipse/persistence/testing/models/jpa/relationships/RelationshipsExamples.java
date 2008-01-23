@@ -10,8 +10,6 @@
 
 
 package org.eclipse.persistence.testing.models.jpa.relationships;
-import java.util.Collection;
-import java.util.List;
 import java.util.Vector;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;

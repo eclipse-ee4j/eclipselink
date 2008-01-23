@@ -530,7 +530,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:234:7: (u= UPDATE schema= abstractSchemaName ( ( AS )? ident= IDENT )? )
             // JPQL.g3:234:7: u= UPDATE schema= abstractSchemaName ( ( AS )? ident= IDENT )?
             {
-            u=(Token)input.LT(1);
+            u=input.LT(1);
             match(input,UPDATE,FOLLOW_UPDATE_in_updateClause911); if (failed) return node;
             pushFollow(FOLLOW_abstractSchemaName_in_updateClause917);
             schema=abstractSchemaName();
@@ -565,7 +565,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     }
 
-                    ident=(Token)input.LT(1);
+                    ident=input.LT(1);
                     match(input,IDENT,FOLLOW_IDENT_in_updateClause938); if (failed) return node;
                     
                     }
@@ -622,7 +622,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:254:7: (t= SET n= setAssignmentClause ( COMMA n= setAssignmentClause )* )
             // JPQL.g3:254:7: t= SET n= setAssignmentClause ( COMMA n= setAssignmentClause )*
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,SET,FOLLOW_SET_in_setClause987); if (failed) return node;
             pushFollow(FOLLOW_setAssignmentClause_in_setClause993);
             n=setAssignmentClause();
@@ -705,7 +705,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             target=setAssignmentTarget();
             _fsp--;
             if (failed) return node;
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,EQUALS,FOLLOW_EQUALS_in_setAssignmentClause1074); if (failed) return node;
             pushFollow(FOLLOW_newValue_in_setAssignmentClause1080);
             value=newValue();
@@ -863,7 +863,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:281:7: n1= NULL
                     {
-                    n1=(Token)input.LT(1);
+                    n1=input.LT(1);
                     match(input,NULL,FOLLOW_NULL_in_newValue1171); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newNullLiteral(n1.getLine(), n1.getCharPositionInLine()); 
@@ -972,7 +972,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:304:7: (t= DELETE FROM schema= abstractSchemaName ( ( AS )? ident= IDENT )? )
             // JPQL.g3:304:7: t= DELETE FROM schema= abstractSchemaName ( ( AS )? ident= IDENT )?
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,DELETE,FOLLOW_DELETE_in_deleteClause1271); if (failed) return node;
             match(input,FROM,FOLLOW_FROM_in_deleteClause1273); if (failed) return node;
             pushFollow(FOLLOW_abstractSchemaName_in_deleteClause1279);
@@ -1008,7 +1008,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     }
 
-                    ident=(Token)input.LT(1);
+                    ident=input.LT(1);
                     match(input,IDENT,FOLLOW_IDENT_in_deleteClause1298); if (failed) return node;
                     if ( backtracking==0 ) {
                        ((deleteClause_scope)deleteClause_stack.peek()).variable = ident.getText(); 
@@ -1067,7 +1067,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:324:7: (t= SELECT ( DISTINCT )? n= selectExpression ( COMMA n= selectExpression )* )
             // JPQL.g3:324:7: t= SELECT ( DISTINCT )? n= selectExpression ( COMMA n= selectExpression )*
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,SELECT,FOLLOW_SELECT_in_selectClause1345); if (failed) return node;
             // JPQL.g3:324:16: ( DISTINCT )?
             int alt15=2;
@@ -1308,7 +1308,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:346:10: d= DOT right= attribute
             	    {
-            	    d=(Token)input.LT(1);
+            	    d=input.LT(1);
             	    match(input,DOT,FOLLOW_DOT_in_pathExprOrVariableAccess1525); if (failed) return node;
             	    pushFollow(FOLLOW_attribute_in_pathExprOrVariableAccess1531);
             	    right=attribute();
@@ -1406,7 +1406,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:359:7: t1= AVG LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
-                    t1=(Token)input.LT(1);
+                    t1=input.LT(1);
                     match(input,AVG,FOLLOW_AVG_in_aggregateExpression1588); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1590); if (failed) return node;
                     // JPQL.g3:359:33: ( DISTINCT )?
@@ -1444,7 +1444,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:362:7: t2= MAX LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
-                    t2=(Token)input.LT(1);
+                    t2=input.LT(1);
                     match(input,MAX,FOLLOW_MAX_in_aggregateExpression1634); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1636); if (failed) return node;
                     // JPQL.g3:362:33: ( DISTINCT )?
@@ -1482,7 +1482,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:365:7: t3= MIN LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
-                    t3=(Token)input.LT(1);
+                    t3=input.LT(1);
                     match(input,MIN,FOLLOW_MIN_in_aggregateExpression1680); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1682); if (failed) return node;
                     // JPQL.g3:365:33: ( DISTINCT )?
@@ -1520,7 +1520,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 4 :
                     // JPQL.g3:368:7: t4= SUM LEFT_ROUND_BRACKET ( DISTINCT )? n= stateFieldPathExpression RIGHT_ROUND_BRACKET
                     {
-                    t4=(Token)input.LT(1);
+                    t4=input.LT(1);
                     match(input,SUM,FOLLOW_SUM_in_aggregateExpression1725); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1727); if (failed) return node;
                     // JPQL.g3:368:33: ( DISTINCT )?
@@ -1558,7 +1558,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 5 :
                     // JPQL.g3:371:7: t5= COUNT LEFT_ROUND_BRACKET ( DISTINCT )? n= pathExprOrVariableAccess RIGHT_ROUND_BRACKET
                     {
-                    t5=(Token)input.LT(1);
+                    t5=input.LT(1);
                     match(input,COUNT,FOLLOW_COUNT_in_aggregateExpression1770); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_aggregateExpression1772); if (failed) return node;
                     // JPQL.g3:371:35: ( DISTINCT )?
@@ -1634,7 +1634,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:384:7: (t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET )
             // JPQL.g3:384:7: t= NEW className= constructorName LEFT_ROUND_BRACKET n= constructorItem ( COMMA n= constructorItem )* RIGHT_ROUND_BRACKET
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,NEW,FOLLOW_NEW_in_constructorExpression1838); if (failed) return node;
             pushFollow(FOLLOW_constructorName_in_constructorExpression1844);
             className=constructorName();
@@ -1726,7 +1726,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:403:7: (i1= IDENT ( DOT i2= IDENT )* )
             // JPQL.g3:403:7: i1= IDENT ( DOT i2= IDENT )*
             {
-            i1=(Token)input.LT(1);
+            i1=input.LT(1);
             match(input,IDENT,FOLLOW_IDENT_in_constructorName1946); if (failed) return className;
             if ( backtracking==0 ) {
                ((constructorName_scope)constructorName_stack.peek()).buf.append(i1.getText()); 
@@ -1747,7 +1747,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	    // JPQL.g3:404:11: DOT i2= IDENT
             	    {
             	    match(input,DOT,FOLLOW_DOT_in_constructorName1960); if (failed) return className;
-            	    i2=(Token)input.LT(1);
+            	    i2=input.LT(1);
             	    match(input,IDENT,FOLLOW_IDENT_in_constructorName1964); if (failed) return className;
             	    if ( backtracking==0 ) {
             	       ((constructorName_scope)constructorName_stack.peek()).buf.append('.').append(i2.getText()); 
@@ -1873,7 +1873,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:422:7: (t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )* )
             // JPQL.g3:422:7: t= FROM identificationVariableDeclaration[$fromClause::varDecls] ( COMMA ( identificationVariableDeclaration[$fromClause::varDecls] | n= collectionMemberDeclaration ) )*
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,FROM,FOLLOW_FROM_in_fromClause2055); if (failed) return node;
             pushFollow(FOLLOW_identificationVariableDeclaration_in_fromClause2057);
             identificationVariableDeclaration(((fromClause_scope)fromClause_stack.peek()).varDecls);
@@ -2083,7 +2083,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            i=(Token)input.LT(1);
+            i=input.LT(1);
             match(input,IDENT,FOLLOW_IDENT_in_rangeVariableDeclaration2228); if (failed) return node;
             if ( backtracking==0 ) {
                
@@ -2119,7 +2119,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:452:7: (ident= . )
             // JPQL.g3:452:7: ident= .
             {
-            ident=(Token)input.LT(1);
+            ident=input.LT(1);
             matchAny(input); if (failed) return schema;
             if ( backtracking==0 ) {
               
@@ -2209,7 +2209,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     }
 
-                    i=(Token)input.LT(1);
+                    i=input.LT(1);
                     match(input,IDENT,FOLLOW_IDENT_in_join2334); if (failed) return node;
                     if ( backtracking==0 ) {
                       
@@ -2223,7 +2223,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:469:9: t= FETCH n= joinAssociationPathExpression
                     {
-                    t=(Token)input.LT(1);
+                    t=input.LT(1);
                     match(input,FETCH,FOLLOW_FETCH_in_join2356); if (failed) return node;
                     pushFollow(FOLLOW_joinAssociationPathExpression_in_join2362);
                     n=joinAssociationPathExpression();
@@ -2347,7 +2347,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:483:7: (t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT )
             // JPQL.g3:483:7: t= IN LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET ( AS )? i= IDENT
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,IN,FOLLOW_IN_in_collectionMemberDeclaration2454); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_collectionMemberDeclaration2456); if (failed) return node;
             pushFollow(FOLLOW_collectionValuedPathExpression_in_collectionMemberDeclaration2462);
@@ -2373,7 +2373,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             
             }
 
-            i=(Token)input.LT(1);
+            i=input.LT(1);
             match(input,IDENT,FOLLOW_IDENT_in_collectionMemberDeclaration2480); if (failed) return node;
             if ( backtracking==0 ) {
                
@@ -2491,7 +2491,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             left=variableAccess();
             _fsp--;
             if (failed) return node;
-            d=(Token)input.LT(1);
+            d=input.LT(1);
             match(input,DOT,FOLLOW_DOT_in_joinAssociationPathExpression2586); if (failed) return node;
             pushFollow(FOLLOW_attribute_in_joinAssociationPathExpression2592);
             right=attribute();
@@ -2629,7 +2629,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:524:10: d= DOT right= attribute
             	    {
-            	    d=(Token)input.LT(1);
+            	    d=input.LT(1);
             	    match(input,DOT,FOLLOW_DOT_in_pathExpression2711); if (failed) return node;
             	    pushFollow(FOLLOW_attribute_in_pathExpression2717);
             	    right=attribute();
@@ -2682,7 +2682,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:538:7: (i= . )
             // JPQL.g3:538:7: i= .
             {
-            i=(Token)input.LT(1);
+            i=input.LT(1);
             matchAny(input); if (failed) return node;
             if ( backtracking==0 ) {
                
@@ -2718,7 +2718,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:547:7: (i= IDENT )
             // JPQL.g3:547:7: i= IDENT
             {
-            i=(Token)input.LT(1);
+            i=input.LT(1);
             match(input,IDENT,FOLLOW_IDENT_in_variableAccess2813); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newVariableAccess(i.getLine(), i.getCharPositionInLine(), i.getText()); 
@@ -2753,7 +2753,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:553:7: (t= WHERE n= conditionalExpression )
             // JPQL.g3:553:7: t= WHERE n= conditionalExpression
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,WHERE,FOLLOW_WHERE_in_whereClause2851); if (failed) return node;
             pushFollow(FOLLOW_conditionalExpression_in_whereClause2857);
             n=conditionalExpression();
@@ -2820,7 +2820,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:564:10: t= OR right= conditionalTerm
             	    {
-            	    t=(Token)input.LT(1);
+            	    t=input.LT(1);
             	    match(input,OR,FOLLOW_OR_in_conditionalExpression2914); if (failed) return node;
             	    pushFollow(FOLLOW_conditionalTerm_in_conditionalExpression2920);
             	    right=conditionalTerm();
@@ -2894,7 +2894,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:574:10: t= AND right= conditionalFactor
             	    {
-            	    t=(Token)input.LT(1);
+            	    t=input.LT(1);
             	    match(input,AND,FOLLOW_AND_in_conditionalTerm2990); if (failed) return node;
             	    pushFollow(FOLLOW_conditionalFactor_in_conditionalTerm2996);
             	    right=conditionalFactor();
@@ -2953,7 +2953,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:581:8: n= NOT
                     {
-                    n=(Token)input.LT(1);
+                    n=input.LT(1);
                     match(input,NOT,FOLLOW_NOT_in_conditionalFactor3051); if (failed) return node;
                     
                     }
@@ -7134,7 +7134,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         case 1 :
                             // JPQL.g3:611:8: n1= NOT
                             {
-                            n1=(Token)input.LT(1);
+                            n1=input.LT(1);
                             match(input,NOT,FOLLOW_NOT_in_simpleConditionalExpressionRemainder3274); if (failed) return node;
                             
                             }
@@ -7167,7 +7167,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         case 1 :
                             // JPQL.g3:612:11: n2= NOT
                             {
-                            n2=(Token)input.LT(1);
+                            n2=input.LT(1);
                             match(input,NOT,FOLLOW_NOT_in_simpleConditionalExpressionRemainder3298); if (failed) return node;
                             
                             }
@@ -7396,7 +7396,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:633:7: (t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression )
             // JPQL.g3:633:7: t= BETWEEN lowerBound= arithmeticExpression AND upperBound= arithmeticExpression
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,BETWEEN,FOLLOW_BETWEEN_in_betweenExpression3467); if (failed) return node;
             pushFollow(FOLLOW_arithmeticExpression_in_betweenExpression3481);
             lowerBound=arithmeticExpression();
@@ -7454,7 +7454,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:649:7: (t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET )
             // JPQL.g3:649:7: t= IN LEFT_ROUND_BRACKET (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery ) RIGHT_ROUND_BRACKET
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,IN,FOLLOW_IN_in_inExpression3532); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_inExpression3542); if (failed) return node;
             // JPQL.g3:651:9: (itemNode= inItem ( COMMA itemNode= inItem )* | subqueryNode= subquery )
@@ -7677,7 +7677,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:677:7: (t= LIKE pattern= likeValue (escapeChars= escape )? )
             // JPQL.g3:677:7: t= LIKE pattern= likeValue (escapeChars= escape )?
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,LIKE,FOLLOW_LIKE_in_likeExpression3741); if (failed) return node;
             pushFollow(FOLLOW_likeValue_in_likeExpression3747);
             pattern=likeValue();
@@ -7742,7 +7742,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:689:7: (t= ESCAPE escapeClause= likeValue )
             // JPQL.g3:689:7: t= ESCAPE escapeClause= likeValue
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,ESCAPE,FOLLOW_ESCAPE_in_escape3802); if (failed) return node;
             pushFollow(FOLLOW_likeValue_in_escape3808);
             escapeClause=likeValue();
@@ -7848,7 +7848,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:701:7: (t= NULL )
             // JPQL.g3:701:7: t= NULL
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,NULL,FOLLOW_NULL_in_nullComparisonExpression3895); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newIsNull(t.getLine(), t.getCharPositionInLine(), not, left); 
@@ -7881,7 +7881,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:707:7: (t= EMPTY )
             // JPQL.g3:707:7: t= EMPTY
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,EMPTY,FOLLOW_EMPTY_in_emptyCollectionComparisonExpression3936); if (failed) return node;
             if ( backtracking==0 ) {
                node = factory.newIsEmpty(t.getLine(), t.getCharPositionInLine(), not, left); 
@@ -7916,7 +7916,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:713:7: (t= MEMBER ( OF )? n= collectionValuedPathExpression )
             // JPQL.g3:713:7: t= MEMBER ( OF )? n= collectionValuedPathExpression
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,MEMBER,FOLLOW_MEMBER_in_collectionMemberExpression3977); if (failed) return node;
             // JPQL.g3:713:17: ( OF )?
             int alt53=2;
@@ -7978,7 +7978,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:724:7: (t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET )
             // JPQL.g3:724:7: t= EXISTS LEFT_ROUND_BRACKET subqueryNode= subquery RIGHT_ROUND_BRACKET
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,EXISTS,FOLLOW_EXISTS_in_existsExpression4028); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_existsExpression4030); if (failed) return node;
             pushFollow(FOLLOW_subquery_in_existsExpression4036);
@@ -8069,7 +8069,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:733:7: t1= EQUALS n= comparisonExpressionRightOperand
                     {
-                    t1=(Token)input.LT(1);
+                    t1=input.LT(1);
                     match(input,EQUALS,FOLLOW_EQUALS_in_comparisonExpression4078); if (failed) return node;
                     pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4084);
                     n=comparisonExpressionRightOperand();
@@ -8084,7 +8084,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:735:7: t2= NOT_EQUAL_TO n= comparisonExpressionRightOperand
                     {
-                    t2=(Token)input.LT(1);
+                    t2=input.LT(1);
                     match(input,NOT_EQUAL_TO,FOLLOW_NOT_EQUAL_TO_in_comparisonExpression4105); if (failed) return node;
                     pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4111);
                     n=comparisonExpressionRightOperand();
@@ -8099,7 +8099,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:737:7: t3= GREATER_THAN n= comparisonExpressionRightOperand
                     {
-                    t3=(Token)input.LT(1);
+                    t3=input.LT(1);
                     match(input,GREATER_THAN,FOLLOW_GREATER_THAN_in_comparisonExpression4132); if (failed) return node;
                     pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4138);
                     n=comparisonExpressionRightOperand();
@@ -8114,7 +8114,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 4 :
                     // JPQL.g3:739:7: t4= GREATER_THAN_EQUAL_TO n= comparisonExpressionRightOperand
                     {
-                    t4=(Token)input.LT(1);
+                    t4=input.LT(1);
                     match(input,GREATER_THAN_EQUAL_TO,FOLLOW_GREATER_THAN_EQUAL_TO_in_comparisonExpression4159); if (failed) return node;
                     pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4165);
                     n=comparisonExpressionRightOperand();
@@ -8129,7 +8129,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 5 :
                     // JPQL.g3:741:7: t5= LESS_THAN n= comparisonExpressionRightOperand
                     {
-                    t5=(Token)input.LT(1);
+                    t5=input.LT(1);
                     match(input,LESS_THAN,FOLLOW_LESS_THAN_in_comparisonExpression4186); if (failed) return node;
                     pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4192);
                     n=comparisonExpressionRightOperand();
@@ -8144,7 +8144,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 6 :
                     // JPQL.g3:743:7: t6= LESS_THAN_EQUAL_TO n= comparisonExpressionRightOperand
                     {
-                    t6=(Token)input.LT(1);
+                    t6=input.LT(1);
                     match(input,LESS_THAN_EQUAL_TO,FOLLOW_LESS_THAN_EQUAL_TO_in_comparisonExpression4213); if (failed) return node;
                     pushFollow(FOLLOW_comparisonExpressionRightOperand_in_comparisonExpression4219);
                     n=comparisonExpressionRightOperand();
@@ -8369,7 +8369,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:764:11: p= PLUS right= arithmeticTerm
             	    {
-            	    p=(Token)input.LT(1);
+            	    p=input.LT(1);
             	    match(input,PLUS,FOLLOW_PLUS_in_simpleArithmeticExpression4372); if (failed) return node;
             	    pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4378);
             	    right=arithmeticTerm();
@@ -8384,7 +8384,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 2 :
             	    // JPQL.g3:766:11: m= MINUS right= arithmeticTerm
             	    {
-            	    m=(Token)input.LT(1);
+            	    m=input.LT(1);
             	    match(input,MINUS,FOLLOW_MINUS_in_simpleArithmeticExpression4407); if (failed) return node;
             	    pushFollow(FOLLOW_arithmeticTerm_in_simpleArithmeticExpression4413);
             	    right=arithmeticTerm();
@@ -8462,7 +8462,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 1 :
             	    // JPQL.g3:776:11: m= MULTIPLY right= arithmeticFactor
             	    {
-            	    m=(Token)input.LT(1);
+            	    m=input.LT(1);
             	    match(input,MULTIPLY,FOLLOW_MULTIPLY_in_arithmeticTerm4486); if (failed) return node;
             	    pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4492);
             	    right=arithmeticFactor();
@@ -8477,7 +8477,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             	case 2 :
             	    // JPQL.g3:778:11: d= DIVIDE right= arithmeticFactor
             	    {
-            	    d=(Token)input.LT(1);
+            	    d=input.LT(1);
             	    match(input,DIVIDE,FOLLOW_DIVIDE_in_arithmeticTerm4521); if (failed) return node;
             	    pushFollow(FOLLOW_arithmeticFactor_in_arithmeticTerm4527);
             	    right=arithmeticFactor();
@@ -8583,7 +8583,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:785:7: p= PLUS n= arithmeticPrimary
                     {
-                    p=(Token)input.LT(1);
+                    p=input.LT(1);
                     match(input,PLUS,FOLLOW_PLUS_in_arithmeticFactor4581); if (failed) return node;
                     pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor4588);
                     n=arithmeticPrimary();
@@ -8598,7 +8598,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:787:7: m= MINUS n= arithmeticPrimary
                     {
-                    m=(Token)input.LT(1);
+                    m=input.LT(1);
                     match(input,MINUS,FOLLOW_MINUS_in_arithmeticFactor4610); if (failed) return node;
                     pushFollow(FOLLOW_arithmeticPrimary_in_arithmeticFactor4616);
                     n=arithmeticPrimary();
@@ -8952,7 +8952,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:809:7: a= ALL LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
-                    a=(Token)input.LT(1);
+                    a=input.LT(1);
                     match(input,ALL,FOLLOW_ALL_in_anyOrAllExpression4848); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4850); if (failed) return node;
                     pushFollow(FOLLOW_subquery_in_anyOrAllExpression4856);
@@ -8969,7 +8969,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:811:7: y= ANY LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
-                    y=(Token)input.LT(1);
+                    y=input.LT(1);
                     match(input,ANY,FOLLOW_ANY_in_anyOrAllExpression4878); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4880); if (failed) return node;
                     pushFollow(FOLLOW_subquery_in_anyOrAllExpression4886);
@@ -8986,7 +8986,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:813:7: s= SOME LEFT_ROUND_BRACKET n= subquery RIGHT_ROUND_BRACKET
                     {
-                    s=(Token)input.LT(1);
+                    s=input.LT(1);
                     match(input,SOME,FOLLOW_SOME_in_anyOrAllExpression4908); if (failed) return node;
                     match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_anyOrAllExpression4910); if (failed) return node;
                     pushFollow(FOLLOW_subquery_in_anyOrAllExpression4916);
@@ -9273,7 +9273,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:836:7: i= INTEGER_LITERAL
                     {
-                    i=(Token)input.LT(1);
+                    i=input.LT(1);
                     match(input,INTEGER_LITERAL,FOLLOW_INTEGER_LITERAL_in_literalNumeric5092); if (failed) return node;
                     if ( backtracking==0 ) {
                        
@@ -9287,7 +9287,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:841:7: l= LONG_LITERAL
                     {
-                    l=(Token)input.LT(1);
+                    l=input.LT(1);
                     match(input,LONG_LITERAL,FOLLOW_LONG_LITERAL_in_literalNumeric5108); if (failed) return node;
                     if ( backtracking==0 ) {
                        
@@ -9304,7 +9304,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:849:7: f= FLOAT_LITERAL
                     {
-                    f=(Token)input.LT(1);
+                    f=input.LT(1);
                     match(input,FLOAT_LITERAL,FOLLOW_FLOAT_LITERAL_in_literalNumeric5129); if (failed) return node;
                     if ( backtracking==0 ) {
                        
@@ -9318,7 +9318,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 4 :
                     // JPQL.g3:854:7: d= DOUBLE_LITERAL
                     {
-                    d=(Token)input.LT(1);
+                    d=input.LT(1);
                     match(input,DOUBLE_LITERAL,FOLLOW_DOUBLE_LITERAL_in_literalNumeric5149); if (failed) return node;
                     if ( backtracking==0 ) {
                        
@@ -9375,7 +9375,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:863:7: t= TRUE
                     {
-                    t=(Token)input.LT(1);
+                    t=input.LT(1);
                     match(input,TRUE,FOLLOW_TRUE_in_literalBoolean5187); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newBooleanLiteral(t.getLine(), t.getCharPositionInLine(), Boolean.TRUE); 
@@ -9386,7 +9386,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:865:7: f= FALSE
                     {
-                    f=(Token)input.LT(1);
+                    f=input.LT(1);
                     match(input,FALSE,FOLLOW_FALSE_in_literalBoolean5209); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newBooleanLiteral(f.getLine(), f.getCharPositionInLine(), Boolean.FALSE); 
@@ -9440,7 +9440,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:871:7: d= STRING_LITERAL_DOUBLE_QUOTED
                     {
-                    d=(Token)input.LT(1);
+                    d=input.LT(1);
                     match(input,STRING_LITERAL_DOUBLE_QUOTED,FOLLOW_STRING_LITERAL_DOUBLE_QUOTED_in_literalString5248); if (failed) return node;
                     if ( backtracking==0 ) {
                        
@@ -9454,7 +9454,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:876:7: s= STRING_LITERAL_SINGLE_QUOTED
                     {
-                    s=(Token)input.LT(1);
+                    s=input.LT(1);
                     match(input,STRING_LITERAL_SINGLE_QUOTED,FOLLOW_STRING_LITERAL_SINGLE_QUOTED_in_literalString5269); if (failed) return node;
                     if ( backtracking==0 ) {
                        
@@ -9511,7 +9511,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:885:7: p= POSITIONAL_PARAM
                     {
-                    p=(Token)input.LT(1);
+                    p=input.LT(1);
                     match(input,POSITIONAL_PARAM,FOLLOW_POSITIONAL_PARAM_in_inputParameter5307); if (failed) return node;
                     if ( backtracking==0 ) {
                        
@@ -9526,7 +9526,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:891:7: n= NAMED_PARAM
                     {
-                    n=(Token)input.LT(1);
+                    n=input.LT(1);
                     match(input,NAMED_PARAM,FOLLOW_NAMED_PARAM_in_inputParameter5327); if (failed) return node;
                     if ( backtracking==0 ) {
                        
@@ -9739,7 +9739,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:911:7: d= CURRENT_DATE
                     {
-                    d=(Token)input.LT(1);
+                    d=input.LT(1);
                     match(input,CURRENT_DATE,FOLLOW_CURRENT_DATE_in_functionsReturningDatetime5467); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newCurrentDate(d.getLine(), d.getCharPositionInLine()); 
@@ -9750,7 +9750,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:913:7: t= CURRENT_TIME
                     {
-                    t=(Token)input.LT(1);
+                    t=input.LT(1);
                     match(input,CURRENT_TIME,FOLLOW_CURRENT_TIME_in_functionsReturningDatetime5488); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newCurrentTime(t.getLine(), t.getCharPositionInLine()); 
@@ -9761,7 +9761,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 3 :
                     // JPQL.g3:915:7: ts= CURRENT_TIMESTAMP
                     {
-                    ts=(Token)input.LT(1);
+                    ts=input.LT(1);
                     match(input,CURRENT_TIMESTAMP,FOLLOW_CURRENT_TIMESTAMP_in_functionsReturningDatetime5508); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newCurrentTimestamp(ts.getLine(), ts.getCharPositionInLine()); 
@@ -9929,7 +9929,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:933:7: (c= CONCAT LEFT_ROUND_BRACKET firstArg= stringPrimary COMMA secondArg= stringPrimary RIGHT_ROUND_BRACKET )
             // JPQL.g3:933:7: c= CONCAT LEFT_ROUND_BRACKET firstArg= stringPrimary COMMA secondArg= stringPrimary RIGHT_ROUND_BRACKET
             {
-            c=(Token)input.LT(1);
+            c=input.LT(1);
             match(input,CONCAT,FOLLOW_CONCAT_in_concat5635); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_concat5646); if (failed) return node;
             pushFollow(FOLLOW_stringPrimary_in_concat5661);
@@ -9981,7 +9981,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:944:7: (s= SUBSTRING LEFT_ROUND_BRACKET string= stringPrimary COMMA start= simpleArithmeticExpression COMMA lengthNode= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
             // JPQL.g3:944:7: s= SUBSTRING LEFT_ROUND_BRACKET string= stringPrimary COMMA start= simpleArithmeticExpression COMMA lengthNode= simpleArithmeticExpression RIGHT_ROUND_BRACKET
             {
-            s=(Token)input.LT(1);
+            s=input.LT(1);
             match(input,SUBSTRING,FOLLOW_SUBSTRING_in_substring5717); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_substring5730); if (failed) return node;
             pushFollow(FOLLOW_stringPrimary_in_substring5744);
@@ -10041,7 +10041,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:960:7: (t= TRIM LEFT_ROUND_BRACKET ( ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET )
             // JPQL.g3:960:7: t= TRIM LEFT_ROUND_BRACKET ( ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )? n= stringPrimary RIGHT_ROUND_BRACKET
             {
-            t=(Token)input.LT(1);
+            t=input.LT(1);
             match(input,TRIM,FOLLOW_TRIM_in_trim5824); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_trim5834); if (failed) return node;
             // JPQL.g3:962:9: ( ( trimSpec trimChar FROM )=>trimSpecIndicator= trimSpec trimCharNode= trimChar FROM )?
@@ -10326,7 +10326,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:991:7: (u= UPPER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET )
             // JPQL.g3:991:7: u= UPPER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET
             {
-            u=(Token)input.LT(1);
+            u=input.LT(1);
             match(input,UPPER,FOLLOW_UPPER_in_upper6068); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_upper6070); if (failed) return node;
             pushFollow(FOLLOW_stringPrimary_in_upper6076);
@@ -10367,7 +10367,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:997:7: (l= LOWER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET )
             // JPQL.g3:997:7: l= LOWER LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET
             {
-            l=(Token)input.LT(1);
+            l=input.LT(1);
             match(input,LOWER,FOLLOW_LOWER_in_lower6116); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_lower6118); if (failed) return node;
             pushFollow(FOLLOW_stringPrimary_in_lower6124);
@@ -10408,7 +10408,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1004:7: (a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
             // JPQL.g3:1004:7: a= ABS LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
             {
-            a=(Token)input.LT(1);
+            a=input.LT(1);
             match(input,ABS,FOLLOW_ABS_in_abs6165); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_abs6167); if (failed) return node;
             pushFollow(FOLLOW_simpleArithmeticExpression_in_abs6173);
@@ -10449,7 +10449,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1010:7: (l= LENGTH LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET )
             // JPQL.g3:1010:7: l= LENGTH LEFT_ROUND_BRACKET n= stringPrimary RIGHT_ROUND_BRACKET
             {
-            l=(Token)input.LT(1);
+            l=input.LT(1);
             match(input,LENGTH,FOLLOW_LENGTH_in_length6213); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_length6215); if (failed) return node;
             pushFollow(FOLLOW_stringPrimary_in_length6221);
@@ -10496,7 +10496,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1018:7: (l= LOCATE LEFT_ROUND_BRACKET pattern= stringPrimary COMMA n= stringPrimary ( COMMA startPos= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET )
             // JPQL.g3:1018:7: l= LOCATE LEFT_ROUND_BRACKET pattern= stringPrimary COMMA n= stringPrimary ( COMMA startPos= simpleArithmeticExpression )? RIGHT_ROUND_BRACKET
             {
-            l=(Token)input.LT(1);
+            l=input.LT(1);
             match(input,LOCATE,FOLLOW_LOCATE_in_locate6261); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_locate6271); if (failed) return node;
             pushFollow(FOLLOW_stringPrimary_in_locate6286);
@@ -10567,7 +10567,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1031:7: (s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET )
             // JPQL.g3:1031:7: s= SIZE LEFT_ROUND_BRACKET n= collectionValuedPathExpression RIGHT_ROUND_BRACKET
             {
-            s=(Token)input.LT(1);
+            s=input.LT(1);
             match(input,SIZE,FOLLOW_SIZE_in_size6363); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_size6374); if (failed) return node;
             pushFollow(FOLLOW_collectionValuedPathExpression_in_size6380);
@@ -10612,7 +10612,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1040:7: (m= MOD LEFT_ROUND_BRACKET left= simpleArithmeticExpression COMMA right= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
             // JPQL.g3:1040:7: m= MOD LEFT_ROUND_BRACKET left= simpleArithmeticExpression COMMA right= simpleArithmeticExpression RIGHT_ROUND_BRACKET
             {
-            m=(Token)input.LT(1);
+            m=input.LT(1);
             match(input,MOD,FOLLOW_MOD_in_mod6420); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_mod6422); if (failed) return node;
             pushFollow(FOLLOW_simpleArithmeticExpression_in_mod6436);
@@ -10658,7 +10658,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1049:7: (s= SQRT LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET )
             // JPQL.g3:1049:7: s= SQRT LEFT_ROUND_BRACKET n= simpleArithmeticExpression RIGHT_ROUND_BRACKET
             {
-            s=(Token)input.LT(1);
+            s=input.LT(1);
             match(input,SQRT,FOLLOW_SQRT_in_sqrt6501); if (failed) return node;
             match(input,LEFT_ROUND_BRACKET,FOLLOW_LEFT_ROUND_BRACKET_in_sqrt6512); if (failed) return node;
             pushFollow(FOLLOW_simpleArithmeticExpression_in_sqrt6518);
@@ -10824,7 +10824,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1077:7: (s= SELECT ( DISTINCT )? n= simpleSelectExpression )
             // JPQL.g3:1077:7: s= SELECT ( DISTINCT )? n= simpleSelectExpression
             {
-            s=(Token)input.LT(1);
+            s=input.LT(1);
             match(input,SELECT,FOLLOW_SELECT_in_simpleSelectClause6665); if (failed) return node;
             // JPQL.g3:1077:16: ( DISTINCT )?
             int alt78=2;
@@ -10993,7 +10993,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1103:7: (f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] )* )
             // JPQL.g3:1103:7: f= FROM subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] ( COMMA subselectIdentificationVariableDeclaration[$subqueryFromClause::varDecls] )*
             {
-            f=(Token)input.LT(1);
+            f=input.LT(1);
             match(input,FROM,FOLLOW_FROM_in_subqueryFromClause6789); if (failed) return node;
             pushFollow(FOLLOW_subselectIdentificationVariableDeclaration_in_subqueryFromClause6791);
             subselectIdentificationVariableDeclaration(((subqueryFromClause_scope)subqueryFromClause_stack.peek()).varDecls);
@@ -11238,7 +11238,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     
                     }
 
-                    i=(Token)input.LT(1);
+                    i=input.LT(1);
                     match(input,IDENT,FOLLOW_IDENT_in_subselectIdentificationVariableDeclaration6867); if (failed) return ;
                     if ( backtracking==0 ) {
                        
@@ -11300,7 +11300,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1127:7: (o= ORDER BY n= orderByItem ( COMMA n= orderByItem )* )
             // JPQL.g3:1127:7: o= ORDER BY n= orderByItem ( COMMA n= orderByItem )*
             {
-            o=(Token)input.LT(1);
+            o=input.LT(1);
             match(input,ORDER,FOLLOW_ORDER_in_orderByClause6922); if (failed) return node;
             match(input,BY,FOLLOW_BY_in_orderByClause6924); if (failed) return node;
             pushFollow(FOLLOW_orderByItem_in_orderByClause6938);
@@ -11412,7 +11412,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 1 :
                     // JPQL.g3:1136:11: a= ASC
                     {
-                    a=(Token)input.LT(1);
+                    a=input.LT(1);
                     match(input,ASC,FOLLOW_ASC_in_orderByItem7019); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newAscOrdering(a.getLine(), a.getCharPositionInLine(), n); 
@@ -11423,7 +11423,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                 case 2 :
                     // JPQL.g3:1138:11: d= DESC
                     {
-                    d=(Token)input.LT(1);
+                    d=input.LT(1);
                     match(input,DESC,FOLLOW_DESC_in_orderByItem7048); if (failed) return node;
                     if ( backtracking==0 ) {
                        node = factory.newDescOrdering(d.getLine(), d.getCharPositionInLine(), n); 
@@ -11482,7 +11482,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1153:7: (g= GROUP BY n= groupByItem ( COMMA n= groupByItem )* )
             // JPQL.g3:1153:7: g= GROUP BY n= groupByItem ( COMMA n= groupByItem )*
             {
-            g=(Token)input.LT(1);
+            g=input.LT(1);
             match(input,GROUP,FOLLOW_GROUP_in_groupByClause7128); if (failed) return node;
             match(input,BY,FOLLOW_BY_in_groupByClause7130); if (failed) return node;
             pushFollow(FOLLOW_groupByItem_in_groupByClause7144);
@@ -11638,7 +11638,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             // JPQL.g3:1167:7: (h= HAVING n= conditionalExpression )
             // JPQL.g3:1167:7: h= HAVING n= conditionalExpression
             {
-            h=(Token)input.LT(1);
+            h=input.LT(1);
             match(input,HAVING,FOLLOW_HAVING_in_havingClause7253); if (failed) return node;
             if ( backtracking==0 ) {
                setAggregatesAllowed(true); 

@@ -29,7 +29,7 @@ public class SelectSimpleNotInTest extends org.eclipse.persistence.testing.tests
         raq.setReferenceClass(Employee.class);
         raq.setSelectionCriteria(whereClause);
 
-        setOriginalOject((Vector)getSession().executeQuery(raq));
+        setOriginalOject(getSession().executeQuery(raq));
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         //////////
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id NOT IN (" + emp.getId().toString() + ")";

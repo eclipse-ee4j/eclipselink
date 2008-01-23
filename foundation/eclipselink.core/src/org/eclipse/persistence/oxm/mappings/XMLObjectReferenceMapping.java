@@ -9,10 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.mappings;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.*;
 
 import javax.xml.namespace.QName;
 
@@ -24,7 +21,6 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.IdentityHashtable;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -98,7 +94,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
 		ClassDescriptor descriptor = getReferenceDescriptor();
 		ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
 		Vector pks = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
-		int idx = descriptor.getPrimaryKeyFields().indexOf((XMLField) getSourceToTargetKeyFieldAssociations().get(xmlFld));
+		int idx = descriptor.getPrimaryKeyFields().indexOf(getSourceToTargetKeyFieldAssociations().get(xmlFld));
 		if (idx == -1) {
 			return null;
 		}
@@ -155,7 +151,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
-    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // objects referenced by this mapping are not registered as they have
         // no identity, however mappings from the referenced object may need cascading.
         Object objectReferenced = getRealAttributeValueFromObject(object, uow);
@@ -173,7 +169,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // Aggregate objects are not registered but their mappings should be.
         Object objectReferenced = getRealAttributeValueFromObject(object, uow);
         if (objectReferenced == null) {
@@ -234,7 +230,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         QName nextQName;
         Class javaClass;
         for (int i = 0; i < schemaTypes.size(); i++) {
-            nextQName = (QName)((XMLUnionField)xmlField).getSchemaTypes().get(i);
+            nextQName = (QName)(xmlField).getSchemaTypes().get(i);
             try {
                 if (nextQName != null) {
                     javaClass = xmlField.getJavaClass(nextQName);

@@ -11,7 +11,6 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.activation.DataHandler;
 
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
@@ -111,7 +110,7 @@ public class XMLBinaryAttachmentHandler implements ContentHandler {
             //check for collection case
             if(isCollection) {
                 Object container = record.getContainerInstance((XMLBinaryDataCollectionMappingNodeValue)nodeValue);
-                ((XMLBinaryDataCollectionMapping)mapping).getContainerPolicy().addInto(data, container, (AbstractSession)record.getSession());
+                ((XMLBinaryDataCollectionMapping)mapping).getContainerPolicy().addInto(data, container, record.getSession());
             } else {
                 mapping.setAttributeValueInObject(record.getCurrentObject(), data);
             }

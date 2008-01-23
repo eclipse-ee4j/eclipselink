@@ -12,7 +12,6 @@
 package org.eclipse.persistence.testing.models.jpa.xml.inheritance;
 
 import java.io.*;
-import static javax.persistence.InheritanceType.*;
 
 /**
  * This tests;

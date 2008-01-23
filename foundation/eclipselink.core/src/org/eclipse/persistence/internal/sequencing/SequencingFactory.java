@@ -10,7 +10,6 @@
 package org.eclipse.persistence.internal.sequencing;
 
 import org.eclipse.persistence.sessions.server.ClientSession;
-import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
 import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.AbstractSession;

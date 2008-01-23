@@ -30,7 +30,7 @@ public class DoesExistProxyObjectTest extends AutoVerifyTestCase {
 
     public void test() {
         Employee emp = (Employee)getSession().readObject(Employee.class, new ExpressionBuilder().get("firstName").like("Rick%"));
-        doesExist = ((org.eclipse.persistence.sessions.Session)getSession()).doesObjectExist(emp.getAddress());
+        doesExist = (getSession()).doesObjectExist(emp.getAddress());
     }
 
     public void verify() {

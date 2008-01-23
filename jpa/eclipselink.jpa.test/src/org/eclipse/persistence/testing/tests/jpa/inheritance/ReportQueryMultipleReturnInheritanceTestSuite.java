@@ -18,9 +18,6 @@ import javax.persistence.EntityManager;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.PerformanceTireInfo;
@@ -62,7 +59,7 @@ public class ReportQueryMultipleReturnInheritanceTestSuite extends JUnitTestCase
             EntityManager em = createEntityManager();
             em.getTransaction().begin();
             try{
-                TireInfo localTire = (TireInfo)em.find(TireInfo.class, tireInfo.getId());
+                TireInfo localTire = em.find(TireInfo.class, tireInfo.getId());
                 em.remove(localTire);
                 em.getTransaction().commit();
             }catch (RuntimeException ex){

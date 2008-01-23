@@ -9,14 +9,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 
-import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.testing.framework.*;
 import javax.persistence.Query;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.*;
 import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
-import org.eclipse.persistence.exceptions.QueryException;
 import javax.persistence.RollbackException;
 
 /*
@@ -66,7 +63,7 @@ public class ExecuteUpdateTest extends EntityContainerTestBase {
     if (reset){//ensures it is only done once
 	  try {
 		beginTransaction();
-        Customer cus1 = (Customer)getEntityManager().find(Customer.class,cusIDs[0]);
+        Customer cus1 = getEntityManager().find(Customer.class,cusIDs[0]);
         getEntityManager().remove(cus1);
 		commitTransaction();
 		reset = false;
@@ -80,7 +77,7 @@ public class ExecuteUpdateTest extends EntityContainerTestBase {
 
     try {
       beginTransaction();
-      Customer cus = (Customer)getEntityManager().find(Customer.class,cusIDs[0]);
+      Customer cus = getEntityManager().find(Customer.class,cusIDs[0]);
       Query query = getEntityManager().createQuery("UPDATE FieldAccessCustomer customer SET customer.name = '"+nameChange1+"' WHERE customer.customerId = "+cusIDs[0]);
       query.executeUpdate();
       
@@ -88,7 +85,7 @@ public class ExecuteUpdateTest extends EntityContainerTestBase {
       ((EntityManagerImpl)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
       getSession().getIdentityMapAccessor().initializeAllIdentityMaps();  
       //getEntityManager().refresh(cus);
-      cus = (Customer)getEntityManager().find(Customer.class,cusIDs[0]);
+      cus = getEntityManager().find(Customer.class,cusIDs[0]);
       returnedName1 = cus.getName();
       
         //tests bug 4288845
@@ -99,7 +96,7 @@ public class ExecuteUpdateTest extends EntityContainerTestBase {
       ((EntityManagerImpl)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
       getSession().getIdentityMapAccessor().initializeAllIdentityMaps();  
       //getEntityManager().refresh(cus);
-      cus = (Customer)getEntityManager().find(Customer.class,cusIDs[0]);
+      cus = getEntityManager().find(Customer.class,cusIDs[0]);
       returnedName2 = cus.getName();
       
         //tests bug 4293920
@@ -111,7 +108,7 @@ public class ExecuteUpdateTest extends EntityContainerTestBase {
       ((EntityManagerImpl)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
       getSession().getIdentityMapAccessor().initializeAllIdentityMaps();  
       //getEntityManager().refresh(cus);
-      cus = (Customer)getEntityManager().find(Customer.class,cusIDs[0]);
+      cus = getEntityManager().find(Customer.class,cusIDs[0]);
       returnedName3 = cus.getName();
       
         //tests bug 4294241

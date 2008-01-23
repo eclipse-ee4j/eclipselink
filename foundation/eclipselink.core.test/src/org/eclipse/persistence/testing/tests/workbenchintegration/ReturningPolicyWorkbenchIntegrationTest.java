@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import org.eclipse.persistence.Version;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
 import org.eclipse.persistence.sessions.Project;

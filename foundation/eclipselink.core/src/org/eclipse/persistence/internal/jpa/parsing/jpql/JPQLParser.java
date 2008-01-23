@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.libraries.antlr.TokenStreamRecognitionEx
 
 //toplink imports
 import org.eclipse.persistence.exceptions.JPQLException;
-import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.jpa.parsing.JPQLParseTree;
 import org.eclipse.persistence.internal.jpa.parsing.NodeFactory;
 import org.eclipse.persistence.internal.jpa.parsing.NodeFactoryImpl;

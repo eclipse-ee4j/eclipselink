@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.workbenchintegration.ExpressionPersistence;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.testing.models.conversion.ConversionDataObject;
 
@@ -25,7 +24,7 @@ public class ExpressionPersistenceSpecialTypesTest extends ExpressionPersistence
     public void test() {
         getSession().executeQuery(basicQuery);
         systemQuery = 
-                (DatabaseQuery)((ClassDescriptor)getSession().getDescriptor(ConversionDataObject.class)).getQueryManager().getQuery(queryName);
+                (getSession().getDescriptor(ConversionDataObject.class)).getQueryManager().getQuery(queryName);
         getSession().executeQuery(systemQuery);
     }
 }

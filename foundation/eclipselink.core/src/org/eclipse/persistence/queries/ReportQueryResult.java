@@ -80,17 +80,13 @@ public class ReportQueryResult implements Serializable, Map {
         if (query.shouldDistinctBeUsed() && (query.shouldFilterDuplicates())) {
             this.key = new StringBuffer();
         }
-        int numberOfPrimaryKeyFields = 0;
         List items = query.getItems();
         int itemSize = items.size();
         Vector results = new Vector(itemSize);
 
         if (query.shouldRetrievePrimaryKeys()) {
-            numberOfPrimaryKeyFields = query.getDescriptor().getPrimaryKeyFields().size();
             setPrimaryKeyValues(query.getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(row, query.getSession()));
-            // For bug 3115576 this is only used for EXISTS subselects so no result is needed.
-        } else if (query.shouldRetrieveFirstPrimaryKey()) {
-            numberOfPrimaryKeyFields = 1;
+            // For bug 3115576 this is only used for EXISTS sub-selects so no result is needed.
         }
         for (int index = 0; index < itemSize; index++) {
             ReportItem item = (ReportItem)items.get(index);

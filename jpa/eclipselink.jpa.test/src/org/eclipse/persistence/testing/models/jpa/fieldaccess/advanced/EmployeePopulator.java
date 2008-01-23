@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
-import java.sql.*;
 import java.util.*;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -554,7 +553,7 @@ public class EmployeePopulator {
         try {
             largeProject.setName("Sales Reporting");
             largeProject.setDescription("A reporting application to report on the corporations database through TopLink.");
-            largeProject.setBudget((double)5000);
+            largeProject.setBudget(5000);
             startCalendar.set(1991, 10, 11, 12, 0, 0);
             //largeProject.setMilestoneVersion(new Timestamp(startCalendar.getTime().getTime()));
 
@@ -779,7 +778,7 @@ public class EmployeePopulator {
         try {
             platinumBuyer.setName("Platinum Buyer 1");
             platinumBuyer.setDescription("First of the platinum buyers");
-            platinumBuyer.setPurchases((double)5000);
+            platinumBuyer.setPurchases(5000);
 
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());

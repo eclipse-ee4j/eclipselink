@@ -29,12 +29,12 @@ public class CommitManager {
      * objects that have been processed.  This must be done to allow for customers
      * modifying the changesets in events
      */
-    protected IdentityHashtable processedCommits;
-    protected IdentityHashtable pendingCommits;
-    protected IdentityHashtable preModifyCommits;
-    protected IdentityHashtable postModifyCommits;
-    protected IdentityHashtable completedCommits;
-    protected IdentityHashtable shallowCommits;
+    protected Map processedCommits;
+    protected Map pendingCommits;
+    protected Map preModifyCommits;
+    protected Map postModifyCommits;
+    protected Map completedCommits;
+    protected Map shallowCommits;
     protected AbstractSession session;
     protected boolean isActive;
     protected Hashtable dataModifications;
@@ -50,12 +50,12 @@ public class CommitManager {
         this.isActive = false;
 
         // PERF - move to lazy initialization (3286091)
-        //this.processedCommits = new IdentityHashtable(20);
-        //this.pendingCommits = new IdentityHashtable(20);
-        //this.preModifyCommits = new IdentityHashtable(20);
-        //this.postModifyCommits = new IdentityHashtable(20);
-        //this.completedCommits = new IdentityHashtable(20);
-        //this.shallowCommits = new IdentityHashtable(20);
+        //this.processedCommits = new IdentityHashMap(20);
+        //this.pendingCommits = new IdentityHashMap(20);
+        //this.preModifyCommits = new IdentityHashMap(20);
+        //this.postModifyCommits = new IdentityHashMap(20);
+        //this.completedCommits = new IdentityHashMap(20);
+        //this.shallowCommits = new IdentityHashMap(20);
     }
 
     /**
@@ -89,7 +89,7 @@ public class CommitManager {
      * Commit all of the objects as a single transaction.
      * This should commit the object in the correct order to maintain referencial integrity.
      */
-    public void commitAllObjects(IdentityHashtable domainObjects) throws RuntimeException, DatabaseException, OptimisticLockException {
+    public void commitAllObjects(Map domainObjects) throws RuntimeException, DatabaseException, OptimisticLockException {
         reinitialize();
         setPendingCommits(domainObjects);
 
@@ -101,9 +101,9 @@ public class CommitManager {
                      classesEnum.hasMoreElements();) {
                 Class theClass = (Class)classesEnum.nextElement();
 
-                for (Enumeration pendingEnum = getPendingCommits().elements();
-                         pendingEnum.hasMoreElements();) {
-                    Object objectToWrite = pendingEnum.nextElement();
+                for (Iterator pendingEnum = getPendingCommits().values().iterator();
+                         pendingEnum.hasNext();) {
+                    Object objectToWrite = pendingEnum.hasNext();
 
                     // Old commit is not supported for attribute change tracking.
                     if (getSession().getDescriptor(objectToWrite).getObjectChangePolicy() instanceof AttributeChangeTrackingPolicy) {
@@ -231,12 +231,12 @@ public class CommitManager {
      * This allows for the order of the classes to be processed optimally.
      */
     protected void commitNewObjectsForClassWithChangeSet(UnitOfWorkChangeSet uowChangeSet, Class theClass) {
-        IdentityHashtable newObjectChangesList = (IdentityHashtable)uowChangeSet.getNewObjectChangeSets().get(theClass);
+        Map newObjectChangesList = (Map)uowChangeSet.getNewObjectChangeSets().get(theClass);
         if (newObjectChangesList != null) { // may be no changes for that class type.
             ClassDescriptor descriptor = getSession().getDescriptor(theClass);
-            for (Enumeration pendingEnum = newObjectChangesList.elements();
-                     pendingEnum.hasMoreElements();) {
-                ObjectChangeSet changeSetToWrite = (ObjectChangeSet)pendingEnum.nextElement();
+            for (Iterator pendingEnum = new IdentityHashMap(newObjectChangesList).values().iterator();
+                     pendingEnum.hasNext();) {
+                ObjectChangeSet changeSetToWrite = (ObjectChangeSet)pendingEnum.next();
                 Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
                 if ((!getProcessedCommits().containsKey(changeSetToWrite)) && (!getProcessedCommits().containsKey(objectToWrite))) {
                     addProcessedCommit(changeSetToWrite);
@@ -349,10 +349,10 @@ public class CommitManager {
     /**
      * Return any objects that have been written during this commit process.
      */
-    protected IdentityHashtable getCompletedCommits() {
+    protected Map getCompletedCommits() {
         if (completedCommits == null) {
-            // 2612538 - the default size of IdentityHashtable (32) is appropriate
-            completedCommits = new IdentityHashtable();
+            // 2612538 - the default size of Map (32) is appropriate
+            completedCommits = new IdentityHashMap();
         }
         return completedCommits;
     }
@@ -389,10 +389,10 @@ public class CommitManager {
     /**
      * Return any objects that should be written during this commit process.
      */
-    protected IdentityHashtable getProcessedCommits() {
+    protected Map getProcessedCommits() {
         if (processedCommits == null) {
-            // 2612538 - the default size of IdentityHashtable (32) is appropriate
-            processedCommits = new IdentityHashtable();
+            // 2612538 - the default size of Map (32) is appropriate
+            processedCommits = new IdentityHashMap();
         }
         return processedCommits;
     }
@@ -400,10 +400,10 @@ public class CommitManager {
     /**
      * Return any objects that should be written during this commit process.
      */
-    protected IdentityHashtable getPendingCommits() {
+    protected Map getPendingCommits() {
         if (pendingCommits == null) {
-            // 2612538 - the default size of IdentityHashtable (32) is appropriate
-            pendingCommits = new IdentityHashtable();
+            // 2612538 - the default size of Map (32) is appropriate
+            pendingCommits = new IdentityHashMap();
         }
         return pendingCommits;
     }
@@ -412,10 +412,10 @@ public class CommitManager {
      * Return any objects that should be written during post modify commit process.
      * These objects should be order by their ownership constraints to maintain referencial integrity.
      */
-    protected IdentityHashtable getPostModifyCommits() {
+    protected Map getPostModifyCommits() {
         if (postModifyCommits == null) {
-            // 2612538 - the default size of IdentityHashtable (32) is appropriate
-            postModifyCommits = new IdentityHashtable();
+            // 2612538 - the default size of Map (32) is appropriate
+            postModifyCommits = new IdentityHashMap();
         }
         return postModifyCommits;
     }
@@ -424,10 +424,10 @@ public class CommitManager {
      * Return any objects that should be written during pre modify commit process.
      * These objects should be order by their ownership constraints to maintain referencial integrity.
      */
-    protected IdentityHashtable getPreModifyCommits() {
+    protected Map getPreModifyCommits() {
         if (preModifyCommits == null) {
-            // 2612538 - the default size of IdentityHashtable (32) is appropriate
-            preModifyCommits = new IdentityHashtable();
+            // 2612538 - the default size of Map (32) is appropriate
+            preModifyCommits = new IdentityHashMap();
         }
         return preModifyCommits;
     }
@@ -442,10 +442,10 @@ public class CommitManager {
     /**
      * Return any objects that have been shallow comitted during this commit process.
      */
-    protected IdentityHashtable getShallowCommits() {
+    protected Map getShallowCommits() {
         if (shallowCommits == null) {
-            // 2612538 - the default size of IdentityHashtable (32) is appropriate
-            shallowCommits = new IdentityHashtable();
+            // 2612538 - the default size of Map (32) is appropriate
+            shallowCommits = new IdentityHashMap();
         }
         return shallowCommits;
     }
@@ -606,7 +606,7 @@ public class CommitManager {
     /**
      * Set the objects that have been written during this commit process.
      */
-    protected void setCompletedCommits(IdentityHashtable completedCommits) {
+    protected void setCompletedCommits(Map completedCommits) {
         this.completedCommits = completedCommits;
     }
 
@@ -635,14 +635,14 @@ public class CommitManager {
     /**
      * Set the objects that should be written during this commit process.
      */
-    protected void setPendingCommits(IdentityHashtable pendingCommits) {
+    protected void setPendingCommits(Map pendingCommits) {
         this.pendingCommits = pendingCommits;
     }
 
     /**
      * Set the objects that should be written during this commit process.
      */
-    protected void setProcessedCommits(IdentityHashtable processedCommits) {
+    protected void setProcessedCommits(Map processedCommits) {
         this.processedCommits = processedCommits;
     }
 
@@ -650,7 +650,7 @@ public class CommitManager {
      * Set any objects that should be written during post modify commit process.
      * These objects should be order by their ownership constraints to maintain referencial integrity.
      */
-    protected void setPostModifyCommits(IdentityHashtable postModifyCommits) {
+    protected void setPostModifyCommits(Map postModifyCommits) {
         this.postModifyCommits = postModifyCommits;
     }
 
@@ -658,7 +658,7 @@ public class CommitManager {
      * Set any objects that should be written during pre modify commit process.
      * These objects should be order by their ownership constraints to maintain referencial integrity.
      */
-    protected void setPreModifyCommits(IdentityHashtable preModifyCommits) {
+    protected void setPreModifyCommits(Map preModifyCommits) {
         this.preModifyCommits = preModifyCommits;
     }
 
@@ -672,7 +672,7 @@ public class CommitManager {
     /**
      * Set any objects that have been shallow comitted during this commit process.
      */
-    protected void setShallowCommits(IdentityHashtable shallowCommits) {
+    protected void setShallowCommits(Map shallowCommits) {
         this.shallowCommits = shallowCommits;
     }
 

@@ -33,8 +33,8 @@ public class SqrtTestCase extends org.eclipse.persistence.testing.tests.jpql.JPQ
         e2.setSalary(49);
         e2.setFemale();
 
-        getDatabaseSession().writeObject((Object)e1);
-        getDatabaseSession().writeObject((Object)e2);
+        getDatabaseSession().writeObject(e1);
+        getDatabaseSession().writeObject(e2);
 
         return employees;
     }

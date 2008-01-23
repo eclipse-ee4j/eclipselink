@@ -824,9 +824,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 childDescriptors = descriptor.getInheritancePolicy().getChildDescriptors();
                 if ((childDescriptors != null) && (childDescriptors.size() != 0)) {//Bug#2675242
                     Enumeration enum2 = childDescriptors.elements();
-                    writer.write(Helper.getShortClassName((Class)((ClassDescriptor)enum2.nextElement()).getJavaClass()));
+                    writer.write(Helper.getShortClassName(((ClassDescriptor)enum2.nextElement()).getJavaClass()));
                     while (enum2.hasMoreElements()) {
-                        writer.write(", " + Helper.getShortClassName((Class)((ClassDescriptor)enum2.nextElement()).getJavaClass()));
+                        writer.write(", " + Helper.getShortClassName(((ClassDescriptor)enum2.nextElement()).getJavaClass()));
                     }
                 }
                 writer.write(")");

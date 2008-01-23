@@ -13,10 +13,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContextType;
-
 import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -37,7 +34,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 * @since   TopLink 10.1.3 EJB 3.0 Preview
 */
 public class EntityManagerFactoryImpl implements EntityManagerFactory {
-	// This stores a reference to the ServerSession for this deployment.
+    // This stores a reference to the ServerSession for this deployment.
     protected ServerSession serverSession;
     protected EntityManagerSetupImpl setupImpl;
     protected boolean isOpen = true;
@@ -72,32 +69,32 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
     }
     
     /**
-	 * Closes this factory, releasing any resources that might be held by this factory. After
-	 * invoking this method, all methods on the instance will throw an
-	 * {@link IllegalStateException}, except for {@link #isOpen}, which will return
-	 * <code>false</code>.
-	 */
-	public synchronized void close(){
+     * Closes this factory, releasing any resources that might be held by this factory. After
+     * invoking this method, all methods on the instance will throw an
+     * {@link IllegalStateException}, except for {@link #isOpen}, which will return
+     * <code>false</code>.
+     */
+    public synchronized void close(){
         verifyOpen();
         isOpen = false;
         setupImpl.undeploy();
     }
 
 
-	/**
-	 * Indicates whether or not this factory is open. Returns <code>true</code> until a call
-	 * to {@link #close} is made.
-	 */
-	public boolean isOpen(){
+    /**
+     * Indicates whether or not this factory is open. Returns <code>true</code> until a call
+     * to {@link #close} is made.
+     */
+    public boolean isOpen(){
        return isOpen;
     }
 
-	/**
+    /**
      * PUBLIC:
      * Returns an EntityManager for this deployment
      */
     public EntityManager createEntityManager() {
-        return (EntityManager) createEntityManagerImpl(false);
+        return createEntityManagerImpl(false);
     }
     
     /**
@@ -105,7 +102,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
      * Returns an EntityManager for this deployment
      */
     public EntityManager createEntityManager(Map properties) {
-        return (EntityManager) createEntityManagerImpl(properties, false);
+        return createEntityManagerImpl(properties, false);
     }
     
     protected EntityManagerImpl createEntityManagerImpl(boolean extended) {
@@ -122,7 +119,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
     }
 
     //TODO change the way create works to deal with how the specification works with persistence contexts
-    protected org.eclipse.persistence.internal.jpa.EntityManagerImpl createEntityManagerImplInternal(Map properties, boolean extended) {
+    protected EntityManagerImpl createEntityManagerImplInternal(Map properties, boolean extended) {
         return new EntityManagerImpl(this, properties, false, extended);
     }
     
@@ -140,11 +137,8 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
     
     /**
      * The method return user defined property passed in from EntityManagerFactory. 
-     * @param name
-     * @return
      */
     public Object getProperty(String name) {
-        Object propertyValue=null;
         if(name==null){
             return null;
         }

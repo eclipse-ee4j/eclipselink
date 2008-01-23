@@ -14,7 +14,7 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 
 public class BaseTestCase extends JPQLTestCase {
     public void setup() {
-        Vector employees = (Vector)getSession().readAllObjects(Employee.class);
+        Vector employees = getSession().readAllObjects(Employee.class);
 
         setOriginalOject(employees);
         setEjbqlString("SELECT OBJECT(emp) FROM Employee emp");

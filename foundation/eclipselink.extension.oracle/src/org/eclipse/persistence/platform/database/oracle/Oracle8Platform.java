@@ -16,7 +16,6 @@ import java.sql.SQLException;
 import java.sql.Struct;
 import java.util.Hashtable;
 import java.sql.Connection;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.databaseaccess.Platform;

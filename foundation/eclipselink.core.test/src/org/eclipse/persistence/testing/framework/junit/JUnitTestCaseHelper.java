@@ -13,11 +13,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 

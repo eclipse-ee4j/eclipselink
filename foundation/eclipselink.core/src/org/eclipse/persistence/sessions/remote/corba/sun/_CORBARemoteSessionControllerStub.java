@@ -674,7 +674,7 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
     private static String[] __ids = { "IDL:org/eclipse/persistence/remote/corba/sun/CORBARemoteSessionController:1.0" };
 
     public String[] _ids() {
-        return (String[])__ids.clone();
+        return __ids.clone();
     }
 
     private void readObject(java.io.ObjectInputStream s) {

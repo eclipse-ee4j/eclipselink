@@ -9,11 +9,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties;
 
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
 import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
 
 public class CustomizedExceptionHandler implements ExceptionHandler {
 

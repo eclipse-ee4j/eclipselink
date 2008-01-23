@@ -54,7 +54,7 @@ public class JTATransactionController extends AbstractTransactionController {
      */
     public JTATransactionController() {
         super();
-        listenerFactory = (SynchronizationListenerFactory)new JTASynchronizationListener();
+        listenerFactory = new JTASynchronizationListener();
         try {
             transactionManager = acquireTransactionManager();
         } catch (Exception ex) {

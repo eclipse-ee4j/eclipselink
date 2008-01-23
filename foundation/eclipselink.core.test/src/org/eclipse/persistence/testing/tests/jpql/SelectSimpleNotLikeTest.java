@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpql;
 
-import java.util.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
@@ -28,7 +27,7 @@ public class SelectSimpleNotLikeTest extends org.eclipse.persistence.testing.tes
         raq.setReferenceClass(Employee.class);
         raq.setSelectionCriteria(whereClause);
 
-        setOriginalOject((Vector)getSession().executeQuery(raq));
+        setOriginalOject(getSession().executeQuery(raq));
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName NOT LIKE \"" + partialFirstName + "\"";

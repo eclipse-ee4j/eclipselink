@@ -11,7 +11,6 @@ package org.eclipse.persistence.tools.profiler;
 
 import java.util.*;
 import java.io.*;
-import java.sql.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.Record;

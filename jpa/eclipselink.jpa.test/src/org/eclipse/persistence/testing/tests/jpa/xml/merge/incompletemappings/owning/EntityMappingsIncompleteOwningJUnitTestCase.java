@@ -17,16 +17,10 @@ import javax.persistence.EntityManager;
 import junit.framework.*;
 import junit.extensions.TestSetup;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning.Address;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning.Employee;
-import org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning.ModelExamples;
-import org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning.PhoneNumber;
-import org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning.PhoneNumberPK;
-import org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning.Project;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning.SecurityBadge;
-import org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning.SmallProject;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 /**
@@ -105,7 +99,7 @@ public class EntityMappingsIncompleteOwningJUnitTestCase extends JUnitTestCase {
     }
 
     public void testReadEmployee() {
-        Employee employee = (Employee) createEntityManager().find(Employee.class, employeeId);
+        Employee employee = createEntityManager().find(Employee.class, employeeId);
         assertTrue("Error reading Employee", employee.getId() == employeeId);
     }
 
@@ -113,7 +107,7 @@ public class EntityMappingsIncompleteOwningJUnitTestCase extends JUnitTestCase {
         EntityManager em = createEntityManager();
         em.getTransaction().begin();
         try {
-            Employee employee = (Employee) em.find(Employee.class, employeeId);
+            Employee employee = em.find(Employee.class, employeeId);
             employee.setSecurityBadge(new SecurityBadge(69));
             em.merge(employee);
             em.getTransaction().commit();
@@ -125,7 +119,7 @@ public class EntityMappingsIncompleteOwningJUnitTestCase extends JUnitTestCase {
             throw e;
         }
         clearCache();
-        Employee newEmployee = (Employee) em.find(Employee.class, employeeId);
+        Employee newEmployee = em.find(Employee.class, employeeId);
         assertTrue("Error updating Employee's Security Badge", newEmployee.getSecurityBadge().getBadgeNumber() == 69);
     }
 

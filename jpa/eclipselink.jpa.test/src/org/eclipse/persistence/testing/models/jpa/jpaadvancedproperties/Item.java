@@ -9,9 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties;
 
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-
 public class Item implements java.io.Serializable {
 	private Integer itemId;
 	private int version;

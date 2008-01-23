@@ -11,7 +11,6 @@ package org.eclipse.persistence.testing.tests.types;
 
 import java.util.*;
 
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.*;
 
@@ -129,7 +128,7 @@ public class TypeTestModel extends org.eclipse.persistence.testing.framework.Tes
     public void setup() {
         DatabaseSession session = (DatabaseSession)getSession();
         if (useAccessors) {
-            ((DatabaseSession)session).addDescriptor(BooleanTester.descriptorWithAccessors());
+            (session).addDescriptor(BooleanTester.descriptorWithAccessors());
             session.addDescriptor(TimeDateTester.descriptorWithAccessors());
             session.addDescriptor(NumericTester.descriptorWithAccessors());
             session.addDescriptor(StringTester.descriptorWithAccessors());

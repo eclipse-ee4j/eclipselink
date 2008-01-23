@@ -161,8 +161,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         ExpressionBuilder builder;
         Expression originalSelectionCriteria = null;
 
-        // 2612538 - the default size of IdentityHashtable (32) is appropriate
-        IdentityHashtable clonedExpressions = new IdentityHashtable();
+        // 2612538 - the default size of Map (32) is appropriate
+        Map clonedExpressions = new IdentityHashMap();
         if (query.getSelectionCriteria() == null) {
             builder = new ExpressionBuilder();
             // S.M.  For flashback.
@@ -301,7 +301,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
-    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //as this mapping type references primitive objects this method does not apply
     }
 
@@ -309,7 +309,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, IdentityHashtable visitedObjects) {
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //as this mapping type references primitive objects this method does not apply
     }
     
@@ -317,7 +317,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, IdentityHashtable newObjects, IdentityHashtable unregisteredExistingObjects, IdentityHashtable visitedObjects, UnitOfWorkImpl uow) {
+    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         // Direct mappings do not require any cascading.
     }
 
@@ -669,7 +669,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * The reference objects for a DirectCollectionMapping
      * are primitives, so they do not need to be replaced.
      */
-    public void fixRealObjectReferences(Object object, IdentityHashtable objectInformation, IdentityHashtable processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixRealObjectReferences(Object object, Map objectInformation, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         // do nothing
     }
 
@@ -753,7 +753,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * DirectCollections do not have to worry about
      * maintaining object identity.
      */
-    public Object getObjectCorrespondingTo(Object object, RemoteSession session, IdentityHashtable objectDescriptors, IdentityHashtable processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object object, RemoteSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
         return object;
     }
 
@@ -1131,7 +1131,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     protected void initializeSourceKeys(AbstractSession session) {
         for (int index = 0; index < getSourceKeyFields().size(); index++) {
-            DatabaseField field = getDescriptor().buildField((DatabaseField)getSourceKeyFields().get(index));
+            DatabaseField field = getDescriptor().buildField(getSourceKeyFields().get(index));
             getSourceKeyFields().set(index, field);
         }
     }
@@ -1593,7 +1593,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * INTERNAL:
      * replace the value holders in the specified reference object(s)
      */
-    public IdentityHashtable replaceValueHoldersIn(Object object, RemoteSessionController controller) {
+    public Map replaceValueHoldersIn(Object object, RemoteSessionController controller) {
         // do nothing, since direct collections do not hold onto other domain objects
         return null;
     }

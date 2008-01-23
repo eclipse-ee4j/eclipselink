@@ -303,7 +303,7 @@ public abstract class MethodDefinition extends CodeDefinition {
         generator.write(" throws ");
 
         for (Iterator exceptionIterator = this.exceptions.iterator(); exceptionIterator.hasNext();) {
-            generator.write((String)exceptionIterator.next());
+            generator.write(exceptionIterator.next());
 
             if (exceptionIterator.hasNext()) {
                 generator.write(", ");

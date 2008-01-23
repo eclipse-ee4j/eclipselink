@@ -93,7 +93,7 @@ public class ReflectiveMethodDefinition extends MethodDefinition {
                 generator.write(name);
             }
             generator.write(" ");
-            generator.write((String)getArgumentNames().elementAt(index));
+            generator.write(getArgumentNames().elementAt(index));
         }
     }
 

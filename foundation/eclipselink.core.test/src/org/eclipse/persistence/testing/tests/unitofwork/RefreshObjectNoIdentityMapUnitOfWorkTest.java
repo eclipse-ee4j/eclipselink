@@ -30,7 +30,7 @@ public class RefreshObjectNoIdentityMapUnitOfWorkTest extends org.eclipse.persis
 
         uowObject = (Weather)uow.registerObject(objectToBeWritten);
 
-        ((Weather)uowObject).setStormPattern(((Weather)uowObject).getStormPattern() + " and windy");
+        (uowObject).setStormPattern((uowObject).getStormPattern() + " and windy");
 
     }
 

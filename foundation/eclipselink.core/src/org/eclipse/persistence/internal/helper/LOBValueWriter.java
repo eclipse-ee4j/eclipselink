@@ -103,7 +103,7 @@ public class LOBValueWriter {
             Expression expression = selectStatement.getWhereClause();
 
             //additioanl join from the non-primary tables
-            Expression additionalJoin = (Expression)writeQuery.getDescriptor().getQueryManager().getAdditionalJoinExpression();
+            Expression additionalJoin = writeQuery.getDescriptor().getQueryManager().getAdditionalJoinExpression();
             if (additionalJoin != null) {
                 expression = expression.and(additionalJoin);
             }

@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
-import java.util.*;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
@@ -50,7 +49,7 @@ public class EMCascadingPersistAndCommitTest extends EntityContainerTestBase  {
     
     public void verify(){
         //lets check the cache for the objects
-        Employee emp = (Employee) getEntityManager().find(Employee.class, empIDs[0]);
+        Employee emp = getEntityManager().find(Employee.class, empIDs[0]);
         if (emp == null){
             throw new TestErrorException("Employee, empID: " + empIDs[0] + " Not created");
         }
@@ -64,7 +63,7 @@ public class EMCascadingPersistAndCommitTest extends EntityContainerTestBase  {
         //lets initialize the identity map to make sure they were persisted
         ((JpaEntityManager)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        emp = (Employee) getEntityManager().find(Employee.class, empIDs[0]);
+        emp = getEntityManager().find(Employee.class, empIDs[0]);
         if (emp == null){
             throw new TestErrorException("Employee, empID: " + empIDs[0] + " Not created");
         }

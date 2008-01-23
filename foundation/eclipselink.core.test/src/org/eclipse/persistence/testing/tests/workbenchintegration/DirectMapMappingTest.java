@@ -46,7 +46,7 @@ public class DirectMapMappingTest extends AutoVerifyTestCase {
                     Integer.class)) {
             throw new TestErrorException("DirectMapMapping returned a wrong key converter after written out and read in from xml");
         } else if (((DirectMapMapping)directMap).getDirectKeyField() == null || 
-                   !(((DirectMapMapping)directMap).getDirectKeyField() instanceof DatabaseField) || 
+                   !(((DirectMapMapping)directMap).getDirectKeyField().getClass() == DatabaseField.class) || 
                    !(((DirectMapMapping)directMap).getDirectKeyField().getName().equals("KEY_FIELD"))) {
             throw new TestErrorException("DirectMapMapping returned a wrong directKeyField after written out and read in from xml");
         }

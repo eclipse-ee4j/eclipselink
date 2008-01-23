@@ -70,9 +70,9 @@ public class GetResultCollectionTest extends EntityContainerTestBase {
     if (reset){//ensures it is only done once
 	  try {
 	    beginTransaction();
-        Customer cus1 = (Customer)getEntityManager().find(Customer.class,cusIDs[0]);
+        Customer cus1 = getEntityManager().find(Customer.class,cusIDs[0]);
         getEntityManager().remove(cus1);
-        Customer cus2 = (Customer)getEntityManager().find(Customer.class,cusIDs[1]);
+        Customer cus2 = getEntityManager().find(Customer.class,cusIDs[1]);
         getEntityManager().remove(cus2);
 	    commitTransaction();
         reset = false;

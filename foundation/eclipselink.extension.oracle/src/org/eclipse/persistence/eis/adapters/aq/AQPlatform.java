@@ -52,7 +52,7 @@ public class AQPlatform extends EISPlatform {
      * Allow the platform to build the interaction spec based on properties defined in the interaction.
      */
     public InteractionSpec buildInteractionSpec(EISInteraction interaction) {
-        InteractionSpec spec = (InteractionSpec)interaction.getInteractionSpec();
+        InteractionSpec spec = interaction.getInteractionSpec();
         if (spec == null) {
             AQInteractionSpec aqSpec;
             if (interaction.getProperty(QUEUE_OPERATION) == null) {

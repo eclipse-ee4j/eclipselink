@@ -9,9 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.expressions.Expression;

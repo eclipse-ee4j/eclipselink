@@ -33,7 +33,7 @@ public class ReturningTestSystem extends TestSystem {
     }
 
     public void createTables(DatabaseSession session) {
-        new ReturningTableCreator().replaceTables((DatabaseSession)session);
+        new ReturningTableCreator().replaceTables(session);
     }
 
 }

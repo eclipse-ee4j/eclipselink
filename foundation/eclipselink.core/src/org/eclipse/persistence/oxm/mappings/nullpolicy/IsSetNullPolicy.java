@@ -158,7 +158,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
         try {
             Class objectClass = object.getClass();
             PrivilegedGetMethod privilegedGetMethod = new PrivilegedGetMethod(objectClass, getIsSetMethodName(), getIsSetParameterTypes(), false);
-            Method isSetMethod = (Method) privilegedGetMethod.run();
+            Method isSetMethod = privilegedGetMethod.run();
             PrivilegedMethodInvoker privilegedMethodInvoker = new PrivilegedMethodInvoker(isSetMethod, object, isSetParameters); 
             isSet = (Boolean) privilegedMethodInvoker.run();
         } catch(Exception e) {

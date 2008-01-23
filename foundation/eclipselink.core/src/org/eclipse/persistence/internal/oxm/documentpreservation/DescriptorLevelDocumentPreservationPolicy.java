@@ -63,7 +63,7 @@ public class DescriptorLevelDocumentPreservationPolicy extends DocumentPreservat
                 pk.addElement(new WeakObjectWrapper(obj));
             }
             CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
-            if (((XMLDescriptor)xmlDescriptor).shouldPreserveDocument()) {
+            if ((xmlDescriptor).shouldPreserveDocument()) {
                 key.setRecord(row);
             }
             key.setObject(obj);

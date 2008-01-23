@@ -9,8 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.util.Enumeration;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;

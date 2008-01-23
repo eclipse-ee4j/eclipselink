@@ -14,7 +14,6 @@ import java.security.PrivilegedActionException;
 
 import java.util.*;
 import org.eclipse.persistence.Version;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;

@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.parsing;
 
-import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
@@ -19,7 +18,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedGetField;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 
 /**
@@ -49,7 +47,7 @@ public class TypeHelperImpl
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return (Class)AccessController.doPrivileged(
+                    return AccessController.doPrivileged(
                         new PrivilegedClassForName(typeName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     return null;

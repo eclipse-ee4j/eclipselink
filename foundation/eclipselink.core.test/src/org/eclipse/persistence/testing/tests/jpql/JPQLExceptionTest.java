@@ -169,7 +169,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
     public void test() {
         try {
             getSession().logMessage("Running EJBQL -> " + getEjbqlString());
-            setReturnedObjects((Vector)getSession().executeQuery(getQuery()));
+            setReturnedObjects(getSession().executeQuery(getQuery()));
         } catch (EclipseLinkException tle) {
             caughtException = tle;
         } catch (Exception e) {

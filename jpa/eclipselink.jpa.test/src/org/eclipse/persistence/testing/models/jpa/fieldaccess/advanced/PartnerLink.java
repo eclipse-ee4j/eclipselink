@@ -11,9 +11,7 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import javax.persistence.*;
 
-import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
 
 @Entity(name="PartnerLink")
 @Table(name="CMP3_FA_MW")

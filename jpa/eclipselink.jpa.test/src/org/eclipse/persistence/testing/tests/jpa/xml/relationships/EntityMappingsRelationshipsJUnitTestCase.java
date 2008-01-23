@@ -17,7 +17,6 @@ import junit.framework.*;
 import junit.extensions.TestSetup;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Customer;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Item;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Order;
@@ -121,10 +120,10 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         try {
             Order order = new Order();
             order.setShippingAddress("50 O'Connor St.");
-            Customer customer = (Customer) em.find(Customer.class, customerId);
+            Customer customer = em.find(Customer.class, customerId);
             order.setCustomer(customer);
             order.setQuantity(1);
-            Item item = (Item) em.find(Item.class, itemId);
+            Item item = em.find(Item.class, itemId);
             order.setItem(item);
             em.persist(order);
             orderId = order.getOrderId();
@@ -206,17 +205,17 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
     }
 
     public void testReadCustomer() {
-        Customer customer = (Customer) createEntityManager().find(Customer.class, customerId);
+        Customer customer = createEntityManager().find(Customer.class, customerId);
         assertTrue("Error reading Customer", customer.getCustomerId() == customerId);
     }
     
     public void testReadItem() {
-        Item item = (Item) createEntityManager().find(Item.class, itemId);
+        Item item = createEntityManager().find(Item.class, itemId);
         assertTrue("Error reading Item", item.getItemId() == itemId);
     }
 
     public void testReadOrder() {
-        Order order = (Order) createEntityManager().find(Order.class, orderId);
+        Order order = createEntityManager().find(Order.class, orderId);
         assertTrue("Error reading Order", order.getOrderId() == orderId);
     }
 
@@ -224,7 +223,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         EntityManager em = createEntityManager();
         em.getTransaction().begin();
         try {
-            Customer customer = (Customer) em.find(Customer.class, customerId);
+            Customer customer = em.find(Customer.class, customerId);
             customer.setCity("Dallas");
             em.merge(customer);
             em.getTransaction().commit();
@@ -236,7 +235,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             throw e;
         }
         clearCache();
-        Customer newCustomer = (Customer) em.find(Customer.class, customerId);
+        Customer newCustomer = em.find(Customer.class, customerId);
         assertTrue("Error updating Customer", newCustomer.getCity().equals("Dallas"));
     }
 
@@ -244,7 +243,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         EntityManager em = createEntityManager();
         em.getTransaction().begin();
         try {
-            Item item = (Item) em.find(Item.class, itemId);
+            Item item = em.find(Item.class, itemId);
             item.setDescription("A Widget");
             item.setImage(new byte[1280]);
             em.merge(item);
@@ -257,7 +256,7 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             throw e;
         }
         clearCache();
-        Item newItem = (Item) em.find(Item.class, itemId);
+        Item newItem = em.find(Item.class, itemId);
         assertTrue("Error updating Item description", newItem.getDescription().equals("A Widget"));
         assertTrue("Error updating Item image", newItem.getImage().length==1280);
     }
@@ -266,8 +265,8 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         EntityManager em = createEntityManager();
         em.getTransaction().begin();
         try {
-            Customer customer = (Customer) em.find(Customer.class, customerId);
-            Order order = (Order) customer.getOrders().iterator().next();
+            Customer customer = em.find(Customer.class, customerId);
+            Order order = customer.getOrders().iterator().next();
             order.setQuantity(100);
             em.merge(customer);
             em.getTransaction().commit();
@@ -279,8 +278,8 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             throw e;
         }
         clearCache();
-        Customer newCustomer = (Customer) em.find(Customer.class, customerId);
-        assertTrue("Error updating Customer", ((Order) newCustomer.getOrders().iterator().next()).getQuantity() == 100);
+        Customer newCustomer = em.find(Customer.class, customerId);
+        assertTrue("Error updating Customer", (newCustomer.getOrders().iterator().next()).getQuantity() == 100);
     }
 
 }

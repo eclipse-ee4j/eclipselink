@@ -11,8 +11,6 @@
 
 package org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties;
 
-import java.sql.Date;
-
 public class ModelExamples  {
 
      public static Customer customerExample1(){
