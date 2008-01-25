@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<Table>
+	<shortName>EMAILADDRESS</shortName>
+	<validFileName>EMAILADDRESS</validFileName>
+	<isFullyQualified>false</isFullyQualified>
+	<databaseFields>
+		<DatabaseField>
+			<name>ADDRESS</name>
+			<identity>false</identity>
+			<allowsNull>false</allowsNull>
+			<primaryKey>false</primaryKey>
+			<size>20</size>
+			<unique>false</unique>
+			<platformName>Oracle</platformName>
+			<type>VARCHAR2</type>
+		</DatabaseField>
+		<DatabaseField>
+			<name>ID</name>
+			<identity>false</identity>
+			<allowsNull>false</allowsNull>
+			<primaryKey>true</primaryKey>
+			<size>0</size>
+			<subSize>0</subSize>
+			<unique>false</unique>
+			<platformName>Oracle</platformName>
+			<type>NUMBER</type>
+		</DatabaseField>
+	</databaseFields>
+</Table>

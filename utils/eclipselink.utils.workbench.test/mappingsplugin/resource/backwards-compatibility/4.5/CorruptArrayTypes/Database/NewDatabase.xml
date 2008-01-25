@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<Database>
+	<name>NewDatabase</name>
+	<platformName>DB2</platformName>
+	<tables>
+		<table>
+			<table>CORRUPT_ARRAY</table>
+		</table>
+	</tables>
+</Database>

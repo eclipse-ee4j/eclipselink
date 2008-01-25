@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<Package>
+	<name>test.webgain.models.employee</name>
+	<descriptors>
+		<descriptor>
+			<descriptor>test.webgain.models.employee.Address.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.employee.Employee.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.employee.EmploymentPeriod.AggregateDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.employee.LargeProject.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.employee.PhoneNumber.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.employee.Project.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.employee.SmallProject.ClassDescriptor</descriptor>
+		</descriptor>
+	</descriptors>
+</Package>

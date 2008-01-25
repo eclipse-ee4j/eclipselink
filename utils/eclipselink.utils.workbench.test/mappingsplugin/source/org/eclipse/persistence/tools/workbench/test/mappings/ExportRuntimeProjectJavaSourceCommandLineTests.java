@@ -1,0 +1,83 @@
+/*******************************************************************************
+* Copyright (c) 2007 Oracle. All rights reserved.
+* This program and the accompanying materials are made available under the terms of
+* the Eclipse Public License v1.0, which accompanies this distribution and is available at
+* http://www.eclipse.org/legal/epl-v10.html.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+******************************************************************************/
+package org.eclipse.persistence.tools.workbench.test.mappings;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.persistence.tools.workbench.test.mappingsmodel.AbstractExportRuntimeProjectJavaSourceTests;
+import org.eclipse.persistence.tools.workbench.test.models.projects.LegacyEmployeeProject;
+import org.eclipse.persistence.tools.workbench.test.utility.JavaTools;
+import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import junit.swingui.TestRunner;
+
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.tools.workbench.mappings.JavaSourceGenerator;
+import org.eclipse.persistence.tools.workbench.mappingsio.ProjectIOManager;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
+import org.eclipse.persistence.tools.workbench.utility.Classpath;
+import org.eclipse.persistence.tools.workbench.utility.io.FileTools;
+
+public class ExportRuntimeProjectJavaSourceCommandLineTests extends AbstractExportRuntimeProjectJavaSourceTests {
+
+	public static void main(String[] args) {
+		TestRunner.main(new String[] {"-c", ExportRuntimeProjectJavaSourceCommandLineTests.class.getName()});
+	}
+
+	public static Test suite() {
+		TestTools.setUpJUnitThreadContextClassLoader();
+		return new TestSuite(ExportRuntimeProjectJavaSourceCommandLineTests.class);
+	}
+
+	public ExportRuntimeProjectJavaSourceCommandLineTests(String name) {
+		super(name);
+	}
+
+	// TODO change this to use EmployeeProject once the runtime 
+	// has put directMapMapping in the ProjectClassGenerator
+	public void testEmployeeProject() throws Exception {
+		verifyJavaExport(new LegacyEmployeeProject().getProject());
+	}
+
+	private void verifyJavaExport(MWRelationalProject project) throws Exception {
+		this.configureDeploymentLogin(project);
+		// write the project first, so it can be read via the command-line
+		project.setSaveDirectory(this.tempDir);
+		new ProjectIOManager().write(project);
+
+		project.setProjectSourceDirectoryName(this.tempDir.getPath());
+		project.setProjectSourceClassName(this.className(project));
+
+		List classpathEntries = new ArrayList();
+		classpathEntries.add(this.tempDir.getAbsolutePath());
+		classpathEntries.add(Classpath.locationFor(MWProject.class));	// tlmwcore.jar
+		classpathEntries.add(Classpath.locationFor(JavaSourceGenerator.class));	// toplinkmw.jar
+		classpathEntries.add(Classpath.locationFor(ValueHolderInterface.class));	// toplink.jar
+//		classpathEntries.add(Classpath.locationFor(EnterpriseBean.class));	// ejb.jar
+//		classpathEntries.add(Classpath.locationFor(XMLDocument.class));		// xmlparserv2.jar
+		classpathEntries.add(FileTools.resourceFile("/platforms.dpr").getParentFile().getAbsolutePath());	// config dir
+		Classpath classpath = new Classpath(classpathEntries);
+
+		String input = project.saveFile().getAbsolutePath();
+		String output = project.projectSourceFile().getAbsolutePath();
+//		String log = new File(this.tempDir, "JavaSourceGenerator.log").getAbsolutePath();
+		String[] args = new String[] {input, output};
+
+		JavaTools.java(JavaSourceGenerator.class.getName(), classpath.path(), args);
+//		JavaSourceGenerator.main(args);
+
+		this.compileAndCheckJavaExport(project);
+	}
+
+}

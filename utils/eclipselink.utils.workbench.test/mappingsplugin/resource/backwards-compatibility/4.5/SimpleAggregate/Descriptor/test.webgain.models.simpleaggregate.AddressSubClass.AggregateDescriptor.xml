@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.simpleaggregate.AddressSubClass.AggregateDescriptor</uniqueFilename>
+	<active>true</active>
+	<bldrClass>test.webgain.models.simpleaggregate.AddressSubClass</bldrClass>
+	<inheritancePolicy>
+		<InheritancePolicy>
+			<isRoot>false</isRoot>
+			<readSubclassesOnQuery>false</readSubclassesOnQuery>
+			<parent>test.webgain.models.simpleaggregate.Address.AggregateDescriptor</parent>
+			<classIndicatorPolicy>
+				<ClassIndicatorPolicy>
+					<classNameIsIndicator>false</classNameIsIndicator>
+					<useClassExtractionMethod>false</useClassExtractionMethod>
+					<defaultFieldName></defaultFieldName>
+					<indicatorType>0</indicatorType>
+					<fieldHandle>
+						<FieldHandle emptyAggregate="true">
+						</FieldHandle>
+					</fieldHandle>
+					<classExtractionMethodHandle>
+						<MethodHandle emptyAggregate="true">
+						</MethodHandle>
+					</classExtractionMethodHandle>
+				</ClassIndicatorPolicy>
+			</classIndicatorPolicy>
+		</InheritancePolicy>
+	</inheritancePolicy>
+	<mappings>
+		<Mapping>
+			<descriptor>test.webgain.models.simpleaggregate.AddressSubClass.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>true</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.simpleaggregate.AddressSubClass</methodClass>
+					<methodSignature>getCountry()</methodSignature>
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.simpleaggregate.AddressSubClass</methodClass>
+					<methodSignature>setCountry(java.lang.String)</methodSignature>
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>country</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=COUNTRY</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+	</mappings>
+	<descriptorClass>BldrAggregateDescriptor</descriptorClass>
+</Descriptor>

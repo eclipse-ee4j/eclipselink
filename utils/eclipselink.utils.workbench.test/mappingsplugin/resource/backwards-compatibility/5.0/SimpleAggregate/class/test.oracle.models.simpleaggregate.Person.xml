@@ -1,0 +1,523 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<class>
+   <name>test.oracle.models.simpleaggregate.Person</name>
+   <modifier>1</modifier>
+   <superclass>java.lang.Object</superclass>
+   <attributes>
+      <class-attribute>
+         <name>address</name>
+         <modifier>2</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.simpleaggregate.Address</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+      <class-attribute>
+         <name>age</name>
+         <modifier>1</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>int</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+      <class-attribute>
+         <name>firstName</name>
+         <modifier>1</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+      <class-attribute>
+         <name>gender</name>
+         <modifier>1</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+      <class-attribute>
+         <name>id</name>
+         <modifier>1</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>java.lang.Integer</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+      <class-attribute>
+         <name>lastName</name>
+         <modifier>1</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+   </attributes>
+   <methods>
+      <method>
+         <name>Person</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>fullName</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>genders</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.util.Vector</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getAddress</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.simpleaggregate.Address</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getAge</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>int</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getCity</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getFirstName</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getGender</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getId</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.Integer</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getLastName</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getPostalCode</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getState</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getStreet</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setAddress</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>test.oracle.models.simpleaggregate.Address</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setAge</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>int</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setCity</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setFirstName</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setGender</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setId</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>int</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setId</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>java.lang.Integer</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setLastName</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setPostalCode</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setState</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setStreet</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>toString</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+   </methods>
+</class>

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.oracle.models.phone.Serviceable.InterfaceDescriptor</uniqueFilename>
+	<comment>Serviceable interface descriptor</comment>
+	<active>true</active>
+	<bldrClass>test.oracle.models.phone.Serviceable</bldrClass>
+	<implementors>
+		<implementor>
+			<implementor>test.oracle.models.phone.Company.ClassDescriptor</implementor>
+		</implementor>
+		<implementor>
+			<implementor>test.oracle.models.phone.Household.ClassDescriptor</implementor>
+		</implementor>
+	</implementors>
+	<descriptorClass>BldrInterfaceDescriptor</descriptorClass>
+</Descriptor>

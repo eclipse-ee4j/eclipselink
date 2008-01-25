@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<BldrProject>
+	<name>Insurance</name>
+	<version>4.5.0</version>
+	<projectPackageName></projectPackageName>
+	<defaultsPolicy>
+		<ProjectDefaultsPolicy>
+			<defaults_methodAccess>true</defaults_methodAccess>
+			<projectIdentityPolicy>
+				<IdentityPolicy>
+					<existenceChecking>Assume existence</existenceChecking>
+					<identityMapSize>0</identityMapSize>
+					<identityMapClassName>com.webgain.integrator.internal.identitymaps.CacheIdentityMap</identityMapClassName>
+				</IdentityPolicy>
+			</projectIdentityPolicy>
+		</ProjectDefaultsPolicy>
+	</defaultsPolicy>
+	<ejbPolicy>
+		<ProjectEjbPolicy>
+			<ejbPersistenceType>EJB BMP</ejbPersistenceType>
+			<ejbJarXmlLocation>C:\DIWDev\Thor\Product\WMWTest\Resource\ejb\test.webgain.models.ejb20.cmp.employee.ejb-jar.xml</ejbJarXmlLocation>
+		</ProjectEjbPolicy>
+	</ejbPolicy>
+	<sequencingPolicy>
+		<SequencingPolicy>
+			<seq_preallocSize>50</seq_preallocSize>
+			<seq_type>Use native sequencing</seq_type>
+			<nameFieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</nameFieldHandle>
+			<counterFieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</counterFieldHandle>
+		</SequencingPolicy>
+	</sequencingPolicy>
+	<tableGenerationPolicy>
+		<TableGenerationPolicy>
+			<tabGen_defPKName>id</tabGen_defPKName>
+			<tabGen_PKSearchPat>*id</tabGen_PKSearchPat>
+		</TableGenerationPolicy>
+	</tableGenerationPolicy>
+	<repository>repository</repository>
+	<database>INSURANCE_DB</database>
+	<packages>
+		<package>
+			<package>test.webgain.models.insurance</package>
+		</package>
+	</packages>
+</BldrProject>

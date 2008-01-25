@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<Class>
+	<name>test.webgain.models.complexinheritance.Engineer</name>
+	<isInterface>false</isInterface>
+	<modifier>
+		<Modifier>
+			<modifier_code>1</modifier_code>
+		</Modifier>
+	</modifier>
+	<superclass>test.webgain.models.complexinheritance.Person</superclass>
+	<methods>
+		<Method>
+			<constructor>true</constructor>
+			<name>Engineer</name>
+			<modifier>
+				<Modifier>
+					<modifier_code>1</modifier_code>
+				</Modifier>
+			</modifier>
+		</Method>
+	</methods>
+</Class>

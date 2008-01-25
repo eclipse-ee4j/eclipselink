@@ -1,0 +1,30 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<table>
+   <short-name>SALARY</short-name>
+   <valid-file-name>SALARY</valid-file-name>
+   <is-fully-qualified>false</is-fully-qualified>
+   <fields>
+      <database-field>
+         <name>EMP_ID</name>
+         <identity>false</identity>
+         <allows-null>false</allows-null>
+         <primary-key>true</primary-key>
+         <size>0</size>
+         <sub-size>0</sub-size>
+         <unique>false</unique>
+         <platform-name>Oracle</platform-name>
+         <type>NUMBER</type>
+      </database-field>
+      <database-field>
+         <name>SALARY</name>
+         <identity>false</identity>
+         <allows-null>true</allows-null>
+         <primary-key>false</primary-key>
+         <size>0</size>
+         <sub-size>0</sub-size>
+         <unique>false</unique>
+         <platform-name>Oracle</platform-name>
+         <type>NUMBER</type>
+      </database-field>
+   </fields>
+</table>

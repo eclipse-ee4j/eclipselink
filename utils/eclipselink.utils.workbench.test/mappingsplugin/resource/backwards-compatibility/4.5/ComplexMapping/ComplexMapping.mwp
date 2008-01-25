@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<BldrProject>
+	<name>ComplexMapping</name>
+	<version>4.5.0</version>
+	<projectPackageName></projectPackageName>
+	<defaultsPolicy>
+		<ProjectDefaultsPolicy>
+			<defaults_methodAccess>false</defaults_methodAccess>
+			<projectIdentityPolicy>
+				<IdentityPolicy>
+					<existenceChecking>Check database</existenceChecking>
+					<identityMapSize>50</identityMapSize>
+					<identityMapClassName>com.webgain.integrator.internal.identitymaps.FullIdentityMap</identityMapClassName>
+				</IdentityPolicy>
+			</projectIdentityPolicy>
+		</ProjectDefaultsPolicy>
+	</defaultsPolicy>
+	<ejbPolicy>
+		<ProjectEjbPolicy>
+			<ejbPersistenceType>EJB 1.1 CMP</ejbPersistenceType>
+		</ProjectEjbPolicy>
+	</ejbPolicy>
+	<sequencingPolicy>
+		<SequencingPolicy>
+			<seq_preallocSize>25</seq_preallocSize>
+			<seq_type>Use default sequencing</seq_type>
+			<nameFieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</nameFieldHandle>
+			<counterFieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</counterFieldHandle>
+		</SequencingPolicy>
+	</sequencingPolicy>
+	<tableGenerationPolicy>
+		<TableGenerationPolicy>
+			<tabGen_defPKName>foo</tabGen_defPKName>
+			<tabGen_PKSearchPat>*foo</tabGen_PKSearchPat>
+		</TableGenerationPolicy>
+	</tableGenerationPolicy>
+	<repository>repository</repository>
+	<database>COMPLEXMAPPINGSYSTEM_DB</database>
+	<packages>
+		<package>
+			<package>test.webgain.models.complexmapping</package>
+		</package>
+	</packages>
+</BldrProject>

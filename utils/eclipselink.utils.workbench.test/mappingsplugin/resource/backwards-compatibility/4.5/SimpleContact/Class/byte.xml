@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<Class>
+	<name>byte</name>
+	<isInterface>false</isInterface>
+	<modifier>
+		<Modifier>
+			<modifier_code>1</modifier_code>
+		</Modifier>
+	</modifier>
+	<superclass>java.lang.Object</superclass>
+</Class>

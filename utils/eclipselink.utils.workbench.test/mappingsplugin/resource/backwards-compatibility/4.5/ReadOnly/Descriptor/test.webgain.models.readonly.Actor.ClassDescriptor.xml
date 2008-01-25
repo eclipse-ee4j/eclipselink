@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.readonly.Actor.ClassDescriptor</uniqueFilename>
+	<active>true</active>
+	<bldrClass>test.webgain.models.readonly.Actor</bldrClass>
+	<mappings>
+		<Mapping>
+			<descriptor>test.webgain.models.readonly.Actor.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>id</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>RO_ACTOR</table>
+					<fieldName>ACT_ID</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.readonly.Actor.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>minimumSalary</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>RO_ACTOR</table>
+					<fieldName>MIN_SAL</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.readonly.Actor.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>true</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>movies</instanceVariableName>
+			<referenceDescriptor>test.webgain.models.readonly.Movie.ClassDescriptor</referenceDescriptor>
+			<privateOwned>false</privateOwned>
+			<usesBatchReading>false</usesBatchReading>
+			<referenceHandle>
+				<ReferenceHandle>
+					<table>ACT_MOV</table>
+					<referenceName>ACT_MOV_RO_ACTOR</referenceName>
+				</ReferenceHandle>
+			</referenceHandle>
+			<keyMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</keyMethodHandle>
+			<indirectionPolicy>
+				<CollectionIndirectionPolicy>
+					<usesIndirection>false</usesIndirection>
+					<usesTransparentIndirection>false</usesTransparentIndirection>
+				</CollectionIndirectionPolicy>
+			</indirectionPolicy>
+			<orderingCriteria>
+				<CollectionOrderingCriteria>
+					<useOrdering>false</useOrdering>
+					<ascending>true</ascending>
+				</CollectionOrderingCriteria>
+			</orderingCriteria>
+			<collectionType>java.util.Vector</collectionType>
+			<relationTable>ACT_MOV</relationTable>
+			<targetReferenceHandle>
+				<ReferenceHandle>
+					<table>ACT_MOV</table>
+					<referenceName>ACT_MOV_RO_MOVIE</referenceName>
+				</ReferenceHandle>
+			</targetReferenceHandle>
+			<classIndicator>BldrManyToManyMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.readonly.Actor.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>name</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>RO_ACTOR</table>
+					<fieldName>ACT_NAME</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+	</mappings>
+	<primaryKeyFieldHandles>
+		<FieldHandle>
+			<table>RO_ACTOR</table>
+			<fieldName>ACT_ID</fieldName>
+		</FieldHandle>
+	</primaryKeyFieldHandles>
+	<primaryTable>RO_ACTOR</primaryTable>
+	<associatedTables>
+		<table>
+			<table>RO_ACTOR</table>
+		</table>
+	</associatedTables>
+	<sequenceNumberName>SEQ</sequenceNumberName>
+	<usesSequencing>true</usesSequencing>
+	<sequenceNumberFieldHandle>
+		<FieldHandle>
+			<table>RO_ACTOR</table>
+			<fieldName>ACT_ID</fieldName>
+		</FieldHandle>
+	</sequenceNumberFieldHandle>
+	<queryManager>
+		<QueryManager>
+			<descriptorAlias>Actor</descriptorAlias>
+		</QueryManager>
+	</queryManager>
+	<identityPolicy>
+		<IdentityPolicy>
+			<identityMapSize>100</identityMapSize>
+			<identityMapClassName>com.webgain.integrator.internal.identitymaps.FullIdentityMap</identityMapClassName>
+		</IdentityPolicy>
+	</identityPolicy>
+	<descriptorClass>BldrClassDescriptor</descriptorClass>
+</Descriptor>

@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.readonly.Promoter.ClassDescriptor</uniqueFilename>
+	<active>true</active>
+	<bldrClass>test.webgain.models.readonly.Promoter</bldrClass>
+	<mappings>
+		<Mapping>
+			<descriptor>test.webgain.models.readonly.Promoter.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>id</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>RO_PROMO</table>
+					<fieldName>PROMO_ID</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.readonly.Promoter.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>name</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>RO_PROMO</table>
+					<fieldName>NAME</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.readonly.Promoter.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>phoneNumbers</instanceVariableName>
+			<classIndicator>BldrUnmappedMapping</classIndicator>
+		</Mapping>
+	</mappings>
+	<primaryKeyFieldHandles>
+		<FieldHandle>
+			<table>RO_PROMO</table>
+			<fieldName>PROMO_ID</fieldName>
+		</FieldHandle>
+	</primaryKeyFieldHandles>
+	<primaryTable>RO_PROMO</primaryTable>
+	<associatedTables>
+		<table>
+			<table>RO_PROMO</table>
+		</table>
+	</associatedTables>
+	<sequenceNumberName>PROMO_SEQ</sequenceNumberName>
+	<usesSequencing>true</usesSequencing>
+	<sequenceNumberFieldHandle>
+		<FieldHandle>
+			<table>RO_PROMO</table>
+			<fieldName>PROMO_ID</fieldName>
+		</FieldHandle>
+	</sequenceNumberFieldHandle>
+	<queryManager>
+		<QueryManager>
+			<descriptorAlias>Promoter</descriptorAlias>
+		</QueryManager>
+	</queryManager>
+	<identityPolicy>
+		<IdentityPolicy>
+			<identityMapSize>100</identityMapSize>
+			<identityMapClassName>com.webgain.integrator.internal.identitymaps.FullIdentityMap</identityMapClassName>
+		</IdentityPolicy>
+	</identityPolicy>
+	<descriptorClass>BldrClassDescriptor</descriptorClass>
+</Descriptor>

@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.complexaggregate.PeriodDescription.AggregateDescriptor</uniqueFilename>
+	<active>true</active>
+	<bldrClass>test.webgain.models.complexaggregate.PeriodDescription</bldrClass>
+	<mappings>
+		<Mapping>
+			<descriptor>test.webgain.models.complexaggregate.PeriodDescription.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>endPeriod</instanceVariableName>
+			<classIndicator>BldrUnmappedMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.complexaggregate.PeriodDescription.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>true</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.complexaggregate.PeriodDescription</methodClass>
+					<methodSignature>getPeriod()</methodSignature>
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.complexaggregate.PeriodDescription</methodClass>
+					<methodSignature>setPeriod(test.webgain.models.complexaggregate.Period)</methodSignature>
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>period</instanceVariableName>
+			<referenceDescriptor>test.webgain.models.complexaggregate.Period.AggregateDescriptor</referenceDescriptor>
+			<allowsNull>false</allowsNull>
+			<pathsToFields>
+				<AggregatePathToField>
+					<fieldDescription>direct field</fieldDescription>
+					<mappingHandles>
+						<MappingHandle>
+							<mappingDescriptor>test.webgain.models.complexaggregate.Period.AggregateDescriptor</mappingDescriptor>
+							<mappingName>endDate</mappingName>
+						</MappingHandle>
+					</mappingHandles>
+				</AggregatePathToField>
+				<AggregatePathToField>
+					<fieldDescription>direct field</fieldDescription>
+					<mappingHandles>
+						<MappingHandle>
+							<mappingDescriptor>test.webgain.models.complexaggregate.Period.AggregateDescriptor</mappingDescriptor>
+							<mappingName>startDate</mappingName>
+						</MappingHandle>
+					</mappingHandles>
+				</AggregatePathToField>
+			</pathsToFields>
+			<classIndicator>BldrAggregateMapping</classIndicator>
+		</Mapping>
+	</mappings>
+	<descriptorClass>BldrAggregateDescriptor</descriptorClass>
+</Descriptor>

@@ -1,0 +1,76 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<class>
+   <name>test.oracle.models.complexinheritance.Car</name>
+   <modifier>1</modifier>
+   <superclass>test.oracle.models.complexinheritance.FueledVehicle</superclass>
+   <methods>
+      <method>
+         <name>Car</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>example1</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexinheritance.Car</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>example2</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexinheritance.Car</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>example3</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexinheritance.Car</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>example4</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexinheritance.Car</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>tableDefinition</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>org.eclipse.persistence.tools.schemaframework.TableDefinition</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+   </methods>
+</class>

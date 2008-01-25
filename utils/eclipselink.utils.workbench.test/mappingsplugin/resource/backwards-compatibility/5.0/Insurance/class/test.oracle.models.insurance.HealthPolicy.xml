@@ -1,0 +1,98 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<class>
+   <name>test.oracle.models.insurance.HealthPolicy</name>
+   <modifier>1</modifier>
+   <superclass>test.oracle.models.insurance.Policy</superclass>
+   <attributes>
+      <class-attribute>
+         <name>coverageRate</name>
+         <modifier>2</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>float</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+   </attributes>
+   <methods>
+      <method>
+         <name>HealthPolicy</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>clone</name>
+         <modifier>4</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.Object</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>example1</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.insurance.HealthPolicy</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getCoverageRate</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>float</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setCoverageRate</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>float</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+   </methods>
+</class>

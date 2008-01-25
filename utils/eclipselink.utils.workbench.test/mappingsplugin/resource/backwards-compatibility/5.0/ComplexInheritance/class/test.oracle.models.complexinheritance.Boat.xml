@@ -1,0 +1,67 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<class>
+   <name>test.oracle.models.complexinheritance.Boat</name>
+   <modifier>1</modifier>
+   <superclass>test.oracle.models.complexinheritance.NonFueledVehicle</superclass>
+   <methods>
+      <method>
+         <name>Boat</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>example1</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexinheritance.Boat</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>test.oracle.models.complexinheritance.Company</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>example2</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexinheritance.Boat</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>test.oracle.models.complexinheritance.Company</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>example3</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexinheritance.Boat</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>test.oracle.models.complexinheritance.Company</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+   </methods>
+</class>

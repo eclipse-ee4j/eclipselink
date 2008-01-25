@@ -1,0 +1,21 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<class>
+   <name>org.eclipse.persistence.testing.tljaxb.TeamImpl</name>
+   <modifier>1</modifier>
+   <superclass>org.eclipse.persistence.testing.tljaxb.TeamTypeImpl</superclass>
+   <interfaces>
+      <interface>
+         <name>org.eclipse.persistence.testing.tljaxb.Team</name>
+      </interface>
+   </interfaces>
+   <methods>
+      <method>
+         <name>TeamImpl</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+         <accessed-attribute-handle>
+            <attribute-handle/>
+         </accessed-attribute-handle>
+      </method>
+   </methods>
+</class>

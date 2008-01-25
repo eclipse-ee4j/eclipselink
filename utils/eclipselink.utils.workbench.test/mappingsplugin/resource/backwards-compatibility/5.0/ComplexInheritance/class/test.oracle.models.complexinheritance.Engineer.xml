@@ -1,0 +1,16 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<class>
+   <name>test.oracle.models.complexinheritance.Engineer</name>
+   <modifier>1</modifier>
+   <superclass>test.oracle.models.complexinheritance.Person</superclass>
+   <methods>
+      <method>
+         <name>Engineer</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+   </methods>
+</class>

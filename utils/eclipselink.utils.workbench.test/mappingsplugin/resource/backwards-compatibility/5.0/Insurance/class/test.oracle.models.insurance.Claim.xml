@@ -1,0 +1,215 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<class>
+   <name>test.oracle.models.insurance.Claim</name>
+   <modifier>1025</modifier>
+   <superclass>java.lang.Object</superclass>
+   <interfaces>
+      <interface>
+         <name>java.io.Serializable</name>
+      </interface>
+   </interfaces>
+   <attributes>
+      <class-attribute>
+         <name>amount</name>
+         <modifier>2</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>float</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+      <class-attribute>
+         <name>id</name>
+         <modifier>2</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>long</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+      <class-attribute>
+         <name>policy</name>
+         <modifier>2</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.insurance.Policy</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+   </attributes>
+   <methods>
+      <method>
+         <name>Claim</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getAmount</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>float</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getId</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>long</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getPolicy</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.insurance.Policy</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>healthClaimExample</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.insurance.HealthClaim</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setAmount</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>float</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setId</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>long</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setPolicy</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>test.oracle.models.insurance.Policy</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>toString</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+   </methods>
+</class>

@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.readonly.Country.ClassDescriptor</uniqueFilename>
+	<active>true</active>
+	<bldrClass>test.webgain.models.readonly.Country</bldrClass>
+	<mappings>
+		<Mapping>
+			<descriptor>test.webgain.models.readonly.Country.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>id</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>COUNTRY</table>
+					<fieldName>COUNTRY_ID</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.readonly.Country.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>name</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>COUNTRY</table>
+					<fieldName>NAME</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+	</mappings>
+	<primaryKeyFieldHandles>
+		<FieldHandle>
+			<table>COUNTRY</table>
+			<fieldName>COUNTRY_ID</fieldName>
+		</FieldHandle>
+	</primaryKeyFieldHandles>
+	<primaryTable>COUNTRY</primaryTable>
+	<associatedTables>
+		<table>
+			<table>COUNTRY</table>
+		</table>
+	</associatedTables>
+	<sequenceNumberName>COUNTRY_SEQ</sequenceNumberName>
+	<usesSequencing>true</usesSequencing>
+	<sequenceNumberFieldHandle>
+		<FieldHandle>
+			<table>COUNTRY</table>
+			<fieldName>COUNTRY_ID</fieldName>
+		</FieldHandle>
+	</sequenceNumberFieldHandle>
+	<queryManager>
+		<QueryManager>
+			<descriptorAlias>Country</descriptorAlias>
+		</QueryManager>
+	</queryManager>
+	<identityPolicy>
+		<IdentityPolicy>
+			<identityMapSize>100</identityMapSize>
+			<identityMapClassName>com.webgain.integrator.internal.identitymaps.FullIdentityMap</identityMapClassName>
+		</IdentityPolicy>
+	</identityPolicy>
+	<descriptorClass>BldrClassDescriptor</descriptorClass>
+</Descriptor>

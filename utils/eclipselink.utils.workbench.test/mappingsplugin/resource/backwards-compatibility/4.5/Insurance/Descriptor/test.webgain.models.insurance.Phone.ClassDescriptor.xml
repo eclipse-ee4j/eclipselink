@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.insurance.Phone.ClassDescriptor</uniqueFilename>
+	<active>false</active>
+	<bldrClass>test.webgain.models.insurance.Phone</bldrClass>
+	<mappings>
+		<Mapping>
+			<descriptor>test.webgain.models.insurance.Phone.ClassDescriptor</descriptor>
+			<usesMethodAccessing>true</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.insurance.Phone</methodClass>
+					<methodSignature>getAreaCode()</methodSignature>
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.insurance.Phone</methodClass>
+					<methodSignature>setAreaCode(int)</methodSignature>
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>areaCode</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.insurance.Phone.ClassDescriptor</descriptor>
+			<usesMethodAccessing>true</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.insurance.Phone</methodClass>
+					<methodSignature>getNumber()</methodSignature>
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.insurance.Phone</methodClass>
+					<methodSignature>setNumber(int)</methodSignature>
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>number</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.insurance.Phone.ClassDescriptor</descriptor>
+			<usesMethodAccessing>true</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.insurance.Phone</methodClass>
+					<methodSignature>getType()</methodSignature>
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.insurance.Phone</methodClass>
+					<methodSignature>setType(java.lang.String)</methodSignature>
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>type</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+	</mappings>
+	<usesSequencing>false</usesSequencing>
+	<sequenceNumberFieldHandle>
+		<FieldHandle emptyAggregate="true">
+		</FieldHandle>
+	</sequenceNumberFieldHandle>
+	<queryManager>
+		<QueryManager>
+			<descriptorAlias>Phone</descriptorAlias>
+		</QueryManager>
+	</queryManager>
+	<descriptorClass>BldrClassDescriptor</descriptorClass>
+</Descriptor>

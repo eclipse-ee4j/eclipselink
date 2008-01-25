@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<Class>
+	<name>org.eclipse.persistence.publicinterface.DatabaseRow</name>
+	<isInterface>false</isInterface>
+	<modifier>
+		<Modifier>
+			<modifier_code>1</modifier_code>
+		</Modifier>
+	</modifier>
+	<superclass>java.lang.Object</superclass>
+	<interfacesImplemented>
+		<interface>
+			<interface>java.io.Serializable</interface>
+		</interface>
+		<interface>
+			<interface>java.lang.Cloneable</interface>
+		</interface>
+		<interface>
+			<interface>java.util.Map</interface>
+		</interface>
+	</interfacesImplemented>
+</Class>

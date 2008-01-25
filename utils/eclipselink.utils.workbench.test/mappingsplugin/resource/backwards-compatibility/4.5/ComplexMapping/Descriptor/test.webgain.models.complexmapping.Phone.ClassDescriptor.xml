@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.complexmapping.Phone.ClassDescriptor</uniqueFilename>
+	<active>true</active>
+	<bldrClass>test.webgain.models.complexmapping.Phone</bldrClass>
+	<mappings>
+		<Mapping>
+			<descriptor>test.webgain.models.complexmapping.Phone.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>areaCode</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>MAP_PHO</table>
+					<fieldName>AREACODE</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.complexmapping.Phone.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>id</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>MAP_PHO</table>
+					<fieldName>P_ID</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.complexmapping.Phone.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>number</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>MAP_PHO</table>
+					<fieldName>PNUMBER</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+	</mappings>
+	<primaryKeyFieldHandles>
+		<FieldHandle>
+			<table>MAP_PHO</table>
+			<fieldName>P_ID</fieldName>
+		</FieldHandle>
+	</primaryKeyFieldHandles>
+	<primaryTable>MAP_PHO</primaryTable>
+	<associatedTables>
+		<table>
+			<table>MAP_PHO</table>
+		</table>
+	</associatedTables>
+	<sequenceNumberName>SEQ_ID</sequenceNumberName>
+	<usesSequencing>true</usesSequencing>
+	<sequenceNumberFieldHandle>
+		<FieldHandle>
+			<table>MAP_PHO</table>
+			<fieldName>P_ID</fieldName>
+		</FieldHandle>
+	</sequenceNumberFieldHandle>
+	<queryManager>
+		<QueryManager>
+			<descriptorAlias>Phone</descriptorAlias>
+		</QueryManager>
+	</queryManager>
+	<identityPolicy>
+		<IdentityPolicy>
+			<existenceChecking>Assume non-existence</existenceChecking>
+			<identityMapSize>100</identityMapSize>
+			<identityMapClassName>com.webgain.integrator.internal.identitymaps.HardCacheWeakIdentityMap</identityMapClassName>
+		</IdentityPolicy>
+	</identityPolicy>
+	<descriptorClass>BldrClassDescriptor</descriptorClass>
+</Descriptor>

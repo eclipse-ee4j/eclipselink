@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.complexinheritance.PC.ClassDescriptor</uniqueFilename>
+	<active>true</active>
+	<bldrClass>test.webgain.models.complexinheritance.PC</bldrClass>
+	<inheritancePolicy>
+		<InheritancePolicy>
+			<isRoot>false</isRoot>
+			<readSubclassesOnQuery>true</readSubclassesOnQuery>
+			<parent>test.webgain.models.complexinheritance.Computer.ClassDescriptor</parent>
+			<classIndicatorPolicy>
+				<ClassIndicatorPolicy>
+					<classNameIsIndicator>false</classNameIsIndicator>
+					<useClassExtractionMethod>false</useClassExtractionMethod>
+					<defaultFieldName></defaultFieldName>
+					<indicatorType>0</indicatorType>
+					<fieldHandle>
+						<FieldHandle emptyAggregate="true">
+						</FieldHandle>
+					</fieldHandle>
+					<classExtractionMethodHandle>
+						<MethodHandle emptyAggregate="true">
+						</MethodHandle>
+					</classExtractionMethodHandle>
+				</ClassIndicatorPolicy>
+			</classIndicatorPolicy>
+		</InheritancePolicy>
+	</inheritancePolicy>
+	<afterLoadingPolicy>
+		<DescriptorAfterLoadingPolicy>
+			<postLoadMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.complexinheritance.PC</methodClass>
+					<methodSignature>addToDescriptor(com.webgain.integrator.publicinterface.Descriptor)</methodSignature>
+				</MethodHandle>
+			</postLoadMethodHandle>
+		</DescriptorAfterLoadingPolicy>
+	</afterLoadingPolicy>
+	<primaryKeyFieldHandles>
+		<FieldHandle>
+			<table>INH_COMP</table>
+			<fieldName>ID</fieldName>
+		</FieldHandle>
+	</primaryKeyFieldHandles>
+	<primaryTable>INH_COMP</primaryTable>
+	<associatedTables>
+		<table>
+			<table>INH_COMP</table>
+		</table>
+	</associatedTables>
+	<usesSequencing>false</usesSequencing>
+	<sequenceNumberFieldHandle>
+		<FieldHandle emptyAggregate="true">
+		</FieldHandle>
+	</sequenceNumberFieldHandle>
+	<queryManager>
+		<QueryManager>
+			<descriptorAlias>PC</descriptorAlias>
+		</QueryManager>
+	</queryManager>
+	<identityPolicy>
+		<IdentityPolicy>
+			<identityMapSize>100</identityMapSize>
+			<identityMapClassName>com.webgain.integrator.internal.identitymaps.FullIdentityMap</identityMapClassName>
+		</IdentityPolicy>
+	</identityPolicy>
+	<descriptorClass>BldrClassDescriptor</descriptorClass>
+</Descriptor>

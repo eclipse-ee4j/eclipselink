@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.complexinheritance.SportsCar.ClassDescriptor</uniqueFilename>
+	<active>true</active>
+	<bldrClass>test.webgain.models.complexinheritance.SportsCar</bldrClass>
+	<inheritancePolicy>
+		<InheritancePolicy>
+			<isRoot>false</isRoot>
+			<readSubclassesOnQuery>false</readSubclassesOnQuery>
+			<parent>test.webgain.models.complexinheritance.Car.ClassDescriptor</parent>
+			<classIndicatorPolicy>
+				<ClassIndicatorPolicy>
+					<classNameIsIndicator>false</classNameIsIndicator>
+					<useClassExtractionMethod>false</useClassExtractionMethod>
+					<defaultFieldName></defaultFieldName>
+					<indicatorType>0</indicatorType>
+					<fieldHandle>
+						<FieldHandle emptyAggregate="true">
+						</FieldHandle>
+					</fieldHandle>
+					<classExtractionMethodHandle>
+						<MethodHandle emptyAggregate="true">
+						</MethodHandle>
+					</classExtractionMethodHandle>
+				</ClassIndicatorPolicy>
+			</classIndicatorPolicy>
+		</InheritancePolicy>
+	</inheritancePolicy>
+	<primaryKeyFieldHandles>
+		<FieldHandle>
+			<table>CAR</table>
+			<fieldName>ID</fieldName>
+		</FieldHandle>
+	</primaryKeyFieldHandles>
+	<primaryTable>CAR</primaryTable>
+	<associatedTables>
+		<table>
+			<table>CAR</table>
+		</table>
+	</associatedTables>
+	<usesSequencing>false</usesSequencing>
+	<sequenceNumberFieldHandle>
+		<FieldHandle emptyAggregate="true">
+		</FieldHandle>
+	</sequenceNumberFieldHandle>
+	<queryManager>
+		<QueryManager>
+			<descriptorAlias>SportsCar</descriptorAlias>
+		</QueryManager>
+	</queryManager>
+	<identityPolicy>
+		<IdentityPolicy>
+			<identityMapSize>100</identityMapSize>
+			<identityMapClassName>com.webgain.integrator.internal.identitymaps.FullIdentityMap</identityMapClassName>
+		</IdentityPolicy>
+	</identityPolicy>
+	<descriptorClass>BldrClassDescriptor</descriptorClass>
+</Descriptor>

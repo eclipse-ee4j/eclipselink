@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<Class>
+	<name>java.lang.StringBuffer</name>
+	<isInterface>false</isInterface>
+	<modifier>
+		<Modifier>
+			<modifier_code>17</modifier_code>
+		</Modifier>
+	</modifier>
+	<superclass>java.lang.Object</superclass>
+	<interfacesImplemented>
+		<interface>
+			<interface>java.io.Serializable</interface>
+		</interface>
+	</interfacesImplemented>
+</Class>

@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.complexaggregate.Address.ClassDescriptor</uniqueFilename>
+	<comment>Address Descriptor</comment>
+	<active>true</active>
+	<bldrClass>test.webgain.models.complexaggregate.Address</bldrClass>
+	<mappings>
+		<Mapping>
+			<descriptor>test.webgain.models.complexaggregate.Address.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>address</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>AGG_ADD</table>
+					<fieldName>ADDRESS</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.complexaggregate.Address.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>id</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>AGG_ADD</table>
+					<fieldName>ID</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+	</mappings>
+	<primaryKeyFieldHandles>
+		<FieldHandle>
+			<table>AGG_ADD</table>
+			<fieldName>ID</fieldName>
+		</FieldHandle>
+	</primaryKeyFieldHandles>
+	<primaryTable>AGG_ADD</primaryTable>
+	<associatedTables>
+		<table>
+			<table>AGG_ADD</table>
+		</table>
+	</associatedTables>
+	<sequenceNumberName>SEQ</sequenceNumberName>
+	<usesSequencing>true</usesSequencing>
+	<sequenceNumberFieldHandle>
+		<FieldHandle>
+			<table>AGG_ADD</table>
+			<fieldName>ID</fieldName>
+		</FieldHandle>
+	</sequenceNumberFieldHandle>
+	<queryManager>
+		<QueryManager>
+			<descriptorAlias>Address</descriptorAlias>
+		</QueryManager>
+	</queryManager>
+	<identityPolicy>
+		<IdentityPolicy>
+			<existenceChecking>Assume non-existence</existenceChecking>
+			<identityMapSize>100</identityMapSize>
+			<identityMapClassName>com.webgain.integrator.internal.identitymaps.FullIdentityMap</identityMapClassName>
+		</IdentityPolicy>
+	</identityPolicy>
+	<descriptorClass>BldrClassDescriptor</descriptorClass>
+</Descriptor>

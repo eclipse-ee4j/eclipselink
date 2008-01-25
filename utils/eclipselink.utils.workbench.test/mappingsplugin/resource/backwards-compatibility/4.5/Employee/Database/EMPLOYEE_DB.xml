@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<Database>
+	<name>EMPLOYEE_DB</name>
+	<platformName>Oracle</platformName>
+	<deploymentLoginInfoName>Oracle</deploymentLoginInfoName>
+	<developmentLoginInfoName>Oracle</developmentLoginInfoName>
+	<loginInfos>
+		<LoginInfo>
+			<name>Oracle</name>
+			<driverClass>oracle.jdbc.OracleDriver</driverClass>
+			<password>password</password>
+			<savePassword>true</savePassword>
+			<url>jdbc:oracle:thin:@tlserver12-2k.ca.oracle.com:1521:RALEIGH</url>
+			<userName>mwdev1</userName>
+		</LoginInfo>
+	</loginInfos>
+	<tables>
+		<table>
+			<table>ADDRESS</table>
+		</table>
+		<table>
+			<table>EMPLOYEE</table>
+		</table>
+		<table>
+			<table>LPROJECT</table>
+		</table>
+		<table>
+			<table>PHONE</table>
+		</table>
+		<table>
+			<table>PROJ_EMP</table>
+		</table>
+		<table>
+			<table>PROJECT</table>
+		</table>
+		<table>
+			<table>RESPONS</table>
+		</table>
+		<table>
+			<table>SALARY</table>
+		</table>
+		<table>
+			<table>SEQUENCE</table>
+		</table>
+	</tables>
+</Database>

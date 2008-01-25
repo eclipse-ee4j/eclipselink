@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<BldrProject>
+	<name>ComplexAggregate</name>
+	<version>4.5.0</version>
+	<projectPackageName></projectPackageName>
+	<defaultsPolicy>
+		<ProjectDefaultsPolicy>
+			<defaults_methodAccess>false</defaults_methodAccess>
+			<projectIdentityPolicy>
+				<IdentityPolicy>
+					<existenceChecking>Check database</existenceChecking>
+					<identityMapSize>405</identityMapSize>
+					<identityMapClassName>com.webgain.integrator.internal.identitymaps.FullIdentityMap</identityMapClassName>
+				</IdentityPolicy>
+			</projectIdentityPolicy>
+		</ProjectDefaultsPolicy>
+	</defaultsPolicy>
+	<ejbPolicy>
+		<ProjectEjbPolicy>
+			<ejbPersistenceType>No EJB</ejbPersistenceType>
+		</ProjectEjbPolicy>
+	</ejbPolicy>
+	<sequencingPolicy>
+		<SequencingPolicy>
+			<seq_preallocSize>50</seq_preallocSize>
+			<seq_type>Use sequencing table</seq_type>
+			<nameFieldHandle>
+				<FieldHandle>
+					<table>SEQUENCE</table>
+					<fieldName>SEQ_NAME</fieldName>
+				</FieldHandle>
+			</nameFieldHandle>
+			<counterFieldHandle>
+				<FieldHandle>
+					<table>SEQUENCE</table>
+					<fieldName>SEQ_COUNT</fieldName>
+				</FieldHandle>
+			</counterFieldHandle>
+			<seq_table>SEQUENCE</seq_table>
+		</SequencingPolicy>
+	</sequencingPolicy>
+	<tableGenerationPolicy>
+		<TableGenerationPolicy>
+			<tabGen_defPKName>id</tabGen_defPKName>
+			<tabGen_PKSearchPat>*id</tabGen_PKSearchPat>
+		</TableGenerationPolicy>
+	</tableGenerationPolicy>
+	<repository>repository</repository>
+	<database>COMPLEXAGGREGATESYSTEM2_DB</database>
+	<packages>
+		<package>
+			<package>test.webgain.models.complexaggregate</package>
+		</package>
+	</packages>
+</BldrProject>

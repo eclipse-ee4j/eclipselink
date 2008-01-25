@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table>
+   <short-name>VHCL_POL</short-name>
+   <columns>
+      <column>
+         <name>MODEL</name>
+         <type>VARCHAR2</type>
+         <size>30</size>
+         <allows-null>true</allows-null>
+      </column>
+      <column>
+         <name>POL_ID</name>
+         <type>NUMBER</type>
+         <size>19</size>
+         <unique>true</unique>
+         <primary-key>true</primary-key>
+      </column>
+   </columns>
+</table>

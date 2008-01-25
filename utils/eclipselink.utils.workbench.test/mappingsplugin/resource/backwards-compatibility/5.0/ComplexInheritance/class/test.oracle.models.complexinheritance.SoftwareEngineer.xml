@@ -1,0 +1,72 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<class>
+   <name>test.oracle.models.complexinheritance.SoftwareEngineer</name>
+   <modifier>1</modifier>
+   <superclass>test.oracle.models.complexinheritance.Engineer</superclass>
+   <attributes>
+      <class-attribute>
+         <name>boss</name>
+         <modifier>1</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexinheritance.Engineer</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+      <class-attribute>
+         <name>isExperiencedInJava</name>
+         <modifier>1</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>boolean</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+   </attributes>
+   <methods>
+      <method>
+         <name>SoftwareEngineer</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+   </methods>
+</class>

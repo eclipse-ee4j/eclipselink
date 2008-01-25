@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.complexaggregate.ProjectDescription.AggregateDescriptor</uniqueFilename>
+	<active>true</active>
+	<bldrClass>test.webgain.models.complexaggregate.ProjectDescription</bldrClass>
+	<mappings>
+		<Mapping>
+			<descriptor>test.webgain.models.complexaggregate.ProjectDescription.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>computer</instanceVariableName>
+			<referenceDescriptor>test.webgain.models.complexaggregate.Computer.ClassDescriptor</referenceDescriptor>
+			<privateOwned>true</privateOwned>
+			<usesBatchReading>false</usesBatchReading>
+			<referenceHandle>
+				<ReferenceHandle>
+					<table>AGG_EMP</table>
+					<referenceName>AGG_EMP_AGG_COM</referenceName>
+				</ReferenceHandle>
+			</referenceHandle>
+			<usesJoining>false</usesJoining>
+			<indirectionPolicy>
+				<IndirectionPolicy>
+					<usesIndirection>true</usesIndirection>
+				</IndirectionPolicy>
+			</indirectionPolicy>
+			<classIndicator>BldrOneToOneMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.complexaggregate.ProjectDescription.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>description</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=EM_PDESC</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.complexaggregate.ProjectDescription.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>id</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=EM_ID</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.complexaggregate.ProjectDescription.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>languages</instanceVariableName>
+			<referenceDescriptor>test.webgain.models.complexaggregate.Language.ClassDescriptor</referenceDescriptor>
+			<privateOwned>false</privateOwned>
+			<usesBatchReading>false</usesBatchReading>
+			<referenceHandle>
+				<ReferenceHandle>
+					<table>EMP_LAN</table>
+					<referenceName>EMP_LAN_AGG_EMP</referenceName>
+				</ReferenceHandle>
+			</referenceHandle>
+			<keyMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</keyMethodHandle>
+			<indirectionPolicy>
+				<CollectionIndirectionPolicy>
+					<usesIndirection>true</usesIndirection>
+					<usesTransparentIndirection>false</usesTransparentIndirection>
+				</CollectionIndirectionPolicy>
+			</indirectionPolicy>
+			<orderingCriteria>
+				<CollectionOrderingCriteria>
+					<useOrdering>false</useOrdering>
+					<ascending>true</ascending>
+				</CollectionOrderingCriteria>
+			</orderingCriteria>
+			<collectionType>java.util.Vector</collectionType>
+			<relationTable>EMP_LAN</relationTable>
+			<targetReferenceHandle>
+				<ReferenceHandle>
+					<table>EMP_LAN</table>
+					<referenceName>EMP_LAN_AGG_LAN</referenceName>
+				</ReferenceHandle>
+			</targetReferenceHandle>
+			<classIndicator>BldrManyToManyMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.complexaggregate.ProjectDescription.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>responsibilities</instanceVariableName>
+			<referenceDescriptor>test.webgain.models.complexaggregate.Responsibility.ClassDescriptor</referenceDescriptor>
+			<privateOwned>true</privateOwned>
+			<usesBatchReading>false</usesBatchReading>
+			<referenceHandle>
+				<ReferenceHandle>
+					<table>AGG_RES</table>
+					<referenceName>AGG_RES_AGG_EMP</referenceName>
+				</ReferenceHandle>
+			</referenceHandle>
+			<keyMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</keyMethodHandle>
+			<indirectionPolicy>
+				<CollectionIndirectionPolicy>
+					<usesIndirection>true</usesIndirection>
+					<usesTransparentIndirection>false</usesTransparentIndirection>
+				</CollectionIndirectionPolicy>
+			</indirectionPolicy>
+			<orderingCriteria>
+				<CollectionOrderingCriteria>
+					<useOrdering>false</useOrdering>
+					<ascending>true</ascending>
+				</CollectionOrderingCriteria>
+			</orderingCriteria>
+			<collectionType>java.util.Vector</collectionType>
+			<classIndicator>BldrOneToManyMapping</classIndicator>
+		</Mapping>
+	</mappings>
+	<descriptorClass>BldrAggregateDescriptor</descriptorClass>
+</Descriptor>

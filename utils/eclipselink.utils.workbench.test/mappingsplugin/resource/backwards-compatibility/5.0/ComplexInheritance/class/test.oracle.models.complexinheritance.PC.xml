@@ -1,0 +1,57 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<class>
+   <name>test.oracle.models.complexinheritance.PC</name>
+   <modifier>1</modifier>
+   <superclass>test.oracle.models.complexinheritance.Computer</superclass>
+   <methods>
+      <method>
+         <name>PC</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>addToDescriptor</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>org.eclipse.persistence.publicinterface.Descriptor</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getComputerType</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getPCType</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+   </methods>
+</class>

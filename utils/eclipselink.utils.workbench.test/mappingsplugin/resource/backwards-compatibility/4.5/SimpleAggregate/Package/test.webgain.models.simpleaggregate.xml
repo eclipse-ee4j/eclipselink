@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<Package>
+	<name>test.webgain.models.simpleaggregate</name>
+	<descriptors>
+		<descriptor>
+			<descriptor>test.webgain.models.simpleaggregate.Address.AggregateDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.simpleaggregate.AddressSubClass.AggregateDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.simpleaggregate.Person.ClassDescriptor</descriptor>
+		</descriptor>
+	</descriptors>
+</Package>

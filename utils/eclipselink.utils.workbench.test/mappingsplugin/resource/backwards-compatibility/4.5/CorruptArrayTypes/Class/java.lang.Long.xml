@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<Class>
+	<name>java.lang.Long</name>
+	<isInterface>false</isInterface>
+	<modifier>
+		<Modifier>
+			<modifier_code>17</modifier_code>
+		</Modifier>
+	</modifier>
+	<superclass>java.lang.Number</superclass>
+	<interfacesImplemented>
+		<interface>
+			<interface>java.lang.Comparable</interface>
+		</interface>
+	</interfacesImplemented>
+</Class>

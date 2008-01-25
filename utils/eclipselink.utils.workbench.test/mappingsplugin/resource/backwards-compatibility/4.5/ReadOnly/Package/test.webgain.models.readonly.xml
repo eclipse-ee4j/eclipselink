@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<Package>
+	<name>test.webgain.models.readonly</name>
+	<descriptors>
+		<descriptor>
+			<descriptor>test.webgain.models.readonly.Actor.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.readonly.Address.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.readonly.Country.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.readonly.Movie.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.readonly.Promoter.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.readonly.Studio.AggregateDescriptor</descriptor>
+		</descriptor>
+	</descriptors>
+</Package>

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<Table>
+	<shortName>RO_ACTOR</shortName>
+	<validFileName>RO_ACTOR</validFileName>
+	<isFullyQualified>false</isFullyQualified>
+	<databaseFields>
+		<DatabaseField>
+			<name>ACT_ID</name>
+			<identity>false</identity>
+			<allowsNull>false</allowsNull>
+			<primaryKey>true</primaryKey>
+			<size>15</size>
+			<subSize>0</subSize>
+			<unique>false</unique>
+			<platformName>Oracle</platformName>
+			<type>NUMBER</type>
+		</DatabaseField>
+		<DatabaseField>
+			<name>ACT_NAME</name>
+			<identity>false</identity>
+			<allowsNull>true</allowsNull>
+			<primaryKey>false</primaryKey>
+			<size>50</size>
+			<unique>false</unique>
+			<platformName>Oracle</platformName>
+			<type>VARCHAR2</type>
+		</DatabaseField>
+		<DatabaseField>
+			<name>MIN_SAL</name>
+			<identity>false</identity>
+			<allowsNull>true</allowsNull>
+			<primaryKey>false</primaryKey>
+			<size>19</size>
+			<subSize>0</subSize>
+			<unique>false</unique>
+			<platformName>Oracle</platformName>
+			<type>NUMBER</type>
+		</DatabaseField>
+	</databaseFields>
+</Table>

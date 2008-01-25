@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<Database>
+	<name>SIMPLECONTACTPROJECT_DB</name>
+	<platformName>Oracle</platformName>
+	<deploymentLoginInfoName>Oracle</deploymentLoginInfoName>
+	<developmentLoginInfoName>Oracle</developmentLoginInfoName>
+	<loginInfos>
+		<LoginInfo>
+			<name>Oracle</name>
+			<driverClass>oracle.jdbc.OracleDriver</driverClass>
+			<password>password</password>
+			<savePassword>true</savePassword>
+			<url>jdbc:oracle:thin:@tlserver12-2k.ca.oracle.com:1521:RALEIGH</url>
+			<userName>mwdev1</userName>
+		</LoginInfo>
+	</loginInfos>
+	<tables>
+		<table>
+			<table>EMAILADDRESS</table>
+		</table>
+		<table>
+			<table>PERSON</table>
+		</table>
+		<table>
+			<table>PHONENUMBER</table>
+		</table>
+		<table>
+			<table>SEQUENCE</table>
+		</table>
+	</tables>
+</Database>

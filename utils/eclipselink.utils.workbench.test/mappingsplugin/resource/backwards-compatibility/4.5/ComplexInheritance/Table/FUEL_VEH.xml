@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<Table>
+	<shortName>FUEL_VEH</shortName>
+	<validFileName>FUEL_VEH</validFileName>
+	<isFullyQualified>false</isFullyQualified>
+	<databaseFields>
+		<DatabaseField>
+			<name>FUEL_CAP</name>
+			<identity>false</identity>
+			<allowsNull>true</allowsNull>
+			<primaryKey>false</primaryKey>
+			<size>10</size>
+			<subSize>0</subSize>
+			<unique>false</unique>
+			<platformName>Oracle</platformName>
+			<type>NUMBER</type>
+		</DatabaseField>
+		<DatabaseField>
+			<name>FUEL_TYP</name>
+			<identity>false</identity>
+			<allowsNull>true</allowsNull>
+			<primaryKey>false</primaryKey>
+			<size>30</size>
+			<unique>false</unique>
+			<platformName>Oracle</platformName>
+			<type>VARCHAR2</type>
+		</DatabaseField>
+		<DatabaseField>
+			<name>ID</name>
+			<identity>false</identity>
+			<allowsNull>false</allowsNull>
+			<primaryKey>true</primaryKey>
+			<size>15</size>
+			<subSize>0</subSize>
+			<unique>false</unique>
+			<platformName>Oracle</platformName>
+			<type>NUMBER</type>
+		</DatabaseField>
+	</databaseFields>
+</Table>

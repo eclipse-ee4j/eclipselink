@@ -1,0 +1,160 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<descriptor>
+   <unique-filename>test.oracle.models.complexaggregate.ProjectDescription.AggregateDescriptor</unique-filename>
+   <active>true</active>
+   <bldr-class>test.oracle.models.complexaggregate.ProjectDescription</bldr-class>
+   <mappings>
+      <mapping>
+         <inherited>false</inherited>
+         <instance-variable-name>computer</instance-variable-name>
+         <uses-method-accessing>false</uses-method-accessing>
+         <read-only>false</read-only>
+         <get-method-handle>
+            <method-handle empty-aggregate="true"/>
+         </get-method-handle>
+         <set-method-handle>
+            <method-handle empty-aggregate="true"/>
+         </set-method-handle>
+         <reference-descriptor>test.oracle.models.complexaggregate.Computer.ClassDescriptor</reference-descriptor>
+         <private-owned>true</private-owned>
+         <uses-batch-reading>false</uses-batch-reading>
+         <table-reference-mapping-reference-handle>
+            <reference-handle>
+               <reference-table>AGG_EMP</reference-table>
+               <reference-name>AGG_EMP_AGG_COM</reference-name>
+            </reference-handle>
+         </table-reference-mapping-reference-handle>
+         <uses-joining>false</uses-joining>
+         <one-to-one-mapping-indirection-policy>
+            <indirection-policy>
+               <uses-indirection>true</uses-indirection>
+            </indirection-policy>
+         </one-to-one-mapping-indirection-policy>
+         <mapping-class>MWOneToOneMapping</mapping-class>
+      </mapping>
+      <mapping>
+         <inherited>false</inherited>
+         <instance-variable-name>description</instance-variable-name>
+         <default-field-names>
+            <default-field-name>direct field=EM_PDESC</default-field-name>
+         </default-field-names>
+         <uses-method-accessing>false</uses-method-accessing>
+         <read-only>false</read-only>
+         <get-method-handle>
+            <method-handle empty-aggregate="true"/>
+         </get-method-handle>
+         <set-method-handle>
+            <method-handle empty-aggregate="true"/>
+         </set-method-handle>
+         <direct-mapping-field-handle>
+            <field-handle empty-aggregate="true"/>
+         </direct-mapping-field-handle>
+         <mapping-class>MWDirectToFieldMapping</mapping-class>
+      </mapping>
+      <mapping>
+         <inherited>false</inherited>
+         <instance-variable-name>id</instance-variable-name>
+         <default-field-names>
+            <default-field-name>direct field=EM_ID</default-field-name>
+         </default-field-names>
+         <uses-method-accessing>false</uses-method-accessing>
+         <read-only>false</read-only>
+         <get-method-handle>
+            <method-handle empty-aggregate="true"/>
+         </get-method-handle>
+         <set-method-handle>
+            <method-handle empty-aggregate="true"/>
+         </set-method-handle>
+         <direct-mapping-field-handle>
+            <field-handle empty-aggregate="true"/>
+         </direct-mapping-field-handle>
+         <mapping-class>MWDirectToFieldMapping</mapping-class>
+      </mapping>
+      <mapping>
+         <inherited>false</inherited>
+         <instance-variable-name>languages</instance-variable-name>
+         <uses-method-accessing>false</uses-method-accessing>
+         <read-only>false</read-only>
+         <get-method-handle>
+            <method-handle empty-aggregate="true"/>
+         </get-method-handle>
+         <set-method-handle>
+            <method-handle empty-aggregate="true"/>
+         </set-method-handle>
+         <reference-descriptor>test.oracle.models.complexaggregate.Language.ClassDescriptor</reference-descriptor>
+         <private-owned>false</private-owned>
+         <uses-batch-reading>false</uses-batch-reading>
+         <table-reference-mapping-reference-handle>
+            <reference-handle>
+               <reference-table>EMP_LAN</reference-table>
+               <reference-name>EMP_LAN_AGG_EMP</reference-name>
+            </reference-handle>
+         </table-reference-mapping-reference-handle>
+         <container-type>Collection</container-type>
+         <uses-default-container-class>true</uses-default-container-class>
+         <key-method>
+            <method-handle empty-aggregate="true"/>
+         </key-method>
+         <collection-mapping-indirection-policy>
+            <collection-indirection-policy>
+               <uses-indirection>true</uses-indirection>
+               <uses-transparent-indirection>false</uses-transparent-indirection>
+            </collection-indirection-policy>
+         </collection-mapping-indirection-policy>
+         <ordering-criteria>
+            <collection-ordering-criteria>
+               <use-ordering>false</use-ordering>
+               <ascending>true</ascending>
+            </collection-ordering-criteria>
+         </ordering-criteria>
+         <relation-table>EMP_LAN</relation-table>
+         <target-reference-handle>
+            <reference-handle>
+               <reference-table>EMP_LAN</reference-table>
+               <reference-name>EMP_LAN_AGG_LAN</reference-name>
+            </reference-handle>
+         </target-reference-handle>
+         <mapping-class>MWManyToManyMapping</mapping-class>
+      </mapping>
+      <mapping>
+         <inherited>false</inherited>
+         <instance-variable-name>responsibilities</instance-variable-name>
+         <uses-method-accessing>false</uses-method-accessing>
+         <read-only>false</read-only>
+         <get-method-handle>
+            <method-handle empty-aggregate="true"/>
+         </get-method-handle>
+         <set-method-handle>
+            <method-handle empty-aggregate="true"/>
+         </set-method-handle>
+         <reference-descriptor>test.oracle.models.complexaggregate.Responsibility.ClassDescriptor</reference-descriptor>
+         <private-owned>true</private-owned>
+         <uses-batch-reading>false</uses-batch-reading>
+         <table-reference-mapping-reference-handle>
+            <reference-handle>
+               <reference-table>AGG_RES</reference-table>
+               <reference-name>AGG_RES_AGG_EMP</reference-name>
+            </reference-handle>
+         </table-reference-mapping-reference-handle>
+         <container-type>Collection</container-type>
+         <uses-default-container-class>true</uses-default-container-class>
+         <key-method>
+            <method-handle empty-aggregate="true"/>
+         </key-method>
+         <collection-mapping-indirection-policy>
+            <collection-indirection-policy>
+               <uses-indirection>true</uses-indirection>
+               <uses-transparent-indirection>false</uses-transparent-indirection>
+            </collection-indirection-policy>
+         </collection-mapping-indirection-policy>
+         <ordering-criteria>
+            <collection-ordering-criteria>
+               <use-ordering>false</use-ordering>
+               <ascending>true</ascending>
+            </collection-ordering-criteria>
+         </ordering-criteria>
+         <mapping-class>MWOneToManyMapping</mapping-class>
+      </mapping>
+   </mappings>
+   <descriptor-class>MWAggregateDescriptor</descriptor-class>
+</descriptor>

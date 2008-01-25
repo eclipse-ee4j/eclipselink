@@ -1,0 +1,54 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<descriptor>
+   <unique-filename>test.oracle.models.simpleaggregate.AddressSubClass.AggregateDescriptor</unique-filename>
+   <active>true</active>
+   <bldr-class>test.oracle.models.simpleaggregate.AddressSubClass</bldr-class>
+   <mapping-descriptor-inheritance-policy>
+      <inheritance-policy>
+         <is-root>false</is-root>
+         <read-subclasses-on-query>false</read-subclasses-on-query>
+         <parent-descriptor>test.oracle.models.simpleaggregate.Address.AggregateDescriptor</parent-descriptor>
+         <inheritance-policy-class-indicator-policy>
+            <class-indicator-policy>
+               <class-name-is-indicator>false</class-name-is-indicator>
+               <use-class-extraction-method>false</use-class-extraction-method>
+               <default-field-name></default-field-name>
+               <class-indicator-policy-field-handle>
+                  <field-handle empty-aggregate="true"/>
+               </class-indicator-policy-field-handle>
+               <class-extraction-method-handle>
+                  <method-handle empty-aggregate="true"/>
+               </class-extraction-method-handle>
+            </class-indicator-policy>
+         </inheritance-policy-class-indicator-policy>
+      </inheritance-policy>
+   </mapping-descriptor-inheritance-policy>
+   <mappings>
+      <mapping>
+         <inherited>false</inherited>
+         <instance-variable-name>country</instance-variable-name>
+         <default-field-names>
+            <default-field-name>direct field=COUNTRY</default-field-name>
+         </default-field-names>
+         <uses-method-accessing>true</uses-method-accessing>
+         <read-only>false</read-only>
+         <get-method-handle>
+            <method-handle>
+               <method-declaring-type>test.oracle.models.simpleaggregate.AddressSubClass</method-declaring-type>
+               <method-signature>getCountry()</method-signature>
+            </method-handle>
+         </get-method-handle>
+         <set-method-handle>
+            <method-handle>
+               <method-declaring-type>test.oracle.models.simpleaggregate.AddressSubClass</method-declaring-type>
+               <method-signature>setCountry(java.lang.String)</method-signature>
+            </method-handle>
+         </set-method-handle>
+         <direct-mapping-field-handle>
+            <field-handle empty-aggregate="true"/>
+         </direct-mapping-field-handle>
+         <mapping-class>MWDirectToFieldMapping</mapping-class>
+      </mapping>
+   </mappings>
+   <descriptor-class>MWAggregateDescriptor</descriptor-class>
+</descriptor>

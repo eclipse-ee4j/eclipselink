@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<Package>
+	<name>test.webgain.models.insurance</name>
+	<descriptors>
+		<descriptor>
+			<descriptor>test.webgain.models.insurance.Address.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.insurance.Claim.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.insurance.HealthClaim.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.insurance.HealthPolicy.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.insurance.HouseClaim.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.insurance.HousePolicy.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.insurance.Phone.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.insurance.Policy.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.insurance.PolicyHolder.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.insurance.VehicleClaim.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.insurance.VehiclePolicy.ClassDescriptor</descriptor>
+		</descriptor>
+	</descriptors>
+</Package>

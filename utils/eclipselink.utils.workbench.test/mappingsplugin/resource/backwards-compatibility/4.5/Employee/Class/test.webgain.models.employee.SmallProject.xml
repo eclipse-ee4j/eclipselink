@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<Class>
+	<name>test.webgain.models.employee.SmallProject</name>
+	<isInterface>false</isInterface>
+	<modifier>
+		<Modifier>
+			<modifier_code>1</modifier_code>
+		</Modifier>
+	</modifier>
+	<superclass>test.webgain.models.employee.Project</superclass>
+	<interfacesImplemented>
+		<interface>
+			<interface>test.webgain.models.employee.SmallProjectInterface</interface>
+		</interface>
+	</interfacesImplemented>
+	<methods>
+		<Method>
+			<constructor>true</constructor>
+			<name>SmallProject</name>
+			<modifier>
+				<Modifier>
+					<modifier_code>1</modifier_code>
+				</Modifier>
+			</modifier>
+		</Method>
+		<Method>
+			<constructor>false</constructor>
+			<name>toString</name>
+			<modifier>
+				<Modifier>
+					<modifier_code>1</modifier_code>
+				</Modifier>
+			</modifier>
+			<returnType>
+				<ArrayType>
+					<dimensionality>0</dimensionality>
+					<type>java.lang.String</type>
+				</ArrayType>
+			</returnType>
+		</Method>
+	</methods>
+</Class>

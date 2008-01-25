@@ -1,0 +1,368 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.oracle.models.phone.Service.AggregateDescriptor</uniqueFilename>
+	<comment>Service Aggregate descriptor</comment>
+	<active>true</active>
+	<bldrClass>test.oracle.models.phone.Service</bldrClass>
+	<mappings>
+		<Mapping>
+			<descriptor>test.oracle.models.phone.Service.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>billingAddress</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=ADDRESS</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.oracle.models.phone.Service.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>lineAccounts</instanceVariableName>
+			<privateOwned>true</privateOwned>
+			<usesBatchReading>true</usesBatchReading>
+			<fieldHandle>
+				<FieldHandle>
+					<table>LINE_ACCOUNT</table>
+					<fieldName>LINE_ACCOUNT</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<referenceHandle>
+				<ReferenceHandle>
+					<table>LINE_ACCOUNT</table>
+					<referenceName>LINE_ACCOUNT_COMPANY</referenceName>
+				</ReferenceHandle>
+			</referenceHandle>
+			<collectionType>java.util.ArrayList</collectionType>
+			<indirectionPolicy>
+				<CollectionIndirectionPolicy>
+					<usesIndirection>false</usesIndirection>
+					<usesTransparentIndirection>false</usesTransparentIndirection>
+				</CollectionIndirectionPolicy>
+			</indirectionPolicy>
+			<classIndicator>BldrDirectCollectionMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.oracle.models.phone.Service.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>primaryContact</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>, field used as an association to query key "id"=CONTACT_ID</defaultFieldName>
+				<defaultFieldName>Class Indicator Field=CONTACT_TYPE</defaultFieldName>
+			</defaultFieldNames>
+			<referenceDescriptor>test.oracle.models.phone.Contact.InterfaceDescriptor</referenceDescriptor>
+			<privateOwned>false</privateOwned>
+			<usesBatchReading>true</usesBatchReading>
+			<reference>
+				<TableAssociation>
+					<onDatabase>false</onDatabase>
+					<fieldAssociations>
+						<FieldAssociation>
+							<sourceFieldHandle>
+								<FieldHandle emptyAggregate="true">
+								</FieldHandle>
+							</sourceFieldHandle>
+							<queryKeyHandle>
+								<QueryKeyHandle>
+									<queryKeyName>id</queryKeyName>
+								</QueryKeyHandle>
+							</queryKeyHandle>
+							<type>BldrFieldQueryKeyAssociation</type>
+						</FieldAssociation>
+					</fieldAssociations>
+					<associationType>BldrReference</associationType>
+				</TableAssociation>
+			</reference>
+			<classIndicatorPolicy>
+				<ClassIndicatorPolicy>
+					<classNameIsIndicator>false</classNameIsIndicator>
+					<useClassExtractionMethod>false</useClassExtractionMethod>
+					<defaultFieldName>CONTACT_TYPE</defaultFieldName>
+					<indicatorType>0</indicatorType>
+					<fieldHandle>
+						<FieldHandle emptyAggregate="true">
+						</FieldHandle>
+					</fieldHandle>
+					<classExtractionMethodHandle>
+						<MethodHandle emptyAggregate="true">
+						</MethodHandle>
+					</classExtractionMethodHandle>
+					<classIndicatorValues>
+						<ClassIndicatorValue>
+							<indicator>E</indicator>
+							<descriptor>test.oracle.models.phone.EmailAddress.ClassDescriptor</descriptor>
+						</ClassIndicatorValue>
+						<ClassIndicatorValue>
+							<indicator>P</indicator>
+							<descriptor>test.oracle.models.phone.PhoneNumber.ClassDescriptor</descriptor>
+						</ClassIndicatorValue>
+					</classIndicatorValues>
+				</ClassIndicatorPolicy>
+			</classIndicatorPolicy>
+			<indirectionPolicy>
+				<IndirectionPolicy>
+					<usesIndirection>false</usesIndirection>
+				</IndirectionPolicy>
+			</indirectionPolicy>
+			<classIndicator>BldrVariableOneToOneMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.oracle.models.phone.Service.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>primaryContactPerson</instanceVariableName>
+			<referenceDescriptor>test.oracle.models.phone.Person.ClassDescriptor</referenceDescriptor>
+			<privateOwned>false</privateOwned>
+			<usesBatchReading>false</usesBatchReading>
+			<referenceHandle>
+				<ReferenceHandle>
+					<table>HOUSEHOLD</table>
+					<referenceName>HOUSEHOLD_PERSON2</referenceName>
+				</ReferenceHandle>
+			</referenceHandle>
+			<usesJoining>false</usesJoining>
+			<indirectionPolicy>
+				<IndirectionPolicy>
+					<usesIndirection>false</usesIndirection>
+				</IndirectionPolicy>
+			</indirectionPolicy>
+			<classIndicator>BldrOneToOneMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.oracle.models.phone.Service.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>rate</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>, field set by method hasDslService()=HAS_DSL</defaultFieldName>
+				<defaultFieldName>, field set by method hasLocalService()=HAS_LOCAL</defaultFieldName>
+				<defaultFieldName>, field set by method hasLongDistanceService()=HAS_LONG_DISTANCE</defaultFieldName>
+			</defaultFieldNames>
+			<fieldsToAttributeMethodHandle>
+				<MethodHandle>
+					<methodClass>test.oracle.models.phone.Service</methodClass>
+					<methodSignature>calculateRate(org.eclipse.persistence.publicinterface.DatabaseRow)</methodSignature>
+				</MethodHandle>
+			</fieldsToAttributeMethodHandle>
+			<indirectionPolicy>
+				<IndirectionPolicy>
+					<usesIndirection>false</usesIndirection>
+				</IndirectionPolicy>
+			</indirectionPolicy>
+			<fieldMethodPairs>
+				<FieldMethodPair>
+					<methodHandle>
+						<MethodHandle>
+							<methodClass>test.oracle.models.phone.Service</methodClass>
+							<methodSignature>hasLocalService()</methodSignature>
+						</MethodHandle>
+					</methodHandle>
+					<fieldHandle>
+						<FieldHandle emptyAggregate="true">
+						</FieldHandle>
+					</fieldHandle>
+				</FieldMethodPair>
+				<FieldMethodPair>
+					<methodHandle>
+						<MethodHandle>
+							<methodClass>test.oracle.models.phone.Service</methodClass>
+							<methodSignature>hasLongDistanceService()</methodSignature>
+						</MethodHandle>
+					</methodHandle>
+					<fieldHandle>
+						<FieldHandle emptyAggregate="true">
+						</FieldHandle>
+					</fieldHandle>
+				</FieldMethodPair>
+				<FieldMethodPair>
+					<methodHandle>
+						<MethodHandle>
+							<methodClass>test.oracle.models.phone.Service</methodClass>
+							<methodSignature>hasDslService()</methodSignature>
+						</MethodHandle>
+					</methodHandle>
+					<fieldHandle>
+						<FieldHandle emptyAggregate="true">
+						</FieldHandle>
+					</fieldHandle>
+				</FieldMethodPair>
+			</fieldMethodPairs>
+			<classIndicator>BldrTransformationMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.oracle.models.phone.Service.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>serviceCalls</instanceVariableName>
+			<referenceDescriptor>test.oracle.models.phone.ServiceCall.ClassDescriptor</referenceDescriptor>
+			<privateOwned>true</privateOwned>
+			<usesBatchReading>false</usesBatchReading>
+			<referenceHandle>
+				<ReferenceHandle>
+					<table>SERVICE_CALL</table>
+					<referenceName>SERVICE_CALL_HOUSEHOLD</referenceName>
+				</ReferenceHandle>
+			</referenceHandle>
+			<keyMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</keyMethodHandle>
+			<indirectionPolicy>
+				<CollectionIndirectionPolicy>
+					<usesIndirection>false</usesIndirection>
+					<usesTransparentIndirection>false</usesTransparentIndirection>
+				</CollectionIndirectionPolicy>
+			</indirectionPolicy>
+			<orderingCriteria>
+				<CollectionOrderingCriteria>
+					<useOrdering>true</useOrdering>
+					<ascending>false</ascending>
+					<queryKeyName>id</queryKeyName>
+				</CollectionOrderingCriteria>
+			</orderingCriteria>
+			<collectionType>java.util.ArrayList</collectionType>
+			<classIndicator>BldrOneToManyMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.oracle.models.phone.Service.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>servicePlan</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=SERVICE_PLAN</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</fieldHandle>
+			<databaseType>java.lang.Integer</databaseType>
+			<objectType>java.lang.String</objectType>
+			<valuePairs>
+				<pair>0=Platinum</pair>
+				<pair>1=Gold</pair>
+				<pair>2=Standard</pair>
+			</valuePairs>
+			<classIndicator>BldrObjectTypeMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.oracle.models.phone.Service.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>users</instanceVariableName>
+			<referenceDescriptor>test.oracle.models.phone.Person.ClassDescriptor</referenceDescriptor>
+			<privateOwned>false</privateOwned>
+			<usesBatchReading>false</usesBatchReading>
+			<referenceHandle>
+				<ReferenceHandle>
+					<table>COMPANY_PERSON</table>
+					<referenceName>COMPANY_PERSON_COMPANY</referenceName>
+				</ReferenceHandle>
+			</referenceHandle>
+			<keyMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</keyMethodHandle>
+			<indirectionPolicy>
+				<CollectionIndirectionPolicy>
+					<usesIndirection>false</usesIndirection>
+					<usesTransparentIndirection>false</usesTransparentIndirection>
+				</CollectionIndirectionPolicy>
+			</indirectionPolicy>
+			<orderingCriteria>
+				<CollectionOrderingCriteria>
+					<useOrdering>false</useOrdering>
+					<ascending>true</ascending>
+				</CollectionOrderingCriteria>
+			</orderingCriteria>
+			<collectionType>java.util.ArrayList</collectionType>
+			<relationTable>COMPANY_PERSON</relationTable>
+			<targetReferenceHandle>
+				<ReferenceHandle>
+					<table>COMPANY_PERSON</table>
+					<referenceName>COMPANY_PERSON_PERSON</referenceName>
+				</ReferenceHandle>
+			</targetReferenceHandle>
+			<classIndicator>BldrManyToManyMapping</classIndicator>
+		</Mapping>
+	</mappings>
+	<descriptorClass>BldrAggregateDescriptor</descriptorClass>
+</Descriptor>

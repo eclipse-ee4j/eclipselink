@@ -1,0 +1,295 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<class>
+   <name>test.oracle.models.complexaggregate.Employee</name>
+   <modifier>1</modifier>
+   <superclass>java.lang.Object</superclass>
+   <interfaces>
+      <interface>
+         <name>java.io.Serializable</name>
+      </interface>
+   </interfaces>
+   <attributes>
+      <class-attribute>
+         <name>addressDescription</name>
+         <modifier>1</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexaggregate.AddressDescription</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+      <class-attribute>
+         <name>firstName</name>
+         <modifier>1</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+      <class-attribute>
+         <name>lastName</name>
+         <modifier>1</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+      <class-attribute>
+         <name>projectDescription</name>
+         <modifier>1</modifier>
+         <attribute-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexaggregate.ProjectDescription</type>
+            </type-declaration>
+         </attribute-type-declaration>
+         <get-method>
+            <method-handle empty-aggregate="true"/>
+         </get-method>
+         <set-method>
+            <method-handle empty-aggregate="true"/>
+         </set-method>
+         <value-get-method>
+            <method-handle empty-aggregate="true"/>
+         </value-get-method>
+         <value-set-method>
+            <method-handle empty-aggregate="true"/>
+         </value-set-method>
+         <add-method>
+            <method-handle empty-aggregate="true"/>
+         </add-method>
+         <remove-method>
+            <method-handle empty-aggregate="true"/>
+         </remove-method>
+      </class-attribute>
+   </attributes>
+   <methods>
+      <method>
+         <name>Employee</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>example1</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexaggregate.Employee</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>example2</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexaggregate.Employee</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>example3</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexaggregate.Employee</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getAddressDescription</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexaggregate.AddressDescription</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getFirstName</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getLastName</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>getProjectDescription</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>test.oracle.models.complexaggregate.ProjectDescription</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setAddressDescription</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>test.oracle.models.complexaggregate.AddressDescription</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setFirstName</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setLastName</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>setProjectDescription</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>void</type>
+            </type-declaration>
+         </return-type-declaration>
+         <parameter-type-declarations>
+            <type-declaration>
+               <type>test.oracle.models.complexaggregate.ProjectDescription</type>
+            </type-declaration>
+         </parameter-type-declarations>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>tableDefinition</name>
+         <modifier>9</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>org.eclipse.persistence.tools.schemaframework.TableDefinition</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+   </methods>
+</class>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<toplink-sessions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="0">
+   <session xsi:type="database-session">
+      <name>org.eclipse.persistence.testing.tljaxb</name>
+      <project-xml>team.xml</project-xml>
+   </session>
+</toplink-sessions>

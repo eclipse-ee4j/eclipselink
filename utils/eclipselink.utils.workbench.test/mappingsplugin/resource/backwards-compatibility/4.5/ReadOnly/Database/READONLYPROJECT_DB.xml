@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<Database>
+	<name>READONLYPROJECT_DB</name>
+	<platformName>Oracle</platformName>
+	<deploymentLoginInfoName>Oracle</deploymentLoginInfoName>
+	<developmentLoginInfoName>Oracle</developmentLoginInfoName>
+	<loginInfos>
+		<LoginInfo>
+			<name>Oracle</name>
+			<driverClass>oracle.jdbc.OracleDriver</driverClass>
+			<password>password</password>
+			<savePassword>true</savePassword>
+			<url>jdbc:oracle:thin:@tlserver12-2k.ca.oracle.com:1521:RALEIGH</url>
+			<userName>mwdev1</userName>
+		</LoginInfo>
+	</loginInfos>
+	<tables>
+		<table>
+			<table>ACT_MOV</table>
+		</table>
+		<table>
+			<table>COUNTRY</table>
+		</table>
+		<table>
+			<table>RO_ACTOR</table>
+		</table>
+		<table>
+			<table>RO_ADDR</table>
+		</table>
+		<table>
+			<table>RO_MOVIE</table>
+		</table>
+		<table>
+			<table>RO_PROMO</table>
+		</table>
+		<table>
+			<table>SEQUENCE</table>
+		</table>
+	</tables>
+</Database>

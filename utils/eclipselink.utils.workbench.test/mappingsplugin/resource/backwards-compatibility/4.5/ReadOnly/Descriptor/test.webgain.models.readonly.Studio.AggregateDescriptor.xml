@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.readonly.Studio.AggregateDescriptor</uniqueFilename>
+	<active>true</active>
+	<bldrClass>test.webgain.models.readonly.Studio</bldrClass>
+	<mappings>
+		<Mapping>
+			<descriptor>test.webgain.models.readonly.Studio.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>address</instanceVariableName>
+			<referenceDescriptor>test.webgain.models.readonly.Address.ClassDescriptor</referenceDescriptor>
+			<privateOwned>true</privateOwned>
+			<usesBatchReading>false</usesBatchReading>
+			<referenceHandle>
+				<ReferenceHandle>
+					<table>RO_MOVIE</table>
+					<referenceName>RO_MOVIE_RO_ADDR</referenceName>
+				</ReferenceHandle>
+			</referenceHandle>
+			<usesJoining>false</usesJoining>
+			<indirectionPolicy>
+				<IndirectionPolicy>
+					<usesIndirection>false</usesIndirection>
+				</IndirectionPolicy>
+			</indirectionPolicy>
+			<classIndicator>BldrOneToOneMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.readonly.Studio.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>name</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=STD_NAME</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.readonly.Studio.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>owner</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=STD_OWN</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+	</mappings>
+	<descriptorClass>BldrAggregateDescriptor</descriptorClass>
+</Descriptor>

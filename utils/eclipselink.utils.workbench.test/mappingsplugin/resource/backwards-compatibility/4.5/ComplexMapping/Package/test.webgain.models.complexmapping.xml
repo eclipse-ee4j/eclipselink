@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<Package>
+	<name>test.webgain.models.complexmapping</name>
+	<descriptors>
+		<descriptor>
+			<descriptor>test.webgain.models.complexmapping.Address.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexmapping.Computer.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexmapping.Employee.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexmapping.Hardware.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexmapping.Monitor.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexmapping.Phone.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexmapping.Shipment.ClassDescriptor</descriptor>
+		</descriptor>
+	</descriptors>
+</Package>

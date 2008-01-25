@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.complexinheritance.Bus.ClassDescriptor</uniqueFilename>
+	<active>true</active>
+	<bldrClass>test.webgain.models.complexinheritance.Bus</bldrClass>
+	<inheritancePolicy>
+		<InheritancePolicy>
+			<isRoot>false</isRoot>
+			<readSubclassesOnQuery>false</readSubclassesOnQuery>
+			<parent>test.webgain.models.complexinheritance.FueledVehicle.ClassDescriptor</parent>
+			<classIndicatorPolicy>
+				<ClassIndicatorPolicy>
+					<classNameIsIndicator>false</classNameIsIndicator>
+					<useClassExtractionMethod>false</useClassExtractionMethod>
+					<defaultFieldName></defaultFieldName>
+					<indicatorType>0</indicatorType>
+					<fieldHandle>
+						<FieldHandle emptyAggregate="true">
+						</FieldHandle>
+					</fieldHandle>
+					<classExtractionMethodHandle>
+						<MethodHandle emptyAggregate="true">
+						</MethodHandle>
+					</classExtractionMethodHandle>
+				</ClassIndicatorPolicy>
+			</classIndicatorPolicy>
+		</InheritancePolicy>
+	</inheritancePolicy>
+	<mappings>
+		<Mapping>
+			<descriptor>test.webgain.models.complexinheritance.Bus.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>busDriver</instanceVariableName>
+			<classIndicator>BldrUnmappedMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.complexinheritance.Bus.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>true</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>description</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>BUS</table>
+					<fieldName>DESCRIP</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.complexinheritance.Bus.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>true</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>fuelType</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>FUEL_VEH</table>
+					<fieldName>FUEL_TYP</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.complexinheritance.Bus.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>true</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>partNumbers</instanceVariableName>
+			<privateOwned>true</privateOwned>
+			<usesBatchReading>false</usesBatchReading>
+			<fieldHandle>
+				<FieldHandle>
+					<table>PARTNUMS</table>
+					<fieldName>PART_NUM</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<referenceHandle>
+				<ReferenceHandle>
+					<table>PARTNUMS</table>
+					<referenceName>PARTNUMS_BUS</referenceName>
+				</ReferenceHandle>
+			</referenceHandle>
+			<collectionType>java.util.Vector</collectionType>
+			<indirectionPolicy>
+				<CollectionIndirectionPolicy>
+					<usesIndirection>false</usesIndirection>
+					<usesTransparentIndirection>false</usesTransparentIndirection>
+				</CollectionIndirectionPolicy>
+			</indirectionPolicy>
+			<classIndicator>BldrDirectCollectionMapping</classIndicator>
+		</Mapping>
+	</mappings>
+	<primaryKeyFieldHandles>
+		<FieldHandle>
+			<table>BUS</table>
+			<fieldName>ID</fieldName>
+		</FieldHandle>
+	</primaryKeyFieldHandles>
+	<primaryTable>BUS</primaryTable>
+	<associatedTables>
+		<table>
+			<table>BUS</table>
+		</table>
+		<table>
+			<table>FUEL_VEH</table>
+		</table>
+	</associatedTables>
+	<usesSequencing>false</usesSequencing>
+	<sequenceNumberFieldHandle>
+		<FieldHandle emptyAggregate="true">
+		</FieldHandle>
+	</sequenceNumberFieldHandle>
+	<multiTableInfoPolicy>
+		<MultiTableInfoPolicy emptyAggregate="true">
+		</MultiTableInfoPolicy>
+	</multiTableInfoPolicy>
+	<queryManager>
+		<QueryManager>
+			<descriptorAlias>Bus</descriptorAlias>
+		</QueryManager>
+	</queryManager>
+	<identityPolicy>
+		<IdentityPolicy>
+			<identityMapSize>100</identityMapSize>
+			<identityMapClassName>com.webgain.integrator.internal.identitymaps.FullIdentityMap</identityMapClassName>
+		</IdentityPolicy>
+	</identityPolicy>
+	<descriptorClass>BldrClassDescriptor</descriptorClass>
+</Descriptor>

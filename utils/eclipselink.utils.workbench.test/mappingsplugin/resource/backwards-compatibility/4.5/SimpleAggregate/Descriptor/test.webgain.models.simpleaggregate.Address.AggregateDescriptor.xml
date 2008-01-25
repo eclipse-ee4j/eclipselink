@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.simpleaggregate.Address.AggregateDescriptor</uniqueFilename>
+	<active>true</active>
+	<bldrClass>test.webgain.models.simpleaggregate.Address</bldrClass>
+	<inheritancePolicy>
+		<InheritancePolicy>
+			<isRoot>true</isRoot>
+			<readSubclassesOnQuery>true</readSubclassesOnQuery>
+			<classIndicatorPolicy>
+				<ClassIndicatorPolicy>
+					<classNameIsIndicator>true</classNameIsIndicator>
+					<useClassExtractionMethod>false</useClassExtractionMethod>
+					<defaultFieldName>TYPE</defaultFieldName>
+					<indicatorType>0</indicatorType>
+					<fieldHandle>
+						<FieldHandle emptyAggregate="true">
+						</FieldHandle>
+					</fieldHandle>
+					<classExtractionMethodHandle>
+						<MethodHandle emptyAggregate="true">
+						</MethodHandle>
+					</classExtractionMethodHandle>
+				</ClassIndicatorPolicy>
+			</classIndicatorPolicy>
+		</InheritancePolicy>
+	</inheritancePolicy>
+	<mappings>
+		<Mapping>
+			<descriptor>test.webgain.models.simpleaggregate.Address.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>true</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.simpleaggregate.Address</methodClass>
+					<methodSignature>getCity()</methodSignature>
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.simpleaggregate.Address</methodClass>
+					<methodSignature>setCity(java.lang.String)</methodSignature>
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>city</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=CITY</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.simpleaggregate.Address.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>true</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.simpleaggregate.Address</methodClass>
+					<methodSignature>getState()</methodSignature>
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.simpleaggregate.Address</methodClass>
+					<methodSignature>setState(java.lang.String)</methodSignature>
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>state</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=STATE</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.simpleaggregate.Address.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>true</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.simpleaggregate.Address</methodClass>
+					<methodSignature>getStreet()</methodSignature>
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.simpleaggregate.Address</methodClass>
+					<methodSignature>setStreet(java.lang.String)</methodSignature>
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>street</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=STREET</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.simpleaggregate.Address.AggregateDescriptor</descriptor>
+			<usesMethodAccessing>true</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.simpleaggregate.Address</methodClass>
+					<methodSignature>getZip()</methodSignature>
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle>
+					<methodClass>test.webgain.models.simpleaggregate.Address</methodClass>
+					<methodSignature>setZip(java.lang.String)</methodSignature>
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>zip</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=P_CODE</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle emptyAggregate="true">
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+	</mappings>
+	<descriptorClass>BldrAggregateDescriptor</descriptorClass>
+</Descriptor>

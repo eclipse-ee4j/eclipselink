@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<Database>
+	<name>COMPLEXAGGREGATESYSTEM2_DB</name>
+	<platformName>Oracle</platformName>
+	<deploymentLoginInfoName>Oracle</deploymentLoginInfoName>
+	<developmentLoginInfoName>Oracle</developmentLoginInfoName>
+	<loginInfos>
+		<LoginInfo>
+			<name>Oracle</name>
+			<driverClass>oracle.jdbc.OracleDriver</driverClass>
+			<password>password</password>
+			<savePassword>true</savePassword>
+			<url>jdbc:oracle:thin:@tlserver12-2k.ca.oracle.com:1521:RALEIGH</url>
+			<userName>mwdev1</userName>
+		</LoginInfo>
+	</loginInfos>
+	<tables>
+		<table>
+			<table>AGG_ADD</table>
+		</table>
+		<table>
+			<table>AGG_CLNT</table>
+		</table>
+		<table>
+			<table>AGG_COM</table>
+		</table>
+		<table>
+			<table>AGG_ECNT</table>
+		</table>
+		<table>
+			<table>AGG_EMP</table>
+		</table>
+		<table>
+			<table>AGG_LAN</table>
+		</table>
+		<table>
+			<table>AGG_RES</table>
+		</table>
+		<table>
+			<table>EMP_LAN</table>
+		</table>
+		<table>
+			<table>SEQUENCE</table>
+		</table>
+	</tables>
+</Database>

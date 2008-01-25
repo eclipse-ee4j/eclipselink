@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<Package>
+	<name>test.webgain.models.complexaggregate</name>
+	<descriptors>
+		<descriptor>
+			<descriptor>test.webgain.models.complexaggregate.Address.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexaggregate.AddressDescription.AggregateDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexaggregate.Client.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexaggregate.Computer.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexaggregate.Employee.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexaggregate.EvaluationClient.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexaggregate.Language.ClassDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexaggregate.Period.AggregateDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexaggregate.PeriodDescription.AggregateDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexaggregate.ProjectDescription.AggregateDescriptor</descriptor>
+		</descriptor>
+		<descriptor>
+			<descriptor>test.webgain.models.complexaggregate.Responsibility.ClassDescriptor</descriptor>
+		</descriptor>
+	</descriptors>
+</Package>

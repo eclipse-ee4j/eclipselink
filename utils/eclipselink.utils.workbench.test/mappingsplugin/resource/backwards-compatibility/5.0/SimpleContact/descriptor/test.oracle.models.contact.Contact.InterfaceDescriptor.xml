@@ -1,0 +1,23 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<descriptor>
+   <unique-filename>test.oracle.models.contact.Contact.InterfaceDescriptor</unique-filename>
+   <active>true</active>
+   <bldr-class>test.oracle.models.contact.Contact</bldr-class>
+   <user-defined-query-keys>
+      <user-defined-query-key>
+         <name>id</name>
+         <user-defined-query-key-field-handle>
+            <field-handle empty-aggregate="true"/>
+         </user-defined-query-key-field-handle>
+      </user-defined-query-key>
+   </user-defined-query-keys>
+   <implementors>
+      <implementor>
+         <name>test.oracle.models.contact.EmailAddress.ClassDescriptor</name>
+      </implementor>
+      <implementor>
+         <name>test.oracle.models.contact.PhoneNumber.ClassDescriptor</name>
+      </implementor>
+   </implementors>
+   <descriptor-class>MWInterfaceDescriptor</descriptor-class>
+</descriptor>

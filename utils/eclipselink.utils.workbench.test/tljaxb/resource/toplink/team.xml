@@ -1,0 +1,185 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<toplink:object-persistence xmlns:opm="http://xmlns.oracle.com/ias/xsds/opm" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:toplink="http://xmlns.oracle.com/ias/xsds/toplink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <opm:name>team</opm:name>
+   <opm:class-mapping-descriptors>
+      <opm:class-mapping-descriptor xsi:type="toplink:xml-class-mapping-descriptor">
+         <opm:class>org.eclipse.persistence.testing.tljaxb.AddressTypeImpl</opm:class>
+         <opm:alias>AddressTypeImpl</opm:alias>
+         <opm:events xsi:type="toplink:event-policy"/>
+         <opm:querying xsi:type="toplink:query-policy"/>
+         <opm:attribute-mappings>
+            <opm:attribute-mapping xsi:type="toplink:xml-direct-mapping">
+               <opm:attribute-name>_Street</opm:attribute-name>
+               <opm:field name="street" xsi:type="toplink:node"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:xml-direct-mapping">
+               <opm:attribute-name>_City</opm:attribute-name>
+               <opm:field name="city" xsi:type="toplink:node"/>
+            </opm:attribute-mapping>
+         </opm:attribute-mappings>
+         <toplink:descriptor-type>aggregate</toplink:descriptor-type>
+         <toplink:instantiation/>
+         <toplink:copying/>
+         <toplink:default-root-element>address-type</toplink:default-root-element>
+         <toplink:schema xsi:type="schema-file-reference">
+            <toplink:resource>/home/rbarkhou/.ade/view_storage/rbarkhou_tlmain/tltest/resource/ox/jaxb/team.xsd</toplink:resource>
+         </toplink:schema>
+      </opm:class-mapping-descriptor>
+      <opm:class-mapping-descriptor xsi:type="toplink:xml-class-mapping-descriptor">
+         <opm:class>org.eclipse.persistence.testing.tljaxb.CaAddressTypeImpl</opm:class>
+         <opm:alias>CaAddressTypeImpl</opm:alias>
+         <opm:events xsi:type="toplink:event-policy"/>
+         <opm:querying xsi:type="toplink:query-policy"/>
+         <opm:attribute-mappings>
+            <opm:attribute-mapping xsi:type="toplink:xml-direct-mapping">
+               <opm:attribute-name>_Province</opm:attribute-name>
+               <opm:field name="province" xsi:type="toplink:node"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:xml-direct-mapping">
+               <opm:attribute-name>_PostalCode</opm:attribute-name>
+               <opm:field name="postal-code" xsi:type="toplink:node"/>
+            </opm:attribute-mapping>
+         </opm:attribute-mappings>
+         <toplink:descriptor-type>aggregate</toplink:descriptor-type>
+         <toplink:instantiation/>
+         <toplink:copying/>
+         <toplink:default-root-element>ca-address-type</toplink:default-root-element>
+         <toplink:schema xsi:type="schema-file-reference">
+            <toplink:resource>/home/rbarkhou/.ade/view_storage/rbarkhou_tlmain/tltest/resource/ox/jaxb/team.xsd</toplink:resource>
+         </toplink:schema>
+      </opm:class-mapping-descriptor>
+      <opm:class-mapping-descriptor xsi:type="toplink:xml-class-mapping-descriptor">
+         <opm:class>org.eclipse.persistence.testing.tljaxb.EmployeeTypeImpl</opm:class>
+         <opm:alias>EmployeeTypeImpl</opm:alias>
+         <opm:events xsi:type="toplink:event-policy"/>
+         <opm:querying xsi:type="toplink:query-policy"/>
+         <opm:attribute-mappings>
+            <opm:attribute-mapping xsi:type="toplink:xml-direct-mapping">
+               <opm:attribute-name>_FirstName</opm:attribute-name>
+               <opm:field name="first-name" xsi:type="toplink:node"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:xml-direct-mapping">
+               <opm:attribute-name>_LastName</opm:attribute-name>
+               <opm:field name="last-name" xsi:type="toplink:node"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:xml-direct-mapping">
+               <opm:attribute-name>_Gender</opm:attribute-name>
+               <opm:field name="gender" xsi:type="toplink:node"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:xml-direct-collection-mapping">
+               <opm:attribute-name>_Task</opm:attribute-name>
+               <toplink:field name="task" xsi:type="toplink:node"/>
+               <toplink:value-converter xsi:type="toplink:type-conversion-converter">
+                  <toplink:object-class>java.lang.String</toplink:object-class>
+               </toplink:value-converter>
+               <toplink:container xsi:type="toplink:list-container-policy">
+                  <toplink:collection-type>java.util.Vector</toplink:collection-type>
+               </toplink:container>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:composite-object-mapping">
+               <opm:attribute-name>_Address</opm:attribute-name>
+               <toplink:reference-class>org.eclipse.persistence.testing.tljaxb.AddressTypeImpl</toplink:reference-class>
+               <toplink:field name="address" xsi:type="toplink:node"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:composite-collection-mapping">
+               <opm:attribute-name>_PhoneNumber</opm:attribute-name>
+               <toplink:reference-class>org.eclipse.persistence.testing.tljaxb.EmployeeTypeImpl$PhoneNumberTypeImpl</toplink:reference-class>
+               <toplink:field name="phone-number" xsi:type="toplink:node"/>
+               <toplink:container xsi:type="toplink:list-container-policy">
+                  <toplink:collection-type>java.util.Vector</toplink:collection-type>
+               </toplink:container>
+            </opm:attribute-mapping>
+         </opm:attribute-mappings>
+         <toplink:descriptor-type>aggregate</toplink:descriptor-type>
+         <toplink:instantiation/>
+         <toplink:copying/>
+         <toplink:default-root-element>employee-type</toplink:default-root-element>
+         <toplink:schema xsi:type="schema-file-reference">
+            <toplink:resource>/home/rbarkhou/.ade/view_storage/rbarkhou_tlmain/tltest/resource/ox/jaxb/team.xsd</toplink:resource>
+         </toplink:schema>
+      </opm:class-mapping-descriptor>
+      <opm:class-mapping-descriptor xsi:type="toplink:xml-class-mapping-descriptor">
+         <opm:class>org.eclipse.persistence.testing.tljaxb.EmployeeTypeImpl$PhoneNumberTypeImpl</opm:class>
+         <opm:alias>EmployeeTypeImpl$PhoneNumberTypeImpl</opm:alias>
+         <opm:events xsi:type="toplink:event-policy"/>
+         <opm:querying xsi:type="toplink:query-policy"/>
+         <opm:attribute-mappings>
+            <opm:attribute-mapping xsi:type="toplink:xml-direct-mapping">
+               <opm:attribute-name>_AreaCode</opm:attribute-name>
+               <opm:field name="area-code" xsi:type="toplink:node"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:xml-direct-mapping">
+               <opm:attribute-name>_Exchange</opm:attribute-name>
+               <opm:field name="exchange" xsi:type="toplink:node"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:xml-direct-mapping">
+               <opm:attribute-name>_Number</opm:attribute-name>
+               <opm:field name="number" xsi:type="toplink:node"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:xml-direct-mapping">
+               <opm:attribute-name>_Type</opm:attribute-name>
+               <opm:field name="@type" xsi:type="toplink:node"/>
+            </opm:attribute-mapping>
+         </opm:attribute-mappings>
+         <toplink:descriptor-type>aggregate</toplink:descriptor-type>
+         <toplink:instantiation/>
+         <toplink:copying/>
+         <toplink:default-root-element>phone-number</toplink:default-root-element>
+         <toplink:schema xsi:type="schema-file-reference">
+            <toplink:resource>/home/rbarkhou/.ade/view_storage/rbarkhou_tlmain/tltest/resource/ox/jaxb/team.xsd</toplink:resource>
+         </toplink:schema>
+      </opm:class-mapping-descriptor>
+      <opm:class-mapping-descriptor xsi:type="toplink:xml-class-mapping-descriptor">
+         <opm:class>org.eclipse.persistence.testing.tljaxb.TeamImpl</opm:class>
+         <opm:alias>TeamImpl</opm:alias>
+         <opm:events xsi:type="toplink:event-policy"/>
+         <opm:querying xsi:type="toplink:query-policy"/>
+         <opm:attribute-mappings>
+            <opm:attribute-mapping xsi:type="toplink:composite-collection-mapping">
+               <opm:attribute-name>_Employee</opm:attribute-name>
+               <toplink:reference-class>org.eclipse.persistence.testing.tljaxb.EmployeeTypeImpl</toplink:reference-class>
+               <toplink:field name="employee" xsi:type="toplink:node"/>
+               <toplink:container xsi:type="toplink:list-container-policy">
+                  <toplink:collection-type>java.util.Vector</toplink:collection-type>
+               </toplink:container>
+            </opm:attribute-mapping>
+         </opm:attribute-mappings>
+         <toplink:descriptor-type>aggregate</toplink:descriptor-type>
+         <toplink:instantiation/>
+         <toplink:copying/>
+         <toplink:default-root-element>team</toplink:default-root-element>
+         <toplink:schema xsi:type="schema-file-reference">
+            <toplink:resource>/home/rbarkhou/.ade/view_storage/rbarkhou_tlmain/tltest/resource/ox/jaxb/team.xsd</toplink:resource>
+         </toplink:schema>
+      </opm:class-mapping-descriptor>
+      <opm:class-mapping-descriptor xsi:type="toplink:xml-class-mapping-descriptor">
+         <opm:class>org.eclipse.persistence.testing.tljaxb.UsAddressTypeImpl</opm:class>
+         <opm:alias>UsAddressTypeImpl</opm:alias>
+         <opm:events xsi:type="toplink:event-policy"/>
+         <opm:querying xsi:type="toplink:query-policy"/>
+         <opm:attribute-mappings>
+            <opm:attribute-mapping xsi:type="toplink:xml-direct-mapping">
+               <opm:attribute-name>_State</opm:attribute-name>
+               <opm:field name="state" xsi:type="toplink:node"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:xml-direct-mapping">
+               <opm:attribute-name>_ZipCode</opm:attribute-name>
+               <opm:field name="zip-code" xsi:type="toplink:node"/>
+            </opm:attribute-mapping>
+         </opm:attribute-mappings>
+         <toplink:descriptor-type>aggregate</toplink:descriptor-type>
+         <toplink:instantiation/>
+         <toplink:copying/>
+         <toplink:default-root-element>us-address-type</toplink:default-root-element>
+         <toplink:schema xsi:type="schema-file-reference">
+            <toplink:resource>/home/rbarkhou/.ade/view_storage/rbarkhou_tlmain/tltest/resource/ox/jaxb/team.xsd</toplink:resource>
+         </toplink:schema>
+      </opm:class-mapping-descriptor>
+   </opm:class-mapping-descriptors>
+   <toplink:login xsi:type="toplink:eis-login">
+      <toplink:platform-class>org.eclipse.persistence.eis.EISPlatform</toplink:platform-class>
+      <toplink:user-name></toplink:user-name>
+      <toplink:password></toplink:password>
+      <toplink:connection-spec-class>org.eclipse.persistence.eis.EISConnectionSpec</toplink:connection-spec-class>
+   </toplink:login>
+</toplink:object-persistence>

@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+
+<Descriptor>
+	<uniqueFilename>test.webgain.models.employee.PhoneNumber.ClassDescriptor</uniqueFilename>
+	<active>true</active>
+	<bldrClass>test.webgain.models.employee.PhoneNumber</bldrClass>
+	<mappings>
+		<Mapping>
+			<descriptor>test.webgain.models.employee.PhoneNumber.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>areaCode</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>PHONE</table>
+					<fieldName>AREA_CODE</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.employee.PhoneNumber.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>true</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>number</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>PHONE</table>
+					<fieldName>P_NUMBER</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.employee.PhoneNumber.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>owner</instanceVariableName>
+			<referenceDescriptor>test.webgain.models.employee.Employee.ClassDescriptor</referenceDescriptor>
+			<privateOwned>false</privateOwned>
+			<usesBatchReading>false</usesBatchReading>
+			<referenceHandle>
+				<ReferenceHandle>
+					<table>PHONE</table>
+					<referenceName>PHONE_EMPLOYEE</referenceName>
+				</ReferenceHandle>
+			</referenceHandle>
+			<usesJoining>false</usesJoining>
+			<indirectionPolicy>
+				<IndirectionPolicy>
+					<usesIndirection>true</usesIndirection>
+				</IndirectionPolicy>
+			</indirectionPolicy>
+			<classIndicator>BldrOneToOneMapping</classIndicator>
+		</Mapping>
+		<Mapping>
+			<descriptor>test.webgain.models.employee.PhoneNumber.ClassDescriptor</descriptor>
+			<usesMethodAccessing>false</usesMethodAccessing>
+			<inherited>false</inherited>
+			<readOnly>false</readOnly>
+			<getMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</getMethodHandle>
+			<setMethodHandle>
+				<MethodHandle emptyAggregate="true">
+				</MethodHandle>
+			</setMethodHandle>
+			<instanceVariableName>type</instanceVariableName>
+			<defaultFieldNames>
+				<defaultFieldName>direct field=</defaultFieldName>
+			</defaultFieldNames>
+			<fieldHandle>
+				<FieldHandle>
+					<table>PHONE</table>
+					<fieldName>TYPE</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+			<classIndicator>BldrDirectToFieldMapping</classIndicator>
+		</Mapping>
+	</mappings>
+	<primaryKeyFieldHandles>
+		<FieldHandle>
+			<table>PHONE</table>
+			<fieldName>EMP_ID</fieldName>
+		</FieldHandle>
+		<FieldHandle>
+			<table>PHONE</table>
+			<fieldName>TYPE</fieldName>
+		</FieldHandle>
+	</primaryKeyFieldHandles>
+	<primaryTable>PHONE</primaryTable>
+	<associatedTables>
+		<table>
+			<table>PHONE</table>
+		</table>
+	</associatedTables>
+	<usesSequencing>false</usesSequencing>
+	<sequenceNumberFieldHandle>
+		<FieldHandle emptyAggregate="true">
+		</FieldHandle>
+	</sequenceNumberFieldHandle>
+	<lockingPolicy>
+		<DescriptorLockingPolicy>
+			<lockingType>Timestamp Locking</lockingType>
+			<storeInCache>true</storeInCache>
+			<fieldHandle>
+				<FieldHandle>
+					<table>PHONE</table>
+					<fieldName>P_NUMBER</fieldName>
+				</FieldHandle>
+			</fieldHandle>
+		</DescriptorLockingPolicy>
+	</lockingPolicy>
+	<queryManager>
+		<QueryManager>
+			<descriptorAlias>PhoneNumber</descriptorAlias>
+		</QueryManager>
+	</queryManager>
+	<identityPolicy>
+		<IdentityPolicy>
+			<identityMapSize>100</identityMapSize>
+			<identityMapClassName>com.webgain.integrator.internal.identitymaps.FullIdentityMap</identityMapClassName>
+		</IdentityPolicy>
+	</identityPolicy>
+	<descriptorClass>BldrClassDescriptor</descriptorClass>
+</Descriptor>

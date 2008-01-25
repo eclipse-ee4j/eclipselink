@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.complexinheritance.SoftwareEngineer</name>
+   <class-handle>
+      <type-name>test.oracle.models.complexinheritance.SoftwareEngineer</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>SoftwareEngineer</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy/>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>PERSON2</column-table-name>
+               <column-name>ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="one-to-one">
+         <name>boss</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexinheritance.SoftwareEngineer</attribute-declaring-type-name>
+            <attribute-name>boss</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.complexinheritance.Engineer</descriptor-name>
+         </reference-descriptor-handle>
+         <reference-handle>
+            <reference-table-name>PERSON2</reference-table-name>
+            <reference-name>PERSON2_PERSON2</reference-name>
+         </reference-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>isExperiencedInJava</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexinheritance.SoftwareEngineer</attribute-declaring-type-name>
+            <attribute-name>isExperiencedInJava</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>PERSON2</column-table-name>
+            <column-name>KNOWS_JAVA</column-name>
+         </column-handle>
+      </mapping>
+   </mappings>
+   <inheritance-policy type="relational">
+      <is-root>false</is-root>
+      <parent-descriptor-handle>
+         <descriptor-name>test.oracle.models.complexinheritance.Engineer</descriptor-name>
+      </parent-descriptor-handle>
+      <read-subclasses-on-query>false</read-subclasses-on-query>
+   </inheritance-policy>
+   <primary-table-handle>
+      <table-name>PERSON2</table-name>
+   </primary-table-handle>
+</descriptor>

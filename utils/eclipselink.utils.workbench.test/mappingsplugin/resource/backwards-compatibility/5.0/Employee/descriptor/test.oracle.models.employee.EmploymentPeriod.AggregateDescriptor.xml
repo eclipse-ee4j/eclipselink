@@ -1,0 +1,47 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<descriptor>
+   <unique-filename>test.oracle.models.employee.EmploymentPeriod.AggregateDescriptor</unique-filename>
+   <active>true</active>
+   <bldr-class>test.oracle.models.employee.EmploymentPeriod</bldr-class>
+   <mappings>
+      <mapping>
+         <inherited>false</inherited>
+         <instance-variable-name>endDate</instance-variable-name>
+         <default-field-names>
+            <default-field-name>direct field=END_DATE</default-field-name>
+         </default-field-names>
+         <uses-method-accessing>false</uses-method-accessing>
+         <read-only>false</read-only>
+         <get-method-handle>
+            <method-handle empty-aggregate="true"/>
+         </get-method-handle>
+         <set-method-handle>
+            <method-handle empty-aggregate="true"/>
+         </set-method-handle>
+         <direct-mapping-field-handle>
+            <field-handle empty-aggregate="true"/>
+         </direct-mapping-field-handle>
+         <mapping-class>MWDirectToFieldMapping</mapping-class>
+      </mapping>
+      <mapping>
+         <inherited>false</inherited>
+         <instance-variable-name>startDate</instance-variable-name>
+         <default-field-names>
+            <default-field-name>direct field=START_DATE</default-field-name>
+         </default-field-names>
+         <uses-method-accessing>false</uses-method-accessing>
+         <read-only>false</read-only>
+         <get-method-handle>
+            <method-handle empty-aggregate="true"/>
+         </get-method-handle>
+         <set-method-handle>
+            <method-handle empty-aggregate="true"/>
+         </set-method-handle>
+         <direct-mapping-field-handle>
+            <field-handle empty-aggregate="true"/>
+         </direct-mapping-field-handle>
+         <mapping-class>MWDirectToFieldMapping</mapping-class>
+      </mapping>
+   </mappings>
+   <descriptor-class>MWAggregateDescriptor</descriptor-class>
+</descriptor>

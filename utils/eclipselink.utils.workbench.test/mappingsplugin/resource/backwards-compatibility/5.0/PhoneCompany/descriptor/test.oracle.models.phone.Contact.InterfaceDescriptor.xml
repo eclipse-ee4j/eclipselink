@@ -1,0 +1,15 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<descriptor>
+   <unique-filename>test.oracle.models.phone.Contact.InterfaceDescriptor</unique-filename>
+   <active>true</active>
+   <bldr-class>test.oracle.models.phone.Contact</bldr-class>
+   <implementors>
+      <implementor>
+         <name>test.oracle.models.phone.EmailAddress.ClassDescriptor</name>
+      </implementor>
+      <implementor>
+         <name>test.oracle.models.phone.PhoneNumber.ClassDescriptor</name>
+      </implementor>
+   </implementors>
+   <descriptor-class>MWInterfaceDescriptor</descriptor-class>
+</descriptor>

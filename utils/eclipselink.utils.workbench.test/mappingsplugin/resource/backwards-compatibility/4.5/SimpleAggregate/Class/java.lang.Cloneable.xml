@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<Class>
+	<name>java.lang.Cloneable</name>
+	<isInterface>true</isInterface>
+	<modifier>
+		<Modifier>
+			<modifier_code>1537</modifier_code>
+		</Modifier>
+	</modifier>
+</Class>

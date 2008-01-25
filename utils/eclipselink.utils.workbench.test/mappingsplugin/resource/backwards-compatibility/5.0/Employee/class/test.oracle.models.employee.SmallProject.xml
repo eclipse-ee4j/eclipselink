@@ -1,0 +1,33 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<class>
+   <name>test.oracle.models.employee.SmallProject</name>
+   <modifier>1</modifier>
+   <superclass>test.oracle.models.employee.Project</superclass>
+   <interfaces>
+      <interface>
+         <name>test.oracle.models.employee.SmallProjectInterface</name>
+      </interface>
+   </interfaces>
+   <methods>
+      <method>
+         <name>SmallProject</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+      <method>
+         <name>toString</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-declaration>
+               <type>java.lang.String</type>
+            </type-declaration>
+         </return-type-declaration>
+         <accessed-attribute-handle>
+            <attribute-handle empty-aggregate="true"/>
+         </accessed-attribute-handle>
+      </method>
+   </methods>
+</class>
