@@ -21,6 +21,7 @@ public interface XMLTypeFactory {
     Object createXML(java.sql.Connection connection, String xml) throws Exception;    
     Object createXML(oracle.sql.OPAQUE opaque) throws java.sql.SQLException;
     Document getDOM(oracle.sql.OPAQUE opaque) throws java.sql.SQLException;
+    String getString(oracle.sql.OPAQUE opaque) throws java.sql.SQLException;
 
     boolean isXDBDocument(Object obj);
     Object createXMLTypeBindCallCustomParameter(Object obj);

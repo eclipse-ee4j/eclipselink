@@ -15,12 +15,17 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.platform.database.oracle.XMLTypePlaceholder;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
+import org.eclipse.persistence.platform.xml.XMLParser;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -46,6 +51,11 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
      * Used to determine if the XML document has been modified.
      */
     private XMLComparer xmlComparer;
+    
+    /**
+     * Used to convert the String to a DOM
+     */
+    private  XMLParser xmlParser;
 
     /**
      * INTERNAL:
@@ -61,6 +71,7 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
         super();
         xmlTransformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
         xmlTransformer.setFormattedOutput(false);
+        xmlParser = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLParser();
         xmlComparer = new XMLComparer();
     }
 
@@ -91,16 +102,10 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
         Object attributeValue = fieldValue;
         try {
             if (attributeValue != null) {
-                if (getAttributeClassification() == ClassConstants.STRING) {
-                    if (session.getPlatform().isXDBDocument(attributeValue)) {
-                        return attributeValue.toString();
-                    } else {
-                        Document doc = (Document)attributeValue;
-                        StringWriter writer = new StringWriter();
-                        StreamResult result = new StreamResult(writer);
-                        xmlTransformer.transform(doc, result);
-                        return writer.getBuffer().toString();
-                    }
+                if (getAttributeClassification() != ClassConstants.STRING) {
+                    String xml = (String)attributeValue;
+                    java.io.StringReader reader = new java.io.StringReader(xml);
+                    return xmlParser.parse(reader);
                 }
             }
         } catch (Exception ex) {
@@ -152,4 +157,11 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
             return one.equals(two);
         }
     }
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
+        // PERF: Direct variable access.
+        Object fieldValue = row.get(this.field);
+        Object attributeValue = getAttributeValue(fieldValue, executionSession);
+
+        return attributeValue;
+    }      
 }
