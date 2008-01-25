@@ -1,0 +1,68 @@
+/*******************************************************************************
+* Copyright (c) 2007 Oracle. All rights reserved.
+* This program and the accompanying materials are made available under the terms of
+* the Eclipse Public License v1.0, which accompanies this distribution and is available at
+* http://www.eclipse.org/legal/epl-v10.html.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+******************************************************************************/
+package org.eclipse.persistence.tools.workbench.mappingsmodel;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
+import org.eclipse.persistence.mappings.ObjectTypeMapping;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+
+/**
+ * Used as a convenience for holding a Set of TopLinkOptions.
+ * Use addConversionValuesForTopLink(ObjectTypeConveter) for persistence.
+ * Use toplinkOptionForMWModelOption(String) as a convenience for
+ * returning the TopLinkOption that has the given mwModelOption String 
+ */
+public final class TopLinkOptionSet {
+
+    private List topLinkOptions;
+    
+    public TopLinkOptionSet(List topLinkOptions) {
+        this.topLinkOptions = topLinkOptions;
+    }
+    
+	public ListIterator toplinkOptions() {
+	    return this.topLinkOptions.listIterator();
+	}
+	
+    public TopLinkOption topLinkOptionForMWModelOption(String mwModelOption) {
+ 		for (Iterator i = toplinkOptions(); i.hasNext(); ) {
+ 		   TopLinkOption option = (TopLinkOption) i.next();
+			if (option.getMWModelOption() == mwModelOption) {
+			    return option;
+			}
+		}
+		throw new IllegalArgumentException("mwModelOption is not valid");
+	}
+
+    /**
+	 * Call this for persistence using an ObjectTypeConverter
+	 */
+	public void addConversionValuesForTopLinkTo(ObjectTypeConverter converter) {
+	    for (Iterator i = toplinkOptions(); i.hasNext();) {
+			TopLinkOption model = (TopLinkOption) i.next();
+			converter.addConversionValue(model.getMWModelOption(), model);
+		}
+	}
+
+	/**
+	 * Call this for legacy 4.0 and 4.5 persistence
+	 */	
+	public void addConversionValuesForTopLink4X(ObjectTypeMapping mapping) {
+	    for (Iterator i = toplinkOptions(); i.hasNext();) {
+			TopLinkOption model = (TopLinkOption) i.next();
+			mapping.addConversionValue(model.getTopLinkModelOption(), model);
+		}
+	}
+	
+
+}
