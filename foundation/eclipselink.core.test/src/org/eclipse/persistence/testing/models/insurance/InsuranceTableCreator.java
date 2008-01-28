@@ -105,7 +105,7 @@ public class InsuranceTableCreator extends TableCreator {
 
         FieldDefinition fieldAMOUNT = new FieldDefinition();
         fieldAMOUNT.setName("AMOUNT");
-        fieldAMOUNT.setTypeName("NUMBER");
+        fieldAMOUNT.setTypeName("FLOAT");
         fieldAMOUNT.setSize(19);
         fieldAMOUNT.setSubSize(4);
         fieldAMOUNT.setIsPrimaryKey(false);
