@@ -46,7 +46,7 @@ public class MemoryQueryAcrossManyToManyAcrossOneToManyMapping extends org.eclip
         queryAll.setSelectionCriteria(new ExpressionBuilder().anyOf("projects").get("teamLeader").anyOf("phoneNumbers").get("areaCode").greaterThan("416"));
         getSession().removeQuery("getAllEmployees");
         getSession().addQuery("getAllEmployees", queryAll);
-        allEmployees = (Vector)getSession().executeQuery("getAllEmployees");
+        allEmployees = (Vector)getSession().readAllObjects(Employee.class); //BUG215359 test needs to trigger indirection on all employees
         for (Enumeration enumtr = allEmployees.elements(); enumtr.hasMoreElements();) {
             Vector projects = ((Employee)enumtr.nextElement()).getProjects();
             employees.addAll(projects);
