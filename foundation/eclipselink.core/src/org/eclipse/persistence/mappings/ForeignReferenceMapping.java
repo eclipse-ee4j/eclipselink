@@ -650,7 +650,12 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     /**
      * INTERNAL:
      * Returns the selection criteria stored in the mapping selection query. This criteria
-     * is used to read reference objects from the database.
+     * is used to read reference objects from the database.  It will return null before
+     * initialization.  To obtain the selection criteria before initialization (e.g., in a 
+     * customizer) you can use the buildSelectionCriteria() method defined by some subclasses.
+     * 
+     * @see org.eclipse.persistence.mappings.OneToOneMapping#buildSelectionCriteria()
+     * @see org.eclipse.persistence.mappings.OneToManyMapping#buildSelectionCriteria()
      */
     public Expression getSelectionCriteria() {
         return getSelectionQuery().getSelectionCriteria();
