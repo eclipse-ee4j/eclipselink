@@ -11,7 +11,7 @@ package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
-
+import java.util.concurrent.ConcurrentHashMap;
 /**
  * <p><b>Purpose</b>: A FullIdentityMap holds all objects stored within it for the life of the application.
  * <p><b>Responsibilities</b>:<ul>
@@ -29,7 +29,7 @@ public class FullIdentityMap extends IdentityMap {
     
     public FullIdentityMap(int size) {
         super(size);
-        cacheKeys = new IdentityMapHashMap(size);
+        cacheKeys = new ConcurrentHashMap(size);
     }
 
     /**
@@ -38,7 +38,7 @@ public class FullIdentityMap extends IdentityMap {
      */
     public Object clone() {
         FullIdentityMap clone = (FullIdentityMap)super.clone();
-        clone.setCacheKeys(new IdentityMapHashMap(getCacheKeys().size()));
+        clone.setCacheKeys(new ConcurrentHashMap(getCacheKeys().size()));
 
         for (Iterator cacheKeysIterator = getCacheKeys().values().iterator(); cacheKeysIterator.hasNext();) {
             CacheKey key = (CacheKey)((CacheKey)cacheKeysIterator.next()).clone();
