@@ -8,13 +8,13 @@
 	<classpathentry kind="src" path="mappingsplugin/source"/>
 	<classpathentry kind="src" path="scplugin/source"/>
 	<classpathentry kind="lib" path="jlib/compile/packageRename_g.jar" sourcepath="jlib/source/toplink_src.jar"/>
-	<classpathentry kind="lib" path="jlib/compile/ant.jar" sourcepath="jlib/source/ant_src.zip"/>
-	<classpathentry kind="lib" path="jlib/compile/ant-launcher.jar"/>
-	<classpathentry kind="lib" path="jlib/compile/junit_3.8.1.jar" sourcepath="jlib/source/junit_3.8.1_src.jar"/>
-	<classpathentry kind="lib" path="jlib/compile/eclipselink.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.utils.workbench"/>
 	<classpathentry kind="lib" path="framework/resource"/>
 	<classpathentry kind="lib" path="mappingsplugin/resource"/>
 	<classpathentry kind="lib" path="scplugin/resource"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench/jlib/compile/ant.jar" sourcepath="/eclipselink.utils.workbench/jlib/source/ant_src.zip"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench/jlib/compile/eclipselink.jar"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench/jlib/compile/xercesImpl.jar" sourcepath="/eclipselink.utils.workbench/jlib/source/Xerces-J-src.2.9.0.zip"/>
 	<classpathentry kind="output" path="class"/>
 </classpath>

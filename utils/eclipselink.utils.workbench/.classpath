@@ -10,7 +10,6 @@
 	<classpathentry kind="src" path="mappingsio/source"/>
 	<classpathentry kind="src" path="mappingsplugin/source"/>
 	<classpathentry kind="src" path="scplugin/source"/>
-	<classpathentry kind="src" path="tljaxb/source"/>
 	<classpathentry kind="lib" path="jlib/compile/ant.jar" sourcepath="jlib/source/ant_src.zip"/>
 	<classpathentry kind="lib" path="jlib/compile/eclipselink.jar"/>
 	<classpathentry kind="lib" path="jlib/compile/xercesImpl.jar" sourcepath="jlib/source/Xerces-J-src.2.9.0.zip"/>

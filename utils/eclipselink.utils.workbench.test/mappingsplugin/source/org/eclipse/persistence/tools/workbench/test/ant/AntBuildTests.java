@@ -13,7 +13,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.tools.ant.launch.Launcher;
+//import org.apache.tools.ant.launch.Launcher;
 import org.apache.tools.ant.taskdefs.Ant;
 import org.eclipse.persistence.tools.workbench.test.utility.JavaTools;
 import org.eclipse.persistence.tools.workbench.test.utility.TestTools;
@@ -55,7 +55,7 @@ public class AntBuildTests extends TestCase {
 		classpathEntries.add( this.resourceDir.getAbsolutePath());
 
 		classpathEntries.add( Classpath.locationFor( Ant.class));	// ant.jar
-		classpathEntries.add( Classpath.locationFor( Launcher.class));	// ant-launcher.jar
+//		classpathEntries.add( Classpath.locationFor( Launcher.class));	// ant-launcher.jar
 
 		Classpath classpath = new Classpath(classpathEntries);
 		String[] javaOptions = TestTools.buildOracleProxyCommandLineOptions();
