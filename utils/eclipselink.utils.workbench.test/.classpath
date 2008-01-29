@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/eclipse.mwdev"/>
 	<classpathentry kind="src" path="utility/source"/>
 	<classpathentry kind="src" path="uitools/source"/>
 	<classpathentry kind="src" path="framework/source"/>
@@ -13,11 +12,9 @@
 	<classpathentry kind="lib" path="jlib/compile/ant-launcher.jar"/>
 	<classpathentry kind="lib" path="jlib/compile/junit_3.8.1.jar" sourcepath="jlib/source/junit_3.8.1_src.jar"/>
 	<classpathentry kind="lib" path="jlib/compile/eclipselink.jar"/>
-	<classpathentry kind="lib" path="/mwtest/jlib/jdbc"/>
-	<classpathentry kind="lib" path="/mwtest/framework/resource"/>
-	<classpathentry kind="lib" path="/mwtest/mappingsplugin/resource"/>
-	<classpathentry kind="lib" path="/mwtest/scplugin/resource"/>
-	<classpathentry kind="lib" path="/mwtest/tljaxb/resource"/>
-	<classpathentry kind="lib" path="/mwtest/uitools/resource"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.utils.workbench"/>
+	<classpathentry kind="lib" path="framework/resource"/>
+	<classpathentry kind="lib" path="mappingsplugin/resource"/>
+	<classpathentry kind="lib" path="scplugin/resource"/>
 	<classpathentry kind="output" path="class"/>
 </classpath>
