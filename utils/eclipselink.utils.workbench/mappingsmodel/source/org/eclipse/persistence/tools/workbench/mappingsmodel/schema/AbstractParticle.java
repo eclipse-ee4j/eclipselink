@@ -13,11 +13,9 @@ import java.util.Collection;
 
 import org.apache.xerces.impl.xs.XSParticleDecl;
 import org.apache.xerces.xs.XSObject;
-import org.eclipse.persistence.tools.workbench.utility.ClassTools;
-import org.eclipse.persistence.tools.workbench.utility.node.Node;
-
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 public abstract class AbstractParticle
 	extends AbstractSchemaComponent

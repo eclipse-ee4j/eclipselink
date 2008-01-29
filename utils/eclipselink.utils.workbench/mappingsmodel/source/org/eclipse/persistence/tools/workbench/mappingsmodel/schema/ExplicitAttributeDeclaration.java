@@ -19,14 +19,13 @@ import org.apache.xerces.impl.xs.XSAttributeDecl;
 import org.apache.xerces.impl.xs.XSAttributeUseImpl;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSObject;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
-import org.eclipse.persistence.tools.workbench.utility.iterators.NullIterator;
-import org.eclipse.persistence.tools.workbench.utility.node.Node;
-
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
+import org.eclipse.persistence.tools.workbench.utility.iterators.NullIterator;
+import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 public final class ExplicitAttributeDeclaration
 	extends AbstractNamedSchemaComponent

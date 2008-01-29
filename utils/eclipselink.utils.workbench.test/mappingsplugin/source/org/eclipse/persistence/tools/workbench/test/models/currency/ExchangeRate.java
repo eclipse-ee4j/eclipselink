@@ -16,7 +16,7 @@ public class ExchangeRate
 	private Integer periodLength;
 /**
  * 
- * @return test.oracle.models.currency.CurrencyRange
+ * @return org.eclipse.persistence.tools.workbench.test.models.currency.CurrencyRange
  */
 public CurrencyRange getCurrencyRange() {
 	return currencyRange;
@@ -37,7 +37,7 @@ public java.lang.Integer getPeriodLength() {
 }
 /**
  * 
- * @param newCurrencyRange test.oracle.models.currency.CurrencyRange
+ * @param newCurrencyRange org.eclipse.persistence.tools.workbench.test.models.currency.CurrencyRange
  */
 public void setCurrencyRange(CurrencyRange newCurrencyRange) {
 	currencyRange = newCurrencyRange;

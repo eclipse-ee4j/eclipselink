@@ -68,28 +68,6 @@ public final class MWRelationalReadAllQuery
 		return descriptor;
 	}
 		
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWRelationalReadAllQuery.class);
-		descriptor.setTableName("query");
-		
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractRelationalReadQuery.class);
-
-		return descriptor;
-	}
-	
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWRelationalReadAllQuery.class);
-		descriptor.setTableName("Query");
-		
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractRelationalReadQuery.class);
-		
-		return descriptor;
-	}
-
 	/** Default constructor - for TopLink use only. */			
 	private MWRelationalReadAllQuery() {
 		super();
@@ -354,18 +332,4 @@ public final class MWRelationalReadAllQuery
 		return new ReadAllQuery();
 	}
 	
-	
-	// **************** TopLink only methods ****************	
-
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.batchReadItems = new Vector();
-		this.orderingItems = new Vector();		
-	}
-	
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.batchReadItems = new Vector();
-		this.orderingItems = new Vector();		
-	}
 }

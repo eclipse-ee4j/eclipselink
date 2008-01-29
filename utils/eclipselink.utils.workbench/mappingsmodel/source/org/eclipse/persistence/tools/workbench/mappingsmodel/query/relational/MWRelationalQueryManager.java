@@ -22,7 +22,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import deprecated.sdk.SDKAggregateCollectionMapping;
 
 /**
  * This class holds any custom sql the user has created.
@@ -180,70 +179,5 @@ public final class MWRelationalQueryManager extends MWQueryManager {
 		setReadObjectSQLString(rtQueryManager.getReadObjectSQLString());		
 
 	}
-
-	public static ClassDescriptor legacy50BuildDescriptor()
-	{
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWRelationalQueryManager.class);
-		descriptor.setTableName("query-manager");
-	
-		// DTFs
-		((DirectToFieldMapping) descriptor.addDirectMapping("legacyDescriptorAlias", "descriptor-alias")).setNullValue("");
-		descriptor.addDirectMapping("insertSQLString", "insert-string");
-		descriptor.addDirectMapping("updateSQLString", "update-string");
-		descriptor.addDirectMapping("deleteSQLString", "delete-string");
-		descriptor.addDirectMapping("readObjectSQLString", "read-object-string");
-		descriptor.addDirectMapping("readAllSQLString", "read-all-string");
-		
-		// Aggregate collection - queries
-		SDKAggregateCollectionMapping queriesMapping = new SDKAggregateCollectionMapping();
-		queriesMapping.setAttributeName("queries");
-		queriesMapping.setGetMethodName("getQueriesForTopLink");
-		queriesMapping.setSetMethodName("setQueriesForTopLink");
-		queriesMapping.setReferenceClass(MWAbstractRelationalReadQuery.class);
-		queriesMapping.setFieldName("query-list");
-		descriptor.addMapping(queriesMapping);
-		return descriptor;
-	}	
-
-	public static ClassDescriptor legacy45BuildDescriptor()
-	{
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWRelationalQueryManager.class);
-		descriptor.setTableName("QueryManager");
-		descriptor.descriptorIsAggregate();
-	
-		// DTFs
-		((DirectToFieldMapping) descriptor.addDirectMapping("legacyDescriptorAlias", "descriptorAlias")).setNullValue("");
-		descriptor.addDirectMapping("insertSQLString", "insertString");
-		descriptor.addDirectMapping("updateSQLString", "updateString");
-		descriptor.addDirectMapping("deleteSQLString", "deleteString");
-		descriptor.addDirectMapping("readObjectSQLString", "readObjectString");
-		descriptor.addDirectMapping("readAllSQLString", "readAllString");
-	
-		// Aggregate collection - queries
-		SDKAggregateCollectionMapping queriesMapping = new SDKAggregateCollectionMapping();
-		queriesMapping.setAttributeName("queries");
-		queriesMapping.setGetMethodName("getQueriesForTopLink");
-		queriesMapping.setSetMethodName("setQueriesForTopLink");
-		queriesMapping.setReferenceClass(MWAbstractRelationalReadQuery.class);
-		queriesMapping.setFieldName("queryList");
-		descriptor.addMapping(queriesMapping);
-		
-		return descriptor;
-    }
-    
-    public void legacy50PostPostProjectBuild() {
-        super.legacy50PostPostProjectBuild();
-        getOwningDescriptor().getTransactionalPolicy().setDescriptorAlias(this.legacyDescriptorAlias);
-        this.legacyDescriptorAlias = null;
-    }
-    
-    public void legacy45PostPostProjectBuild() {
-        super.legacy45PostPostProjectBuild();
-        getOwningDescriptor().getTransactionalPolicy().setDescriptorAlias(this.legacyDescriptorAlias);
-        this.legacyDescriptorAlias = null;
-    }
 
 }

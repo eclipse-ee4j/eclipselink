@@ -14,10 +14,9 @@ import java.net.URL;
 
 import org.apache.xerces.util.URI;
 import org.apache.xerces.util.URI.MalformedURIException;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
-
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 
 public abstract class ResourceSpecification 
 	extends MWModel

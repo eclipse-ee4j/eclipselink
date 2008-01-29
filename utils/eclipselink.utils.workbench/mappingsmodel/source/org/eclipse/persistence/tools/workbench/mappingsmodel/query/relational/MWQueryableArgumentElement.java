@@ -27,7 +27,6 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
 
 /**
  * An MWQueryableArgument holds on to 1 MWQueryableArgumentElement.
@@ -286,31 +285,5 @@ public final class MWQueryableArgumentElement extends MWModel {
 		NodeReferenceScrubber scrubber = this.buildQueryableScrubber();
 		this.queryableHandle = ((handle == null) ? new MWQueryableHandle(this, scrubber) : handle.setScrubber(scrubber));
 	}
-
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWQueryableArgumentElement.class);
-		descriptor.setTableName("queryable-argument-element");
-
-		SDKAggregateObjectMapping queryableHandleMapping = new SDKAggregateObjectMapping();
-		queryableHandleMapping.setAttributeName("queryableHandle");
-		queryableHandleMapping.setGetMethodName("getQueryableHandleForTopLink");
-		queryableHandleMapping.setSetMethodName("setQueryableHandleForTopLink");
-		queryableHandleMapping.setReferenceClass(MWQueryableHandle.class);
-		queryableHandleMapping.setFieldName("argument-queryable-handle");
-		descriptor.addMapping(queryableHandleMapping);
-	
-		descriptor.addDirectMapping("allowsNull", "allows-null");
-
-		SDKAggregateObjectMapping joinedQueryableElementMapping = new SDKAggregateObjectMapping();
-		joinedQueryableElementMapping.setAttributeName("joinedQueryableElement");
-		joinedQueryableElementMapping.setReferenceClass(MWQueryableArgumentElement.class);
-		joinedQueryableElementMapping.setFieldName("joined-queryable-element");
-		descriptor.addMapping(joinedQueryableElementMapping);
-				
-		return descriptor;
-	}	
 
 }

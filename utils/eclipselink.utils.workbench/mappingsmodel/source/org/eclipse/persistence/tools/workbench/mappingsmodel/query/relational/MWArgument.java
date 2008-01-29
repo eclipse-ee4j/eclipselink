@@ -81,28 +81,7 @@ public abstract class MWArgument extends MWModel implements Undoable {
 		
 		return descriptor;
 	}
-	public static ClassDescriptor legacy50BuildDescriptor() 
-	{
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWArgument.class);
-		descriptor.setTableName("argument");
-	
-		//inheritance policy
-		InheritancePolicy ip = descriptor.getInheritancePolicy();
-		ip.setClassIndicatorFieldName("argument-class");
-		ip.readSubclassesOnQueries();
-		Class[] classes = {
-			MWLiteralArgument.class,
-			MWQueryParameterArgument.class,
-			MWQueryableArgument.class
-		};
-		for (int i = 0; i < classes.length; i++) {
-			ip.addClassIndicator(classes[i], ClassTools.shortNameFor(classes[i]));
-		}	
-		
-		return descriptor;
-	}
+
 	//Conversion to Runtime
 	abstract Expression runtimeExpression(ExpressionBuilder builder);
 

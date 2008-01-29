@@ -32,6 +32,6 @@ public abstract class RelationalProjectRunnerTests extends ProjectRunnerTests {
 	 */
 	protected void configureDeploymentLogin( MWProject project) {
 		MWDatabase database = project.getDatabase();
-		database.setDeploymentLoginSpec( database.loginSpecNamed( "Oracle"));
+		database.setDeploymentLoginSpec( database.loginSpecNamed("MySQL"));
 	}
 }

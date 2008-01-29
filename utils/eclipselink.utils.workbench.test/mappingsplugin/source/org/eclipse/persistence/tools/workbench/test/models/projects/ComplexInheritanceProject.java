@@ -217,8 +217,8 @@ public class ComplexInheritanceProject extends RelationalTestProject {
 	public void initializeBusTable() {
 		MWTable table = database().addTable("BUS");
 		
-		addField(table,"DESCRIP", "VARCHAR2", 30);
-		addPrimaryKeyField(table,"ID", "NUMBER", 15);
+		addField(table,"DESCRIP", "varchar", 30);
+		addPrimaryKeyField(table,"ID", "decimal", 15);
 	}
 	
 	public void initializeCarDescriptor() {		
@@ -266,9 +266,9 @@ public class ComplexInheritanceProject extends RelationalTestProject {
 	public void initializeCarTable() {
 		MWTable table = database().addTable("CAR");
 		
-		addField(table,"CDESCRIP", "VARCHAR2", 30);
-		addField(table,"FUEL_CAP", "NUMBER", 10);
-		addPrimaryKeyField(table,"ID", "NUMBER", 15);
+		addField(table,"CDESCRIP", "varchar", 30);
+		addField(table,"FUEL_CAP", "decimal", 10);
+		addPrimaryKeyField(table,"ID", "decimal", 15);
 	}
 	
 	public void initializeCompanyDescriptor() {
@@ -300,8 +300,8 @@ public class ComplexInheritanceProject extends RelationalTestProject {
 	public void initializeCompanyTable() {
 		MWTable table = database().addTable("COMPANY");
 		
-		addPrimaryKeyField(table,"ID", "NUMBER", 15);
-		addField(table,"NAME", "VARCHAR2", 30);
+		addPrimaryKeyField(table,"ID", "decimal", 15);
+		addField(table,"NAME", "varchar", 30);
 	}
 	
 	public void initializeComputerDescriptor() {		
@@ -320,7 +320,7 @@ public class ComplexInheritanceProject extends RelationalTestProject {
 		
 		//afterload policy
 		descriptor.addAfterLoadingPolicy();
-		MWClass postLoadClass = typeNamed("test.oracle.models.complexinheritance.Computer");
+		MWClass postLoadClass = typeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.Computer");
 		((MWDescriptorAfterLoadingPolicy) descriptor.getAfterLoadingPolicy()).setPostLoadMethodClass(postLoadClass);
 		((MWDescriptorAfterLoadingPolicy) descriptor.getAfterLoadingPolicy()).setPostLoadMethod(methodNamed(postLoadClass, "addToDescriptor"));
 		
@@ -379,24 +379,24 @@ public class ComplexInheritanceProject extends RelationalTestProject {
 	@Override
 	protected void initializeDescriptors()  {
 		super.initializeDescriptors();
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.Bicycle");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.Boat");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.Bus");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.Car");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.Company");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.Computer");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.Engineer");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.FueledVehicle");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.IBMPC");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.Mac");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.Mainframe");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.NonFueledVehicle");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.PC");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.Person");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.SalesRep");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.SoftwareEngineer");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.SportsCar");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexinheritance.Vehicle");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.Bicycle");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.Boat");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.Bus");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.Car");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.Company");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.Computer");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.Engineer");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.FueledVehicle");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.IBMPC");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.Mac");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.Mainframe");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.NonFueledVehicle");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.PC");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.Person");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.SalesRep");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.SoftwareEngineer");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.SportsCar");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.Vehicle");
 	
 		
 		initializeBicycleDescriptor();
@@ -453,9 +453,9 @@ public class ComplexInheritanceProject extends RelationalTestProject {
 	public void initializeFuelVehTable() {
 		MWTable table = database().addTable("FUEL_VEH");
 
-		addField(table,"FUEL_CAP", "NUMBER", 10);
-		addField(table,"FUEL_TYP", "VARCHAR2", 30);
-		addPrimaryKeyField(table,"ID", "NUMBER", 15);
+		addField(table,"FUEL_CAP", "decimal", 10);
+		addField(table,"FUEL_TYP", "varchar", 30);
+		addPrimaryKeyField(table,"ID", "decimal", 15);
 	}	
 
 	public void initializeIBMPCDescriptor() {
@@ -484,21 +484,21 @@ public class ComplexInheritanceProject extends RelationalTestProject {
 	public void initializeInhCompTable() {
 		MWTable table = database().addTable("INH_COMP");
 
-		addField(table,"CLONE", "NUMBER", 1).setAllowsNull(false);
-		addField(table,"CTYPE", "VARCHAR2", 20);
-		addPrimaryKeyField(table,"ID", "NUMBER", 10);
-		addField(table,"MAKE", "VARCHAR2", 100);
-		addField(table,"MANUFAC", "VARCHAR2", 100);
-		addField(table,"MEMORY", "NUMBER", 10);
-		addField(table,"PCTYPE", "VARCHAR2", 20);
-		addField(table,"SPEED", "NUMBER", 10);
+		addField(table,"CLONE", "decimal", 1).setAllowsNull(false);
+		addField(table,"CTYPE", "varchar", 20);
+		addPrimaryKeyField(table,"ID", "decimal", 10);
+		addField(table,"MAKE", "varchar", 100);
+		addField(table,"MANUFAC", "varchar", 100);
+		addField(table,"MEMORY", "decimal", 10);
+		addField(table,"PCTYPE", "varchar", 20);
+		addField(table,"SPEED", "decimal", 10);
 	}	
 
 	public void initializeInhMfTable() {
 		MWTable table = database().addTable("INH_MF");
 
-		addPrimaryKeyField(table,"MF_ID", "NUMBER", 10);
-		addField(table,"PROCS", "NUMBER", 10);
+		addPrimaryKeyField(table,"MF_ID", "decimal", 10);
+		addField(table,"PROCS", "decimal", 10);
 	}	
 
 	public void initializeMacDescriptor() {		
@@ -572,21 +572,21 @@ public class ComplexInheritanceProject extends RelationalTestProject {
 	public void initializePartNumsTable() {
 		MWTable table = database().addTable("PARTNUMS");
 
-		addPrimaryKeyField(table,"PART_NUM", "VARCHAR2", 30);
-		addPrimaryKeyField(table,"VEHIC_ID", "NUMBER", 15);
+		addPrimaryKeyField(table,"PART_NUM", "varchar", 30);
+		addPrimaryKeyField(table,"VEHIC_ID", "decimal", 15);
 	}	
 
 	public void initializePerson2Table() {
 		MWTable table = database().addTable("PERSON2");
 
-		addField(table,"BOSS_ID", "NUMBER", 15);
-		addField(table,"C_TYPE", "VARCHAR2", 100);
-		addField(table,"CAR_ID", "NUMBER", 15);
-		addField(table,"FRIEND_ID", "NUMBER", 15);
-		addPrimaryKeyField(table,"ID", "NUMBER", 15);
-		addField(table,"KNOWS_JAVA", "NUMBER", 1).setAllowsNull(false);
-		addField(table,"NAME", "VARCHAR2", 20);
-		addField(table,"REP_ID", "NUMBER", 15);
+		addField(table,"BOSS_ID", "decimal", 15);
+		addField(table,"C_TYPE", "varchar", 100);
+		addField(table,"CAR_ID", "decimal", 15);
+		addField(table,"FRIEND_ID", "decimal", 15);
+		addPrimaryKeyField(table,"ID", "decimal", 15);
+		addField(table,"KNOWS_JAVA", "decimal", 1).setAllowsNull(false);
+		addField(table,"NAME", "varchar", 20);
+		addField(table,"REP_ID", "decimal", 15);
 		
 	}	
 
@@ -752,10 +752,10 @@ public class ComplexInheritanceProject extends RelationalTestProject {
 	public void initializeVehicleTable() {
 		MWTable table = database().addTable("VEHICLE");
 
-		addField(table,"BICY_DES", "VARCHAR2", 30);
-		addField(table,"CAPACITY", "NUMBER", 10);
-		addPrimaryKeyField(table,"ID", "NUMBER", 15);
-		addField(table,"OWNER_ID", "NUMBER", 15);
-		addField(table,"TYPE", "NUMBER", 15);
+		addField(table,"BICY_DES", "varchar", 30);
+		addField(table,"CAPACITY", "decimal", 10);
+		addPrimaryKeyField(table,"ID", "decimal", 15);
+		addField(table,"OWNER_ID", "decimal", 15);
+		addField(table,"TYPE", "decimal", 15);
 	}	
 }

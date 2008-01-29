@@ -86,11 +86,15 @@ final class MWXpathStep
 	 * Return true if my position is not ANY_POSITION 
 	 * or if my component has a max occurs of 1 or less
 	 */
-	boolean isSingular() {
-		return 
-			this.isText 
-			|| this.position != ANY_POSITION
-			|| this.xpathComponent.getMaxOccurs() <= 1;
+	boolean isSingular() { 
+		if (this.xpathComponent != null && this.xpathComponent.getMaxOccurs() == -1) {
+			return false;
+		} else if (this.isText
+					|| this.position != ANY_POSITION
+					|| this.xpathComponent.getMaxOccurs() <= 1) {
+			return true;
+		}
+		return false;
 	}
 	
 	MWXpathableSchemaComponent xpathComponent() {

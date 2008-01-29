@@ -260,34 +260,7 @@ public abstract class MWDescriptorLockingPolicy extends MWModel implements MWLoc
 		this.optimisticVersionLockingType = versionType;
 		firePropertyChanged(OPTIMISTIC_VERSION_LOCKING_TYPE_PROPERTY, oldValue, this.optimisticVersionLockingType);
 	}
-	
-	
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.waitForLock = true;
-		this.retrieveTimeFrom = SERVER_TIME;
-	}	
-	
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.waitForLock = true;
-		this.retrieveTimeFrom = SERVER_TIME;
-	}
-    
-    private String legacyGetLockingType() {
-        throw new UnsupportedOperationException();
-    }
-    
-    private void legacySetLockingType(String lockingType) {
-        if (lockingType == NO_LOCKING) {
-            this.lockingType = NO_LOCKING;
-        }
-        else {
-            this.lockingType = OPTIMISTIC_LOCKING;
-            this.optimisticVersionLockingType = lockingType;
-       }
-    }
-    
+	    
     public String getRetrieveTimeFrom() {
     	return this.retrieveTimeFrom;
     }

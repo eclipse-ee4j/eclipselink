@@ -518,26 +518,6 @@ public final class MWTypeDeclaration extends MWModel {
 	
 	// ********** legacy TopLink 5.0 methods **********
 
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWTypeDeclaration.class);
-		descriptor.setTableName("type-declaration");
-
-		DirectToFieldMapping dimMapping = (DirectToFieldMapping) descriptor.addDirectMapping("dimensionality", "dimensionality");
-		dimMapping.setNullValue(new Integer(0));
-	
-		DirectToFieldMapping typeMapping = new DirectToFieldMapping();
-		typeMapping.setAttributeName("type");
-		typeMapping.setFieldName("type");
-		typeMapping.setGetMethodName("legacyGetTypeNameForTopLink");
-		typeMapping.setSetMethodName("legacy50SetTypeNameForTopLink");
-		descriptor.addMapping(typeMapping);
-	
-		return descriptor;
-	}
-
 	private void legacy50SetTypeNameForTopLink(String typeName) {
 		this.typeHandle = new MWClassHandle(this, this.buildTypeScrubber());
 		if (ClassTools.classNamedIsArray(typeName)) {
@@ -552,41 +532,6 @@ public final class MWTypeDeclaration extends MWModel {
 	 */
 	private String legacyGetTypeNameForTopLink() {
 		return this.typeHandle.legacyGetTypeNameForTopLink();
-	}
-
-
-	// ********** legacy TopLink 4.5 methods **********
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWTypeDeclaration.class);
-		descriptor.setTableName("ArrayType");
-	
-		descriptor.addDirectMapping("dimensionality", "dimensionality");
-
-		DirectToFieldMapping typeMapping = new DirectToFieldMapping();
-		typeMapping.setAttributeName("type");
-		typeMapping.setFieldName("type");
-		typeMapping.setGetMethodName("legacyGetTypeNameForTopLink");
-		typeMapping.setSetMethodName("legacy45SetTypeNameForTopLink");
-		descriptor.addMapping(typeMapping);
-
-		return descriptor;
-	}
-
-	private void legacy45SetTypeNameForTopLink(String typeName) {
-		this.legacy45SetTypeName(typeName);
-	}
-
-	public void legacy45SetTypeName(String typeName) {
-		this.typeHandle = new MWClassHandle(this, this.buildTypeScrubber());
-		if (ClassTools.classNamedIsArray(typeName)) {
-			this.dimensionality = ClassTools.arrayDepthForClassNamed(typeName);
-			typeName = ClassTools.elementTypeNameForClassNamed(typeName);
-		}
-		this.typeHandle.legacySetTypeNameForTopLink(typeName);
 	}
 
 }

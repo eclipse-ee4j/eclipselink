@@ -25,6 +25,7 @@ import org.eclipse.persistence.eis.EISConnectionSpec;
 import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.eis.EISLogin;
 import org.eclipse.persistence.eis.adapters.aq.AQPlatform;
+import org.eclipse.persistence.eis.adapters.jms.JMSPlatform;
 import org.eclipse.persistence.eis.interactions.XMLInteraction;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
 import org.eclipse.persistence.eis.mappings.EISCompositeDirectCollectionMapping;
@@ -42,6 +43,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnionField;
+import org.eclipse.persistence.platform.database.AttunityPlatform;
 
 public final class EmployeeEisRuntimeProject 
 {
@@ -55,7 +57,7 @@ public final class EmployeeEisRuntimeProject
 	private void initialize() {
 		this.runtimeProject = new org.eclipse.persistence.sessions.Project();
 		this.runtimeProject.setName("Employee-EIS");
-		EISLogin login = new EISLogin(new AQPlatform());
+		EISLogin login = new EISLogin(new JMSPlatform());
 		login.setConnectionSpec(new EISConnectionSpec());
 		login.setConnectionFactoryURL("www.imguessingatthis.com");
 		this.runtimeProject.setLogin(login);
@@ -147,7 +149,7 @@ public final class EmployeeEisRuntimeProject
 		employeeDescriptor.setJavaClassName(Employee.class.getName());
 		employeeDescriptor.setDataTypeName("employee");
 		
-		employeeDescriptor.getInterfacePolicy().addParentInterfaceName("test.oracle.models.contact.Person");
+		employeeDescriptor.getInterfacePolicy().addParentInterfaceName("org.eclipse.persistence.tools.workbench.test.models.contact.Person");
 
 		employeeDescriptor.setShouldAlwaysConformResultsInUnitOfWork(true);
 		employeeDescriptor.setShouldAlwaysRefreshCache(true);

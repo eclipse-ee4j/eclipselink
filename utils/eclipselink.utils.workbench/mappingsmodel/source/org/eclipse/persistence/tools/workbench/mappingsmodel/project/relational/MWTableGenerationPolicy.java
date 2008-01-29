@@ -36,32 +36,6 @@ public class MWTableGenerationPolicy extends MWModel {
 
 		return descriptor;
 	}
-	public static ClassDescriptor legacy50BuildDescriptor() 
-	{
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWTableGenerationPolicy.class);
-		descriptor.setTableName("table-generation-policy");
-
-		descriptor.addDirectMapping("defaultPrimaryKeyName", "default-primary-key-name");
-		descriptor.addDirectMapping("primaryKeySearchPattern", "primary-key-search-pattern");
-
-		return descriptor;
-	}
-	public static ClassDescriptor legacy45BuildDescriptor() 
-	{
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWTableGenerationPolicy.class);
-		descriptor.setTableName("TableGenerationPolicy");
-		descriptor.descriptorIsAggregate();
-
-		// DTFs
-		descriptor.addDirectMapping("defaultPrimaryKeyName", "tabGen_defPKName");
-		descriptor.addDirectMapping("primaryKeySearchPattern", "tabGen_PKSearchPat");
-
-		return descriptor;
-	}
 
 	/**
 	 * default constructor - for TopLink use only

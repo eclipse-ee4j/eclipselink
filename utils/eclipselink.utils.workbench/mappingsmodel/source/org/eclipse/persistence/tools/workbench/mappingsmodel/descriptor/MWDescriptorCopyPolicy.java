@@ -21,12 +21,10 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.mappings.ObjectTypeMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
 
 public final class MWDescriptorCopyPolicy extends MWAbstractDescriptorPolicy {
 
@@ -214,71 +212,6 @@ public final class MWDescriptorCopyPolicy extends MWAbstractDescriptorPolicy {
 	private void setMethodHandleForTopLink(MWMethodHandle handle) {
 		NodeReferenceScrubber scrubber = this.buildMethodScrubber();
 		this.methodHandle = ((handle == null) ? new MWMethodHandle(this, scrubber) : handle.setScrubber(scrubber));
-	}
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWDescriptorCopyPolicy.class);
-		descriptor.setTableName("copy-policy");
-		
-		// use an object type mapping so we can preserve object identity
-		ObjectTypeMapping policyTypeMapping = new ObjectTypeMapping();
-		policyTypeMapping.setAttributeName("policyType");
-		policyTypeMapping.addConversionValue(
-				MWDescriptorCopyPolicy.INSTANTIATION_POLICY,
-				MWDescriptorCopyPolicy.INSTANTIATION_POLICY);
-		policyTypeMapping.addConversionValue(
-				MWDescriptorCopyPolicy.CLONE,
-				MWDescriptorCopyPolicy.CLONE);
-		// convert the old "constructor" values to "instantiation"
-		policyTypeMapping
-				.setDefaultAttributeValue(MWDescriptorCopyPolicy.INSTANTIATION_POLICY);
-		policyTypeMapping.setFieldName("policy-type");
-		policyTypeMapping.setNullValue(MWDescriptorCopyPolicy.INSTANTIATION_POLICY);
-		descriptor.addMapping(policyTypeMapping);
-
-		SDKAggregateObjectMapping methodHandleMapping = new SDKAggregateObjectMapping();
-		methodHandleMapping.setAttributeName("methodHandle");
-		methodHandleMapping.setGetMethodName("getMethodHandleForTopLink");
-		methodHandleMapping.setSetMethodName("setMethodHandleForTopLink");
-		methodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		methodHandleMapping.setFieldName("copy-policy-method-handle");
-		descriptor.addMapping(methodHandleMapping);
-
-		return descriptor;
-	}
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWDescriptorCopyPolicy.class);
-		descriptor.setTableName("CopyPolicy");
-		descriptor.descriptorIsAggregate();
-
-		// use an object type mapping so we can use object identity
-		ObjectTypeMapping policyType = new ObjectTypeMapping();
-		policyType.setAttributeName("policyType");
-		policyType.addConversionValue(
-				MWDescriptorCopyPolicy.INSTANTIATION_POLICY,
-				MWDescriptorCopyPolicy.INSTANTIATION_POLICY);
-		policyType.addConversionValue(
-				MWDescriptorCopyPolicy.CLONE,
-				MWDescriptorCopyPolicy.CLONE);
-		// convert the old "constructor" values to "instantiation"
-		policyType.setDefaultAttributeValue(MWDescriptorCopyPolicy.INSTANTIATION_POLICY);
-		policyType.setFieldName("CP_policyType");
-		policyType.setNullValue(MWDescriptorCopyPolicy.INSTANTIATION_POLICY);
-		descriptor.addMapping(policyType);
-
-		SDKAggregateObjectMapping methodHandleMapping = new SDKAggregateObjectMapping();
-		methodHandleMapping.setAttributeName("methodHandle");
-		methodHandleMapping.setGetMethodName("getMethodHandleForTopLink");
-		methodHandleMapping.setSetMethodName("setMethodHandleForTopLink");
-		methodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		methodHandleMapping.setFieldName("methodHandle");
-		descriptor.addMapping(methodHandleMapping);
-
-		return descriptor;
 	}
 
 }

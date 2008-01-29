@@ -43,7 +43,7 @@ public class ComplexAggregateProject extends RelationalTestProject{
 	}
 	
 	public static MWRelationalProject emptyProject() {
-		MWRelationalProject project = new MWRelationalProject("ComplexAggregate", spiManager(), oraclePlatform());
+		MWRelationalProject project = new MWRelationalProject("ComplexAggregate", spiManager(), mySqlPlatform());
 
 		// project defaults policy
 		MWProjectDefaultsPolicy pdp = project.getDefaultsPolicy();
@@ -61,19 +61,19 @@ public class ComplexAggregateProject extends RelationalTestProject{
 	}
 	
 	public MWTableDescriptor getAddressDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.complexaggregate.Address");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.Address");
 	}
 	
 	public MWAggregateDescriptor getAddressDescriptionDescriptor() {
-		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.complexaggregate.AddressDescription");
+		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.AddressDescription");
 	}
 	
 	public MWTableDescriptor getClientDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.complexaggregate.Client");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.Client");
 	}
 	
 	public MWTableDescriptor getComputerDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.complexaggregate.Computer");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.Computer");
 	}
 	
 	protected Integer getDefaultQueryTimeout() {
@@ -85,31 +85,31 @@ public class ComplexAggregateProject extends RelationalTestProject{
 	}
 	
 	public MWTableDescriptor getEmployeeDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.complexaggregate.Employee");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.Employee");
 	}
 	
 	public MWTableDescriptor getEvaluationClientDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.complexaggregate.EvaluationClient");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.EvaluationClient");
 	}
 	
 	public MWTableDescriptor getLanguageDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.complexaggregate.Language");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.Language");
 	}
 	
 	public MWAggregateDescriptor getPeriodDescriptor() {
-		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.complexaggregate.Period");
+		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.Period");
 	}
 	
 	public MWAggregateDescriptor getPeriodDescriptionDescriptor() {
-		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.complexaggregate.PeriodDescription");
+		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.PeriodDescription");
 	}
 	
 	public MWAggregateDescriptor getProjectDescriptionDescriptor() {
-		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.complexaggregate.ProjectDescription");
+		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.ProjectDescription");
 	}
 	
 	public MWTableDescriptor getResponsibilityDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.complexaggregate.Responsibility");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.Responsibility");
 	}
 	
 	protected void initializeAddressDescriptionDescriptor() {
@@ -153,57 +153,57 @@ public class ComplexAggregateProject extends RelationalTestProject{
 	
 	public void initializeAggAddTable() {
 		MWTable table = database().addTable("AGG_ADD");
-		addField(table, "ADDRESS", "VARCHAR2", 30);
-		addPrimaryKeyField(table, "ID", "NUMBER", 15);
+		addField(table, "ADDRESS", "varchar", 30);
+		addPrimaryKeyField(table, "ID", "decimal", 15);
 	}
 	
 	public void initializeAggClntTable() {
 		MWTable table = database().addTable("AGG_CLNT");
-		addField(table, "CL_ADD", "NUMBER", 15);
-		addField(table, "CL_EDATE", "DATE");
-		addPrimaryKeyField(table, "CL_ID", "NUMBER", 15);
-		addField(table, "CL_NAME", "VARCHAR2", 20);
-		addField(table, "CL_SDATE", "DATE");
-		addField(table, "TYPE", "VARCHAR2", 20);
+		addField(table, "CL_ADD", "decimal", 15);
+		addField(table, "CL_EDATE", "date");
+		addPrimaryKeyField(table, "CL_ID", "decimal", 15);
+		addField(table, "CL_NAME", "varchar", 20);
+		addField(table, "CL_SDATE", "date");
+		addField(table, "TYPE", "varchar", 20);
 	}
 	
 	public void initializeAggComTable() {
 		MWTable table = database().addTable("AGG_COM");
-		addField(table, "DESCRIP", "VARCHAR2", 30);
-		addPrimaryKeyField(table, "ID", "NUMBER",15);
+		addField(table, "DESCRIP", "varchar", 30);
+		addPrimaryKeyField(table, "ID", "decimal",15);
 	}
 	
 	public void initializeAggEcntTable() {
 		MWTable table = database().addTable("AGG_ECNT");
-		addPrimaryKeyField(table, "CL_ID", "NUMBER", 15);
-		addField(table, "EV_EDATE", "DATE");
-		addField(table, "EV_SDATE", "DATE");	
+		addPrimaryKeyField(table, "CL_ID", "decimal", 15);
+		addField(table, "EV_EDATE", "date");
+		addField(table, "EV_SDATE", "date");	
 	}
 	
 	public void initializeAggEmpTable() {
 		MWTable table = database().addTable("AGG_EMP");
-		addField(table, "COMP_ID", "NUMBER",15);
-		addPrimaryKeyField(table, "EM_ADD", "VARCHAR2",20);
-		addField(table, "EM_EDATE", "DATE");
-		addField(table, "EM_FNAME", "VARCHAR2",20);
-		addPrimaryKeyField(table, "EM_ID", "NUMBER", 15);
-		addField(table, "EM_LNAME", "VARCHAR2",20);
-		addField(table, "EM_PDESC", "VARCHAR2",100);
-		addField(table, "EM_SDATE", "DATE");
+		addField(table, "COMP_ID", "decimal",15);
+		addPrimaryKeyField(table, "EM_ADD", "varchar",20);
+		addField(table, "EM_EDATE", "date");
+		addField(table, "EM_FNAME", "varchar",20);
+		addPrimaryKeyField(table, "EM_ID", "decimal", 15);
+		addField(table, "EM_LNAME", "varchar",20);
+		addField(table, "EM_PDESC", "varchar",100);
+		addField(table, "EM_SDATE", "date");
 	
 	}
 	
 	public void initializeAggLanTable() {
 		MWTable table = database().addTable("AGG_LAN");
-		addPrimaryKeyField(table, "ID", "NUMBER", 15);
-		addField(table, "LANGUAGE", "VARCHAR2", 30);
+		addPrimaryKeyField(table, "ID", "decimal", 15);
+		addField(table, "LANGUAGE", "varchar", 30);
 	}
 	
 	public void initializeAggResTable() {
 		MWTable table = database().addTable("AGG_RES");
-		addField(table, "DUTY", "VARCHAR2", 30);
-		addField(table, "EMP_ID", "NUMBER", 15);
-		addPrimaryKeyField(table, "ID", "NUMBER", 15);
+		addField(table, "DUTY", "varchar", 30);
+		addField(table, "EMP_ID", "decimal", 15);
+		addPrimaryKeyField(table, "ID", "decimal", 15);
 	}
 	
 	protected void initializeClientDescriptor() {
@@ -378,18 +378,18 @@ public class ComplexAggregateProject extends RelationalTestProject{
 	protected void initializeDescriptors() {
 		super.initializeDescriptors();
 
-		this.addDescriptorForTypeNamed("test.oracle.models.complexaggregate.Address");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexaggregate.Client");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexaggregate.Computer");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexaggregate.Employee");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexaggregate.EvaluationClient");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexaggregate.Language");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexaggregate.Responsibility");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.Address");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.Client");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.Computer");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.Employee");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.EvaluationClient");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.Language");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.Responsibility");
 
-		this.addAggregateDescriptorForTypeNamed("test.oracle.models.complexaggregate.AddressDescription");
-		this.addAggregateDescriptorForTypeNamed("test.oracle.models.complexaggregate.Period");
-		this.addAggregateDescriptorForTypeNamed("test.oracle.models.complexaggregate.PeriodDescription");
-		this.addAggregateDescriptorForTypeNamed("test.oracle.models.complexaggregate.ProjectDescription");
+		this.addAggregateDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.AddressDescription");
+		this.addAggregateDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.Period");
+		this.addAggregateDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.PeriodDescription");
+		this.addAggregateDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexaggregate.ProjectDescription");
 			
 		
 		initializeAddressDescriptor();
@@ -409,8 +409,8 @@ public class ComplexAggregateProject extends RelationalTestProject{
 	
 	public void initializeEmpLanTable() {
 		MWTable table = database().addTable("EMP_LAN");
-		addPrimaryKeyField(table, "EMP_ID", "NUMBER");
-		addPrimaryKeyField(table, "LAN_ID", "NUMBER");
+		addPrimaryKeyField(table, "EMP_ID", "integer");
+		addPrimaryKeyField(table, "LAN_ID", "integer");
 	}
 
 	protected void initializeEmployeeDescriptor() {

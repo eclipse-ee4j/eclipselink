@@ -469,26 +469,5 @@ public abstract class MWDescriptorInheritancePolicy extends MWAbstractDescriptor
 			getClassIndicatorPolicy().setDescriptorsAvailableForIndicatorDictionaryForTopLink(getAllDescriptorsAvailableForIndicatorDictionary().iterator());
 		}
 	}
-	
-	public void legacy50PostPostProjectBuild() {
-		super.legacy50PostPostProjectBuild();
-		if (!isRoot()) {
-			this.classIndicatorPolicy = new MWNullClassIndicatorPolicy(this);
-		}
-	}
 
-	private void legacySetParentDescriptor(MWMappingDescriptor descriptor) {
-		this.parentDescriptorHandle = new MWDescriptorHandle(this, descriptor, this.buildParentDescriptorScrubber());
-	}
-	private MWMappingDescriptor legacyGetParentDescriptor() {
-		throw new UnsupportedOperationException();
-	}
-	
-	public void legacy45PostPostProjectBuild() {
-		super.legacy45PostPostProjectBuild();
-		if (!isRoot()) {
-			this.classIndicatorPolicy = new MWNullClassIndicatorPolicy(this);
-		}
-	}
-	
 }

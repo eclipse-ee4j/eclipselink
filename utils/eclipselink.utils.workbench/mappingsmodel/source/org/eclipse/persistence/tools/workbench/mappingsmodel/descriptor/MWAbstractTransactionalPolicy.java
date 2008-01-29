@@ -218,26 +218,5 @@ public abstract class MWAbstractTransactionalPolicy extends MWModel
 	public MWAbstractTransactionalPolicy getValueForTopLink() {
 		return this;
 	}
-	
-	public void legacySetReadOnly(boolean newValue) {
-		this.readOnly = newValue;
-	}
-	
-	public void legacySetConformResultsInUnitOfWork(boolean newValue) {
-		this.conformResultsInUnitOfWork = newValue;
-	}
-    
-    public void legacySetLockingPolicy(MWLockingPolicy lockingPolicy) {
-        this.lockingPolicy = lockingPolicy;
-    }
-    
-    
-    public void legacySetCachingPolicy(MWCachingPolicy cachingPolicy) {
-        if (cachingPolicy == null) {
-            this.cachingPolicy = new MWDescriptorCachingPolicy(this);
-        }
-        else {
-            this.cachingPolicy = cachingPolicy;
-        }
-    }
+
 }

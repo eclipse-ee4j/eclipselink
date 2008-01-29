@@ -27,7 +27,7 @@ public Household() {
 /**
  * Insert the method's description here.
  * Creation date: (11/27/00 4:59:42 PM)
- * @return test.oracle.models.phone.Person
+ * @return org.eclipse.persistence.tools.workbench.test.models.phone.Person
  */
 public Person getHeadOfHousehold() {
 	return headOfHousehold;
@@ -43,7 +43,7 @@ public int getId() {
 /**
  * Insert the method's description here.
  * Creation date: (11/27/00 4:59:42 PM)
- * @return test.oracle.models.phone.Service
+ * @return org.eclipse.persistence.tools.workbench.test.models.phone.Service
  */
 public Service getService() {
 	return service;
@@ -51,7 +51,7 @@ public Service getService() {
 /**
  * Insert the method's description here.
  * Creation date: (11/27/00 4:59:42 PM)
- * @param newHeadOfHousehold test.oracle.models.phone.Person
+ * @param newHeadOfHousehold org.eclipse.persistence.tools.workbench.test.models.phone.Person
  */
 public void setHeadOfHousehold(Person newHeadOfHousehold) {
 	headOfHousehold = newHeadOfHousehold;
@@ -67,7 +67,7 @@ public void setId(int newId) {
 /**
  * Insert the method's description here.
  * Creation date: (11/27/00 4:59:42 PM)
- * @param newService test.oracle.models.phone.Service
+ * @param newService org.eclipse.persistence.tools.workbench.test.models.phone.Service
  */
 public void setService(Service newService) {
 	service = newService;

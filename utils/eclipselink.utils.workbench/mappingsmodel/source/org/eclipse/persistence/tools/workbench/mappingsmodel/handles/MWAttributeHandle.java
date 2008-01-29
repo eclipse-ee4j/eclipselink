@@ -134,27 +134,6 @@ public final class MWAttributeHandle extends MWHandle {
 		return descriptor;
 	}
 	
-	public static ClassDescriptor legacy50BuildDescriptor(){
-		ClassDescriptor descriptor = new deprecated.xml.XMLDescriptor();
-		descriptor.descriptorIsAggregate();
-	
-		descriptor.setJavaClass(MWAttributeHandle.class);
-		descriptor.setTableName("attribute-handle");
-	
-		OneToOneMapping attributeDeclaringTypeMapping = new OneToOneMapping();
-		attributeDeclaringTypeMapping.setAttributeName("attributeDeclaringType");
-		attributeDeclaringTypeMapping.setGetMethodName("legacy50GetAttributeDeclaringTypeForTopLink");
-		attributeDeclaringTypeMapping.setSetMethodName("legacySetAttributeDeclaringTypeForTopLink");
-		attributeDeclaringTypeMapping.setReferenceClass(MWClass.class);
-		attributeDeclaringTypeMapping.setForeignKeyFieldName("attribute-declaring-type");
-		attributeDeclaringTypeMapping.dontUseIndirection();
-		descriptor.addMapping(attributeDeclaringTypeMapping);
-		
-		descriptor.addDirectMapping("attributeName", "getAttributeNameForTopLink", "setAttributeNameForTopLink", "attribute-name");
-	
-		return descriptor;
-	}
-
 	private String getAttributeDeclaringTypeNameForTopLink(){
 		return (this.attribute == null) ? null : this.attribute.getDeclaringType().getName();
 	}
@@ -170,39 +149,4 @@ public final class MWAttributeHandle extends MWHandle {
 	private void setAttributeNameForTopLink(String attributeName) {
 		this.attributeName = attributeName;
 	}
-
-	/**
-	 * This legacy method will only be used by toplink for reading 5.x projects 
-	 * in which there was an attribute declaring type.
-	 */
-	private void legacySetAttributeDeclaringTypeForTopLink(MWClass attributeDeclaringType) {
-		if (attributeDeclaringType != null) {
-			this.attributeDeclaringTypeName = attributeDeclaringType.getName();
-		}
-	}
-	/**
-	 * it is necessary to return something here because in 5.0 writes are performed
-	 * during the read for the class override stuff
-	 */
-	private MWClass legacy50GetAttributeDeclaringTypeForTopLink() {
-		if(this.getAttribute() == null)
-			return null;
-		return this.getAttribute().getDeclaringType();
-	}
-
-	/**
-	 * These legacy methods are used when importing a 3.x or 4.x project.
-	 * The containing object will call these methods when
-	 * TopLink calls the containing object's similarly-named methods.
-	 */
-	public void legacy45SetAttributeDeclaringType(MWClass attributeDeclaringType){
-		if (attributeDeclaringType != null) {
-			this.attributeDeclaringTypeName = attributeDeclaringType.getName();
-		}
-	}
-
-	public void legacy45SetAttributeName(String attributeName) {
-		this.attributeName = attributeName;
-	}
-
 }

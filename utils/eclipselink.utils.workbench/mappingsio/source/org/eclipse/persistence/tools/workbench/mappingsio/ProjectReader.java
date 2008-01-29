@@ -252,22 +252,6 @@ class ProjectReader {
 		if (this.schemaVersion.startsWith(SCHEMA_VERSION_6_0)) {
 			this.legacyProjectReadCallback.checkLegacyRead(this.schemaVersion);
 			project = LegacyIOFacade.read60Project(file, preferences);
-		} else if (this.schemaVersion.startsWith(SCHEMA_VERSION_5_X)) {
-			this.legacyProjectReadCallback.checkLegacyRead(this.schemaVersion);
-			project = LegacyIOFacade.read50Project(this.file);
-			// "inject" the SPI manager *before* calling #postProjectBuild()
-			this.injectSPIManager(project, this.buildSimpleSPIManager());
-			project.legacy50PostProjectBuild();
-
-		} else if (this.schemaVersion.startsWith(SCHEMA_VERSION_4_5) 
-				|| this.schemaVersion.startsWith(PRODUCT_VERSION_4_6) 
-				|| this.schemaVersion.startsWith(PRODUCT_VERSION_9_0_3)) {
-			this.legacyProjectReadCallback.checkLegacyRead(this.schemaVersion);
-			project = LegacyIOFacade.read45Project(this.file);
-			// "inject" the SPI manager *before* calling #postProjectBuild()
-			this.injectSPIManager(project, this.buildSimpleSPIManager());
-			project.legacy45PostProjectBuild();
-
 		} else {
 			// must be an unsupported version...
 			throw new IllegalStateException(this.schemaVersion);

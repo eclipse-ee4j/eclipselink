@@ -54,7 +54,7 @@ public class MWAggregateMappingTests extends ModelProblemsTestCase {
 
 	public static MWAggregateMapping personAddressMapping() {
 		MWProject crimeSceneProject = new CrimeSceneProject().getProject();
-		MWTableDescriptor personDescriptor = (MWTableDescriptor) crimeSceneProject.descriptorForTypeNamed("test.oracle.models.crimescene.Person");
+		MWTableDescriptor personDescriptor = (MWTableDescriptor) crimeSceneProject.descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Person");
 		return (MWAggregateMapping) personDescriptor.mappingNamed("address");
 	
 	}

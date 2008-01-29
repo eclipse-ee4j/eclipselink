@@ -134,49 +134,7 @@ public final class MWMappingHandle extends MWHandle {
 
 		return descriptor;
 	}
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = new deprecated.xml.XMLDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWMappingHandle.class);
-		descriptor.setTableName("mapping-handle");
-
-		OneToOneMapping mappingDescriptorMapping = new OneToOneMapping();
-		mappingDescriptorMapping.setAttributeName("mappingDescriptor");
-		mappingDescriptorMapping.setGetMethodName("legacyGetMappingDescriptorForTopLink");
-		mappingDescriptorMapping.setSetMethodName("legacySetMappingDescriptorForTopLink");
-		mappingDescriptorMapping.setReferenceClass(MWMappingDescriptor.class);
-		mappingDescriptorMapping.setForeignKeyFieldName("mapping-descriptor");
-		mappingDescriptorMapping.dontUseIndirection();
-		descriptor.addMapping(mappingDescriptorMapping);
 	
-		descriptor.addDirectMapping("mappingName", "getMappingNameForToplink", "setMappingNameForToplink", "mapping-name");
-
-		return descriptor;
-	}
-	
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = new deprecated.xml.XMLDescriptor();
-		descriptor.setJavaClass(MWMappingHandle.class);
-
-		descriptor.setTableName("MappingHandle");
-		descriptor.descriptorIsAggregate();
-
-		OneToOneMapping descriptorMapping = new OneToOneMapping();
-		descriptorMapping.setAttributeName("mappingDescriptorName");
-		descriptorMapping.setGetMethodName("legacyGetMappingDescriptorForTopLink");
-		descriptorMapping.setSetMethodName("legacy4XSetMappingDescriptorForTopLink");
-		descriptorMapping.setReferenceClass(MWMappingDescriptor.class);
-		descriptorMapping.setForeignKeyFieldName("mappingDescriptor");
-		descriptorMapping.dontUseIndirection();
-		descriptor.addMapping(descriptorMapping);
-
-		descriptor.addDirectMapping("mappingName", "getMappingNameForToplink", "setMappingNameForToplink", "mappingName");
-		
-		return descriptor;
-	}
-
 	private String getMappingDescriptorNameForToplink() {
 		return (this.mapping == null) ? null : this.mapping.getParentDescriptor().getName();
 	}
@@ -191,35 +149,6 @@ public final class MWMappingHandle extends MWHandle {
 
 	private void setMappingNameForToplink(String mappingName) {
 		this.mappingName = mappingName;
-	}
-
-
-	private MWMappingDescriptor legacyGetMappingDescriptorForTopLink(){
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * This legacy method will only be used by toplink for reading 5.x projects 
-	 * in which there was a direct reference to the mapping descriptor.
-	 */
-	private void legacySetMappingDescriptorForTopLink(MWMappingDescriptor mappingDescriptor) {
-		if (mappingDescriptor != null) {
-			
-			this.mappingDescriptorName = mappingDescriptor.getName();
-		}
-	}
-	
-	private void legacy4XSetMappingDescriptorForTopLink(MWMappingDescriptor mappingDescriptor) {
-		if (mappingDescriptor != null) {
-			Map legacyValues = (Map) ClassTools.getFieldValue(mappingDescriptor, "legacyValuesMap");
-			MWClass mwClass = ((MWClass) legacyValues.get("mwClass"));
-			if (mwClass != null) {
-				this.mappingDescriptorName = mwClass.getName();
-			}
-			else {
-				this.mappingDescriptorName = mappingDescriptor.getName();
-			}
-		}
 	}
 
 }

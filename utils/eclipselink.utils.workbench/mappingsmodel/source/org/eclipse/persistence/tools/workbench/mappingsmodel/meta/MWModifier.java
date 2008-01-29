@@ -571,24 +571,4 @@ public final class MWModifier extends MWModel {
 		return ! flagsAreSame(flags, code1, code2);
 	}
 	
-	
-	// ********** TopLink methods **********
-	
-	// as of Odin/5.0, MWModifier is no longer mapped directly...
-	
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-	
-		descriptor.setJavaClass(MWModifier.class);
-		descriptor.setTableName("Modifier");
-	
-		DirectToFieldMapping codeMapping = new DirectToFieldMapping();
-		codeMapping.setAttributeName("code");
-		codeMapping.setFieldName("modifier_code");
-		codeMapping.setNullValue(new Integer(0));
-		descriptor.addMapping(codeMapping);
-	
-		return descriptor;
-	}
 }

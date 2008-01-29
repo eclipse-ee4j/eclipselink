@@ -32,8 +32,8 @@ public interface MWTypeNames {
 	public final static String SET_TYPE_NAME 			= "java.util.Set";
 	
 	// toplink types
-	public final static String INDIRECT_CONTAINER_TYPE_NAME 	= "oracle.toplink.indirection.IndirectContainer";
-	public final static String VALUE_HOLDER_INTERFACE_TYPE_NAME = "oracle.toplink.indirection.ValueHolderInterface";
-	public final static String VALUE_HOLDER_TYPE_NAME			= "oracle.toplink.indirection.ValueHolder";
+	public final static String INDIRECT_CONTAINER_TYPE_NAME 	= "org.eclipse.persistence.indirection.IndirectContainer";
+	public final static String VALUE_HOLDER_INTERFACE_TYPE_NAME = "org.eclipse.persistence.indirection.ValueHolderInterface";
+	public final static String VALUE_HOLDER_TYPE_NAME			= "org.eclipse.persistence.indirection.ValueHolder";
 
 }

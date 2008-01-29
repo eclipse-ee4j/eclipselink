@@ -25,8 +25,6 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
-
 
 /**
  * An MWQueryParameterArgument is only used as the right hand side of a MWBinaryExpression
@@ -188,23 +186,6 @@ public final class MWQueryParameterArgument extends MWArgument {
 	private void setQueryParameterHandleForTopLink(MWDescriptorQueryParameterHandle handle) {
 		NodeReferenceScrubber scrubber = this.buildQueryParameterScrubber();
 		this.queryParameterHandle = ((handle == null) ? new MWDescriptorQueryParameterHandle(this, scrubber) : handle.setScrubber(scrubber));
-	}
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWQueryParameterArgument.class);
-	
-		descriptor.getInheritancePolicy().setParentClass(MWArgument.class);
-		
-		SDKAggregateObjectMapping queryParameterHandleMapping = new SDKAggregateObjectMapping();
-		queryParameterHandleMapping.setAttributeName("queryParameterHandle");
-		queryParameterHandleMapping.setGetMethodName("getQueryParameterHandleForTopLink");
-		queryParameterHandleMapping.setSetMethodName("setQueryParameterHandleForTopLink");
-		queryParameterHandleMapping.setReferenceClass(MWDescriptorQueryParameterHandle.class);
-		queryParameterHandleMapping.setFieldName("query-parameter-handle");
-		descriptor.addMapping(queryParameterHandleMapping);
-		return descriptor;
 	}
 	
 }

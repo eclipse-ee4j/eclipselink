@@ -58,7 +58,7 @@ public class QueryProject extends RelationalTestProject
 	
 	public static MWRelationalProject emptyProject() 
 	{
-		MWRelationalProject project = new MWRelationalProject("Query", spiManager(), oraclePlatform());
+		MWRelationalProject project = new MWRelationalProject("Query", spiManager(), mySqlPlatform());
 		
 
 		// Defaults policy  
@@ -537,9 +537,9 @@ public class QueryProject extends RelationalTestProject
 	{
 		super.initializeDescriptors();
 
-		this.addDescriptorForTypeNamed("test.oracle.models.query.Employee");
-		this.addAggregateDescriptorForTypeNamed("test.oracle.models.query.EmploymentPeriod");
-		this.addDescriptorForTypeNamed("test.oracle.models.query.PhoneNumber");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.query.Employee");
+		this.addAggregateDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.query.EmploymentPeriod");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.query.PhoneNumber");
 				
 		initializeEmploymentPeriodDescriptor();
 		initializePhoneNumberDescriptor();
@@ -606,7 +606,7 @@ public class QueryProject extends RelationalTestProject
 	
 	public void initializeEmploymentPeriodDescriptor()
 	{
-		MWAggregateDescriptor periodDescriptor = (MWAggregateDescriptor)  (getProject().descriptorForTypeNamed("test.oracle.models.query.EmploymentPeriod"));
+		MWAggregateDescriptor periodDescriptor = (MWAggregateDescriptor)  (getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.query.EmploymentPeriod"));
 		
 		addDirectMapping(periodDescriptor, "endDate");
 		addDirectMapping(periodDescriptor, "startDate");
@@ -655,26 +655,26 @@ public class QueryProject extends RelationalTestProject
 	{
 		MWTable phoneTable = database().addTable("PHONE");
 		
-		addField(phoneTable,"AREA_CODE", "VARCHAR2", 3);
-		addPrimaryKeyField(phoneTable,"EMP_ID", "NUMBER");
-		addField(phoneTable,"P_NUMBER", "VARCHAR2", 7);
-		addPrimaryKeyField(phoneTable,"TYPE", "VARCHAR2");
+		addField(phoneTable,"AREA_CODE", "varchar", 3);
+		addPrimaryKeyField(phoneTable,"EMP_ID", "integer");
+		addField(phoneTable,"P_NUMBER", "varchar", 7);
+		addPrimaryKeyField(phoneTable,"TYPE", "varchar");
 	}
 	public void initializeEmployeeTable()
 	{	
 		MWTable employeeTable = database().addTable("EMPLOYEE");
 		
-		addField(employeeTable,"ADDR_ID", "NUMBER");
-		addPrimaryKeyField(employeeTable,"EMP_ID", "NUMBER");
-		addField(employeeTable,"END_DATE", "DATE");
-		//addNewField(employeeTable,"END_TIME", "DATE");
-		addField(employeeTable,"F_NAME", "VARCHAR2", 20);
-		//addNewField(employeeTable,"GENDER", "NUMBER", 20);
-		addField(employeeTable,"L_NAME", "VARCHAR2", 20);
-		addField(employeeTable,"MANAGER_ID", "NUMBER");
-		addField(employeeTable,"START_DATE", "DATE");
-		//addNewField(employeeTable,"START_TIME", "DATE");
-		//addNewField(employeeTable,"VERSION", "NUMBER");		
+		addField(employeeTable,"ADDR_ID", "integer");
+		addPrimaryKeyField(employeeTable,"EMP_ID", "integer");
+		addField(employeeTable,"END_DATE", "date");
+		//addNewField(employeeTable,"END_TIME", "date");
+		addField(employeeTable,"F_NAME", "varchar", 20);
+		//addNewField(employeeTable,"GENDER", "decimal", 20);
+		addField(employeeTable,"L_NAME", "varchar", 20);
+		addField(employeeTable,"MANAGER_ID", "integer");
+		addField(employeeTable,"START_DATE", "date");
+		//addNewField(employeeTable,"START_TIME", "date");
+		//addNewField(employeeTable,"VERSION", "integer");		
 	}	
 	
 	@Override

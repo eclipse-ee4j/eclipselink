@@ -15,13 +15,12 @@ import java.util.List;
 
 import org.apache.xerces.impl.xs.XSGroupDecl;
 import org.apache.xerces.xs.XSObject;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.QName;
 import org.eclipse.persistence.tools.workbench.utility.iterators.NullIterator;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
-
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 public final class ModelGroupDefinition
 	extends AbstractNamedSchemaComponent
 	implements MWModelGroupDefinition

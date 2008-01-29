@@ -256,10 +256,9 @@ public final class MappingsPlugin
 	public JMenuItem[] buildNewMenuItems(WorkbenchContext context) {
 
 		context = this.wrap(context);
-		JMenuItem[] menuItems = new JMenuItem[2];
+		JMenuItem[] menuItems = new JMenuItem[1];
 
 		menuItems[0] = new JMenuItem(this.buildNewProjectAction(context));
-		menuItems[1] = new JMenuItem(this.buildUsingJAXBAction(context));
 
 		return menuItems;
 	}
@@ -438,10 +437,6 @@ public final class MappingsPlugin
 	
 	FrameworkAction buildNewProjectAction(WorkbenchContext context) {
 		return new NewProjectAction(this, context);
-	}
-
-	FrameworkAction buildUsingJAXBAction(WorkbenchContext context) {
-		return new NewProjectUsingJAXBAction(this, context);
 	}
 
 	ApplicationNode buildProjectNode(MWProject project, WorkbenchContext context) {

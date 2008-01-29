@@ -26,7 +26,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
 
 public final class MWDescriptorAfterLoadingPolicy extends MWAbstractDescriptorPolicy {
 
@@ -207,62 +206,4 @@ public final class MWDescriptorAfterLoadingPolicy extends MWAbstractDescriptorPo
 		return (this.postLoadMethodHandle.getMethod() == null) ? null : this.postLoadMethodHandle;
 	}
 	
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWDescriptorAfterLoadingPolicy.class);
-		descriptor.setTableName("descriptor-after-loading-policy");
-
-		SDKAggregateObjectMapping postLoadMethodHandleMapping = new SDKAggregateObjectMapping();
-		postLoadMethodHandleMapping.setAttributeName("postLoadMethodHandle");
-		postLoadMethodHandleMapping.setGetMethodName("getPostLoadMethodHandleForTopLink");
-		postLoadMethodHandleMapping.setSetMethodName("setPostLoadMethodHandleForTopLink");
-		postLoadMethodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		postLoadMethodHandleMapping.setFieldName("post-load-method-handle");
-		descriptor.addMapping(postLoadMethodHandleMapping);
-
-		return descriptor;
-	}
-
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		this.postLoadMethodClassHandle = new MWClassHandle(this, this.buildPostLoadMethodClassScrubber());
-		super.legacy50PostBuild(event);
-	}
-
-	public void legacy50PostPostProjectBuild() {
-		super.legacy50PostPostProjectBuild();
-		if (getPostLoadMethod() != null) {
-			this.postLoadMethodClassHandle.setType(getPostLoadMethod().getDeclaringType());
-		}
-	}
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWDescriptorAfterLoadingPolicy.class);
-		descriptor.setTableName("DescriptorAfterLoadingPolicy");
-		descriptor.descriptorIsAggregate();
-
-		SDKAggregateObjectMapping postLoadMethodHandle = new SDKAggregateObjectMapping();
-		postLoadMethodHandle.setAttributeName("postLoadMethodHandle");
-		postLoadMethodHandle.setGetMethodName("getPostLoadMethodHandleForTopLink");
-		postLoadMethodHandle.setSetMethodName("setPostLoadMethodHandleForTopLink");
-		postLoadMethodHandle.setReferenceClass(MWMethodHandle.class);
-		postLoadMethodHandle.setFieldName("postLoadMethodHandle");
-		descriptor.addMapping(postLoadMethodHandle);
-
-		return descriptor;
-	}
-
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		this.postLoadMethodClassHandle = new MWClassHandle(this, this.buildPostLoadMethodClassScrubber());
-		super.legacy45PostBuild(event);
-	}
-
-	public void legacy45PostPostProjectBuild() {
-		super.legacy45PostPostProjectBuild();
-		if (getPostLoadMethod() != null) {
-			this.postLoadMethodClassHandle.setType(getPostLoadMethod().getDeclaringType());
-		}
-	}
-
 }

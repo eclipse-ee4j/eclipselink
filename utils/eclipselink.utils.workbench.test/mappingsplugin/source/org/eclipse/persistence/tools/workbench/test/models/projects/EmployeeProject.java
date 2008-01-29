@@ -65,9 +65,9 @@ public class EmployeeProject extends LegacyEmployeeProject {
 	
 	public void initializeEmailTable() {	
 		MWTable emailTable = database().addTable("EMAIL_ADDRESS");
-		addPrimaryKeyField(emailTable,"EMP_ID", "NUMBER");
-		addField(emailTable,"DESCRIPTION", "NUMBER");		
-		addField(emailTable,"ADDRESS", "VARCHAR2");		
+		addPrimaryKeyField(emailTable,"EMP_ID", "integer");
+		addField(emailTable,"DESCRIPTION", "integer");		
+		addField(emailTable,"ADDRESS", "varchar");		
 	}
 	
 	

@@ -53,13 +53,13 @@ public class ReturningPolicyProject extends RelationalTestProject{
 	{
 		super.initializeDescriptors();
 
-		this.addDescriptorForTypeNamed("test.oracle.models.employee.Employee");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.Employee");
 
 		initializeEmployeeDescriptor();
 	}
 	
 	public MWTableDescriptor getEmployeeDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.employee.Employee");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.Employee");		
 	}
 	
 	public void initializeEmployeeDescriptor() {
@@ -119,31 +119,31 @@ public class ReturningPolicyProject extends RelationalTestProject{
 	public void initializeEmployeeTable() {	
 		MWTable employeeTable = database().addTable("EMPLOYEE");
 		
-		addField(employeeTable,"ADDR_ID", "NUMBER");
-		addPrimaryKeyField(employeeTable,"EMP_ID", "NUMBER");
-		addField(employeeTable,"END_DATE", "DATE");
-		addField(employeeTable,"END_TIME", "DATE");
-		addField(employeeTable,"F_NAME", "VARCHAR2", 20);
-		addField(employeeTable,"GENDER", "VARCHAR2", 20);
-		addField(employeeTable,"L_NAME", "VARCHAR2", 20);
-		addField(employeeTable,"MANAGER_ID", "NUMBER");
-		addField(employeeTable,"START_DATE", "DATE");
-		addField(employeeTable,"START_TIME", "DATE");
-		addField(employeeTable,"VERSION", "NUMBER");		
+		addField(employeeTable,"ADDR_ID", "integer");
+		addPrimaryKeyField(employeeTable,"EMP_ID", "integer");
+		addField(employeeTable,"END_DATE", "date");
+		addField(employeeTable,"END_TIME", "date");
+		addField(employeeTable,"F_NAME", "varchar", 20);
+		addField(employeeTable,"GENDER", "varchar", 20);
+		addField(employeeTable,"L_NAME", "varchar", 20);
+		addField(employeeTable,"MANAGER_ID", "integer");
+		addField(employeeTable,"START_DATE", "date");
+		addField(employeeTable,"START_TIME", "date");
+		addField(employeeTable,"VERSION", "integer");		
 	}
 	
 	public void initializeSalaryTable() {
 		MWTable salaryTable = database().addTable("SALARY");
 		
-		addPrimaryKeyField(salaryTable,"EMP_ID", "NUMBER");
-		addField(salaryTable,"SALARY", "NUMBER");
+		addPrimaryKeyField(salaryTable,"EMP_ID", "integer");
+		addField(salaryTable,"SALARY", "integer");
 	}
     
     public void initializeResponsTable() {
         MWTable responsTable = database().addTable("RESPONS");
             
-        addPrimaryKeyField(responsTable,"DESCRIP", "VARCHAR2", 200);
-        addPrimaryKeyField(responsTable,"EMP_ID", "NUMBER");
+        addPrimaryKeyField(responsTable,"DESCRIP", "varchar", 200);
+        addPrimaryKeyField(responsTable,"EMP_ID", "integer");
     }
 
 }

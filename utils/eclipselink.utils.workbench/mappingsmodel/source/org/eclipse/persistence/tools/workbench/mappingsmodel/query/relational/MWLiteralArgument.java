@@ -120,14 +120,6 @@ public final class MWLiteralArgument extends MWArgument {
 		getBasicExpression().getRootCompoundExpression().propertyChanged(this, TYPE_PROPERTY, oldType, type);
 	}
 	
-	private MWClass legacyGetTypeForTopLink() {
-		throw new UnsupportedOperationException();
-	}
-
-	private void legacySetTypeForTopLink(MWClass type) {
-		this.type = new MWTypeDeclaration(this, type);
-	}
-
 	public void setValue(String value) 
 	{
 		Object oldValue = getValue();
@@ -167,30 +159,6 @@ public final class MWLiteralArgument extends MWArgument {
 		// DTF Object value
 		XMLDirectMapping valueMapping = (XMLDirectMapping)descriptor.addDirectMapping("value", "value/text()");
 		valueMapping.setNullValue("");
-		
-		return descriptor;
-	}
-	public static ClassDescriptor legacy50BuildDescriptor() 
-	{
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWLiteralArgument.class);
-			
-		//inheritance policy
-		descriptor.getInheritancePolicy().setParentClass(MWArgument.class);
-	
-		// 1:1 - type
-		OneToOneMapping typeMapping = new OneToOneMapping();
-		typeMapping.setAttributeName("type");
-		typeMapping.setGetMethodName("legacyGetTypeForTopLink");
-		typeMapping.setSetMethodName("legacySetTypeForTopLink");
-		typeMapping.setReferenceClass(MWClass.class);
-		typeMapping.setForeignKeyFieldName("type");
-		typeMapping.dontUseIndirection();
-		descriptor.addMapping(typeMapping);
-	
-		// DTF Object value
-		descriptor.addDirectMapping("value", "value");
 		
 		return descriptor;
 	}

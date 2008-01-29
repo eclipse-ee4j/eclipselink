@@ -76,10 +76,10 @@ public class EmployeeJAXBProject
 		super.initializeDescriptors();
 
 		//this is not exactly how it's done in the MultipleClassChooserDialog
-		this.addDescriptorForTypeNamed("test.oracle.models.jaxb.employee.Address");
-		this.addDescriptorForTypeNamed("test.oracle.models.jaxb.employee.Employee");
-		this.addDescriptorForTypeNamed("test.oracle.models.jaxb.employee.PhoneNumber");
-		this.addDescriptorForTypeNamed("test.oracle.models.jaxb.employee.Dependent");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.jaxb.employee.Address");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.jaxb.employee.Employee");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.jaxb.employee.PhoneNumber");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.jaxb.employee.Dependent");
 		
 		initializeAddressDescriptor();
 		initializePhoneNumberDescriptor();

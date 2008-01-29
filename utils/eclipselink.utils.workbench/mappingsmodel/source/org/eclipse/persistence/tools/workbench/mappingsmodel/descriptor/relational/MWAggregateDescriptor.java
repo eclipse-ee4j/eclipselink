@@ -44,24 +44,6 @@ public final class MWAggregateDescriptor extends MWRelationalClassDescriptor
 		return descriptor;
 	}
 	
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-
-		descriptor.setJavaClass(MWAggregateDescriptor.class);
-		descriptor.getInheritancePolicy().setParentClass(MWRelationalClassDescriptor.class);
-
-		return descriptor;
-	}
-	
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWAggregateDescriptor.class);
-		descriptor.getInheritancePolicy().setParentClass(MWRelationalClassDescriptor.class);
-
-		return descriptor;
-	}
-
-
 	// ********** constructors **********
 
 	/** Default constructor - for TopLink use only */

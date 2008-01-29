@@ -61,7 +61,7 @@ public class XMLToolsWriteTests extends TestCase {
 		XMLTools.print(this.testDocument, stream);
 		stream.close();
 		StringBuffer sb = new StringBuffer(2000);
-		sb.append("<?xml version = '1.0' encoding = 'UTF-8'?>");
+		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
 		sb.append(CR);
 		sb.append("<root-element>");
 		sb.append(CR);
@@ -72,6 +72,7 @@ public class XMLToolsWriteTests extends TestCase {
 		sb.append(CR);
 		sb.append(string);
 		sb.append("</root-element>");
+		sb.append(CR);
 		String expected = sb.toString();
 		String actual = stream.toString();
 		assertEquals(expected, actual);

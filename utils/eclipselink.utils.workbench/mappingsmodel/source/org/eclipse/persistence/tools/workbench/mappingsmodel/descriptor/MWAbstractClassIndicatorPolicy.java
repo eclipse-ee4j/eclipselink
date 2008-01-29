@@ -126,36 +126,4 @@ public abstract class MWAbstractClassIndicatorPolicy
 		return descriptor;
 	}
 	
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWAbstractClassIndicatorPolicy.class);
-		descriptor.setTableName("class-indicator-policy");
-
-		InheritancePolicy ip = descriptor.getInheritancePolicy();
-		ip.setClassIndicatorFieldName("use-class-extraction-method");
-		ip.addClassIndicator(MWClassIndicatorExtractionMethodPolicy.class, "true");
-		ip.addClassIndicator(MWRelationalClassIndicatorFieldPolicy.class, "false");
-	
-	
-		return descriptor;
-	}
-
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWAbstractClassIndicatorPolicy.class);
-		descriptor.setTableName("ClassIndicatorPolicy");
-		descriptor.descriptorIsAggregate();
-
-		InheritancePolicy ip = descriptor.getInheritancePolicy();
-		ip.setClassIndicatorFieldName("useClassExtractionMethod");
-		ip.addClassIndicator(MWClassIndicatorExtractionMethodPolicy.class, "true");
-		ip.addClassIndicator(MWRelationalClassIndicatorFieldPolicy.class, "false");
-
-		return descriptor;
-	}
-	
 }

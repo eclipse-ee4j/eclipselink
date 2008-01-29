@@ -16,6 +16,7 @@ import org.apache.xerces.impl.xs.XSParticleDecl;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModelGroup;
 
+
 public interface MWParticle 
 	extends MWSchemaComponent 
 {

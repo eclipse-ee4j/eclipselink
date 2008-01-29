@@ -32,8 +32,6 @@ import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
-
 
 /**
  * Abstract class extended by MWBinaryExpression and MWUnaryExpression
@@ -351,35 +349,6 @@ public final class MWBasicExpression
 	
 	}
 	
-	public static ClassDescriptor legacy50BuildDescriptor() 
-	{
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWBasicExpression.class);
-			
-		//Inheritance Policy
-		descriptor.getInheritancePolicy().setParentClass(MWExpression.class);	
-		
-		//Mappings
-		
-		// 1-1 to the first BldrArgument
-		SDKAggregateObjectMapping firstArgumentMapping = new SDKAggregateObjectMapping();
-		firstArgumentMapping.setAttributeName("firstArgument");
-		firstArgumentMapping.setReferenceClass(MWQueryableArgument.class);
-		firstArgumentMapping.setFieldName("first-argument");
-		descriptor.addMapping(firstArgumentMapping);
-		
-		SDKAggregateObjectMapping secondArgumentMapping = new SDKAggregateObjectMapping();
-		secondArgumentMapping.setAttributeName("secondArgument");
-		secondArgumentMapping.setReferenceClass(MWQueryableArgument.class);
-		secondArgumentMapping.setFieldName("second-argument");
-		descriptor.addMapping(secondArgumentMapping);
-
-		return descriptor;
-	
-	}
-	
-	
 	// ***************** Runtime Conversion ***********
 	
 	Expression buildRuntimeExpression(ExpressionBuilder builder) {
@@ -504,13 +473,5 @@ public final class MWBasicExpression
 		}
 		return bldrExpression;
 	}
-	
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		if (this.secondArgument == null) {
-			this.secondArgument = new MWNullArgument(this);
-		}
-	}
-	
 
 }

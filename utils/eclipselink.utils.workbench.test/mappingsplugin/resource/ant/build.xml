@@ -30,8 +30,8 @@
 			<pathelement path = "${basedir}/../../../jlib/run/antlr.jar"/>
 		</path>
 		<path id = "mw.classpath">
-			<pathelement path = "${basedir}/../../../../mwdev/jlib/mw/tlmwcore.jar"/>
-			<pathelement path = "${basedir}/../../../../mwdev/jlib/mw/toplinkmw.jar"/>
+			<pathelement path = "${basedir}/../../../../mwdev/jlib/mw/elmwcore.jar"/>
+			<pathelement path = "${basedir}/../../../../mwdev/jlib/mw/eclipselinkmw.jar"/>
 		</path>
 	
 	    <typedef file = "toplink-ant-lib.xml" classpathref = "mw.classpath" uri = "toplinklib" />

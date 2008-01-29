@@ -67,8 +67,6 @@ import org.eclipse.persistence.tools.workbench.utility.string.PartialStringMatch
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import deprecated.sdk.SDKAggregateCollectionMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
 
 public abstract class MWRelationalClassDescriptor 
 	extends MWMappingDescriptor
@@ -105,55 +103,6 @@ public abstract class MWRelationalClassDescriptor
 		userDefinedQueryKeysMapping.setXPath("user-defined-query-keys/user-defined-query-key");
 		descriptor.addMapping(userDefinedQueryKeysMapping);
 
-		return descriptor;
-	}
-	
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-
-		descriptor.setJavaClass(MWRelationalClassDescriptor.class);
-		descriptor.getInheritancePolicy().setParentClass(MWMappingDescriptor.class);
-		
-		SDKAggregateCollectionMapping userDefinedQueryKeysMapping = new SDKAggregateCollectionMapping();
-		userDefinedQueryKeysMapping.setAttributeName("userDefinedQueryKeys");
-		userDefinedQueryKeysMapping.setReferenceClass(MWUserDefinedQueryKey.class);
-		userDefinedQueryKeysMapping.setFieldName("user-defined-query-keys");
-		descriptor.addMapping(userDefinedQueryKeysMapping);
-		
-		SDKAggregateObjectMapping inheritancePolicyMapping = new SDKAggregateObjectMapping();
-		inheritancePolicyMapping.setAttributeName("inheritancePolicy");
-		inheritancePolicyMapping.setGetMethodName("getInheritancePolicyForTopLink");
-		inheritancePolicyMapping.setSetMethodName("setInheritancePolicyForTopLink");
-		inheritancePolicyMapping.setReferenceClass(MWRelationalDescriptorInheritancePolicy.class);
-		inheritancePolicyMapping.setFieldName("mapping-descriptor-inheritance-policy");
-		descriptor.addMapping(inheritancePolicyMapping);
-		
-		
-		return descriptor;
-	}
-	
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-
-		descriptor.setJavaClass(MWRelationalClassDescriptor.class);
-		descriptor.getInheritancePolicy().setParentClass(MWMappingDescriptor.class);
-		
-		// 1:M - queryKeys
-		SDKAggregateCollectionMapping queryKeysMapping = new SDKAggregateCollectionMapping();
-		queryKeysMapping.setAttributeName("userDefinedQueryKeys");
-		queryKeysMapping.setReferenceClass(MWUserDefinedQueryKey.class);
-		queryKeysMapping.setFieldName("userDefinedQueryKeys");
-		descriptor.addMapping(queryKeysMapping);
-		
-		// aggregate - inheritancePolicy
-		SDKAggregateObjectMapping inheritancePolicyMapping = new SDKAggregateObjectMapping();
-		inheritancePolicyMapping.setAttributeName("inheritancePolicy");
-		inheritancePolicyMapping.setReferenceClass(MWRelationalDescriptorInheritancePolicy.class);
-		inheritancePolicyMapping.setGetMethodName("getInheritancePolicyForTopLink");
-		inheritancePolicyMapping.setSetMethodName("setInheritancePolicyForTopLink");
-		inheritancePolicyMapping.setFieldName("inheritancePolicy");
-		descriptor.addMapping(inheritancePolicyMapping);
-		
 		return descriptor;
 	}
 	

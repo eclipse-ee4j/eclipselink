@@ -97,13 +97,6 @@ public abstract class BackwardCompatibilityTestCase
 			rd.ignoreFieldsNamed("generateDeprecatedDirectMappings");
 			
 		rd = de.addReflectiveDifferentiator(MWAbstractRelationalReadQuery.class);
-			// this will be different for legacy projects 5.0 and before
-			rd.ignoreFieldsNamed("legacy50Prepare");
-			rd.ignoreFieldsNamed("legacyCacheStatement");
-			rd.ignoreFieldsNamed("legacyBindAllParameters");
-			rd.ignoreFieldsNamed("legacy50QueryFormat");
-			rd.ignoreFieldsNamed("legacy4XQueryFormatType");
-			rd.ignoreFieldsNamed("legacy4XQueryString");
 	
 		setUpDescriptorCachingPolicyDifferentiator(de);
 

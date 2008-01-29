@@ -62,32 +62,32 @@ public class LegacyEmployeeProject extends RelationalTestProject {
 	}
 	
 	public MWTableDescriptor getAddressDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.employee.Address");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.Address");
 	}
 		
 	public MWTableDescriptor getEmployeeDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.employee.Employee");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.Employee");		
 	}
 	
 	public MWAggregateDescriptor getEmploymentPeriodDescriptor()
 	{
-		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.employee.EmploymentPeriod");		
+		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.EmploymentPeriod");		
 	}
 	
 	public MWTableDescriptor getLargeProjectDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.employee.LargeProject");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.LargeProject");		
 	}
 		
 	public MWTableDescriptor getPhoneNumberDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.employee.PhoneNumber");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.PhoneNumber");		
 	}
 		
 	public MWTableDescriptor getProjectDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.employee.Project");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.Project");		
 	}
 		
 	public MWTableDescriptor getSmallProjectDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.employee.SmallProject");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.SmallProject");		
 	}
 			
 	public void initializeAddressDescriptor() {
@@ -125,12 +125,12 @@ public class LegacyEmployeeProject extends RelationalTestProject {
 	public void initializeAddressTable() {
 		MWTable addressTable = database().addTable("ADDRESS");
 			
-		addPrimaryKeyField(addressTable,"ADDRESS_ID", "NUMBER");
-		addField(addressTable,"CITY", "VARCHAR2", 20);
-		addField(addressTable,"COUNTRY", "VARCHAR2", 20);
-		addField(addressTable,"P_CODE", "VARCHAR2", 20);
-		addField(addressTable,"PROVINCE", "VARCHAR2", 20);
-		addField(addressTable,"STREET", "VARCHAR2", 20);
+		addPrimaryKeyField(addressTable,"ADDRESS_ID", "integer");
+		addField(addressTable,"CITY", "varchar", 20);
+		addField(addressTable,"COUNTRY", "varchar", 20);
+		addField(addressTable,"P_CODE", "varchar", 20);
+		addField(addressTable,"PROVINCE", "varchar", 20);
+		addField(addressTable,"STREET", "varchar", 20);
 	}
 		
 	@Override
@@ -167,14 +167,14 @@ public class LegacyEmployeeProject extends RelationalTestProject {
 	public void initializeDescriptors() {
 		super.initializeDescriptors();
 
-		this.addDescriptorForTypeNamed("test.oracle.models.employee.Address");
-		this.addDescriptorForTypeNamed("test.oracle.models.employee.Employee");
-		this.addDescriptorForTypeNamed("test.oracle.models.employee.Project");
-		this.addDescriptorForTypeNamed("test.oracle.models.employee.LargeProject");
-		this.addDescriptorForTypeNamed("test.oracle.models.employee.PhoneNumber");
-		this.addDescriptorForTypeNamed("test.oracle.models.employee.SmallProject");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.Address");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.Employee");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.Project");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.LargeProject");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.PhoneNumber");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.SmallProject");
 		
-		this.addAggregateDescriptorForTypeNamed("test.oracle.models.employee.EmploymentPeriod");
+		this.addAggregateDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.EmploymentPeriod");
 
 		this.initializeAddressDescriptor();
 		this.initializeEmploymentPeriodDescriptor();
@@ -315,17 +315,17 @@ public class LegacyEmployeeProject extends RelationalTestProject {
 	public void initializeEmployeeTable() {	
 		MWTable employeeTable = database().addTable("EMPLOYEE");
 			
-		addField(employeeTable,"ADDR_ID", "NUMBER");
-		addPrimaryKeyField(employeeTable,"EMP_ID", "NUMBER");
-		addField(employeeTable,"END_DATE", "DATE");
-		addField(employeeTable,"END_TIME", "DATE");
-		addField(employeeTable,"F_NAME", "VARCHAR2", 20);
-		addField(employeeTable,"GENDER", "VARCHAR2", 20);
-		addField(employeeTable,"L_NAME", "VARCHAR2", 20);
-		addField(employeeTable,"MANAGER_ID", "NUMBER");
-		addField(employeeTable,"START_DATE", "DATE");
-		addField(employeeTable,"START_TIME", "DATE");
-		addField(employeeTable,"VERSION", "NUMBER");		
+		addField(employeeTable,"ADDR_ID", "integer");
+		addPrimaryKeyField(employeeTable,"EMP_ID", "integer");
+		addField(employeeTable,"END_DATE", "date");
+		addField(employeeTable,"END_TIME", "date");
+		addField(employeeTable,"F_NAME", "varchar", 20);
+		addField(employeeTable,"GENDER", "varchar", 20);
+		addField(employeeTable,"L_NAME", "varchar", 20);
+		addField(employeeTable,"MANAGER_ID", "integer");
+		addField(employeeTable,"START_DATE", "date");
+		addField(employeeTable,"START_TIME", "date");
+		addField(employeeTable,"VERSION", "integer");		
 	}
 		
 	public void initializeEmploymentPeriodDescriptor() {
@@ -376,9 +376,9 @@ public class LegacyEmployeeProject extends RelationalTestProject {
 	public void initializeLProjectTable() {
 		MWTable lProjectTable = database().addTable("LPROJECT");
 			
-		addField(lProjectTable,"BUDGET", "NUMBER");
-		addField(lProjectTable,"MILESTONE", "DATE");
-		addPrimaryKeyField(lProjectTable,"PROJ_ID", "NUMBER");
+		addField(lProjectTable,"BUDGET", "integer");
+		addField(lProjectTable,"MILESTONE", "date");
+		addPrimaryKeyField(lProjectTable,"PROJ_ID", "integer");
 	}
 		
 	public void initializePhoneNumberDescriptor() {
@@ -412,17 +412,17 @@ public class LegacyEmployeeProject extends RelationalTestProject {
 	public void initializePhoneTable() {
 		MWTable phoneTable = database().addTable("PHONE");
 			
-		addPrimaryKeyField(phoneTable, "EMP_ID", "NUMBER");
-		addPrimaryKeyField(phoneTable,"TYPE", "VARCHAR2", 20);
-		addField(phoneTable,"AREA_CODE", "VARCHAR2", 3);
-		addField(phoneTable,"P_NUMBER", "VARCHAR2", 7);
+		addPrimaryKeyField(phoneTable, "EMP_ID", "integer");
+		addPrimaryKeyField(phoneTable,"TYPE", "varchar", 20);
+		addField(phoneTable,"AREA_CODE", "varchar", 3);
+		addField(phoneTable,"P_NUMBER", "varchar", 7);
 	}
 		
 	public void initializeProjEmpTable() {
 		MWTable projEmpTable = database().addTable("PROJ_EMP");
 			
-		addPrimaryKeyField(projEmpTable,"EMP_ID", "NUMBER");
-		addPrimaryKeyField(projEmpTable,"PROJ_ID", "NUMBER");
+		addPrimaryKeyField(projEmpTable,"EMP_ID", "integer");
+		addPrimaryKeyField(projEmpTable,"PROJ_ID", "integer");
 	}
 		
 	public void initializeProjectDescriptor() {				
@@ -475,26 +475,26 @@ public class LegacyEmployeeProject extends RelationalTestProject {
 	public void initializeProjectTable() {
 		MWTable projectTable = database().addTable("PROJECT");
 			
-		addField(projectTable,"DESCRIP", "VARCHAR2", 200);
-		addField(projectTable,"LEADER_ID", "NUMBER");
-		addPrimaryKeyField(projectTable,"PROJ_ID", "NUMBER");
-		addField(projectTable,"PROJ_NAME", "VARCHAR2", 30);
-		addField(projectTable,"PROJ_TYPE", "VARCHAR2", 1);
-		addField(projectTable,"VERSION", "NUMBER");
+		addField(projectTable,"DESCRIP", "varchar", 200);
+		addField(projectTable,"LEADER_ID", "integer");
+		addPrimaryKeyField(projectTable,"PROJ_ID", "integer");
+		addField(projectTable,"PROJ_NAME", "varchar", 30);
+		addField(projectTable,"PROJ_TYPE", "varchar", 1);
+		addField(projectTable,"VERSION", "integer");
 	}
 		
 	public void initializeResponsTable() {
 		MWTable responsTable = database().addTable("RESPONS");
 			
-		addPrimaryKeyField(responsTable,"DESCRIP", "VARCHAR2", 200);
-		addPrimaryKeyField(responsTable,"EMP_ID", "NUMBER");
+		addPrimaryKeyField(responsTable,"DESCRIP", "varchar", 200);
+		addPrimaryKeyField(responsTable,"EMP_ID", "integer");
 	}
 		
 	public void initializeSalaryTable() {
 		MWTable salaryTable = database().addTable("SALARY");
 			
-		addPrimaryKeyField(salaryTable,"EMP_ID", "NUMBER");
-		addField(salaryTable,"SALARY", "NUMBER");
+		addPrimaryKeyField(salaryTable,"EMP_ID", "integer");
+		addField(salaryTable,"SALARY", "integer");
 	}
 		
 	public void initializeSmallProjectDescriptor() {

@@ -21,6 +21,7 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
+import org.eclipse.persistence.platform.database.MySQL4Platform;
 import org.eclipse.persistence.platform.database.oracle.OraclePlatform;
 import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
@@ -63,9 +64,9 @@ public class CrimeSceneRuntimeProject {
 
 	public void applyLogin() {
 		DatabaseLogin login = new DatabaseLogin();
-		login.usePlatform(new OraclePlatform());
-		login.setDriverClassName(TestDatabases.oracleDriverClassName());
-		login.setConnectionString(TestDatabases.oracleServerURL());
+		login.usePlatform(new MySQL4Platform());
+		login.setDriverClassName(TestDatabases.mySQLDriverClassName());
+		login.setConnectionString(TestDatabases.mySQLServerURL());
 		login.setUserName(TestDatabases.userName());
 		login.setPassword(TestDatabases.password());
 	
@@ -152,7 +153,7 @@ public class CrimeSceneRuntimeProject {
 		descriptor.useWeakIdentityMap();
 		descriptor.setIdentityMapSize(98);
 		descriptor.setSequenceNumberFieldName("CRIME_SCENE.ID");
-		descriptor.setSequenceNumberName("test.oracle.models.crimescene.CrimeScene");
+		descriptor.setSequenceNumberName("org.eclipse.persistence.tools.workbench.test.models.crimescene.CrimeScene");
 		descriptor.setAlias("CrimeScene");
 		descriptor.setAmendmentClassName(org.eclipse.persistence.tools.workbench.test.models.crimescene.CrimeScene.class.getName());
 		descriptor.setAmendmentMethodName("addToDescriptor");
@@ -368,7 +369,7 @@ public class CrimeSceneRuntimeProject {
 		descriptor.useFullIdentityMap();
 		descriptor.setIdentityMapSize(400);
 		descriptor.setSequenceNumberFieldName("PERSON.ID");
-		descriptor.setSequenceNumberName("test.oracle.models.crimescene.Person");
+		descriptor.setSequenceNumberName("org.eclipse.persistence.tools.workbench.test.models.crimescene.Person");
 		descriptor.onlyRefreshCacheIfNewerVersion();
 		descriptor.setAlias("Person");
 			
@@ -473,7 +474,7 @@ public class CrimeSceneRuntimeProject {
 		descriptor.useFullIdentityMap();
 		descriptor.setIdentityMapSize(405);
 		descriptor.setSequenceNumberFieldName("EVIDENCE.ID");
-		descriptor.setSequenceNumberName("test.oracle.models.crimescene.PieceOfEvidence");
+		descriptor.setSequenceNumberName("org.eclipse.persistence.tools.workbench.test.models.crimescene.PieceOfEvidence");
 		descriptor.setAlias("PieceOfEvidence");
 			
 		
@@ -514,7 +515,7 @@ public class CrimeSceneRuntimeProject {
 		crimeSceneMapping.dontUseIndirection();
 		crimeSceneMapping.useBatchReading();
 		crimeSceneMapping.addForeignKeyFieldName("EVIDENCE.CS_ID", "CRIME_SCENE.ID");
-		crimeSceneMapping.useJoining();
+		crimeSceneMapping.useInnerJoinFetch();
 		descriptor.addMapping(crimeSceneMapping);
 	
 		return descriptor;

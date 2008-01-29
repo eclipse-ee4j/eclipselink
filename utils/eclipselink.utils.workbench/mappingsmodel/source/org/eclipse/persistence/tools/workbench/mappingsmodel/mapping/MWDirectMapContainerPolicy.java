@@ -150,7 +150,4 @@ public final class MWDirectMapContainerPolicy extends MWModel implements MWConta
 		return containerPolicy;
 	}
 
-    public void legacyAdjustUsesDefaultContainerClassAttributes() {     
-        //don't need this only for pre 5.0 projects, Direct Maps didn't exist then
-    }
 }

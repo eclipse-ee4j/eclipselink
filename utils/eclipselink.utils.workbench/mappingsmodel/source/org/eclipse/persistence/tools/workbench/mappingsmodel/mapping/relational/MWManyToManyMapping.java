@@ -42,7 +42,6 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
 
 public final class MWManyToManyMapping extends MWCollectionMapping {
 
@@ -506,68 +505,4 @@ public final class MWManyToManyMapping extends MWCollectionMapping {
 		NodeReferenceScrubber scrubber = this.buildTargetReferenceScrubber();
 		this.targetReferenceHandle = ((targetReferenceHandle == null) ? new MWReferenceHandle(this, scrubber) : targetReferenceHandle.setScrubber(scrubber));
 	}
-
-	
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWManyToManyMapping.class);
-
-		descriptor.getInheritancePolicy().setParentClass(MWCollectionMapping.class);
-
-		OneToOneMapping relationTableMapping = new OneToOneMapping();
-		relationTableMapping.dontUseIndirection();
-		relationTableMapping.setAttributeName("relationTable");
-		relationTableMapping.setGetMethodName("legacyGetRelationTable");
-		relationTableMapping.setSetMethodName("legacySetRelationTable");
-		relationTableMapping.setReferenceClass(MWTable.class);
-		relationTableMapping.setForeignKeyFieldName("relation-table");
-		descriptor.addMapping(relationTableMapping);
-
-		SDKAggregateObjectMapping targetReferenceHandleMapping = new SDKAggregateObjectMapping();
-		targetReferenceHandleMapping.setAttributeName("targetReferenceHandle");
-		targetReferenceHandleMapping.setGetMethodName("getTargetReferenceHandleForTopLink");
-		targetReferenceHandleMapping.setSetMethodName("setTargetReferenceHandleForTopLink");
-		targetReferenceHandleMapping.setReferenceClass(MWReferenceHandle.class);
-		targetReferenceHandleMapping.setFieldName("target-reference-handle");
-		descriptor.addMapping(targetReferenceHandleMapping);
-	
-		return descriptor;
-	}
-
-	private void legacySetRelationTable(MWTable table) {
-		this.relationTableHandle = new MWTableHandle(this, table, this.buildRelationTableScrubber());
-	}
-	private MWTable legacyGetRelationTable() {
-		throw new UnsupportedOperationException();
-	}	
-
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWManyToManyMapping.class);
-
-		descriptor.getInheritancePolicy().setParentClass(MWCollectionMapping.class);
-
-		OneToOneMapping relationTableMapping = new OneToOneMapping();
-		relationTableMapping.dontUseIndirection();
-		relationTableMapping.setGetMethodName("legacyGetRelationTable");
-		relationTableMapping.setSetMethodName("legacySetRelationTable");
-		relationTableMapping.setAttributeName("relationTable");
-		relationTableMapping.setReferenceClass(MWTable.class);
-		relationTableMapping.setForeignKeyFieldName("relationTable");
-		descriptor.addMapping(relationTableMapping);
-
-		SDKAggregateObjectMapping targetReferenceHandleMapping = new SDKAggregateObjectMapping();
-		targetReferenceHandleMapping.setAttributeName("targetReferenceHandle");
-		targetReferenceHandleMapping.setGetMethodName("getTargetReferenceHandleForTopLink");
-		targetReferenceHandleMapping.setSetMethodName("setTargetReferenceHandleForTopLink");
-		targetReferenceHandleMapping.setReferenceClass(MWReferenceHandle.class);
-		targetReferenceHandleMapping.setFieldName("targetReferenceHandle");
-		descriptor.addMapping(targetReferenceHandleMapping);
-	
-		return descriptor;
-	}
-
 }

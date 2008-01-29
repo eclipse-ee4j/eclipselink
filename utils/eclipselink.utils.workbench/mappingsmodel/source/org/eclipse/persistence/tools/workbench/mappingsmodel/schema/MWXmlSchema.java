@@ -9,9 +9,6 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.mappingsmodel.schema;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +28,16 @@ import org.apache.xerces.xni.parser.XMLInputSource;
 import org.apache.xerces.xs.StringList;
 import org.apache.xerces.xs.XSException;
 import org.apache.xerces.xs.XSModel;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
+import org.eclipse.persistence.oxm.schema.XMLSchemaFileReference;
+import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWNominative;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProblemConstants;
@@ -42,7 +49,6 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.resource.ResourceEx
 import org.eclipse.persistence.tools.workbench.mappingsmodel.resource.ResourceSpecification;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.resource.UrlResourceSpecification;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.SchemaChange;
-import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.HashBag;
 import org.eclipse.persistence.tools.workbench.utility.iterators.CompositeIterator;
@@ -50,17 +56,6 @@ import org.eclipse.persistence.tools.workbench.utility.iterators.FilteringIterat
 import org.eclipse.persistence.tools.workbench.utility.iterators.TransformationIterator;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
 import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.ls.LSInput;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
-import org.eclipse.persistence.oxm.schema.XMLSchemaFileReference;
-import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
-import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 
 public final class MWXmlSchema extends MWModel
 	implements MWNominative

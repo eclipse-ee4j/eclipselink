@@ -828,35 +828,6 @@ public abstract class MWRelationalDirectContainerMapping
 		NodeReferenceScrubber scrubber = this.buildReferenceScrubber();
 		this.referenceHandle = ((handle == null) ? new MWReferenceHandle(this, scrubber) : handle.setScrubber(scrubber));
 	}
-
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.targetTableHandle = new MWTableHandle(this, this.buildTargetTableScrubber());
-		if (this.joinFetchOption == null) {
-			this.joinFetchOption = (JoinFetchOption)MWJoinFetchableMapping.JoinFetchOptionSet.joinFetchOptions().topLinkOptionForMWModelOption(JOIN_FETCH_NONE);
-		}
-	}
-
-	public void legacy50PostPostProjectBuild() {
-		super.legacy50PostPostProjectBuild();
-		if (getDirectValueColumn() != null) {
-			this.targetTableHandle.setTable(getDirectValueColumn().getTable());
-		}
-	}
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.targetTableHandle = new MWTableHandle(this, this.buildTargetTableScrubber());
-		if (this.joinFetchOption == null) {
-			this.joinFetchOption = (JoinFetchOption)MWJoinFetchableMapping.JoinFetchOptionSet.joinFetchOptions().topLinkOptionForMWModelOption(JOIN_FETCH_NONE);
-		}
-	}
-
-	public void legacy45PostPostProjectBuild() {
-		super.legacy45PostPostProjectBuild();
-		if (getDirectValueColumn() != null) {
-			this.targetTableHandle.setTable(getDirectValueColumn().getTable());
-		}
-	}
 	
 	public TopLinkOptionSet joinFetchOptions() {
 		if (joinFetchOptions == null) {

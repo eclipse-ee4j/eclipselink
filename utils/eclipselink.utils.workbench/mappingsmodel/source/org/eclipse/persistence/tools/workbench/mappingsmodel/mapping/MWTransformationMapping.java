@@ -31,7 +31,6 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import deprecated.sdk.SDKFieldValue;
 import org.eclipse.persistence.sessions.Record;
 
 public abstract class MWTransformationMapping
@@ -321,44 +320,6 @@ public abstract class MWTransformationMapping
 	}
 	private void setAttributeTransformerForTopLink(MWTransformer transformer) {
 		this.attributeTransformer = MWTransformer.buildTransformerForTopLink(transformer);
-	}
-
-    protected void legacy50PostBuild(DescriptorEvent event) {
-        super.legacy50PostBuild(event);
-        this.mutable = true;
-    }
-    
-    protected void legacy45PostBuild(DescriptorEvent event) {
-        super.legacy45PostBuild(event);
-        this.mutable = true;
-    }
-    
-	private MWMethodHandle legacyGetAttributeTransformerMethodHandle() {
-		throw new UnsupportedOperationException();
-	}
-	
-	private void legacySetAttributeTransformerMethodHandle(MWMethodHandle methodHandle) {
-		this.attributeTransformer = new MWMethodBasedTransformer(this, methodHandle);
-	}
-	
-	private String legacy50BuildUsesIndirectionForTopLink(Record row) {
-		SDKFieldValue indirectionPolicy = (SDKFieldValue) row.get("transformation-mapping-indirection-policy");
-		String usesIndirection = (String) ((Record) indirectionPolicy.getElements().get(0)).get("uses-indirection");
-		
-		if (usesIndirection.equals("true")) {
-			return VALUE_HOLDER_INDIRECTION;
-		}
-		return NO_INDIRECTION;
-	}
-	
-	private String legacy4xBuildUsesIndirectionForTopLink(Record row) {
-		SDKFieldValue indirectionPolicy = (SDKFieldValue) row.get("indirectionPolicy");
-		String usesIndirection = (String) ((Record) indirectionPolicy.getElements().get(0)).get("usesIndirection");
-		
-		if (usesIndirection.equals("true")) {
-			return VALUE_HOLDER_INDIRECTION;
-		}
-		return NO_INDIRECTION;
 	}
 
 }

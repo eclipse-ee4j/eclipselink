@@ -15,7 +15,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.mappings.ObjectTypeMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
@@ -122,50 +121,7 @@ public abstract class MWExpression extends MWModel implements Undoable
 		return descriptor;
 	
 	}
-	public static ClassDescriptor legacy50BuildDescriptor() 
-	{
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWExpression.class);
-		descriptor.setTableName("expression");
-			
-		//Inheritance Policy
-		InheritancePolicy ip = descriptor.getInheritancePolicy();
-		ip.setClassIndicatorFieldName("expression-class");
-		ip.readSubclassesOnQueries();
-		ip.addClassIndicator(MWBasicExpression.class, "MWBasicExpression");
-		ip.addClassIndicator(MWCompoundExpression.class, "MWCompoundExpression");
-		ip.addClassIndicator(MWBasicExpression.class, "MWBinaryExpression");
-		ip.addClassIndicator(MWBasicExpression.class, "MWUnaryExpression");
-		
-		//Mappings
-		
-		//use an object type mapping to preserve object identity for the operator type
-		ObjectTypeMapping operatorType = new ObjectTypeMapping();
-		operatorType.setAttributeName("operatorType");
-		operatorType.addConversionValue(MWCompoundExpression.AND, MWCompoundExpression.AND);
-		operatorType.addConversionValue(MWCompoundExpression.OR, MWCompoundExpression.OR);
-		operatorType.addConversionValue(MWCompoundExpression.NAND, MWCompoundExpression.NAND);
-		operatorType.addConversionValue(MWCompoundExpression.NOR, MWCompoundExpression.NOR);
-		operatorType.addConversionValue(MWBasicExpression.EQUAL, MWBasicExpression.EQUAL);
-		operatorType.addConversionValue(MWBasicExpression.EQUALS_IGNORE_CASE, MWBasicExpression.EQUALS_IGNORE_CASE);
-		operatorType.addConversionValue(MWBasicExpression.GREATER_THAN, MWBasicExpression.GREATER_THAN);
-		operatorType.addConversionValue(MWBasicExpression.GREATER_THAN_EQUAL, MWBasicExpression.GREATER_THAN_EQUAL);
-		operatorType.addConversionValue(MWBasicExpression.IS_NULL, MWBasicExpression.IS_NULL);
-		operatorType.addConversionValue(MWBasicExpression.LESS_THAN, MWBasicExpression.LESS_THAN);
-		operatorType.addConversionValue(MWBasicExpression.LESS_THAN_EQUAL, MWBasicExpression.LESS_THAN_EQUAL);
-		operatorType.addConversionValue(MWBasicExpression.LIKE, MWBasicExpression.LIKE);
-		operatorType.addConversionValue(MWBasicExpression.LIKE_IGNORE_CASE, MWBasicExpression.LIKE_IGNORE_CASE);
-		operatorType.addConversionValue(MWBasicExpression.NOT_EQUAL, MWBasicExpression.NOT_EQUAL);
-		operatorType.addConversionValue(MWBasicExpression.NOT_LIKE, MWBasicExpression.NOT_LIKE);
-		operatorType.addConversionValue(MWBasicExpression.NOT_NULL, MWBasicExpression.NOT_NULL);
-		operatorType.setFieldName("operator-type");
-		descriptor.addMapping(operatorType);
-		
-		return descriptor;
-	
-	}
-	
+
 	// *************** Runtime Conversion ******************
 	abstract Expression buildRuntimeExpression(ExpressionBuilder builder);
 	

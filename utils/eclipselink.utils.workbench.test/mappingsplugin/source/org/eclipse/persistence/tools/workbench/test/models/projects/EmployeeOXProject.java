@@ -71,10 +71,10 @@ public class EmployeeOXProject
 		super.initializeDescriptors();
 
 		//this is not exactly how it's done in the MultipleClassChooserDialog
-		this.addDescriptorForTypeNamed("test.oracle.models.xml.employee.Address");
-		this.addDescriptorForTypeNamed("test.oracle.models.xml.employee.Employee");
-		this.addDescriptorForTypeNamed("test.oracle.models.xml.employee.PhoneNumber");
-		this.addDescriptorForTypeNamed("test.oracle.models.xml.employee.Dependent");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.xml.employee.Address");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.xml.employee.Employee");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.xml.employee.PhoneNumber");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.xml.employee.Dependent");
 		
 		initializeAddressDescriptor();
 		initializePhoneNumberDescriptor();

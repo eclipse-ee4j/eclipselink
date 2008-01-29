@@ -57,19 +57,19 @@ public final class MWEisLoginSpec extends MWModel {
 
 	private volatile String j2cAdapterName;
 		public static String J2C_ADAPTER_NAME_PROPERTY = "j2cAdapter";
-		public static String ORACLE_AQ_ADAPTER_NAME = "Oracle AQ";
-		public static String ATTUNITY_CONNECT_ADAPTER_NAME = "Attunity Connect";
-		public static String IBM_MQSERIES_ADAPTER_NAME = "IBM MQSeries";
-		public static String DEFAULT_ADAPTER_NAME = ORACLE_AQ_ADAPTER_NAME;
-	public static String[] j2cAdapterNames = { ORACLE_AQ_ADAPTER_NAME, ATTUNITY_CONNECT_ADAPTER_NAME, IBM_MQSERIES_ADAPTER_NAME };
+		public static String AQ_ADAPTER_NAME = "AQ";
+		public static String JMS_ADAPTER_NAME = "JMS";
+		public static String XML_FILE_ADAPTER_NAME = "XML File";
+		public static String DEFAULT_ADAPTER_NAME = AQ_ADAPTER_NAME;
+	public static String[] j2cAdapterNames = { AQ_ADAPTER_NAME, JMS_ADAPTER_NAME, XML_FILE_ADAPTER_NAME };
 		public static final String J2C_ADAPTER_NAMES_COLLECTION = "j2cAdapterNames";
 
 	public static String ORACLE_AQ_ADAPTER_CLASS_NAME = "org.eclipse.persistence.eis.adapters.aq.AQPlatform";
-	public static String ATTUNITY_CONNECT_ADAPTER_CLASS_NAME = "org.eclipse.persistence.eis.adapters.attunity.AttunityPlatform";
-	public static String IBM_MQSERIES_ADAPTER_CLASS_NAME = "org.eclipse.persistence.eis.adapters.mqseries.MQPlatform";
-
+	public static String JMS_ADAPTER_CLASS_NAME = "org.eclipse.persistence.eis.adapters.jms.JMSPlatform";
+	public static String XML_FILE_ADAPTER_CLASS_NAME = "org.eclipse.persistence.eis.adapters.xmlfile.XMLFilePlatform";
+	
 	public static final String PLATFORM_PREFERENCE = "eis platform";
-	public static final String PLATFORM_PREFERENCE_DEFAULT = ORACLE_AQ_ADAPTER_NAME;
+	public static final String PLATFORM_PREFERENCE_DEFAULT = AQ_ADAPTER_NAME;
 
 
 	/** cache this - it's expensive to instantiate */
@@ -280,12 +280,12 @@ public final class MWEisLoginSpec extends MWModel {
 	public DatasourceLogin buildRuntimeLogin() {
 		EISLogin eisLogin = new EISLogin();
 
-		if (getJ2CAdapterName().equals(ORACLE_AQ_ADAPTER_NAME)) {
+		if (getJ2CAdapterName().equals(AQ_ADAPTER_NAME)) {
 			eisLogin.setPlatformClassName(ORACLE_AQ_ADAPTER_CLASS_NAME);
-		} else if (getJ2CAdapterName().equals(ATTUNITY_CONNECT_ADAPTER_NAME)) {
-			eisLogin.setPlatformClassName(ATTUNITY_CONNECT_ADAPTER_CLASS_NAME);
-		} else if (getJ2CAdapterName().equals(IBM_MQSERIES_ADAPTER_NAME)) {
-			eisLogin.setPlatformClassName(IBM_MQSERIES_ADAPTER_CLASS_NAME);
+		} else if (getJ2CAdapterName().equals(JMS_ADAPTER_NAME)) {
+			eisLogin.setPlatformClassName(JMS_ADAPTER_CLASS_NAME);
+		} else if (getJ2CAdapterName().equals(XML_FILE_ADAPTER_NAME)) {
+			eisLogin.setPlatformClassName(XML_FILE_ADAPTER_CLASS_NAME);
 		} else {
 			throw new UnsupportedOperationException("The j2cAdapterName is not valid");
 		}

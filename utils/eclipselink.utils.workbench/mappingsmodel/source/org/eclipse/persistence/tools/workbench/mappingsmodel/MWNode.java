@@ -67,12 +67,6 @@ public interface MWNode
 	
 	// ********** legacy methods **********
 
-	void legacy50PrePostProjectBuild();
-	void legacy50PostPostProjectBuild();
-	void legacy50FixAggregatePathToFields();
-	
-	void legacy45PrePostProjectBuild();
-	void legacy45PostPostProjectBuild();
-	void legacy45FixAggregatePathToFields();
+
 
 }

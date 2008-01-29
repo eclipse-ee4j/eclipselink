@@ -101,7 +101,7 @@ public class MWExpressionTests extends TestCase
 		assertTrue("The expression added is not a MWBasicExpression", MWBasicExpression.class.isAssignableFrom(basicExpression.getClass()));
 		assertTrue("The second argument is not a literal argument", MWLiteralArgument.class.isAssignableFrom(basicExpression.getSecondArgument().getClass()));
 		 
-		MWTableDescriptor employeeDescriptor = (MWTableDescriptor) query.getProject().descriptorForTypeNamed("test.oracle.models.employee.Employee");
+		MWTableDescriptor employeeDescriptor = (MWTableDescriptor) query.getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.employee.Employee");
 		MWDirectToFieldMapping lastNameMapping = (MWDirectToFieldMapping) employeeDescriptor.mappingNamed("lastName");
 		basicExpression.getFirstArgument().setQueryableArgument(lastNameMapping);
 		

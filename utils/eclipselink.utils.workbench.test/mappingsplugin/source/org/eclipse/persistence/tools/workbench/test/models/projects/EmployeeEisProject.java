@@ -70,7 +70,7 @@ public class EmployeeEisProject
 	}
 	
 	public static MWEisProject emptyProject() {
-		MWEisProject project = new MWEisProject("Employee-EIS", MWEisLoginSpec.ORACLE_AQ_ADAPTER_NAME, spiManager());
+		MWEisProject project = new MWEisProject("Employee-EIS", MWEisLoginSpec.JMS_ADAPTER_NAME, spiManager());
 		project.getEisLoginSpec().setConnectionFactoryURL("www.imguessingatthis.com");
 		project.getEisLoginSpec().setConnectionSpecClass(project.typeFor(EISConnectionSpec.class));
 		return project;
@@ -88,13 +88,13 @@ public class EmployeeEisProject
 		super.initializeDescriptors();
 
 		//this is not exactly how it's done in the MultipleClassChooserDialog
-		this.addDescriptorForTypeNamed("test.oracle.models.eis.employee.Address");
-		this.addDescriptorForTypeNamed("test.oracle.models.eis.employee.Dependent");
-		this.addDescriptorForTypeNamed("test.oracle.models.eis.employee.PhoneNumber");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.eis.employee.Address");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.eis.employee.Dependent");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.eis.employee.PhoneNumber");
 
-		this.addRootEisDescriptorForTypeNamed("test.oracle.models.eis.employee.Employee");
-		this.addRootEisDescriptorForTypeNamed("test.oracle.models.eis.employee.Project");
-		this.addRootEisDescriptorForTypeNamed("test.oracle.models.eis.employee.LargeProject");
+		this.addRootEisDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.eis.employee.Employee");
+		this.addRootEisDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.eis.employee.Project");
+		this.addRootEisDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.eis.employee.LargeProject");
 		
 		initializeAddressDescriptor();
 		initializeDependentDescriptor();	
@@ -203,7 +203,7 @@ public class EmployeeEisProject
 		MWRootEisDescriptor employeeDescriptor = getEmployeeDescriptor();
 		
 		employeeDescriptor.addInterfaceAliasPolicy();
-		MWClass interfaceAlias = typeNamed("test.oracle.models.contact.Person");
+		MWClass interfaceAlias = typeNamed("org.eclipse.persistence.tools.workbench.test.models.contact.Person");
 		((MWDescriptorInterfaceAliasPolicy) employeeDescriptor.getInterfaceAliasPolicy()).setInterfaceAlias(interfaceAlias);
 
 		MWClass employeeClass = employeeDescriptor.getMWClass();

@@ -30,7 +30,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.mappings.ObjectTypeMapping;
 import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -39,9 +38,6 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import deprecated.sdk.SDKAggregateCollectionMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
-import deprecated.sdk.SDKFieldValue;
 import org.eclipse.persistence.sessions.Record;
 
 public abstract class MWAbstractRelationalReadQuery 
@@ -65,14 +61,6 @@ public abstract class MWAbstractRelationalReadQuery
 	private List joinedItems;
 		public static final String JOINED_ITEMS_LIST = "joinedItems";
 
-	
-	private boolean legacy50Prepare;
-	private Boolean legacyCacheStatement;
-	private Boolean legacyBindAllParameters;
-	private MWQueryFormat legacy50QueryFormat;
-	private String legacy4XQueryFormatType;
-	private String legacy4XQueryString;
-	
 	//joining
 	
 	public static class CacheUsageModel extends TopLinkOption { 
@@ -167,163 +155,6 @@ public abstract class MWAbstractRelationalReadQuery
 		return descriptor;
 	}	
 
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWAbstractRelationalReadQuery.class);
-		descriptor.setTableName("query");
-		
-		InheritancePolicy inheritancePolicy = (InheritancePolicy) descriptor.getInheritancePolicy();
-		inheritancePolicy.setClassIndicatorFieldName("query-type");
-		inheritancePolicy.addClassIndicator(MWRelationalReadAllQuery.class, "org.eclipse.persistence.queries.ReadAllQuery");
-		inheritancePolicy.addClassIndicator(MWRelationalReadObjectQuery.class, "org.eclipse.persistence.queries.ReadObjectQuery");
-		
-		// DTF
-		descriptor.addDirectMapping("name", "name");
-		
-		//object type mapping -  cacheUsage
-		ObjectTypeMapping cacheUsage = new ObjectTypeMapping();
-		cacheUsageOptions().addConversionValuesForTopLinkTo(cacheUsage.getObjectTypeConverter());
-		cacheUsage.setAttributeName("cacheUsage");
-		cacheUsage.setFieldName("cache-usage");
-		descriptor.addMapping(cacheUsage);
-		
-		//object type mapping -  lockMode
-		ObjectTypeMapping lockMode = new ObjectTypeMapping();
-		lockingOptions().addConversionValuesForTopLinkTo(lockMode.getObjectTypeConverter());
-		lockMode.setAttributeName("lockMode");
-		lockMode.setFieldName("lock-mode");
-		descriptor.addMapping(lockMode);
-			
-		//object type mapping -  distinctState
-		ObjectTypeMapping distinctState = new ObjectTypeMapping();
-		distinctStateOptions().addConversionValuesForTopLinkTo(distinctState.getObjectTypeConverter());
-		distinctState.setAttributeName("distinctState");
-		distinctState.setFieldName("distinct-state");
-		descriptor.addMapping(distinctState);
-		
-		//object type mapping - inMemoryQueryIndirectionPolicy
-		ObjectTypeMapping inMemoryQueryIndirectionPolicy = new ObjectTypeMapping();
-		inMemoryQueryIndirectionPolicyOptions().addConversionValuesForTopLinkTo(inMemoryQueryIndirectionPolicy.getObjectTypeConverter());
-		inMemoryQueryIndirectionPolicy.setAttributeName("inMemoryQueryIndirectionPolicy");
-		inMemoryQueryIndirectionPolicy.setFieldName("in-memory-query-indirection-policy");
-		descriptor.addMapping(inMemoryQueryIndirectionPolicy);
-		
-		
-		//object type mapping bindAllParameters
-		DirectToFieldMapping bindAllParameters =
-			(DirectToFieldMapping) descriptor.addDirectMapping(
-				"legacyBindAllParameters",
-				"bind-all-parameters");
-		bindAllParameters.setNullValue(null);
-		
-		//object type mapping cacheStatement
-		DirectToFieldMapping cacheStatement =
-			(DirectToFieldMapping) descriptor.addDirectMapping(
-				"legacyCacheStatement",
-				"cache-statement");
-		cacheStatement.setNullValue(null);
-		
-		descriptor.addDirectMapping("cacheQueryResults", "cache-query-results");
-
-		ObjectTypeMapping maintainCacheMapping = new ObjectTypeMapping();
-		maintainCacheMapping.setAttributeName("maintainCache");
-		maintainCacheMapping.setFieldName("maintain-cache");
-		maintainCacheMapping.addConversionValue("false", Boolean.FALSE);
-		maintainCacheMapping.addConversionValue("undefined", Boolean.TRUE);
-		maintainCacheMapping.addConversionValue("true", Boolean.TRUE);
-		maintainCacheMapping.setNullValue(Boolean.TRUE);
-		maintainCacheMapping.setDefaultAttributeValue(Boolean.TRUE);
-		descriptor.addMapping(maintainCacheMapping);
-
-	
-		descriptor.addDirectMapping("refreshIdentityMapResult", "refresh-identity-map-result");
-		descriptor.addDirectMapping("refreshRemoteIdentityMapResult", "refresh-remote-identity-map-result");
-		descriptor.addDirectMapping("useWrapperPolicy", "use-wrapper-policy");
-		
-		descriptor.addDirectMapping("legacy50Prepare", "prepare");
-
-
-		DirectToFieldMapping queryTimeoutMapping = new DirectToFieldMapping();
-		queryTimeoutMapping.setAttributeName("queryTimeout");
-		queryTimeoutMapping.setFieldName("query-timeout");
-		queryTimeoutMapping.setGetMethodName("getQueryTimeoutForTopLink");
-		queryTimeoutMapping.setSetMethodName("setQueryTimeoutForTopLink");
-		descriptor.addMapping(queryTimeoutMapping);
-
-		descriptor.addDirectMapping("maximumRows", "maximum-rows");
-		
-		// Aggregate mapping - query format
-		SDKAggregateObjectMapping formatMapping = new SDKAggregateObjectMapping();
-		formatMapping.setAttributeName("legacy50QueryFormat");
-		formatMapping.setReferenceClass(MWQueryFormat.class);
-		formatMapping.setFieldName("format");
-		descriptor.addMapping(formatMapping);
-		
-		// Aggregate collection mapping - parameterList
-		SDKAggregateCollectionMapping parameterListMapping = new SDKAggregateCollectionMapping();
-		parameterListMapping.setAttributeName("parameters");
-		parameterListMapping.setReferenceClass(MWQueryParameter.class);
-		parameterListMapping.setFieldName("parameter-list");
-		descriptor.addMapping(parameterListMapping);
-		return descriptor;
-	}
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWAbstractRelationalReadQuery.class);
-		descriptor.setTableName("Query");
-	
-		InheritancePolicy inheritancePolicy = (InheritancePolicy) descriptor.getInheritancePolicy();
-		inheritancePolicy.setClassIndicatorFieldName("queryType");
-		inheritancePolicy.addClassIndicator(MWRelationalReadAllQuery.class, "org.eclipse.persistence.queries.ReadAllQuery");
-		inheritancePolicy.addClassIndicator(MWRelationalReadObjectQuery.class, "org.eclipse.persistence.queries.ReadObjectQuery");
-
-		// DTF
-		descriptor.addDirectMapping("name", "name");
-		descriptor.addDirectMapping("cacheQueryResults", "shouldCacheQueryResults");
-		descriptor.addDirectMapping("maintainCache", "shouldMaintainCache");
-		//this is always false in old projects, because the ui did not have a widget to set this
-		//we will use the setter for refreshIdentityMapResult to set this up.  If refreshIdentityMapResult
-		//is true, then refresh remote identity map result will be set to true.  This is why the order has changed
-		descriptor.addDirectMapping("refreshRemoteIdentityMapResult", "shouldRefreshRemoteIdentityMapResult");
-		descriptor.addDirectMapping("refreshIdentityMapResult", "legacyGetRefreshIdentityMapResultForTopLink", "legacySetRefreshIdentityMapResultForTopLink","shouldRefreshIdentityMapResult");	
-	
-		descriptor.addDirectMapping("legacyBindAllParameters", "shouldBindAllParameters");
-		descriptor.addDirectMapping("legacyCacheStatement", "shouldCacheStatement");
-		
-		
-		ObjectTypeMapping cacheUsage = new ObjectTypeMapping();
-		cacheUsageOptions().addConversionValuesForTopLink4X(cacheUsage);
-		cacheUsage.setAttributeName("cacheUsage");
-		cacheUsage.setFieldName("cacheUsage");
-		descriptor.addMapping(cacheUsage);
-	
-	
-		//object type mapping -  lockMode
-		ObjectTypeMapping lockMode = new ObjectTypeMapping();
-		lockingOptions().addConversionValuesForTopLink4X(lockMode);
-		lockMode.setAttributeName("lockMode");
-		lockMode.setFieldName("lockMode");
-		descriptor.addMapping(lockMode);
-	
-		// Transformation - query format
-		TransformationMapping formatMapping = new TransformationMapping();
-		formatMapping.setAttributeName("legacy4XQueryFormatType");
-		formatMapping.setAttributeTransformation("legacy45GetQueryFormatFromRowForTopLink");
-		descriptor.addMapping(formatMapping);		// Aggregate mapping - query format
-		
-		// Aggregate collection mapping - parameterList
-		SDKAggregateCollectionMapping parameterListMapping = new SDKAggregateCollectionMapping();
-		parameterListMapping.setAttributeName("parameters");
-		parameterListMapping.setReferenceClass(MWQueryParameter.class);
-		parameterListMapping.setFieldName("parameterList");
-		descriptor.addMapping(parameterListMapping);
-	
-		return descriptor;
-	}
-
 	/** Default constructor - for TopLink use only. */			
 	MWAbstractRelationalReadQuery() {
 		super();
@@ -347,7 +178,9 @@ public abstract class MWAbstractRelationalReadQuery
 	}
 	
 	private void setDefaultQueryFormat() {
-		this.relationalOptions.setQueryFormatToAutoGenerated();
+		if (isTopLinkReservedFinder()) {
+			this.relationalOptions.setQueryFormatToAutoGenerated();
+		}
 	}
 	
 	protected void addChildrenTo(List children) {
@@ -572,39 +405,6 @@ public abstract class MWAbstractRelationalReadQuery
 		setInMemoryQueryIndirectionPolicy(runtimeQuery);
 
 		getRelationalOptions().adjustFromRuntime(runtimeQuery);
-	}
-	
-	
-	// ************ TopLink only methods **************
-	
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.relationalOptions = new MWRelationalSpecificQueryOptions(this);
-		this.relationalOptions.legacySetQueryFormatForToplink(this.legacy50QueryFormat);
-		this.relationalOptions.legacySetPrepareForToplink(this.legacy50Prepare);
-		this.relationalOptions.legacySetCacheStatementForToplink(this.legacyCacheStatement);
-		this.relationalOptions.legacySetBindAllParametersForToplink(this.legacyBindAllParameters);
-		this.joinedItems = new Vector();
-	}
-	
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.inMemoryQueryIndirectionPolicy = (InMemoryQueryIndirectionPolicyModel) inMemoryQueryIndirectionPolicyOptions().topLinkOptionForMWModelOption(THROW_INDIRECTION_EXCEPTION);
-		this.relationalOptions = new MWRelationalSpecificQueryOptions(this);
-		this.relationalOptions.legacy4XSetQueryFormatForToplink(this.legacy4XQueryFormatType, this.legacy4XQueryString);
-		this.relationalOptions.legacySetCacheStatementForToplink(this.legacyCacheStatement);
-		this.relationalOptions.legacySetBindAllParametersForToplink(this.legacyBindAllParameters);
-		this.joinedItems = new Vector();
-	}
-
-	private String legacy45GetQueryFormatFromRowForTopLink(Record row) {
-		SDKFieldValue queryFormatValue = (SDKFieldValue)row.get("queryFormat");
-		Record queryFormatRow = (Record) queryFormatValue.getElements().get(0);
-		String queryFormatType = (String) queryFormatRow.get("queryFormatType");
-		
-		legacy4XQueryString = (String) queryFormatRow.get("queryString");
-
-		return (String) queryFormatRow.get("queryFormatType");
 	}
 
 }

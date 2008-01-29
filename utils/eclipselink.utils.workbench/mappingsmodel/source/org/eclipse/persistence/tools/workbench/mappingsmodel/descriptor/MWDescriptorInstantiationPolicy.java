@@ -23,13 +23,11 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.mappings.ObjectTypeMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
 
 public final class MWDescriptorInstantiationPolicy extends MWAbstractDescriptorPolicy {
 
@@ -416,127 +414,4 @@ public final class MWDescriptorInstantiationPolicy extends MWAbstractDescriptorP
 		this.instantiationMethodHandle = ((handle == null) ? new MWMethodHandle(this, scrubber) : handle.setScrubber(scrubber));
 	}
 	
-	
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWDescriptorInstantiationPolicy.class);
-		descriptor.setTableName("instantiation-policy");
-		
-		ObjectTypeMapping policyTypeMapping = new ObjectTypeMapping();
-		policyTypeMapping.setAttributeName("policyType");
-		policyTypeMapping.addConversionValue(
-				MWDescriptorInstantiationPolicy.DEFAULT_CONSTRUCTOR,
-				MWDescriptorInstantiationPolicy.DEFAULT_CONSTRUCTOR);
-		policyTypeMapping.addConversionValue(
-				MWDescriptorInstantiationPolicy.FACTORY,
-				MWDescriptorInstantiationPolicy.FACTORY);
-		policyTypeMapping.addConversionValue(
-				MWDescriptorInstantiationPolicy.METHOD,
-				MWDescriptorInstantiationPolicy.METHOD);
-		policyTypeMapping.setFieldName("policy-type");
-		policyTypeMapping.setNullValue(MWDescriptorInstantiationPolicy.DEFAULT_CONSTRUCTOR);
-		descriptor.addMapping(policyTypeMapping);
-		
-		OneToOneMapping factoryTypeMapping = new OneToOneMapping();
-		factoryTypeMapping.setAttributeName("factoryType");
-		factoryTypeMapping.setSetMethodName("legacySetFactoryTypeForTopLink");
-		factoryTypeMapping.setGetMethodName("legacyGetFactoryTypeForTopLink");
-		factoryTypeMapping.setReferenceClass(MWClass.class);
-		factoryTypeMapping.setForeignKeyFieldName("factory-type");
-		factoryTypeMapping.dontUseIndirection();
-		descriptor.addMapping(factoryTypeMapping);
-		
-		SDKAggregateObjectMapping useMethodHandleMapping = new SDKAggregateObjectMapping();
-		useMethodHandleMapping.setAttributeName("useMethodHandle");
-		useMethodHandleMapping.setSetMethodName("setUseMethodHandleForTopLink");
-		useMethodHandleMapping.setGetMethodName("getUseMethodHandleForTopLink");
-		useMethodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		useMethodHandleMapping.setFieldName("use-method-handle");
-		descriptor.addMapping(useMethodHandleMapping);
-		
-		SDKAggregateObjectMapping factoryMethodHandleMapping = new SDKAggregateObjectMapping();
-		factoryMethodHandleMapping.setAttributeName("factoryMethodHandle");
-		factoryMethodHandleMapping.setSetMethodName("setFactoryMethodHandleForTopLink");
-		factoryMethodHandleMapping.setGetMethodName("getFactoryMethodHandleForTopLink");
-		factoryMethodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		factoryMethodHandleMapping.setFieldName("factory-method-handle");
-		descriptor.addMapping(factoryMethodHandleMapping);
-		
-		SDKAggregateObjectMapping instantiationMethodHandleMapping = new SDKAggregateObjectMapping();
-		instantiationMethodHandleMapping.setAttributeName("instantiationMethodHandle");
-		instantiationMethodHandleMapping.setSetMethodName("setInstantiationMethodHandleForTopLink");
-		instantiationMethodHandleMapping.setGetMethodName("getInstantiationMethodHandleForTopLink");
-		instantiationMethodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		instantiationMethodHandleMapping.setFieldName("instantiation-method-handle");
-		descriptor.addMapping(instantiationMethodHandleMapping);
-		
-		return descriptor;
-	}
-
-	private void legacySetFactoryTypeForTopLink(MWClass factoryType) {
-		this.factoryTypeHandle = new MWClassHandle(this, factoryType, this.buildFactoryTypeScrubber());
-	}
-	private MWClass legacyGetFactoryTypeForTopLink() {
-		throw new UnsupportedOperationException();
-	}
-
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWDescriptorInstantiationPolicy.class);
-		descriptor.setTableName("InstantiationPolicy");
-		descriptor.descriptorIsAggregate();
-
-		ObjectTypeMapping policyTypeMapping = new ObjectTypeMapping();
-		policyTypeMapping.addConversionValue(
-				MWDescriptorInstantiationPolicy.DEFAULT_CONSTRUCTOR,
-				MWDescriptorInstantiationPolicy.DEFAULT_CONSTRUCTOR);
-		policyTypeMapping.addConversionValue(
-				MWDescriptorInstantiationPolicy.FACTORY,
-				MWDescriptorInstantiationPolicy.FACTORY);
-		policyTypeMapping.addConversionValue(
-				MWDescriptorInstantiationPolicy.METHOD,
-				MWDescriptorInstantiationPolicy.METHOD);
-		policyTypeMapping.setAttributeName("policyType");
-		policyTypeMapping.setFieldName("policyType");
-		policyTypeMapping.setNullValue(MWDescriptorInstantiationPolicy.DEFAULT_CONSTRUCTOR);
-		descriptor.addMapping(policyTypeMapping);
-
-		OneToOneMapping factoryTypeMapping = new OneToOneMapping();
-		factoryTypeMapping.setAttributeName("factoryType");
-		factoryTypeMapping.setSetMethodName("legacySetFactoryTypeForTopLink");
-		factoryTypeMapping.setGetMethodName("legacyGetFactoryTypeForTopLink");
-		factoryTypeMapping.setReferenceClass(MWClass.class);
-		factoryTypeMapping.setForeignKeyFieldName("factoryType");
-		factoryTypeMapping.dontUseIndirection();
-		descriptor.addMapping(factoryTypeMapping);
-
-		SDKAggregateObjectMapping useMethodHandleMapping = new SDKAggregateObjectMapping();
-		useMethodHandleMapping.setAttributeName("useMethodHandle");
-		useMethodHandleMapping.setSetMethodName("setUseMethodHandleForTopLink");
-		useMethodHandleMapping.setGetMethodName("getUseMethodHandleForTopLink");
-		useMethodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		useMethodHandleMapping.setFieldName("useMethodHandle");
-		descriptor.addMapping(useMethodHandleMapping);
-
-		SDKAggregateObjectMapping factoryMethodHandleMapping = new SDKAggregateObjectMapping();
-		factoryMethodHandleMapping.setAttributeName("factoryMethodHandle");
-		factoryMethodHandleMapping.setSetMethodName("setFactoryMethodHandleForTopLink");
-		factoryMethodHandleMapping.setGetMethodName("getFactoryMethodHandleForTopLink");
-		factoryMethodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		factoryMethodHandleMapping.setFieldName("factoryMethodHandle");
-		descriptor.addMapping(factoryMethodHandleMapping);
-
-		SDKAggregateObjectMapping instantiationMethodHandleMapping = new SDKAggregateObjectMapping();
-		instantiationMethodHandleMapping.setAttributeName("instantiationMethodHandle");
-		instantiationMethodHandleMapping.setSetMethodName("setInstantiationMethodHandleForTopLink");
-		instantiationMethodHandleMapping.setGetMethodName("getInstantiationMethodHandleForTopLink");
-		instantiationMethodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		instantiationMethodHandleMapping.setFieldName("instantiationMethodHandle");
-		descriptor.addMapping(instantiationMethodHandleMapping);
-
-		return descriptor;
-	}
-
 }

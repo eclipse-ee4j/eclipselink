@@ -24,7 +24,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
 
 public final class MWClassIndicatorExtractionMethodPolicy extends MWAbstractClassIndicatorPolicy {
 
@@ -144,43 +143,6 @@ public final class MWClassIndicatorExtractionMethodPolicy extends MWAbstractClas
 	private void setMethodHandleForTopLink(MWMethodHandle handle) {
 		NodeReferenceScrubber scrubber = this.buildMethodScrubber();
 		this.methodHandle = ((handle == null) ? new MWMethodHandle(this, scrubber) : handle.setScrubber(scrubber));
-	}
-
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWClassIndicatorExtractionMethodPolicy.class);
-	
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractClassIndicatorPolicy.class);
-		SDKAggregateObjectMapping classExtractionMethodHandleMapping = new SDKAggregateObjectMapping();
-		classExtractionMethodHandleMapping.setAttributeName("methodHandle");
-		classExtractionMethodHandleMapping.setGetMethodName("getMethodHandleForTopLink");
-		classExtractionMethodHandleMapping.setSetMethodName("setMethodHandleForTopLink");
-		classExtractionMethodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		classExtractionMethodHandleMapping.setFieldName("class-extraction-method-handle");
-		descriptor.addMapping(classExtractionMethodHandleMapping);
-
-		return descriptor;
-	}
-
-
-	public static ClassDescriptor legacy45BuildDescriptor()  {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWClassIndicatorExtractionMethodPolicy.class);
-		descriptor.descriptorIsAggregate();
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractClassIndicatorPolicy.class);
-
-		SDKAggregateObjectMapping classExtractionMethodHandleMapping = new SDKAggregateObjectMapping();
-		classExtractionMethodHandleMapping.setAttributeName("methodHandle");
-		classExtractionMethodHandleMapping.setGetMethodName("getMethodHandleForTopLink");
-		classExtractionMethodHandleMapping.setSetMethodName("setMethodHandleForTopLink");
-		classExtractionMethodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		classExtractionMethodHandleMapping.setFieldName("classExtractionMethodHandle");
-		descriptor.addMapping(classExtractionMethodHandleMapping);
-
-		return descriptor;
 	}
 
 }

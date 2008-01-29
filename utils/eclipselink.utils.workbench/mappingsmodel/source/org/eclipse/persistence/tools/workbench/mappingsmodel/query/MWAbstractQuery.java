@@ -41,6 +41,7 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.QueryResultsCachePolicy;
 
 public abstract class MWAbstractQuery 
 	extends MWModel 
@@ -676,6 +677,10 @@ public abstract class MWAbstractQuery
 		throw new IllegalArgumentException();		
 	}
 	
+	public boolean isTopLinkReservedFinder() {
+		return MWQueryManager.topLinkReservedFinderNames().contains(this.getName());
+	}
+
 	// ************ displaying ************
 			
 	public String displayString() {
@@ -696,8 +701,9 @@ public abstract class MWAbstractQuery
 		for (Iterator i = parameters(); i.hasNext(); ) {
 			((MWQueryParameter) i.next()).convertToRuntime(runtimeQuery);			
 		}
-		
-		runtimeQuery.setShouldCacheQueryResults(isCacheQueryResults());
+		if (isCacheQueryResults()) {
+			runtimeQuery.setQueryResultsCachePolicy(new QueryResultsCachePolicy());
+		}
 		runtimeQuery.setShouldOuterJoinSubclasses(isOuterJoinAllSubclasses());
 		runtimeQuery.setShouldUseExclusiveConnection(isExclusiveConnection());
 		if (getMaximumRows() > 0) {
@@ -772,9 +778,4 @@ public abstract class MWAbstractQuery
 		}
 	}
 	
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.queryTimeout = QUERY_TIMEOUT_UNDEFINED;
-		this.distinctState = (DistinctStateModel) distinctStateOptions().topLinkOptionForMWModelOption(UNCOMPUTED_DISTINCT);
-	}
 }

@@ -61,13 +61,14 @@ public class ProjectConverterTests
 		this.convertAndVerifyRuntime(new LockingPolicyProject().getProject(), new LockingPolicyRuntimeProject().getRuntimeProject());
 	}
 	
-	public void testReturningPolicyProjectConversion() {
-		this.convertAndVerifyRuntime(new ReturningPolicyProject().getProject(), new ReturningPolicyRuntimeProject().getRuntimeProject());
-	}
+	//MySQL database doesn't support returning
+//	public void testReturningPolicyProjectConversion() {
+//		this.convertAndVerifyRuntime(new ReturningPolicyProject().getProject(), new ReturningPolicyRuntimeProject().getRuntimeProject());
+//	}
 	
-	public void testReturningPolicyEisProjectConversion() {
-		this.convertAndVerifyRuntime(new ReturningPolicyEisProject().getProject(), new ReturningPolicyEisRuntimeProject().getRuntimeProject());
-	}
+//	public void testReturningPolicyEisProjectConversion() {
+//		this.convertAndVerifyRuntime(new ReturningPolicyEisProject().getProject(), new ReturningPolicyEisRuntimeProject().getRuntimeProject());
+//	}
 	
 	public void testIdentityPolicyProjectConversion() {
 		this.convertAndVerifyRuntime(new IdentityPolicyProject().getProject(), new IdentityPolicyRuntimeProject().getRuntimeProject());

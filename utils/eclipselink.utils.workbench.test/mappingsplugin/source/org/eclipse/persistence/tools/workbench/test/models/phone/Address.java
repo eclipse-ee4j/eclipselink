@@ -107,7 +107,7 @@ public java.util.List getServiceCalls() {
 }
 /**
  * 
- * @return test.oracle.models.phone.State
+ * @return org.eclipse.persistence.tools.workbench.test.models.phone.State
  */
 public State getState() {
 	return this.state;
@@ -165,7 +165,7 @@ public void setServiceCalls(java.util.List newServiceCalls) {
 }
 /**
  * 
- * @param newState test.oracle.models.phone.State
+ * @param newState org.eclipse.persistence.tools.workbench.test.models.phone.State
  */
 public void setState(State newState) {
 	this.state = newState;

@@ -51,5 +51,4 @@ public interface MWTransactionalPolicy
 	
 	MWAbstractTransactionalPolicy getValueForTopLink(); 
     
-    void legacySetLockingPolicy(MWLockingPolicy lockingPolicy);
 }

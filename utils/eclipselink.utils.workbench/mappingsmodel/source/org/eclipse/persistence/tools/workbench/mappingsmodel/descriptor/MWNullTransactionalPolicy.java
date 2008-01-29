@@ -88,7 +88,4 @@ final class MWNullTransactionalPolicy extends MWModel
 		return null;
 	}
     
-    public void legacySetLockingPolicy(MWLockingPolicy lockingPolicy) {
-        //no op
-    }
 }

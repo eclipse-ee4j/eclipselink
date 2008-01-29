@@ -51,8 +51,6 @@ import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
-
 
 public abstract class MWAbstractTableReferenceMapping extends MWAbstractReferenceMapping 
 	implements MWTableReferenceMapping, MWIndirectableMapping, MWJoinFetchableMapping
@@ -704,119 +702,6 @@ public abstract class MWAbstractTableReferenceMapping extends MWAbstractReferenc
 		super.legacy60PostBuild(event);
 		if (this.joinFetchOption == null) {
 			this.joinFetchOption = (JoinFetchOption)MWJoinFetchableMapping.JoinFetchOptionSet.joinFetchOptions().topLinkOptionForMWModelOption(JOIN_FETCH_NONE);
-		}
-	}
-	
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWAbstractTableReferenceMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractReferenceMapping.class);
-
-		DirectToFieldMapping mbdrMapping = (DirectToFieldMapping) descriptor.addDirectMapping("maintainsBidirectionalRelationship", "maintains-bidirectional-relationship");
-		mbdrMapping.setNullValue(Boolean.FALSE);
-		
-		DirectToFieldMapping relationshipPartnerMappingNameMapping = (DirectToFieldMapping) descriptor.addDirectMapping("relationshipPartnerMappingName", "relationship-partner-mapping-name");
-		relationshipPartnerMappingNameMapping.setGetMethodName("legacyGetRelationshipPartnerMappingName");
-		relationshipPartnerMappingNameMapping.setSetMethodName("legacySetRelationshipPartnerMappingName");
-
-		SDKAggregateObjectMapping referenceHandleMapping = new SDKAggregateObjectMapping();
-		referenceHandleMapping.setAttributeName("referenceHandle");
-		referenceHandleMapping.setGetMethodName("getReferenceHandleForTopLink");
-		referenceHandleMapping.setSetMethodName("setReferenceHandleForTopLink");
-		referenceHandleMapping.setReferenceClass(MWReferenceHandle.class);
-		referenceHandleMapping.setFieldName("table-reference-mapping-reference-handle");
-		descriptor.addMapping(referenceHandleMapping);
-
-		OneToOneMapping referenceDescriptorMapping = new OneToOneMapping();
-		referenceDescriptorMapping.setAttributeName("referenceDescriptor");
-		referenceDescriptorMapping.setGetMethodName("legacyGetReferenceDescriptor");
-		referenceDescriptorMapping.setSetMethodName("legacySetReferenceDescriptor");
-		referenceDescriptorMapping.setReferenceClass(MWDescriptor.class);
-		referenceDescriptorMapping.setForeignKeyFieldName("reference-descriptor");
-		referenceDescriptorMapping.dontUseIndirection();
-		descriptor.addMapping(referenceDescriptorMapping);
-
-		descriptor.addDirectMapping("privateOwned", "private-owned");
-		descriptor.addDirectMapping("batchReading","uses-batch-reading");
-	
-		return descriptor;
-	}
-	
-	private void legacySetRelationshipPartnerMappingName(String name) {
-		this.legacyValuesMap.put("relationship-partner-mapping-name", name);
-	}
-	private String legacyGetRelationshipPartnerMappingName() {
-		throw new UnsupportedOperationException();
-	}
-
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.relationshipPartnerMappingHandle = new MWMappingHandle(this, this.buildRelationshipPartnerMappingScrubber());
-		if (this.joinFetchOption == null) {
-			this.joinFetchOption = (JoinFetchOption)MWJoinFetchableMapping.JoinFetchOptionSet.joinFetchOptions().topLinkOptionForMWModelOption(JOIN_FETCH_NONE);
-		}
-	}
-
-	public void legacy50PostPostProjectBuild() {
-		super.legacy50PostPostProjectBuild();
-		String name = (String) this.legacyValuesMap.remove("relationship-partner-mapping-name");
-		if (name != null && getReferenceDescriptor() != null) {
-			setRelationshipPartnerMapping(getReferenceDescriptor().mappingNamed(name));
-		}
-	}
-	
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWAbstractTableReferenceMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractReferenceMapping.class);
-
-		((DirectToFieldMapping) descriptor.addDirectMapping("maintainsBidirectionalRelationship", "maintainsBidirectionalRelationship")).setNullValue(Boolean.FALSE);
-		
-		DirectToFieldMapping relationshipPartnerMappingNameMapping = (DirectToFieldMapping) descriptor.addDirectMapping("relationshipPartnerMappingName", "relationshipPartnerMappingName");
-		relationshipPartnerMappingNameMapping.setGetMethodName("legacyGetRelationshipPartnerMappingName");
-		relationshipPartnerMappingNameMapping.setSetMethodName("legacySetRelationshipPartnerMappingName");
-	
-		SDKAggregateObjectMapping referenceHandleMapping = new SDKAggregateObjectMapping();
-		referenceHandleMapping.setAttributeName("referenceHandle");
-		referenceHandleMapping.setGetMethodName("getReferenceHandleForTopLink");
-		referenceHandleMapping.setSetMethodName("setReferenceHandleForTopLink");
-		referenceHandleMapping.setReferenceClass(MWReferenceHandle.class);
-		referenceHandleMapping.setFieldName("referenceHandle");
-		descriptor.addMapping(referenceHandleMapping);
-
-		OneToOneMapping referenceDescriptorMapping = new OneToOneMapping();
-		referenceDescriptorMapping.setAttributeName("referenceDescriptor");
-		referenceDescriptorMapping.setGetMethodName("legacyGetReferenceDescriptor");
-		referenceDescriptorMapping.setSetMethodName("legacySetReferenceDescriptor");
-		referenceDescriptorMapping.dontUseIndirection();
-		referenceDescriptorMapping.setReferenceClass(MWDescriptor.class);
-		referenceDescriptorMapping.setForeignKeyFieldName("referenceDescriptor");
-		descriptor.addMapping(referenceDescriptorMapping);
-
-		descriptor.addDirectMapping("privateOwned", "privateOwned");
-		descriptor.addDirectMapping("batchReading","usesBatchReading");
-		
-		return descriptor;
-	}
-
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.relationshipPartnerMappingHandle = new MWMappingHandle(this, this.buildRelationshipPartnerMappingScrubber());
-		if (this.joinFetchOption == null) {
-			this.joinFetchOption = (JoinFetchOption)MWJoinFetchableMapping.JoinFetchOptionSet.joinFetchOptions().topLinkOptionForMWModelOption(JOIN_FETCH_NONE);
-		}
-	}
-
-	public void legacy45PostPostProjectBuild() {
-		super.legacy45PostPostProjectBuild();
-		String name = (String) this.legacyValuesMap.remove("relationship-partner-mapping-name");
-		if (name != null && getReferenceDescriptor() != null) {
-			setRelationshipPartnerMapping(getReferenceDescriptor().mappingNamed(name));
 		}
 	}
 	

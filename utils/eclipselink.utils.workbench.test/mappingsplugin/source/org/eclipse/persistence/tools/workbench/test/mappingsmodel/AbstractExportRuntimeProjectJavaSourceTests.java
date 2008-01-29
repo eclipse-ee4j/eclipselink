@@ -76,7 +76,7 @@ public abstract class AbstractExportRuntimeProjectJavaSourceTests extends TestCa
 	 */
 	protected void configureDeploymentLogin(MWRelationalProject project) {
 		MWDatabase database = project.getDatabase();
-		database.setDeploymentLoginSpec(database.loginSpecNamed("Oracle"));
+		database.setDeploymentLoginSpec(database.loginSpecNamed("MySQL"));
 	}
 
 	protected File logFile(MWRelationalProject project) {

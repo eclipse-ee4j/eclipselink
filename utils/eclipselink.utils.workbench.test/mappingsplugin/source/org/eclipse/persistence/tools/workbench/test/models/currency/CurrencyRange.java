@@ -16,14 +16,14 @@ public class CurrencyRange
 	private String trend;
 /**
  * 
- * @return test.oracle.models.currency.Currency
+ * @return org.eclipse.persistence.tools.workbench.test.models.currency.Currency
  */
 public Currency getHighLimit() {
 	return highLimit;
 }
 /**
  * 
- * @return test.oracle.models.currency.Currency
+ * @return org.eclipse.persistence.tools.workbench.test.models.currency.Currency
  */
 public Currency getLowLimit() {
 	return lowLimit;
@@ -37,14 +37,14 @@ public java.lang.String getTrend() {
 }
 /**
  * 
- * @param newHighLimit test.oracle.models.currency.Currency
+ * @param newHighLimit org.eclipse.persistence.tools.workbench.test.models.currency.Currency
  */
 public void setHighLimit(Currency newHighLimit) {
 	highLimit = newHighLimit;
 }
 /**
  * 
- * @param newLowLimit test.oracle.models.currency.Currency
+ * @param newLowLimit org.eclipse.persistence.tools.workbench.test.models.currency.Currency
  */
 public void setLowLimit(Currency newLowLimit) {
 	lowLimit = newLowLimit;

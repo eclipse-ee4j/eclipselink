@@ -183,59 +183,5 @@ public final class MWQueryParameter
 	        this.typeHandle.legacySetTypeNameForTopLink(typeName);
     	}
     }
-    
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWQueryParameter.class);
-		descriptor.setTableName("query-parameter");
-
-		descriptor.addDirectMapping("name", "name");
-
-        DirectToFieldMapping typeMapping = new DirectToFieldMapping();
-		typeMapping.setAttributeName("typeHandle");
-        typeMapping.setFieldName("type");
-		typeMapping.setGetMethodName("legacy50GetTypeNameForTopLink");
-		typeMapping.setSetMethodName("legacy50SetTypeNameForTopLink");
-		descriptor.addMapping(typeMapping);
-
-		return descriptor;
-	}
-
-	private String legacy50GetTypeNameForTopLink() {
-		throw new UnsupportedOperationException();
-    }
-    private void legacy50SetTypeNameForTopLink(String typeName) {
-        this.typeHandle = new MWClassHandle(this, this.buildTypeScrubber());
-        this.typeHandle.legacySetTypeNameForTopLink(typeName);
-    }
-    
-
-    public static ClassDescriptor legacy45BuildDescriptor() {
-    	ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWQueryParameter.class);
-		descriptor.setTableName("QueryParameter");
-
-		descriptor.addDirectMapping("name", "name");
-
-        DirectToFieldMapping typeMapping = new DirectToFieldMapping();
-        typeMapping.setAttributeName("typeHandle");
-        typeMapping.setFieldName("type");
-		typeMapping.setGetMethodName("legacy45GetTypeNameForTopLink");
-		typeMapping.setSetMethodName("legacy45SetTypeNameForTopLink");
-		descriptor.addMapping(typeMapping);
-
-		return descriptor;
-	}
-
-	private String legacy45GetTypeNameForTopLink() {
-		throw new UnsupportedOperationException();
-    }
-    private void legacy45SetTypeNameForTopLink(String typeName) {
-        this.typeHandle = new MWClassHandle(this, this.buildTypeScrubber());
-        this.typeHandle.legacySetTypeNameForTopLink(typeName);
-    }
 
 }

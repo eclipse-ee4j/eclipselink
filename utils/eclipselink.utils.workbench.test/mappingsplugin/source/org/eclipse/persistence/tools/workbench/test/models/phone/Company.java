@@ -42,7 +42,7 @@ public java.lang.String getName() {
 /**
  * Insert the method's description here.
  * Creation date: (11/27/00 4:58:39 PM)
- * @return test.oracle.models.phone.Service
+ * @return org.eclipse.persistence.tools.workbench.test.models.phone.Service
  */
 public Service getService() {
 	return service;
@@ -65,7 +65,7 @@ public void setName(java.lang.String newName) {
 /**
  * Insert the method's description here.
  * Creation date: (11/27/00 4:58:39 PM)
- * @param newService test.oracle.models.phone.Service
+ * @param newService org.eclipse.persistence.tools.workbench.test.models.phone.Service
  */
 public void setService(Service newService) {
 	service = newService;

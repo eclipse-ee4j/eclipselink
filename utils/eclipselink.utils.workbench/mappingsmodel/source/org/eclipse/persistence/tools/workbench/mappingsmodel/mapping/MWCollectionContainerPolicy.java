@@ -162,20 +162,4 @@ public final class MWCollectionContainerPolicy
 		return new CollectionContainerPolicy(getDefaultingContainerClass().getContainerClass().getName());
 	}
     
-    
-    // **************** TopLink methods ************************
-
-    public void legacySetUsesDefaultContainerClass(boolean usesDefaultContainerClass) {
-        getDefaultingContainerClass().setUseDefaultContainerClass(usesDefaultContainerClass);
-    }
-    
-    public void legacyAdjustUsesDefaultContainerClassAttributes() {     
-        if (getDefaultingContainerClass().getContainerClass() == defaultContainerClass()) {
-            getDefaultingContainerClass().setUseDefaultContainerClass(true);
-        }
-        else {
-            getDefaultingContainerClass().setUseDefaultContainerClass(false);
-        }
-    }
-
 }

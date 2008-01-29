@@ -23,12 +23,11 @@ import org.eclipse.persistence.tools.workbench.utility.filters.Filter;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.mappings.ObjectTypeMapping;
-import org.eclipse.persistence.mappings.SerializedObjectMapping;
-import org.eclipse.persistence.mappings.TypeConversionMapping;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
+import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
 
 public final class MWDirectToFieldMapping 
 	extends MWRelationalDirectMapping
@@ -149,14 +148,20 @@ public final class MWDirectToFieldMapping
 				return new DirectToFieldMapping();
 			}
 			else if (getConverter().getType().equals((MWConverter.TYPE_CONVERSION_CONVERTER))) {
-				return new TypeConversionMapping();
+				DirectToFieldMapping mapping = new DirectToFieldMapping();
+				mapping.setConverter(new TypeConversionConverter());
+				return mapping;
 			}
 			else if (getConverter().getType().equals((MWConverter.OBJECT_TYPE_CONVERTER))) {
-				return new ObjectTypeMapping();
+				DirectToFieldMapping mapping = new DirectToFieldMapping();
+				mapping.setConverter(new ObjectTypeConverter());
+				return mapping;			
+			} 
+			else {
+				DirectToFieldMapping mapping = new DirectToFieldMapping();
+				mapping.setConverter(new SerializedObjectConverter());
+				return mapping;
 			}
-			else
-				return new SerializedObjectMapping();
-				
 		}
 		else {
 			return new DirectToFieldMapping();
@@ -184,77 +189,4 @@ public final class MWDirectToFieldMapping
 		return descriptor;	
 	}
 	
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		
-		descriptor.setJavaClass(MWDirectToFieldMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWMapping.class);
-		
-		DirectToFieldMapping useWhenNullMapping = new DirectToFieldMapping();
-		useWhenNullMapping.setAttributeName("nullValue");
-		useWhenNullMapping.setGetMethodName("legacyGetNullValueForTopLink");
-		useWhenNullMapping.setSetMethodName("legacySetNullValueForTopLink");
-		useWhenNullMapping.setFieldName("use-when-null");		
-		descriptor.addMapping(useWhenNullMapping);
-		
-		DirectToFieldMapping useWhenNullTypeMapping = new DirectToFieldMapping();
-		useWhenNullTypeMapping.setAttributeName("nullValueType");
-		useWhenNullTypeMapping.setGetMethodName("legacyGetNullValueTypeForTopLink");
-		useWhenNullTypeMapping.setSetMethodName("legacySetNullValueTypeForTopLink");
-		useWhenNullTypeMapping.setFieldName("use-when-null-type");		
-		descriptor.addMapping(useWhenNullTypeMapping);
-
-		SDKAggregateObjectMapping columnHandleMapping = new SDKAggregateObjectMapping();
-		columnHandleMapping.setAttributeName("columnHandle");
-		columnHandleMapping.setGetMethodName("getColumnHandleForTopLink");
-		columnHandleMapping.setSetMethodName("setColumnHandleForTopLink");
-		columnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		columnHandleMapping.setFieldName("direct-mapping-field-handle");
-		descriptor.addMapping(columnHandleMapping);
-
-		XMLTransformationMapping converterMapping = new XMLTransformationMapping();
-		converterMapping.setAttributeName("converter");
-		converterMapping.setAttributeTransformation("legacy50GetConverterFromRowForTopLink");
-		descriptor.addMapping(converterMapping);
-
-		return descriptor;
-	}
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWDirectToFieldMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWMapping.class);
-
-		DirectToFieldMapping useWhenNullMapping = new DirectToFieldMapping();
-		useWhenNullMapping.setAttributeName("nullValue");
-		useWhenNullMapping.setGetMethodName("legacyGetNullValueForTopLink");
-		useWhenNullMapping.setSetMethodName("legacySetNullValueForTopLink");
-		useWhenNullMapping.setFieldName("useWhenNull");		
-		descriptor.addMapping(useWhenNullMapping);
-		
-		DirectToFieldMapping useWhenNullTypeMapping = new DirectToFieldMapping();
-		useWhenNullTypeMapping.setAttributeName("nullValueType");
-		useWhenNullTypeMapping.setGetMethodName("legacyGetNullValueTypeForTopLink");
-		useWhenNullTypeMapping.setSetMethodName("legacySetNullValueTypeForTopLink");
-		useWhenNullTypeMapping.setFieldName("useWhenNullType");		
-		descriptor.addMapping(useWhenNullTypeMapping);
-
-		SDKAggregateObjectMapping columnHandleMapping = new SDKAggregateObjectMapping();
-		columnHandleMapping.setAttributeName("columnHandle");
-		columnHandleMapping.setGetMethodName("getColumnHandleForTopLink");
-		columnHandleMapping.setSetMethodName("setColumnHandleForTopLink");
-		columnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		columnHandleMapping.setFieldName("fieldHandle");
-		descriptor.addMapping(columnHandleMapping);
-
-		XMLTransformationMapping converterMapping = new XMLTransformationMapping();
-		converterMapping.setAttributeName("converter");
-		converterMapping.setAttributeTransformation("legacy4XGetConverterFromRowForTopLink");
-		descriptor.addMapping(converterMapping);
-
-		return descriptor;
-	}
 }

@@ -54,9 +54,6 @@ import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
-import deprecated.sdk.SDKDirectCollectionMapping;
-import deprecated.sdk.SDKFieldValue;
-import deprecated.sdk.SDKObjectCollectionMapping;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
 
@@ -144,10 +141,6 @@ public final class MWClassRepository
 	 */
 	private List classpathEntries;
 		public static final String CLASSPATH_ENTRIES_LIST = "classpathEntries";
-
-	/** the repository used to have a name - so this is used by TopLink as the primary key */
-	private String legacy45Name;
-
 
 	/** these are the keys used to find the classpath entries for the "core" classes */
 	private static final Class[] CORE_KEYS =
@@ -1139,120 +1132,6 @@ public final class MWClassRepository
 		}
 	}
 	
-
-	// ********** legacy TopLink 5.0 methods **********
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-	
-		descriptor.setJavaClass(MWClassRepository.class);
-		descriptor.setTableName("class-repository");
-	
-		SDKDirectCollectionMapping classpathMapping = new SDKDirectCollectionMapping();
-		classpathMapping.setAttributeName("classpathEntries");
-		classpathMapping.setSetMethodName("legacy50SetClasspathEntriesForTopLink");
-		classpathMapping.setGetMethodName("legacy50GetClasspathEntriesForTopLink");
-		classpathMapping.setFieldName("classpath-entries");
-		classpathMapping.setElementDataTypeName("entry");
-		descriptor.addMapping(classpathMapping);
-	
-		SDKObjectCollectionMapping typesMapping = MWModel.legacyBuildOneToManyMapping();
-		typesMapping.setAttributeName("types");
-		typesMapping.setSetMethodName("legacySetTypesForTopLink");
-		typesMapping.setGetMethodName("legacyGetTypesForTopLink");
-		typesMapping.setReferenceClass(MWClass.class);
-		typesMapping.setFieldName("types");
-		typesMapping.setReferenceDataTypeName("type");
-		typesMapping.setSourceForeignKeyFieldName("name");
-		typesMapping.dontUseIndirection();
-		descriptor.addMapping(typesMapping);
-	
-		return descriptor;
-	}
-	
-	/**
-	 * legacy repositories stored direct references to the types;
-	 * currently, we store only the names
-	 */
-	private void legacySetTypesForTopLink(Collection types) {
-		this.types = new Hashtable(types.size());
-		this.typeNames = new Hashtable(types.size());
-		for (Iterator stream = types.iterator(); stream.hasNext(); ) {
-			MWClass type = (MWClass) stream.next();
-			String typeName = type.getName();
-            if ( ! ClassTools.classNamedIsArray(typeName)) {
-                this.addType(typeName, type);
-            }
-		}
-		this.userTypes = Collections.synchronizedSet(new HashSet(types));
-	}
-	private Collection legacyGetTypesForTopLink() {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * convert to platform-independent representation
-	 */
-	private List legacy50GetClasspathEntriesForTopLink() {
-		List result = new ArrayList(this.classpathEntries.size());
-		for (Iterator stream = this.classpathEntries.iterator(); stream.hasNext(); ) {
-			result.add(((String) stream.next()).replace('\\', '/'));
-		}
-		return result;
-	}
-	
-	/**
-	 * convert to platform-specific representation
-	 */
-	private void legacy50SetClasspathEntriesForTopLink(List entries) {
-		this.classpathEntries = this.convertToClasspathEntries(this.legacy50StripBackSlashes(entries));
-	}
-
-	/**
-	 * old projects can have backslashes
-	 */
-	private List legacy50StripBackSlashes(List entries) {
-		List result = new Vector(entries.size());
-		for (Iterator stream = entries.iterator(); stream.hasNext(); ) {
-			result.add(((String) stream.next()).replace('\\', '/'));
-		}
-		return result;
-	}
-
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.userTypes = Collections.synchronizedSet(new HashSet());
-		this.userTypeNames = new HashSet();
-	}
-
-	public void legacy50PostPostProjectBuild() {
-		super.legacy50PostPostProjectBuild();
-		this.legacyRebuildUserTypes();
-	}
-
-	/**
-	 * at this point some "core" types have slipped into our set of
-	 * "user" types (legacy "core" types are not marked until
-	 * post-post project build); so completely rebuild
-	 */
-	private void legacyRebuildUserTypes() {
-		this.userTypes.clear();
-		this.userTypes.addAll(this.legacyBuildUserTypes());
-	}
-
-	private Set legacyBuildUserTypes() {
-		// no need to synchronize 'types' during a read
-		Set result = new HashSet(this.types.size());
-		for (Iterator stream = this.types.values().iterator(); stream.hasNext(); ) {
-			MWClass type = (MWClass) stream.next();
-			if (this.typeIsUserSupplied(type)) {
-				result.add(type);
-			}
-		}
-		return result;
-	}
-
 	/**
 	 * Return whether the specified type is a "user" type;
 	 * i.e. it is neither a stub nor a "core" type.
@@ -1266,76 +1145,6 @@ public final class MWClassRepository
 		}
 		return true;
 	}
-
-	/**
-	 * expose the lookup for refreshing core types from old projects;
-	 * see MWClass.legacyRefresh() and MWClass.legacyRefreshTypeDeclaration()
-	 */
-	ExternalClassDescription legacyExternalClassDescriptionNamed(String name) {
-		return this.externalClassDescriptionNamed(name);
-	}
-
-
-	// ********** legacy TopLink 4.5 methods **********
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-	
-		descriptor.setJavaClass(MWClassRepository.class);
-		descriptor.setTableName("ClassRepository");
-		descriptor.addPrimaryKeyFieldName("name");
-	
-		descriptor.addDirectMapping("legacy45Name", "name");
-	
-		XMLTransformationMapping classpathMapping = new XMLTransformationMapping();
-	    classpathMapping.setAttributeName("classpathEntries");
-	    classpathMapping.setAttributeTransformation("legacy45BuildClasspathFromRow");
-	    descriptor.addMapping(classpathMapping);
-	
-		SDKObjectCollectionMapping typesMapping = MWModel.legacyBuildOneToManyMapping();
-		typesMapping.setAttributeName("types");
-		typesMapping.setSetMethodName("legacySetTypesForTopLink");
-		typesMapping.setGetMethodName("legacyGetTypesForTopLink");
-		typesMapping.setReferenceClass(MWClass.class);
-		typesMapping.setFieldName("types");
-		typesMapping.setReferenceDataTypeName("type");
-		typesMapping.setSourceForeignKeyFieldName("id");
-		typesMapping.dontUseIndirection();
-		descriptor.addMapping(typesMapping);
-	
-		return descriptor;
-	}
-	
-	/**
-	 * The classpath changed in Odin
-	 */
-	private List legacy45BuildClasspathFromRow(Record row, Session session) {
-		List result = new Vector();
-		SDKFieldValue classpathValue = (SDKFieldValue) row.get("classPath");
-		if (classpathValue != null) {
-			Record classpathRow = (Record) classpathValue.getElements().firstElement();
-			SDKFieldValue entriesValue = (SDKFieldValue) classpathRow.get("entries");
-			if (entriesValue != null) {
-				for (Iterator stream = entriesValue.getElements().iterator(); stream.hasNext(); ) {
-					// old projects can have backslashes
-					result.add(((String) stream.next()).replace('\\', '/'));
-			    }
-			}
-		}
-		return this.convertToClasspathEntries(result);
-	}
-
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.userTypes = Collections.synchronizedSet(new HashSet());
-		this.userTypeNames = new HashSet();
-	}
-
-	public void legacy45PostPostProjectBuild() {
-		super.legacy45PostPostProjectBuild();
-		this.legacyRebuildUserTypes();
-	}
-
 
 	// ********** static methods **********
 	

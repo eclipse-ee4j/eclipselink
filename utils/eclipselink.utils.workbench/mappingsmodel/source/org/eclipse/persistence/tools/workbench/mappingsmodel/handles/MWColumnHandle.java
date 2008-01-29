@@ -135,49 +135,7 @@ public final class MWColumnHandle extends MWHandle {
 
 		return descriptor;
 	}
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = new deprecated.xml.XMLDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWColumnHandle.class);
-		descriptor.setTableName("field-handle");
-
-		OneToOneMapping fieldTableMapping = new OneToOneMapping();
-		fieldTableMapping.setAttributeName("columnTable");
-		fieldTableMapping.setGetMethodName("legacyGetColumnTableForTopLink");
-		fieldTableMapping.setSetMethodName("legacySetColumnTableForTopLink");
-		fieldTableMapping.setReferenceClass(MWTable.class);
-		fieldTableMapping.setForeignKeyFieldName("field-table");
-		fieldTableMapping.dontUseIndirection();
-		descriptor.addMapping(fieldTableMapping);
 	
-		descriptor.addDirectMapping("columnName", "getColumnNameForTopLink", "setColumnNameForTopLink", "field-name");
-
-		return descriptor;
-	}
-	
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = new deprecated.xml.XMLDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWColumnHandle.class);
-		descriptor.setTableName("FieldHandle");
-
-		OneToOneMapping tableMapping = new OneToOneMapping();
-		tableMapping.setAttributeName("columnTable");
-		tableMapping.setGetMethodName("legacyGetColumnTableForTopLink");
-		tableMapping.setSetMethodName("legacySetColumnTableForTopLink");
-		tableMapping.dontUseIndirection();
-		tableMapping.setReferenceClass(MWTable.class);
-		tableMapping.setForeignKeyFieldName("table");
-		descriptor.addMapping(tableMapping);
-	
-		descriptor.addDirectMapping("columnName", "getColumnNameForTopLink", "setColumnNameForTopLink", "fieldName");
-		
-		return descriptor;
-	}
-
 	private String getColumnTableNameForTopLink(){
 		return (this.column == null) ? null : this.column.getTable().getName();
 	}
@@ -190,19 +148,6 @@ public final class MWColumnHandle extends MWHandle {
 	}
 	private void setColumnNameForTopLink(String columnName) {
 		this.columnName = columnName;
-	}
-
-	/**
-	 * This legacy method will only be used by toplink for reading 4.x projects 
-	 * in which there was a column table.
-	 */
-	private void legacySetColumnTableForTopLink(MWTable columnTable) {
-		if (columnTable != null) {
-			this.columnTableName = columnTable.legacyGetName();
-		}
-	}
-	private MWTable legacyGetColumnTableForTopLink() {
-		throw new UnsupportedOperationException();
 	}
 
 }

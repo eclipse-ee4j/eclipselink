@@ -1,5 +1,4 @@
 <!--/*******************************************************************************
-* Copyright (c) 2007 Oracle. All rights reserved.
 * This program and the accompanying materials are made available under the terms of
 * the Eclipse Public License v1.0, which accompanies this distribution and is available at
 * http://www.eclipse.org/legal/epl-v10.html.
@@ -96,20 +95,6 @@
             includes="**/*.java"
             excludes="**/*&#35;*/**, **/.ade_path/**"
         />
-        <javac
-            classpath="${compile.framework.classpath}"
-            srcdir="${compile.framework.wptgdir}"
-            destdir="${compile.framework.destdir}"
-            debug="${_debug}"
-            debuglevel="${_debuglvl}"
-            failonerror="${_stop_on_err}"
-            optimize="${_optimize}"
-            deprecation="${_deprecation}"
-            target="${_targetjvm}"
-            nowarn="${_nowarn}"
-            includes="**/*.java"
-            excludes="**/*&#35;*/**, **/.ade_path/**"
-        />
    </target>
 
     <!-- =================================================================== -->
@@ -122,11 +107,11 @@
         <jar jarfile="${_jarDestDir}/${framework.jarfile}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
-                <attribute name="Specification-Vendor" value="Oracle Corporation" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
                 <attribute name="Specification-Version" value="${_VersionStamp}" />
                 <attribute name="Implementation-Title" value="org.eclipse.persistence.workbench.framework" />
                 <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
-                <attribute name="Implementation-Vendor" value="Oracle Corporation" />
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
                 <attribute name="Release-Designation" value="${_releaseVersion}" />
                 <attribute name="Library-Designation" value="${_LibraryName}" />
             </manifest>
@@ -141,11 +126,11 @@
         <jar jarfile="${_jarDestDir}/${framework.jarfile}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
-                <attribute name="Specification-Vendor" value="Oracle Corporation" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
                 <attribute name="Specification-Version" value="${_VersionStamp}" />
                 <attribute name="Implementation-Title" value="org.eclipse.persistence.workbench.framework" />
                 <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
-                <attribute name="Implementation-Vendor" value="Oracle Corporation" />
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
                 <attribute name="Release-Designation" value="${_releaseVersion}" />
                 <attribute name="Library-Designation" value="${_LibraryName} (debug)" />
             </manifest>

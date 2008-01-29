@@ -27,8 +27,6 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import deprecated.sdk.SDKFieldValue;
-
 
 public final class MWObjectTypeConverter 
 	extends MWTypeConverter
@@ -423,30 +421,6 @@ public final class MWObjectTypeConverter
 	private void setDefaultAttributeValueForTopLink(Object defaultAttributeValue) {
 		this.defaultValuePair = this.valuePairForAttributeValue(defaultAttributeValue);
 	}
-	
-	
-	protected void legacyInitialize(Map legacyValuesMap) {
-		super.legacyInitialize(legacyValuesMap);
-
-		SDKFieldValue fieldValue = (SDKFieldValue) legacyValuesMap.remove("value-pairs");
-		if (fieldValue != null) {
-			for (Iterator i = fieldValue.getElements().iterator(); i.hasNext(); ) {
-				legacyAddValuePairFromString((String) i.next());		
-			}
-		}
-	}
-
-	private void legacyAddValuePairFromString(String valuePairString) {
-		StringTokenizer tokenizer = new StringTokenizer(valuePairString, "=");
-		
-		try {
-			addValuePair(tokenizer.nextToken(), tokenizer.nextToken());
-		}catch (ConversionValueException e) {
-			//do not add the valuePair if an exception occurs
-			//TODO should we inform the user?					
-		}	
-	}
-	
 	
 	// **************** Member classes ****************************************
 	

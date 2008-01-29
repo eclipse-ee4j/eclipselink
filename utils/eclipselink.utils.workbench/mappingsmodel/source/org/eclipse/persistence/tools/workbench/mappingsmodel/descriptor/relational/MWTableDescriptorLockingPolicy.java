@@ -37,14 +37,11 @@ import org.eclipse.persistence.descriptors.FieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
-import org.eclipse.persistence.mappings.ObjectTypeMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
-
 
 public final class MWTableDescriptorLockingPolicy extends MWDescriptorLockingPolicy {
  
@@ -468,90 +465,5 @@ public final class MWTableDescriptorLockingPolicy extends MWDescriptorLockingPol
 		}
 		this.columnLockColumnHandles = handles;
 	}
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-        descriptor.descriptorIsAggregate();
-        descriptor.setJavaClass(MWTableDescriptorLockingPolicy.class);
-        descriptor.setTableName("descriptor-locking-policy");
-        descriptor.addDirectMapping("storeInCache", "store-in-cache");
-       
-        ObjectTypeMapping optimisticVersionLockingTypeMapping = new ObjectTypeMapping();
-        optimisticVersionLockingTypeMapping.setAttributeName("optimisticVersionLockingType");
-        optimisticVersionLockingTypeMapping.setGetMethodName("legacyGetLockingType");       
-        optimisticVersionLockingTypeMapping.setSetMethodName("legacySetLockingType");
-        optimisticVersionLockingTypeMapping.addConversionValue(
-                MWDescriptorLockingPolicy.NO_LOCKING,
-                MWDescriptorLockingPolicy.NO_LOCKING);
-        optimisticVersionLockingTypeMapping.addConversionValue(
-                MWDescriptorLockingPolicy.OPTIMISTIC_VERSION_TIMESTAMP,
-                MWDescriptorLockingPolicy.OPTIMISTIC_VERSION_TIMESTAMP);
-        optimisticVersionLockingTypeMapping.addConversionValue(
-                MWDescriptorLockingPolicy.OPTIMISTIC_VERSION_VERSION,
-                MWDescriptorLockingPolicy.OPTIMISTIC_VERSION_VERSION);
-        optimisticVersionLockingTypeMapping.setFieldName("locking-type");
-        descriptor.addMapping(optimisticVersionLockingTypeMapping);
-
-		SDKAggregateObjectMapping versionLockingColumnHandleMapping = new SDKAggregateObjectMapping();
-		versionLockingColumnHandleMapping.setAttributeName("versionLockingColumnHandle");
-		versionLockingColumnHandleMapping.setGetMethodName("getVersionLockingColumnHandleForTopLink");
-		versionLockingColumnHandleMapping.setSetMethodName("setVersionLockingColumnHandleForTopLink");
-		versionLockingColumnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		versionLockingColumnHandleMapping.setFieldName("descriptor-locking-policy-field-handle");
-		descriptor.addMapping(versionLockingColumnHandleMapping);
-	
-		return descriptor;
-	}
-
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.columnLockColumnHandles = new Vector();
-        if (getLockingType() == OPTIMISTIC_LOCKING) {
-            this.optimisticLockingType = DEFAULT_OPTIMISTIC_LOCKING_TYPE;
-        }
-   }
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWTableDescriptorLockingPolicy.class);
-        descriptor.setTableName("DescriptorLockingPolicy");
-		descriptor.descriptorIsAggregate();
-		
-        ObjectTypeMapping lockingType = new ObjectTypeMapping();
-        lockingType.setGetMethodName("legacyGetLockingType");       
-        lockingType.setSetMethodName("legacySetLockingType");
-        lockingType.addConversionValue(
-        		MWDescriptorLockingPolicy.NO_LOCKING,
-                MWDescriptorLockingPolicy.NO_LOCKING);
-        lockingType.addConversionValue(
-                MWDescriptorLockingPolicy.OPTIMISTIC_VERSION_TIMESTAMP,
-                MWDescriptorLockingPolicy.OPTIMISTIC_VERSION_TIMESTAMP);
-        lockingType.addConversionValue(
-                MWDescriptorLockingPolicy.OPTIMISTIC_VERSION_VERSION,
-                MWDescriptorLockingPolicy.OPTIMISTIC_VERSION_VERSION);
-        lockingType.setAttributeName("optimisticVersionLockingType");
-        lockingType.setFieldName("lockingType");
-        descriptor.addMapping(lockingType);
-
-        descriptor.addDirectMapping("storeInCache", "storeInCache");
-        
-        SDKAggregateObjectMapping versionLockingColumnHandleMapping = new SDKAggregateObjectMapping();
-		versionLockingColumnHandleMapping.setAttributeName("versionLockingColumnHandle");
-		versionLockingColumnHandleMapping.setGetMethodName("getVersionLockingColumnHandleForTopLink");
-		versionLockingColumnHandleMapping.setSetMethodName("setVersionLockingColumnHandleForTopLink");
-		versionLockingColumnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		versionLockingColumnHandleMapping.setFieldName("fieldHandle");
-		descriptor.addMapping(versionLockingColumnHandleMapping);
-		
-		return descriptor;
-	}
-	
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.columnLockColumnHandles = new Vector();
-        if (getLockingType() == OPTIMISTIC_LOCKING) {
-            this.optimisticLockingType = DEFAULT_OPTIMISTIC_LOCKING_TYPE;
-        }
-   }
 
 }

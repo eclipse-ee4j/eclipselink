@@ -162,48 +162,4 @@ public final class MWDescriptorInterfaceAliasPolicy extends MWAbstractDescriptor
 		NodeReferenceScrubber scrubber = this.buildInterfaceAliasScrubber();
 		this.interfaceAliasHandle = ((handle == null) ? new MWClassHandle(this, scrubber) : handle.setScrubber(scrubber));
 	}
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWDescriptorInterfaceAliasPolicy.class);
-		descriptor.setTableName("interface-alias-policy");
-
-		OneToOneMapping interfaceAliasMapping = new OneToOneMapping();
-		interfaceAliasMapping.setAttributeName("interfaceAlias");
-		interfaceAliasMapping.setSetMethodName("legacySetInterfaceAliasForTopLink");
-		interfaceAliasMapping.setGetMethodName("legacyGetInterfaceAliasForTopLink");
-		interfaceAliasMapping.setReferenceClass(MWClass.class);
-		interfaceAliasMapping.setForeignKeyFieldName("interface-alias");
-		interfaceAliasMapping.dontUseIndirection();
-		descriptor.addMapping(interfaceAliasMapping);
-
-		return descriptor;
-	}
-
-	private void legacySetInterfaceAliasForTopLink(MWClass interfaceAlias) {
-		this.interfaceAliasHandle = new MWClassHandle(this, interfaceAlias, this.buildInterfaceAliasScrubber());
-	}
-	private MWClass legacyGetInterfaceAliasForTopLink() {
-		throw new UnsupportedOperationException();
-	}
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWDescriptorInterfaceAliasPolicy.class);
-		descriptor.setTableName("InterfaceAliasPolicy");
-		descriptor.descriptorIsAggregate();
-
-		OneToOneMapping interfaceAliasMapping = new OneToOneMapping();
-		interfaceAliasMapping.setAttributeName("interfaceAlias");
-		interfaceAliasMapping.setSetMethodName("legacySetInterfaceAliasForTopLink");
-		interfaceAliasMapping.setGetMethodName("legacyGetInterfaceAliasForTopLink");
-		interfaceAliasMapping.setReferenceClass(MWClass.class);
-		interfaceAliasMapping.setForeignKeyFieldName("interfaceAlias");
-		interfaceAliasMapping.dontUseIndirection();
-		descriptor.addMapping(interfaceAliasMapping);
-
-		return descriptor;
-	}
-
 }

@@ -21,21 +21,18 @@ import javax.xml.XMLConstants;
 import org.apache.xerces.impl.xs.XSComplexTypeDecl;
 import org.apache.xerces.impl.xs.XSElementDecl;
 import org.apache.xerces.impl.xs.XSParticleDecl;
-import org.apache.xerces.impl.xs.identity.IdentityConstraint;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSObject;
 import org.apache.xerces.xs.XSTypeDefinition;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.QName;
-import org.eclipse.persistence.tools.workbench.utility.ClassTools;
-import org.eclipse.persistence.tools.workbench.utility.iterators.CompositeIterator;
-import org.eclipse.persistence.tools.workbench.utility.iterators.NullIterator;
-import org.eclipse.persistence.tools.workbench.utility.node.Node;
-
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.QName;
+import org.eclipse.persistence.tools.workbench.utility.iterators.CompositeIterator;
+import org.eclipse.persistence.tools.workbench.utility.iterators.NullIterator;
+import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 public final class ExplicitElementDeclaration
 	extends AbstractNamedSchemaComponent
@@ -355,9 +352,9 @@ public final class ExplicitElementDeclaration
 	}
 	
 	private void reloadIdentityConstraints(XSElementDecl elementDecl) {
-		IdentityConstraint[] identityNodes = elementDecl.getIDConstraints();
+		org.apache.xerces.impl.xs.identity.IdentityConstraint[] identityNodes = elementDecl.getIDConstraints();
 		for (int i = 0; identityNodes != null && i < identityNodes.length; i ++ ) {
-			IdentityConstraint identityNode = identityNodes[i];
+			org.apache.xerces.impl.xs.identity.IdentityConstraint identityNode = identityNodes[i];
 			String identityName = identityNode.getName();
 			IdentityConstraintDefinition identityConstraint = (IdentityConstraintDefinition) this.identityConstraints.get(identityName);
 			

@@ -35,8 +35,6 @@ public interface MWContainerPolicy
 	void referenceDescriptorChanged(MWDescriptor newReferenceDescriptor);
     
     ContainerPolicy runtimeContainerPolicy();
-
-    void legacyAdjustUsesDefaultContainerClassAttributes();
         
     //This class is just used to "trick" TopLink into thinking we have an inheritance situation
     //It is a workaround for a Variable 1-1 mapping.

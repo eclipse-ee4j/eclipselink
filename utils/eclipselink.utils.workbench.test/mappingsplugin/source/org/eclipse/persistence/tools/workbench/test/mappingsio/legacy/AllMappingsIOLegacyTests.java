@@ -30,13 +30,7 @@ public class AllMappingsIOLegacyTests {
 	public static Test suite(boolean all) {
 		TestSuite suite = new TestSuite(ClassTools.packageNameFor(AllMappingsIOLegacyTests.class));
 
-		suite.addTest(BackwardCompatibilityTests45.suite());
-        suite.addTest(BackwardCompatibilityTests50.suite());
-        suite.addTest(BackwardCompatibilityTests60.suite());
-        if (all) {
-	        suite.addTest(BackwardCompatibilityCustomerTests.suite());
-        }
-	
+        suite.addTest(BackwardCompatibilityTests60.suite());	
 		return suite;
 	}
 

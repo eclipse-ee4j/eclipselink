@@ -44,7 +44,7 @@ public class LockingPolicyRuntimeProject
 	private RelationalDescriptor buildEmployeeDescriptor() 
 	{
 		RelationalDescriptor descriptor = new RelationalDescriptor();
-		descriptor.setJavaClassName("test.oracle.models.employee.Employee");
+		descriptor.setJavaClassName("org.eclipse.persistence.tools.workbench.test.models.employee.Employee");
 		descriptor.setTableName("EMPLOYEE");
 		descriptor.addTableName("SALARY");
 		descriptor.addPrimaryKeyFieldName("EMPLOYEE.EMP_ID");
@@ -103,9 +103,9 @@ public class LockingPolicyRuntimeProject
 	public void applyLogin() 
 	{
 		DatabaseLogin login = new DatabaseLogin();
-		login.usePlatform(new org.eclipse.persistence.platform.database.oracle.OraclePlatform());
-		login.setDriverClassName(TestDatabases.oracleDriverClassName());
-		login.setConnectionString(TestDatabases.oracleServerURL());
+		login.usePlatform(new org.eclipse.persistence.platform.database.MySQL4Platform());
+		login.setDriverClassName(TestDatabases.mySQLDriverClassName());
+		login.setConnectionString(TestDatabases.mySQLServerURL());
 		login.setUserName(TestDatabases.userName());
 		login.setPassword(TestDatabases.password());
 	

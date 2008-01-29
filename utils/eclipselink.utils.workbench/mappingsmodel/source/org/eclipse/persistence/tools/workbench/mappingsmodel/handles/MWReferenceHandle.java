@@ -134,47 +134,6 @@ public final class MWReferenceHandle extends MWHandle {
 		return descriptor;
 	}
 
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = new deprecated.xml.XMLDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWReferenceHandle.class);
-		descriptor.setTableName("reference-handle");
- 
-		OneToOneMapping tableMapping = new OneToOneMapping();
-		tableMapping.setAttributeName("referenceTable");
-		tableMapping.setGetMethodName("legacyGetReferenceTableForTopLink");
-		tableMapping.setSetMethodName("legacySetReferenceTableForTopLink");
-		tableMapping.setReferenceClass(MWTable.class);
-		tableMapping.setForeignKeyFieldName("reference-table");
-		tableMapping.dontUseIndirection();
-		descriptor.addMapping(tableMapping);
-	
-		descriptor.addDirectMapping("referenceName", "getReferenceNameForTopLink", "setReferenceNameForTopLink", "reference-name");
-
-		return descriptor;
-	}
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = new deprecated.xml.XMLDescriptor();
-		descriptor.setJavaClass(MWReferenceHandle.class);
-		descriptor.setTableName("ReferenceHandle");
-		descriptor.descriptorIsAggregate();
- 
-		OneToOneMapping tableMapping = new OneToOneMapping();
-		tableMapping.setAttributeName("referenceTable");
-		tableMapping.setGetMethodName("legacyGetReferenceTableForTopLink");
-		tableMapping.setSetMethodName("legacySetReferenceTableForTopLink");
-		tableMapping.setReferenceClass(MWTable.class);
-		tableMapping.setForeignKeyFieldName("table");
-		tableMapping.dontUseIndirection();
-		descriptor.addMapping(tableMapping);
-	
-		descriptor.addDirectMapping("referenceName", "getReferenceNameForTopLink", "setReferenceNameForTopLink", "referenceName");
-
-		return descriptor;
-	}
-
 	private String getReferenceTableNameForTopLink() {
 		return (this.reference == null) ? null : this.reference.getSourceTable().getName();
 	}
@@ -186,31 +145,6 @@ public final class MWReferenceHandle extends MWHandle {
 		return (this.reference == null) ? null : this.reference.getName();
 	}
 	private void setReferenceNameForTopLink(String referenceName) {
-		this.referenceName = referenceName;
-	}
-
-	/**
-	 * This legacy method will only be used by toplink for reading 4.x projects 
-	 * in which there was a reference table
-	 */
-	private void legacySetReferenceTableForTopLink(MWTable referenceTable){
-		if (referenceTable != null) {
-			this.referenceTableName = referenceTable.getName();
-		}
-	}
-	private MWTable legacyGetReferenceTableForTopLink(){
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * These legacy methods are used by 4.x and 5.x projects when reading
-	 * in MWMultiTableInfoPolicy, which did not use reference handles
-	 * for its secondaryTableAssociations (but should have).
-	 */
-	public void legacySetReferenceTableName(String referenceTableName) {
-		this.referenceTableName = referenceTableName;
-	}
-	public void legacySetReferenceName(String referenceName) {
 		this.referenceName = referenceName;
 	}
 

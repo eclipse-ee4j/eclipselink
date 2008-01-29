@@ -47,6 +47,8 @@ public class TestDatabases {
 				loginSpec.addDriverClasspathEntry(FileTools.resourceFile("/" + driverJARNames[i]).getPath());
 			} catch (URISyntaxException ex) {
 				throw new RuntimeException(ex);
+			} catch (NullPointerException ex) {
+				continue;
 			}
 		}
 	}

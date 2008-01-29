@@ -34,30 +34,7 @@ public final class MWRelationalReadObjectQuery
 
 		return descriptor;
 	}
-		
-	
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWRelationalReadObjectQuery.class);
-		descriptor.setTableName("query");
-		
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractRelationalReadQuery.class);
-
-		return descriptor;
-	}
-	
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWRelationalReadObjectQuery.class);
-		descriptor.setTableName("Query");
-		
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractRelationalReadQuery.class);
-		
-		return descriptor;
-	}
-	
+			
 	/** Default constructor - for TopLink use only. */			
 	private MWRelationalReadObjectQuery() {
 		super();

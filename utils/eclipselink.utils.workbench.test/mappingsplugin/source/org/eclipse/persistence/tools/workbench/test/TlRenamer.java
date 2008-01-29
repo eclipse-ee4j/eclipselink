@@ -11,8 +11,8 @@ public class TlRenamer {
 	
 		PackageRenamer renamer = new PackageRenamer(new String[] {
 				"C:/Temp/tlrename.properties",
-				"C:/eclipse/workspace/eclipse.mwtest",
-				"C:/Temp/output/eclipse.mwtest",
+				"C:/eclipse/workspace/eclipselink.utils.workbench.test",
+				"C:/Temp/output/eclipselink.utils.workbench.test",
 				"C:/Temp/mwtesttlrename.log"});
 		renamer.run();
 

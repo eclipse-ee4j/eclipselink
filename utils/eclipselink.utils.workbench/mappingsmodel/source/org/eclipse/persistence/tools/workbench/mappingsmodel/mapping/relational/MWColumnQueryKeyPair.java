@@ -23,7 +23,6 @@ import org.eclipse.persistence.tools.workbench.utility.node.Node;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import deprecated.sdk.SDKFieldValue;
 import org.eclipse.persistence.sessions.Record;
 
 public final class MWColumnQueryKeyPair extends MWModel
@@ -185,21 +184,6 @@ public final class MWColumnQueryKeyPair extends MWModel
 	private void setColumnHandleForTopLink(MWColumnHandle columnHandle) {
 		NodeReferenceScrubber scrubber = this.buildColumnScrubber();
 		this.columnHandle = ((columnHandle == null) ? new MWColumnHandle(this, scrubber) : columnHandle.setScrubber(scrubber));
-	}
-
-	private Object legacy45GetQueryKeyNameFromRowForTopLink(Record row) {
-		SDKFieldValue value = (SDKFieldValue) row.get("queryKeyHandle");
-		
-		if (value != null) {
-			Object rowElement = value.getElements().firstElement();
-			
-			if (rowElement instanceof Record) {
-				Record qkHandleRow = (Record) rowElement;
-				return qkHandleRow.get("queryKeyName/text()");
-			}
-		}
-		
-		return null;
 	}
 
 }

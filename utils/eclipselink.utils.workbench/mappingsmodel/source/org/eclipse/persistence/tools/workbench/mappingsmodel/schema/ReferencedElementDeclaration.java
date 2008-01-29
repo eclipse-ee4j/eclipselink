@@ -12,9 +12,8 @@ package org.eclipse.persistence.tools.workbench.mappingsmodel.schema;
 import java.util.Iterator;
 
 import org.apache.xerces.impl.xs.XSParticleDecl;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.QName;
-
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.QName;
 
 public final class ReferencedElementDeclaration 
 	extends SchemaComponentReference

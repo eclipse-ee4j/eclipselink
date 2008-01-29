@@ -32,10 +32,9 @@ import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
-import deprecated.xml.XMLDescriptor;
+
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.queries.ReadAllQuery;
-import deprecated.sdk.SDKObjectCollectionMapping;
-import deprecated.xml.XMLReadAllCall;
 
 
 public abstract class MWModel 
@@ -486,163 +485,16 @@ public abstract class MWModel
 	//	super.legacy50PostBuild(event);
 	}
 
-	/**
-	 * Our "legacy":
-	 * These methods are here so we have the ability to perform
-	 * version-specific initialization (e.g. initializing handles,
-	 * which did not exist before 4.0).
-	 */
-	// ***** Version 5.0 events *****
-	protected void legacy50PostBuild(DescriptorEvent event) {
-	// when you override this method, don't forget to include:
-	//	super.legacy50PostBuild(event);
-	}
-
-	/**
-	 * This method is called after a 5.0 project is completely read in;
-	 * but *before* the regular #postProjectBuild() method is called.
-	 * This allows us to tweak a 5.0 project into a state where the
-	 * #postProjectBuild() methods will work properly.
-	 * @see MWProject#legacy50PostBuild()
-	 */
-	public void legacy50PrePostProjectBuild() {
-		for (Iterator stream = this.children(); stream.hasNext(); ) {
-			((MWNode) stream.next()).legacy50PrePostProjectBuild();
-		}
-	// when you override this method, don't forget to include:
-	//	super.legacy50PrePostProjectBuild();
-	}
-
-	/**
-	 * This method is called *after*:
-	 * - the 5.0 project has been completely read in
-	 * - #legacy50PostProjectBuild() has been called
-	 * - #postProjectBuild() has been called
-	 * This allows us to perform any last-second tweaks to a 5.0 project.
-	 * @see MWProject#legacy50PostBuild()
-	 */
-	public void legacy50PostPostProjectBuild() {
-		for (Iterator stream = this.children(); stream.hasNext(); ) {
-			((MWNode) stream.next()).legacy50PostPostProjectBuild();
-		}
-	// when you override this method, don't forget to include:
-	//	super.legacy50PostPostProjectBuild();
-	}
-
-	/**
-	 * This method is called *after*:
-	 * - the 5.0 project has been completely read in
-	 * - #legacy50PrePostProjectBuild() has been called
-	 * - #postProjectBuild() has been called
-	 * - #legacy50PostPostProjectBuild() has been called
-	 * It should only be implemented by MWAggregatePathToField
-	 * @see MWProject#legacy50PostBuild()
-	 */
-	public void legacy50FixAggregatePathToFields() {
-		for (Iterator stream = this.children(); stream.hasNext(); ) {
-			((MWNode) stream.next()).legacy50FixAggregatePathToFields();
-		}
-	// when you override this method, don't forget to include:
-	//	super.legacy50FixAggregatePathToFields();
-	}
-
-
-	// ***** Version 4.5 events *****
-	protected void legacy45PostBuild(DescriptorEvent event) {
-	// when you override this method, don't forget to include:
-	//	super.legacy45PostBuild(event);
-	}
-	
-	/**
-	 * This method is called after a 4.5 project is completely read in;
-	 * but *before* the regular #postProjectBuild() method is called.
-	 * This allows us to tweak a 4.5 project into a state where the
-	 * #postProjectBuild() methods will work properly.
-	 * @see MWProject#legacy45PostBuild()
-	 */
-	public void legacy45PrePostProjectBuild() {
-		for (Iterator stream = this.children(); stream.hasNext(); ) {
-			((MWNode) stream.next()).legacy45PrePostProjectBuild();
-		}
-	// when you override this method, don't forget to include:
-	//	super.legacy45PrePostProjectBuild();
-	}
-	
-	/**
-	 * This method is called *after*:
-	 * - the 4.5 project has been completely read in
-	 * - #legacy45PrePostProjectBuild() has been called
-	 * - #postProjectBuild() has been called
-	 * This allows us to perform any last-second tweaks to a 4.5 project.
-	 * @see MWProject#legacy45PostBuild()
-	 */
-	public void legacy45PostPostProjectBuild() {
-		for (Iterator stream = this.children(); stream.hasNext(); ) {
-			((MWNode) stream.next()).legacy45PostPostProjectBuild();
-		}
-	// when you override this method, don't forget to include:
-	//	super.legacy45PostPostProjectBuild();
-	}
-
-	/**
-	 * This method is called *after*:
-	 * - the 4.5 project has been completely read in
-	 * - #legacy45PrePostProjectBuild() has been called
-	 * - #postProjectBuild() has been called
-	 * - #legacy45PostPostProjectBuild() has been called
-	 * It should only be implemented by MWAggregatePathToField
-	 * @see MWProject#legacy45PostBuild()
-	 */
-	public void legacy45FixAggregatePathToFields() {
-		for (Iterator stream = this.children(); stream.hasNext(); ) {
-			((MWNode) stream.next()).legacy45FixAggregatePathToFields();
-		}
-	// when you override this method, don't forget to include:
-	//	super.legacy45FixAggregatePathToFields();
-	}
-
-
 	// ********** legacy TopLink support **********
-
-	/**
-	 * Build and return a one-to-many mapping configured
-	 * for referencing XML documents.
-	 */
-	protected static SDKObjectCollectionMapping legacyBuildOneToManyMapping() {
-		SDKObjectCollectionMapping mapping = new SDKObjectCollectionMapping();
-		ReadAllQuery query = new ReadAllQuery();
-		query.setCall(new XMLReadAllCall(mapping));
-		mapping.setCustomSelectionQuery(query);
-		return mapping;
-	}
 
 	/**
 	 * Build and return a descriptor with the appropriate descriptor events configured.
 	 */
-	protected static org.eclipse.persistence.oxm.XMLDescriptor legacy60BuildStandardDescriptor() {
+	protected static XMLDescriptor legacy60BuildStandardDescriptor() {
 		org.eclipse.persistence.oxm.XMLDescriptor descriptor = new org.eclipse.persistence.oxm.XMLDescriptor();
 		descriptor.getEventManager().setPostBuildSelector("legacy60PostBuild");
 		return descriptor;
 	}
-
-	/**
-	 * Build and return a descriptor with the appropriate descriptor events configured.
-	 */
-	protected static ClassDescriptor legacy50BuildStandardDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
-		descriptor.getEventManager().setPostBuildSelector("legacy50PostBuild");
-		return descriptor;
-	}
-
-	/**
-	 * Build and return a descriptor with the appropriate descriptor events configured.
-	 */
-	protected static ClassDescriptor legacy45BuildStandardDescriptor() {
-		XMLDescriptor descriptor = new XMLDescriptor();
-		descriptor.getEventManager().setPostBuildSelector("legacy45PostBuild");
-		return descriptor;
-	}
-
 
 	// ********** hacking **********
 

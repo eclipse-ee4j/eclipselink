@@ -61,6 +61,7 @@ public final class ProblemConstants
 	public static final String DESCRIPTOR_PK_SIZE_DONT_MATCH								= "0233";
 	public static final String DESCRIPTOR_PKS_DONT_MATCH_PARENT								= "0234";
 	public static final String DESCRIPTOR_PRIMARY_KEY_MAPPING_READ_ONLY						= "0235";
+	public static final String DESCRIPTOR_PRIMARY_KEY_MAPPING_DUPLICATED_IN_HIERARCHY		= "0226";
 	
 	public static final String DESCRIPTOR_NO_SEQUENCE_NUMBER_FIELD_SPECIFIED				= "0236";
 	public static final String DESCRIPTOR_NO_SEQUENCE_NAME_SPECIFIED						= "0237";

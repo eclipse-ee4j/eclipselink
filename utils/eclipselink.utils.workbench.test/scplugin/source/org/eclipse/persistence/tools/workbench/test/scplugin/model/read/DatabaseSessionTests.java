@@ -63,7 +63,7 @@ public class DatabaseSessionTests extends TestCase {
 		
 		validateLoadedSession( databaseSession);
 		
-		databaseSession.addProjectClassNamed( "test.oracle.models.employee.SmallProject");
+		databaseSession.addProjectClassNamed( "org.eclipse.persistence.tools.workbench.test.models.employee.SmallProject");
 		databaseSession.addProjectXmlNamed( "aProject.xml");
 		// Log
 		DefaultSessionLogAdapter currentLog = ( DefaultSessionLogAdapter)databaseSession.getLog();

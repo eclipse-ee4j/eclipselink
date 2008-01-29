@@ -83,8 +83,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
-
 
 /**
  * Discussion of morphing mappings:<ol>
@@ -1173,130 +1171,6 @@ public abstract class MWMapping extends MWModel implements MWQueryable {
 	private void setSetMethodHandleForTopLink(MWMethodHandle setMethodHandle) {
 		NodeReferenceScrubber scrubber = this.buildSetMethodScrubber();
 		this.setMethodHandle = ((setMethodHandle == null) ? new MWMethodHandle(this, scrubber) : setMethodHandle.setScrubber(scrubber));
-	}
-
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWMapping.class);
-		descriptor.setTableName("mapping");
-	
-		InheritancePolicy ip = descriptor.getInheritancePolicy();
-		ip.setClassIndicatorFieldName("mapping-class");
-		ip.addClassIndicator(MWRelationalDirectCollectionMapping.class, "MWDirectCollectionMapping");
-		ip.addClassIndicator(MWDirectToFieldMapping.class, "MWDirectToFieldMapping");
-		ip.addClassIndicator(MWDirectToFieldMapping.class, "MWObjectTypeMapping");
-		ip.addClassIndicator(MWDirectToFieldMapping.class, "MWSerializedMapping");
-		ip.addClassIndicator(MWDirectToFieldMapping.class, "MWTypeConversionMapping");
-		ip.addClassIndicator(MWManyToManyMapping.class, "MWManyToManyMapping");
-		ip.addClassIndicator(MWOneToManyMapping.class, "MWOneToManyMapping");
-		ip.addClassIndicator(MWOneToOneMapping.class, "MWOneToOneMapping");
-		ip.addClassIndicator(MWVariableOneToOneMapping.class, "MWVariableOneToOneMapping");
-		ip.addClassIndicator(MWRelationalTransformationMapping.class, "MWTransformationMapping");
-		ip.addClassIndicator(MWAggregateMapping.class, "MWAggregateMapping");
-		
-		ip.addClassIndicator(MWLegacyUnmappedMapping.class, "MWUnmappedMapping");
-		
-		descriptor.addDirectMapping("inherited", "inherited");
-		descriptor.addDirectMapping("instanceVariableName", "legacyGetInstanceVariableNameForTopLink", "legacySetInstanceVariableNameForTopLink", "instance-variable-name");
-
-		descriptor.addDirectMapping("usesMethodAccessing", "uses-method-accessing");
-		descriptor.addDirectMapping("readOnly", "read-only");
-	
-		SDKAggregateObjectMapping getMethodHandleMapping = new SDKAggregateObjectMapping();
-		getMethodHandleMapping.setAttributeName("getMethodHandle");
-		getMethodHandleMapping.setSetMethodName("setGetMethodHandleForTopLink");
-		getMethodHandleMapping.setGetMethodName("getGetMethodHandleForTopLink");
-		getMethodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		getMethodHandleMapping.setFieldName("get-method-handle");
-		descriptor.addMapping(getMethodHandleMapping);
-	
-		SDKAggregateObjectMapping setMethodHandleMapping = new SDKAggregateObjectMapping();
-		setMethodHandleMapping.setAttributeName("setMethodHandle");
-		setMethodHandleMapping.setSetMethodName("setSetMethodHandleForTopLink");
-		setMethodHandleMapping.setGetMethodName("getSetMethodHandleForTopLink");
-		setMethodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		setMethodHandleMapping.setFieldName("set-method-handle");
-		descriptor.addMapping(setMethodHandleMapping);
-
-		return descriptor;
-	}
-
-	private void legacySetInstanceVariableNameForTopLink(String newValue){
-		this.name = newValue;
-	}
-	private String legacyGetInstanceVariableNameForTopLink() {
-		throw new UnsupportedOperationException();
-	}
-
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.attributeHandle = new MWAttributeHandle(this, this.buildAttributeScrubber());
-	}
-	
-	public void legacy50PostPostProjectBuild() {
-		super.legacy50PostPostProjectBuild();
-		this.attributeHandle.setAttribute(getParentDescriptor().getMWClass().attributeNamedFromCombinedAll(this.name));
-	}
-	
-	
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWMapping.class);
-		descriptor.setTableName("Mapping");
-	
-		InheritancePolicy ip = descriptor.getInheritancePolicy();
-		ip.setClassIndicatorFieldName("classIndicator");
-		ip.readSubclassesOnQueries();
-		ip.addClassIndicator(MWRelationalDirectCollectionMapping.class, "BldrDirectCollectionMapping");
-		ip.addClassIndicator(MWDirectToFieldMapping.class, "BldrDirectToFieldMapping");
-		ip.addClassIndicator(MWDirectToFieldMapping.class, "BldrSerializedMapping");
-		ip.addClassIndicator(MWDirectToFieldMapping.class, "BldrObjectTypeMapping");
-		ip.addClassIndicator(MWDirectToFieldMapping.class, "BldrTypeConversionMapping");
-		ip.addClassIndicator(MWManyToManyMapping.class, "BldrManyToManyMapping");
-		ip.addClassIndicator(MWOneToManyMapping.class, "BldrOneToManyMapping");
-		ip.addClassIndicator(MWOneToOneMapping.class, "BldrOneToOneMapping");
-		ip.addClassIndicator(MWVariableOneToOneMapping.class, "BldrVariableOneToOneMapping");
-		ip.addClassIndicator(MWRelationalTransformationMapping.class, "BldrTransformationMapping");
-		ip.addClassIndicator(MWAggregateMapping.class, "BldrAggregateMapping");
-		
-		ip.addClassIndicator(MWLegacyUnmappedMapping.class, "BldrUnmappedMapping");
-
-		descriptor.addDirectMapping("inherited", "inherited");
-		descriptor.addDirectMapping("instanceVariableName", "legacyGetInstanceVariableNameForTopLink", "legacySetInstanceVariableNameForTopLink", "instanceVariableName");
-		descriptor.addDirectMapping("readOnly", "readOnly");
-		descriptor.addDirectMapping("usesMethodAccessing", "usesMethodAccessing");
-	
-		SDKAggregateObjectMapping getMethodHandleMapping = new SDKAggregateObjectMapping();
-		getMethodHandleMapping.setAttributeName("getMethodHandle");
-		getMethodHandleMapping.setSetMethodName("setGetMethodHandleForTopLink");
-		getMethodHandleMapping.setGetMethodName("getGetMethodHandleForTopLink");
-		getMethodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		getMethodHandleMapping.setFieldName("getMethodHandle");
-		descriptor.addMapping(getMethodHandleMapping);
-	
-		SDKAggregateObjectMapping setMethodHandleMapping = new SDKAggregateObjectMapping();
-		setMethodHandleMapping.setAttributeName("setMethodHandle");
-		setMethodHandleMapping.setSetMethodName("setSetMethodHandleForTopLink");
-		setMethodHandleMapping.setGetMethodName("getSetMethodHandleForTopLink");
-		setMethodHandleMapping.setReferenceClass(MWMethodHandle.class);
-		setMethodHandleMapping.setFieldName("setMethodHandle");
-		descriptor.addMapping(setMethodHandleMapping);
-
-		return descriptor;
-	}
-
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.attributeHandle = new MWAttributeHandle(this, this.buildAttributeScrubber());
-	}
-	
-	public void legacy45PostPostProjectBuild() {
-		super.legacy45PostPostProjectBuild();
-		this.attributeHandle.setAttribute(getParentDescriptor().getMWClass().attributeNamedFromCombinedAll(this.name));
 	}
 
 }

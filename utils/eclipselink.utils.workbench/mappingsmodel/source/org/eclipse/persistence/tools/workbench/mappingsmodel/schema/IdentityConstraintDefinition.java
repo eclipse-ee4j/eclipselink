@@ -12,10 +12,9 @@ package org.eclipse.persistence.tools.workbench.mappingsmodel.schema;
 import java.util.List;
 
 import org.apache.xerces.xs.XSIDCDefinition;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
-
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 
 public final class IdentityConstraintDefinition 
 	extends MWModel 

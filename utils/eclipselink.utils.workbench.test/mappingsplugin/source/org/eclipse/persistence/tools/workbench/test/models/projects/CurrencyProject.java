@@ -32,7 +32,7 @@ public class CurrencyProject extends RelationalTestProject {
 	}
 
 	public static MWRelationalProject emptyProject() {
-		return new MWRelationalProject("Currency Project", spiManager(), oraclePlatform());
+		return new MWRelationalProject("Currency Project", spiManager(), mySqlPlatform());
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class CurrencyProject extends RelationalTestProject {
 	}
 
 	protected void initializeCommodityPriceDescriptor() {
-		MWClass commodityPriceClass = refreshedTypeNamed("test.oracle.models.currency.CommodityPrice");
+		MWClass commodityPriceClass = refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.currency.CommodityPrice");
 	
 		MWTableDescriptor descriptor;
 		try {
@@ -72,7 +72,7 @@ public class CurrencyProject extends RelationalTestProject {
 	
 		// Aggregate mappings
 		MWAggregateMapping currencyRangeMapping = descriptor.addAggregateMapping(descriptor.getMWClass().attributeNamed("currencyRange"));
-		MWClass currencyRangeClass = refreshedTypeNamed("test.oracle.models.currency.CurrencyRange");
+		MWClass currencyRangeClass = refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.currency.CurrencyRange");
 		currencyRangeMapping.setReferenceDescriptor(getProject().descriptorForType(currencyRangeClass));
 		
 		Iterator fieldAssociations = CollectionTools.sort(currencyRangeMapping.pathsToFields()).iterator();
@@ -85,18 +85,18 @@ public class CurrencyProject extends RelationalTestProject {
 	
 	protected void initializeCommodityPriceTable() {
 		MWTable table = database().addTable("COMMODITY_PRICE");
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "TYPE", "VARCHAR2", 20);
-		addField(table, "PERIOD", "NUMBER");
-		addField(table, "LOW_UNIT", "VARCHAR2", 20);
-		addField(table, "LOW_VALUE", "NUMBER");
-		addField(table, "HIGH_UNIT", "VARCHAR2", 20);
-		addField(table, "HIGH_VALUE", "NUMBER");
-		addField(table, "TREND", "VARCHAR2", 50);
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "TYPE", "varchar", 20);
+		addField(table, "PERIOD", "integer");
+		addField(table, "LOW_UNIT", "varchar", 20);
+		addField(table, "LOW_VALUE", "integer");
+		addField(table, "HIGH_UNIT", "varchar", 20);
+		addField(table, "HIGH_VALUE", "integer");
+		addField(table, "TREND", "varchar", 50);
 	}
 	
 	protected void initializeCurrencyDescriptor() {
-		MWAggregateDescriptor descriptor = this.addAggregateDescriptorForTypeNamed("test.oracle.models.currency.Currency");
+		MWAggregateDescriptor descriptor = this.addAggregateDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.currency.Currency");
 	
 		// Direct to field mappings
 		addDirectMapping(descriptor, "unit");
@@ -105,14 +105,14 @@ public class CurrencyProject extends RelationalTestProject {
 	
 	protected void initializeCurrencyRangeDescriptor() {
 	
-		MWAggregateDescriptor descriptor = this.addAggregateDescriptorForTypeNamed("test.oracle.models.currency.CurrencyRange");
+		MWAggregateDescriptor descriptor = this.addAggregateDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.currency.CurrencyRange");
 		descriptor.setActive(true);
 	
 		// Direct to field mappings
 		addDirectMapping(descriptor, "trend");
 	
 		// Aggregate mappings
-		MWClass currencyClass = refreshedTypeNamed("test.oracle.models.currency.Currency");
+		MWClass currencyClass = refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.currency.Currency");
 		
 		// lowLimit aggregate mapping
 		MWAggregateMapping lowLimitMapping = descriptor.addAggregateMapping(descriptor.getMWClass().attributeNamed("lowLimit"));
@@ -141,7 +141,7 @@ public class CurrencyProject extends RelationalTestProject {
 	}
 
 	protected void initializeExchangeRateDescriptor()  {
-		MWClass exchangeRateClass = refreshedTypeNamed("test.oracle.models.currency.ExchangeRate");
+		MWClass exchangeRateClass = refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.currency.ExchangeRate");
 		MWTable exchangeRateTable = getProject().getDatabase().tableNamed("EXCHANGE_RATE");
 		MWTableDescriptor descriptor;
 		try {
@@ -166,7 +166,7 @@ public class CurrencyProject extends RelationalTestProject {
 	
 		// Aggregate mappings
 		MWAggregateMapping currencyRangeMapping = descriptor.addAggregateMapping(descriptor.getMWClass().attributeNamed("currencyRange"));
-		MWClass currencyRangeClass = refreshedTypeNamed("test.oracle.models.currency.CurrencyRange");
+		MWClass currencyRangeClass = refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.currency.CurrencyRange");
 		MWAggregateDescriptor currencyRangeDescriptor = (MWAggregateDescriptor) getProject().descriptorForType(currencyRangeClass);
 		currencyRangeMapping.setReferenceDescriptor(currencyRangeDescriptor);
 	
@@ -181,13 +181,13 @@ public class CurrencyProject extends RelationalTestProject {
 	protected void initializeExchangeRateTable() 
 	{
 		MWTable table = database().addTable("EXCHANGE_RATE");
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "PERIOD", "NUMBER");
-		addField(table, "LO_UNIT", "VARCHAR2", 20);
-		addField(table, "LO_VALUE", "NUMBER");
-		addField(table, "HI_UNIT", "VARCHAR2", 20);
-		addField(table, "HI_VALUE", "NUMBER");
-		addField(table, "TREND", "VARCHAR2", 50);
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "PERIOD", "integer");
+		addField(table, "LO_UNIT", "varchar", 20);
+		addField(table, "LO_VALUE", "integer");
+		addField(table, "HI_UNIT", "varchar", 20);
+		addField(table, "HI_VALUE", "integer");
+		addField(table, "TREND", "varchar", 50);
 	}
 	
 	public MWTableDescriptor getExchangeRateDescriptor() {

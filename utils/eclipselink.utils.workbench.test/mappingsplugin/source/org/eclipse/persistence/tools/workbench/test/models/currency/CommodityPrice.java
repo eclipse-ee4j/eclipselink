@@ -17,7 +17,7 @@ public class CommodityPrice
 	private CurrencyRange currencyRange;
 /**
  * 
- * @return test.oracle.models.currency.CurrencyRange
+ * @return org.eclipse.persistence.tools.workbench.test.models.currency.CurrencyRange
  */
 public CurrencyRange getCurrencyRange() {
 	return currencyRange;
@@ -45,7 +45,7 @@ public java.lang.String getType() {
 }
 /**
  * 
- * @param newCurrencyRange test.oracle.models.currency.CurrencyRange
+ * @param newCurrencyRange org.eclipse.persistence.tools.workbench.test.models.currency.CurrencyRange
  */
 public void setCurrencyRange(CurrencyRange newCurrencyRange) {
 	currencyRange = newCurrencyRange;

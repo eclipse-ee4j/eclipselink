@@ -29,7 +29,7 @@ public class LegacySimpleContactProject extends RelationalTestProject {
 	}
 	
 	public static MWRelationalProject emptyProject() {
-		MWRelationalProject project = new MWRelationalProject("SimpleContact", spiManager(), oraclePlatform());
+		MWRelationalProject project = new MWRelationalProject("SimpleContact", spiManager(), mySqlPlatform());
 	
 		// defaults policy
 		project.getDefaultsPolicy().getCachingPolicy().setExistenceChecking(MWCachingPolicy.EXISTENCE_CHECKING_CHECK_CACHE);
@@ -72,7 +72,7 @@ public class LegacySimpleContactProject extends RelationalTestProject {
 	}
 	
 	public String getPackageName() {
-		return "test.oracle.models.contact";
+		return "org.eclipse.persistence.tools.workbench.test.models.contact";
 	}
 	
 	public MWTable getPersonTable() {
@@ -80,7 +80,7 @@ public class LegacySimpleContactProject extends RelationalTestProject {
 	}
 	
 	public void initializeContactDescriptor(){
-		MWInterfaceDescriptor contactDescriptor = (MWInterfaceDescriptor) getProject().descriptorForTypeNamed("test.oracle.models.contact.Contact");
+		MWInterfaceDescriptor contactDescriptor = (MWInterfaceDescriptor) getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.contact.Contact");
 		
 		contactDescriptor.addImplementor(getEmailAddressDescriptor());
 		contactDescriptor.addImplementor(getPhoneNumberDescriptor());
@@ -99,10 +99,10 @@ public class LegacySimpleContactProject extends RelationalTestProject {
 	protected void initializeDescriptors() {
 		super.initializeDescriptors();
 
-		this.addDescriptorForTypeNamed("test.oracle.models.contact.Contact");
-		this.addDescriptorForTypeNamed("test.oracle.models.contact.EmailAddress");
-		this.addDescriptorForTypeNamed("test.oracle.models.contact.PersonImpl");
-		this.addDescriptorForTypeNamed("test.oracle.models.contact.PhoneNumber");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.contact.Contact");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.contact.EmailAddress");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.contact.PersonImpl");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.contact.PhoneNumber");
 		
 		this.initializeEmailDescriptor();
 		this.initializePhoneNumberDescriptor();
@@ -130,8 +130,8 @@ public class LegacySimpleContactProject extends RelationalTestProject {
 
 	public void initializeEmailAddressTable() {
 		MWTable table = database().addTable("EMAILADDRESS");
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "ADDRESS", "VARCHAR2", 20).setAllowsNull(false);
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "ADDRESS", "varchar", 20).setAllowsNull(false);
 	}
 
 	public MWTableDescriptor initializePersonDescriptor(){
@@ -143,7 +143,7 @@ public class LegacySimpleContactProject extends RelationalTestProject {
 		// Single-implementor (or interfaceAlias) policy
 		
 		descriptor.addInterfaceAliasPolicy();
-		MWClass interfaceAlias = refreshedTypeNamed("test.oracle.models.contact.Person");
+		MWClass interfaceAlias = refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.contact.Person");
 		((MWDescriptorInterfaceAliasPolicy) descriptor.getInterfaceAliasPolicy()).setInterfaceAlias(interfaceAlias);
 		
 		// Mappings
@@ -172,9 +172,9 @@ public class LegacySimpleContactProject extends RelationalTestProject {
     
 	public void initializePersonTable() {
 		MWTable table = database().addTable("PERSON");
-		addPrimaryKeyField(table, "ID", "NUMBER", 15);
-		addField(table, "CONTACT_ID", "NUMBER");
-		addField(table, "CONTACT_TYPE", "VARCHAR2", 20);
+		addPrimaryKeyField(table, "ID", "decimal", 15);
+		addField(table, "CONTACT_ID", "integer");
+		addField(table, "CONTACT_TYPE", "varchar", 20);
 	}
 
 	public void initializePhoneNumberDescriptor(){
@@ -193,8 +193,8 @@ public class LegacySimpleContactProject extends RelationalTestProject {
 
 	public void initializePhoneNumberTable() {
 		MWTable table = database().addTable("PHONENUMBER");
-		addPrimaryKeyField(table, "ID", "NUMBER", 20);
-		addField(table, "P_NUM", "VARCHAR2", 20);
+		addPrimaryKeyField(table, "ID", "decimal", 20);
+		addField(table, "P_NUM", "varchar", 20);
 	}
 	
 }

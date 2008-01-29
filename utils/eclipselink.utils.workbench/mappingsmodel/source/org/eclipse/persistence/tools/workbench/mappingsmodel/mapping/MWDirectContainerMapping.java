@@ -136,8 +136,4 @@ public abstract class MWDirectContainerMapping extends MWMapping
 		}
 	}
 
-	private MWConverter legacyGetConverterForTopLink(Record row) {
-		return new MWNullConverter(this);
-	}
-
 }

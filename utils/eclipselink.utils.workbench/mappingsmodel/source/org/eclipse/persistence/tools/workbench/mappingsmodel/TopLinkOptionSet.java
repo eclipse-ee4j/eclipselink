@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.eclipse.persistence.mappings.ObjectTypeMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 
 /**
@@ -52,17 +51,5 @@ public final class TopLinkOptionSet {
 			TopLinkOption model = (TopLinkOption) i.next();
 			converter.addConversionValue(model.getMWModelOption(), model);
 		}
-	}
-
-	/**
-	 * Call this for legacy 4.0 and 4.5 persistence
-	 */	
-	public void addConversionValuesForTopLink4X(ObjectTypeMapping mapping) {
-	    for (Iterator i = toplinkOptions(); i.hasNext();) {
-			TopLinkOption model = (TopLinkOption) i.next();
-			mapping.addConversionValue(model.getTopLinkModelOption(), model);
-		}
-	}
-	
-
+	}	
 }

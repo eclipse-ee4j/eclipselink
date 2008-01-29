@@ -49,7 +49,7 @@ public abstract class RelationalTestProject
 	}
 
 	protected void initializeDatabase() {
-		TestDatabases.configureOracleDatabase(this.database());
+		TestDatabases.configureMySQLDatabase(this.database());
 	}
 	
 	/**
@@ -79,8 +79,8 @@ public abstract class RelationalTestProject
 	 */
 	protected void initializeSequenceTable() {
 		MWTable table = this.database().addTable("SEQUENCE");
-		this.addPrimaryKeyField(table, "SEQ_NAME", "VARCHAR2", 20);
-		this.addField(table, "SEQ_COUNT", "NUMBER");
+		this.addPrimaryKeyField(table, "SEQ_NAME", "varchar", 20);
+		this.addField(table, "SEQ_COUNT", "integer");
 	}
 
 	protected void initializeDescriptors() {
@@ -100,6 +100,10 @@ public abstract class RelationalTestProject
 	
     protected static DatabasePlatform db2Platform() {
         return DatabasePlatformRepository.getDefault().platformNamed("IBM DB2");
+    }
+    
+    protected static DatabasePlatform mySqlPlatform() {
+    	return DatabasePlatformRepository.getDefault().platformNamed("MySQL4");
     }
     
 	protected MWAggregateDescriptor aggregateDescriptorWithShortName(String name) {	

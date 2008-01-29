@@ -20,7 +20,7 @@ public final class FrameworkResourceBundle extends ListResourceBundle {
 
 	static final Object[][] contents = { 
 		
-		{"COPYRIGHT", "Copyright \u00A9 1997, 2007 Oracle. All rights reserved."},
+		{"COPYRIGHT", "Copyright \u00A9 1997, 2008 Oracle. All rights reserved."},
 
 		// Helpful when having more than one Browse button in a panel
 		{"BROWSE_BUTTON_1", "&Browse..."},

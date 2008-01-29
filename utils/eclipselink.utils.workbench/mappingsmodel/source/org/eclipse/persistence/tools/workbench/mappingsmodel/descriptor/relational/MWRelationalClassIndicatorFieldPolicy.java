@@ -43,13 +43,10 @@ import org.eclipse.persistence.tools.workbench.utility.string.PartialStringMatch
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
-import org.eclipse.persistence.mappings.ObjectTypeMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import deprecated.sdk.SDKAggregateCollectionMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
 
 /**
  * Class indicator that uses a relational database column
@@ -299,81 +296,6 @@ public final class MWRelationalClassIndicatorFieldPolicy extends MWClassIndicato
 	private void setColumnHandleForTopLink(MWColumnHandle handle) {
 		NodeReferenceScrubber scrubber = this.buildColumnScrubber();
 		this.columnHandle = ((handle == null) ? new MWColumnHandle(this, scrubber) : handle.setScrubber(scrubber));
-	}
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWRelationalClassIndicatorFieldPolicy.class);
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractClassIndicatorPolicy.class);
-
-		descriptor.addDirectMapping("classNameIsIndicator", "class-name-is-indicator");
-
-		OneToOneMapping indicatorTypeMapping = new OneToOneMapping();
-		indicatorTypeMapping.setAttributeName("indicatorType");
-		indicatorTypeMapping.setGetMethodName("legacy50GetIndicatorType");
-		indicatorTypeMapping.setSetMethodName("legacy50SetIndicatorType");
-		indicatorTypeMapping.setReferenceClass(MWClass.class);
-		indicatorTypeMapping.setForeignKeyFieldName("indicator-type");
-		indicatorTypeMapping.dontUseIndirection();
-		descriptor.addMapping(indicatorTypeMapping);
-
-		SDKAggregateObjectMapping columnHandleMapping = new SDKAggregateObjectMapping();
-		columnHandleMapping.setAttributeName("columnHandle");
-		columnHandleMapping.setGetMethodName("getColumnHandleForTopLink");
-		columnHandleMapping.setSetMethodName("setColumnHandleForTopLink");
-		columnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		columnHandleMapping.setFieldName("class-indicator-policy-field-handle");
-		descriptor.addMapping(columnHandleMapping);
-
-		SDKAggregateCollectionMapping classIndicatorValuesMapping = new SDKAggregateCollectionMapping();
-		classIndicatorValuesMapping.setAttributeName("classIndicatorValues");
-		classIndicatorValuesMapping.setGetMethodName("getIndicatorValuesForTopLink");
-		classIndicatorValuesMapping.setSetMethodName("setIndicatorValuesForTopLink");
-		classIndicatorValuesMapping.setReferenceClass(MWClassIndicatorValue.class);
-		classIndicatorValuesMapping.setFieldName("class-indicator-values");
-		descriptor.addMapping(classIndicatorValuesMapping);
-
-		return descriptor;
-	}
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWRelationalClassIndicatorFieldPolicy.class);
-		descriptor.setTableName("ClassIndicatorPolicy");
-		descriptor.descriptorIsAggregate();
-
-		descriptor.addDirectMapping("classNameIsIndicator", "classNameIsIndicator");
-
-		ObjectTypeMapping indicatorType = new ObjectTypeMapping();
-		indicatorType.setAttributeName("legacyIndicatorType");
-		indicatorType.setFieldName("indicatorType");
-		indicatorType.setSetMethodName("legacy45SetIndicatorType");
-		indicatorType.setGetMethodName("legacy45GetIndicatorType");
-		for (int i = 0; i < ALLOWED_INDICATOR_TYPES.length; i++) {
-			indicatorType.addConversionValue(new Integer(i), ALLOWED_INDICATOR_TYPES[i]);
-		}
-		indicatorType.setNullValue(DEFAULT_INDICATOR_TYPE);
-		descriptor.addMapping(indicatorType); 
-
-		SDKAggregateObjectMapping columnHandleMapping = new SDKAggregateObjectMapping();
-		columnHandleMapping.setAttributeName("columnHandle");
-		columnHandleMapping.setGetMethodName("getColumnHandleForTopLink");
-		columnHandleMapping.setSetMethodName("setColumnHandleForTopLink");
-		columnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		columnHandleMapping.setFieldName("fieldHandle");
-		descriptor.addMapping(columnHandleMapping);
-
-		SDKAggregateCollectionMapping classIndicatorValuesMapping = new SDKAggregateCollectionMapping();
-		classIndicatorValuesMapping.setReferenceClass(MWClassIndicatorValue.class);
-		classIndicatorValuesMapping.setAttributeName("classIndicatorValues");
-		classIndicatorValuesMapping.setGetMethodName("getIndicatorValuesForTopLink");
-		classIndicatorValuesMapping.setSetMethodName("setIndicatorValuesForTopLink");
-		classIndicatorValuesMapping.setFieldName("classIndicatorValues");
-		descriptor.addMapping(classIndicatorValuesMapping);
-
-		return descriptor;
 	}
 
 	public static interface Parent {

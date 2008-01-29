@@ -56,10 +56,7 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
-import deprecated.sdk.SDKFieldValue;
 import org.eclipse.persistence.sessions.Record;
-
 
 public final class MWVariableOneToOneMapping 
 	extends MWAbstractReferenceMapping
@@ -99,80 +96,6 @@ public final class MWVariableOneToOneMapping
 		return descriptor;
 	}
 	
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWVariableOneToOneMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractReferenceMapping.class);
-
-		OneToOneMapping referenceDescriptorMapping = new OneToOneMapping();
-		referenceDescriptorMapping.setAttributeName("referenceDescriptor");
-		referenceDescriptorMapping.setGetMethodName("legacyGetReferenceDescriptor");
-		referenceDescriptorMapping.setSetMethodName("legacySetReferenceDescriptor");
-		referenceDescriptorMapping.setReferenceClass(MWDescriptor.class);
-		referenceDescriptorMapping.setForeignKeyFieldName("reference-descriptor");
-		referenceDescriptorMapping.dontUseIndirection();
-		descriptor.addMapping(referenceDescriptorMapping);
-
-		descriptor.addDirectMapping("privateOwned", "private-owned");
-
-		XMLTransformationMapping referenceMapping = new XMLTransformationMapping();
-		referenceMapping.setAttributeName("columnQueryKeyPairs");
-		referenceMapping.setAttributeTransformation("legacy50GetColumnQueryKeyPairsFromRowForTopLink");
-		descriptor.addMapping(referenceMapping);
-	
-		SDKAggregateObjectMapping classIndicatorPolicyMapping = new SDKAggregateObjectMapping();
-		classIndicatorPolicyMapping.setAttributeName("classIndicatorPolicy");
-		classIndicatorPolicyMapping.setReferenceClass(MWRelationalClassIndicatorFieldPolicy.class);
-		classIndicatorPolicyMapping.setFieldName("variable-one-to-one-mapping-class-indicator-policy");
-		descriptor.addMapping(classIndicatorPolicyMapping);
-	
-		XMLTransformationMapping usesIndirectionMapping = new XMLTransformationMapping();
-		usesIndirectionMapping.setAttributeName("indirectionType");
-		usesIndirectionMapping.setAttributeTransformation("legacy50GetIndirectionTypeFromRowForTopLink");
-		descriptor.addMapping(usesIndirectionMapping);
-
-		return descriptor;
-	}
-	
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWVariableOneToOneMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWAbstractReferenceMapping.class);
-	
-		OneToOneMapping referenceDescriptorMapping = new OneToOneMapping();
-		referenceDescriptorMapping.setAttributeName("referenceDescriptor");
-		referenceDescriptorMapping.setGetMethodName("legacyGetReferenceDescriptor");
-		referenceDescriptorMapping.setSetMethodName("legacySetReferenceDescriptor");
-		referenceDescriptorMapping.dontUseIndirection();
-		referenceDescriptorMapping.setReferenceClass(MWDescriptor.class);
-		referenceDescriptorMapping.setForeignKeyFieldName("referenceDescriptor");
-		descriptor.addMapping(referenceDescriptorMapping);
-
-		descriptor.addDirectMapping("privateOwned", "privateOwned");
-
-		XMLTransformationMapping referenceMapping = new XMLTransformationMapping();
-		referenceMapping.setAttributeName("columnQueryKeyPairs");
-		referenceMapping.setAttributeTransformation("legacy4XGetColumnQueryKeyPairsFromRowForTopLink");
-		descriptor.addMapping(referenceMapping);
-	
-		SDKAggregateObjectMapping classIndicatorMapping = new SDKAggregateObjectMapping();
-		classIndicatorMapping.setAttributeName("classIndicatorPolicy");
-		classIndicatorMapping.setReferenceClass(MWRelationalClassIndicatorFieldPolicy.class);
-		classIndicatorMapping.setFieldName("classIndicatorPolicy");
-		descriptor.addMapping(classIndicatorMapping);
- 
-		XMLTransformationMapping usesIndirectionMapping = new XMLTransformationMapping();
-		usesIndirectionMapping.setAttributeName("indirectionType");
-		usesIndirectionMapping.setAttributeTransformation("legacy4XGetIndirectionTypeFromRowForTopLink");
-		descriptor.addMapping(usesIndirectionMapping);
-
-		return descriptor;
-	}
-
 	private MWVariableOneToOneMapping() {
 		super();
 	}
@@ -592,36 +515,6 @@ public final class MWVariableOneToOneMapping
             this.classIndicatorPolicy.setDescriptorsAvailableForIndicatorDictionary(NullIterator.instance());
         }
     }
-
-	public void legacy50PostPostProjectBuild() {
-		super.legacy50PostPostProjectBuild();
-		for (Iterator stream = ((Collection) this.legacyValuesMap.remove("fieldAssociationsCollection")).iterator(); stream.hasNext(); ) {
-			Record fieldAssociationRow = (Record) stream.next();			
-			
-			SDKFieldValue sourceFieldFieldValue = (SDKFieldValue) fieldAssociationRow.get("source-field-handle");
-			Object rowElement = sourceFieldFieldValue.getElements().get(0);
-			if (rowElement instanceof Record) {
-				Record fieldHandleRecord = (Record) rowElement;
-				String tableName = (String) fieldHandleRecord.get("field-table");
-				String columnName = (String) fieldHandleRecord.get("field-name");
-				
-				MWColumn column = null;
-				
-				if (tableName != null && columnName != null) {
-					MWTable table = this.getDatabase().tableNamed(tableName);
-					if (table == null) {
-						table = findBestMatchingTable(tableName);
-					}
-					if (table != null) {
-						column = table.columnNamed(columnName);
-					}
-				}
-				
-				String queryKeyName = (String)  fieldAssociationRow.get("query-key-name");	
-				this.columnQueryKeyPairs.add(new MWColumnQueryKeyPair(this, column, queryKeyName));
-			}
-		}		
-	}
 	
 	private MWTable findBestMatchingTable(String tableName) {
 		for (Iterator i = getDatabase().tables(); i.hasNext(); ) {
@@ -633,85 +526,4 @@ public final class MWVariableOneToOneMapping
 		return null;
 	}
 	
-	public void legacy45PostPostProjectBuild() {
-		super.legacy45PostPostProjectBuild();
-		for (Iterator stream = ((Collection) this.legacyValuesMap.remove("fieldAssociationsCollection")).iterator(); stream.hasNext(); ) {
-			Record fieldAssociationRow = (Record) stream.next();			
-			
-			SDKFieldValue sourceFieldFieldValue = (SDKFieldValue) fieldAssociationRow.get("sourceFieldHandle");
-			Object rowElement = sourceFieldFieldValue.getElements().get(0);
-			if (rowElement instanceof Record) {
-				Record fieldHandleRecord = (Record) rowElement;
-				String tableName = (String) fieldHandleRecord.get("table");
-				String columnName = (String) fieldHandleRecord.get("fieldName");
-				MWColumn column = null;
-				if (tableName != null && columnName != null) {
-					MWTable table = this.getDatabase().tableNamed(tableName);
-					if (table == null) {
-						table = findBestMatchingTable(tableName);
-					}
-					if (table != null) {
-						column = table.columnNamed(columnName);
-					}
-				}
-				
-				SDKFieldValue queryKeyHandleFieldValue = (SDKFieldValue) fieldAssociationRow.get("queryKeyHandle");
-				String queryKeyName = (String) ((Record) queryKeyHandleFieldValue.getElements().get(0)).get("queryKeyName");
-				
-				this.columnQueryKeyPairs.add(new MWColumnQueryKeyPair(this, column, queryKeyName));
-			}
-		}		
-	}
-	
-	private Collection legacy4XGetColumnQueryKeyPairsFromRowForTopLink(Record row) {
-		SDKFieldValue referenceFieldValue = (SDKFieldValue) row.get("reference");
-		Record referenceRow = (Record) referenceFieldValue.getElements().get(0);
-		SDKFieldValue fieldAssociationsFieldValue = (SDKFieldValue) referenceRow.get("fieldAssociations");
-		
-		Collection fieldAssociationsCollection = new ArrayList();
-		for (Iterator stream = fieldAssociationsFieldValue.getElements().iterator(); stream.hasNext(); ) {
-			Record fieldAssociationRow = (Record) stream.next();
-			fieldAssociationsCollection.add(fieldAssociationRow);
-		}
-		
-		this.legacyValuesMap.put("fieldAssociationsCollection", fieldAssociationsCollection);
-		
-		return new Vector();
-	}
-	
-	private Collection legacy50GetColumnQueryKeyPairsFromRowForTopLink(Record row) {
-		SDKFieldValue referenceFieldValue = (SDKFieldValue) row.get("reference");
-		Record referenceRow = (Record) referenceFieldValue.getElements().get(0);
-		SDKFieldValue fieldAssociationsFieldValue = (SDKFieldValue) referenceRow.get("field-associations");
-		
-		Collection fieldAssociationsCollection = new ArrayList();
-		for (Iterator stream = fieldAssociationsFieldValue.getElements().iterator(); stream.hasNext(); ) {
-			Record fieldAssociationRow = (Record) stream.next();
-			fieldAssociationsCollection.add(fieldAssociationRow);
-		}
-		
-		this.legacyValuesMap.put("fieldAssociationsCollection", fieldAssociationsCollection);
-		
-		return new Vector();
-	}
-	
-	private String legacy50GetIndirectionTypeFromRowForTopLink(Record row) {
-		SDKFieldValue indirectionPolicy = (SDKFieldValue) row.get("variable-one-to-one-mapping-indirection-policy");
-		String usesIndirection = (String) ((Record) indirectionPolicy.getElements().get(0)).get("uses-indirection");
-		if (usesIndirection.equals("true")) {
-			return VALUE_HOLDER_INDIRECTION;
-		}
-		return NO_INDIRECTION;
-	}
-
-	private String legacy4XGetIndirectionTypeFromRowForTopLink(Record row) {
-		SDKFieldValue indirectionPolicy = (SDKFieldValue) row.get("indirectionPolicy");
-		String usesIndirection = (String) ((Record) indirectionPolicy.getElements().get(0)).get("usesIndirection");
-		if (usesIndirection.equals("true")) {
-			return VALUE_HOLDER_INDIRECTION;
-		}
-		return NO_INDIRECTION;
-	}
-
-
 }

@@ -44,27 +44,27 @@ public class ReadOnlyProject extends RelationalTestProject {
 	}
 	
 	public MWTableDescriptor getActorDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.readonly.Actor");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.readonly.Actor");
 	}
 
 	public MWTableDescriptor getAddressDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.readonly.Address");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.readonly.Address");
 	}
 
 	public MWTableDescriptor getCountryDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.readonly.Country");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.readonly.Country");
 	}
 
 	public MWTableDescriptor getMovieDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.readonly.Movie");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.readonly.Movie");
 	}
 
 	public MWTableDescriptor getPromoterDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.readonly.Promoter");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.readonly.Promoter");
 	}
 
 	public MWAggregateDescriptor getStudioDescriptor() {
-		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.readonly.Studio");
+		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.readonly.Studio");
 	}
 
 	public void initializeActorDescriptor() {
@@ -102,8 +102,8 @@ public class ReadOnlyProject extends RelationalTestProject {
 	public void initializeActMovTable() {
 		MWTable table = database().addTable("ACT_MOV");
 		
-		addPrimaryKeyField(table,"ACT_ID", "NUMBER", 15);
-		addPrimaryKeyField(table,"MOV_ID", "NUMBER", 15);
+		addPrimaryKeyField(table,"ACT_ID", "decimal", 15);
+		addPrimaryKeyField(table,"MOV_ID", "decimal", 15);
 	}
 
 	public void initializeAddressDescriptor() {
@@ -159,8 +159,8 @@ public class ReadOnlyProject extends RelationalTestProject {
 	public void initializeCountryTable() {
 		MWTable table = database().addTable("COUNTRY");
 		
-		addPrimaryKeyField(table,"COUNTRY_ID", "NUMBER", 15);
-		addField(table,"NAME", "VARCHAR2", 50);
+		addPrimaryKeyField(table,"COUNTRY_ID", "decimal", 15);
+		addField(table,"NAME", "varchar", 50);
 	}
 
 	@Override
@@ -199,13 +199,13 @@ public class ReadOnlyProject extends RelationalTestProject {
 	protected void initializeDescriptors() {
 		super.initializeDescriptors();
 
-		this.addDescriptorForTypeNamed("test.oracle.models.readonly.Actor");
-		this.addDescriptorForTypeNamed("test.oracle.models.readonly.Address");
-		this.addDescriptorForTypeNamed("test.oracle.models.readonly.Country");
-		this.addDescriptorForTypeNamed("test.oracle.models.readonly.Movie");
-		this.addDescriptorForTypeNamed("test.oracle.models.readonly.Promoter");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.readonly.Actor");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.readonly.Address");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.readonly.Country");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.readonly.Movie");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.readonly.Promoter");
 
-		this.addAggregateDescriptorForTypeNamed("test.oracle.models.readonly.Studio");
+		this.addAggregateDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.readonly.Studio");
 		
 		initializeActorDescriptor();
 		initializeAddressDescriptor();
@@ -288,37 +288,37 @@ public class ReadOnlyProject extends RelationalTestProject {
 	public void initializeRoActorTable() {
 		MWTable table = database().addTable("RO_ACTOR");
 		
-		addPrimaryKeyField(table,"ACT_ID", "NUMBER", 15);
-		addField(table,"ACT_NAME", "VARCHAR2", 50);
-		addField(table,"MIN_SAL", "NUMBER", 19);
+		addPrimaryKeyField(table,"ACT_ID", "decimal", 15);
+		addField(table,"ACT_NAME", "varchar", 50);
+		addField(table,"MIN_SAL", "decimal", 19);
 	}
 
 	public void initializeRoAddrTable() {
 		MWTable table = database().addTable("RO_ADDR");
 		
-		addPrimaryKeyField(table,"ADD_ID", "NUMBER", 15);
-		addField(table,"CITY", "VARCHAR2", 30);
-		addField(table,"COUNTRY_ID", "NUMBER", 15);
-		addField(table,"STREET", "VARCHAR2", 30);
-		addField(table,"ZIP", "VARCHAR2", 10);
+		addPrimaryKeyField(table,"ADD_ID", "decimal", 15);
+		addField(table,"CITY", "varchar", 30);
+		addField(table,"COUNTRY_ID", "decimal", 15);
+		addField(table,"STREET", "varchar", 30);
+		addField(table,"ZIP", "varchar", 10);
 	}
 
 	public void initializeRoMovieTable() {
 		MWTable table = database().addTable("RO_MOVIE");
 		
-		addPrimaryKeyField(table,"MOV_ID", "NUMBER", 15);
-		addField(table,"PROMO_ID", "NUMBER", 15);
-		addField(table,"STD_ADD", "NUMBER", 15);
-		addField(table,"STD_NAME", "VARCHAR2", 50);
-		addField(table,"STD_OWN", "VARCHAR2", 50);
-		addField(table,"TITLE", "VARCHAR2", 50);
+		addPrimaryKeyField(table,"MOV_ID", "decimal", 15);
+		addField(table,"PROMO_ID", "decimal", 15);
+		addField(table,"STD_ADD", "decimal", 15);
+		addField(table,"STD_NAME", "varchar", 50);
+		addField(table,"STD_OWN", "varchar", 50);
+		addField(table,"TITLE", "varchar", 50);
 	}
 
 	public void initializeRoPromoTable() {
 		MWTable table = database().addTable("RO_PROMO");
 		
-		addField(table,"NAME", "VARCHAR2", 20);
-		addPrimaryKeyField(table,"PROMO_ID", "NUMBER", 15);
+		addField(table,"NAME", "varchar", 20);
+		addPrimaryKeyField(table,"PROMO_ID", "decimal", 15);
 	}	
 
 	public void initializeStudioDescriptor() {

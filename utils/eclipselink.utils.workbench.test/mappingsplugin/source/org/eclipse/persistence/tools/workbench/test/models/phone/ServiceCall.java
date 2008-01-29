@@ -32,7 +32,7 @@ public int getId() {
 /**
  * Insert the method's description here.
  * Creation date: (11/27/00 5:25:21 PM)
- * @return test.oracle.models.phone.Serviceable
+ * @return org.eclipse.persistence.tools.workbench.test.models.phone.Serviceable
  */
 public Serviceable getServiceUser() {
 	return this.serviceUser;
@@ -55,7 +55,7 @@ public void setId(int newId) {
 /**
  * Insert the method's description here.
  * Creation date: (11/27/00 5:25:21 PM)
- * @param newServiceUser test.oracle.models.phone.Serviceable
+ * @param newServiceUser org.eclipse.persistence.tools.workbench.test.models.phone.Serviceable
  */
 public void setServiceUser(Serviceable newServiceUser) {
 	serviceUser = newServiceUser;

@@ -136,8 +136,4 @@ public final class MWLoginSpecHandle extends MWHandle {
 		this.loginSpecName = loginSpecName;
 	}
 
-	void legacySetLoginSpecNameForToplink(String legacyLoginSpecName) {
-		this.loginSpecName = legacyLoginSpecName;
-	}
-
 }

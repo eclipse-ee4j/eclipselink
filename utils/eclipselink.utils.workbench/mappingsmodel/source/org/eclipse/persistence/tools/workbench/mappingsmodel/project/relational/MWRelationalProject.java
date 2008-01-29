@@ -54,8 +54,6 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
-import deprecated.sdk.SDKObjectCollectionMapping;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
@@ -139,181 +137,11 @@ public final class MWRelationalProject
 		return descriptor;
 	}
 	
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.setJavaClass(MWRelationalProject.class);
-		descriptor.setTableName("project");
-		descriptor.addPrimaryKeyFieldName("name");
-		
-		descriptor.addDirectMapping("name", "name");
-		
-		SDKAggregateObjectMapping databaseMapping = new SDKAggregateObjectMapping();
-		databaseMapping.setAttributeName("tableRepository");
-		databaseMapping.setReferenceClass(MWDatabase.class);
-		databaseMapping.setFieldName("project-database");
-		descriptor.addMapping(databaseMapping);
-		
-		SDKObjectCollectionMapping descriptorsMapping = MWModel.legacyBuildOneToManyMapping();
-		descriptorsMapping.setAttributeName("descriptors");
-		descriptorsMapping.setSetMethodName("legacySetDescriptorsForTopLink");
-		descriptorsMapping.setGetMethodName("legacyGetDescriptorsForTopLink");
-		descriptorsMapping.setReferenceClass(MWDescriptor.class);
-		descriptorsMapping.setFieldName("descriptors");
-		descriptorsMapping.setReferenceDataTypeName("package-descriptor");
-		descriptorsMapping.setSourceForeignKeyFieldName("name");
-		descriptorsMapping.dontUseIndirection();
-		descriptor.addMapping(descriptorsMapping);
-		
-		SDKAggregateObjectMapping defaultsPolicyMapping = new SDKAggregateObjectMapping();
-		defaultsPolicyMapping.setAttributeName("defaultsPolicy");
-		defaultsPolicyMapping.setReferenceClass(MWRelationalProjectDefaultsPolicy.class);
-		defaultsPolicyMapping.setFieldName("defaults-policy");
-		descriptor.addMapping(defaultsPolicyMapping);
-		
-		SDKAggregateObjectMapping repositoryMapping = new SDKAggregateObjectMapping();
-		repositoryMapping.setAttributeName("classRepository");
-		repositoryMapping.setReferenceClass(MWClassRepository.class);
-		repositoryMapping.setFieldName("repository");
-		descriptor.addMapping(repositoryMapping);
-		
-		SDKAggregateObjectMapping sequencingPolicyMapping = new SDKAggregateObjectMapping();
-		sequencingPolicyMapping.setAttributeName("sequencingPolicy");
-		sequencingPolicyMapping.setReferenceClass(MWSequencingPolicy.class);
-		sequencingPolicyMapping.setFieldName("project-sequencing-policy");
-		descriptor.addMapping(sequencingPolicyMapping);
-		
-		DirectToFieldMapping projectPackageNameMapping = new DirectToFieldMapping();
-		projectPackageNameMapping.setAttributeName("projectSourceClassName");
-		projectPackageNameMapping.setFieldName("project-class-name");
-		projectPackageNameMapping.setNullValue("");
-		descriptor.addMapping(projectPackageNameMapping);
-		
-		DirectToFieldMapping projectSourceRootDirMapping = new DirectToFieldMapping();
-		projectSourceRootDirMapping.setAttributeName("projectSourceDirectoryName");
-		projectSourceRootDirMapping.setSetMethodName("legacy50SetProjectSourceDirectoryNameForTopLink");
-		projectSourceRootDirMapping.setGetMethodName("legacy50GetProjectSourceDirectoryNameForTopLink");
-		projectSourceRootDirMapping.setFieldName("project-source-root-directory");
-		projectSourceRootDirMapping.setNullValue("");
-		descriptor.addMapping(projectSourceRootDirMapping);
-		
-		DirectToFieldMapping projectXmlFileNameMapping = new DirectToFieldMapping();
-		projectXmlFileNameMapping.setAttributeName("deploymentXMLFileName");
-		projectXmlFileNameMapping.setSetMethodName("legacy50SetDeploymentXMLFileNameForTopLink");
-		projectXmlFileNameMapping.setGetMethodName("legacy50GetDeploymentXMLFileNameForTopLink");
-		projectXmlFileNameMapping.setFieldName("project-deployment-xml-file-name");
-		projectXmlFileNameMapping.setNullValue("");
-		descriptor.addMapping(projectXmlFileNameMapping);
-		
-		DirectToFieldMapping projectXmlDirectoryMapping = new DirectToFieldMapping();
-		projectXmlDirectoryMapping.setAttributeName("deploymentXMLDirectoryName");
-		projectXmlDirectoryMapping.setSetMethodName("legacy50SetDeploymentXMLDirectoryNameForTopLink");
-		projectXmlDirectoryMapping.setGetMethodName("legacy50GetDeploymentXMLDirectoryNameForTopLink");
-		projectXmlDirectoryMapping.setFieldName("project-deployment-xml-directory");
-		projectXmlDirectoryMapping.setNullValue("");
-		descriptor.addMapping(projectXmlDirectoryMapping);
-		
-		DirectToFieldMapping tableCreatorSourceClassNameMapping = new DirectToFieldMapping();
-		tableCreatorSourceClassNameMapping.setAttributeName("tableCreatorSourceClassName");
-		tableCreatorSourceClassNameMapping.setFieldName("table-creator-class-name");
-		tableCreatorSourceClassNameMapping.setNullValue("");
-		descriptor.addMapping(tableCreatorSourceClassNameMapping);
-		
-		DirectToFieldMapping tableCreatorSourceDirectoryNameMapping = new DirectToFieldMapping();
-		tableCreatorSourceDirectoryNameMapping.setAttributeName("tableCreatorSourceDirectoryName");
-		tableCreatorSourceDirectoryNameMapping.setSetMethodName("legacy50SetTableCreatorSourceDirectoryNameForTopLink");
-		tableCreatorSourceDirectoryNameMapping.setGetMethodName("legacy50GetTableCreatorSourceDirectoryNameForTopLink");
-		tableCreatorSourceDirectoryNameMapping.setFieldName("table-creator-source-root-directory");
-		tableCreatorSourceDirectoryNameMapping.setNullValue("");
-		descriptor.addMapping(tableCreatorSourceDirectoryNameMapping);
-		
-		DirectToFieldMapping modelSourceRootDirMapping = new DirectToFieldMapping();
-		modelSourceRootDirMapping.setAttributeName("modelSourceDirectoryName");
-		modelSourceRootDirMapping.setSetMethodName("legacy50SetModelSourceDirectoryNameForTopLink");
-		modelSourceRootDirMapping.setGetMethodName("legacy50GetModelSourceDirectoryNameForTopLink");
-		modelSourceRootDirMapping.setFieldName("model-source-root-directory");
-		modelSourceRootDirMapping.setNullValue("");
-		descriptor.addMapping(modelSourceRootDirMapping);
-		
-		SDKAggregateObjectMapping tableGenerationPolicyMapping = new SDKAggregateObjectMapping();
-		tableGenerationPolicyMapping.setAttributeName("tableGenerationPolicy");
-		tableGenerationPolicyMapping.setReferenceClass(MWTableGenerationPolicy.class);
-		tableGenerationPolicyMapping.setFieldName("project-table-generation-policy");
-		descriptor.addMapping(tableGenerationPolicyMapping);
-		
-		return descriptor;
-	}
-	
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWRelationalProject.class);
-		descriptor.setTableName("BldrProject");
-
-		descriptor.addPrimaryKeyFieldName("name");
-		descriptor.addDirectMapping("name", "name");
-
-		SDKAggregateObjectMapping defaultsPolicyMapping = new SDKAggregateObjectMapping();
-		defaultsPolicyMapping.setAttributeName("defaultsPolicy");
-		defaultsPolicyMapping.setReferenceClass(MWRelationalProjectDefaultsPolicy.class);
-		defaultsPolicyMapping.setFieldName("defaultsPolicy");
-		descriptor.addMapping(defaultsPolicyMapping);
-	
-		SDKAggregateObjectMapping sequencingPolicyMapping = new SDKAggregateObjectMapping();
-		sequencingPolicyMapping.setAttributeName("sequencingPolicy");
-		sequencingPolicyMapping.setReferenceClass(MWSequencingPolicy.class);
-		sequencingPolicyMapping.setFieldName("sequencingPolicy");
-		descriptor.addMapping(sequencingPolicyMapping);
-	
-		SDKAggregateObjectMapping tableGenerationPolicyMapping = new SDKAggregateObjectMapping();
-		tableGenerationPolicyMapping.setAttributeName("tableGenerationPolicy");
-		tableGenerationPolicyMapping.setReferenceClass(MWTableGenerationPolicy.class);
-		tableGenerationPolicyMapping.setFieldName("tableGenerationPolicy");
-		descriptor.addMapping(tableGenerationPolicyMapping);
-	
-		OneToOneMapping repositoryMapping = new OneToOneMapping();
-		repositoryMapping.setAttributeName("classRepository");
-		repositoryMapping.setReferenceClass(MWClassRepository.class);
-		repositoryMapping.setForeignKeyFieldName("repository");
-		repositoryMapping.privateOwnedRelationship();
-		repositoryMapping.dontUseIndirection();
-		descriptor.addMapping(repositoryMapping);
-	
-		OneToOneMapping databaseMapping = new OneToOneMapping();
-		databaseMapping.setAttributeName("tableRepository");
-		databaseMapping.setReferenceClass(MWDatabase.class);
-		databaseMapping.setForeignKeyFieldName("database");
-		databaseMapping.privateOwnedRelationship();
-		databaseMapping.dontUseIndirection();
-		descriptor.addMapping(databaseMapping);
-	
-		XMLTransformationMapping descriptorsMapping = new XMLTransformationMapping();
-		descriptorsMapping.setAttributeName("descriptors");
-		descriptorsMapping.setSetMethodName("legacySetDescriptorsForTopLink");
-		descriptorsMapping.setGetMethodName("legacyGetDescriptorsForTopLink");
-		descriptorsMapping.setAttributeMethodName("legacyGetDescriptorsFromRowForTopLink");
-		descriptor.addMapping(descriptorsMapping);
-	
-		return descriptor;
-	}
-	
 	/**
 	 * Default constructor - for TopLink use only.
 	 */
 	private MWRelationalProject() {
 		super();
-	}
-
-	/**
-	 * this should ONLY be used by DynamicClassOverridePolicy50, via hackery
-	 * ~bjv
-	 */
-	private MWRelationalProject(String name) {
-		this(name, legacy50BuildSPIManager(), null);
-	}
-
-	private static SPIManager legacy50BuildSPIManager() {
-		SimpleSPIManager mgr = new SimpleSPIManager();
-		mgr.setExternalClassRepositoryFactory(CFExternalClassRepositoryFactory.instance());
-		return mgr;
 	}
 
 	public MWRelationalProject(String name, SPIManager spiManager, DatabasePlatform databasePlatform) {
@@ -611,18 +439,6 @@ public final class MWRelationalProject
 
 	// ********** TopLink methods **********
 	
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.generateDeprecatedDirectMappings = true;
-	}
-	
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.tableCreatorSourceClassName = "";
-		this.tableCreatorSourceDirectoryName = "";
-		this.generateDeprecatedDirectMappings = true;
-	}
-
 	/**
 	 * convert to platform-independent representation
 	 */
@@ -635,16 +451,6 @@ public final class MWRelationalProject
 	 */
 	private void setTableCreatorSourceDirectoryNameForTopLink(String dirName) {
 		this.tableCreatorSourceDirectoryName = new File(dirName).getPath();
-	}
-
-	/**
-	 * strip out back slashes stored in old projects
-	 */
-	private void legacy50SetTableCreatorSourceDirectoryNameForTopLink(String dirName) {
-		this.setTableCreatorSourceDirectoryNameForTopLink(dirName.replace('\\', '/'));
-	}
-	private String legacy50GetTableCreatorSourceDirectoryNameForTopLink() {
-		throw new UnsupportedOperationException();
 	}
 
 }

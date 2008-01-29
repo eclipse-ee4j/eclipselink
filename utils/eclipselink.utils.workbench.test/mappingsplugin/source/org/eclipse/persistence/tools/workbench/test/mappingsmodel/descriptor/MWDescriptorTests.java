@@ -102,11 +102,11 @@ public class MWDescriptorTests extends ModelProblemsTestCase {
 		MWMappingDescriptor boatDescriptor =  null;
 		MWMappingDescriptor nonFueledVehicleDescriptor =  null;
 		try {
-			vehicleType = project.typeNamed("test.oracle.models.complexinheritance.Vehicle");
+			vehicleType = project.typeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.Vehicle");
 			vehicleType.refresh();
-			boatType = project.typeNamed("test.oracle.models.complexinheritance.Boat");
+			boatType = project.typeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.Boat");
 			boatType.refresh();
-			nonFueledVehicleType = project.typeNamed("test.oracle.models.complexinheritance.NonFueledVehicle");
+			nonFueledVehicleType = project.typeNamed("org.eclipse.persistence.tools.workbench.test.models.complexinheritance.NonFueledVehicle");
 			nonFueledVehicleType.refresh();
 		} catch(ExternalClassNotFoundException e) {
 			throw new RuntimeException(e);

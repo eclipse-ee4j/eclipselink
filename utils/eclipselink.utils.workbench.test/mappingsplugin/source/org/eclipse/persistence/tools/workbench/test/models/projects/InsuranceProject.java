@@ -40,7 +40,7 @@ public class InsuranceProject extends RelationalTestProject {
 	}
 	
 	public static MWRelationalProject emptyProject() {
-		MWRelationalProject project = new MWRelationalProject("Insurance", spiManager(), oraclePlatform());
+		MWRelationalProject project = new MWRelationalProject("Insurance", spiManager(), mySqlPlatform());
 
 		// Defaults policy  
 		project.getDefaultsPolicy().getCachingPolicy().setCacheSize(0);
@@ -55,47 +55,47 @@ public class InsuranceProject extends RelationalTestProject {
 	}
 	
 	public MWTableDescriptor getAddressDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.insurance.Address");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.Address");
 	}
 	
 	public MWTableDescriptor getClaimDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.insurance.Claim");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.Claim");		
 	}
 	
 	public MWTableDescriptor getHealthClaimDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.insurance.HealthClaim");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.HealthClaim");		
 	}
 	
 	public MWTableDescriptor getHealthPolicyDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.insurance.HealthPolicy");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.HealthPolicy");		
 	}
 	
 	public MWTableDescriptor getHouseClaimDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.insurance.HouseClaim");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.HouseClaim");		
 	}
 	
 	public MWTableDescriptor getHousePolicyDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.insurance.HousePolicy");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.HousePolicy");		
 	}
 	
 	public MWTableDescriptor getPhoneDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.insurance.Phone");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.Phone");		
 	}	
 
 	public MWTableDescriptor getPolicyDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.insurance.Policy");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.Policy");		
 	}	
 	
 	public MWTableDescriptor getPolicyHolderDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.insurance.PolicyHolder");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.PolicyHolder");		
 	}
 	
 	public MWTableDescriptor getVehicleClaimDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.insurance.VehicleClaim");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.VehicleClaim");		
 	}
 	
 	public MWTableDescriptor getVehiclePolicyDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.insurance.VehiclePolicy");		
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.VehiclePolicy");		
 	}
 	
 	
@@ -197,12 +197,12 @@ public class InsuranceProject extends RelationalTestProject {
 	public void initializeHolderTable() {	
 		MWTable holderTable = database().addTable("HOLDER");
 		
-		addField(holderTable,"BDATE", "DATE");
-		addField(holderTable,"F_NAME", "VARCHAR2", 20);
-		addField(holderTable,"L_NAME", "VARCHAR2", 20);		
-		addField(holderTable,"OCC", "VARCHAR2", 20);		
-		addField(holderTable,"SEX", "CHAR", 1);		
-		addPrimaryKeyField(holderTable,"SSN", "NUMBER", 19);		
+		addField(holderTable,"BDATE", "date");
+		addField(holderTable,"F_NAME", "varchar", 20);
+		addField(holderTable,"L_NAME", "varchar", 20);		
+		addField(holderTable,"OCC", "varchar", 20);		
+		addField(holderTable,"SEX", "char", 1);		
+		addPrimaryKeyField(holderTable,"SSN", "decimal", 19);		
 	}
 	
 	public void initializeHouseClaimDescriptor() {
@@ -248,12 +248,12 @@ public class InsuranceProject extends RelationalTestProject {
 	public void initializeInsAddrTable() {
 		MWTable addressTable = database().addTable("INS_ADDR");
 		
-		addField(addressTable,"CITY", "VARCHAR2", 25);
-		addField(addressTable,"COUNTRY", "VARCHAR2", 20);
-		addPrimaryKeyField(addressTable,"SSN", "NUMBER", 19);
-		addField(addressTable,"STATE", "VARCHAR2", 2);
-		addField(addressTable,"STREET", "VARCHAR2", 30);
-		addField(addressTable,"ZIPCODE", "VARCHAR2", 10);
+		addField(addressTable,"CITY", "varchar", 25);
+		addField(addressTable,"COUNTRY", "varchar", 20);
+		addPrimaryKeyField(addressTable,"SSN", "decimal", 19);
+		addField(addressTable,"STATE", "varchar", 2);
+		addField(addressTable,"STREET", "varchar", 30);
+		addField(addressTable,"ZIPCODE", "varchar", 10);
 	}
 	
 	@Override
@@ -285,17 +285,17 @@ public class InsuranceProject extends RelationalTestProject {
 	protected void initializeDescriptors() {
 		super.initializeDescriptors();
 
-		this.addDescriptorForTypeNamed("test.oracle.models.insurance.Address");
-	 	this.addDescriptorForTypeNamed("test.oracle.models.insurance.Claim");
-		this.addDescriptorForTypeNamed("test.oracle.models.insurance.HealthClaim");
-		this.addDescriptorForTypeNamed("test.oracle.models.insurance.HealthPolicy");
-		this.addDescriptorForTypeNamed("test.oracle.models.insurance.HouseClaim");
-		this.addDescriptorForTypeNamed("test.oracle.models.insurance.HousePolicy");
-		this.addDescriptorForTypeNamed("test.oracle.models.insurance.Phone");
-		this.addDescriptorForTypeNamed("test.oracle.models.insurance.Policy");
-		this.addDescriptorForTypeNamed("test.oracle.models.insurance.PolicyHolder");
-		this.addDescriptorForTypeNamed("test.oracle.models.insurance.VehicleClaim");
-		this.addDescriptorForTypeNamed("test.oracle.models.insurance.VehiclePolicy");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.Address");
+	 	this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.Claim");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.HealthClaim");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.HealthPolicy");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.HouseClaim");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.HousePolicy");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.Phone");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.Policy");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.PolicyHolder");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.VehicleClaim");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.insurance.VehiclePolicy");
 		
 		this.initializeAddressDescriptor();
 		this.initializeHealthClaimDescriptor();
@@ -314,8 +314,8 @@ public class InsuranceProject extends RelationalTestProject {
 	public void initializeChildrenNamesTable() {	
 		MWTable childrenNamesTable =  database().addTable("CHILDRENNAMES");
 		
-		addField(childrenNamesTable,"CHILD_NAME", "VARCHAR2", 20);
-		addField(childrenNamesTable,"HOLDER_ID", "NUMBER", 19).setAllowsNull(false);		
+		addField(childrenNamesTable,"CHILD_NAME", "varchar", 20);
+		addField(childrenNamesTable,"HOLDER_ID", "decimal", 19).setAllowsNull(false);		
 	}
 	
 	public void initializeClaimDescriptor() {
@@ -366,12 +366,12 @@ public class InsuranceProject extends RelationalTestProject {
 	public void initializeClaimTable() {	
 		MWTable claimTable = database().addTable("CLAIM");
 		
-		addField(claimTable,"AMOUNT", "NUMBER", 19).setSubSize(4);
-		addField(claimTable,"AREA", "NUMBER", 19).setSubSize(4);		
-		addPrimaryKeyField(claimTable,"CLM_ID", "NUMBER", 19);
-		addField(claimTable,"CLM_TYPE", "VARCHAR2", 20);		
-		addField(claimTable,"DISEASE", "VARCHAR2", 50);		
-		addField(claimTable,"POL_ID", "NUMBER", 19);		
+		addField(claimTable,"AMOUNT", "decimal", 19).setSubSize(4);
+		addField(claimTable,"AREA", "decimal", 19).setSubSize(4);		
+		addPrimaryKeyField(claimTable,"CLM_ID", "decimal", 19);
+		addField(claimTable,"CLM_TYPE", "varchar", 20);		
+		addField(claimTable,"DISEASE", "varchar", 50);		
+		addField(claimTable,"POL_ID", "decimal", 19);		
 	}
 	
 	public void initializePhoneDescriptor() {	
@@ -516,13 +516,13 @@ public class InsuranceProject extends RelationalTestProject {
 	public void initializePolicyTable() {
 		MWTable policyTable = database().addTable("POLICY");
 		
-		addField(policyTable,"CNST_DTE", "DATE");
-		addField(policyTable,"COV_RATE", "NUMBER", 19).setSubSize(4);
-		addField(policyTable,"DESCRIPT", "VARCHAR2", 100);
-		addField(policyTable,"MAX_COV", "NUMBER", 19).setSubSize(4);
-		addPrimaryKeyField(policyTable,"POL_ID", "NUMBER", 19);
-		addField(policyTable,"POL_TYPE", "NUMBER", 1);
-		addField(policyTable,"SSN", "NUMBER", 19);
+		addField(policyTable,"CNST_DTE", "date");
+		addField(policyTable,"COV_RATE", "decimal", 19).setSubSize(4);
+		addField(policyTable,"DESCRIPT", "varchar", 100);
+		addField(policyTable,"MAX_COV", "decimal", 19).setSubSize(4);
+		addPrimaryKeyField(policyTable,"POL_ID", "decimal", 19);
+		addField(policyTable,"POL_TYPE", "decimal", 1);
+		addField(policyTable,"SSN", "decimal", 19);
 	}	
 
 	@Override
@@ -575,15 +575,15 @@ public class InsuranceProject extends RelationalTestProject {
 	public void initializeVehicleClaimTable() {	
 		MWTable vehicleClaimTable = database().addTable("VHCL_CLM");
 		
-		addPrimaryKeyField(vehicleClaimTable,"CLM_ID", "NUMBER", 19);
-		addField(vehicleClaimTable,"PART", "VARCHAR2", 30);
-		addField(vehicleClaimTable,"PART_DESC", "VARCHAR2", 30);		
+		addPrimaryKeyField(vehicleClaimTable,"CLM_ID", "decimal", 19);
+		addField(vehicleClaimTable,"PART", "varchar", 30);
+		addField(vehicleClaimTable,"PART_DESC", "varchar", 30);		
 	}
 	
 	public void initializeVehiclePolicyTable() {	
 		MWTable vehiclePolicyTable = database().addTable("VHCL_POL");
 		
-		addField(vehiclePolicyTable,"MODEL", "VARCHAR2", 30);
-		addPrimaryKeyField(vehiclePolicyTable,"POL_ID", "NUMBER", 19);
+		addField(vehiclePolicyTable,"MODEL", "varchar", 30);
+		addPrimaryKeyField(vehiclePolicyTable,"POL_ID", "decimal", 19);
 	}
 }

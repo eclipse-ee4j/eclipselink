@@ -242,13 +242,13 @@ public class ComplexMappingProject extends RelationalTestProject {
 	@Override
 	public void initializeDescriptors() {
 		super.initializeDescriptors();
-		this.addDescriptorForTypeNamed("test.oracle.models.complexmapping.Address");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexmapping.Computer");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexmapping.Employee");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexmapping.Hardware");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexmapping.Monitor");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexmapping.Phone");
-		this.addDescriptorForTypeNamed("test.oracle.models.complexmapping.Shipment");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexmapping.Address");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexmapping.Computer");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexmapping.Employee");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexmapping.Hardware");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexmapping.Monitor");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexmapping.Phone");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.complexmapping.Shipment");
 
 		this.initializeAddressDescriptor();
 		this.initializeComputerDescriptor();
@@ -270,7 +270,7 @@ public class ComplexMappingProject extends RelationalTestProject {
 		
 		//afterload policy
 		descriptor.addAfterLoadingPolicy();
-		MWClass postLoadClass = typeNamed("test.oracle.models.complexmapping.Employee");
+		MWClass postLoadClass = typeNamed("org.eclipse.persistence.tools.workbench.test.models.complexmapping.Employee");
 		((MWDescriptorAfterLoadingPolicy) descriptor.getAfterLoadingPolicy()).setPostLoadMethodClass(postLoadClass);
 		((MWDescriptorAfterLoadingPolicy) descriptor.getAfterLoadingPolicy()).setPostLoadMethod(methodNamed(postLoadClass, "addToDescriptor"));
 
@@ -417,101 +417,101 @@ public class ComplexMappingProject extends RelationalTestProject {
 	public void initializeMapAddTable() {
 		MWTable table = database().addTable("MAP_ADD");
 
-		addPrimaryKeyField(table, "A_ID", "NUMBER", 15);
-		addField(table, "LOCATION", "VARCHAR2", 20);
-		addField(table, "PROVINCE", "VARCHAR2", 3);
+		addPrimaryKeyField(table, "A_ID", "decimal", 15);
+		addField(table, "LOCATION", "varchar", 20);
+		addField(table, "PROVINCE", "varchar", 3);
 	}
 
 	public void initializeMapComTable() {
 		MWTable table = database().addTable("MAP_COM");
 
-		addPrimaryKeyField(table, "ID", "NUMBER", 15);
-		addField(table, "DESCRIP", "VARCHAR2", 30);
-		addField(table, "IS_MAC", "VARCHAR2", 3);
-		addField(table, "MON_SER", "VARCHAR2", 30);
-		addField(table, "SERL_NO", "VARCHAR2", 30);
+		addPrimaryKeyField(table, "ID", "decimal", 15);
+		addField(table, "DESCRIP", "varchar", 30);
+		addField(table, "IS_MAC", "varchar", 3);
+		addField(table, "MON_SER", "varchar", 30);
+		addField(table, "SERL_NO", "varchar", 30);
 
 	}
 
 	public void initializeMapEmpTable() {
 		MWTable table = database().addTable("MAP_EMP");
 
-		addPrimaryKeyField(table, "FNAME", "VARCHAR2", 20);
-		addPrimaryKeyField(table, "LNAME", "VARCHAR2", 20);
-		addPrimaryKeyField(table, "SEX", "VARCHAR2", 10);
+		addPrimaryKeyField(table, "FNAME", "varchar", 20);
+		addPrimaryKeyField(table, "LNAME", "varchar", 20);
+		addPrimaryKeyField(table, "SEX", "varchar", 10);
 
-		addField(table, "BDAY", "DATE");
-		addField(table, "BTIME", "DATE");
-		addField(table, "JDAY", "DATE");
-		addField(table, "A_ID", "NUMBER", 20);
-		addField(table, "GENDER", "VARCHAR2", 10);
-		addField(table, "M_FNAME", "VARCHAR2", 20);
-		addField(table, "M_LNAME", "VARCHAR2", 20);
-		addField(table, "RANK", "NUMBER", 10);
-		addField(table, "JDESC", "LONG RAW");
+		addField(table, "BDAY", "date");
+		addField(table, "BTIME", "date");
+		addField(table, "JDAY", "date");
+		addField(table, "A_ID", "decimal", 20);
+		addField(table, "GENDER", "varchar", 10);
+		addField(table, "M_FNAME", "varchar", 20);
+		addField(table, "M_LNAME", "varchar", 20);
+		addField(table, "RANK", "decimal", 10);
+		addField(table, "JDESC", "longtext");
 	}
 
 	public void initializeMapEmphTable() {
 		MWTable table = database().addTable("MAP_EMPH");
 
-		addPrimaryKeyField(table, "FNAME", "VARCHAR2", 20);
-		addPrimaryKeyField(table, "LNAME", "VARCHAR2", 20);
-		addPrimaryKeyField(table, "P_ID", "NUMBER", 15);
+		addPrimaryKeyField(table, "FNAME", "varchar", 20);
+		addPrimaryKeyField(table, "LNAME", "varchar", 20);
+		addPrimaryKeyField(table, "P_ID", "decimal", 15);
 	}
 
 	public void initializeMapEmspTable() {
 		MWTable table = database().addTable("MAP_EMSP");
 
-		addPrimaryKeyField(table, "EMP_FNAME", "VARCHAR2", 20);
-		addPrimaryKeyField(table, "EMP_LNAME", "VARCHAR2", 20);
-		addPrimaryKeyField(table, "SP_TS", "DATE");
-		addPrimaryKeyField(table, "SP_TSMIL", "NUMBER", 10);
-		addField(table, "STATUS", "VARCHAR2", 1);
+		addPrimaryKeyField(table, "EMP_FNAME", "varchar", 20);
+		addPrimaryKeyField(table, "EMP_LNAME", "varchar", 20);
+		addPrimaryKeyField(table, "SP_TS", "date");
+		addPrimaryKeyField(table, "SP_TSMIL", "decimal", 10);
+		addField(table, "STATUS", "varchar", 1);
 	}
 
 	public void initializeMapHrwTable() {
 		MWTable table = database().addTable("MAP_HRW");
 
-		addPrimaryKeyField(table, "ID", "NUMBER", 15);
-		addField(table, "EMP_FNAME", "VARCHAR2", 25);
-		addField(table, "EMP_LNAME", "VARCHAR2", 25);
-		addField(table, "DIST", "VARCHAR2", 5);
-		addField(table, "TYPE", "VARCHAR2", 5);
+		addPrimaryKeyField(table, "ID", "decimal", 15);
+		addField(table, "EMP_FNAME", "varchar", 25);
+		addField(table, "EMP_LNAME", "varchar", 25);
+		addField(table, "DIST", "varchar", 5);
+		addField(table, "TYPE", "varchar", 5);
 	}
 
 	public void initializeMapMonTable() {
 		MWTable table = database().addTable("MAP_MON");
 
-		addPrimaryKeyField(table, "ID", "NUMBER", 15);
-		addField(table, "BRAND", "VARCHAR2", 30);
-		addField(table, "COM_SER", "VARCHAR2", 30);
-		addField(table, "MSIZE", "NUMBER", 10);
-		addField(table, "SERL_NO", "VARCHAR2", 30);
+		addPrimaryKeyField(table, "ID", "decimal", 15);
+		addField(table, "BRAND", "varchar", 30);
+		addField(table, "COM_SER", "varchar", 30);
+		addField(table, "MSIZE", "decimal", 10);
+		addField(table, "SERL_NO", "varchar", 30);
 	}
 
 	public void initializeMapPhoTable() {
 		MWTable table = database().addTable("MAP_PHO");
 
-		addPrimaryKeyField(table, "P_ID", "NUMBER", 15);
-		addField(table, "AREACODE", "VARCHAR2", 15);
-		addField(table, "PNUMBER", "VARCHAR2", 30);
+		addPrimaryKeyField(table, "P_ID", "decimal", 15);
+		addField(table, "AREACODE", "varchar", 15);
+		addField(table, "PNUMBER", "varchar", 30);
 	}
 
 	public void initializeMapPolTable() {
 		MWTable table = database().addTable("MAP_POL");
 
-		addPrimaryKeyField(table, "FNAME", "VARCHAR2", 20);
-		addPrimaryKeyField(table, "LNAME", "VARCHAR2", 20);
-		addPrimaryKeyField(table, "POLICY", "VARCHAR2", 20);
+		addPrimaryKeyField(table, "FNAME", "varchar", 20);
+		addPrimaryKeyField(table, "LNAME", "varchar", 20);
+		addPrimaryKeyField(table, "POLICY", "varchar", 20);
 	}
 
 	public void initializeMapShipTable() {
 		MWTable table = database().addTable("MAP_SHIP");
 
-		addPrimaryKeyField(table, "SP_TS", "DATE");
-		addPrimaryKeyField(table, "SP_TSMIL", "NUMBER", 10);
-		addField(table, "QUANTITY", "VARCHAR2", 20);
-		addField(table, "SHP_MODE", "VARCHAR2", 50);
+		addPrimaryKeyField(table, "SP_TS", "date");
+		addPrimaryKeyField(table, "SP_TSMIL", "decimal", 10);
+		addField(table, "QUANTITY", "varchar", 20);
+		addField(table, "SHP_MODE", "varchar", 50);
 	}
 
 	public void initializeMonitorDescriptor() {

@@ -23,7 +23,7 @@ public PersonImpl() {
 /**
  * Insert the method's description here.
  * Creation date: (6/1/00 2:53:26 PM)
- * @return test.oracle.models.contact.Contact
+ * @return org.eclipse.persistence.tools.workbench.test.models.contact.Contact
  */
 public Contact getContact() {
 	return contact;
@@ -39,7 +39,7 @@ public int getId() {
 /**
  * Insert the method's description here.
  * Creation date: (6/1/00 2:53:26 PM)
- * @param newContact test.oracle.models.contact.Contact
+ * @param newContact org.eclipse.persistence.tools.workbench.test.models.contact.Contact
  */
 public void setContact(Contact newContact) {
 	contact = newContact;

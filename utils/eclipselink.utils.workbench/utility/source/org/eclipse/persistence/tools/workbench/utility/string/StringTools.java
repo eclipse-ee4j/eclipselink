@@ -625,6 +625,20 @@ public final class StringTools {
 		return s1.equalsIgnoreCase(s2);
 	}
 	
+	/**
+	 * Return whether the specified strings are equal.
+	 * Check for nulls.
+	 */
+	public static boolean stringsAreEqual(String s1, String s2) {
+		if ((s1 == null) && (s2 == null)) {
+			return true;	// both are null
+		}
+		if ((s1 == null) || (s2 == null)) {
+			return false;	// one is null but the other is not
+		}
+		return s1.equals(s2);
+	}
+
 	private static final char[] VOWELS = new char[] {'a', 'e', 'i', 'o', 'u'};
 
 	public static boolean charIsVowel(char c) {

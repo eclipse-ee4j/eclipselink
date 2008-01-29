@@ -79,28 +79,5 @@ public abstract class MWStringQueryFormat extends MWQueryFormat
 
 		return descriptor;
 	}	
-	public static ClassDescriptor legacy50BuildDescriptor() 
-	{
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWStringQueryFormat.class);
-		descriptor.getInheritancePolicy().setParentClass(MWQueryFormat.class);
-	
-		descriptor.addDirectMapping("queryString", "query-string");
 
-		return descriptor;
-	}	
-	public static ClassDescriptor legacy45BuildDescriptor() 
-	{
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWStringQueryFormat.class);
-		descriptor.setTableName("StringQueryFormat");
-		descriptor.getInheritancePolicy().setParentClass(MWQueryFormat.class);
-			
-		// dtf queryString 
-		descriptor.addDirectMapping("queryString", "queryString");
-			
-		return descriptor;
-	}
 }

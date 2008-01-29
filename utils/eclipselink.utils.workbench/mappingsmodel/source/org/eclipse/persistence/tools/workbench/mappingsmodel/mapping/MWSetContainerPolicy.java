@@ -232,20 +232,7 @@ public final class MWSetContainerPolicy
 		super.legacy60PostBuild(event);
         this.comparatorClass = new MWClassHandle(this, buildComparatorTypeScrubber());
 	}
-	
-    public void legacySetUsesDefaultContainerClass(boolean usesDefaultContainerClass) {
-        getDefaultingContainerClass().setUseDefaultContainerClass(usesDefaultContainerClass);
-    }
-    
-    public void legacyAdjustUsesDefaultContainerClassAttributes() {     
-        if (getDefaultingContainerClass().getContainerClass() == defaultContainerClass()) {
-            getDefaultingContainerClass().setUseDefaultContainerClass(true);
-        }
-        else {
-            getDefaultingContainerClass().setUseDefaultContainerClass(false);
-        }
-    }
-
+   
 	/**
 	 * check for null
 	 */

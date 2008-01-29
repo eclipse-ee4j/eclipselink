@@ -97,29 +97,29 @@ public class ExportModelJavaSourceTests
 		
 		// database
 		MWDatabase database = result.getDatabase();
-		TestDatabases.configureOracleDatabase(database);
+		TestDatabases.configureMySQLDatabase(database);
 		DatabasePlatform platform = database.getDatabasePlatform();
 		
 		// employee table
-		MWTable employeeTable = database.addTable("EMPLOYEE");
-		MWColumn empIdField = employeeTable.addColumn("ID");
-		empIdField.setDatabaseType(platform.databaseTypeNamed("NUMBER"));
+		MWTable employeeTable = database.addTable("employee");
+		MWColumn empIdField = employeeTable.addColumn("id");
+		empIdField.setDatabaseType(platform.databaseTypeNamed("integer"));
 		empIdField.setPrimaryKey(true);
-		MWColumn nameField = employeeTable.addColumn("NAME");
-		nameField.setDatabaseType(platform.databaseTypeNamed("VARCHAR2"));
+		MWColumn nameField = employeeTable.addColumn("name");
+		nameField.setDatabaseType(platform.databaseTypeNamed("varchar"));
 		
 		// phone number table
-		MWTable phoneNumberTable = database.addTable("PHONE_NUMBER");
-		MWColumn phoneIdField = phoneNumberTable.addColumn("ID");
-		phoneIdField.setDatabaseType(platform.databaseTypeNamed("NUMBER"));
+		MWTable phoneNumberTable = database.addTable("phone_number");
+		MWColumn phoneIdField = phoneNumberTable.addColumn("id");
+		phoneIdField.setDatabaseType(platform.databaseTypeNamed("integer"));
 		phoneIdField.setPrimaryKey(true);
-		MWColumn phoneEmpIdField = phoneNumberTable.addColumn("EMP_ID");
-		phoneEmpIdField.setDatabaseType(platform.databaseTypeNamed("NUMBER"));
-		MWColumn numField = phoneNumberTable.addColumn("NUM");
-		numField.setDatabaseType(platform.databaseTypeNamed("VARCHAR2"));
+		MWColumn phoneEmpIdField = phoneNumberTable.addColumn("emp_id");
+		phoneEmpIdField.setDatabaseType(platform.databaseTypeNamed("integer"));
+		MWColumn numField = phoneNumberTable.addColumn("num");
+		numField.setDatabaseType(platform.databaseTypeNamed("varchar"));
 		
 		// phone number -> employee reference
-		MWReference phoneNumberEmployeeReference = phoneNumberTable.addReference("PHONE_NUMBER_EMPLOYEE", employeeTable);
+		MWReference phoneNumberEmployeeReference = phoneNumberTable.addReference("phone_number_employee", employeeTable);
 		phoneNumberEmployeeReference.addColumnPair(phoneEmpIdField, empIdField);
 
 		return result;
@@ -192,7 +192,7 @@ public class ExportModelJavaSourceTests
 	{
 		Collection relationships = new Vector();
 		
-		MWReference phoneNumberToEmployeeRef = this.project.getDatabase().tableNamed("PHONE_NUMBER").referenceNamed("PHONE_NUMBER_EMPLOYEE");
+		MWReference phoneNumberToEmployeeRef = this.project.getDatabase().tableNamed("phone_number").referenceNamed("phone_number_employee");
 		
 		MWRelationshipHolder phoneNumberToEmployee = new MWRelationshipHolder(phoneNumberToEmployeeRef, false);
 		phoneNumberToEmployee.setOneToOne();

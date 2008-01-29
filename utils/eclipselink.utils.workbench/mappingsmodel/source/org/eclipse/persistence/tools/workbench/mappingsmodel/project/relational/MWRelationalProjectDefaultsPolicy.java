@@ -24,8 +24,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import deprecated.sdk.SDKAggregateObjectMapping;
-import deprecated.sdk.SDKDirectCollectionMapping;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -56,93 +54,7 @@ public final class MWRelationalProjectDefaultsPolicy extends MWTransactionalProj
 		
 		return descriptor;
 	}
-	
-	public static ClassDescriptor legacy50BuildDescriptor() 
-	{
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWRelationalProjectDefaultsPolicy.class);
-		descriptor.setTableName("project-defaults-policy");
-
-		descriptor.addDirectMapping("methodAccessing", "use-method-accessing");
-		descriptor.addDirectMapping("queriesBindAllParameters", "bind-all-parameters");
-		descriptor.addDirectMapping("queriesCacheAllStatements", "cache-all-statements");
-
-		SDKAggregateObjectMapping projectCachingPolicyMapping = new SDKAggregateObjectMapping();
-		projectCachingPolicyMapping.setAttributeName("cachingPolicy");
-		projectCachingPolicyMapping.setReferenceClass(MWTransactionalProjectCachingPolicy.class);
-		projectCachingPolicyMapping.setFieldName("project-identity-policy");
-		descriptor.addMapping(projectCachingPolicyMapping);
-
-		SDKDirectCollectionMapping defaultDescriptorPolicyClassesMapping = new SDKDirectCollectionMapping();
-		defaultDescriptorPolicyClassesMapping.setAttributeName("defaultPolicies");
-        defaultDescriptorPolicyClassesMapping.setGetMethodName("legacyGetDefaultPolicyClasses");
-        defaultDescriptorPolicyClassesMapping.setSetMethodName("legacySetDefaultPolicyClasses");
-		ObjectTypeConverter defaultDescriptorClassesConverter = new ObjectTypeConverter();
-		defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.MWCopyPolicy", COPY_POLICY);
-		defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.MWInheritancePolicy", INHERITANCE_POLICY);
-		defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.MWInstantiationPolicy", INSTANTIATION_POLICY);
-		defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.MWInterfaceAliasPolicy", INTERFACE_ALIAS_POLICY);
-		defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.MWDescriptorAfterLoadingPolicy", AFTER_LOAD_POLICY);
-		defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.MWMultiTableInfoPolicy", MULTI_TABLE_INFO_POLICY);
-		defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.MWDescriptorEventsPolicy", EVENTS_POLICY);
-        defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.MWDescriptorLockingPolicy", "legacy-locking-policy");
-        defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.MWIdentityPolicy", "legacy-identity-policy");
-		defaultDescriptorPolicyClassesMapping.setValueConverter(defaultDescriptorClassesConverter);
-		defaultDescriptorPolicyClassesMapping.setFieldName("default-descriptor-policy-classes");
-		defaultDescriptorPolicyClassesMapping.setElementDataTypeName("policy-class");
-		descriptor.addMapping(defaultDescriptorPolicyClassesMapping);
-
-		return descriptor;
-	}
-
-	public static ClassDescriptor legacy45BuildDescriptor() 
-	{
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWRelationalProjectDefaultsPolicy.class);
-		descriptor.setTableName("MWRProjectDefaultsPolicy");
-		descriptor.descriptorIsAggregate();
-
-		// DTFs
-		descriptor.addDirectMapping("methodAccessing", "defaults_methodAccess");
-
-		// aggregate - projectIdentityPolicy
-		SDKAggregateObjectMapping projectIdentityPolicyMapping = new SDKAggregateObjectMapping();
-		projectIdentityPolicyMapping.setAttributeName("cachingPolicy");
-		projectIdentityPolicyMapping.setReferenceClass(MWTransactionalProjectCachingPolicy.class);
-		projectIdentityPolicyMapping.setFieldName("projectIdentityPolicy");
-		descriptor.addMapping(projectIdentityPolicyMapping);
-
-		// direct collection - defaultDescriptorPolicyClasses
-		SDKDirectCollectionMapping defaultDescriptorPolicyClassesMapping = new SDKDirectCollectionMapping();
-		defaultDescriptorPolicyClassesMapping.setAttributeName("defaultPolicies");
-        defaultDescriptorPolicyClassesMapping.setGetMethodName("legacyGetDefaultPolicyClasses");
-        defaultDescriptorPolicyClassesMapping.setSetMethodName("legacySetDefaultPolicyClasses");
-		ObjectTypeConverter defaultDescriptorClassesConverter = new ObjectTypeConverter();
-		defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.BldrCopyPolicy", COPY_POLICY);
-		defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.BldrInheritancePolicy", INHERITANCE_POLICY);
-		defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.BldrInstantiationPolicy", INSTANTIATION_POLICY);
-		defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.BldrInterfaceAliasPolicy", INTERFACE_ALIAS_POLICY);
-		defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.BldrDescriptorAfterLoadingPolicy", AFTER_LOAD_POLICY);
-		defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.BldrMultiTableInfoPolicy", MULTI_TABLE_INFO_POLICY);
-        defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.BldrDescriptorEventsPolicy", EVENTS_POLICY);
-        defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.BldrDescriptorLockingPolicy", "legacy-locking-policy");
-        defaultDescriptorClassesConverter.addConversionValue("org.eclipse.persistence.workbench.model.desc.BldrIdentityPolicy", "legacy-identity-policy");
-		defaultDescriptorPolicyClassesMapping.setValueConverter(defaultDescriptorClassesConverter);
-		defaultDescriptorPolicyClassesMapping.setFieldName("defautlDescriptorPolicyClasses");
-		defaultDescriptorPolicyClassesMapping.setElementDataTypeName("policyClass");
-		descriptor.addMapping(defaultDescriptorPolicyClassesMapping);	
 		
-		return descriptor;
-	}
-	
-	@Override
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.queriesBindAllParameters = true;
-	}
-	
 	private MWRelationalProjectDefaultsPolicy()
 	{
 		super();

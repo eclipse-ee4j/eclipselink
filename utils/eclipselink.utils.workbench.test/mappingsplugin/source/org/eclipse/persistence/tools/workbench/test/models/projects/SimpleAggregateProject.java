@@ -30,7 +30,7 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 public class SimpleAggregateProject extends RelationalTestProject {
 
 	public static MWRelationalProject emptyProject() {
-		MWRelationalProject project = new MWRelationalProject("SimpleAggregate", spiManager(), oraclePlatform());
+		MWRelationalProject project = new MWRelationalProject("SimpleAggregate", spiManager(), mySqlPlatform());
 	
 		// defaults policy
 		project.getDefaultsPolicy().getCachingPolicy().setExistenceChecking(MWCachingPolicy.EXISTENCE_CHECKING_CHECK_CACHE);
@@ -44,15 +44,15 @@ public class SimpleAggregateProject extends RelationalTestProject {
 	}
 	
 	public MWAggregateDescriptor getAddressDescriptor() {
-		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.simpleaggregate.Address");
+		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.simpleaggregate.Address");
 	}
 
 	public MWAggregateDescriptor getAddressSubClassDescriptor() {
-		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.simpleaggregate.AddressSubClass");
+		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.simpleaggregate.AddressSubClass");
 	}
 
 	public MWTableDescriptor getPersonDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.simpleaggregate.Person");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.simpleaggregate.Person");
 	}
 
 	public void initializeAddressDescriptor()
@@ -95,14 +95,14 @@ public class SimpleAggregateProject extends RelationalTestProject {
 	public void initializeAddressTable() {
 		MWTable table = database().addTable("ADDRESS");
 		
-		addField(table, "CITY", "VARCHAR2", 20);
-		addField(table, "COUNTRY", "VARCHAR2", 20);
+		addField(table, "CITY", "varchar", 20);
+		addField(table, "COUNTRY", "varchar", 20);
 
-		addPrimaryKeyField(table, "ID", "NUMBER", 20);
-		addField(table, "P_CODE", "VARCHAR2", 20);
-		addField(table, "STATE", "VARCHAR2", 20);
-		addField(table, "STREET", "VARCHAR2", 20);
-		addField(table, "TYPE", "VARCHAR2", 20);
+		addPrimaryKeyField(table, "ID", "decimal", 20);
+		addField(table, "P_CODE", "varchar", 20);
+		addField(table, "STATE", "varchar", 20);
+		addField(table, "STREET", "varchar", 20);
+		addField(table, "TYPE", "varchar", 20);
 
 	}
 
@@ -118,9 +118,9 @@ public class SimpleAggregateProject extends RelationalTestProject {
 	protected void initializeDescriptors() {
 		super.initializeDescriptors();
 		
-		this.addAggregateDescriptorForTypeNamed("test.oracle.models.simpleaggregate.Address");
-		this.addAggregateDescriptorForTypeNamed("test.oracle.models.simpleaggregate.AddressSubClass");
-		this.addDescriptorForTypeNamed("test.oracle.models.simpleaggregate.Person");
+		this.addAggregateDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.simpleaggregate.Address");
+		this.addAggregateDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.simpleaggregate.AddressSubClass");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.simpleaggregate.Person");
 		
 		this.initializeAddressDescriptor();
 		this.initializeAddressSubClassDescriptor();
@@ -192,13 +192,13 @@ public class SimpleAggregateProject extends RelationalTestProject {
 	public void initializePersonTable() {
 		MWTable table = database().addTable("PERSON");
 		
-		addField(table, "ADDRESS", "VARCHAR2", 50);
-		addField(table, "AGE", "NUMBER", 10);
-		addField(table, "F_NAME", "VARCHAR2", 20);
-		addField(table, "GENDER", "VARCHAR2", 20);
-		addPrimaryKeyField(table, "ID", "NUMBER", 15);
+		addField(table, "ADDRESS", "varchar", 50);
+		addField(table, "AGE", "decimal", 10);
+		addField(table, "F_NAME", "varchar", 20);
+		addField(table, "GENDER", "varchar", 20);
+		addPrimaryKeyField(table, "ID", "decimal", 15);
 
-		addField(table, "L_NAME", "VARCHAR2", 20);
+		addField(table, "L_NAME", "varchar", 20);
 
 	}
 

@@ -9,9 +9,6 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.mappingsmodel.schema;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +30,9 @@ import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSModelGroupDefinition;
 import org.apache.xerces.xs.XSNamedMap;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.xml.MWXmlProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.SchemaChange;
@@ -40,10 +40,6 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 import org.eclipse.persistence.tools.workbench.utility.HashBag;
 import org.eclipse.persistence.tools.workbench.utility.iterators.CompositeIterator;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
-
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 
 public final class MWNamespace 
 	extends MWModel
@@ -120,7 +116,7 @@ public final class MWNamespace
 	
 	static MWNamespace xsiNamespace(MWXmlSchema schema) {
 		MWNamespace xsiNamespace = new MWNamespace(schema);
-		xsiNamespace.namespaceUrl = XMLConstants.W3C_XML_SCHEMA_NS_URI;
+		xsiNamespace.namespaceUrl = XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 		xsiNamespace.namespacePrefix = "xsi";
 		
 		xsiNamespace.addAttribute("nil");

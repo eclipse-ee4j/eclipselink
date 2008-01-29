@@ -37,8 +37,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
-import deprecated.sdk.SDKAggregateCollectionMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
 
 public final class MWRelationalTransformationMapping 
 	extends MWTransformationMapping
@@ -216,76 +214,4 @@ public final class MWRelationalTransformationMapping
 		return descriptor;	
 	}
 	
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWRelationalTransformationMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWMapping.class);
-		
-		// this descriptor is done here because there were no xml transformation mappings before
-		
-		// attribute transformer - map directly to a method handle and create a method based
-		//		transformer in the accessor method
-		SDKAggregateObjectMapping attributeTransformerMethodMapping = new SDKAggregateObjectMapping();
-		attributeTransformerMethodMapping.setAttributeName("attributeTransformer");
-		attributeTransformerMethodMapping.setReferenceClass(MWMethodHandle.class);
-		attributeTransformerMethodMapping.setFieldName("fields-to-attribute-method-handle");
-		attributeTransformerMethodMapping.setGetMethodName("legacyGetAttributeTransformerMethodHandle");
-		attributeTransformerMethodMapping.setSetMethodName("legacySetAttributeTransformerMethodHandle");
-		descriptor.addMapping(attributeTransformerMethodMapping);
-		
-		// field transformers - map what used to be field method pairs to relational field transformer associations
-		//		and handle the tricky stuff there (basically what was done here for the attribute transformer)
-		SDKAggregateCollectionMapping fieldTransformerFieldMethodPairsMapping = new SDKAggregateCollectionMapping();
-		fieldTransformerFieldMethodPairsMapping.setAttributeName("fieldTransformerAssociations");
-		fieldTransformerFieldMethodPairsMapping.setReferenceClass(MWRelationalFieldTransformerAssociation.class);
-		fieldTransformerFieldMethodPairsMapping.setFieldName("field-method-pairs");
-		descriptor.addMapping(fieldTransformerFieldMethodPairsMapping);
-		
-		// uses indirection - map as a transformation mapping, retrieving the boolean nested two
-		//		levels down
-		XMLTransformationMapping usesIndirectionMapping = new XMLTransformationMapping();
-		usesIndirectionMapping.setAttributeName("indirectionType");
-		usesIndirectionMapping.setAttributeTransformation("legacy50BuildUsesIndirectionForTopLink");
-		descriptor.addMapping(usesIndirectionMapping);
-		
-		return descriptor;
-	}
-	
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWRelationalTransformationMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWMapping.class);
-		
-		// attribute transformer - map directly to a method handle and create a method based
-		//		transformer in the accessor method
-		SDKAggregateObjectMapping attributeTransformerMethodMapping = new SDKAggregateObjectMapping();
-		attributeTransformerMethodMapping.setAttributeName("attributeTransformer");
-		attributeTransformerMethodMapping.setReferenceClass(MWMethodHandle.class);
-		attributeTransformerMethodMapping.setFieldName("fieldsToAttributeMethodHandle");
-		attributeTransformerMethodMapping.setGetMethodName("legacyGetAttributeTransformerMethodHandle");
-		attributeTransformerMethodMapping.setSetMethodName("legacySetAttributeTransformerMethodHandle");
-		descriptor.addMapping(attributeTransformerMethodMapping);
-		
-		// field transformers - map what used to be field method pairs to relational field transformer associations
-		//		and handle the tricky stuff there (basically what was done here for the attribute transformer)
-		SDKAggregateCollectionMapping fieldTransformerFieldMethodPairsMapping = new SDKAggregateCollectionMapping();
-		fieldTransformerFieldMethodPairsMapping.setAttributeName("fieldTransformerAssociations");
-		fieldTransformerFieldMethodPairsMapping.setReferenceClass(MWRelationalFieldTransformerAssociation.class);
-		fieldTransformerFieldMethodPairsMapping.setFieldName("fieldMethodPairs");
-		descriptor.addMapping(fieldTransformerFieldMethodPairsMapping);
-		 
-		// uses indirection - map as a transformation mapping, retrieving the boolean nested two
-		//		levels down
-		XMLTransformationMapping usesIndirectionMapping = new XMLTransformationMapping();
-		usesIndirectionMapping.setAttributeName("indirectionType");
-		usesIndirectionMapping.setAttributeTransformation("legacy4xBuildUsesIndirectionForTopLink");
-		descriptor.addMapping(usesIndirectionMapping);
-		
-		return descriptor;
-	}
-
 }

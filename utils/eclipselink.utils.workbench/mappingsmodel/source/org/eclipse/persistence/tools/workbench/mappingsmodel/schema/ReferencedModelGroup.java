@@ -11,9 +11,8 @@ package org.eclipse.persistence.tools.workbench.mappingsmodel.schema;
 
 import org.apache.xerces.impl.xs.XSParticleDecl;
 import org.apache.xerces.xs.XSModelGroup;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.QName;
-
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.QName;
 
 public final class ReferencedModelGroup
 	extends SchemaComponentReference

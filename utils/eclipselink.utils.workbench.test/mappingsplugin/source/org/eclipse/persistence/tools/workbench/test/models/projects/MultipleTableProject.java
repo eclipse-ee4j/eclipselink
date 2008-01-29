@@ -38,7 +38,7 @@ public class MultipleTableProject extends RelationalTestProject
 	
 	@Override
 	protected MWProject buildEmptyProject() {
-		return new MWRelationalProject("MultipleTable", spiManager(), oraclePlatform());
+		return new MWRelationalProject("MultipleTable", spiManager(), mySqlPlatform());
 	}
 	
 	@Override
@@ -75,10 +75,10 @@ public class MultipleTableProject extends RelationalTestProject
 	{
 		super.initializeDescriptors();
 
-		this.addDescriptorForTypeNamed("test.oracle.models.multipletable.Cow");
-		this.addDescriptorForTypeNamed("test.oracle.models.multipletable.Horse");
-		this.addDescriptorForTypeNamed("test.oracle.models.multipletable.Human");
-		this.addDescriptorForTypeNamed("test.oracle.models.multipletable.Swan");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.multipletable.Cow");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.multipletable.Horse");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.multipletable.Human");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.multipletable.Swan");
 
 		initializeCowDescriptor();
 		initializeHorseDescriptor();
@@ -87,19 +87,19 @@ public class MultipleTableProject extends RelationalTestProject
 	}
 	
 	public MWTableDescriptor getCowDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.multipletable.Cow");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.multipletable.Cow");
 	}
 	
 	public MWTableDescriptor getHorseDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.multipletable.Horse");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.multipletable.Horse");
 	}
 
 	public MWTableDescriptor getHumanDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.multipletable.Human");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.multipletable.Human");
 	}
 
 	public MWTableDescriptor getSwanDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.multipletable.Swan");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.multipletable.Swan");
 	}
 
 	public void initializeCowDescriptor() {
@@ -199,57 +199,57 @@ public class MultipleTableProject extends RelationalTestProject
 	public void initializeCowTable() {	
 		MWTable cowTable = database().addTable("MULTI_COW");
 		
-		addPrimaryKeyField(cowTable,"ID", "NUMBER");
-		addField(cowTable,"CALFS_ID", "NUMBER");
-		addField(cowTable, "NAME", "VARCHAR2", 40);
+		addPrimaryKeyField(cowTable,"ID", "integer");
+		addField(cowTable,"CALFS_ID", "integer");
+		addField(cowTable, "NAME", "varchar", 40);
 	}
 	
 	public void initializeCalfTable() {
 		MWTable table = database().addTable("MULTI_CALFS");
 		
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "CALFS", "NUMBER");
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "CALFS", "integer");
 	}
 	
 	public void initializeHorseTable() {
 		MWTable table = database().addTable("MULTI_HORSE");
 		
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "NAME", "VARCHAR2");
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "NAME", "varchar");
 	}
 	
 	public void initializeFoalTable() {
 		MWTable table = database().addTable("MULTI_FOALS");
 		
-		addPrimaryKeyField(table, "HORSE_ID", "NUMBER");
-		addField(table, "FOALS", "NUMBER");
+		addPrimaryKeyField(table, "HORSE_ID", "integer");
+		addField(table, "FOALS", "integer");
 	}
 	
 	public void initializeHumanTable() {
 		MWTable table = database().addTable("MULTI_HUMAN");
 		
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "NAME", "VARCHAR2");
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "NAME", "varchar");
 	}
 	
 	public void initializeKidTable() {
 		MWTable table = database().addTable("MULTI_KIDS");
 		
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "KIDS", "NUMBER");
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "KIDS", "integer");
 	}
 	
 	public void initializeSwanTable() {
 		MWTable table = database().addTable("MULTI_SWAN");
 		
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "NAME", "VARCHAR2");
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "NAME", "varchar");
 	}
 	
 	public void initializeCygnetTable() {
 		MWTable table = database().addTable("MULTI_CYGNETS");
 		
-		addPrimaryKeyField(table, "SWAN_ID", "NUMBER");
-		addField(table, "CYGNETS", "NUMBER");
+		addPrimaryKeyField(table, "SWAN_ID", "integer");
+		addField(table, "CYGNETS", "integer");
 	}
 }

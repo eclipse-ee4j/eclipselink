@@ -19,8 +19,6 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import deprecated.sdk.SDKAggregateObjectMapping;
-
 
 /**
  * This class holds on to the expression for queries which have expression format chosen
@@ -114,22 +112,7 @@ public final class MWExpressionQueryFormat extends MWQueryFormat
 		
 		return descriptor;
 	}
-	public static ClassDescriptor legacy50BuildDescriptor() 
-	{
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWExpressionQueryFormat.class);
-		descriptor.getInheritancePolicy().setParentClass(MWQueryFormat.class);
-	
-		// 1-1 to the compound expression
-		SDKAggregateObjectMapping expressionMapping = new SDKAggregateObjectMapping();
-		expressionMapping.setAttributeName("expression");
-		expressionMapping.setReferenceClass(MWCompoundExpression.class);
-		expressionMapping.setFieldName("main-compound-expression");
-		descriptor.addMapping(expressionMapping);
-		
-		return descriptor;
-	}	
+
 	//Conversion methods
 	void convertToRuntime(ObjectLevelReadQuery runtimeQuery) 
 	{

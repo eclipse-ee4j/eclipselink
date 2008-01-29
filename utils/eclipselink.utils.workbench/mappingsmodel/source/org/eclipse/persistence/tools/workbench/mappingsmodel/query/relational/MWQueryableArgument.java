@@ -30,7 +30,6 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
 
 /**
  * An MWQueryableArgument is always used as the left hand side of an MWBasicExpression.
@@ -265,22 +264,7 @@ public final class MWQueryableArgument extends MWArgument
 		
 		return descriptor;
 	}
-	public static ClassDescriptor legacy50BuildDescriptor() 
-	{
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWQueryableArgument.class);
 
-		descriptor.getInheritancePolicy().setParentClass(MWArgument.class);
-
-		SDKAggregateObjectMapping queryableArgumentElementMapping = new SDKAggregateObjectMapping();
-		queryableArgumentElementMapping.setAttributeName("queryableArgumentElement");
-		queryableArgumentElementMapping.setReferenceClass(MWQueryableArgumentElement.class);
-		queryableArgumentElementMapping.setFieldName("argument-element");
-		descriptor.addMapping(queryableArgumentElementMapping);
-		
-		return descriptor;
-	}	
 	//Conversion to Runtime
 	Expression runtimeExpression(ExpressionBuilder builder) 
 	{		

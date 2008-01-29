@@ -16,11 +16,10 @@ import java.util.List;
 import org.apache.xerces.impl.xs.XSComplexTypeDecl;
 import org.apache.xerces.impl.xs.XSParticleDecl;
 import org.apache.xerces.xs.XSObject;
-import org.eclipse.persistence.tools.workbench.utility.iterators.SingleElementIterator;
-import org.eclipse.persistence.tools.workbench.utility.node.Node;
-
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.tools.workbench.utility.iterators.SingleElementIterator;
+import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 public final class ComplexContent
 	extends Content

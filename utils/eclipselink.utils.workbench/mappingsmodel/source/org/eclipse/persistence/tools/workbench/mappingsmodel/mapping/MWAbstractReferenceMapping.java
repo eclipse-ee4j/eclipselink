@@ -450,14 +450,5 @@ public abstract class MWAbstractReferenceMapping extends MWMapping
 		NodeReferenceScrubber scrubber = this.buildReferenceDescriptorScrubber();
 		this.referenceDescriptorHandle = ((referenceDescriptorHandle == null) ? new MWDescriptorHandle(this, scrubber) : referenceDescriptorHandle.setScrubber(scrubber));
 	}
-
-	
-	private void legacySetReferenceDescriptor(MWDescriptor newValue) {
-		this.referenceDescriptorHandle = new MWDescriptorHandle(this, this.buildReferenceDescriptorScrubber());
-		this.referenceDescriptorHandle.setDescriptor(newValue);
-	}
-	private MWDescriptor legacyGetReferenceDescriptor() {
-		throw new UnsupportedOperationException();
-	}
 	
 }

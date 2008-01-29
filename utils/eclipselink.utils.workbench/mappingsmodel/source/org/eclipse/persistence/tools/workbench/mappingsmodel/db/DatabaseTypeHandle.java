@@ -38,8 +38,6 @@ final class DatabaseTypeHandle
 	 * we cannot know when the database type has been renamed etc.
 	 */
 	private volatile String databaseTypeName;
-	private volatile String legacyDatabaseTypeName;
-
 
 	// ********** constructors **********
 
@@ -68,11 +66,6 @@ final class DatabaseTypeHandle
 	}
 
 	public void postProjectBuild() {
-		super.postProjectBuild();
-		if (this.legacyDatabaseTypeName != null) {
-			this.databaseTypeName = this.convertLegacyDatabaseTypeName(this.legacyDatabaseTypeName);
-			this.legacyDatabaseTypeName = null;
-		}
 		if (this.databaseTypeName == null) {
 			// bug 3856524 - databaseType can be null in legacy projects
 			this.databaseType = this.databasePlatform().defaultDatabaseType();
@@ -115,103 +108,6 @@ final class DatabaseTypeHandle
 
 	void setDatabaseTypeNameForTopLink(String name) {
 		this.databaseTypeName = name;
-	}
-
-	void legacySetDatabaseTypeNameForTopLink(String name) {
-		this.legacyDatabaseTypeName = name;
-	}
-
-	/**
-	 * we changed the names of some of the database type names
-	 */
-	private String convertLegacyDatabaseTypeName(String dbTypeName) {
-		String platformName = this.databasePlatform().getName();
-		if (platformName.equals("Cloudscape")) {
-			if (dbTypeName.equals("FLOAT(16)")) {
-				return "FLOAT";
-			} else if (dbTypeName.equals("FLOAT(32)")) {
-				return "FLOAT";
-			} else if (dbTypeName.equals("TEXT")) {
-				return "CLOB";
-			} else if (dbTypeName.equals("BIT default 0")) {
-				return "SMALLINT";
-			} else if (dbTypeName.equals("IMAGE")) {
-				return "BLOB";
-			}
-			return dbTypeName;
-		} else if (platformName.equals("dBASE")) {
-			if (dbTypeName.equals("NUMBER")) {
-				return "NUMERIC";
-			}
-			return dbTypeName;
-		} else if (platformName.equals("Informix")) {
-			if (dbTypeName.equals("FLOAT(16)")) {
-				return "FLOAT";
-			} else if (dbTypeName.equals("FLOAT(32)")) {
-				return "FLOAT";
-			}
-			return dbTypeName;
-		} else if (platformName.equals("PointBase")) {
-			if (dbTypeName.equals("CHARACTER")) {
-				return "CHAR";
-			} else if (dbTypeName.equals("DOUBLE PRECISION")) {
-				return "DOUBLE";
-			}
-			return dbTypeName;
-		} else if (platformName.equals("SQL Anywhere")) {
-			if (dbTypeName.equals("FLOAT(16)")) {
-				return "FLOAT";
-			} else if (dbTypeName.equals("FLOAT(32)")) {
-				return "FLOAT";
-			} else if (dbTypeName.equals("INTEGER")) {
-				return "INT";
-			} else if (dbTypeName.equals("BIT default 0")) {
-				return "BIT";
-			}
-			return dbTypeName;
-		} else if (platformName.equals("Microsoft SQL Server")) {
-			if (dbTypeName.equals("FLOAT(16)")) {
-				return "FLOAT";
-			} else if (dbTypeName.equals("FLOAT(32)")) {
-				return "FLOAT";
-			} else if (dbTypeName.equals("INTEGER")) {
-				return "INT";
-			} else if (dbTypeName.equals("BIT default 0")) {
-				return "BIT";
-			}
-			return dbTypeName;
-		} else if (platformName.equals("Sybase")) {
-			if (dbTypeName.equals("SMALLINT")) {
-				return "smallint";
-			} else if (dbTypeName.equals("BIT")) {
-				return "bit";
-			} else if (dbTypeName.equals("INTEGER")) {
-				return "int";
-			} else if (dbTypeName.equals("DATETIME")) {
-				return "datetime";
-			} else if (dbTypeName.equals("NUMERIC")) {
-				return "numeric";
-			} else if (dbTypeName.equals("FLOAT(16)")) {
-				return "float";
-			} else if (dbTypeName.equals("FLOAT(32)")) {
-				return "float";
-			} else if (dbTypeName.equals("TEXT")) {
-				return "text";
-			} else if (dbTypeName.equals("VARCHAR")) {
-				return "varchar";
-			} else if (dbTypeName.equals("CHAR")) {
-				return "char";
-			} else if (dbTypeName.equals("IMAGE")) {
-				return "image";
-			} else if (dbTypeName.equals("BINARY")) {
-				return "binary";
-			} else if (dbTypeName.equals("VARBINARY")) {
-				return "varbinary";
-			}
-			return dbTypeName;
-		}
-		// some of the names were not changed
-		return dbTypeName;
 	}
 
 }

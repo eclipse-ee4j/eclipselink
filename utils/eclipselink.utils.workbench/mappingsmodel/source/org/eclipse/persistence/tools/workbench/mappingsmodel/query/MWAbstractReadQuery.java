@@ -212,19 +212,5 @@ public abstract class MWAbstractReadQuery
 
 		
 	}
-	// ************* toplink only methods ***********
 	
-	private boolean legacyGetRefreshIdentityMapResultForTopLink() {
-		throw new UnsupportedOperationException();
-	}
-	
-	private void legacySetRefreshIdentityMapResultForTopLink(boolean refreshIdentityMapResult) {
-		this.refreshIdentityMapResult = refreshIdentityMapResult;
-		this.refreshRemoteIdentityMapResult = refreshIdentityMapResult;
-	}
-	
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.useWrapperPolicy = true;
-	}
 }

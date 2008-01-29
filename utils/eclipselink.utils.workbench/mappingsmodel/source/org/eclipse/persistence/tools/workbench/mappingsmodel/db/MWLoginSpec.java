@@ -111,44 +111,6 @@ public final class MWLoginSpec
 
 		return descriptor;
 	}
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWLoginSpec.class);
-		descriptor.setTableName("login-info");
-
-		descriptor.addDirectMapping("name", "name");
-
-		descriptor.addDirectMapping("driverClassName", "driver-class");
-		descriptor.addDirectMapping("url", "url");
-		
-		descriptor.addDirectMapping("userName", "user-name");
-		descriptor.addDirectMapping("password", "getPasswordForTopLink", "setPasswordForTopLink", "password");
-		((DirectToFieldMapping) descriptor.addDirectMapping("savePassword", "save-password")).setNullValue(Boolean.FALSE);
-
-		return descriptor;
-	}	
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWLoginSpec.class);
-		descriptor.setTableName("LoginInfo");
-	
-		descriptor.addDirectMapping("name", "name");
-
-		descriptor.addDirectMapping("driverClassName", "driverClass");
-		descriptor.addDirectMapping("url", "url");
-
-		descriptor.addDirectMapping("userName", "userName");
-		descriptor.addDirectMapping("password", "getPasswordForTopLink", "legacySetPasswordForTopLink", "password");
-		((DirectToFieldMapping) descriptor.addDirectMapping("savePassword", "savePassword")).setNullValue(Boolean.FALSE);
-	
-		return descriptor;
-	}	
 	
 	/**
 	 * return the driver class names we know about
@@ -586,22 +548,6 @@ public final class MWLoginSpec
 	 */
 	private void legacySetPasswordForTopLink(String password) {
 		this.password = password;
-	}
-
-	/**
-	 * driver classpath was added in 6.0/10.1.3
-	 */
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.driverClasspathEntries = new Vector();
-	}
-
-	/**
-	 * driver classpath was added in 6.0/10.1.3
-	 */
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.driverClasspathEntries = new Vector();
 	}
 
 	/**

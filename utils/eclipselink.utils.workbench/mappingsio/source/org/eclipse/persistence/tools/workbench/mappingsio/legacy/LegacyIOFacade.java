@@ -27,14 +27,6 @@ public class LegacyIOFacade {
 		return ioManager.read(file, preferences);
 	}
 
-	public static MWRelationalProject read50Project(File file) {
-		return PersistenceTools50.instance().readMWProjectNamed(file.getParentFile(), FileTools.stripExtension(file.getName()));
-	}
-
-	public static MWRelationalProject read45Project(File file) {
-		return PersistenceTools45.instance().readMWProjectNamed(file.getParentFile(), FileTools.stripExtension(file.getName()));
-	}
-	
 	/**
 	 * disallow instantiation
 	 */

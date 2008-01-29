@@ -54,8 +54,8 @@ public class EisProjectExporterTests extends XmlProjectRunnerTests {
 	    							"", 
 	    							ignoreErrorCodes, 
 	    							new Boolean( true), 	// failOnErrorObject
-	    							"Attunity.URL", 
-	    							MWEisLoginSpec.ATTUNITY_CONNECT_ADAPTER_NAME, 
+	    							"JMS.URL", 
+	    							MWEisLoginSpec.JMS_ADAPTER_NAME, 
 	    							"tle", "");
 	    assertEquals( status, 0);
 	}

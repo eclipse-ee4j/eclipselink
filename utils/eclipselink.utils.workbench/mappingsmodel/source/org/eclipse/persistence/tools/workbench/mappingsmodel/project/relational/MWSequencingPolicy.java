@@ -22,13 +22,11 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.handles.MWHandle.No
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.mappings.ObjectTypeMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 
@@ -329,118 +327,4 @@ public final class MWSequencingPolicy extends MWModel {
 		this.tableHandle = ((handle == null) ? new MWTableHandle(this, scrubber) : handle.setScrubber(scrubber));
 	}
 
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWSequencingPolicy.class);
-		descriptor.setTableName("sequencing-policy");
-
-		descriptor.addDirectMapping("preallocationSize", "preallocation-size");
-
-		// use an object type mapping so we can preserve object identity
-		ObjectTypeMapping sequencingTypeMapping = new ObjectTypeMapping();
-		sequencingTypeMapping.setAttributeName("sequencingType");
-			sequencingTypeMapping.addConversionValue(
-					MWSequencingPolicy.DEFAULT_SEQUENCING,
-					MWSequencingPolicy.DEFAULT_SEQUENCING);
-			sequencingTypeMapping.addConversionValue(
-					MWSequencingPolicy.NATIVE_SEQUENCING,
-					MWSequencingPolicy.NATIVE_SEQUENCING);
-			sequencingTypeMapping.addConversionValue(
-					MWSequencingPolicy.SEQUENCE_TABLE,
-					MWSequencingPolicy.SEQUENCE_TABLE);
-		sequencingTypeMapping.setFieldName("sequencing-type");
-		descriptor.addMapping(sequencingTypeMapping);
-
-
-		SDKAggregateObjectMapping nameColumnHandleMapping = new SDKAggregateObjectMapping();
-		nameColumnHandleMapping.setAttributeName("nameColumnHandle");
-		nameColumnHandleMapping.setSetMethodName("setNameColumnHandleForTopLink");
-		nameColumnHandleMapping.setGetMethodName("getNameColumnHandleForTopLink");
-		nameColumnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		nameColumnHandleMapping.setFieldName("name-field-handle");
-		descriptor.addMapping(nameColumnHandleMapping);
-
-		SDKAggregateObjectMapping counterColumnHandleMapping = new SDKAggregateObjectMapping();
-		counterColumnHandleMapping.setAttributeName("counterColumnHandle");
-		counterColumnHandleMapping.setSetMethodName("setCounterColumnHandleForTopLink");
-		counterColumnHandleMapping.setGetMethodName("getCounterColumnHandleForTopLink");
-		counterColumnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		counterColumnHandleMapping.setFieldName("counter-field-handle");
-		descriptor.addMapping(counterColumnHandleMapping);
-
-		OneToOneMapping tableMapping = new OneToOneMapping();
-		tableMapping.setAttributeName("table");
-		tableMapping.setGetMethodName("legacyGetTable");
-		tableMapping.setSetMethodName("legacySetTable");
-		tableMapping.setReferenceClass(MWTable.class);
-		tableMapping.setForeignKeyFieldName("sequencing-policy-table");
-		tableMapping.dontUseIndirection();
-		descriptor.addMapping(tableMapping);
-
-		return descriptor;
-	}
-
-	private void legacySetTable(MWTable table) {
-		this.tableHandle = new MWTableHandle(this, table, this.buildTableScrubber());
-	}
-	private MWTable legacyGetTable() {
-		throw new UnsupportedOperationException();
-	}
-
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWSequencingPolicy.class);
-		descriptor.setTableName("SequencingPolicy");
-		descriptor.descriptorIsAggregate();
-
-		descriptor.addDirectMapping("preallocationSize", "seq_preallocSize");
-
-		// use an object type mapping so we can preserve object identity
-		ObjectTypeMapping sequencingTypeMapping = new ObjectTypeMapping();
-		sequencingTypeMapping.setAttributeName("sequencingType");
-			sequencingTypeMapping.addConversionValue(
-					MWSequencingPolicy.DEFAULT_SEQUENCING,
-					MWSequencingPolicy.DEFAULT_SEQUENCING);
-			sequencingTypeMapping.addConversionValue(
-					MWSequencingPolicy.NATIVE_SEQUENCING,
-					MWSequencingPolicy.NATIVE_SEQUENCING);
-			sequencingTypeMapping.addConversionValue(
-					MWSequencingPolicy.SEQUENCE_TABLE,
-					MWSequencingPolicy.SEQUENCE_TABLE);
-		sequencingTypeMapping.setFieldName("seq_type");
-		descriptor.addMapping(sequencingTypeMapping);
- 
-	
-		SDKAggregateObjectMapping nameColumnHandleMapping = new SDKAggregateObjectMapping();
-		nameColumnHandleMapping.setAttributeName("nameColumnHandle");
-		nameColumnHandleMapping.setSetMethodName("setNameColumnHandleForTopLink");
-		nameColumnHandleMapping.setGetMethodName("getNameColumnHandleForTopLink");
-		nameColumnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		nameColumnHandleMapping.setFieldName("nameFieldHandle");
-		descriptor.addMapping(nameColumnHandleMapping);
-
-		SDKAggregateObjectMapping counterColumnHandleMapping = new SDKAggregateObjectMapping();
-		counterColumnHandleMapping.setAttributeName("counterColumnHandle");
-		counterColumnHandleMapping.setSetMethodName("setCounterColumnHandleForTopLink");
-		counterColumnHandleMapping.setGetMethodName("getCounterColumnHandleForTopLink");
-		counterColumnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		counterColumnHandleMapping.setFieldName("counterFieldHandle");
-		descriptor.addMapping(counterColumnHandleMapping);
-
-		OneToOneMapping tableMapping = new OneToOneMapping();
-		tableMapping.dontUseIndirection();
-		tableMapping.setAttributeName("table");
-		tableMapping.setGetMethodName("legacyGetTable");
-		tableMapping.setSetMethodName("legacySetTable");
-		tableMapping.setReferenceClass(MWTable.class);
-		tableMapping.setForeignKeyFieldName("seq_table");
-		descriptor.addMapping(tableMapping);
-
-		return descriptor;
-	}
-	
 }

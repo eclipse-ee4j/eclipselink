@@ -402,45 +402,4 @@ public abstract class MWClassIndicatorFieldPolicy extends MWAbstractClassIndicat
 		this.classIndicatorValues = indicatorValues;		
 	}
 	
-	private void legacy50SetIndicatorType(MWClass newIndicatorType) {
-		if (newIndicatorType != null) {
-			this.indicatorType = new MWTypeDeclaration(this, newIndicatorType);
-		}
-	}
-	private MWClass legacy50GetIndicatorType() {
-		throw new UnsupportedOperationException();
-	}
-
-	private void legacy45SetIndicatorType(Class indicatorType) {
-		this.legacyIndicatorType = indicatorType;
-	}	
-	private Class legacy45GetIndicatorType() {
-		throw new UnsupportedOperationException();
-	}
-	
-	// in 4.5 projects, it is possible for the descriptor to be null (if read in from 3.6), but
-	// not possible for the descriptor's package to be null	
-	public void legacy45PrePostProjectBuild() {
-		super.legacy45PrePostProjectBuild();
-		for (Iterator stream = this.classIndicatorValues.iterator(); stream.hasNext(); ) {
-			MWClassIndicatorValue value = (MWClassIndicatorValue) stream.next();
-			if (value.getDescriptorValue() == null) {
-				stream.remove();
-			}
-		}   
-	}
-
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.indicatorType = new MWTypeDeclaration(this);
-		if (this.legacyIndicatorType != null) {
-			if (this.classNameIsIndicator()) {
-				this.indicatorType = null;	// bug 3900433
-			} else {
-				this.indicatorType.legacy45SetTypeName(this.legacyIndicatorType.getName());
-			}
-			this.legacyIndicatorType = null;
-		}
-	}
-
 }

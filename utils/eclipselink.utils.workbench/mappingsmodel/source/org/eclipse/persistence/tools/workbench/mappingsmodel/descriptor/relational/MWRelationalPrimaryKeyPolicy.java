@@ -222,14 +222,4 @@ public final class MWRelationalPrimaryKeyPolicy extends MWModel {
 		this.setPrimaryKeyHandlesForTopLink(handles);
 	}
 
-	//bug #4338221
-	public void legacy45PostPostProjectBuild() {
-		super.legacy45PostPostProjectBuild();
-		for (Iterator stream = this.primaryKeys(); stream.hasNext(); ) {
-			MWColumn primaryKey = (MWColumn) stream.next();
-			if (primaryKey == null) {
-				stream.remove();
-			}
-		}
-	}
 }

@@ -28,7 +28,6 @@ import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.LogicalExpression;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import deprecated.sdk.SDKAggregateCollectionMapping;
 
 /**
  *  This class contains a list of expressions and an operator used on those expressions
@@ -326,23 +325,7 @@ public final class MWCompoundExpression extends MWExpression {
 			
 		return descriptor;	
 	}
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWCompoundExpression.class);
-			
-		//Inheritance Policy
-		descriptor.getInheritancePolicy().setParentClass(MWExpression.class);
-	
-		// aggregate collection - expressions
-		SDKAggregateCollectionMapping expressionsMapping = new SDKAggregateCollectionMapping();
-		expressionsMapping.setAttributeName("expressions");
-		expressionsMapping.setReferenceClass(MWExpression.class);
-		expressionsMapping.setFieldName("expression-list");
-		descriptor.addMapping(expressionsMapping);
-			
-		return descriptor;	
-	}	
+
 	//review this one again and make sure to unit test it well
 	//Conversion methods
 	Expression buildRuntimeExpression(ExpressionBuilder builder) {	

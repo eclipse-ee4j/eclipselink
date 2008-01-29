@@ -79,14 +79,5 @@ public final class MWEJBQLQueryFormat
 	
 		return descriptor;
 	}
-	public static ClassDescriptor legacy50BuildDescriptor() 
-	{
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWEJBQLQueryFormat.class);
 
-		descriptor.getInheritancePolicy().setParentClass(MWStringQueryFormat.class);
-	
-		return descriptor;
-	}
 }

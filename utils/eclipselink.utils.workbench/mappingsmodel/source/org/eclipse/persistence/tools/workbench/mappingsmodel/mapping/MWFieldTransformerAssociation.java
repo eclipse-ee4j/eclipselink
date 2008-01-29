@@ -203,15 +203,4 @@ public abstract class MWFieldTransformerAssociation
 		this.fieldTransformer = MWTransformer.buildTransformerForTopLink(transformer);
 	}
 
-	/**
-	 * put these methods here because 'fieldTransformer' is private to this class
-	 * but the legacy mappings are in the relational subclass
-	 */
-	private void legacySetFieldTransformerMethodHandle(MWMethodHandle methodHandle) {
-		this.fieldTransformer = new MWMethodBasedTransformer(this, methodHandle);
-	}
-	private MWMethodHandle legacyGetFieldTransformerMethodHandle() {
-		throw new UnsupportedOperationException();
-	}
-
 }

@@ -47,7 +47,6 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
-import deprecated.sdk.SDKObjectCollectionMapping;
 
 public final class MWInterfaceDescriptor extends MWDescriptor 
 	implements MWRelationalDescriptor {
@@ -483,59 +482,6 @@ public final class MWInterfaceDescriptor extends MWDescriptor
 			((MWDescriptorHandle) stream.next()).setScrubber(this.implementorScrubber());
 		}
 		this.implementorHandles = implementorHandles;
-	}
-
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.setJavaClass(MWInterfaceDescriptor.class);
-		descriptor.getInheritancePolicy().setParentClass(MWDescriptor.class);
-		
-		SDKObjectCollectionMapping implementorsMapping = MWModel.legacyBuildOneToManyMapping();
-		implementorsMapping.setAttributeName("implementors");
-		implementorsMapping.setSetMethodName("legacySetImplementorsForTopLink");
-		implementorsMapping.setGetMethodName("legacyGetImplementorsForTopLink");
-		implementorsMapping.setReferenceClass(MWDescriptor.class);
-		implementorsMapping.setFieldName("implementors");
-		implementorsMapping.setReferenceDataTypeName("implementor");
-		implementorsMapping.setSourceForeignKeyFieldName("name");
-		implementorsMapping.dontUseIndirection();
-		descriptor.addMapping(implementorsMapping);
-		
-		return descriptor;
-	}
-
-	/**
-	 * legacy projects did not use MWDescriptorHandle
-	 */
-	private void legacySetImplementorsForTopLink(Collection implementors) {
-		this.implementorHandles = new Vector();
-		for (Iterator stream = implementors.iterator(); stream.hasNext(); ) {
-			this.implementorHandles.add(new MWDescriptorHandle(this, (MWDescriptor) stream.next(), this.implementorScrubber()));
-		}
-	}
-	private Collection legacyGetImplementorsForTopLink() {
-		throw new UnsupportedOperationException();
-	}
-
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWInterfaceDescriptor.class);
-		descriptor.getInheritancePolicy().setParentClass(MWDescriptor.class);
-
-		SDKObjectCollectionMapping implementorsMapping = MWModel.legacyBuildOneToManyMapping();
-		implementorsMapping.setAttributeName("implementors");
-		implementorsMapping.setSetMethodName("legacySetImplementorsForTopLink");
-		implementorsMapping.setGetMethodName("legacyGetImplementorsForTopLink");
-		implementorsMapping.setReferenceClass(MWDescriptor.class);
-		implementorsMapping.setFieldName("implementors");
-		implementorsMapping.setReferenceDataTypeName("implementor");
-		implementorsMapping.setSourceForeignKeyFieldName("implementor");
-		implementorsMapping.dontUseIndirection();
-		descriptor.addMapping(implementorsMapping);
-
-		return descriptor;
 	}
 
 }

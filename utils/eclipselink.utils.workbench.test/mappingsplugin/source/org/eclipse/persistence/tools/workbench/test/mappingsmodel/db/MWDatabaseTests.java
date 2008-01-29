@@ -50,7 +50,7 @@ public class MWDatabaseTests extends AbstractModelDatabaseTests {
 	}
 
 	public void testTableNamed() {
-		MWDatabase db = TestDatabases.oracleDatabase();
+		MWDatabase db = TestDatabases.mySQLDatabase();
 		MWTable table1 = db.addTable("TEST_TABLE");
 		MWTable table2;
 
@@ -85,13 +85,11 @@ public class MWDatabaseTests extends AbstractModelDatabaseTests {
 	}
 
 	public void testImportTables() throws Exception {
-		MWDatabase db = TestDatabases.oracleDatabase();
+		MWDatabase db = TestDatabases.mySQLDatabase();
 		try {
 			db.login();
 			Collection tableTypes = CollectionTools.collection(db.tableTypeNames());
-//			System.out.println("table types: " + tableTypes);
 			assertTrue("The list of table types does not contain TABLE", tableTypes.contains("TABLE"));
-			// Oracle 10g will return 117 tables - just refresh a few...
 			db.importQualifiedTablesFor(this.xxx(db.externalTableDescriptions(null, null, null, new String[] {"TABLE"})));
 			assertTrue("No tables were added.", db.tablesSize() > 0);
 		} finally {
@@ -101,7 +99,7 @@ public class MWDatabaseTests extends AbstractModelDatabaseTests {
 		}
 	}
 
-	private static final String[] IMPORT_TABLE_NAMES = new String[] {"EMP", "ADDR", "STATE"};
+	private static final String[] IMPORT_TABLE_NAMES = new String[] {"emp", "addr", "state"};
 
 	private Collection xxx(Iterator externalTables) {
 		Collection result = new ArrayList();
@@ -120,12 +118,12 @@ public class MWDatabaseTests extends AbstractModelDatabaseTests {
 		this.database.writeDDLOn(writer);
 		this.database.logout();
 		String ddl = writer.toString();
-		assertTrue(ddl, ddl.indexOf("CREATE TABLE EMP") != -1);
-		assertTrue(ddl, ddl.indexOf("ALTER TABLE EMP ADD CONSTRAINT EMP_ADDR FOREIGN KEY") != -1);
-		assertTrue(ddl, ddl.indexOf("ALTER TABLE EMP ADD CONSTRAINT EMP_BOSS FOREIGN KEY") != -1);
-		assertTrue(ddl, ddl.indexOf("CREATE TABLE ADDR") != -1);
-		assertTrue(ddl, ddl.indexOf("ALTER TABLE ADDR ADD CONSTRAINT ADDR_STATE FOREIGN KEY") != -1);
-		assertTrue(ddl, ddl.indexOf("CREATE TABLE STATE") != -1);
+		assertTrue(ddl, ddl.indexOf("CREATE TABLE emp") != -1);
+		assertTrue(ddl, ddl.indexOf("ALTER TABLE emp ADD CONSTRAINT emp_addr FOREIGN KEY") != -1);
+		assertTrue(ddl, ddl.indexOf("ALTER TABLE emp ADD CONSTRAINT emp_boss FOREIGN KEY") != -1);
+		assertTrue(ddl, ddl.indexOf("CREATE TABLE addr") != -1);
+		assertTrue(ddl, ddl.indexOf("ALTER TABLE addr ADD CONSTRAINT addr_state FOREIGN KEY") != -1);
+		assertTrue(ddl, ddl.indexOf("CREATE TABLE state") != -1);
 	}
 
 	public void testGenerateTables() throws Exception {
@@ -133,7 +131,7 @@ public class MWDatabaseTests extends AbstractModelDatabaseTests {
 		this.database.generateTables();
 		this.database.logout();
 		
-		MWDatabase database2 = TestDatabases.oracleDatabase();
+		MWDatabase database2 = TestDatabases.mySQLDatabase();
 		database2.login();
 		database2.importUnqualifiedTablesFor(this.matching(database2.externalTableDescriptions(null, null, null, new String[] {"TABLE"})));
 		database2.logout();

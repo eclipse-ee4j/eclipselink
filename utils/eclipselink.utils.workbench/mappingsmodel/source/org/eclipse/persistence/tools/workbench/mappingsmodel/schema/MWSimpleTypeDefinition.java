@@ -13,6 +13,7 @@ import java.util.ListIterator;
 
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 
+
 public interface MWSimpleTypeDefinition 
 	extends MWSchemaTypeDefinition 
 {

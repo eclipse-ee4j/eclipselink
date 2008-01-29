@@ -40,9 +40,9 @@ public class MultipleTableRuntimeProject {
 
 	public void applyLogin() {
 		DatabaseLogin login = new DatabaseLogin();
-		login.usePlatform(new org.eclipse.persistence.platform.database.oracle.OraclePlatform());
-		login.setDriverClassName(TestDatabases.oracleDriverClassName());
-		login.setConnectionString(TestDatabases.oracleServerURL());
+		login.usePlatform(new org.eclipse.persistence.platform.database.MySQL4Platform());
+		login.setDriverClassName(TestDatabases.mySQLDriverClassName());
+		login.setConnectionString(TestDatabases.mySQLServerURL());
 		login.setUserName(TestDatabases.userName());
 		login.setPassword(TestDatabases.password());
 		
@@ -70,7 +70,7 @@ public class MultipleTableRuntimeProject {
 
     public ClassDescriptor buildCowDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
-        descriptor.setJavaClassName("test.oracle.models.multipletable.Cow");
+        descriptor.setJavaClassName("org.eclipse.persistence.tools.workbench.test.models.multipletable.Cow");
         descriptor.addTableName("MULTI_COW");
         descriptor.addTableName("MULTI_CALFS");
         descriptor.addPrimaryKeyFieldName("MULTI_COW.ID");
@@ -112,7 +112,7 @@ public class MultipleTableRuntimeProject {
     
     public ClassDescriptor buildHorseDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
-        descriptor.setJavaClassName("test.oracle.models.multipletable.Horse");
+        descriptor.setJavaClassName("org.eclipse.persistence.tools.workbench.test.models.multipletable.Horse");
         descriptor.addTableName("MULTI_HORSE");
         descriptor.addTableName("MULTI_FOALS");
         descriptor.addPrimaryKeyFieldName("MULTI_HORSE.ID");
@@ -149,7 +149,7 @@ public class MultipleTableRuntimeProject {
 
     public ClassDescriptor buildHumanDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
-        descriptor.setJavaClassName("test.oracle.models.multipletable.Human");
+        descriptor.setJavaClassName("org.eclipse.persistence.tools.workbench.test.models.multipletable.Human");
         descriptor.addTableName("MULTI_HUMAN");
         descriptor.addTableName("MULTI_KIDS");
         descriptor.addPrimaryKeyFieldName("MULTI_HUMAN.ID");
@@ -186,7 +186,7 @@ public class MultipleTableRuntimeProject {
     
     public ClassDescriptor buildSwanDescriptor() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
-        descriptor.setJavaClassName("test.oracle.models.multipletable.Swan");
+        descriptor.setJavaClassName("org.eclipse.persistence.tools.workbench.test.models.multipletable.Swan");
         descriptor.addTableName("MULTI_SWAN");
         descriptor.addTableName("MULTI_CYGNETS");
         descriptor.addPrimaryKeyFieldName("MULTI_SWAN.ID");

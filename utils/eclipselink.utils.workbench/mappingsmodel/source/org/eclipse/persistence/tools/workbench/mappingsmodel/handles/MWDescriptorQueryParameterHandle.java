@@ -54,9 +54,6 @@ public final class MWDescriptorQueryParameterHandle extends MWHandle {
 	private volatile String querySignature;
 	private volatile String queryParameterName;
 	
-	private volatile MWTableDescriptor legacyTableDescriptor;
-
-
 	// ********** constructors **********
 
 	/**
@@ -97,9 +94,6 @@ public final class MWDescriptorQueryParameterHandle extends MWHandle {
 
 	public void postProjectBuild() {
 		super.postProjectBuild();
-		if (this.legacyTableDescriptor != null) {
-			this.classDescriptorName = this.legacyTableDescriptor.getName();
-		}
 		if (this.classDescriptorName != null && this.querySignature != null && this.queryParameterName != null) {
 			MWTableDescriptor classDescriptor = (MWTableDescriptor) this.getProject().descriptorNamed(this.classDescriptorName);
 			if (classDescriptor != null) {
@@ -151,28 +145,6 @@ public final class MWDescriptorQueryParameterHandle extends MWHandle {
 		return descriptor;
 	}
 
-	public static ClassDescriptor legacy50BuildDescriptor(){
-		ClassDescriptor descriptor = new deprecated.xml.XMLDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWDescriptorQueryParameterHandle.class);
-		descriptor.setTableName("descriptor-query-parameter-handle");
-
-	    OneToOneMapping descriptorMapping = new OneToOneMapping();
-		descriptorMapping.setAttributeName("classDescriptor");
-		descriptorMapping.setGetMethodName("legacyGetClassDescriptorForTopLink");
-		descriptorMapping.setSetMethodName("legacySetClassDescriptorForTopLink");
-		descriptorMapping.dontUseIndirection();
-		descriptorMapping.setReferenceClass(MWTableDescriptor.class);
-		descriptorMapping.setForeignKeyFieldName("class-descriptor");
-		descriptor.addMapping(descriptorMapping);
-
-		descriptor.addDirectMapping("querySignature", "getQuerySignatureForTopLink", "setQuerySignatureForTopLink", "query-signature");
-		descriptor.addDirectMapping("queryParameterName", "getQueryParameterNameForTopLink", "setQueryParameterNameForTopLink", "query-parameter-name");
-
-		return descriptor;
-	}
-
 	private String getClassDescriptorNameForTopLink() {
 		return (this.queryParameter == null) ? null : this.queryParameter.getQuery().getOwningDescriptor().getName();
 	}
@@ -195,20 +167,6 @@ public final class MWDescriptorQueryParameterHandle extends MWHandle {
 
 	private void setQueryParameterNameForTopLink(String queryParameterName) {
 		this.queryParameterName = queryParameterName;
-	}
-
-	/**
-	 * This legacy method will only be used by toplink for reading 5.x projects 
-	 * in which there was a direct reference to the class descriptor.
-	 */
-	private void legacySetClassDescriptorForTopLink(MWTableDescriptor classDescriptor) {
-		if (classDescriptor != null) {
-			this.legacyTableDescriptor = classDescriptor;
-		}
-	}
-
-	private MWTableDescriptor legacyGetClassDescriptorForTopLink() {
-		throw new UnsupportedOperationException();
 	}
 
 }

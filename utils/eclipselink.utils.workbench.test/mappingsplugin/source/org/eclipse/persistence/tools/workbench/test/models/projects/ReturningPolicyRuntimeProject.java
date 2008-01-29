@@ -49,7 +49,7 @@ public class ReturningPolicyRuntimeProject {
 
 		descriptor.getDescriptorQueryManager().checkCacheForDoesExist();
 		
-		descriptor.setJavaClassName("test.oracle.models.employee.Employee");
+		descriptor.setJavaClassName("org.eclipse.persistence.tools.workbench.test.models.employee.Employee");
 		descriptor.setTableName("EMPLOYEE");
 		descriptor.addTableName("SALARY");
 		descriptor.addPrimaryKeyFieldName("EMPLOYEE.EMP_ID");

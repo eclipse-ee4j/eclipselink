@@ -53,10 +53,6 @@ public final class MWQueryableHandle extends MWHandle {
 	private volatile String mappingDescriptorName;
 	private volatile String queryableName;
 
-
-	private volatile MWRelationalClassDescriptor legacyDescriptor;
-
-
 	// ********** constructors **********
 
 	/**
@@ -97,10 +93,6 @@ public final class MWQueryableHandle extends MWHandle {
 
 	public void postProjectBuild() {
 		super.postProjectBuild();
-		if (this.legacyDescriptor != null) {
-			this.mappingDescriptorName = this.legacyDescriptor.getName();
-		}
-
 		if (this.mappingDescriptorName != null && this.queryableName != null) {
 			MWRelationalClassDescriptor mappingDescriptor = (MWRelationalClassDescriptor) this.getProject().descriptorNamed(this.mappingDescriptorName);
 			if (mappingDescriptor != null) {
@@ -142,27 +134,6 @@ public final class MWQueryableHandle extends MWHandle {
 		return descriptor;
 	}
 
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = new deprecated.xml.XMLDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWQueryableHandle.class);
-		descriptor.setTableName("queryable-handle");
-
-	    OneToOneMapping classDescriptorMapping = new OneToOneMapping();
-		classDescriptorMapping.setAttributeName("mappingDescriptor");
-		classDescriptorMapping.setGetMethodName("legacyGetMappingDescriptorForTopLink");
-		classDescriptorMapping.setSetMethodName("legacySetMappingDescriptorForTopLink");
-		classDescriptorMapping.setReferenceClass(MWRelationalClassDescriptor.class);
-		classDescriptorMapping.setForeignKeyFieldName("mapping-descriptor");
-		classDescriptorMapping.dontUseIndirection();
-		descriptor.addMapping(classDescriptorMapping);
-
-		descriptor.addDirectMapping("queryableName", "getQueryableNameForToplink", "setQueryableNameForToplink", "queryable-name");
-
-		return descriptor;
-	}
-
 	private String getMappingDescriptorNameForToplink() {
 		return (this.queryable == null) ? null : this.queryable.getParentDescriptor().getName();
 	}
@@ -177,18 +148,6 @@ public final class MWQueryableHandle extends MWHandle {
 
 	private void setQueryableNameForToplink(String queryableName) {
 		this.queryableName = queryableName;
-	}
-
-	/**
-	 * This legacy method will only be used by toplink for reading 5.x projects 
-	 * in which there was an attribute declaring type.
-	 */
-	private void legacySetMappingDescriptorForTopLink(MWRelationalClassDescriptor mappingDescriptor) {
-		this.legacyDescriptor = mappingDescriptor;
-	}
-
-	private MWRelationalClassDescriptor legacyGetMappingDescriptorForTopLink() {
-		throw new UnsupportedOperationException();
 	}
 
 }

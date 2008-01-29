@@ -31,8 +31,6 @@ import org.eclipse.persistence.tools.workbench.utility.node.Node;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
-
 
 public final class MWUserDefinedQueryKey extends MWModel 
 	implements MWQueryKey, MWQueryable, AggregateRuntimeFieldNameGenerator {
@@ -308,45 +306,4 @@ public final class MWUserDefinedQueryKey extends MWModel
 		NodeReferenceScrubber scrubber = this.buildColumnScrubber();
 		this.columnHandle = ((handle == null) ? new MWColumnHandle(this, scrubber) : handle.setScrubber(scrubber));
 	}
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWUserDefinedQueryKey.class);
-		descriptor.setTableName("user-defined-query-key");
-
-		descriptor.addDirectMapping("name", "name");
-
-		SDKAggregateObjectMapping columnHandleMapping = new SDKAggregateObjectMapping();
-		columnHandleMapping.setAttributeName("columnHandle");
-		columnHandleMapping.setGetMethodName("getColumnHandleForTopLink");
-		columnHandleMapping.setSetMethodName("setColumnHandleForTopLink");
-		columnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		columnHandleMapping.setFieldName("user-defined-query-key-field-handle");
-		descriptor.addMapping(columnHandleMapping);
-
-		return descriptor;
-	}
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWUserDefinedQueryKey.class);
-		descriptor.setTableName("UserDefinedQueryKey");
-
-		descriptor.addDirectMapping("name", "name");
-
-		SDKAggregateObjectMapping columnHandleMapping = new SDKAggregateObjectMapping();
-		columnHandleMapping.setAttributeName("columnHandle");
-		columnHandleMapping.setGetMethodName("getColumnHandleForTopLink");
-		columnHandleMapping.setSetMethodName("setColumnHandleForTopLink");
-		columnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		columnHandleMapping.setFieldName("fieldHandle");
-		descriptor.addMapping(columnHandleMapping);
-
-		return descriptor;
-	}
-
 }

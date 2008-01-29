@@ -102,7 +102,7 @@ public class ReturningPolicyEisRuntimeProject {
                 
         EISTransformationMapping normalHoursMapping = new EISTransformationMapping();
         normalHoursMapping.setAttributeName("normalHours");
-        normalHoursMapping.setAttributeTransformerClassName("test.oracle.models.eis.employee.NormalHoursTransformer");
+        normalHoursMapping.setAttributeTransformerClassName("org.eclipse.persistence.tools.workbench.test.models.eis.employee.NormalHoursTransformer");
         
         XMLField startTimeField = new XMLField("working-hours/start-time/text()");
         startTimeField.setSchemaType(new QName(XMLConstants.SCHEMA_URL, XMLConstants.DATE_TIME));

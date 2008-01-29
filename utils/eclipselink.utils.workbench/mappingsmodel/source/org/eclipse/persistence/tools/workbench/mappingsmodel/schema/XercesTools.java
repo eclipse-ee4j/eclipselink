@@ -10,16 +10,10 @@
 package org.eclipse.persistence.tools.workbench.mappingsmodel.schema;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.ListIterator;
-import java.util.Vector;
 
-import org.apache.xerces.impl.xs.XSAttributeDecl;
 import org.apache.xerces.xs.XSObject;
 import org.apache.xerces.xs.XSObjectList;
-import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 
 
 final class XercesTools 

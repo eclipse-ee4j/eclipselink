@@ -31,7 +31,7 @@ public class CorruptArrayProject extends RelationalTestProject {
 	}
     
     public MWTableDescriptor getCorruptArrayDescriptor() {
-        return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.corruptarray.CorruptArray");
+        return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.corruptarray.CorruptArray");
     }
    
 
@@ -51,7 +51,7 @@ public class CorruptArrayProject extends RelationalTestProject {
 	protected void initializeDescriptors() {
 		super.initializeDescriptors();
 
-		this.addDescriptorForTypeNamed("test.oracle.models.corruptarray.CorruptArray");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.corruptarray.CorruptArray");
 		
 		initializeCorruptArrayDescriptor();
 	}

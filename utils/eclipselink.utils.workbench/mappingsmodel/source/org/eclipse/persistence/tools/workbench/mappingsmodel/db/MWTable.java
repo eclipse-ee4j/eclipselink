@@ -40,7 +40,6 @@ import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import deprecated.sdk.SDKAggregateCollectionMapping;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public final class MWTable
@@ -429,17 +428,6 @@ public final class MWTable
 	public String getName() {
 		return this.qualifiedName();
 	}
-
-	/**
-	 * for legacy reading purposes only.  in legacy projects the fully qualified status of the table
-	 * was determined by a boolean.
-	 */
-	public String legacyGetName() {
-		if (this.legacyIsFullyQualified) {
-			return this.qualifiedName();
-		}
-		return this.getShortName();
-	}
 	
 	//  ********** queries **********
 
@@ -808,105 +796,5 @@ public final class MWTable
 	private void setReferencesForTopLink(Collection references) {
 		 this.references = references;
 	}
-
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = legacy50BuildStandardDescriptor();
-
-		descriptor.setJavaClass(MWTable.class);
-		descriptor.setTableName("table");
-		descriptor.addPrimaryKeyFieldName("valid-file-name");
-
-		descriptor.addDirectMapping("catalog","catalog");
-		descriptor.addDirectMapping("schema", "schema");
-		descriptor.addDirectMapping("shortName", "short-name");
-		descriptor.addDirectMapping("validFileName", "legacyGetValidFileName", "legacySetValidFileName", "valid-file-name");
-		DirectToFieldMapping legacyIsFullyQualifiedMapping = (DirectToFieldMapping)descriptor.addDirectMapping("legacyIsFullyQualified", "is-fully-qualified");
-		legacyIsFullyQualifiedMapping.setNullValue(Boolean.TRUE);
-		
-		SDKAggregateCollectionMapping columnsMapping = new SDKAggregateCollectionMapping();
-		columnsMapping.setAttributeName("columns");
-		columnsMapping.setGetMethodName("getColumnsForTopLink");
-		columnsMapping.setSetMethodName("setColumnsForTopLink");
-		columnsMapping.setReferenceClass(MWColumn.class);
-		columnsMapping.setFieldName("fields");
-		descriptor.addMapping(columnsMapping);
-
-		SDKAggregateCollectionMapping referencesMapping = new SDKAggregateCollectionMapping();
-		referencesMapping.setAttributeName("references");
-		referencesMapping.setGetMethodName("getReferencesForTopLink");
-		referencesMapping.setSetMethodName("setReferencesForTopLink");
-		referencesMapping.setReferenceClass(MWReference.class);
-		referencesMapping.setFieldName("references");
-		descriptor.addMapping(referencesMapping);
-
-		return descriptor;
-	}
 	
-	private String legacyGetValidFileName() {
-		return FileTools.convertToValidFileName(this.qualifiedName());
-	}
-	private void legacySetValidFileName(String validFileName) {
-		// ignore - the valid file name is calculated
-	}
-
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.resolveFullyQualified();
-	}
-
-	// legacy projects sometimes have a value for 'schema' or 'catalog', even
-	// when the 'fullyQualified' flag is set to false;
-	// but now we calculate the value of the 'fullyQualified' flag: if either
-	// 'schema' or 'catalog' have a value, the method #nameIsQualified() returns true;
-	// so, when we read in a legacy project we need to clear the
-	// 'schema' and 'catalog' fields if the 'fullyQualified' flag is false because
-	// the references do not have fully-qualified table names and will not be
-	// able to find the appropriate table during #resolveMetadataHandles()
-	private void resolveFullyQualified() {
-		if ( ! this.legacyIsFullyQualified) {
-			this.schema = null;
-			this.catalog = null;
-		}
-	}
-	
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWTable.class);
-		descriptor.setTableName("Table");
-
-		descriptor.addPrimaryKeyFieldName("validFileName");
-
-		descriptor.addDirectMapping("catalog","catalog");
-		descriptor.addDirectMapping("schema", "schema");
-		descriptor.addDirectMapping("shortName", "shortName");
-		descriptor.addDirectMapping("validFileName", "legacyGetValidFileName", "legacySetValidFileName", "validFileName");
-		DirectToFieldMapping legacyIsFullyQualifiedMapping = (DirectToFieldMapping)descriptor.addDirectMapping("legacyIsFullyQualified", "isFullyQualified");
-		legacyIsFullyQualifiedMapping.setNullValue(Boolean.TRUE);		
-
-		SDKAggregateCollectionMapping columnsMapping = new SDKAggregateCollectionMapping();
-		columnsMapping.setAttributeName("columns");
-		columnsMapping.setGetMethodName("getColumnsForTopLink");
-		columnsMapping.setSetMethodName("setColumnsForTopLink");
-		columnsMapping.setReferenceClass(MWColumn.class);
-		columnsMapping.setFieldName("databaseFields");
-		descriptor.addMapping(columnsMapping);
-
-		SDKAggregateCollectionMapping referencesMapping = new SDKAggregateCollectionMapping();
-		referencesMapping.setAttributeName("references");
-		referencesMapping.setGetMethodName("getReferencesForTopLink");
-		referencesMapping.setSetMethodName("setReferencesForTopLink");
-		referencesMapping.setReferenceClass(MWReference.class);
-		referencesMapping.setFieldName("references");
-		descriptor.addMapping(referencesMapping);
-
-		return descriptor;
-	}
-
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.resolveFullyQualified();
-	}
-
 }

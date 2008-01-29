@@ -53,9 +53,9 @@ public class PhoneCompanyRuntimeProject {
 
 	public void applyLogin() {
 		DatabaseLogin login = new DatabaseLogin();
-		login.usePlatform(new org.eclipse.persistence.platform.database.oracle.OraclePlatform());
-		login.setDriverClassName(TestDatabases.oracleDriverClassName());
-		login.setConnectionString(TestDatabases.oracleServerURL());
+		login.usePlatform(new org.eclipse.persistence.platform.database.MySQL4Platform());
+		login.setDriverClassName(TestDatabases.mySQLDriverClassName());
+		login.setConnectionString(TestDatabases.mySQLServerURL());
 		login.setUserName(TestDatabases.userName());
 		login.setPassword(TestDatabases.password());
 		
@@ -177,7 +177,7 @@ public class PhoneCompanyRuntimeProject {
 		descriptor.setIdentityMapSize(98);
 
 		descriptor.setSequenceNumberFieldName("EMAIL.ID");
-		descriptor.setSequenceNumberName("test.oracle.models.phone.EmailAddress");
+		descriptor.setSequenceNumberName("org.eclipse.persistence.tools.workbench.test.models.phone.EmailAddress");
 		descriptor.setAlias("EmailAddress");
 		
 		// Query manager.
@@ -324,7 +324,7 @@ public class PhoneCompanyRuntimeProject {
 		descriptor.setIdentityMapSize(98);
 
 		descriptor.setSequenceNumberFieldName("PHONE_NUMBER.ID");
-		descriptor.setSequenceNumberName("test.oracle.models.phone.PhoneNumber");
+		descriptor.setSequenceNumberName("org.eclipse.persistence.tools.workbench.test.models.phone.PhoneNumber");
 		descriptor.setAlias("PhoneNumber");
 			
 		// Query manager.
@@ -393,8 +393,8 @@ public class PhoneCompanyRuntimeProject {
 		serviceUserMapping.setIndirectionPolicy(new ProxyIndirectionPolicy());
 		serviceUserMapping.addForeignQueryKeyName("SERVICE_CALL.SERVICE_USER_ID", "id");
 		serviceUserMapping.setTypeFieldName("SERVICE_CALL.SERVICE_USER_TYPE");
-		serviceUserMapping.addClassNameIndicator("test.oracle.models.phone.Household", "H");
-		serviceUserMapping.addClassNameIndicator("test.oracle.models.phone.Company", "C");
+		serviceUserMapping.addClassNameIndicator("org.eclipse.persistence.tools.workbench.test.models.phone.Household", "H");
+		serviceUserMapping.addClassNameIndicator("org.eclipse.persistence.tools.workbench.test.models.phone.Company", "C");
 		descriptor.addMapping(serviceUserMapping);
 	
 		return descriptor;
@@ -455,8 +455,8 @@ public class PhoneCompanyRuntimeProject {
 		primaryContactMapping.setIndirectionPolicy(new ProxyIndirectionPolicy());
 		primaryContactMapping.addForeignQueryKeyName("primaryContact->QUERY_KEY id", "id");
 		primaryContactMapping.setTypeFieldName("primaryContact->CLASS_INDICATOR_FIELD");
-		primaryContactMapping.addClassNameIndicator("test.oracle.models.phone.PhoneNumber", "P");
-		primaryContactMapping.addClassNameIndicator("test.oracle.models.phone.EmailAddress", "E");
+		primaryContactMapping.addClassNameIndicator("org.eclipse.persistence.tools.workbench.test.models.phone.PhoneNumber", "P");
+		primaryContactMapping.addClassNameIndicator("org.eclipse.persistence.tools.workbench.test.models.phone.EmailAddress", "E");
 		descriptor.addMapping(primaryContactMapping);
 	
 		OneToOneMapping primaryContactPersonMapping = new OneToOneMapping();

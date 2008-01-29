@@ -31,7 +31,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
 
 public final class MWRelationalFieldTransformerAssociation
 		extends MWFieldTransformerAssociation
@@ -200,80 +199,6 @@ public final class MWRelationalFieldTransformerAssociation
 	private void setColumnHandleForTopLink(MWColumnHandle columnHandle) {
 		NodeReferenceScrubber scrubber = this.buildColumnScrubber();
 		this.columnHandle = ((columnHandle == null) ? new MWColumnHandle(this, scrubber) : columnHandle.setScrubber(scrubber));
-	}
-
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		
-		// Map this class to the same schema that used to be mapped to by the 
-		//		MWFieldMethodPair class.  They both (did) hold field handles and
-		//		method handles.
-		
-		descriptor.setJavaClass(MWRelationalFieldTransformerAssociation.class);
-		// no need for inheritance here, since xml field transformers didn't exist yet
-		
-		descriptor.setTableName("field-method-pair");
-		
-		// field handle - should work exactly the same as previously
-		SDKAggregateObjectMapping columnHandleMapping = new SDKAggregateObjectMapping();
-		columnHandleMapping.setAttributeName("columnHandle");
-		columnHandleMapping.setGetMethodName("getColumnHandleForTopLink");
-		columnHandleMapping.setSetMethodName("setColumnHandleForTopLink");
-		columnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		columnHandleMapping.setFieldName("field-method-pair-field-handle");
-		descriptor.addMapping(columnHandleMapping);
-		
-		// field transformer - map directly to a method handle and create a method based
-		//		transformer in the accessor method.  This is the same thing done in 
-		//		MWRelationalTransformationMapping for its attribute transformer.
-		SDKAggregateObjectMapping fieldTransformerMethodMapping = new SDKAggregateObjectMapping();
-		fieldTransformerMethodMapping.setAttributeName("fieldTransformer");
-		fieldTransformerMethodMapping.setReferenceClass(MWMethodHandle.class);
-		fieldTransformerMethodMapping.setFieldName("field-method-pair-method-handle");
-		fieldTransformerMethodMapping.setGetMethodName("legacyGetFieldTransformerMethodHandle");
-		fieldTransformerMethodMapping.setSetMethodName("legacySetFieldTransformerMethodHandle");
-		descriptor.addMapping(fieldTransformerMethodMapping);
-		
-		return descriptor;
-	}
-
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		
-		// Map this class to the same schema that used to be mapped to by the 
-		//		BldrFieldMethodPair class.  They both (did) hold field handles and
-		//		method handles.
-		
-		descriptor.setJavaClass(MWRelationalFieldTransformerAssociation.class);
-		// no need for inheritance here, since xml field transformers didn't exist yet
-		
-		descriptor.setTableName("FieldMethodPair");
-		
-		// field handle - should work exactly the same as previously
-		SDKAggregateObjectMapping columnHandleMapping = new SDKAggregateObjectMapping();
-		columnHandleMapping.setAttributeName("columnHandle");
-		columnHandleMapping.setGetMethodName("getColumnHandleForTopLink");
-		columnHandleMapping.setSetMethodName("setColumnHandleForTopLink");
-		columnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		columnHandleMapping.setFieldName("fieldHandle");
-		descriptor.addMapping(columnHandleMapping);
-		
-		// field transformer - map directly to a method handle and create a method based
-		//		transformer in the accessor method.  This is the same thing done in 
-		//		MWRelationalTransformationMapping for its attribute transformer.
-		SDKAggregateObjectMapping fieldTransformerMethodMapping = new SDKAggregateObjectMapping();
-		fieldTransformerMethodMapping.setAttributeName("fieldTransformer");
-		fieldTransformerMethodMapping.setReferenceClass(MWMethodHandle.class);
-		fieldTransformerMethodMapping.setFieldName("methodHandle");
-		fieldTransformerMethodMapping.setGetMethodName("legacyGetFieldTransformerMethodHandle");
-		fieldTransformerMethodMapping.setSetMethodName("legacySetFieldTransformerMethodHandle");
-		descriptor.addMapping(fieldTransformerMethodMapping);
-		
-		return descriptor;
 	}
 	
 }

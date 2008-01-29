@@ -28,7 +28,6 @@ import org.eclipse.persistence.internal.identitymaps.SoftCacheWeakIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.SoftIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.WeakIdentityMap;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.mappings.ObjectTypeMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
@@ -179,128 +178,6 @@ public final class MWDescriptorCachingPolicy extends MWModel
         cacheExpiryMapping.setXPath("cache-expiry");
         descriptor.addMapping(cacheExpiryMapping);
 
-		return descriptor;
-	}
-
-	public static ClassDescriptor legacy50BuildDescriptor()
-	{
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWDescriptorCachingPolicy.class);
-		descriptor.setTableName("identity-policy");
-		
-		DirectToFieldMapping cacheSizeMapping = new DirectToFieldMapping();
-        cacheSizeMapping.setAttributeName("cacheSizeHolder");
-        cacheSizeMapping.setGetMethodName("getCacheSizeForTopLink");
-        cacheSizeMapping.setSetMethodName("setCacheSizeForTopLink");
-        cacheSizeMapping.setFieldName("identity-map-size");
-        descriptor.addMapping(cacheSizeMapping);
-        
-		
-		ObjectTypeMapping cacheTypeMapping = new ObjectTypeMapping();
-		cacheTypeMapping.setAttributeName("cacheType");
-		cacheTypeMapping.setGetMethodName("getCacheTypeForTopLink");
-		cacheTypeMapping.setSetMethodName("setCacheTypeForTopLink");
-		cacheTypeMapping.setNullValue(cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_PROJECT_DEFAULT));
-		cacheTypeMapping.setFieldName("identity-map-class-name");
-		cacheTypeMapping.addConversionValue(
-				CacheIdentityMap.class.getName(),
-				cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_PROJECT_DEFAULT));
-		cacheTypeMapping.addConversionValue(
-				FullIdentityMap.class.getName(),
-				cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_FULL));					
-		cacheTypeMapping.addConversionValue(
-				HardCacheWeakIdentityMap.class.getName(),
-				cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_WEAK_WITH_HARD_SUBCACHE));					
-		cacheTypeMapping.addConversionValue(
-				NoIdentityMap.class.getName(),
-				cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_NONE));					
-		cacheTypeMapping.addConversionValue(
-				SoftCacheWeakIdentityMap.class.getName(),
-				cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_WEAK_WITH_SOFT_SUBCACHE));					
-		cacheTypeMapping.addConversionValue(
-				WeakIdentityMap.class.getName(),
-				cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_WEAK));
-		descriptor.addMapping(cacheTypeMapping);
-
-		ObjectTypeMapping existenceCheckingMapping = new ObjectTypeMapping();
-		existenceCheckingMapping.setAttributeName("existenceChecking");
- 		existenceCheckingMapping.addConversionValue(
-				EXISTENCE_CHECKING_CHECK_CACHE,
-                existenceCheckingOptions().topLinkOptionForMWModelOption(EXISTENCE_CHECKING_CHECK_CACHE));
-		existenceCheckingMapping.addConversionValue(
-				EXISTENCE_CHECKING_CHECK_DATABASE,
-                existenceCheckingOptions().topLinkOptionForMWModelOption(EXISTENCE_CHECKING_CHECK_DATABASE));
-		existenceCheckingMapping.addConversionValue(
-				EXISTENCE_CHECKING_ASSUME_EXISTENCE,
-                existenceCheckingOptions().topLinkOptionForMWModelOption(EXISTENCE_CHECKING_ASSUME_EXISTENCE));
-		existenceCheckingMapping.addConversionValue(
-				EXISTENCE_CHECKING_ASSUME_NON_EXISTENCE,
-                existenceCheckingOptions().topLinkOptionForMWModelOption(EXISTENCE_CHECKING_ASSUME_NON_EXISTENCE));
-		existenceCheckingMapping.setFieldName("existence-checking");
-		existenceCheckingMapping.setNullValue(existenceCheckingOptions().topLinkOptionForMWModelOption(EXISTENCE_CHECKING_PROJECT_DEFAULT));
-		descriptor.addMapping(existenceCheckingMapping);
-		return descriptor;
-	}
-
-	public static ClassDescriptor legacy45BuildDescriptor()
-	{
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWDescriptorCachingPolicy.class);
-		descriptor.setTableName("IdentityPolicy");
-		descriptor.descriptorIsAggregate();
-		//object type mapping - existencChecking
-		ObjectTypeMapping existenceChecking = new ObjectTypeMapping();
-		existenceChecking.addConversionValue(
-				EXISTENCE_CHECKING_CHECK_CACHE,
-				existenceCheckingOptions().topLinkOptionForMWModelOption(EXISTENCE_CHECKING_CHECK_CACHE));
-		existenceChecking.addConversionValue(
-				EXISTENCE_CHECKING_CHECK_DATABASE,
-				existenceCheckingOptions().topLinkOptionForMWModelOption(EXISTENCE_CHECKING_CHECK_DATABASE));
-		existenceChecking.addConversionValue(
-				EXISTENCE_CHECKING_ASSUME_EXISTENCE,
-				existenceCheckingOptions().topLinkOptionForMWModelOption(EXISTENCE_CHECKING_ASSUME_EXISTENCE));
-		existenceChecking.addConversionValue(
-				EXISTENCE_CHECKING_ASSUME_NON_EXISTENCE,
-				existenceCheckingOptions().topLinkOptionForMWModelOption(EXISTENCE_CHECKING_ASSUME_NON_EXISTENCE));
-		existenceChecking.setAttributeName("existenceChecking");
-		existenceChecking.setFieldName("existenceChecking");
-		existenceChecking.setNullValue(existenceCheckingOptions().topLinkOptionForMWModelOption(EXISTENCE_CHECKING_PROJECT_DEFAULT));
-		descriptor.addMapping(existenceChecking);
-	
-		DirectToFieldMapping cacheSizeMapping = new DirectToFieldMapping();
-        cacheSizeMapping.setAttributeName("cacheSizeHolder");
-        cacheSizeMapping.setGetMethodName("getCacheSizeForTopLink");
-        cacheSizeMapping.setSetMethodName("setCacheSizeForTopLink");
-        cacheSizeMapping.setFieldName("identityMapSize");
-        descriptor.addMapping(cacheSizeMapping);
-
-		ObjectTypeMapping cacheTypeMapping = new ObjectTypeMapping();
-		cacheTypeMapping.setAttributeName("cacheType");
-		cacheTypeMapping.setGetMethodName("getCacheTypeForTopLink");
-		cacheTypeMapping.setSetMethodName("setCacheTypeForTopLink");
-		cacheTypeMapping.setFieldName("identityMapClassName");
-		cacheTypeMapping.addConversionValue(
-				CacheIdentityMap.class.getName(),
-				cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_PROJECT_DEFAULT));
-		cacheTypeMapping.addConversionValue(
-				FullIdentityMap.class.getName(),
-				cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_FULL));					
-		cacheTypeMapping.addConversionValue(
-                HardCacheWeakIdentityMap.class.getName(),
-				cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_WEAK_WITH_HARD_SUBCACHE));					
-		cacheTypeMapping.addConversionValue(
-                NoIdentityMap.class.getName(),
-				cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_NONE));					
-		cacheTypeMapping.addConversionValue(
-                SoftCacheWeakIdentityMap.class.getName(),
-				cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_WEAK_WITH_SOFT_SUBCACHE));			
-		cacheTypeMapping.addConversionValue(
-                WeakIdentityMap.class.getName(),
-				cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_WEAK));
-		descriptor.addMapping(cacheTypeMapping);
-
-		
 		return descriptor;
 	}
 
@@ -589,38 +466,6 @@ public final class MWDescriptorCachingPolicy extends MWModel
     	}
     }
     
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.cacheCoordination      = (CacheCoordinationOption) cacheCoordinationOptions().topLinkOptionForMWModelOption(CACHE_COORDINATION_PROJECT_DEFAULT);
-		this.cacheIsolation         = (CacheIsolationOption) cacheIsolationOptions().topLinkOptionForMWModelOption(CACHE_ISOLATION_PROJECT_DEFAULT);
-        this.cacheExpiry            = new MWProjectDefaultCacheExpiry(this);
-	}
-
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.cacheCoordination      = (CacheCoordinationOption) cacheCoordinationOptions().topLinkOptionForMWModelOption(CACHE_COORDINATION_PROJECT_DEFAULT);
-		this.cacheIsolation         = (CacheIsolationOption) cacheIsolationOptions().topLinkOptionForMWModelOption(CACHE_ISOLATION_PROJECT_DEFAULT);
-        this.cacheExpiry            = new MWProjectDefaultCacheExpiry(this);
-	}
-//
-//	public void legacy45PostPostProjectBuild() {
-//		super.legacy45PostPostProjectBuild();
-//		boolean shouldRedirectToRootDescriptor = getOwningDescriptor().getInheritancePolicy().getParentDescriptor() != null;
-//
-//		if (shouldRedirectToRootDescriptor) {
-//			this.cacheTypeHolder = (CacheTypeOption) cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_PROJECT_DEFAULT);
-//		}
-//	}
-//
-//	public void legacy50PostPostProjectBuild() {
-//		super.legacy50PostPostProjectBuild();
-//		boolean shouldRedirectToRootDescriptor = getOwningDescriptor().getInheritancePolicy().getParentDescriptor() != null;
-//
-//		if (shouldRedirectToRootDescriptor) {
-//			this.cacheTypeHolder = (CacheTypeOption) cacheTypeOptions().topLinkOptionForMWModelOption(CACHE_TYPE_PROJECT_DEFAULT);
-//		}
-//	}
-//	
 	public interface CacheSizeHolder {
 		/**
 		 * Return whether the cacheSize can be set, don't allow user

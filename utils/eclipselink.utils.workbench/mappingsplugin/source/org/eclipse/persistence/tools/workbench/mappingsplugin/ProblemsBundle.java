@@ -63,6 +63,7 @@ public class ProblemsBundle extends ListResourceBundle
 		{"0233", "Number of primary keys does not match the number of primary keys on the parent."},
 		{"0234", "Primary keys do not match parent's primary keys."},
 		{"0235", "The following primary key field has no writable mappings - {0}"},
+		{"0226", "The following primary key mapping is duplicated in the hierachy - {0}"},
 		
 		{"0236", "No sequence field is selected."},
 		{"0237", "No sequence name is selected."},

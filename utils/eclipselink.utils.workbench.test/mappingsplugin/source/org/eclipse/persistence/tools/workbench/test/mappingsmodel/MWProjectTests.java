@@ -67,7 +67,7 @@ public class MWProjectTests extends ModelProblemsTestCase {
 	
 	public void testDescriptorsThatImplement() {
 		MWRelationalProject contactProject = new SimpleContactProject().getProject();
-		MWInterfaceDescriptor interfaceDescriptor = (MWInterfaceDescriptor) contactProject.descriptorNamed("test.oracle.models.contact.Contact");
+		MWInterfaceDescriptor interfaceDescriptor = (MWInterfaceDescriptor) contactProject.descriptorNamed("org.eclipse.persistence.tools.workbench.test.models.contact.Contact");
 		Collection descriptors = CollectionTools.collection(contactProject.descriptorsThatImplement(interfaceDescriptor));
 		
 		assertTrue("2 descriptors should implement the Contact descriptor", descriptors.size() == 2);

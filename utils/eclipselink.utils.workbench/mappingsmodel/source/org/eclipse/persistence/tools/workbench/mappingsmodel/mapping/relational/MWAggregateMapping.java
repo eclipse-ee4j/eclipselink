@@ -55,7 +55,6 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import deprecated.sdk.SDKAggregateCollectionMapping;
 
 public final class MWAggregateMapping 
 	extends MWMapping 
@@ -618,67 +617,6 @@ public final class MWAggregateMapping
 	}
 	private void setPathsToFieldsForTopLink(Collection pathsToFields) {
 		this.pathsToFields = pathsToFields;
-	}
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWAggregateMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWMapping.class);
-
-		OneToOneMapping referenceDescriptorMapping = new OneToOneMapping();
-		referenceDescriptorMapping.setAttributeName("referenceDescriptor");
-		referenceDescriptorMapping.setGetMethodName("legacyGetReferenceDescriptor");
-		referenceDescriptorMapping.setSetMethodName("legacySetReferenceDescriptor");
-		referenceDescriptorMapping.setReferenceClass(MWAggregateDescriptor.class);
-		referenceDescriptorMapping.setForeignKeyFieldName("reference-descriptor");
-		referenceDescriptorMapping.dontUseIndirection();
-		descriptor.addMapping(referenceDescriptorMapping);
-
-		descriptor.addDirectMapping("allowsNull", "allows-null");
-
-		SDKAggregateCollectionMapping pathsToFieldsMapping = new SDKAggregateCollectionMapping();
-		pathsToFieldsMapping.setAttributeName("pathsToFields");
-		pathsToFieldsMapping.setReferenceClass(MWAggregatePathToColumn.class);
-		pathsToFieldsMapping.setFieldName("paths-to-fields");
-		descriptor.addMapping(pathsToFieldsMapping);
-
-		return descriptor;
-	}
-
-	private void legacySetReferenceDescriptor(MWAggregateDescriptor referenceDescriptor) {
-		this.referenceDescriptorHandle = new MWDescriptorHandle(this, referenceDescriptor, this.buildReferenceDescriptorScrubber());
-	}
-	private MWAggregateDescriptor legacyGetReferenceDescriptor() {
-		throw new UnsupportedOperationException();
-	}
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWAggregateMapping.class);
-
-		descriptor.getInheritancePolicy().setParentClass(MWMapping.class);
-
-		OneToOneMapping referenceDescriptorMapping = new OneToOneMapping();
-		referenceDescriptorMapping.setAttributeName("referenceDescriptor");
-		referenceDescriptorMapping.setGetMethodName("legacyGetReferenceDescriptor");
-		referenceDescriptorMapping.setSetMethodName("legacySetReferenceDescriptor");
-		referenceDescriptorMapping.dontUseIndirection();
-		referenceDescriptorMapping.setReferenceClass(MWAggregateDescriptor.class);
-		referenceDescriptorMapping.setForeignKeyFieldName("referenceDescriptor");
-		descriptor.addMapping(referenceDescriptorMapping);
-
-		descriptor.addDirectMapping("allowsNull", "allowsNull");
-
-		SDKAggregateCollectionMapping pathsToFields = new SDKAggregateCollectionMapping();
-		pathsToFields.setAttributeName("pathsToFields");
-		pathsToFields.setReferenceClass(MWAggregatePathToColumn.class);
-		pathsToFields.setFieldName("pathsToFields");
-		descriptor.addMapping(pathsToFields);
-
-		return descriptor;
 	}
 
 }

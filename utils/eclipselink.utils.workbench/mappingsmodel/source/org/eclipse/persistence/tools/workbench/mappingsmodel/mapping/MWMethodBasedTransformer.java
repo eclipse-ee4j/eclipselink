@@ -181,7 +181,7 @@ public final class MWMethodBasedTransformer
 	
 	public void setRuntimeAttributeTransformer(AbstractTransformationMapping mapping) {
 		if (this.getMethod() != null) {
-			mapping.setAttributeMethodName(this.getMethod().getName());
+			mapping.setAttributeTransformation(this.getMethod().getName());
 		}
 	}
 	

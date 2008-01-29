@@ -40,7 +40,7 @@ public class ReturningPolicyEisProject extends XmlTestProject{
 	
 	@Override
 	protected MWProject buildEmptyProject() {
-		return new MWEisProject("ReturningEIS", MWEisLoginSpec.ATTUNITY_CONNECT_ADAPTER_NAME, spiManager());
+		return new MWEisProject("ReturningEIS", MWEisLoginSpec.JMS_ADAPTER_NAME, spiManager());
 	}
 	
 	@Override
@@ -53,14 +53,14 @@ public class ReturningPolicyEisProject extends XmlTestProject{
 	public void initializeDescriptors() {
 		super.initializeDescriptors();
 
-		MWEisDescriptor descriptor = (MWEisDescriptor) this.addDescriptorForTypeNamed("test.oracle.models.eis.employee.Employee");
+		MWEisDescriptor descriptor = (MWEisDescriptor) this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.eis.employee.Employee");
 		descriptor.asRootEisDescriptor();
 
 		initializeEmployeeDescriptor();
 	}
 	
 	public MWRootEisDescriptor getEmployeeDescriptor() {
-		return (MWRootEisDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.eis.employee.Employee");		
+		return (MWRootEisDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.eis.employee.Employee");		
 	}
 	
 	public void initializeEmployeeDescriptor() {

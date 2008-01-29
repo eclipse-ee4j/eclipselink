@@ -58,11 +58,11 @@ public class CrimeSceneProject extends RelationalTestProject {
 	}
 	
 	public MWClass crimeSceneType() {
-		return refreshedTypeNamed("test.oracle.models.crimescene.CrimeScene");
+		return refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.CrimeScene");
 	}
 	
 	public MWClass detectiveType() {
-		return refreshedTypeNamed("test.oracle.models.crimescene.Detective");
+		return refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Detective");
 	}
 	
 	@Override
@@ -72,7 +72,7 @@ public class CrimeSceneProject extends RelationalTestProject {
 	
 	public static MWRelationalProject emptyProject() 
 	{
-		MWRelationalProject project = new MWRelationalProject("Crime Scene Project", spiManager(), oraclePlatform());
+		MWRelationalProject project = new MWRelationalProject("Crime Scene Project", spiManager(), mySqlPlatform());
 		
 		// Defaults policy  Had to do this because in the tests when you get an empty project it was never setting the defaults
 		project.getDefaultsPolicy().getCachingPolicy().setExistenceChecking(MWCachingPolicy.EXISTENCE_CHECKING_CHECK_DATABASE);
@@ -84,16 +84,16 @@ public class CrimeSceneProject extends RelationalTestProject {
 
 	public MWClass evidenceType() 
 	{
-		return refreshedTypeNamed("test.oracle.models.crimescene.PieceOfEvidence");
+		return refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.PieceOfEvidence");
 	}
 	public MWClass fingerprintType() 
 	{
-		return refreshedTypeNamed("test.oracle.models.crimescene.Fingerprint");
+		return refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Fingerprint");
 	}
 	
 	public MWClass firearmType() 
 	{
-		return refreshedTypeNamed("test.oracle.models.crimescene.Firearm");
+		return refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Firearm");
 	}
 	
 	public MWAggregateDescriptor getAddressDescriptor() {
@@ -233,7 +233,7 @@ public class CrimeSceneProject extends RelationalTestProject {
 
 		// Suspects - Many to Many mapping
 		MWManyToManyMapping suspects = descriptor.addManyToManyMapping(descriptor.getMWClass().attributeNamed("suspects"));
-		MWClass suspectType = typeNamed("test.oracle.models.crimescene.Suspect");
+		MWClass suspectType = typeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Suspect");
 		MWTable relationTable = tableNamed("CS_SUSPECT");
 		suspects.setRelationTable(relationTable);
 		suspects.setPrivateOwned(false);
@@ -247,7 +247,7 @@ public class CrimeSceneProject extends RelationalTestProject {
 
 		// Evidence - One to Many mapping
 		MWOneToManyMapping evidence = descriptor.addOneToManyMapping(descriptor.getMWClass().attributeNamed("evidence"));
-		MWClass evidenceType = typeNamed("test.oracle.models.crimescene.PieceOfEvidence");    
+		MWClass evidenceType = typeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.PieceOfEvidence");    
 		MWTable evidenceTable = tableNamed("EVIDENCE");
 		evidence.setPrivateOwned(true);
 		evidence.setReference(evidenceTable.referenceNamed("EVIDENCE_CRIME_SCENE"));
@@ -260,14 +260,14 @@ public class CrimeSceneProject extends RelationalTestProject {
 	}
 	public void initializeCrimeSceneSuspectTable() {
 		MWTable table = database().addTable("CS_SUSPECT");
-		addPrimaryKeyField(table,"CS_ID", "NUMBER");
-		addPrimaryKeyField(table,"SUSPECT_ID", "NUMBER");
+		addPrimaryKeyField(table,"CS_ID", "integer");
+		addPrimaryKeyField(table,"SUSPECT_ID", "integer");
 	}
 	protected void initializeCrimeSceneTable() {
 		MWTable table = database().addTable("CRIME_SCENE");
-		addPrimaryKeyField(table,"ID", "NUMBER");
-		addField(table,"DESCRIPTION", "VARCHAR2", 50);
-		addField(table,"CS_TIME", "DATE");
+		addPrimaryKeyField(table,"ID", "integer");
+		addField(table,"DESCRIPTION", "varchar", 50);
+		addField(table,"CS_TIME", "date");
 	}
 
 	@Override
@@ -306,17 +306,17 @@ public class CrimeSceneProject extends RelationalTestProject {
 	@Override
 	protected void initializeDescriptors() {
 		super.initializeDescriptors();
-		this.addDescriptorForTypeNamed("test.oracle.models.crimescene.Detective");
-		this.addDescriptorForTypeNamed("test.oracle.models.crimescene.Suspect");
-		this.addDescriptorForTypeNamed("test.oracle.models.crimescene.Victim");
-		this.addDescriptorForTypeNamed("test.oracle.models.crimescene.Person");
-		this.addDescriptorForTypeNamed("test.oracle.models.crimescene.Fingerprint");
-		this.addDescriptorForTypeNamed("test.oracle.models.crimescene.Firearm");
-		this.addDescriptorForTypeNamed("test.oracle.models.crimescene.Weapon");
-		this.addDescriptorForTypeNamed("test.oracle.models.crimescene.PieceOfEvidence");
-		this.addDescriptorForTypeNamed("test.oracle.models.crimescene.CrimeScene");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Detective");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Suspect");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Victim");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Person");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Fingerprint");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Firearm");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Weapon");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.PieceOfEvidence");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.CrimeScene");
 
-		this.addAggregateDescriptorForTypeNamed("test.oracle.models.crimescene.Address");
+		this.addAggregateDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Address");
 	
 		
 		initializeAddressDescriptor();
@@ -356,11 +356,11 @@ public class CrimeSceneProject extends RelationalTestProject {
 	}
 	public void initializeEvidenceTable() {
 		MWTable table = database().addTable("EVIDENCE");
-		addPrimaryKeyField(table,"ID", "NUMBER");
-		addField(table,"CS_ID", "NUMBER");
-		addField(table,"EVIDENCE_TYPE", "VARCHAR2", 1);
-		addField(table,"NAME", "VARCHAR2", 50);
-		addField(table,"DESCRIPTION", "VARCHAR2", 128);
+		addPrimaryKeyField(table,"ID", "integer");
+		addField(table,"CS_ID", "integer");
+		addField(table,"EVIDENCE_TYPE", "varchar", 1);
+		addField(table,"NAME", "varchar", 50);
+		addField(table,"DESCRIPTION", "varchar", 128);
 	}
 	protected void initializeFingerprintDescriptor() {
 		MWTableDescriptor descriptor = getFingerprintDescriptor();
@@ -383,8 +383,8 @@ public class CrimeSceneProject extends RelationalTestProject {
 	}
 	public void initializeFingerprintTable() {
 		MWTable table = database().addTable("FINGERPRINT");
-		addPrimaryKeyField(table,"ID", "NUMBER");
-		addField(table,"PRINT_IMAGE", "VARCHAR2", 50);
+		addPrimaryKeyField(table,"ID", "integer");
+		addField(table,"PRINT_IMAGE", "varchar", 50);
 	}
 	protected void initializeFirearmDescriptor() {
 		MWTableDescriptor descriptor = getFirearmDescriptor();
@@ -397,7 +397,7 @@ public class CrimeSceneProject extends RelationalTestProject {
 		// Inheritance policy
 		descriptor.addInheritancePolicy();
 		MWRelationalDescriptorInheritancePolicy inheritancePolicy = (MWRelationalDescriptorInheritancePolicy)descriptor.getInheritancePolicy();
-		MWClass parentType = typeNamed("test.oracle.models.crimescene.Weapon");
+		MWClass parentType = typeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Weapon");
 		inheritancePolicy.setParentDescriptor((MWMappingDescriptor)getProject().descriptorForType(parentType));
 
 		descriptor.getCachingPolicy().setExistenceChecking(MWCachingPolicy.EXISTENCE_CHECKING_ASSUME_EXISTENCE);
@@ -428,19 +428,19 @@ public class CrimeSceneProject extends RelationalTestProject {
 	public void initializeFirearmTable() {
 		MWTable table = database().addTable("FIREARM");
 
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "FIREARM_TYPE", "VARCHAR2" ,50);
-		addField(table, "CALIBER","VARCHAR2",50);
-		addField(table, "BYTE_ARRAY", "VARCHAR2",50);
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "FIREARM_TYPE", "varchar" ,50);
+		addField(table, "CALIBER", "varchar",50);
+		addField(table, "BYTE_ARRAY", "varchar",50);
 	}
 	public void initializeKeywordTable() {
 		MWTable table = database().addTable("KEYWORD");
-		addField(table, "CS_ID", "NUMBER");
-		addField(table, "WORD", "VARCHAR2", 50);
+		addField(table, "CS_ID", "integer");
+		addField(table, "WORD", "varchar", 50);
 	}
 	protected void initializePersonDescriptor() 
 	{
-		MWClass addressClass = refreshedTypeNamed("test.oracle.models.crimescene.Address");
+		MWClass addressClass = refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Address");
 		MWTableDescriptor descriptor = getPersonDescriptor();
 		MWTable personTable = tableNamed("PERSON");
 		
@@ -533,26 +533,26 @@ public class CrimeSceneProject extends RelationalTestProject {
 	}
 	public void initializePersonTable() {
 		MWTable table = database().addTable("PERSON");
-		addPrimaryKeyField(table,"ID", "NUMBER");
-		addField(table,"F_NAME", "VARCHAR2", 50);
-		addField(table,"L_NAME", "VARCHAR2", 50);
-		addField(table,"GENDER", "VARCHAR2", 1);
-		addField(table,"AGE", "NUMBER");
-		addField(table,"PERSON_TYPE", "VARCHAR2", 1);
+		addPrimaryKeyField(table,"ID", "integer");
+		addField(table,"F_NAME", "varchar", 50);
+		addField(table,"L_NAME", "varchar", 50);
+		addField(table,"GENDER", "varchar", 1);
+		addField(table,"AGE", "integer");
+		addField(table,"PERSON_TYPE", "varchar", 1);
 
 		//  Add fields specific to Suspect
-		addField(table,"HEIGHT_FEET", "NUMBER");
-		addField(table,"HEIGHT_INCHES", "NUMBER"); 
-		addField(table,"ALIAS", "VARCHAR2",50);
+		addField(table,"HEIGHT_FEET", "integer");
+		addField(table,"HEIGHT_INCHES", "integer"); 
+		addField(table,"ALIAS", "varchar",50);
 		//  Add field specific to Victim
-		addField(table,"STATEMENT","VARCHAR2", 50);
+		addField(table,"STATEMENT","varchar", 50);
 		//  Add fields specific to Detective
-		addField(table,"PRECINCT", "VARCHAR2",50);
+		addField(table,"PRECINCT", "varchar",50);
 		//  Add fields specific to Address
-		addField(table,"ADD_STREET", "VARCHAR2", 80);
-		addField(table,"ADD_CITY", "VARCHAR2", 40);
-		addField(table,"ADD_STATE", "VARCHAR2", 2);
-		addField(table,"ADD_ZIP", "VARCHAR2", 10);
+		addField(table,"ADD_STREET", "varchar", 80);
+		addField(table,"ADD_CITY", "varchar", 40);
+		addField(table,"ADD_STATE", "varchar", 2);
+		addField(table,"ADD_ZIP", "varchar", 10);
 	}
 	protected void initializePieceOfEvidenceDescriptor() {
 		MWTableDescriptor descriptor = (MWTableDescriptor)  getProject().descriptorForType(evidenceType());
@@ -627,7 +627,7 @@ public class CrimeSceneProject extends RelationalTestProject {
 	}
 	
 	protected void initializeVictimDescriptor() {
-		MWClass type = refreshedTypeNamed("test.oracle.models.crimescene.Victim");
+		MWClass type = refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Victim");
 
 		MWTableDescriptor descriptor = (MWTableDescriptor)  getProject().descriptorForType(type);
 		MWTable personTable =tableNamed("PERSON");
@@ -636,7 +636,7 @@ public class CrimeSceneProject extends RelationalTestProject {
 		// Inheritance policy
 		descriptor.addInheritancePolicy();
 		MWRelationalDescriptorInheritancePolicy inheritancePolicy = (MWRelationalDescriptorInheritancePolicy)descriptor.getInheritancePolicy();
-		MWClass parentType = typeNamed("test.oracle.models.crimescene.Person");
+		MWClass parentType = typeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Person");
 		inheritancePolicy.setParentDescriptor((MWMappingDescriptor) getProject().descriptorForType(parentType));
 
 		addDirectMapping(descriptor, "statement", personTable, "STATEMENT");	
@@ -658,7 +658,7 @@ public class CrimeSceneProject extends RelationalTestProject {
 		query.addParameter(typeFor(java.lang.String.class)).setName("shape");
 	}
 	protected void initializeWeaponDescriptor() {
-		MWClass type = refreshedTypeNamed("test.oracle.models.crimescene.Weapon");
+		MWClass type = refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Weapon");
 
 		MWTableDescriptor descriptor = (MWTableDescriptor)   getProject().descriptorForType(type);
 		MWTable weaponTable = getProject().getDatabase().tableNamed("WEAPON");
@@ -668,7 +668,7 @@ public class CrimeSceneProject extends RelationalTestProject {
 		// Inheritance policy
 		descriptor.addInheritancePolicy();
 		MWRelationalDescriptorInheritancePolicy inheritancePolicy = (MWRelationalDescriptorInheritancePolicy)descriptor.getInheritancePolicy();
-		MWClass parentType = typeNamed("test.oracle.models.crimescene.PieceOfEvidence");
+		MWClass parentType = typeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.PieceOfEvidence");
 		inheritancePolicy.setParentDescriptor((MWMappingDescriptor) getProject().descriptorForType(parentType));
 
 		descriptor.getCachingPolicy().setExistenceChecking(MWCachingPolicy.EXISTENCE_CHECKING_ASSUME_EXISTENCE);
@@ -678,8 +678,8 @@ public class CrimeSceneProject extends RelationalTestProject {
 	}
 	public void initializeWeaponTable() {
 		MWTable table = database().addTable("WEAPON");
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "USEDINCRIME", "NUMBER");
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "USEDINCRIME", "integer");
 	}
 	public static MWRelationalProject reusableProject() {
 		if(REUSABLE_PROJECT == null) {
@@ -688,12 +688,12 @@ public class CrimeSceneProject extends RelationalTestProject {
 		return REUSABLE_PROJECT;
 	}
 	public MWClass suspectType() {
-		return refreshedTypeNamed("test.oracle.models.crimescene.Suspect");
+		return refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Suspect");
 	}
 	public MWClass victimType() {
-		return refreshedTypeNamed("test.oracle.models.crimescene.Victim");
+		return refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Victim");
 	}
 	public MWClass weaponType() {
-		return refreshedTypeNamed("test.oracle.models.crimescene.Weapon");
+		return refreshedTypeNamed("org.eclipse.persistence.tools.workbench.test.models.crimescene.Weapon");
 	}
 }

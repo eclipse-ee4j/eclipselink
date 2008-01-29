@@ -321,16 +321,6 @@ public final class MWRootEisDescriptor extends MWEisDescriptor
 	
 	// ************** TopLink only methods *****************
 	
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.returningPolicy = new MWNullDescriptorPolicy(this);
-	}
-	
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.returningPolicy = new MWNullDescriptorPolicy(this);
-	}	
-	
 	private MWReturningPolicy getReturningPolicyForTopLink() {
 		return (MWReturningPolicy) this.returningPolicy.getPersistedPolicy();
 	}

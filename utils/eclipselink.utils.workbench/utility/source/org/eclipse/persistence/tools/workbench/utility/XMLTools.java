@@ -459,6 +459,7 @@ public final class XMLTools {
 			}
 			try {
 				transformer.setOutputProperty("indent", "yes");
+				transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "3");
 			} catch (IllegalArgumentException ex) {
 				// ignore exception - the output will still be valid XML, it just won't be very user-friendly
 			}

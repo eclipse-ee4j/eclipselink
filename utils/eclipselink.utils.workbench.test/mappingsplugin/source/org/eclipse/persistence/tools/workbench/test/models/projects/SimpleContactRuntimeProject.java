@@ -35,9 +35,9 @@ public class SimpleContactRuntimeProject {
 
 	public void applyLogin() {
 		DatabaseLogin login = new DatabaseLogin();
-		login.usePlatform(new org.eclipse.persistence.platform.database.oracle.OraclePlatform());
-		login.setDriverClassName(TestDatabases.oracleDriverClassName());
-		login.setConnectionString(TestDatabases.oracleServerURL());
+		login.usePlatform(new org.eclipse.persistence.platform.database.MySQL4Platform());
+		login.setDriverClassName(TestDatabases.mySQLDriverClassName());
+		login.setConnectionString(TestDatabases.mySQLServerURL());
 		login.setUserName(TestDatabases.userName());
 		login.setPassword(TestDatabases.password());
 		
@@ -157,8 +157,8 @@ public class SimpleContactRuntimeProject {
 		contactMapping.setIndirectionPolicy(new ProxyIndirectionPolicy());
 		contactMapping.addForeignQueryKeyName("PERSON.ID", "id");
 		contactMapping.setTypeFieldName("PERSON.CONTACT_TYPE");
-		contactMapping.addClassNameIndicator("test.oracle.models.contact.PhoneNumber", "P");
-		contactMapping.addClassNameIndicator("test.oracle.models.contact.EmailAddress", "E");
+		contactMapping.addClassNameIndicator("org.eclipse.persistence.tools.workbench.test.models.contact.PhoneNumber", "P");
+		contactMapping.addClassNameIndicator("org.eclipse.persistence.tools.workbench.test.models.contact.EmailAddress", "E");
 		descriptor.addMapping(contactMapping);
 	
 		return descriptor;

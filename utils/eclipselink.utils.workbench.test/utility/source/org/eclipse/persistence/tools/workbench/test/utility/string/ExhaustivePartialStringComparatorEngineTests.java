@@ -20,6 +20,7 @@ import org.eclipse.persistence.tools.workbench.utility.string.LowerCasePartialSt
 import org.eclipse.persistence.tools.workbench.utility.string.PartialStringComparator;
 import org.eclipse.persistence.tools.workbench.utility.string.PartialStringComparatorEngine;
 import org.eclipse.persistence.tools.workbench.utility.string.ExhaustivePartialStringComparatorEngine;
+import org.eclipse.persistence.tools.workbench.utility.string.SimplePartialStringComparator;
 import org.eclipse.persistence.tools.workbench.utility.string.SimpleStringHolder;
 import org.eclipse.persistence.tools.workbench.utility.string.StringHolder;
 import org.eclipse.persistence.tools.workbench.utility.string.PartialStringComparatorEngine.StringHolderPair;
@@ -155,7 +156,8 @@ public class ExhaustivePartialStringComparatorEngineTests extends TestCase {
 	}
 
 	private PartialStringComparator buildComparator() {
-		return new LowerCasePartialStringComparator(PartialStringComparator.EMPTY_COMPARATOR);
+		//return new LowerCasePartialStringComparator(PartialStringComparator.JARO_WINKLER);
+		return new LowerCasePartialStringComparator(SimplePartialStringComparator.instance());
 	}
 
 	private void dump(StringHolderPair[] stringHolderPairs) {

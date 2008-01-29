@@ -263,14 +263,5 @@ public abstract class MWProjectDefaultsPolicy extends MWModel
 	protected void adjustRuntimeProject(Project project)
 	{
 	}
-    
-    private Collection legacyGetDefaultPolicyClasses() {
-        throw new UnsupportedOperationException();
-    }
-    
-    private void legacySetDefaultPolicyClasses(Collection classes) {
-        classes.remove("legacy-locking-policy");
-        classes.remove("legacy-identity-policy");        
-        this.defaultPolicies = classes;
-    }
+
 }

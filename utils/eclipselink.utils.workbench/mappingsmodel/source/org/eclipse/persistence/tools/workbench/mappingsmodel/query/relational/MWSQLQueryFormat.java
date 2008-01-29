@@ -56,16 +56,6 @@ public final class MWSQLQueryFormat extends MWStringQueryFormat
 	
 		return descriptor;
 	}
-	public static ClassDescriptor legacy50BuildDescriptor() 
-	{
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWSQLQueryFormat.class);
-
-		descriptor.getInheritancePolicy().setParentClass(MWStringQueryFormat.class);
-	
-		return descriptor;
-	}
 	
 	//Conversion to Runtime
 	void convertToRuntime(ObjectLevelReadQuery runtimeQuery) 

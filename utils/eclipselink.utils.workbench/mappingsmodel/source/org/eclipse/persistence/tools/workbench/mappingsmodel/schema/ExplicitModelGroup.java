@@ -18,16 +18,15 @@ import java.util.Vector;
 import org.apache.xerces.impl.xs.XSModelGroupImpl;
 import org.apache.xerces.impl.xs.XSParticleDecl;
 import org.apache.xerces.xs.XSModelGroup;
-import org.apache.xerces.xs.XSModelGroupDefinition;
 import org.apache.xerces.xs.XSObject;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.tools.workbench.utility.iterators.CompositeIterator;
 import org.eclipse.persistence.tools.workbench.utility.iterators.SingleElementIterator;
 import org.eclipse.persistence.tools.workbench.utility.iterators.TransformationIterator;
 import org.eclipse.persistence.tools.workbench.utility.iterators.TransformationListIterator;
 import org.eclipse.persistence.tools.workbench.utility.node.Node;
-
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
 
 public final class ExplicitModelGroup 
 	extends AbstractParticle
@@ -236,7 +235,7 @@ public final class ExplicitModelGroup
 			if (particle instanceof MWElementDeclaration) {
 				element = (MWElementDeclaration) particle;
 				
-				if (namespaceUrl.equals(element.getNamespaceUrl())
+				if (StringTools.stringsAreEqual(namespaceUrl, element.getNamespaceUrl())
 					&& elementName.equals(element.getName())) {
 							return element;
 				}

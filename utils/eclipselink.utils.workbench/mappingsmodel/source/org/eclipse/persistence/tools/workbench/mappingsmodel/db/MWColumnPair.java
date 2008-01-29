@@ -22,7 +22,6 @@ import org.eclipse.persistence.tools.workbench.utility.node.Node;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import deprecated.sdk.SDKAggregateObjectMapping;
 import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
 
 /**
@@ -295,57 +294,4 @@ public final class MWColumnPair extends MWModel {
 		NodeReferenceScrubber scrubber = this.buildTargetColumnScrubber();
 		this.targetColumnHandle = ((handle == null) ? new MWColumnHandle(this, scrubber) : handle.setScrubber(scrubber));
 	}
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWColumnPair.class);
-		descriptor.setTableName("field-association");
-
-		SDKAggregateObjectMapping sourceColumnHandleMapping = new SDKAggregateObjectMapping();
-		sourceColumnHandleMapping.setAttributeName("sourceColumnHandle");
-		sourceColumnHandleMapping.setGetMethodName("getSourceColumnHandleForTopLink");
-		sourceColumnHandleMapping.setSetMethodName("setSourceColumnHandleForTopLink");
-		sourceColumnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		sourceColumnHandleMapping.setFieldName("source-field-handle");
-		descriptor.addMapping(sourceColumnHandleMapping);
-
-		SDKAggregateObjectMapping targetColumnHandleMapping = new SDKAggregateObjectMapping();
-		targetColumnHandleMapping.setAttributeName("targetColumnHandle");
-		targetColumnHandleMapping.setGetMethodName("getTargetColumnHandleForTopLink");
-		targetColumnHandleMapping.setSetMethodName("setTargetColumnHandleForTopLink");
-		targetColumnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		targetColumnHandleMapping.setFieldName("target-field-handle");
-		descriptor.addMapping(targetColumnHandleMapping);
-
-		return descriptor;
-	}
-	
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWColumnPair.class);
-		descriptor.setTableName("FieldFieldAssociation");
-
-		SDKAggregateObjectMapping sourceColumnHandleMapping = new SDKAggregateObjectMapping();
-		sourceColumnHandleMapping.setAttributeName("sourceColumnHandle");
-		sourceColumnHandleMapping.setGetMethodName("getSourceColumnHandleForTopLink");
-		sourceColumnHandleMapping.setSetMethodName("setSourceColumnHandleForTopLink");
-		sourceColumnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		sourceColumnHandleMapping.setFieldName("sourceFieldHandle");
-		descriptor.addMapping(sourceColumnHandleMapping);
-
-		SDKAggregateObjectMapping targetColumnHandleMapping = new SDKAggregateObjectMapping();
-		targetColumnHandleMapping.setAttributeName("targetColumnHandle");
-		targetColumnHandleMapping.setGetMethodName("getTargetColumnHandleForTopLink");
-		targetColumnHandleMapping.setSetMethodName("setTargetColumnHandleForTopLink");
-		targetColumnHandleMapping.setReferenceClass(MWColumnHandle.class);
-		targetColumnHandleMapping.setFieldName("targetFieldHandle");
-		descriptor.addMapping(targetColumnHandleMapping);
-
-		return descriptor;
-	}
-
 }

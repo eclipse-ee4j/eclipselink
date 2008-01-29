@@ -58,7 +58,7 @@ public final class QName
 		
 		descriptor.addMapping(componentTypeMapping);
 		
-		descriptor.addDirectMapping("namespaceURI", "@namespace-uri");
+		((XMLDirectMapping)descriptor.addDirectMapping("namespaceURI", "@namespace-uri")).setNullValue("");
 		descriptor.addDirectMapping("localName", "@local-name");
 		
 		return descriptor;

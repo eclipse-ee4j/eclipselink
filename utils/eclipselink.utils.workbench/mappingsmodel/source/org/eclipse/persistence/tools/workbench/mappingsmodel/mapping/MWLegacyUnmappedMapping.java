@@ -21,24 +21,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 
 public final class MWLegacyUnmappedMapping extends MWMapping {
 
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWLegacyUnmappedMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWMapping.class);
-		
-		return descriptor;
-	}
-
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-		descriptor.setJavaClass(MWLegacyUnmappedMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWMapping.class);
-	
-		return descriptor;	
-	}
-
 	private MWLegacyUnmappedMapping() {
 		super();
 	}

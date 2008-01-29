@@ -150,24 +150,4 @@ public final class MWOneToManyMapping
 		return descriptor;
 	}
 	
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWOneToManyMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWCollectionMapping.class);
-
-		return descriptor;
-	}
-	
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWOneToManyMapping.class);
-		descriptor.getInheritancePolicy().setParentClass(MWCollectionMapping.class);
-
-		return descriptor;
-	}
-	
 }

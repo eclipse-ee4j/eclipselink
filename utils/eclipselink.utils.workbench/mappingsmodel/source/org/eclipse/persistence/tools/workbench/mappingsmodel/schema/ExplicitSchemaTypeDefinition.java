@@ -11,9 +11,8 @@ package org.eclipse.persistence.tools.workbench.mappingsmodel.schema;
 
 import org.apache.xerces.impl.xs.XSElementDecl;
 import org.apache.xerces.xs.XSTypeDefinition;
-import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
-
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 
 public abstract class ExplicitSchemaTypeDefinition
 	extends AbstractNamedSchemaComponent

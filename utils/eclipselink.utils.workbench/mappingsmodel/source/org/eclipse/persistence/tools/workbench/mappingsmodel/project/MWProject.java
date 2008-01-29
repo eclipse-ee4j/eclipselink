@@ -31,7 +31,6 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import deprecated.sdk.SDKFieldValue;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
@@ -40,7 +39,6 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.ProjectClassGenerator;
 import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 
-import org.eclipse.persistence.tools.workbench.mappingsmodel.LegacyMWAccessor4X;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.MWModel;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.ProjectSubFileComponentContainer;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.descriptor.DescriptorCreationFailureEvent;
@@ -1192,166 +1190,6 @@ public abstract class MWProject
 	private void setSPIManagerForIOManager(SPIManager spiManager) {
 		this.spiManager = spiManager;
 	}
-
-
-	// ********** legacy methods **********
-
-	/**
-	 * the directory and file names were separate fields in 5.0
-	 */
-	private void legacy50SetDeploymentXMLDirectoryNameForTopLink(String dirName) {
-		// strip out back slashes stored in old projects
-		dirName = dirName.replace('\\', '/');
-		if ((this.deploymentXMLFileName == null) || (this.deploymentXMLFileName.length() == 0)) {
-			this.deploymentXMLFileName = new File(dirName).getPath();
-		} else {
-			// the short file name is already there
-			if (dirName.length() > 0) {
-				// specifying an empty string as the parent will cause the parent to be the root directory
-				// and we probably don't want that
-				this.deploymentXMLFileName = new File(dirName, this.deploymentXMLFileName).getPath();
-			}
-		}
-	}
-	private String legacy50GetDeploymentXMLDirectoryNameForTopLink() {
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * the directory and file names were separate fields in 5.0
-	 */
-	private void legacy50SetDeploymentXMLFileNameForTopLink(String fileName) {
-		if ((this.deploymentXMLFileName == null) || (this.deploymentXMLFileName.length() == 0)) {
-			this.deploymentXMLFileName = fileName;
-		} else {
-			// the directory name is already there
-			this.deploymentXMLFileName = new File(this.deploymentXMLFileName, fileName).getPath();
-		}
-	}
-	private String legacy50GetDeploymentXMLFileNameForTopLink() {
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * strip out back slashes stored in old projects
-	 */
-	private void legacy50SetProjectSourceDirectoryNameForTopLink(String dirName) {
-		this.setProjectSourceDirectoryNameForTopLink(dirName.replace('\\', '/'));
-	}
-	private String legacy50GetProjectSourceDirectoryNameForTopLink() {
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * strip out back slashes stored in old projects
-	 */
-	private void legacy50SetModelSourceDirectoryNameForTopLink(String dirName) {
-		this.setModelSourceDirectoryNameForTopLink(dirName.replace('\\', '/'));
-	}
-	private String legacy50GetModelSourceDirectoryNameForTopLink() {
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * old projects stored direct references to the packages,
-	 * which had references to the descriptors;
-	 * now we store the descriptor names
-	 */
-	private Collection legacyGetDescriptorsFromRowForTopLink(Record row, Session session) {
-		SDKFieldValue fieldValue = (SDKFieldValue) row.get("packages");
-		if (fieldValue == null) {
-			return Collections.EMPTY_SET;
-		}
-
-		if ( ! fieldValue.getElementDataTypeName().equals("package")) {
-			throw new IllegalStateException(fieldValue.getElementDataTypeName());
-		}
-
-		Set descNames = new HashSet();
-		for (Iterator stream = fieldValue.getElements().iterator(); stream.hasNext(); ) {
-			DatabaseRecord nestedRow = (DatabaseRecord) stream.next();
-			String packageName = (String) nestedRow.get("package");
-			this.legacyAddDescriptorNamesTo(packageName, descNames, (AbstractSession)session);
-		}
-		Collection legacyDescriptors = new Vector(descNames.size());
-		for (Iterator stream = descNames.iterator(); stream.hasNext(); ) {
-			String descriptorName = (String) stream.next();
-			MWDescriptor desc = (MWDescriptor)session.readObject(MWDescriptor.class, new ExpressionBuilder().get("uniqueFilename").equal(descriptorName));
-			if (desc != null) {
-				legacyDescriptors.add(desc);
-			}
-		}
-		return legacyDescriptors;
-	}
-
-	private void legacyAddDescriptorNamesTo(String packageName, Set descNames, AbstractSession session) {
-		LegacyMWAccessor4X accessor = (LegacyMWAccessor4X) session.getAccessor();
-		String rootElementName = "Package";
-		File packageFile = new File(accessor.buildDocumentDirectory(rootElementName), packageName + accessor.getFileExtension(rootElementName));
-		Document packageDoc = XMLTools.parse(packageFile);
-		org.w3c.dom.Node node = XMLTools.child(packageDoc, rootElementName);
-		org.w3c.dom.Node descriptorsNode = XMLTools.child(node, "descriptors");
-		org.w3c.dom.Node[] descriptorNodes = XMLTools.children(descriptorsNode, "descriptor");
-		for (int i = 0; i < descriptorNodes.length; i++) {
-			descNames.add(XMLTools.childTextContent(descriptorNodes[i], "descriptor"));
-		}
-	}
-
-	private void legacySetDescriptorsForTopLink(Collection descriptors) {
-		this.descriptors = descriptors;
-	}
-	private Collection legacyGetDescriptorsForTopLink()	{
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * allow multiple hooks for legacy projects to be tweaked;
-	 * this method is invoked by TopLink
-	 */
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		this.descriptorNames = new HashSet();
-
-		this.legacy50PrePostProjectBuild();
-		super.legacy50PostBuild(event);
-	}
-
-	/**
-	 * allow multiple hooks for legacy projects to be tweaked;
-	 * this method is invoked by the ProjectReader
-	 * @see ProjectReader#readPreviousVersion()
-	 */
-	public void legacy50PostProjectBuild() {
-		this.postProjectBuild();
-		this.legacy50PostPostProjectBuild();
-		this.legacy50FixAggregatePathToFields();
-	}
-
-	/**
-	 * allow multiple hooks for legacy projects to be tweaked;
-	 * this method is invoked by TopLink
-	 */
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		this.descriptorNames = new HashSet();
-		this.deploymentXMLFileName = "";
-		this.projectSourceClassName = "";
-		this.projectSourceDirectoryName = "";
-		this.modelSourceDirectoryName = "";
-
-		this.legacy45PrePostProjectBuild();
-		super.legacy45PostBuild(event);
-	}
-
-	/**
-	 * allow multiple hooks for legacy projects to be tweaked;
-	 * this method is invoked by the ProjectReader
-	 * @see ProjectReader#readPreviousVersion()
-	 */
-	public void legacy45PostProjectBuild() {
-		this.postProjectBuild();
-		this.legacy45PostPostProjectBuild();
-		this.legacy45FixAggregatePathToFields();
-	}
-
 
 	// ********** displaying and printing **********
 	

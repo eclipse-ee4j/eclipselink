@@ -36,16 +36,12 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import deprecated.sdk.SDKFieldValue;
 import org.eclipse.persistence.sessions.Record;
 
 public final class MWDescriptorMultiTableInfoPolicy extends MWAbstractDescriptorPolicy 
 {
 	private Collection secondaryTableHolders;
 		public static final String SECONDARY_TABLE_HOLDERS_COLLECTION = "secondaryTableHolders";
-	
-	//used only for legacy projects
-	private Collection legacySecondaryReferenceHandles;
 	
 	/** Default constructor - for TopLink use only */
 	private MWDescriptorMultiTableInfoPolicy() {
@@ -70,10 +66,6 @@ public final class MWDescriptorMultiTableInfoPolicy extends MWAbstractDescriptor
 	protected void addChildrenTo(List children) {
 		super.addChildrenTo(children);
 		synchronized (this.secondaryTableHolders) { children.addAll(this.secondaryTableHolders); }
-		// these legacy handles are only briefly children
-		if (this.legacySecondaryReferenceHandles != null) {
-			synchronized (this.legacySecondaryReferenceHandles) { children.addAll(this.legacySecondaryReferenceHandles); }
-		}
 	}
 
 	
@@ -252,113 +244,5 @@ public final class MWDescriptorMultiTableInfoPolicy extends MWAbstractDescriptor
 
 		return descriptor;
 	}
-
-
-	public static ClassDescriptor legacy50BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy50BuildStandardDescriptor();
-		descriptor.setJavaClass(MWDescriptorMultiTableInfoPolicy.class);
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setTableName("multi-table-info-policy");
-
-		TransformationMapping secondaryReferenceHandlesMapping = new TransformationMapping();
-		secondaryReferenceHandlesMapping.setAttributeName("legacySecondaryReferenceHandles");
-		secondaryReferenceHandlesMapping.setAttributeTransformation("legacy50GetSecondaryReferenceHandlesFromRecordForTopLink");
-		descriptor.addMapping(secondaryReferenceHandlesMapping);
-
-		return descriptor;
-	}
-
-	private Collection legacy50GetSecondaryReferenceHandlesFromRecordForTopLink(Record record) {
-		Collection refHandles = new Vector();
-		SDKFieldValue refsValue = (SDKFieldValue) record.get("secondary-table-associations");
-		
-		if (refsValue == null) {
-			return refHandles;
-		}
-		
-		for (Iterator stream = refsValue.getElements().iterator(); stream.hasNext(); ) {
-			Object next = stream.next();
-			
-			if (next instanceof Record) {
-				Record refRecord = (Record) next;
-				// these handles are garbage-collected the project is read in
-				MWReferenceHandle handle = new MWReferenceHandle(this, NodeReferenceScrubber.NULL_INSTANCE);
-				handle.legacySetReferenceTableName((String) refRecord.get("source-table"));
-				handle.legacySetReferenceName((String) refRecord.get("name"));
-				refHandles.add(handle);
-			}
-		}
-		
-		return refHandles;
-	}
 	
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.secondaryTableHolders = new Vector();
-	}
-	
-	/**
-	 * called by MWTableDescriptor.legacyXXPostPostProjectBuild()
-	 */
-	protected void legacyResolveReferences() {
-		for (Iterator stream = this.legacySecondaryReferenceHandles.iterator(); stream.hasNext(); ) {
-			MWReference reference = ((MWReferenceHandle) stream.next()).getReference();
-			MWSecondaryTableHolder holder = this.secondaryTableHolderFor(reference.getSourceTable());
-			if (holder == null) {
-				holder = this.secondaryTableHolderFor(reference.getTargetTable());
-			}
-			if (holder != null) {
-				holder.setPrimaryKeysHaveSameName(false);
-				holder.setReference(reference);
-			}
-		}
-		this.legacySecondaryReferenceHandles = null;
-	}
-
-	
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = MWModel.legacy45BuildStandardDescriptor();
-		descriptor.setJavaClass(MWDescriptorMultiTableInfoPolicy.class);
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setTableName("MultiTableInfoPolicy");
-
-		TransformationMapping secondaryReferenceHandlesMapping = new TransformationMapping();
-		secondaryReferenceHandlesMapping.setAttributeName("legacySecondaryReferenceHandles");
-		secondaryReferenceHandlesMapping.setAttributeTransformation("legacy45GetSecondaryReferenceHandlesFromRecordForTopLink");
-		descriptor.addMapping(secondaryReferenceHandlesMapping);
-
-		return descriptor;
-	}
-	
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.secondaryTableHolders = new Vector();
-	}
-	
-	private Collection legacy45GetSecondaryReferenceHandlesFromRecordForTopLink(Record record) {
-		Collection refHandles = new Vector();
-		SDKFieldValue refsValue = (SDKFieldValue) record.get("secondaryTableAssociations");
-		
-		if (refsValue == null) {
-			return refHandles;
-		}
-		
-		for (Iterator stream = refsValue.getElements().iterator(); stream.hasNext(); ) {
-			Object next = stream.next();
-			
-			if (next instanceof Record) {
-				Record refRecord = (Record) next;
-				// these handles are garbage-collected the project is read in
-				MWReferenceHandle handle = new MWReferenceHandle(this, NodeReferenceScrubber.NULL_INSTANCE);
-				handle.legacySetReferenceTableName((String) refRecord.get("sourceTableId"));
-				handle.legacySetReferenceName((String) refRecord.get("name"));
-				refHandles.add(handle);
-			}
-		}
-		
-		return refHandles;
-	}
-
 }

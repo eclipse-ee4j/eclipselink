@@ -61,11 +61,9 @@ public class ExportRuntimeProjectJavaSourceCommandLineTests extends AbstractExpo
 
 		List classpathEntries = new ArrayList();
 		classpathEntries.add(this.tempDir.getAbsolutePath());
-		classpathEntries.add(Classpath.locationFor(MWProject.class));	// tlmwcore.jar
-		classpathEntries.add(Classpath.locationFor(JavaSourceGenerator.class));	// toplinkmw.jar
-		classpathEntries.add(Classpath.locationFor(ValueHolderInterface.class));	// toplink.jar
-//		classpathEntries.add(Classpath.locationFor(EnterpriseBean.class));	// ejb.jar
-//		classpathEntries.add(Classpath.locationFor(XMLDocument.class));		// xmlparserv2.jar
+		classpathEntries.add(Classpath.locationFor(MWProject.class));	// elmwcore.jar
+		classpathEntries.add(Classpath.locationFor(JavaSourceGenerator.class));	// eclipselinkmw.jar
+		classpathEntries.add(Classpath.locationFor(ValueHolderInterface.class));	// ecilpselink.jar
 		classpathEntries.add(FileTools.resourceFile("/platforms.dpr").getParentFile().getAbsolutePath());	// config dir
 		Classpath classpath = new Classpath(classpathEntries);
 

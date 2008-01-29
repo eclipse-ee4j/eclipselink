@@ -54,7 +54,7 @@ public class LegacyPhoneCompanyProject extends RelationalTestProject{
 	}
 
 	public static MWRelationalProject emptyProject() {
-		MWRelationalProject project = new MWRelationalProject("PhoneCompany", spiManager(), oraclePlatform());
+		MWRelationalProject project = new MWRelationalProject("PhoneCompany", spiManager(), mySqlPlatform());
 
 		// Defaults policy
 		//added this for testing purposes , it was failing because of useMethodAccessing
@@ -88,39 +88,39 @@ public class LegacyPhoneCompanyProject extends RelationalTestProject{
 	}
 
 	public MWTableDescriptor getCompanyDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.phone.Company");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.Company");
 	}
 	
 	public MWInterfaceDescriptor getContactDescriptor() {
-		return (MWInterfaceDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.phone.Contact");
+		return (MWInterfaceDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.Contact");
 	}
 	
 	public MWTableDescriptor getEmailAddressDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.phone.EmailAddress");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.EmailAddress");
 	}
 	
 	public MWTableDescriptor getHouseholdDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.phone.Household");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.Household");
 	}
 	
 	public MWTableDescriptor getPersonDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.phone.Person");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.Person");
 	}
 	
 	public MWTableDescriptor getPhoneNumberDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.phone.PhoneNumber");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.PhoneNumber");
 	}
 	
 	public MWInterfaceDescriptor getServiceableDescriptor() {
-		return (MWInterfaceDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.phone.Serviceable");
+		return (MWInterfaceDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.Serviceable");
 	}
 	
 	public MWTableDescriptor getServiceCallDescriptor() {
-		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.phone.ServiceCall");
+		return (MWTableDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.ServiceCall");
 	}
 	
 	public MWAggregateDescriptor getServiceDescriptor() {
-		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("test.oracle.models.phone.Service");
+		return (MWAggregateDescriptor)  getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.Service");
 	}
 	
 	protected void initializeCompanyDescriptor() {
@@ -133,7 +133,7 @@ public class LegacyPhoneCompanyProject extends RelationalTestProject{
 		addDirectMapping(descriptor, "name", table, "NAME");	
 			
 		// Aggregate mappings
-		MWAggregateDescriptor serviceDescriptor = ((MWAggregateDescriptor) getProject().descriptorForTypeNamed("test.oracle.models.phone.Service")).asMWAggregateDescriptor();
+		MWAggregateDescriptor serviceDescriptor = ((MWAggregateDescriptor) getProject().descriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.Service")).asMWAggregateDescriptor();
 		MWAggregateMapping serviceMapping = descriptor.addAggregateMapping(descriptor.getMWClass().attributeNamed("service"));
 		serviceMapping.setReferenceDescriptor(serviceDescriptor);
 		
@@ -153,24 +153,24 @@ public class LegacyPhoneCompanyProject extends RelationalTestProject{
 	
 	public void initializeCompanyPersonTable() {
 		MWTable table = database().addTable("COMPANY_PERSON");
-		addPrimaryKeyField(table, "COMPANY_ID", "NUMBER");
-		addPrimaryKeyField(table, "PERSON_ID", "NUMBER");
+		addPrimaryKeyField(table, "COMPANY_ID", "integer");
+		addPrimaryKeyField(table, "PERSON_ID", "integer");
 	}
 	
 	protected void initializeCompanyTable()  {
 		MWTable table = database().addTable("COMPANY");
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "NAME", "VARCHAR2", 50);
-		addField(table, "ADDRESS", "VARCHAR2", 100);
-		addField(table, "SERVICE_PLAN", "NUMBER");
-		addField(table, "CONTACT_PERSON_ID", "NUMBER");
-		addField(table, "CONTACT_ID", "NUMBER");
-		addField(table, "CONTACT_TYPE", "VARCHAR2", 20);
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "NAME", "varchar", 50);
+		addField(table, "ADDRESS", "varchar", 100);
+		addField(table, "SERVICE_PLAN", "integer");
+		addField(table, "CONTACT_PERSON_ID", "integer");
+		addField(table, "CONTACT_ID", "integer");
+		addField(table, "CONTACT_TYPE", "varchar", 20);
 		
 		// For rate transformation mapping
-		addField(table, "HAS_LOCAL", "NUMBER");
-		addField(table, "HAS_LONG_DISTANCE", "NUMBER");
-		addField(table, "HAS_DSL", "NUMBER");
+		addField(table, "HAS_LOCAL", "integer");
+		addField(table, "HAS_LONG_DISTANCE", "integer");
+		addField(table, "HAS_DSL", "integer");
 	}
 	
 	public void initializeContactDescriptor() {
@@ -194,15 +194,15 @@ public class LegacyPhoneCompanyProject extends RelationalTestProject{
 	}
 
 	protected void initializeDescriptors2() {
-		this.addDescriptorForTypeNamed("test.oracle.models.phone.PhoneNumber");
-		this.addDescriptorForTypeNamed("test.oracle.models.phone.EmailAddress");
-		this.addDescriptorForTypeNamed("test.oracle.models.phone.Contact");
-		this.addAggregateDescriptorForTypeNamed("test.oracle.models.phone.Service");
-		this.addDescriptorForTypeNamed("test.oracle.models.phone.Person");
-		this.addDescriptorForTypeNamed("test.oracle.models.phone.Company");
-		this.addDescriptorForTypeNamed("test.oracle.models.phone.Household");
-		this.addDescriptorForTypeNamed("test.oracle.models.phone.Serviceable");
-		this.addDescriptorForTypeNamed("test.oracle.models.phone.ServiceCall");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.PhoneNumber");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.EmailAddress");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.Contact");
+		this.addAggregateDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.Service");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.Person");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.Company");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.Household");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.Serviceable");
+		this.addDescriptorForTypeNamed("org.eclipse.persistence.tools.workbench.test.models.phone.ServiceCall");
 		
 		initializePhoneNumberDescriptor();
 		initializeEmailDescriptor();
@@ -244,8 +244,8 @@ public class LegacyPhoneCompanyProject extends RelationalTestProject{
 	
 	public void initializeEmailTable() {
 		MWTable table = database().addTable("EMAIL");
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "ADDRESS", "VARCHAR2", 50);
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "ADDRESS", "varchar", 50);
 	}
 	
 	protected void initializeHouseholdDescriptor() {
@@ -282,24 +282,24 @@ public class LegacyPhoneCompanyProject extends RelationalTestProject{
 	
 	protected void initializeHouseholdTable()  {
 		MWTable table = database().addTable("HOUSEHOLD");
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "HEAD_ID", "NUMBER");
-		addField(table, "ADDRESS", "VARCHAR2", 100);
-		addField(table, "SERVICE_PLAN", "NUMBER");
-		addField(table, "CONTACT_PERSON_ID", "NUMBER");
-		addField(table, "CONTACT_ID", "NUMBER");
-		addField(table, "CONTACT_TYPE", "VARCHAR2", 20);
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "HEAD_ID", "integer");
+		addField(table, "ADDRESS", "varchar", 100);
+		addField(table, "SERVICE_PLAN", "integer");
+		addField(table, "CONTACT_PERSON_ID", "integer");
+		addField(table, "CONTACT_ID", "integer");
+		addField(table, "CONTACT_TYPE", "varchar", 20);
 		
 		// For rate transformation mapping
-		addField(table, "HAS_LOCAL", "NUMBER");
-		addField(table, "HAS_LONG_DISTANCE", "NUMBER");
-		addField(table, "HAS_DSL", "NUMBER");
+		addField(table, "HAS_LOCAL", "integer");
+		addField(table, "HAS_LONG_DISTANCE", "integer");
+		addField(table, "HAS_DSL", "integer");
 	}
 
 	public void initializeLineAccountTable() {
 		MWTable table = database().addTable("LINE_ACCOUNT");
-		addPrimaryKeyField(table, "COMPANY_ID", "NUMBER");
-		addPrimaryKeyField(table, "LINE_ACCOUNT", "VARCHAR2", 50);
+		addPrimaryKeyField(table, "COMPANY_ID", "integer");
+		addPrimaryKeyField(table, "LINE_ACCOUNT", "varchar", 50);
 	}
 
 	protected void initializePersonDescriptor()  {
@@ -320,9 +320,9 @@ public class LegacyPhoneCompanyProject extends RelationalTestProject{
 
 	protected void initializePersonTable()  {
 		MWTable table = database().addTable("PERSON");
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "F_NAME", "VARCHAR2", 50);
-		addField(table, "L_NAME", "VARCHAR2", 50);
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "F_NAME", "varchar", 50);
+		addField(table, "L_NAME", "varchar", 50);
 	}
 
 	public void initializePhoneNumberDescriptor(){
@@ -352,8 +352,8 @@ public class LegacyPhoneCompanyProject extends RelationalTestProject{
 	
 	protected void initializePhoneNumberTable()  {
 		MWTable table = database().addTable("PHONE_NUMBER");
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "PHONE_NUMBER", "VARCHAR2", 50);
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "PHONE_NUMBER", "varchar", 50);
 	}
 	
 	public void initializeServiceableDescriptor(){
@@ -400,10 +400,10 @@ public class LegacyPhoneCompanyProject extends RelationalTestProject{
 
 	protected void initializeServiceCallTable() {
 		MWTable table = database().addTable("SERVICE_CALL");
-		addPrimaryKeyField(table, "ID", "NUMBER");
-		addField(table, "SERVICE_USER_ID", "NUMBER"); // back pointer to Serviceable (owner of service aggregate mapping)
-		addField(table, "SERVICE_USER_TYPE", "VARCHAR2", 50); // class indicator field for above pointer
-		addField(table, "TIME_OF_CALL", "DATE");
+		addPrimaryKeyField(table, "ID", "integer");
+		addField(table, "SERVICE_USER_ID", "integer"); // back pointer to Serviceable (owner of service aggregate mapping)
+		addField(table, "SERVICE_USER_TYPE", "varchar", 50); // class indicator field for above pointer
+		addField(table, "TIME_OF_CALL", "date");
 	}
 	
 	protected MWAggregateDescriptor initializeServiceDescriptor()  {

@@ -252,17 +252,6 @@ public abstract class MWQueryManager extends MWModel {
 		return descriptor;
 	}
 	
-
-	protected void legacy50PostBuild(DescriptorEvent event) {
-		super.legacy50PostBuild(event);
-		this.queryTimeout = DEFAULT_QUERY_TIMEOUT;	// default value
-	}
-
-	protected void legacy45PostBuild(DescriptorEvent event) {
-		super.legacy45PostBuild(event);
-		this.queryTimeout = DEFAULT_QUERY_TIMEOUT;	// default value
-	}
-
 	private Integer getQueryTimeoutForTopLink() {
 		return this.queryTimeout;
 	}

@@ -167,48 +167,6 @@ public final class MWMethodHandle extends MWHandle {
 
 		return descriptor;
 	}
-
-	public static ClassDescriptor legacy50BuildDescriptor(){
-		ClassDescriptor descriptor = new deprecated.xml.XMLDescriptor();
-		descriptor.descriptorIsAggregate();
-
-		descriptor.setJavaClass(MWMethodHandle.class);
-		descriptor.setTableName("method-handle");
-
-		OneToOneMapping methodDeclaringTypeMapping = new OneToOneMapping();
-		methodDeclaringTypeMapping.setAttributeName("methodDeclaringType");
-		methodDeclaringTypeMapping.setGetMethodName("legacy50GetMethodDeclaringTypeForTopLink");
-		methodDeclaringTypeMapping.setSetMethodName("legacySetMethodDeclaringTypeForTopLink");
-		methodDeclaringTypeMapping.setReferenceClass(MWClass.class);
-		methodDeclaringTypeMapping.setForeignKeyFieldName("method-declaring-type");
-		methodDeclaringTypeMapping.dontUseIndirection();
-		descriptor.addMapping(methodDeclaringTypeMapping);
-
-		descriptor.addDirectMapping("methodSignature", "getMethodSignatureForTopLink", "legacySetMethodSignatureForTopLink", "method-signature");
-	
-		return descriptor;
-	}
-	
-	public static ClassDescriptor legacy45BuildDescriptor() {
-		ClassDescriptor descriptor = new deprecated.xml.XMLDescriptor();
-		descriptor.descriptorIsAggregate();
-	
-		descriptor.setJavaClass(MWMethodHandle.class);
-		descriptor.setTableName("MethodHandle");
-	 
-		OneToOneMapping methodDeclaringTypeMapping = new OneToOneMapping();
-		methodDeclaringTypeMapping.setAttributeName("methodDeclaringType");
-		methodDeclaringTypeMapping.setGetMethodName("legacyGetMethodDeclaringTypeForTopLink");
-		methodDeclaringTypeMapping.setSetMethodName("legacySetMethodDeclaringTypeForTopLink");
-		methodDeclaringTypeMapping.dontUseIndirection();
-		methodDeclaringTypeMapping.setReferenceClass(MWClass.class);
-		methodDeclaringTypeMapping.setForeignKeyFieldName("methodClass");
-		descriptor.addMapping(methodDeclaringTypeMapping);
-	
-		descriptor.addDirectMapping("methodSignature", "getMethodSignatureForTopLink", "legacySetMethodSignatureForTopLink", "methodSignature");
-	
-		return descriptor;
-	}
 	
 	private String getMethodDeclaringTypeNameForTopLink() {
 		return (this.method == null) ? null : this.method.getDeclaringType().getName();
@@ -230,26 +188,4 @@ public final class MWMethodHandle extends MWHandle {
 		this.methodSignature = removeArrayTypesFromSignature(MWModel.legacyReplaceToplinkDepracatedClassReferencesFromSignature(legacyMethodSignature));
     }
     
-	/**
-	 * This legacy method will only be used by toplink for reading 4.x projects 
-	 * in which there was a method declaring type.
-	 */
-	private void legacySetMethodDeclaringTypeForTopLink(MWClass methodDeclaringType){
-		if (methodDeclaringType != null) {
-			this.methodDeclaringTypeName = methodDeclaringType.getName();
-		}
-	}
-
-	private MWClass legacyGetMethodDeclaringTypeForTopLink(){
-		throw new UnsupportedOperationException();
-	}
-	/**
-	 * this needs to return something in 5.0 because of the class override stuff
-	 */
-	private MWClass legacy50GetMethodDeclaringTypeForTopLink(){
-		if(this.getMethod() == null)
-			return null;
-		return this.getMethod().getDeclaringType();
-	}
-
 }

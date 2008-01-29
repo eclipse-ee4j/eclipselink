@@ -416,30 +416,6 @@ public abstract class MWHandle  implements MWNode {
 		throw new UnsupportedOperationException();
 	}
 
-
-	// ********** legacy methods **********
-
-	public final void legacy50PrePostProjectBuild() {
-		// do nothing
-	}
-	public final void legacy50PostPostProjectBuild() {
-		// do nothing
-	}
-	public final void legacy50FixAggregatePathToFields() {
-		// do nothing
-	}
-
-	public final void legacy45PrePostProjectBuild() {
-		// do nothing
-	}
-	public final void legacy45PostPostProjectBuild() {
-		// do nothing
-	}
-	public final void legacy45FixAggregatePathToFields() {
-		// do nothing
-	}
-
-
 	// ********** standard methods **********
 
 	public String toString() {

@@ -251,22 +251,4 @@ public final class MWMapContainerPolicy extends MWModel implements MWContainerPo
 		this.keyMethodHandle = ((keyMethodHandle == null) ? new MWMethodHandle(this, scrubber) : keyMethodHandle.setScrubber(scrubber));
 	}
 	
-	public void legacySetKeyMethod(String methodClassString, String methodSignature) {
-		MWClass methodDeclaringType = typeNamed(methodClassString);
-	
-		if (methodDeclaringType != null && methodSignature != null) {
-			setKeyMethod(methodDeclaringType.methodWithSignature(methodSignature));
-		}
-	}
-
-    
-    public void legacyAdjustUsesDefaultContainerClassAttributes() {     
-        if (getDefaultingContainerClass().getContainerClass() == defaultContainerClass()) {
-            getDefaultingContainerClass().setUseDefaultContainerClass(true);
-        }
-        else {
-            getDefaultingContainerClass().setUseDefaultContainerClass(false);
-        }
-    }
-
 }

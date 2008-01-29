@@ -61,6 +61,7 @@ import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
 import org.eclipse.persistence.internal.queries.InterfaceContainerPolicy;
+import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.mappings.AggregateMapping;
@@ -76,14 +77,17 @@ import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.transformers.MethodBasedAttributeTransformer;
+import org.eclipse.persistence.mappings.xdb.DirectToXMLTypeMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.mappings.OptionalNodeNullPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.platform.xml.XMLComparer;
+import org.eclipse.persistence.platform.xml.XMLTransformer;
+import org.eclipse.persistence.platform.xml.jaxp.JAXPTransformer;
 import org.eclipse.persistence.platform.xml.xdk.XDKTransformer;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
@@ -92,6 +96,7 @@ import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.JPQLCall;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.QueryResultsCachePolicy;
@@ -172,6 +177,8 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.SimpleSPIManage
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.db.jdbc.JDBCExternalDatabaseFactory;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.classfile.CFExternalClassRepositoryFactory;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.MWXmlField;
+import org.eclipse.persistence.tools.workbench.platformsmodel.DatabaseType;
+import org.eclipse.persistence.tools.workbench.platformsmodel.JDBCTypeToDatabaseTypeMapping;
 import org.eclipse.persistence.tools.workbench.utility.AbstractModel;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.diff.CompositeDiff;
@@ -192,6 +199,9 @@ import org.eclipse.persistence.tools.workbench.utility.diff.OrderedContainerDiff
 import org.eclipse.persistence.tools.workbench.utility.diff.ReflectiveDifferentiator;
 import org.eclipse.persistence.tools.workbench.utility.diff.SimpleDiff;
 import org.eclipse.persistence.tools.workbench.utility.node.AbstractNodeModel;
+
+import com.sun.org.apache.xalan.internal.xsltc.trax.TransformerImpl;
+
 import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
 /**
@@ -261,7 +271,7 @@ public class MappingsModelTestTools {
 			rd.addKeyFieldsNamed("indicatorValue", "descriptorValueHandle");
 
 		rd = diffEngine.addReflectiveDifferentiator(MWClassRepository.class);
-			rd.ignoreFieldsNamed(new String[] {"externalClassRepository", "legacy45Name", "userTypeNames"});
+			rd.ignoreFieldsNamed(new String[] {"externalClassRepository", "userTypeNames"});
 			Differentiator typesFieldDifferentiator = rd.getFieldDifferentiator("types");
 			rd.setFieldDifferentiator("types", new ClassRepositoryTypesFieldDifferentiator(typesFieldDifferentiator));
 			rd.setFieldDifferentiator("typeNames", new ClassRepositoryTypesFieldDifferentiator(typesFieldDifferentiator));
@@ -301,7 +311,6 @@ public class MappingsModelTestTools {
 		rd.addReferenceFieldsNamed("this$0");		// "inner" class's backpointer to "outer" class
 
 		rd = diffEngine.addReflectiveDifferentiator(MWDescriptorMultiTableInfoPolicy.class);
-			rd.ignoreFieldsNamed("legacySecondaryReferenceHandles");
 
 		rd = diffEngine.addReflectiveDifferentiator(MWEisLoginSpec.class);
 			rd.addKeyFieldsNamed("name");
@@ -383,9 +392,14 @@ public class MappingsModelTestTools {
 		rd = diffEngine.addReflectiveDifferentiator(MWTable.class);
 			rd.addKeyFieldsNamed("catalog", "schema", "shortName");
 			rd.ignoreFieldsNamed("lastRefreshTimestamp");
+			
+		rd = diffEngine.addReflectiveDifferentiator(DatabaseType.class);
+			rd.addReferenceFieldNamed("jdbcType");
+		
+		rd = diffEngine.addReflectiveDifferentiator(org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatform.class);
+			rd.addReferenceCollectionFieldNamed("jdbcTypeToDatabaseTypeMappings");
 
 		rd = diffEngine.addReflectiveDifferentiator(MWTableDescriptor.class);
-			rd.ignoreFieldsNamed("legacyAssociatedTables");
 
 		rd = diffEngine.addReflectiveDifferentiator(MWTableDescriptorLockingPolicy.class);
 			rd.ignoreFieldsNamed("columnLockColumnScrubber");
@@ -455,7 +469,7 @@ public class MappingsModelTestTools {
 
 		rd = diffEngine.addReflectiveDifferentiator(MWDescriptorQueryParameterHandle.class);
 			rd.addKeyFieldsNamed("queryParameter");
-			rd.ignoreFieldsNamed(new String[] {"classDescriptorName", "querySignature", "queryParameterName", "legacyTableDescriptor"});
+			rd.ignoreFieldsNamed(new String[] {"classDescriptorName", "querySignature", "queryParameterName"});
 			rd.addReferenceFieldsNamed("queryParameter");
 
 		rd = diffEngine.addReflectiveDifferentiator(MWColumnHandle.class);
@@ -485,7 +499,7 @@ public class MappingsModelTestTools {
 
 		rd = diffEngine.addReflectiveDifferentiator(MWQueryableHandle.class);
 			rd.addKeyFieldsNamed("queryable");
-			rd.ignoreFieldsNamed("mappingDescriptorName", "queryableName", "legacyDescriptor");
+			rd.ignoreFieldsNamed("mappingDescriptorName", "queryableName");
 			rd.addReferenceFieldsNamed("queryable");
 
 		rd = diffEngine.addReflectiveDifferentiator(MWQueryKeyHandle.class);
@@ -652,11 +666,13 @@ public class MappingsModelTestTools {
 		rd = diffEngine.addReflectiveDifferentiator(ContainerPolicy.class);
 			rd.addReferenceFieldNamed("elementDescriptor");
             rd.ignoreFieldNamed("constructor");//not initialized until setContainerClass() is called when the deployment xml is read
+        rd = diffEngine.addReflectiveDifferentiator(JPQLCallQueryMechanism.class);
+        	rd.ignoreFieldNamed("ejbqlCall");
             
         rd = diffEngine.addReflectiveDifferentiator(InterfaceContainerPolicy.class);
             rd.ignoreFieldNamed("containerClass");
-
-        rd = diffEngine.addReflectiveDifferentiator(OptionalNodeNullPolicy.class);
+        
+        rd = diffEngine.addReflectiveDifferentiator(NullPolicy.class);
             
 		rd = diffEngine.addReflectiveDifferentiator(InMemoryQueryIndirectionPolicy.class);
 		rd = diffEngine.addReflectiveDifferentiator(ForUpdateClause.class);
@@ -681,13 +697,12 @@ public class MappingsModelTestTools {
 			rd.ignoreFieldNamed("sourceToTargetKeys");
 			
 			rd = diffEngine.addReflectiveDifferentiator(XMLDirectMapping.class);
-			rd.addReferenceFieldNamed("nodeNullPolicy");
+			rd.addReferenceFieldNamed("nullPolicy");
 			
 		rd = diffEngine.addReflectiveDifferentiator(XMLCompositeObjectMapping.class);
-			rd.addReferenceFieldNamed("nodeNullPolicy");
+			rd.addReferenceFieldNamed("nullPolicy");
 			
 		rd = diffEngine.addReflectiveDifferentiator(XMLCompositeCollectionMapping.class);
-			rd.addReferenceFieldNamed("nodeNullPolicy");
 		
 		rd = diffEngine.addReflectiveDifferentiator(DatabaseField.class);
 			rd.addKeyFieldNamed("name");
@@ -723,8 +738,9 @@ public class MappingsModelTestTools {
 		rd = diffEngine.addReflectiveDifferentiator(InitialContext.class);
 		
 		rd = diffEngine.addReflectiveDifferentiator(XMLComparer.class);
-		rd = diffEngine.addReflectiveDifferentiator(XDKTransformer.class);
-			
+		rd = diffEngine.addReflectiveDifferentiator(JAXPTransformer.class);
+			rd.ignoreFieldNamed("transformer");
+
 		return diffEngine;
 	}	
 	
@@ -999,7 +1015,7 @@ public class MappingsModelTestTools {
 				rd.addReferenceFieldNamed("elementDescriptor");
 				rd.ignoreFieldNamed("constructor");//not initialized until setContainerClass() is called when the deployment xml is read
 
-		    rd = diffEngine.addReflectiveDifferentiator(OptionalNodeNullPolicy.class);
+		    rd = diffEngine.addReflectiveDifferentiator(NullPolicy.class);
 
 		diffEngine.setUserDifferentiator(DatabaseQuery.class,
 				new ReflectiveDifferentiator(DatabaseQuery.class, diffEngine.getRecordingDifferentiator()) {
@@ -1289,13 +1305,12 @@ public class MappingsModelTestTools {
 			rd.addReferenceMapFieldsNamed("sourceToTargetKeyFields", "targetToSourceKeyFields");
 				
 		rd = diffEngine.addReflectiveDifferentiator(XMLDirectMapping.class);
-			rd.addReferenceFieldNamed("nodeNullPolicy");
+			rd.addReferenceFieldNamed("nullPolicy");
 			
 		rd = diffEngine.addReflectiveDifferentiator(XMLCompositeObjectMapping.class);
-			rd.addReferenceFieldNamed("nodeNullPolicy");
+			rd.addReferenceFieldNamed("nullPolicy");
 			
 		rd = diffEngine.addReflectiveDifferentiator(XMLCompositeCollectionMapping.class);
-			rd.addReferenceFieldNamed("nodeNullPolicy");
 
 		rd = diffEngine.addReflectiveDifferentiator(XMLObjectReferenceMapping.class);
 			rd.addReferenceMapFieldsNamed("sourceToTargetKeyFieldAssociations");
@@ -1389,7 +1404,7 @@ public class MappingsModelTestTools {
 		rd = diffEngine.addReflectiveDifferentiator(InitialContext.class);
 		
 		rd = diffEngine.addReflectiveDifferentiator(XMLComparer.class);
-		rd = diffEngine.addReflectiveDifferentiator(XDKTransformer.class);
+//		rd = diffEngine.addReflectiveDifferentiator(XDKTransformer.class);
 
 		return diffEngine;
 	}	
