@@ -137,8 +137,8 @@
         <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Dtest.properties=${test.properties.run}"/>
-            <jvmarg value="-Djava.security.manager"/>
-            <jvmarg value="-Djava.security.policy=${eclipselink.core.test}/${resource.dir}/java.policy.allpermissions"/>
+            <!--jvmarg value="-Djava.security.manager"/>
+            <jvmarg value="-Djava.security.policy=${eclipselink.core.test}/${resource.dir}/java.policy.allpermissions"/-->
             <classpath>
                 <path refid="run.classpath"/>
             </classpath>
