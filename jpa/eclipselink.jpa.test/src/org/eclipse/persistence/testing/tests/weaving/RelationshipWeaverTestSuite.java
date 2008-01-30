@@ -14,6 +14,8 @@ import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
 
+import javax.persistence.spi.PersistenceUnitInfo;
+
 // JUnit imports
 import junit.framework.*;
 
@@ -26,12 +28,15 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.models.weaving.Customer;
 import org.eclipse.persistence.testing.models.weaving.Item;
 import org.eclipse.persistence.testing.models.weaving.Order;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
 import org.eclipse.persistence.internal.weaving.*;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;;
 
 public class RelationshipWeaverTestSuite extends TestCase {
     
@@ -43,12 +48,9 @@ public class RelationshipWeaverTestSuite extends TestCase {
             m_session = session;
             Collection<String> entityNames = new HashSet<String>(entities.size());
             for (Class entity : entities) {
-                m_project.addDescriptor(new MetadataDescriptor(entity));
+                m_project.addClassAccessor(new ClassAccessor(entity, m_project));
                 entityNames.add(entity.getName());
             }
-            m_project.setWeavableClassNames(entityNames);
-            m_logger = new MetadataLogger(session);
-            
         }
     }
 	
@@ -126,7 +128,7 @@ public class RelationshipWeaverTestSuite extends TestCase {
 		Object newOrder = null;
 		try {
             // ensure TopLinkWeavedLazy interface has been added
-			newOrder = newOrderClass.newInstance();
+			newOrder = (PersistenceWeavedLazy)newOrderClass.newInstance();
 		}
 		catch (Exception e) {
 			fail(getName() + " failed: " + e.toString());

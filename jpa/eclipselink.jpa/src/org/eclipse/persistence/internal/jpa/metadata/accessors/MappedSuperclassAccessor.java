@@ -9,10 +9,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
-
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 
 /**
  * A mapped superclass accessor.
@@ -21,11 +19,16 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class MappedSuperclassAccessor extends ClassAccessor {
+	/**
+     * INTERNAL:
+     */
+    public MappedSuperclassAccessor() {}
+    
     /**
      * INTERNAL:
      */
-    public MappedSuperclassAccessor(MetadataAccessibleObject accessibleObject, MetadataProcessor processor, MetadataDescriptor descriptor) {
-        super(accessibleObject, processor, descriptor);
+    public MappedSuperclassAccessor(Class cls, MetadataDescriptor descriptor, MetadataProject project) {
+    	super(cls, descriptor, project);
     }
     
     /**
@@ -33,6 +36,11 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Process the items of interest on a mapped superclass.
      */
     public void process() {
-        processMappedSuperclass();
+        // Process the common class level attributes that an entity or
+        // mapped superclass may define.
+        processClassMetadata();
+            
+        // Process the accessors from the mapped superclass.
+        processAccessors();
     }
 }

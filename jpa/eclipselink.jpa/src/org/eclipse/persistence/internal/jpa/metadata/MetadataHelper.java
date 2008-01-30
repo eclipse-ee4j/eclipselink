@@ -40,7 +40,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
-import org.eclipse.persistence.internal.jpa.metadata.listeners.MetadataEntityListener;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -95,8 +95,8 @@ public class MetadataHelper {
      * reading annotations from classes. It returns the wrong type. Anyhow,
      * this method fixes that.
      */
-    private static <T extends Annotation> T getAnnotation(Class annotation, AnnotatedElement annotatedElement, ClassLoader loader) {
-        return (T) annotatedElement.getAnnotation(getClassForName(annotation.getName(), loader));
+    private static <T extends Annotation> T getAnnotation(Class annotation, AnnotatedElement annotatedElement) {
+        return (T) annotatedElement.getAnnotation(annotation);
     }
     
     /**
@@ -105,7 +105,7 @@ public class MetadataHelper {
      * annotations.
      */
     public static <T extends Annotation> T getAnnotation(Class annotation, AnnotatedElement annotatedElement, MetadataDescriptor descriptor) {
-        Annotation loadedAnnotation = getAnnotation(annotation, annotatedElement, descriptor.getJavaClass().getClassLoader());
+        Annotation loadedAnnotation = getAnnotation(annotation, annotatedElement);
         
         if (loadedAnnotation != null && descriptor.ignoreAnnotations()) {
             descriptor.getLogger().logWarningMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, annotatedElement);
@@ -156,7 +156,7 @@ public class MetadataHelper {
      * INTERNAL:
      * Returns the same candidate methods as an entity listener would.
      */
-    public static Method[] getCandidateCallbackMethodsForDefaultListener(MetadataEntityListener listener) {
+    public static Method[] getCandidateCallbackMethodsForDefaultListener(EntityListenerMetadata listener) {
         return getCandidateCallbackMethodsForEntityListener(listener);
     }
     
@@ -174,7 +174,7 @@ public class MetadataHelper {
      * protected, package and public access, AND will also return public 
      * methods from superclasses.
      */
-    public static Method[] getCandidateCallbackMethodsForEntityListener(MetadataEntityListener listener) {
+    public static Method[] getCandidateCallbackMethodsForEntityListener(EntityListenerMetadata listener) {
         HashSet candidateMethods = new HashSet();
         Class listenerClass = listener.getListenerClass();
         
@@ -312,16 +312,14 @@ public class MetadataHelper {
      * INTERNAL:
      * Return the discriminator type class for the given discriminator type.
      */
-    public static Class getDiscriminatorType(String discriminatorType) {
-        if (discriminatorType.equals(MetadataConstants.CHAR)) {
+    public static Class getDiscriminatorType(DiscriminatorType discriminatorType) {
+    	if (discriminatorType == null || discriminatorType.equals(DiscriminatorType.STRING)) {
+    		return String.class;
+    	} else if (discriminatorType.equals(DiscriminatorType.CHAR)) {
             return Character.class;
-        } else if (discriminatorType.equals(MetadataConstants.STRING)) {
-            return String.class;
-        } else if (discriminatorType.equals(MetadataConstants.INTEGER)) {
-            return Integer.class;
         } else {
-            // Should never hit because of validation.
-            return null;
+        	// Can't be anything else, must be DiscriminatorType.INTEGER
+            return Integer.class;
         }
     }
     
@@ -329,17 +327,13 @@ public class MetadataHelper {
      * INTERNAL:
      * Return the field classification for the given temporal type.
      */
-    public static Class getFieldClassification(String temporalType) {
-        if (temporalType.equals(MetadataConstants.DATE)) {
-            return java.sql.Date.class;
-        } else if (temporalType.equals(MetadataConstants.TIME)) {
-            return java.sql.Time.class;
-        } else if (temporalType.equals(MetadataConstants.TIMESTAMP)) {
-            return java.sql.Timestamp.class;
-        } else {
-            // Should never hit because of validation.
-            return null;
-        }
+    public static Class getFieldClassification(TemporalType type) {
+    	switch (type) {
+    		case DATE: return java.sql.Date.class;
+    		case TIME: return java.sql.Time.class;
+    		case TIMESTAMP: return java.sql.Timestamp.class;
+    		default : return null;
+    	}
     }
     
     /**
@@ -405,25 +399,10 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * Returns a fully qualified table name based on the values passed in.
-     * eg. schema.catalog.name
-     */
-    public static String getFullyQualifiedTableName(String name, String defaultName, String catalog, String schema) {
-        // check if a name was specified otherwise use the default
-        String tableName = name;
-        if (tableName.equals("")) {
-            tableName = defaultName;
-        }
-    
-        return getFullyQualifiedTableName(tableName, catalog, schema);
-    }
-    
-    /**
-     * INTERNAL:
      * Method to return a generic method return type.
      */
 	public static Type getGenericReturnType(Method method) {
-        // WIP - should use PrivilegedAccessController
+        // Future: Use PrivilegedAccessController
         return method.getGenericReturnType();
     }
     
@@ -432,7 +411,7 @@ public class MetadataHelper {
      * Method to return a generic field type.
      */
 	public static Type getGenericType(Field field) {
-        // WIP - should use PrivilegedAccessController
+        // Future: Use PrivilegedAccessController
         return field.getGenericType();
     }
     
@@ -520,6 +499,30 @@ public class MetadataHelper {
             return PrivilegedAccessHelper.getMethods(cls);
         }
     }
+	
+    /**
+     * INTERNAL:
+     * Helper method to return a field name from a candidate field name and a 
+     * default field name.
+     * 
+     * Requires the context from where this method is called to output the 
+     * correct logging message when defaulting the field name.
+     *
+     * In some cases, both the name and defaultName could be "" or null,
+     * therefore, don't log a message and return name.
+     */
+    public static String getName(String name, String defaultName, String context, MetadataLogger logger, String location) {
+        // Check if a candidate was specified otherwise use the default.
+        if (name != null && !name.equals("")) {
+            return name;
+        } else if (defaultName == null || defaultName.equals("")) {
+            return "";
+        } else {
+            // Log the defaulting field name based on the given context.
+            logger.logConfigMessage(context, location, defaultName);
+            return defaultName;
+        }
+    }
     
     /**
      * INTERNAL:
@@ -588,34 +591,33 @@ public class MetadataHelper {
  
     /** 
      * INTERNAL:
-     * 
      * Indicates whether the specified annotation is actually not present on 
      * the specified class. Used for defaulting. Need this check since the
      * isAnnotationPresent calls can return a false when true because of the
      * meta-data complete feature.
      */
-    public static boolean isAnnotationNotPresent(Class annotation, AnnotatedElement annotatedElement, MetadataDescriptor descriptor) {
-        return ! isAnnotationPresent(annotation, annotatedElement, descriptor.getJavaClass().getClassLoader());
+    public static boolean isAnnotationNotPresent(Class annotation, AnnotatedElement annotatedElement) {
+        return ! isAnnotationPresent(annotation, annotatedElement);
     }
     
     /** 
      * INTERNAL:
-     * 
      * Indicates whether the specified annotation is present on the specified 
-     * class.
+     * class. NOTE: Calling this method directly does not take any metadata
+     * complete flag into consideration. Look at the other isAnnotationPresent
+     * methods that take a descriptor. 
      */
-    private static boolean isAnnotationPresent(Class annotation, AnnotatedElement annotatedElement, ClassLoader loader) {
-        return annotatedElement.isAnnotationPresent(getClassForName(annotation.getName(), loader));
+    public static boolean isAnnotationPresent(Class annotation, AnnotatedElement annotatedElement) {
+        return annotatedElement.isAnnotationPresent(annotation);
     }
     
     /** 
      * INTERNAL:
-     * 
      * Indicates whether the specified annotation is present on the specified 
      * class.
      */
     public static boolean isAnnotationPresent(Class annotation, AnnotatedElement annotatedElement, MetadataDescriptor descriptor) {
-        boolean isAnnotationPresent = isAnnotationPresent(annotation, annotatedElement, descriptor.getJavaClass().getClassLoader());
+        boolean isAnnotationPresent = isAnnotationPresent(annotation, annotatedElement);
         
         if (isAnnotationPresent && descriptor.ignoreAnnotations()) {
             descriptor.getLogger().logWarningMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, annotatedElement);
@@ -627,7 +629,6 @@ public class MetadataHelper {
     
     /** 
      * INTERNAL:
-     * 
      * Indicates whether the specified annotation is present on java class
      * for the given descriptor metadata. 
      */
@@ -637,7 +638,6 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
 	 * Return true if this accessor represents a basic mapping.
      */
 	public static boolean isBasic(MetadataAccessibleObject annotatedAccessor, MetadataDescriptor descriptor) {
@@ -650,47 +650,22 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
 	 * Return true if this accessor represents a basic collection mapping.
      */
-	public static boolean isBasicCollection(MetadataAccessibleObject annotatedAccessor, MetadataDescriptor descriptor, MetadataValidator validator) {
-        Class rawClass = annotatedAccessor.getRawClass();
-        AnnotatedElement annotatedElement = annotatedAccessor.getAnnotatedElement();
-        
-        if (isAnnotationPresent(BasicCollection.class, annotatedElement, descriptor)) {
-            if (MetadataHelper.isValidBasicCollectionType(rawClass)) {
-                return true;
-            } else {
-                validator.throwInvalidTypeForBasicCollectionAttribute(descriptor.getJavaClass(), annotatedAccessor.getAttributeName(), annotatedAccessor.getRawClass());
-            }
-        }
-        
-        return false;
+	public static boolean isBasicCollection(MetadataAccessibleObject annotatedAccessor, MetadataDescriptor descriptor) {
+        return isAnnotationPresent(BasicCollection.class, annotatedAccessor.getAnnotatedElement(), descriptor);
+    }
+    
+    /**
+     * INTERNAL: 
+	 * Return true if this accessor represents a basic collection mapping.
+     */
+	public static boolean isBasicMap(MetadataAccessibleObject annotatedAccessor, MetadataDescriptor descriptor) {
+        return isAnnotationPresent(BasicMap.class, annotatedAccessor.getAnnotatedElement(), descriptor);
     }
     
     /**
      * INTERNAL:
-     * 
-	 * Return true if this accessor represents a basic collection mapping.
-     */
-	public static boolean isBasicMap(MetadataAccessibleObject annotatedAccessor, MetadataDescriptor descriptor, MetadataValidator validator) {
-        Class rawClass = annotatedAccessor.getRawClass();
-        AnnotatedElement annotatedElement = annotatedAccessor.getAnnotatedElement();
-        
-        if (isAnnotationPresent(BasicMap.class, annotatedElement, descriptor)) {
-            if (MetadataHelper.isValidBasicMapType(rawClass)) {
-                return true;
-            } else {
-                validator.throwInvalidTypeForBasicMapAttribute(descriptor.getJavaClass(), annotatedAccessor.getAttributeName(), annotatedAccessor.getRawClass());
-            }
-        }
-        
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * 
      * Method to return whether a class is a collection or not. 
      */
 	public static boolean isCollectionClass(Class cls) {
@@ -699,21 +674,20 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
      * Return true if this accessor represents an aggregate mapping. True is
-     * returned id and @Embedded is found or if an @Embeddable is found on the
-     * raw/reference class.
+     * returned if an Embedded annotation is found or if an Embeddable 
+     * annotation is found on the raw/reference class.
      */
 	public static boolean isEmbedded(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor) {
         AnnotatedElement annotatedElement = accessibleObject.getAnnotatedElement();
         
-        if (isAnnotationNotPresent(Embedded.class, annotatedElement, descriptor) && isAnnotationNotPresent(EmbeddedId.class, annotatedElement, descriptor)) {
+        if (isAnnotationNotPresent(Embedded.class, annotatedElement) && isAnnotationNotPresent(EmbeddedId.class, annotatedElement)) {
             Class rawClass = accessibleObject.getRawClass();
             // Use the class loader from the descriptor's java class and not
             // that from the rawClass since it may be an int, String etc. which
             // would not have been loaded from the temp loader, hence will not
             // find the Embeddable.class.
-            return (isAnnotationPresent(Embeddable.class, rawClass, descriptor.getJavaClass().getClassLoader()) || descriptor.getProject().hasEmbeddable(rawClass));
+            return (isAnnotationPresent(Embeddable.class, rawClass) || descriptor.getProject().hasEmbeddable(rawClass));
         } else {
             // Still need to make the call since we may need to ignore it
             // because of meta-data complete.
@@ -723,10 +697,7 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
-     * Return true if this accessor represents an aggregate mapping. True is
-     * returned id and @Embedded is found or if an @Embeddable is found on the
-     * reference class.
+     * Return true if this accessor represents an aggregate id mapping.
      */
 	public static boolean isEmbeddedId(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor) {
         return isAnnotationPresent(EmbeddedId.class, accessibleObject.getAnnotatedElement(), descriptor);
@@ -734,7 +705,6 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
      * Method to return whether a collection type is a generic.
      */
 	public static boolean isGenericCollectionType(Type type) {
@@ -743,27 +713,22 @@ public class MetadataHelper {
 
     /**
      * INTERNAL:
-     * 
+	 * Return true if this accessor represents an id mapping.
+     */
+	public static boolean isId(MetadataAccessibleObject annotatedAccessor, MetadataDescriptor descriptor) {
+        return isAnnotationPresent(Id.class, annotatedAccessor.getAnnotatedElement(), descriptor);
+    }
+	
+    /**
+     * INTERNAL:
      * Return true if this field accessor represents a m-m relationship.
      */
 	public static boolean isManyToMany(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor) {
-        Class rawClass = accessibleObject.getRawClass();
-        AnnotatedElement annotatedElement = accessibleObject.getAnnotatedElement();
-        
-        if (isAnnotationPresent(ManyToMany.class, annotatedElement, descriptor)) {
-            if (MetadataHelper.isSupportedCollectionClass(rawClass)) {
-                return true;
-            } else {
-                descriptor.getValidator().throwInvalidCollectionTypeForRelationship(descriptor.getJavaClass(), rawClass, annotatedElement);
-            }
-        } 
-        
-        return false;
+        return isAnnotationPresent(ManyToMany.class, accessibleObject.getAnnotatedElement(), descriptor);
     }
     
     /**
      * INTERNAL:
-     * 
 	 * Return true if this accessor represents a m-1 relationship.
      */
 	public static boolean isManyToOne(MetadataAccessibleObject annotatedAccessor, MetadataDescriptor descriptor) {
@@ -772,7 +737,6 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
      * Method to return whether a class is a map or not. 
      */
     public static boolean isMapClass(Class cls) {
@@ -781,47 +745,37 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
 	 * Return true if this accessor represents a 1-m relationship.
      */
 	public static boolean isOneToMany(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor) {
         AnnotatedElement annotatedElement = accessibleObject.getAnnotatedElement();
         
-        if (isAnnotationNotPresent(OneToMany.class, annotatedElement, descriptor)) {
+        if (isAnnotationNotPresent(OneToMany.class, annotatedElement)) {
             if (MetadataHelper.isGenericCollectionType(accessibleObject.getRelationType()) && 
                 MetadataHelper.isSupportedCollectionClass(accessibleObject.getRawClass()) && 
-                descriptor.getProject().containsDescriptor(accessibleObject.getReferenceClassFromGeneric())) {
+                descriptor.getProject().hasEntity(accessibleObject.getReferenceClassFromGeneric())) {
                 
                 descriptor.getLogger().logConfigMessage(MetadataLogger.ONE_TO_MANY_MAPPING, annotatedElement);
                 return true;
             }
+            
+            return false;
         } else {
             // Still need to make the call since we may need to ignore it
             // because of meta-data complete.
-            if (isAnnotationPresent(OneToMany.class, annotatedElement, descriptor)) {
-                if (MetadataHelper.isSupportedCollectionClass(accessibleObject.getRawClass())) {
-                    return true;
-                } else {
-                    descriptor.getValidator().throwInvalidCollectionTypeForRelationship(descriptor.getJavaClass(), accessibleObject.getRawClass(), annotatedElement);
-                }
-            }
+            return isAnnotationPresent(OneToMany.class, annotatedElement, descriptor);
         }
-        
-        return false;
     }
     
 	/**
      * INTERNAL: 
-     * 
      * Return true if this accessor represents a 1-1 relationship.
      */
 	public static boolean isOneToOne(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor) {
         AnnotatedElement annotatedElement = accessibleObject.getAnnotatedElement();
         
-        if (isAnnotationNotPresent(OneToOne.class, annotatedElement, descriptor)) {
-            if (descriptor.getProject().containsDescriptor(accessibleObject.getRawClass()) && 
-                ! isEmbedded(accessibleObject, descriptor)) {
-                
+        if (isAnnotationNotPresent(OneToOne.class, annotatedElement)) {
+            if (descriptor.getProject().hasEntity(accessibleObject.getRawClass()) && ! isEmbedded(accessibleObject, descriptor)) {
                 descriptor.getLogger().logConfigMessage(MetadataLogger.ONE_TO_ONE_MAPPING, annotatedElement);
                 return true;
             } else {
@@ -836,7 +790,6 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
      * Returns true is the given class is primitive wrapper type.
      */
     public static boolean isPrimitiveWrapperClass(Class cls) {
@@ -858,7 +811,6 @@ public class MetadataHelper {
      
     /**
      * INTERNAL:
-     * 
      * Method to return whether a class is a supported Collection. EJB 3.0 spec 
      * currently only supports Collection, Set, List and Map.
      */
@@ -871,7 +823,6 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
      * Search the class for an attribute with a name matching 'attributeName'
      */
     public static boolean isValidAttributeName(String attributeName, Class javaClass) {
@@ -888,7 +839,6 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
      * Returns true if the given class is a valid basic collection type.
      */ 
     public static boolean isValidBasicCollectionType(Class cls) {
@@ -899,7 +849,6 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
      * Returns true if the given class is a valid basic map type.
      */ 
     public static boolean isValidBasicMapType(Class cls) {
@@ -908,7 +857,6 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
      * Returns true if the given class is a valid blob type.
      */ 
     public static boolean isValidBlobType(Class cls) {
@@ -919,7 +867,6 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
      * Returns true if the given class is a valid clob type.
      */  
     public static boolean isValidClobType(Class cls) {
@@ -931,7 +878,6 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
      * Returns true is the given class is or extends java.util.Date.
      */
     public static boolean isValidDateType(Class cls) {
@@ -940,7 +886,6 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
      * Return true if the given class is a valid enum type.
      */
     public static boolean isValidEnumeratedType(Class cls) {
@@ -949,7 +894,6 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
      * Returns true if the given class is a valid lob type.
      */
     public static boolean isValidLobType(Class cls) {
@@ -965,7 +909,6 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * 
      * Returns true if the given class is valid for SerializedObjectMapping.
      */
     public static boolean isValidSerializedType(Class cls) {
@@ -990,7 +933,6 @@ public class MetadataHelper {
      
     /**
      * INTERNAL:
-     * 
      * Returns true if the given class is a valid temporal type and must be
      * marked temporal.
      */
@@ -1002,7 +944,6 @@ public class MetadataHelper {
      
     /**
      * INTERNAL:
-     * 
      * Returns true if the given class is a valid timestamp locking type.
      */
     public static boolean isValidTimstampVersionLockingType(Class cls) {
@@ -1011,7 +952,6 @@ public class MetadataHelper {
      
     /**
      * INTERNAL:
-     * 
      * Returns true if the given class is a valid version locking type.
      */
     public static boolean isValidVersionLockingType(Class cls) {
@@ -1023,9 +963,16 @@ public class MetadataHelper {
                 cls.equals(Long.class));
     }
     
+    /**
+     * INTERNAL: 
+	 * Return true if this accessor represents a version mapping.
+     */
+	public static boolean isVersion(MetadataAccessibleObject annotatedAccessor, MetadataDescriptor descriptor) {
+        return isAnnotationPresent(Version.class, annotatedAccessor.getAnnotatedElement(), descriptor);
+    }
+	
     /** 
      * INTERNAL:
-     * 
      * Indicates whether the class should ignore annotations. Note that such 
      * classes should already have their descriptors with PKs added to 
      * session's project.
@@ -1038,5 +985,18 @@ public class MetadataHelper {
         } else {
             return false;
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public static boolean valuesMatch(Object value1, Object value2) {
+    	if ((value1 == null && value2 != null) || (value2 == null && value1 != null)) {
+    		return false;
+    	} else if (value1 == null && value2 == null) {
+    		return true;
+    	} else {
+    		return value1.equals(value2);
+    	}
     }
 }

@@ -189,12 +189,12 @@ public class EntityManagerSetupImpl {
                                     processor.setClassLoader(realClassLoader);
                                     processor.addEntityListeners();
                                     processor.addNamedQueries();
-                                    // Must be the last thing to call on the processor before cleanup.
-                                    processor.processCustomizers(realClassLoader);
                                     
-                                    structConverters = processor.getStructConverters(realClassLoader);
-                                    // free the resouces that we don't need any more.
-                                    processor.cleanup();
+                                    // Process the customizers last.
+                                    processor.processCustomizers();
+                                    
+                                    structConverters = processor.getStructConverters();
+                                    
                                     processor = null;
                             }
                     
@@ -760,7 +760,7 @@ public class EntityManagerSetupImpl {
                 processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, enableWeaving);
                 
                 // Process the Object/relational metadata from XML and annotations.
-                PersistenceUnitProcessor.processORMetadata(processor, privateClassLoader, session,throwExceptionOnFail);
+                PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail);
 
                 // The connector will be reconstructed when the session is actually deployed
                 session.getProject().getLogin().setConnector(new DefaultConnector());
@@ -773,7 +773,7 @@ public class EntityManagerSetupImpl {
                 // be returned if we we are mean to process these mappings
                 if (enableWeaving) {                
                     // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
-                    Collection entities = PersistenceUnitProcessor.buildEntityList(processor, privateClassLoader);
+                    Collection entities = PersistenceUnitProcessor.buildEntityList(processor.getProject(), privateClassLoader);
                     transformer = TransformerFactory.createTransformerAndModifyProject(session, entities, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
                 }
             } else {

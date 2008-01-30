@@ -183,7 +183,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_TYPE_FOR_SERIALIZED_ATTRIBUTE = 7155;
     public static final int UNABLE_TO_LOAD_CLASS = 7156;
     public static final int INVALID_COLUMN_ANNOTATION_ON_RELATIONSHIP = 7157;
-    public static final int ERROR_PROCESSING_NAMED_QUERY_ANNOTATION = 7158;
+    public static final int ERROR_PROCESSING_NAMED_QUERY = 7158;
     public static final int COULD_NOT_FIND_MAP_KEY = 7159;
     public static final int UNI_DIRECTIONAL_ONE_TO_MANY_HAS_JOINCOLUMN_ANNOTATIONS = 7160;
     public static final int NO_PK_ANNOTATIONS_FOUND = 7161;
@@ -214,7 +214,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int ORACLEJDBC10_1_0_2PROXYCONNECTOR_REQUIRES_ORACLECONNECTION_VERSION = 7180;
     public static final int ORACLEJDBC10_1_0_2PROXYCONNECTOR_REQUIRES_INT_PROXYTYPE = 7181;
 
-    //EJB30
+    // JPA
     public static final int COULD_NOT_FIND_DRIVER_CLASS = 7182;
     public static final int ERROR_CLOSING_PERSISTENCE_XML = 7183;
     public static final int CONFIG_FACTORY_NAME_PROPERTY_NOT_SPECIFIED = 7184;
@@ -227,30 +227,29 @@ public class ValidationException extends EclipseLinkException {
     public static final int ENTITY_CLASS_NOT_FOUND = 7191;
     public static final int CLASS_FILE_TRANSFORMER_THROWS_EXCEPTION = 7192;
     public static final int JAR_FILES_IN_PERSISTENCE_XML_NOT_SUPPORTED = 7193;
-    public static final int FLUSH_MODE_NOT_SUPPORTED = 7194;
     public static final int COULD_NOT_BIND_JNDI = 7194;
     public static final int EXCEPTION_CONFIGURING_EM_FACTORY = 7195;
     public static final int NULL_PK_IN_UOW_CLONE = 7197;
     public static final int CANNOT_CAST_TO_CLASS = 7196;
-    public static final int NOT_SUPPORTED = 7197;
     public static final int CLASS_NOT_FOUND_WHILE_CONVERTING_CLASSNAMES = 7198;
     public static final int PRIMARY_TABLE_NOT_DEFINED_FOR_RELATIONSHIP = 7199;    
     public static final int INVALID_EMBEDDABLE_ATTRIBUTE = 7200;
     public static final int INVALID_ENTITY_MAPPINGS_DOCUMENT = 7201;    
     public static final int INVALID_ATTRIBUTE_OVERRIDE_NAME = 7202;    
     public static final int INVALID_COLLECTION_TYPE_FOR_RELATIONSHIP = 7203;
-    public static final int MULTIPLE_EMBEDDED_ID_ELEMENTS_FOUND = 7205;
-    public static final int EMBEDDED_ID_AND_ID_ELEMENTS_FOUND = 7206;
+    public static final int MULTIPLE_NAMED_QUERIES_WITH_SAME_NAME = 7204;
+    public static final int MULTIPLE_NAMED_NATIVE_QUERIES_WITH_SAME_NAME = 7205;
+    public static final int MULTIPLE_NAMED_STORED_PROCEDURE_QUERIES_WITH_SAME_NAME = 7206;
     public static final int INVALID_CLASS_TYPE_FOR_BLOB_ATTRIBUTE = 7207;
     public static final int INVALID_CLASS_TYPE_FOR_CLOB_ATTRIBUTE = 7208;
-    public static final int UNI_DIRECTIONAL_ONE_TO_MANY_HAS_JOINCOLUMN_ELEMENTS = 7209;
-    public static final int ERROR_PROCESSING_NAMED_QUERY_ELEMENT = 7210;
-    public static final int INVALID_COLUMN_ELEMENT_ON_RELATIONSHIP = 7211;
+    public static final int MULTIPLE_ATTRIBUTE_OVERRIDE_WITH_SAME_NAME = 7209;
+    public static final int MULTIPLE_ASSOCIATION_OVERRIDE_WITH_SAME_NAME = 7210;
+    public static final int MAPPING_METADATA_APPLIED_TO_INVALID_ATTRIBUTE = 7211;
     public static final int NO_TEMPORAL_TYPE_SPECIFIED = 7212;
     public static final int CIRCULAR_MAPPED_BY_REFERENCES = 7213;
     public static final int UNABLE_TO_DETERMINE_TARGET_ENTITY = 7214;
-    public static final int UNABLE_TO_DETERMINE_CLASS_FOR_FIELD = 7215;
-    public static final int UNABLE_TO_DETERMINE_CLASS_FOR_PROPERTY = 7216;
+    public static final int INVALID_FIELD_FOR_CLASS = 7215;
+    public static final int INVALID_PROPERTY_FOR_CLASS = 7216;
     public static final int INVALID_ORDER_BY_VALUE = 7217;
     public static final int PLATFORM_DOES_NOT_OVERRIDE_GETCREATETEMPTABLESQLPREFIX = 7218;
     public static final int MAPPING_DOES_NOT_OVERRIDE_VALUEFROMROWINTERNALWITHJOIN = 7219;
@@ -272,12 +271,8 @@ public class ValidationException extends EclipseLinkException {
     public static final int PERSISTENCE_UNIT_METADATA_CONFLICT = 7230;
     public static final int CANNOT_PERSIST_MANAGED_OBJECT = 7231;
     public static final int UNSPECIFIED_COMPOSITE_PK_NOT_SUPPORTED = 7232;
-
-    public static final int INCOMPLETE_JOIN_COLUMN_ELEMENTS_SPECIFIED = 7233;
-    public static final int EXCESSIVE_JOIN_COLUMN_ELEMENTS_SPECIFIED = 7234;
-    public static final int INCOMPLETE_PK_JOIN_COLUMN_ELEMENTS_SPECIFIED = 7235;
-    public static final int EXCESSIVE_PK_JOIN_COLUMN_ELEMENTS_SPECIFIED = 7236;
-
+    public static final int MAPPING_METADATA_APPLIED_TO_METHOD_WITH_ARGUMENTS = 7233;
+    // 7234 - 7236 available
     public static final int NON_UNIQUE_ENTITY_NAME = 7237;
     
     public static final int CONFLICTING_SEQUENCE_AND_TABLE_GENERATORS_SPECIFIED = 7238;
@@ -319,6 +314,7 @@ public class ValidationException extends EclipseLinkException {
     //Extended persistence properties validation
     public static final int INVALID_EXCEPTIONHANDLER_CLASS = 7267;
     public static final int INVALID_SESSIONEVENTLISTENER_CLASS = 7268;
+    // 7269 available
     public static final int INVALID_CACHESTATEMENTS_SIZE_VALUE = 7270;
     public static final int INVALID_BOOLEAN_VALUE_FOR_SETTING_NATIVESQL = 7271;
     public static final int INVALID_BOOLEAN_VALUE_FOR_ENABLESTATMENTSCACHED = 7272;
@@ -338,13 +334,12 @@ public class ValidationException extends EclipseLinkException {
     
     public static final int INVALID_COMPARATOR_CLASS = 7284;
 
-    public static final int INVALID_PROFILER_CLASS=7285;
-    public static final int CANNOT_INSTANTIATE_PROFILER_CLASS=7286;
-    
+    public static final int INVALID_PROFILER_CLASS = 7285;
+    public static final int CANNOT_INSTANTIATE_PROFILER_CLASS = 7286;
     
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     public ValidationException() {
         super();
@@ -467,14 +462,6 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NOT_SUPPORTED_FOR_DATASOURCE, args));
         validationException.setErrorCode(NOT_SUPPORTED_FOR_DATASOURCE);
-        return validationException;
-    }
-
-    public static ValidationException notSupported(String operation, Class theClass) {
-        Object[] args = { operation, theClass };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NOT_SUPPORTED, args));
-        validationException.setErrorCode(NOT_SUPPORTED);
         return validationException;
     }
 
@@ -728,19 +715,11 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException errorProcessingNamedQueryAnnotation(Class entityClass, String namedQuery, Exception exception) {
+    public static ValidationException errorProcessingNamedQuery(Class entityClass, String namedQuery, Exception exception) {
         Object[] args = { entityClass, namedQuery };
 
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ERROR_PROCESSING_NAMED_QUERY_ANNOTATION, args), exception);
-        validationException.setErrorCode(ERROR_PROCESSING_NAMED_QUERY_ANNOTATION);
-        return validationException;
-    }
-    
-    public static ValidationException errorProcessingNamedQueryElement(String namedQuery, Exception exception) {
-        Object[] args = { namedQuery };
-        
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ERROR_PROCESSING_NAMED_QUERY_ELEMENT, args), exception);
-        validationException.setErrorCode(ERROR_PROCESSING_NAMED_QUERY_ELEMENT);
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ERROR_PROCESSING_NAMED_QUERY, args), exception);
+        validationException.setErrorCode(ERROR_PROCESSING_NAMED_QUERY);
         return validationException;
     }
     
@@ -801,14 +780,6 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EMBEDDED_ID_AND_ID_ANNOTATIONS_FOUND, args));
         validationException.setErrorCode(EMBEDDED_ID_AND_ID_ANNOTATIONS_FOUND);
-        return validationException;
-    }
-
-    public static ValidationException embeddedIdAndIdElementFound(Class entityClass, String embeddedIdAttributeName, String idAttributeName) {
-        Object[] args = { entityClass, embeddedIdAttributeName, idAttributeName };
-        
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EMBEDDED_ID_AND_ID_ELEMENTS_FOUND, args));
-        validationException.setErrorCode(EMBEDDED_ID_AND_ID_ELEMENTS_FOUND);
         return validationException;
     }
 
@@ -1060,14 +1031,6 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(INVALID_COLUMN_ANNOTATION_ON_RELATIONSHIP);
         return validationException;
     }
-        
-    public static ValidationException invalidColumnElementOnRelationship(Class entityClass, String attributeName) {
-        Object[] args = { entityClass, attributeName };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_COLUMN_ELEMENT_ON_RELATIONSHIP, args));
-        validationException.setErrorCode(INVALID_COLUMN_ELEMENT_ON_RELATIONSHIP);
-        return validationException;
-    }
 
     public static ValidationException invalidCompositePKAttribute(Class entityClass, String pkClassName, String attributeName, Type expectedType, Type actualType) {
         Object[] args = { entityClass, pkClassName, attributeName, expectedType, actualType };
@@ -1293,7 +1256,6 @@ public class ValidationException extends EclipseLinkException {
 
     public static ValidationException nullPrimaryKeyInUnitOfWorkClone() {
         Object[] args = {  };
-
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NULL_PK_IN_UOW_CLONE, args));
         validationException.setErrorCode(NULL_PK_IN_UOW_CLONE);
         return validationException;
@@ -1304,14 +1266,6 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, UNI_DIRECTIONAL_ONE_TO_MANY_HAS_JOINCOLUMN_ANNOTATIONS, args));
         validationException.setErrorCode(UNI_DIRECTIONAL_ONE_TO_MANY_HAS_JOINCOLUMN_ANNOTATIONS);
-        return validationException;
-    }
-    
-    public static ValidationException uniDirectionalOneToManyHasJoinColumnElements( String attributeName, Class entityClass) {
-        Object[] args = { entityClass, attributeName };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, UNI_DIRECTIONAL_ONE_TO_MANY_HAS_JOINCOLUMN_ELEMENTS, args));
-        validationException.setErrorCode(UNI_DIRECTIONAL_ONE_TO_MANY_HAS_JOINCOLUMN_ELEMENTS);
         return validationException;
     }
     
@@ -1727,22 +1681,6 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(INCOMPLETE_JOIN_COLUMNS_SPECIFIED);
         return validationException;
     }
-    
-    public static ValidationException incompleteJoinColumnElementsSpecified(Object attributeName, Class javaClass) {
-        Object[] args = { attributeName, javaClass };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INCOMPLETE_JOIN_COLUMN_ELEMENTS_SPECIFIED, args));
-        validationException.setErrorCode(INCOMPLETE_JOIN_COLUMN_ELEMENTS_SPECIFIED);
-        return validationException;
-    }
-
-    public static ValidationException incompletePrimaryKeyJoinColumnElementsSpecified(Object annotatedElement) {
-        Object[] args = { annotatedElement };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INCOMPLETE_PK_JOIN_COLUMN_ELEMENTS_SPECIFIED, args));
-        validationException.setErrorCode(INCOMPLETE_PK_JOIN_COLUMN_ELEMENTS_SPECIFIED);
-        return validationException;
-    }
 
     public static ValidationException incompletePrimaryKeyJoinColumnsSpecified(Object annotatedElement) {
         Object[] args = { annotatedElement };
@@ -1826,36 +1764,6 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = {  };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, OLD_COMMIT_NOT_SUPPORTED_FOR_ATTRIBUTE_TRACKING, args));
         validationException.setErrorCode(OLD_COMMIT_NOT_SUPPORTED_FOR_ATTRIBUTE_TRACKING);
-        return validationException;
-    }
-
-    /**
-     * PUBLIC:
-     * Possible cause: An field name has been encountered that does not exist on 
-     * the associated entity.
-     * Action: Ensure that a field with a matching name exists on the associated 
-     * entity.
-     */
-    public static ValidationException unableToDetermineClassForField(String fieldName, Class entityClass) {
-        Object[] args = { fieldName, entityClass };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, UNABLE_TO_DETERMINE_CLASS_FOR_FIELD, args));
-        validationException.setErrorCode(UNABLE_TO_DETERMINE_CLASS_FOR_FIELD);
-        return validationException;
-    }
-    
-    /**
-     * PUBLIC:
-     * Possible cause: An property name has been encountered that does not exist 
-     * on the associated entity.
-     * Action: Ensure that a property with a matching name exists on the 
-     * associated entity.
-     */
-    public static ValidationException unableToDetermineClassForProperty(String propertyName, Class entityClass) {
-        Object[] args = { propertyName, entityClass };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, UNABLE_TO_DETERMINE_CLASS_FOR_PROPERTY, args));
-        validationException.setErrorCode(UNABLE_TO_DETERMINE_CLASS_FOR_PROPERTY);
         return validationException;
     }
 
@@ -2141,20 +2049,36 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(MULTIPLE_EMBEDDED_ID_ANNOTATIONS_FOUND);
         return validationException;
     }
-
-    public static ValidationException multipleEmbeddedIdElementsFound(Class entityClass, String attributeName1, String attributeName2) {
-        Object[] args = { entityClass, attributeName1, attributeName2 };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_EMBEDDED_ID_ELEMENTS_FOUND, args));
-        validationException.setErrorCode(MULTIPLE_EMBEDDED_ID_ELEMENTS_FOUND);
-        return validationException;
-    }
     
     public static ValidationException multipleLifecycleCallbackMethodsForSameLifecycleEvent(Class listenerClass, Method method1, Method method2) {
         Object[] args = { listenerClass, method1, method2 };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_CALLBACK_METHODS_DEFINED, args));
         validationException.setErrorCode(MULTIPLE_CALLBACK_METHODS_DEFINED);
+        return validationException;
+    }
+    
+    public static ValidationException multipleNamedNativeQueriesWithSameName(String name, String location1, String location2) {
+        Object[] args = { name, location1, location2 };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_NAMED_NATIVE_QUERIES_WITH_SAME_NAME, args));
+        validationException.setErrorCode(MULTIPLE_NAMED_NATIVE_QUERIES_WITH_SAME_NAME);
+        return validationException;
+    }
+    
+    public static ValidationException multipleNamedQueriesWithSameName(String name, String location1, String location2) {
+        Object[] args = { name, location1, location2 };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_NAMED_QUERIES_WITH_SAME_NAME, args));
+        validationException.setErrorCode(MULTIPLE_NAMED_QUERIES_WITH_SAME_NAME);
+        return validationException;
+    }
+    
+    public static ValidationException multipleNamedStoredProcedureQueriesWithSameName(String name, String location1, String location2) {
+        Object[] args = { name, location1, location2 };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_NAMED_STORED_PROCEDURE_QUERIES_WITH_SAME_NAME, args));
+        validationException.setErrorCode(MULTIPLE_NAMED_STORED_PROCEDURE_QUERIES_WITH_SAME_NAME);
         return validationException;
     }
     
@@ -2200,13 +2124,6 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException flushModeNotSupported() {
-        Object[] args = {  };
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, FLUSH_MODE_NOT_SUPPORTED, args));
-        validationException.setErrorCode(FLUSH_MODE_NOT_SUPPORTED);
-        return validationException;
-    }
-
     public static ValidationException couldNotBindJndi(String bindName, Object bindValue, Exception ex) {
         Object[] args = { bindName, bindValue };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, COULD_NOT_BIND_JNDI, args), ex);
@@ -2220,28 +2137,12 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(EXCEPTION_CONFIGURING_EM_FACTORY);
         return validationException;
     }
-    
-    public static ValidationException excessiveJoinColumnElementsSpecified(String attributeName, Class javaClass) {
-        Object[] args = { attributeName, javaClass };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EXCESSIVE_JOIN_COLUMN_ELEMENTS_SPECIFIED, args));
-        validationException.setErrorCode(EXCESSIVE_JOIN_COLUMN_ELEMENTS_SPECIFIED);
-        return validationException;
-    }
 
     public static ValidationException excessiveJoinColumnsSpecified(Object annotatedElement, Class javaClass) {
         Object[] args = { annotatedElement, javaClass };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EXCESSIVE_JOIN_COLUMNS_SPECIFIED, args));
         validationException.setErrorCode(EXCESSIVE_JOIN_COLUMNS_SPECIFIED);
-        return validationException;
-    }
-    
-    public static ValidationException excessivePrimaryKeyJoinColumnElementsSpecified(Object annotatedElement) {
-        Object[] args = { annotatedElement };
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EXCESSIVE_PK_JOIN_COLUMN_ELEMENTS_SPECIFIED, args));
-        validationException.setErrorCode(EXCESSIVE_PK_JOIN_COLUMN_ELEMENTS_SPECIFIED);
         return validationException;
     }
     
@@ -2285,6 +2186,20 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = {puName, mf};
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MAPPING_FILE_NOT_FOUND, args));
         validationException.setErrorCode(MAPPING_FILE_NOT_FOUND);
+        return validationException;
+    }
+    
+    public static ValidationException mappingMetadataAppliedToInvalidAttribute(Object element, Class cls) {
+        Object[] args = { element, cls };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MAPPING_METADATA_APPLIED_TO_INVALID_ATTRIBUTE, args));
+        validationException.setErrorCode(MAPPING_METADATA_APPLIED_TO_INVALID_ATTRIBUTE);
+        return validationException;
+    }
+    
+    public static ValidationException mappingMetadataAppliedToMethodWithArguments(Object element, Class cls) {
+        Object[] args = { element, cls };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MAPPING_METADATA_APPLIED_TO_METHOD_WITH_ARGUMENTS, args));
+        validationException.setErrorCode(MAPPING_METADATA_APPLIED_TO_METHOD_WITH_ARGUMENTS);
         return validationException;
     }
     
@@ -2436,6 +2351,22 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
+    public static ValidationException multipleAssociationOverrideWithSameNameFound(String name, String javaClassName, String location) {
+        Object[] args = {name, javaClassName, location};
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_ASSOCIATION_OVERRIDE_WITH_SAME_NAME, args));
+        validationException.setErrorCode(MULTIPLE_ASSOCIATION_OVERRIDE_WITH_SAME_NAME);
+        return validationException;
+    }
+    
+    public static ValidationException multipleAttributeOverrideWithSameNameFound(String name, String javaClassName, String location) {
+        Object[] args = {name, javaClassName, location};
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_ATTRIBUTE_OVERRIDE_WITH_SAME_NAME, args));
+        validationException.setErrorCode(MULTIPLE_ATTRIBUTE_OVERRIDE_WITH_SAME_NAME);
+        return validationException;
+    }
+    
     public static ValidationException multipleConvertersOfTheSameName(String name) {
         Object[] args = {name};
 
@@ -2489,6 +2420,36 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = { className };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_PROFILER_CLASS, args));
         validationException.setErrorCode(INVALID_PROFILER_CLASS);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * Possible cause: An field name has been encountered that does not exist on 
+     * the associated entity.
+     * Action: Ensure that a field with a matching name exists on the associated 
+     * entity.
+     */
+    public static ValidationException invalidFieldForClass(String fieldName, Class entityClass) {
+        Object[] args = { fieldName, entityClass };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_FIELD_FOR_CLASS, args));
+        validationException.setErrorCode(INVALID_FIELD_FOR_CLASS);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * Possible cause: An property name has been encountered that does not exist 
+     * on the associated entity.
+     * Action: Ensure that a property with a matching name exists on the 
+     * associated entity.
+     */
+    public static ValidationException invalidPropertyForClass(String propertyName, Class entityClass) {
+        Object[] args = { propertyName, entityClass };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_PROPERTY_FOR_CLASS, args));
+        validationException.setErrorCode(INVALID_PROPERTY_FOR_CLASS);
         return validationException;
     }
 

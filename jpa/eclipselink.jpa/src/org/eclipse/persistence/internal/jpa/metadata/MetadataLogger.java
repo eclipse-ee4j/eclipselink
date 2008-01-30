@@ -26,37 +26,26 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
  */
 public class MetadataLogger  {
     /*************************************************************************/
-    /*                         ORM SPECIFIC MESSSAGES                        */ 
-    /*************************************************************************/
-    public static final String IGNORE_ID_CLASS_ELEMENT = "orm_warning_ignore_id_class";
-    
-    public static final String IGNORE_TABLE_ELEMENT = "orm_warning_ignore_table";
-    public static final String IGNORE_SECONDARY_TABLE_ELEMENT = "orm_warning_ignore_secondary_table";
-    
-    public static final String IGNORE_NAMED_QUERY_ELEMENT = "orm_warning_ignore_named_query";
-    public static final String IGNORE_NAMED_NATIVE_QUERY_ELEMENT = "orm_warning_ignore_named_native_query";
-    
-    public static final String IGNORE_MAPPING_ON_WRITE = "orm_warning_ignore_mapping_on_write";
-    public static final String IGNORE_QUERY_HINT_UNKNOWN_TYPE = "orm_warning_ignore_query_hint_unknown_type";
-    public static final String IGNORE_QUERY_HINT_UNSUPPORTED_TYPE = "orm_warning_ignore_query_hint_unsupported_type";
-    public static final String ERROR_LOADING_ORM_XML_FILE = "orm_warning_exception_loading_orm_xml_file";
-    public static final String COULD_NOT_FIND_ORM_XML_FILE = "orm_could_not_find_orm_xml_file";
-    
-    /*************************************************************************/
-    /*                  ANNOTATION SPECIFIC MESSSAGES                        */ 
+    /*              ANNOTATION SPECIFIC IGNORE MESSSAGES                     */ 
     /*************************************************************************/
     public static final String IGNORE_ANNOTATION = "annotation_warning_ignore_annotation";
+    
+    public static final String IGNORE_ASSOCIATION_OVERRIDE = "annotation_warning_ignore_association_override";
+    public static final String IGNORE_ASSOCIATION_OVERRIDE_ON_MAPPED_SUPERCLASS = "annotation_warning_ignore_association_override_on_mapped_superclass";
+    public static final String IGNORE_ATTRIBUTE_OVERRIDE = "annotation_warning_ignore_attribute_override";
+    public static final String IGNORE_ATTRIBUTE_OVERRIDE_ON_MAPPED_SUPERCLASS = "annotation_warning_ignore_attribute_override_on_mapped_superclass";
+    
     public static final String IGNORE_ID_CLASS_ANNOTATION = "annotation_warning_ignore_id_class";
     
     public static final String IGNORE_READ_ONLY_ANNOTATION = "annotation_warning_ignore_read_only";
     public static final String IGNORE_CUSTOMIZER_ANNOTATION = "annotation_warning_ignore_customizer";
     
+    public static final String IGNORE_NAMED_NATIVE_QUERY_ANNOTATION = "annotation_warning_ignore_named_native_query";
+    public static final String IGNORE_NAMED_QUERY_ANNOTATION = "annotation_warning_ignore_named_query";
+    public static final String IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION = "annotation_warning_ignore_named_stored_procedure_query";
+    
     public static final String IGNORE_TABLE_ANNOTATION = "annotation_warning_ignore_table";
     public static final String IGNORE_SECONDARY_TABLE_ANNOTATION = "annotation_warning_ignore_secondary_table";
-    
-    public static final String IGNORE_NAMED_QUERY_ANNOTATION = "annotation_warning_ignore_named_query";
-    public static final String IGNORE_NAMED_NATIVE_QUERY_ANNOTATION = "annotation_warning_ignore_named_native_query";
-    public static final String IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION = "annotation_warning_ignore_named_stored_procedure_query";
     
     public static final String IGNORE_PRIVATE_OWNED_ANNOTATION = "annotation_warning_ignore_private_owned";
 
@@ -70,21 +59,18 @@ public class MetadataLogger  {
     public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE_ANNOTATION = "annotation_warning_ignore_inheritance_subclass_cache";
     
     /*************************************************************************/
-    /*                       COMMON IGNORE MESSSAGES                         */ 
+    /*                       GENERIC IGNORE MESSSAGES                        */ 
     /*************************************************************************/
     public static final String IGNORE_MAPPING = "metadata_warning_ignore_mapping";
     public static final String IGNORE_LOB = "metadata_warning_ignore_lob";
     public static final String IGNORE_TEMPORAL = "metadata_warning_ignore_temporal";
     public static final String IGNORE_ENUMERATED = "metadata_warning_ignore_enumerated";
     public static final String IGNORE_SERIALIZED = "metadata_warning_ignore_serialized";
-    public static final String IGNORE_INHERITANCE = "metadata_warning_ignore_inheritance";
-    public static final String IGNORE_PRIMARY_KEY = "metadata_warning_ignore_primary_key";
-    public static final String IGNORE_EMBEDDED_ID = "metadata_warning_ignore_embedded_id";
     public static final String IGNORE_VERSION_LOCKING = "metadata_warning_ignore_version_locking";
     public static final String IGNORE_BASIC_FETCH_LAZY = "metadata_warning_ignore_basic_fetch_lazy";
     
     /*************************************************************************/
-    /*                       COMMON DEFAULT MESSSAGES                        */ 
+    /*                       GENERIC DEFAULT MESSSAGES                       */ 
     /*************************************************************************/
     public static final String ALIAS = "metadata_default_alias";
     public static final String MAP_KEY_ATTRIBUTE_NAME = "metadata_default_map_key_attribute_name";
@@ -92,6 +78,10 @@ public class MetadataLogger  {
     public static final String TABLE_NAME = "metadata_default_table_name"; 
     public static final String TABLE_SCHEMA = "metadata_default_table_schema";
     public static final String TABLE_CATALOG = "metadata_default_table_catalog";
+    
+    public static final String TABLE_GENERATOR_NAME = "metadata_default_table_generator_name"; 
+    public static final String TABLE_GENERATOR_SCHEMA = "metadata_default_table_generator_schema";
+    public static final String TABLE_GENERATOR_CATALOG = "metadata_default_table_generator_catalog";
     
     public static final String JOIN_TABLE_NAME = "metadata_default_join_table_name";
     public static final String JOIN_TABLE_SCHEMA = "metadata_default_join_table_schema";
@@ -142,28 +132,23 @@ public class MetadataLogger  {
         
         // Initialize the context strings.
         ctxStrings = new HashMap();
-    
-        // ORM specific
-        ctxStrings.put(IGNORE_ID_CLASS_ELEMENT, IGNORE_ID_CLASS_ELEMENT);
-        ctxStrings.put(IGNORE_TABLE_ELEMENT, IGNORE_TABLE_ELEMENT);
-        ctxStrings.put(IGNORE_SECONDARY_TABLE_ELEMENT, IGNORE_SECONDARY_TABLE_ELEMENT);
-        ctxStrings.put(IGNORE_NAMED_QUERY_ELEMENT, IGNORE_NAMED_QUERY_ELEMENT);
-        ctxStrings.put(IGNORE_NAMED_NATIVE_QUERY_ELEMENT, IGNORE_NAMED_NATIVE_QUERY_ELEMENT);
-        ctxStrings.put(IGNORE_MAPPING_ON_WRITE, IGNORE_MAPPING_ON_WRITE);
-        ctxStrings.put(IGNORE_QUERY_HINT_UNSUPPORTED_TYPE, IGNORE_QUERY_HINT_UNSUPPORTED_TYPE);
-        ctxStrings.put(IGNORE_QUERY_HINT_UNKNOWN_TYPE, IGNORE_QUERY_HINT_UNKNOWN_TYPE);
-        ctxStrings.put(ERROR_LOADING_ORM_XML_FILE, ERROR_LOADING_ORM_XML_FILE);
-        ctxStrings.put(COULD_NOT_FIND_ORM_XML_FILE, COULD_NOT_FIND_ORM_XML_FILE);
         
         // Annotation specific
         ctxStrings.put(IGNORE_ANNOTATION, IGNORE_ANNOTATION);
+        
+        ctxStrings.put(IGNORE_ASSOCIATION_OVERRIDE, IGNORE_ASSOCIATION_OVERRIDE);
+        ctxStrings.put(IGNORE_ASSOCIATION_OVERRIDE_ON_MAPPED_SUPERCLASS, IGNORE_ASSOCIATION_OVERRIDE_ON_MAPPED_SUPERCLASS);
+        ctxStrings.put(IGNORE_ATTRIBUTE_OVERRIDE, IGNORE_ATTRIBUTE_OVERRIDE);
+        ctxStrings.put(IGNORE_ATTRIBUTE_OVERRIDE_ON_MAPPED_SUPERCLASS, IGNORE_ATTRIBUTE_OVERRIDE_ON_MAPPED_SUPERCLASS);
+
+        ctxStrings.put(IGNORE_NAMED_NATIVE_QUERY_ANNOTATION, IGNORE_NAMED_NATIVE_QUERY_ANNOTATION);
+        ctxStrings.put(IGNORE_NAMED_QUERY_ANNOTATION, IGNORE_NAMED_QUERY_ANNOTATION);
+        ctxStrings.put(IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION, IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION);
+        
         ctxStrings.put(IGNORE_ID_CLASS_ANNOTATION, IGNORE_ID_CLASS_ANNOTATION);
         ctxStrings.put(IGNORE_READ_ONLY_ANNOTATION, IGNORE_READ_ONLY_ANNOTATION);
         ctxStrings.put(IGNORE_TABLE_ANNOTATION, IGNORE_TABLE_ANNOTATION);
         ctxStrings.put(IGNORE_SECONDARY_TABLE_ANNOTATION, IGNORE_SECONDARY_TABLE_ANNOTATION);
-        ctxStrings.put(IGNORE_NAMED_QUERY_ANNOTATION, IGNORE_NAMED_QUERY_ANNOTATION);
-        ctxStrings.put(IGNORE_NAMED_NATIVE_QUERY_ANNOTATION, IGNORE_NAMED_NATIVE_QUERY_ANNOTATION);
-        ctxStrings.put(IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION, IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION);
         ctxStrings.put(IGNORE_PRIVATE_OWNED_ANNOTATION, IGNORE_PRIVATE_OWNED_ANNOTATION);
         ctxStrings.put(IGNORE_RETURN_INSERT_ANNOTATION, IGNORE_RETURN_INSERT_ANNOTATION);
         ctxStrings.put(IGNORE_RETURN_UPDATE_ANNOTATION, IGNORE_RETURN_UPDATE_ANNOTATION);
@@ -178,9 +163,6 @@ public class MetadataLogger  {
         ctxStrings.put(IGNORE_TEMPORAL, IGNORE_TEMPORAL);
         ctxStrings.put(IGNORE_ENUMERATED, IGNORE_ENUMERATED);
         ctxStrings.put(IGNORE_SERIALIZED, IGNORE_SERIALIZED);
-        ctxStrings.put(IGNORE_INHERITANCE, IGNORE_INHERITANCE);
-        ctxStrings.put(IGNORE_PRIMARY_KEY, IGNORE_PRIMARY_KEY);
-        ctxStrings.put(IGNORE_EMBEDDED_ID, IGNORE_EMBEDDED_ID);
         ctxStrings.put(IGNORE_VERSION_LOCKING, IGNORE_VERSION_LOCKING);
         ctxStrings.put(IGNORE_BASIC_FETCH_LAZY, IGNORE_BASIC_FETCH_LAZY);
         

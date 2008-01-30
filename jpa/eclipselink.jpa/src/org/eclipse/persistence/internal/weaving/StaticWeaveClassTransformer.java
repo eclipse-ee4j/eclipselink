@@ -143,10 +143,10 @@ public class StaticWeaveClassTransformer {
         // Create an instance of MetadataProcessor for specified persistence unit info
         MetadataProcessor processor = new MetadataProcessor(unitInfo, session, privateClassLoader, true);
         // Process the Object/relational metadata from XML and annotations.
-        PersistenceUnitProcessor.processORMetadata(processor,privateClassLoader, session, false);
+        PersistenceUnitProcessor.processORMetadata(processor, false);
 
         //Collection entities = buildEntityList(persistenceUnitInfo, privateClassLoader);
-        Collection entities = PersistenceUnitProcessor.buildEntityList(processor,privateClassLoader);
+        Collection entities = PersistenceUnitProcessor.buildEntityList(processor.getProject(), privateClassLoader);
 
         boolean weaveLazy = true;
         String weaveL = (String)unitInfo.getProperties().get(PersistenceUnitProperties.WEAVING_LAZY);

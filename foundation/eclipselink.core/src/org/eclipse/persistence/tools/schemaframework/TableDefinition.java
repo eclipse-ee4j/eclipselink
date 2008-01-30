@@ -448,8 +448,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
         return foreignKeyName;
     }
 
-    protected UniqueKeyConstraint buildUniqueKeyConstraint(String[] fieldNames, int serialNumber, DatabasePlatform platform) {
-        assert fieldNames.length > 0;
+    protected UniqueKeyConstraint buildUniqueKeyConstraint(List<String> fieldNames, int serialNumber, DatabasePlatform platform) {
+        assert fieldNames.size() > 0;
         
         UniqueKeyConstraint unqConstraint = new UniqueKeyConstraint();
         for(String fieldName : fieldNames) {

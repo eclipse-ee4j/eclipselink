@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaver;
 import org.eclipse.persistence.internal.weaving.TransformerFactory;
@@ -45,12 +46,9 @@ public class ChangeTrackerWeavingTestSuite  extends TestCase {
             m_session = session;
             Collection<String> entityNames = new HashSet<String>(entities.size());
             for (Class entity : entities) {
-                m_project.addDescriptor(new MetadataDescriptor(entity));
+                m_project.addClassAccessor(new ClassAccessor(entity, m_project));
                 entityNames.add(entity.getName());
             }
-            m_project.setWeavableClassNames(entityNames);
-            m_logger = new MetadataLogger(session);
-            
         }
     }
     

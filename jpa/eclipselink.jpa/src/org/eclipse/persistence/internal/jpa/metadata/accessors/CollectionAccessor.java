@@ -13,23 +13,26 @@ import java.util.Map;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.persistence.FetchType;
+import javax.persistence.JoinTable;
 import javax.persistence.MapKey;
 import javax.persistence.OrderBy;
-import javax.persistence.JoinTable;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-
-import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataJoinColumn;
-import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataJoinColumns;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
-import org.eclipse.persistence.internal.jpa.metadata.tables.MetadataJoinTable;
+import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnsMetadata;
 
-import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+
+import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
@@ -41,10 +44,19 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class CollectionAccessor extends RelationshipAccessor {
-    /**
+	private String m_mapKey;
+	private String m_orderBy;
+	private JoinTableMetadata m_joinTable;
+	
+	/**
      * INTERNAL:
      */
-    public CollectionAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
+    protected CollectionAccessor() {}
+    
+	/**
+     * INTERNAL:
+     */
+    protected CollectionAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
     }
     
@@ -53,7 +65,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * 
      * Add the relation key fields to a many to many mapping.
      */
-    protected void addManyToManyRelationKeyFields(MetadataJoinColumns joinColumns, ManyToManyMapping mapping, String defaultFieldName, MetadataDescriptor descriptor, boolean isSource) {
+    protected void addManyToManyRelationKeyFields(JoinColumnsMetadata joinColumns, ManyToManyMapping mapping, String defaultFieldName, MetadataDescriptor descriptor, boolean isSource) {
         // Set the right context level.
         String PK_CTX, FK_CTX;
         if (isSource) {
@@ -64,7 +76,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
             FK_CTX = MetadataLogger.TARGET_FK_COLUMN;
         }
         
-        for (MetadataJoinColumn joinColumn : processJoinColumns(joinColumns, descriptor)) {
+        for (JoinColumnMetadata joinColumn : processJoinColumns(joinColumns, descriptor)) {
             // If the pk field (referencedColumnName) is not specified, it 
             // defaults to the primary key of the referenced table.
             String defaultPKFieldName = descriptor.getPrimaryKeyFieldName();
@@ -99,43 +111,39 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     }
     
     /**
-     * INTERNAL: (Overridden in XMLManyToManyAccessor and XMLOneToManyAccessor)
-     * Process a @JoinTable.
+     * INTERNAL:
+     * Return the default fetch type for a collection mapping.
      */
-    protected MetadataJoinTable getJoinTable() {
-        JoinTable joinTable = getAnnotation(JoinTable.class);
-        return new MetadataJoinTable(joinTable, m_logger);
+    public FetchType getDefaultFetchType() {
+    	return FetchType.LAZY;
     }
     
     /**
-     * INTERNAL: (Overridden in XMLManyToManyAccessor and XMLOneToManyAccessor)
-     * 
-     * Method to return a map key for a collection mapping. Assumes hasMapKey()
-     * has been called before asking for the map key name.
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public JoinTableMetadata getJoinTable() {
+    	return m_joinTable;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
      */
     public String getMapKey() {
-        if (isAnnotationPresent(MapKey.class)) {
-            MapKey mapKey = getAnnotation(MapKey.class);
-            return mapKey.name();
-        } else {
-            return "";
-        }
+    	return m_mapKey;
     }
     
     /**
-     * INTERNAL: (Overridden in XMLManyToManyAccessor and XMLOneToManyAccessor)
-     * 
-     * Return the order by value on this accessor. Assumes hasOrderBy() has been
-     * called before asking for the order by value.
+     * INTERNAL:
+     * Used for OX mapping.
      */
     public String getOrderBy() {
-        OrderBy orderBy = getAnnotation(OrderBy.class);
-        return orderBy.value();
+    	return m_orderBy; 
     }
     
     /**
      * INTERNAL: (Override from MetadataAccessor)
-     * 
      * If a targetEntity is specified in metadata, it will be set as the 
      * reference class, otherwise we will look to extract one from generics.
      */
@@ -151,10 +159,10 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
                     // Throw an exception. A relationship accessor must have a 
                     // reference class either through generics or a specified
                     // target entity on the mapping metadata.
-                    m_validator.throwUnableToDetermineTargetEntity(getAttributeName(), getJavaClass());
+                	throw ValidationException.unableToDetermineTargetEntity(getAttributeName(), getJavaClass());
                 } else {
                     // Log the defaulting contextual reference class.
-                    m_logger.logConfigMessage(getLoggingContext(), getAnnotatedElement(), m_referenceClass);
+                    getLogger().logConfigMessage(getLoggingContext(), getAnnotatedElement(), m_referenceClass);
                 }
             } 
         }
@@ -163,21 +171,23 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     }
     
     /**
-     * INTERNAL: (Overridden in XMLManyToManyAccessor and XMLOneToManyAccessor)
-     * 
-     * Method to check if this accessor has an @OrderBy.
-     */
-    public boolean hasOrderBy() {
-        return isAnnotationPresent(OrderBy.class);
-    }
-    
-    /**
      * INTERNAL:
-     * 
      * Return true if this accessor uses a Map.
      */
     public boolean isMapCollectionAccessor() {
         return getRawClass().equals(Map.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * This process should do any common validation processing of collection 
+     * accessors.
+     */
+    public void process() {
+    	// Validate the collection type.
+		if (! MetadataHelper.isSupportedCollectionClass(getRawClass())) {
+			throw ValidationException.invalidCollectionTypeForRelationship(getJavaClass(), getRawClass(), getAttributeName());
+		}
     }
     
     /**
@@ -196,7 +206,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         // Process the cascade types.
         processCascadeTypes(mapping);
         
-        // Process an OrderBy id there is one.
+        // Process an OrderBy if there is one.
         processOrderBy(mapping);
         
         // Process a MapKey if there is one.
@@ -205,7 +215,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         // Set the correct indirection on the collection mapping.
         // ** Note the reference class or reference class name needs to be set 
         // on the mapping before setting the indirection policy.
-        setIndirectionPolicy(mapping, mapKey);
+        setIndirectionPolicy(mapping, mapKey, usesIndirection());
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
@@ -215,9 +225,21 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * INTERNAL:
      * Process a MetadataJoinTable.
      */
-    protected void processJoinTable(MetadataJoinTable joinTable, ManyToManyMapping mapping) {
+    protected void processJoinTable(ManyToManyMapping mapping) {
+    	JoinTableMetadata joinTable;
+       	
+    	if (m_joinTable == null) {
+    		// Look for a JoinTable annotation.
+       		JoinTable jTable = getAnnotation(JoinTable.class);
+            joinTable = new JoinTableMetadata(jTable, getAnnotatedElementName());
+    	} else {
+    		// Use the join table specified in XML.
+    		m_joinTable.setLocation(getAnnotatedElementName());
+    		joinTable = m_joinTable;
+    	}
+       	
         // Build the default table name
-        String defaultName = m_descriptor.getPrimaryTableName() + "_" + getReferenceDescriptor().getPrimaryTableName();
+        String defaultName = getDescriptor().getPrimaryTableName() + "_" + getReferenceDescriptor().getPrimaryTableName();
         
         // Process any table defaults and log warning messages.
         processTable(joinTable, defaultName);
@@ -230,13 +252,13 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         if (getReferenceDescriptor().hasBiDirectionalManyToManyAccessorFor(getJavaClassName(), getAttributeName())) {
             defaultSourceFieldName = getReferenceDescriptor().getBiDirectionalManyToManyAccessor(getJavaClassName(), getAttributeName()).getAttributeName();
         } else {
-            defaultSourceFieldName = m_descriptor.getAlias();
+            defaultSourceFieldName = getDescriptor().getAlias();
         }
-        addManyToManyRelationKeyFields(joinTable.getJoinColumns(), mapping, defaultSourceFieldName, m_descriptor, true);
+        addManyToManyRelationKeyFields(new JoinColumnsMetadata(joinTable.getJoinColumns()), mapping, defaultSourceFieldName, getDescriptor(), true);
         
         // Add all the inverseJoinColumns (target foreign keys) to the mapping.
         String defaultTargetFieldName = getAttributeName();
-        addManyToManyRelationKeyFields(joinTable.getInverseJoinColumns(), mapping, defaultTargetFieldName, getReferenceDescriptor(), false);
+        addManyToManyRelationKeyFields(new JoinColumnsMetadata(joinTable.getInverseJoinColumns()), mapping, defaultTargetFieldName, getReferenceDescriptor(), false);
     }
     
     /**
@@ -245,11 +267,22 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * method name that should be use, null otherwise.
      */
     protected String processMapKey(CollectionMapping mapping) {
-        String mapKey = null;
+        String mapKeyMethod = null;
         
         if (isMapCollectionAccessor()) {
             MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
-            String mapKeyValue = getMapKey();
+            String mapKeyValue = "";
+            
+            if (m_mapKey == null) {
+            	// Look for an annotation.
+            	if (isAnnotationPresent(MapKey.class)) {
+                    MapKey mapKey = getAnnotation(MapKey.class);
+                    mapKeyValue = mapKey.name();
+                }
+            } else {
+            	// Use the value specified in XML.
+                mapKeyValue = m_mapKey;
+            }
             
             if (mapKeyValue.equals("") && referenceDescriptor.hasCompositePrimaryKey()) {
                 // No persistent property or field name has been provided, and
@@ -268,14 +301,14 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
                 MetadataAccessor referenceAccessor = referenceDescriptor.getAccessorFor(fieldOrPropertyName);
         
                 if (referenceAccessor == null) {
-                    m_validator.throwCouldNotFindMapKey(fieldOrPropertyName, referenceDescriptor.getJavaClass(), mapping);
+                	throw ValidationException.couldNotFindMapKey(fieldOrPropertyName, referenceDescriptor.getJavaClass(), mapping);
                 }
         
-                mapKey = referenceAccessor.getName();
+                mapKeyMethod = referenceAccessor.getAccessibleObjectName();
             }
         }
         
-        return mapKey;
+        return mapKeyMethod;
     }
     
     /**
@@ -300,11 +333,21 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * operators are supported.
      */
     protected void processOrderBy(CollectionMapping mapping) {
-        if (hasOrderBy()) {
-            String orderBy = getOrderBy();
+        String orderByValue;
+        
+    	if (m_orderBy == null) {
+    		// Look for an OrderBy annotation.
+        	OrderBy orderBy = getAnnotation(OrderBy.class);
+            orderByValue = (orderBy == null) ? null : orderBy.value();
+        } else {
+        	// Used the value specified in XML.
+            orderByValue = m_orderBy;
+        } 
+    	
+        if (orderByValue != null) {
             MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
             
-            if (orderBy.equals("")) {
+            if (orderByValue.equals("")) {
                 // Default to the primary key field name(s).
                 List<String> orderByAttributes = referenceDescriptor.getIdOrderByAttributeNames();
             
@@ -320,7 +363,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
                     }
                 }
             } else {
-                StringTokenizer commaTokenizer = new StringTokenizer(orderBy, ",");
+                StringTokenizer commaTokenizer = new StringTokenizer(orderByValue, ",");
             
                 while (commaTokenizer.hasMoreTokens()) {
                     StringTokenizer spaceTokenizer = new StringTokenizer(commaTokenizer.nextToken());
@@ -328,7 +371,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
                     MetadataAccessor referenceAccessor = referenceDescriptor.getAccessorFor(propertyOrFieldName);
                 
                     if (referenceAccessor == null) {
-                        m_validator.throwInvalidOrderByValue(getJavaClass(), propertyOrFieldName, referenceDescriptor.getJavaClass(), getName());
+                    	throw ValidationException.invalidOrderByValue(propertyOrFieldName, referenceDescriptor.getJavaClass(), getAccessibleObjectName(), getJavaClass());
                     }
 
                     String attributeName = referenceAccessor.getAttributeName();                    
@@ -345,4 +388,28 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
             }
         }
     } 
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setJoinTable(JoinTableMetadata joinTable) {
+    	m_joinTable = joinTable;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMapKey(String mapKey) {
+    	m_mapKey = mapKey;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOrderBy(String orderBy) {
+    	m_orderBy = orderBy;
+    }
 }

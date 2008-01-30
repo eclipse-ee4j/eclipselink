@@ -1,0 +1,1947 @@
+package org.eclipse.persistence.internal.jpa.metadata.xml;
+
+import java.util.Collection;
+
+import javax.persistence.DiscriminatorType;
+import javax.persistence.EnumType;
+import javax.persistence.FetchType;
+import javax.persistence.GenerationType;
+import javax.persistence.InheritanceType;
+import javax.persistence.TemporalType;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+
+import org.eclipse.persistence.internal.jpa.metadata.accessors.BasicAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.CascadeTypes;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddableAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedIdAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.IdAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.ManyToManyAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.ManyToOneAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MappedSuperclassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.OneToManyAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.OneToOneAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.TransientAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.VersionAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.EntityResultMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.FieldResultMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.QueryHintMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.tables.UniqueConstraintMetadata;
+
+import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
+
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
+import org.eclipse.persistence.oxm.platform.DOMPlatform;
+import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
+
+public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.sessions.Project {
+	
+	public XMLEntityMappingsMappingProject() {
+        setName("MetadataMappingProject");
+        
+        addDescriptor(buildEntityMappingsDescriptor());
+        addDescriptor(buildPersistenceUnitMetadataDescriptor());
+        addDescriptor(buildPersistenceUnitDefaultsDescriptor());
+        
+        addDescriptor(buildEntityDescriptor());
+        addDescriptor(buildEmbeddableDescriptor());
+        addDescriptor(buildMappedSuperclassDescriptor());
+        
+        addDescriptor(buildInheritanceDescriptor());
+        addDescriptor(buildTableDescriptor());
+        addDescriptor(buildSecondaryTableDescriptor());
+        addDescriptor(buildUniqueConstraintDescriptor());
+        addDescriptor(buildAttributesDescriptor());
+        addDescriptor(buildEntityListenerDescriptor());
+        
+        addDescriptor(buildColumnDescriptor());
+        addDescriptor(buildJoinColumnDescriptor());
+        addDescriptor(buildPrimaryKeyJoinColumnDescriptor());
+        addDescriptor(buildAssociationOverrideDescriptor());
+        addDescriptor(buildAttributeOverrideDescriptor());
+        addDescriptor(buildDiscriminatorColumnDescriptor());
+        
+        addDescriptor(buildNamedQueryDescriptor());
+        addDescriptor(buildNamedNativeQueryDescriptor());
+        addDescriptor(buildSqlResultSetMappingDescriptor());
+        addDescriptor(buildQueryHintDescriptor());
+        addDescriptor(buildEntityResultDescriptor());
+        addDescriptor(buildFieldResultDescriptor());
+        
+        addDescriptor(buildIdDescriptor());
+        addDescriptor(buildEmbeddedIdDescriptor());
+        addDescriptor(buildTransientDescriptor());
+        addDescriptor(buildVersionDescriptor());
+        addDescriptor(buildBasicDescriptor());
+        addDescriptor(buildCascadeTypeDescriptor());
+        addDescriptor(buildManyToOneDescriptor());
+        addDescriptor(buildOneToOneDescriptor());
+        addDescriptor(buildOneToManyDescriptor());
+        addDescriptor(buildManyToManyDescriptor());
+        addDescriptor(buildJoinTableDescriptor());
+        addDescriptor(buildEmbeddedDescriptor());
+        
+        addDescriptor(buildGeneratedValueDescriptor());
+        addDescriptor(buildSequenceGeneratorDescriptor());
+        addDescriptor(buildTableGeneratorDescriptor());
+        
+        // Come back to this.
+        // Set the name spaces on all descriptors.
+        NamespaceResolver namespaceResolver = new NamespaceResolver();
+        namespaceResolver.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        namespaceResolver.put("xsd", "http://www.w3.org/2001/XMLSchema");
+        namespaceResolver.put("orm", "http://java.sun.com/xml/ns/persistence/orm");
+
+        for (XMLDescriptor descriptor : (Collection<XMLDescriptor>) getDescriptors().values()) {
+            descriptor.setNamespaceResolver(namespaceResolver);
+        }
+        
+        XMLLogin xmlLogin = new XMLLogin();
+        DOMPlatform platform = new DOMPlatform();
+        xmlLogin.setDatasourcePlatform(platform);
+        this.setDatasourceLogin(xmlLogin);
+    }
+
+	/**
+     * INTERNAL:
+     * XSD: association-override
+     */
+    protected ClassDescriptor buildAssociationOverrideDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(AssociationOverrideMetadata.class);
+        
+        descriptor.addMapping(getJoinColumnMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+	}
+    
+	/**
+     * INTERNAL:
+     * XSD: attribute-override
+     */
+    protected ClassDescriptor buildAttributeOverrideDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(AttributeOverrideMetadata.class);
+        
+        descriptor.addMapping(getColumnMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+	}
+	
+	/**
+     * INTERNAL:
+     * XSD: basic
+     */
+    protected ClassDescriptor buildBasicDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(BasicAccessor.class);
+        
+        descriptor.addMapping(getColumnMapping());
+        
+        XMLDirectMapping lobMapping = new XMLDirectMapping();
+        lobMapping.setAttributeName("m_lob");
+        lobMapping.setGetMethodName("getLob");
+        lobMapping.setSetMethodName("setLob");
+        lobMapping.setXPath("orm:lob");
+        descriptor.addMapping(lobMapping);
+        
+        descriptor.addMapping(getTemporalMapping());
+        
+        XMLDirectMapping enumeratedMapping = new XMLDirectMapping();
+        enumeratedMapping.setAttributeName("m_enumerated");
+        enumeratedMapping.setGetMethodName("getEnumerated");
+        enumeratedMapping.setSetMethodName("setEnumerated");
+        enumeratedMapping.setConverter(new EnumTypeConverter(enumeratedMapping, EnumType.class, false));
+        enumeratedMapping.setXPath("orm:enumerated/text()");
+        descriptor.addMapping(enumeratedMapping);
+        
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getFetchAttributeMapping());
+        descriptor.addMapping(getOptionalAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: cascade-type
+     */
+    protected ClassDescriptor buildCascadeTypeDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(CascadeTypes.class);
+        
+        XMLDirectMapping cascadeAllMapping = new XMLDirectMapping();
+        cascadeAllMapping.setAttributeName("m_cascadeAll");
+        cascadeAllMapping.setGetMethodName("getCascadeAll");
+        cascadeAllMapping.setSetMethodName("setCascadeAll");
+        IsSetNullPolicy cascadeAllPolicy = new IsSetNullPolicy("isCascadeAll");
+        cascadeAllPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        cascadeAllMapping.setNullPolicy(cascadeAllPolicy);
+        cascadeAllMapping.setXPath("orm:cascade-all");
+        descriptor.addMapping(cascadeAllMapping);
+        
+        XMLDirectMapping cascadePersistMapping = new XMLDirectMapping();
+        cascadePersistMapping.setAttributeName("m_cascadePersist");
+        cascadePersistMapping.setGetMethodName("getCascadePersist");
+        cascadePersistMapping.setSetMethodName("setCascadePersist");
+        IsSetNullPolicy cascadePersistPolicy = new IsSetNullPolicy("isCascadePersist");
+        cascadePersistPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        cascadePersistMapping.setNullPolicy(cascadePersistPolicy);
+        cascadePersistMapping.setXPath("orm:cascade-persist");
+        descriptor.addMapping(cascadePersistMapping);
+        
+        XMLDirectMapping cascadeMergeMapping = new XMLDirectMapping();
+        cascadeMergeMapping.setAttributeName("m_cascadeMerge");
+        cascadeMergeMapping.setGetMethodName("getCascadeMerge");
+        cascadeMergeMapping.setSetMethodName("setCascadeMerge");
+        IsSetNullPolicy cascadeMergePolicy = new IsSetNullPolicy("isCascadeMerge");
+        cascadeMergePolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        cascadeMergeMapping.setNullPolicy(cascadeMergePolicy);
+        cascadeMergeMapping.setXPath("orm:cascade-merge");
+        descriptor.addMapping(cascadeMergeMapping);
+        
+        XMLDirectMapping cascadeRemoveMapping = new XMLDirectMapping();
+        cascadeRemoveMapping.setAttributeName("m_cascadeRemove");
+        cascadeRemoveMapping.setGetMethodName("getCascadeRemove");
+        cascadeRemoveMapping.setSetMethodName("setCascadeRemove");
+        IsSetNullPolicy cascadeRemovePolicy = new IsSetNullPolicy("isCascadeRemove");
+        cascadeRemovePolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        cascadeRemoveMapping.setNullPolicy(cascadeRemovePolicy);
+        cascadeRemoveMapping.setXPath("orm:cascade-remove");
+        descriptor.addMapping(cascadeRemoveMapping);
+        
+        XMLDirectMapping cascadeRefreshMapping = new XMLDirectMapping();
+        cascadeRefreshMapping.setAttributeName("m_cascadeRefresh");
+        cascadeRefreshMapping.setGetMethodName("getCascadeRefresh");
+        cascadeRefreshMapping.setSetMethodName("setCascadeRefresh");
+        IsSetNullPolicy cascadeRefreshPolicy = new IsSetNullPolicy("isCascadeRefresh");
+        cascadeRefreshPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        cascadeRefreshMapping.setNullPolicy(cascadeRefreshPolicy);
+        cascadeRefreshMapping.setXPath("orm:cascade-refresh");
+        descriptor.addMapping(cascadeRefreshMapping);
+        
+        return descriptor;
+    }
+    
+	/**
+     * INTERNAL:
+     * XSD: attributes
+     */
+    protected ClassDescriptor buildAttributesDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(XMLAttributes.class);
+    	
+        XMLCompositeObjectMapping embeddedIdMapping = new XMLCompositeObjectMapping();
+        embeddedIdMapping.setAttributeName("m_embeddedId");
+        embeddedIdMapping.setGetMethodName("getEmbeddedId");
+        embeddedIdMapping.setSetMethodName("setEmbeddedId");
+        embeddedIdMapping.setReferenceClass(EmbeddedIdAccessor.class);
+        embeddedIdMapping.setXPath("orm:embedded-id");
+        descriptor.addMapping(embeddedIdMapping);
+        
+        XMLCompositeCollectionMapping idsMapping = new XMLCompositeCollectionMapping();
+        idsMapping.setAttributeName("m_ids");
+        idsMapping.setGetMethodName("getIds");
+        idsMapping.setSetMethodName("setIds");
+        idsMapping.setReferenceClass(IdAccessor.class);
+        idsMapping.setXPath("orm:id");
+        descriptor.addMapping(idsMapping);
+        
+        XMLCompositeCollectionMapping basicsMapping = new XMLCompositeCollectionMapping();
+        basicsMapping.setAttributeName("m_basics");
+        basicsMapping.setGetMethodName("getBasics");
+        basicsMapping.setSetMethodName("setBasics");
+        basicsMapping.setReferenceClass(BasicAccessor.class);
+        basicsMapping.setXPath("orm:basic");
+        descriptor.addMapping(basicsMapping);
+        
+        XMLCompositeCollectionMapping versionsMapping = new XMLCompositeCollectionMapping();
+        versionsMapping.setAttributeName("m_versions");
+        versionsMapping.setGetMethodName("getVersions");
+        versionsMapping.setSetMethodName("setVersions");
+        versionsMapping.setReferenceClass(VersionAccessor.class);
+        versionsMapping.setXPath("orm:version");
+        descriptor.addMapping(versionsMapping);
+        
+        XMLCompositeCollectionMapping manyToOnesMapping = new XMLCompositeCollectionMapping();
+        manyToOnesMapping.setAttributeName("m_manyToOnes");
+        manyToOnesMapping.setGetMethodName("getManyToOnes");
+        manyToOnesMapping.setSetMethodName("setManyToOnes");
+        manyToOnesMapping.setReferenceClass(ManyToOneAccessor.class);
+        manyToOnesMapping.setXPath("orm:many-to-one");
+        descriptor.addMapping(manyToOnesMapping);
+        
+        XMLCompositeCollectionMapping oneToManysMapping = new XMLCompositeCollectionMapping();
+        oneToManysMapping.setAttributeName("m_oneToManys");
+        oneToManysMapping.setGetMethodName("getOneToManys");
+        oneToManysMapping.setSetMethodName("setOneToManys");
+        oneToManysMapping.setReferenceClass(OneToManyAccessor.class);
+        oneToManysMapping.setXPath("orm:one-to-many");
+        descriptor.addMapping(oneToManysMapping);
+        
+        XMLCompositeCollectionMapping oneToOnesMapping = new XMLCompositeCollectionMapping();
+        oneToOnesMapping.setAttributeName("m_oneToOnes");
+        oneToOnesMapping.setGetMethodName("getOneToOnes");
+        oneToOnesMapping.setSetMethodName("setOneToOnes");
+        oneToOnesMapping.setReferenceClass(OneToOneAccessor.class);
+        oneToOnesMapping.setXPath("orm:one-to-one");
+        descriptor.addMapping(oneToOnesMapping);
+        
+        XMLCompositeCollectionMapping manyToManysMapping = new XMLCompositeCollectionMapping();
+        manyToManysMapping.setAttributeName("m_manyToManys");
+        manyToManysMapping.setGetMethodName("getManyToManys");
+        manyToManysMapping.setSetMethodName("setManyToManys");
+        manyToManysMapping.setReferenceClass(ManyToManyAccessor.class);
+        manyToManysMapping.setXPath("orm:many-to-many");
+        descriptor.addMapping(manyToManysMapping);
+        
+        XMLCompositeCollectionMapping embeddedsMapping = new XMLCompositeCollectionMapping();
+        embeddedsMapping.setAttributeName("m_embeddeds");
+        embeddedsMapping.setGetMethodName("getEmbeddeds");
+        embeddedsMapping.setSetMethodName("setEmbeddeds");
+        embeddedsMapping.setReferenceClass(EmbeddedAccessor.class);
+        embeddedsMapping.setXPath("orm:embedded");
+        descriptor.addMapping(embeddedsMapping);
+        
+        XMLCompositeCollectionMapping transientsMapping = new XMLCompositeCollectionMapping();
+        transientsMapping.setAttributeName("m_transients");
+        transientsMapping.setGetMethodName("getTransients");
+        transientsMapping.setSetMethodName("setTransients");
+        transientsMapping.setReferenceClass(TransientAccessor.class);
+        transientsMapping.setXPath("orm:transient");
+        descriptor.addMapping(transientsMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: column
+     */
+    protected ClassDescriptor buildColumnDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(ColumnMetadata.class);
+    
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getUniqueAttributeMapping());
+        descriptor.addMapping(getNullableAttributeMapping());
+        descriptor.addMapping(getInsertableAttributeMapping());
+        descriptor.addMapping(getUpdatableAttributeMapping());
+        descriptor.addMapping(getColumnDefinitionAttributeMapping());
+        descriptor.addMapping(getTableAttributeMapping());
+        
+        descriptor.addMapping(getLengthAttributeMapping());
+        
+        XMLDirectMapping precisionMapping = new XMLDirectMapping();
+        precisionMapping.setAttributeName("m_precision");
+        precisionMapping.setGetMethodName("getPrecision");
+        precisionMapping.setSetMethodName("setPrecision");
+        precisionMapping.setXPath("@precision");
+        descriptor.addMapping(precisionMapping);
+        
+        XMLDirectMapping scaleMapping = new XMLDirectMapping();
+        scaleMapping.setAttributeName("m_scale");
+        scaleMapping.setGetMethodName("getScale");
+        scaleMapping.setSetMethodName("setScale");
+        scaleMapping.setXPath("@scale");
+        descriptor.addMapping(scaleMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: discriminator-column
+     */
+    protected ClassDescriptor buildDiscriminatorColumnDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(DiscriminatorColumnMetadata.class);
+    
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        XMLDirectMapping discriminatorTypeMapping = new XMLDirectMapping();
+        discriminatorTypeMapping.setAttributeName("m_discriminatorType");
+        discriminatorTypeMapping.setGetMethodName("getDiscriminatorType");
+        discriminatorTypeMapping.setSetMethodName("setDiscriminatorType");
+        discriminatorTypeMapping.setConverter(new EnumTypeConverter(discriminatorTypeMapping, DiscriminatorType.class, false));
+        discriminatorTypeMapping.setXPath("@discriminator-type");
+        descriptor.addMapping(discriminatorTypeMapping);
+        
+        descriptor.addMapping(getColumnDefinitionAttributeMapping());
+        descriptor.addMapping(getLengthAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: embeddable
+     */
+    protected ClassDescriptor buildEmbeddableDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(EmbeddableAccessor.class);
+        
+        descriptor.addMapping(getDescriptionMapping());
+        descriptor.addMapping(getEmbeddableAttributesMapping());
+        descriptor.addMapping(getClassAttributeMapping());
+        descriptor.addMapping(getAccessAttributeMapping());
+        descriptor.addMapping(getMetadataCompleteAttributeMapping());
+        
+        return descriptor;
+    }
+        
+    /**
+     * INTERNAL:
+     * XSD: embedded
+     */
+    protected ClassDescriptor buildEmbeddedDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(EmbeddedAccessor.class);
+    	
+        descriptor.addMapping(getAttributeOverrideMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: embedded-id
+     */
+    protected ClassDescriptor buildEmbeddedIdDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(EmbeddedIdAccessor.class);
+    	
+        descriptor.addMapping(getAttributeOverrideMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: entity
+     */
+    protected ClassDescriptor buildEntityDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(ClassAccessor.class);
+
+        descriptor.addMapping(getDescriptionMapping());
+        
+        XMLCompositeObjectMapping tableMapping = new XMLCompositeObjectMapping();
+        tableMapping.setAttributeName("m_table");
+        tableMapping.setGetMethodName("getTable");
+        tableMapping.setSetMethodName("setTable");
+        tableMapping.setReferenceClass(TableMetadata.class);
+        tableMapping.setXPath("orm:table");
+        descriptor.addMapping(tableMapping);
+        
+        XMLCompositeCollectionMapping secondaryTablesMapping = new XMLCompositeCollectionMapping();
+        secondaryTablesMapping.setAttributeName("m_secondaryTables");
+        secondaryTablesMapping.setGetMethodName("getSecondaryTables");
+        secondaryTablesMapping.setSetMethodName("setSecondaryTables");
+        secondaryTablesMapping.setReferenceClass(SecondaryTableMetadata.class);
+        secondaryTablesMapping.setXPath("orm:secondary-table");
+        descriptor.addMapping(secondaryTablesMapping);
+        
+        descriptor.addMapping(getPrimaryKeyJoinColumnMapping());
+        descriptor.addMapping(getIdClassMapping());
+        
+        XMLCompositeObjectMapping inheritanceMapping = new XMLCompositeObjectMapping();
+        inheritanceMapping.setAttributeName("m_inheritance");
+        inheritanceMapping.setGetMethodName("getInheritance");
+        inheritanceMapping.setSetMethodName("setInheritance");
+        inheritanceMapping.setReferenceClass(XMLInheritance.class);
+        inheritanceMapping.setXPath("orm:inheritance");
+        descriptor.addMapping(inheritanceMapping);
+        
+        XMLDirectMapping discriminatorValueMapping = new XMLDirectMapping();
+        discriminatorValueMapping.setAttributeName("m_discriminatorValue");
+        discriminatorValueMapping.setGetMethodName("getDiscriminatorValue");
+        discriminatorValueMapping.setSetMethodName("setDiscriminatorValue");
+        discriminatorValueMapping.setXPath("orm:discriminator-value/text()");
+        descriptor.addMapping(discriminatorValueMapping);
+        
+        XMLCompositeObjectMapping discriminatorColumnMapping = new XMLCompositeObjectMapping();
+        discriminatorColumnMapping.setAttributeName("m_discriminatorColumn");
+        discriminatorColumnMapping.setGetMethodName("getDiscriminatorColumn");
+        discriminatorColumnMapping.setSetMethodName("setDiscriminatorColumn");
+        discriminatorColumnMapping.setReferenceClass(DiscriminatorColumnMetadata.class);
+        discriminatorColumnMapping.setXPath("orm:discriminator-column");
+        descriptor.addMapping(discriminatorColumnMapping);
+
+        descriptor.addMapping(getSequenceGeneratorMapping());
+        descriptor.addMapping(getTableGeneratorMapping());
+        
+        XMLCompositeCollectionMapping namedQueryMapping = new XMLCompositeCollectionMapping();
+        namedQueryMapping.setAttributeName("m_namedQueries");
+        namedQueryMapping.setGetMethodName("getNamedQueries");
+        namedQueryMapping.setSetMethodName("setNamedQueries");
+        namedQueryMapping.setReferenceClass(NamedQueryMetadata.class);
+        namedQueryMapping.setXPath("orm:named-query");
+        descriptor.addMapping(namedQueryMapping);
+        
+        XMLCompositeCollectionMapping namedNativeQueryMapping = new XMLCompositeCollectionMapping();
+        namedNativeQueryMapping.setAttributeName("m_namedNativeQueries");
+        namedNativeQueryMapping.setGetMethodName("getNamedNativeQueries");
+        namedNativeQueryMapping.setSetMethodName("setNamedNativeQueries");
+        namedNativeQueryMapping.setReferenceClass(NamedNativeQueryMetadata.class);
+        namedNativeQueryMapping.setXPath("orm:named-native-query");
+        descriptor.addMapping(namedNativeQueryMapping);
+        
+        XMLCompositeCollectionMapping sqlResultSetMappingMapping = new XMLCompositeCollectionMapping();
+        sqlResultSetMappingMapping.setAttributeName("m_sqlResultSetMappings");
+        sqlResultSetMappingMapping.setGetMethodName("getSqlResultSetMappings");
+        sqlResultSetMappingMapping.setSetMethodName("setSqlResultSetMappings");
+        sqlResultSetMappingMapping.setReferenceClass(SQLResultSetMappingMetadata.class);
+        sqlResultSetMappingMapping.setXPath("orm:sql-result-set-mapping");
+        descriptor.addMapping(sqlResultSetMappingMapping);
+        
+        descriptor.addMapping(getExcludeDefaultListenersMapping());
+        descriptor.addMapping(getExcludeSuperclassListenersMapping());
+        descriptor.addMapping(getEntityListenersMapping());
+        descriptor.addMapping(getPrePeristMapping());
+        descriptor.addMapping(getPostPeristMapping());
+        descriptor.addMapping(getPreRemoveMapping());
+        descriptor.addMapping(getPostRemoveMapping());
+        descriptor.addMapping(getPreUpdateMapping());
+        descriptor.addMapping(getPostUpdateMapping());
+        descriptor.addMapping(getPostLoadMapping());
+        
+        XMLCompositeCollectionMapping attributeOverridesMapping = new XMLCompositeCollectionMapping();
+        attributeOverridesMapping.setAttributeName("m_attributeOverrides");
+        attributeOverridesMapping.setGetMethodName("getAttributeOverrides");
+        attributeOverridesMapping.setSetMethodName("setAttributeOverrides");
+        attributeOverridesMapping.setReferenceClass(AttributeOverrideMetadata.class);
+        attributeOverridesMapping.setXPath("orm:attribute-override");
+        descriptor.addMapping(attributeOverridesMapping);
+        
+        XMLCompositeCollectionMapping associationOverridesMapping = new XMLCompositeCollectionMapping();
+        associationOverridesMapping.setAttributeName("m_associationOverrides");
+        associationOverridesMapping.setGetMethodName("getAssociationOverrides");
+        associationOverridesMapping.setSetMethodName("setAssociationOverrides");
+        associationOverridesMapping.setReferenceClass(AssociationOverrideMetadata.class);
+        associationOverridesMapping.setXPath("orm:association-override");
+        descriptor.addMapping(associationOverridesMapping);
+        
+        descriptor.addMapping(getAttributesMapping());
+        
+        XMLDirectMapping nameMapping = new XMLDirectMapping();
+        nameMapping.setAttributeName("m_entityName");
+        nameMapping.setGetMethodName("getEntityName");
+        nameMapping.setSetMethodName("setEntityName");
+        nameMapping.setXPath("@name");
+        descriptor.addMapping(nameMapping);
+
+        descriptor.addMapping(getClassAttributeMapping());
+        descriptor.addMapping(getAccessAttributeMapping());
+        descriptor.addMapping(getMetadataCompleteAttributeMapping());
+        
+        return descriptor;
+    }
+
+    /**
+     * INTERNAL:
+     * XSD: entity-listener
+     */
+    protected ClassDescriptor buildEntityListenerDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(EntityListenerMetadata.class);
+        
+        descriptor.addMapping(getPrePeristMapping());
+        descriptor.addMapping(getPostPeristMapping());
+        descriptor.addMapping(getPreRemoveMapping());
+        descriptor.addMapping(getPostRemoveMapping());
+        descriptor.addMapping(getPreUpdateMapping());
+        descriptor.addMapping(getPostUpdateMapping());
+        descriptor.addMapping(getPostLoadMapping());
+        descriptor.addMapping(getClassAttributeMapping());
+        
+        return descriptor;
+    }
+    
+	/**
+	 * INTERNAL:
+	 * XSD: entity-mappings
+	 */
+    protected ClassDescriptor buildEntityMappingsDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setDefaultRootElement("orm:entity-mappings");
+        descriptor.setJavaClass(XMLEntityMappings.class);
+        // This will be the eclipselink orm eventually
+        descriptor.setSchemaReference(new XMLSchemaClassPathReference("xsd/orm_1_0.xsd"));
+        
+        descriptor.addMapping(getDescriptionMapping());
+        
+        XMLCompositeObjectMapping persistenceUnitMetadataMapping = new XMLCompositeObjectMapping();
+        persistenceUnitMetadataMapping.setAttributeName("m_persistenceUnitMetadata");
+        persistenceUnitMetadataMapping.setGetMethodName("getPersistenceUnitMetadata");
+        persistenceUnitMetadataMapping.setSetMethodName("setPersistenceUnitMetadata");
+        persistenceUnitMetadataMapping.setReferenceClass(XMLPersistenceUnitMetadata.class);
+        persistenceUnitMetadataMapping.setXPath("orm:persistence-unit-metadata");
+        descriptor.addMapping(persistenceUnitMetadataMapping);
+        
+        XMLDirectMapping packageMapping = new XMLDirectMapping();
+        packageMapping.setAttributeName("m_package");
+        packageMapping.setGetMethodName("getPackage");
+        packageMapping.setSetMethodName("setPackage");
+        packageMapping.setXPath("orm:package/text()");
+        descriptor.addMapping(packageMapping);
+        
+        descriptor.addMapping(getSchemaMapping());
+        descriptor.addMapping(getCatalogMapping());
+        descriptor.addMapping(getAccessMapping());
+
+        XMLCompositeCollectionMapping sequenceGeneratorsMapping = new XMLCompositeCollectionMapping();
+        sequenceGeneratorsMapping.setAttributeName("m_sequenceGenerators");
+        sequenceGeneratorsMapping.setGetMethodName("getSequenceGenerators");
+        sequenceGeneratorsMapping.setSetMethodName("setSequenceGenerators");
+        sequenceGeneratorsMapping.setReferenceClass(SequenceGeneratorMetadata.class);
+        sequenceGeneratorsMapping.setXPath("orm:sequence-generator");
+        descriptor.addMapping(sequenceGeneratorsMapping);
+        
+        XMLCompositeCollectionMapping tableGeneratorsMapping = new XMLCompositeCollectionMapping();
+        tableGeneratorsMapping.setAttributeName("m_tableGenerators");
+        tableGeneratorsMapping.setGetMethodName("getTableGenerators");
+        tableGeneratorsMapping.setSetMethodName("setTableGenerators");
+        tableGeneratorsMapping.setReferenceClass(TableGeneratorMetadata.class);
+        tableGeneratorsMapping.setXPath("orm:table-generator");
+        descriptor.addMapping(tableGeneratorsMapping);
+        
+        XMLCompositeCollectionMapping namedQueryMapping = new XMLCompositeCollectionMapping();
+        namedQueryMapping.setAttributeName("m_namedQueries");
+        namedQueryMapping.setGetMethodName("getNamedQueries");
+        namedQueryMapping.setSetMethodName("setNamedQueries");
+        namedQueryMapping.setReferenceClass(NamedQueryMetadata.class);
+        namedQueryMapping.setXPath("orm:named-query");
+        descriptor.addMapping(namedQueryMapping);
+        
+        XMLCompositeCollectionMapping namedNativeQueryMapping = new XMLCompositeCollectionMapping();
+        namedNativeQueryMapping.setAttributeName("m_namedNativeQueries");
+        namedNativeQueryMapping.setGetMethodName("getNamedNativeQueries");
+        namedNativeQueryMapping.setSetMethodName("setNamedNativeQueries");
+        namedNativeQueryMapping.setReferenceClass(NamedNativeQueryMetadata.class);
+        namedNativeQueryMapping.setXPath("orm:named-native-query");
+        descriptor.addMapping(namedNativeQueryMapping);
+        
+        XMLCompositeCollectionMapping sqlResultSetMappingMapping = new XMLCompositeCollectionMapping();
+        sqlResultSetMappingMapping.setAttributeName("m_sqlResultSetMappings");
+        sqlResultSetMappingMapping.setGetMethodName("getSqlResultSetMappings");
+        sqlResultSetMappingMapping.setSetMethodName("setSqlResultSetMappings");
+        sqlResultSetMappingMapping.setReferenceClass(SQLResultSetMappingMetadata.class);
+        sqlResultSetMappingMapping.setXPath("orm:sql-result-set-mapping");
+        descriptor.addMapping(sqlResultSetMappingMapping);
+        
+        XMLCompositeCollectionMapping mappedSuperclassMapping = new XMLCompositeCollectionMapping();
+        mappedSuperclassMapping.setAttributeName("m_mappedSuperclasses");
+        mappedSuperclassMapping.setGetMethodName("getMappedSuperclasses");
+        mappedSuperclassMapping.setSetMethodName("setMappedSuperclasses");
+        mappedSuperclassMapping.setReferenceClass(MappedSuperclassAccessor.class);
+        mappedSuperclassMapping.setXPath("orm:mapped-superclass");
+        descriptor.addMapping(mappedSuperclassMapping);
+        
+        XMLCompositeCollectionMapping entityMapping = new XMLCompositeCollectionMapping();
+        entityMapping.setAttributeName("m_entities");
+        entityMapping.setGetMethodName("getEntities");
+        entityMapping.setSetMethodName("setEntities");
+        entityMapping.setReferenceClass(ClassAccessor.class);
+        entityMapping.setXPath("orm:entity");
+        descriptor.addMapping(entityMapping);
+        
+        XMLCompositeCollectionMapping embeddableMapping = new XMLCompositeCollectionMapping();
+        embeddableMapping.setAttributeName("m_embeddables");
+        embeddableMapping.setGetMethodName("getEmbeddables");
+        embeddableMapping.setSetMethodName("setEmbeddables");
+        embeddableMapping.setReferenceClass(EmbeddableAccessor.class);
+        embeddableMapping.setXPath("orm:embeddable");
+        descriptor.addMapping(embeddableMapping);
+        
+        // What about the version attribute???
+        XMLDirectMapping versionMapping = new XMLDirectMapping();
+        versionMapping.setAttributeName("m_version");
+        versionMapping.setGetMethodName("getVersion");
+        versionMapping.setSetMethodName("setVersion");
+        versionMapping.setXPath("@version");
+        descriptor.addMapping(versionMapping);
+        
+        return descriptor;
+    }
+
+    /**
+     * INTERNAL:
+     * XSD: entity-result
+     */
+    protected ClassDescriptor buildEntityResultDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(EntityResultMetadata.class);
+        
+        XMLCompositeCollectionMapping fieldResultMapping = new XMLCompositeCollectionMapping();
+        fieldResultMapping.setAttributeName("m_fieldResults");
+        fieldResultMapping.setGetMethodName("getFieldResults");
+        fieldResultMapping.setSetMethodName("setFieldResults");
+        fieldResultMapping.setReferenceClass(FieldResultMetadata.class);
+        fieldResultMapping.setXPath("orm:field-result");
+        descriptor.addMapping(fieldResultMapping);
+        
+        XMLDirectMapping entityClassMapping = new XMLDirectMapping();
+        entityClassMapping.setAttributeName("m_entityClassName");
+        entityClassMapping.setGetMethodName("getEntityClassName");
+        entityClassMapping.setSetMethodName("setEntityClassName");
+        entityClassMapping.setXPath("@entity-class");
+        descriptor.addMapping(entityClassMapping);
+        
+        XMLDirectMapping discriminatorColumnMapping = new XMLDirectMapping();
+        discriminatorColumnMapping.setAttributeName("m_discriminatorColumn");
+        discriminatorColumnMapping.setGetMethodName("getDiscriminatorColumn");
+        discriminatorColumnMapping.setSetMethodName("setDiscriminatorColumn");
+        discriminatorColumnMapping.setXPath("@discriminator-column");
+        descriptor.addMapping(discriminatorColumnMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: field-result
+     */
+    protected ClassDescriptor buildFieldResultDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(FieldResultMetadata.class);
+        
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getColumnAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: generated-value
+     */
+    protected ClassDescriptor buildGeneratedValueDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(GeneratedValueMetadata.class);
+        
+    	XMLDirectMapping strategyMapping = new XMLDirectMapping();
+    	strategyMapping.setAttributeName("m_strategy");
+    	strategyMapping.setGetMethodName("getStrategy");
+    	strategyMapping.setSetMethodName("setStrategy");
+    	strategyMapping.setConverter(new EnumTypeConverter(strategyMapping, GenerationType.class, false));
+    	strategyMapping.setXPath("@strategy");
+    	descriptor.addMapping(strategyMapping);
+    	
+    	XMLDirectMapping generatorMapping = new XMLDirectMapping();
+    	generatorMapping.setAttributeName("m_generator");
+    	generatorMapping.setGetMethodName("getGenerator");
+    	generatorMapping.setSetMethodName("setGenerator");
+    	generatorMapping.setXPath("@generator");
+    	descriptor.addMapping(generatorMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: id
+     */
+    protected ClassDescriptor buildIdDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(IdAccessor.class);
+        
+        descriptor.addMapping(getColumnMapping());
+        
+        XMLCompositeObjectMapping generatedValueMapping = new XMLCompositeObjectMapping();
+        generatedValueMapping.setAttributeName("m_generatedValue");
+        generatedValueMapping.setGetMethodName("getGeneratedValue");
+        generatedValueMapping.setSetMethodName("setGeneratedValue");
+        generatedValueMapping.setReferenceClass(GeneratedValueMetadata.class);
+        generatedValueMapping.setXPath("orm:generated-value");
+        descriptor.addMapping(generatedValueMapping);
+        
+        descriptor.addMapping(getTemporalMapping());
+        descriptor.addMapping(getTableGeneratorMapping());
+        
+        descriptor.addMapping(getSequenceGeneratorMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: inheritance
+     */
+    protected ClassDescriptor buildInheritanceDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(XMLInheritance.class);
+        
+        XMLDirectMapping strategyMapping = new XMLDirectMapping();
+        strategyMapping.setAttributeName("m_strategy");
+        strategyMapping.setGetMethodName("getStrategy");
+        strategyMapping.setSetMethodName("setStrategy");
+        strategyMapping.setConverter(new EnumTypeConverter(strategyMapping, InheritanceType.class, false));
+        strategyMapping.setXPath("@strategy");
+        descriptor.addMapping(strategyMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: join-column
+     */
+    protected ClassDescriptor buildJoinColumnDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(JoinColumnMetadata.class);
+    
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        XMLDirectMapping referencedColumnNameMapping = new XMLDirectMapping();
+        referencedColumnNameMapping.setAttributeName("m_referencedColumnName");
+        referencedColumnNameMapping.setGetMethodName("getReferencedColumnName");
+        referencedColumnNameMapping.setSetMethodName("setReferencedColumnName");
+        referencedColumnNameMapping.setXPath("@referenced-column-name");
+        descriptor.addMapping(referencedColumnNameMapping);
+        
+        descriptor.addMapping(getUniqueAttributeMapping());
+        descriptor.addMapping(getNullableAttributeMapping());        
+        descriptor.addMapping(getInsertableAttributeMapping());
+        descriptor.addMapping(getUpdatableAttributeMapping());
+        descriptor.addMapping(getColumnDefinitionAttributeMapping());
+        descriptor.addMapping(getTableAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: join-table
+     */
+    protected ClassDescriptor buildJoinTableDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(JoinTableMetadata.class);
+    
+        descriptor.addMapping(getJoinColumnMapping());
+        descriptor.addMapping(getInverseJoinColumnMapping());
+        descriptor.addMapping(getUniqueConstraintMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getCatalogAttributeMapping());        
+        descriptor.addMapping(getSchemaAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: many-to-one
+     */
+    protected ClassDescriptor buildManyToOneDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(ManyToOneAccessor.class);
+        
+        descriptor.addMapping(getJoinColumnMapping());
+        // join-table is not supported
+        descriptor.addMapping(getCascadeMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getTargetEntityAttributeMapping()); 
+        descriptor.addMapping(getFetchAttributeMapping());
+        descriptor.addMapping(getOptionalAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: mapped-superclass
+     */
+    protected ClassDescriptor buildMappedSuperclassDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(MappedSuperclassAccessor.class);
+
+        descriptor.addMapping(getDescriptionMapping());
+        descriptor.addMapping(getIdClassMapping());
+        descriptor.addMapping(getExcludeDefaultListenersMapping());
+        descriptor.addMapping(getExcludeSuperclassListenersMapping());
+        descriptor.addMapping(getEntityListenersMapping());
+        descriptor.addMapping(getPrePeristMapping());
+        descriptor.addMapping(getPostPeristMapping());
+        descriptor.addMapping(getPreRemoveMapping());
+        descriptor.addMapping(getPostRemoveMapping());
+        descriptor.addMapping(getPreUpdateMapping());
+        descriptor.addMapping(getPostUpdateMapping());
+        descriptor.addMapping(getPostLoadMapping());
+        descriptor.addMapping(getAttributesMapping());
+        descriptor.addMapping(getClassAttributeMapping());
+        descriptor.addMapping(getAccessAttributeMapping());
+        descriptor.addMapping(getMetadataCompleteAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: many-to-many
+     */
+    protected ClassDescriptor buildManyToManyDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(ManyToManyAccessor.class);
+        
+        descriptor.addMapping(getOrderByMapping());
+        descriptor.addMapping(getMapKeyMapping());
+        descriptor.addMapping(getJoinTableMapping());
+        descriptor.addMapping(getCascadeMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getTargetEntityAttributeMapping()); 
+        descriptor.addMapping(getFetchAttributeMapping());
+        descriptor.addMapping(getMappedByAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: named-native-query
+     */
+    protected ClassDescriptor buildNamedNativeQueryDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NamedNativeQueryMetadata.class);
+        
+        descriptor.addMapping(getQueryMapping());        
+        descriptor.addMapping(getHintMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        XMLDirectMapping resultClassMapping = new XMLDirectMapping();
+        resultClassMapping.setAttributeName("m_resultClassName");
+        resultClassMapping.setGetMethodName("getResultClassName");
+        resultClassMapping.setSetMethodName("setResultClassName");
+        resultClassMapping.setNullValue("");
+        resultClassMapping.setXPath("@result-class");
+        descriptor.addMapping(resultClassMapping);
+        
+        XMLDirectMapping resultSetMappingMapping = new XMLDirectMapping();
+        resultSetMappingMapping.setAttributeName("m_resultSetMapping");
+        resultSetMappingMapping.setGetMethodName("getResultSetMapping");
+        resultSetMappingMapping.setSetMethodName("setResultSetMapping");
+        resultSetMappingMapping.setNullValue("");
+        resultSetMappingMapping.setXPath("@result-set-mapping");
+        descriptor.addMapping(resultSetMappingMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: named-query
+     */
+    protected ClassDescriptor buildNamedQueryDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NamedQueryMetadata.class);
+
+        descriptor.addMapping(getQueryMapping());        
+        descriptor.addMapping(getHintMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+    }
+
+    /**
+     * INTERNAL:
+     * XSD: one-to-one
+     */
+    protected ClassDescriptor buildOneToOneDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(OneToOneAccessor.class);
+        
+        descriptor.addMapping(getPrimaryKeyJoinColumnMapping());
+        descriptor.addMapping(getJoinColumnMapping());
+        // join-table is not supported
+        descriptor.addMapping(getCascadeMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getTargetEntityAttributeMapping()); 
+        descriptor.addMapping(getFetchAttributeMapping());
+        descriptor.addMapping(getOptionalAttributeMapping());
+        descriptor.addMapping(getMappedByAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: one-to-many
+     */
+    protected ClassDescriptor buildOneToManyDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(OneToManyAccessor.class);
+        
+        descriptor.addMapping(getOrderByMapping());
+        descriptor.addMapping(getMapKeyMapping());
+        descriptor.addMapping(getJoinTableMapping());
+        descriptor.addMapping(getJoinColumnMapping());
+        descriptor.addMapping(getCascadeMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getTargetEntityAttributeMapping()); 
+        descriptor.addMapping(getFetchAttributeMapping());
+        descriptor.addMapping(getMappedByAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: persistence-unit-defaults
+     */
+    protected ClassDescriptor buildPersistenceUnitDefaultsDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(XMLPersistenceUnitDefaults.class);
+
+        descriptor.addMapping(getSchemaMapping());        
+        descriptor.addMapping(getCatalogMapping());
+        descriptor.addMapping(getAccessMapping());
+
+        XMLDirectMapping cascadePersistMapping = new XMLDirectMapping();
+        cascadePersistMapping.setAttributeName("m_cascadePersist");
+        cascadePersistMapping.setGetMethodName("getCascadePersist");
+        cascadePersistMapping.setSetMethodName("setCascadePersist");
+        IsSetNullPolicy cascadePersistPolicy = new IsSetNullPolicy("isCascadePersist");
+        cascadePersistPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        cascadePersistMapping.setNullPolicy(cascadePersistPolicy);
+        cascadePersistMapping.setXPath("orm:cascade-persist/text()");
+        descriptor.addMapping(cascadePersistMapping);
+        
+        descriptor.addMapping(getEntityListenersMapping());
+        
+        return descriptor;
+    }
+
+    /**
+     * INTERNAL:
+     * XSD: persistence-unit-metadata
+     */
+    protected ClassDescriptor buildPersistenceUnitMetadataDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(XMLPersistenceUnitMetadata.class);
+
+        XMLDirectMapping xmlMappingMetadataCompleteMapping = new XMLDirectMapping();
+        xmlMappingMetadataCompleteMapping.setAttributeName("m_xmlMappingMetadataComplete");
+        xmlMappingMetadataCompleteMapping.setGetMethodName("getXMLMappingMetadataComplete");
+        xmlMappingMetadataCompleteMapping.setSetMethodName("setXMLMappingMetadataComplete");
+        IsSetNullPolicy xmlMappingMetadataCompletePolicy = new IsSetNullPolicy("isXMLMappingMetadataComplete");
+        xmlMappingMetadataCompletePolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        xmlMappingMetadataCompleteMapping.setNullPolicy(xmlMappingMetadataCompletePolicy);
+        xmlMappingMetadataCompleteMapping.setXPath("orm:xml-mapping-metadata-complete");
+        descriptor.addMapping(xmlMappingMetadataCompleteMapping);
+        
+        XMLCompositeObjectMapping persistenceUnitDefaultsMapping = new XMLCompositeObjectMapping();
+        persistenceUnitDefaultsMapping.setAttributeName("m_persistenceUnitDefaults");
+        persistenceUnitDefaultsMapping.setGetMethodName("getPersistenceUnitDefaults");
+        persistenceUnitDefaultsMapping.setSetMethodName("setPersistenceUnitDefaults");
+        persistenceUnitDefaultsMapping.setReferenceClass(XMLPersistenceUnitDefaults.class);
+        persistenceUnitDefaultsMapping.setXPath("orm:persistence-unit-defaults");
+        descriptor.addMapping(persistenceUnitDefaultsMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: primary-key-join-column
+     */
+    protected ClassDescriptor buildPrimaryKeyJoinColumnDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(PrimaryKeyJoinColumnMetadata.class);
+        
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        XMLDirectMapping referencedColumnNameMapping = new XMLDirectMapping();
+        referencedColumnNameMapping.setAttributeName("m_referencedColumnName");
+        referencedColumnNameMapping.setGetMethodName("getReferencedColumnName");
+        referencedColumnNameMapping.setSetMethodName("setReferencedColumnName");
+        referencedColumnNameMapping.setXPath("orm:referenced-column-name");
+        descriptor.addMapping(referencedColumnNameMapping);
+        
+        descriptor.addMapping(getColumnDefinitionAttributeMapping());
+    
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: query-hint
+     */
+    protected ClassDescriptor buildQueryHintDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(QueryHintMetadata.class);
+        
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        XMLDirectMapping valueMapping = new XMLDirectMapping();
+        valueMapping.setAttributeName("m_value");
+        valueMapping.setGetMethodName("getValue");
+        valueMapping.setSetMethodName("setValue");
+        valueMapping.setXPath("@value");
+        descriptor.addMapping(valueMapping);
+        
+        return descriptor;
+    }    
+
+    /**
+     * INTERNAL:
+     * XSD: table
+     */
+    protected ClassDescriptor buildSecondaryTableDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(SecondaryTableMetadata.class);
+        
+        descriptor.addMapping(getPrimaryKeyJoinColumnMapping());
+        descriptor.addMapping(getUniqueConstraintMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getCatalogAttributeMapping());
+        descriptor.addMapping(getSchemaAttributeMapping());
+        
+        return descriptor;
+    } 
+    
+    /**
+     * INTERNAL:
+     * XSD: sequence-generator
+     */
+    protected ClassDescriptor buildSequenceGeneratorDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(SequenceGeneratorMetadata.class);
+
+        descriptor.addMapping(getNameAttributeMapping());
+    	
+        XMLDirectMapping sequenceNameMapping = new XMLDirectMapping();
+        sequenceNameMapping.setAttributeName("m_sequenceName");
+        sequenceNameMapping.setGetMethodName("getSequenceName");
+        sequenceNameMapping.setSetMethodName("setSequenceName");
+        sequenceNameMapping.setXPath("@sequence-name");
+        descriptor.addMapping(sequenceNameMapping);
+    	
+        descriptor.addMapping(getInitialValueAttributeMapping());
+        descriptor.addMapping(getAllocationSizeAttributeMapping());
+        
+        return descriptor;
+    } 
+    
+    /**
+     * INTERNAL:
+     * XSD: sql-result-set-mapping
+     */
+    protected ClassDescriptor buildSqlResultSetMappingDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(SQLResultSetMappingMetadata.class);
+        
+        XMLCompositeCollectionMapping entityResultsMapping = new XMLCompositeCollectionMapping();
+        entityResultsMapping.setAttributeName("m_entityResults");
+        entityResultsMapping.setGetMethodName("getEntityResults");
+        entityResultsMapping.setSetMethodName("setEntityResults");
+        entityResultsMapping.setReferenceClass(EntityResultMetadata.class);
+        entityResultsMapping.setXPath("orm:entity-result");
+        descriptor.addMapping(entityResultsMapping);
+        
+        XMLCompositeDirectCollectionMapping columnResultsMapping = new XMLCompositeDirectCollectionMapping();
+        columnResultsMapping.setAttributeName("m_columnResults");
+        columnResultsMapping.setGetMethodName("getColumnResults");
+        columnResultsMapping.setSetMethodName("setColumnResults");
+        columnResultsMapping.setXPath("orm:column-result/@name");
+        descriptor.addMapping(columnResultsMapping);
+        
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+    } 
+    
+    /**
+     * INTERNAL:
+     * XSD: table
+     */
+    protected ClassDescriptor buildTableDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(TableMetadata.class);
+        
+        descriptor.addMapping(getUniqueConstraintMapping());        
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getCatalogAttributeMapping());
+        descriptor.addMapping(getSchemaAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: table-generator
+     */
+    protected ClassDescriptor buildTableGeneratorDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(TableGeneratorMetadata.class);
+
+        descriptor.addMapping(getUniqueConstraintMapping());
+        
+        XMLDirectMapping nameMapping = new XMLDirectMapping();
+        nameMapping.setAttributeName("m_generatorName");
+        nameMapping.setGetMethodName("getGeneratorName");
+        nameMapping.setSetMethodName("setGeneratorName");
+        nameMapping.setXPath("@name");
+        descriptor.addMapping(nameMapping);
+        
+        XMLDirectMapping tableMapping = new XMLDirectMapping();
+	    tableMapping.setAttributeName("m_name");
+	    tableMapping.setGetMethodName("getName");
+	    tableMapping.setSetMethodName("setName");
+	    tableMapping.setXPath("@table");
+	    descriptor.addMapping(tableMapping);
+	    
+        descriptor.addMapping(getCatalogAttributeMapping());
+        descriptor.addMapping(getSchemaAttributeMapping());
+    	
+        XMLDirectMapping pkColumnNameMapping = new XMLDirectMapping();
+        pkColumnNameMapping.setAttributeName("m_pkColumnName");
+        pkColumnNameMapping.setGetMethodName("getPkColumnName");
+        pkColumnNameMapping.setSetMethodName("setPkColumnName");
+        pkColumnNameMapping.setXPath("@pk-column-name");
+        descriptor.addMapping(pkColumnNameMapping);
+        
+        XMLDirectMapping valueColumnNameMapping = new XMLDirectMapping();
+        valueColumnNameMapping.setAttributeName("m_valueColumnName");
+        valueColumnNameMapping.setGetMethodName("getValueColumnName");
+        valueColumnNameMapping.setSetMethodName("setValueColumnName");
+        valueColumnNameMapping.setXPath("@value-column-name");
+        descriptor.addMapping(valueColumnNameMapping);
+        
+        XMLDirectMapping pkColumnValueMapping = new XMLDirectMapping();
+        pkColumnValueMapping.setAttributeName("m_pkColumnValue");
+        pkColumnValueMapping.setGetMethodName("getPkColumnValue");
+        pkColumnValueMapping.setSetMethodName("setPkColumnValue");
+        pkColumnValueMapping.setXPath("@pk-column-value");
+        descriptor.addMapping(pkColumnValueMapping);
+    	
+        descriptor.addMapping(getInitialValueAttributeMapping());
+        descriptor.addMapping(getAllocationSizeAttributeMapping());
+        
+        return descriptor;
+    } 
+    
+    /**
+     * INTERNAL:
+     * XSD: transient
+     */
+    protected ClassDescriptor buildTransientDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(TransientAccessor.class);
+        
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: unique-constraint
+     */
+    protected ClassDescriptor buildUniqueConstraintDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(UniqueConstraintMetadata.class);
+        
+        XMLCompositeDirectCollectionMapping uniqueConstraintsMapping = new XMLCompositeDirectCollectionMapping();
+        uniqueConstraintsMapping.setAttributeName("m_columnNames");
+        uniqueConstraintsMapping.setGetMethodName("getColumnNames");
+        uniqueConstraintsMapping.setSetMethodName("setColumnNames");
+        uniqueConstraintsMapping.setXPath("orm:column-name");
+        descriptor.addMapping(uniqueConstraintsMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: version
+     */
+    protected ClassDescriptor buildVersionDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(VersionAccessor.class);
+        
+        descriptor.addMapping(getColumnMapping());
+        descriptor.addMapping(getTemporalMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getAccessAttributeMapping() {
+    	XMLDirectMapping accessMapping = new XMLDirectMapping();
+    	accessMapping.setAttributeName("m_access");
+    	accessMapping.setGetMethodName("getAccess");
+    	accessMapping.setSetMethodName("setAccess");
+    	accessMapping.setXPath("@access");
+    	return accessMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getAccessMapping() {
+    	XMLDirectMapping accessMapping = new XMLDirectMapping();
+    	accessMapping.setAttributeName("m_access");
+    	accessMapping.setGetMethodName("getAccess");
+    	accessMapping.setSetMethodName("setAccess");
+    	accessMapping.setXPath("orm:access/text()");
+    	return accessMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getAllocationSizeAttributeMapping() {
+    	XMLDirectMapping allocationSizeMapping = new XMLDirectMapping();
+    	allocationSizeMapping.setAttributeName("m_allocationSize");
+    	allocationSizeMapping.setGetMethodName("getAllocationSize");
+    	allocationSizeMapping.setSetMethodName("setAllocationSize");
+    	allocationSizeMapping.setXPath("@allocation-size");
+    	return allocationSizeMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getEmbeddableAttributesMapping() {
+    	XMLCompositeObjectMapping attributesMapping = new XMLCompositeObjectMapping();
+    	attributesMapping.setAttributeName("m_attributes");
+    	attributesMapping.setGetMethodName("getAttributes");
+    	attributesMapping.setSetMethodName("setAttributes");
+    	attributesMapping.setReferenceClass(XMLAttributes.class);
+    	attributesMapping.setXPath("orm:embeddable-attributes");
+    	return attributesMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getEntityListenersMapping() {
+    	XMLCompositeCollectionMapping entityListenersMapping = new XMLCompositeCollectionMapping();
+    	entityListenersMapping.setAttributeName("m_entityListeners");
+    	entityListenersMapping.setGetMethodName("getEntityListeners");
+    	entityListenersMapping.setSetMethodName("setEntityListeners");
+    	entityListenersMapping.setReferenceClass(EntityListenerMetadata.class);
+    	entityListenersMapping.setXPath("orm:entity-listeners/orm:entity-listener");
+    	return entityListenersMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getExcludeDefaultListenersMapping() {
+    	XMLDirectMapping excludeDefaultListenersMapping = new XMLDirectMapping();
+    	excludeDefaultListenersMapping.setAttributeName("m_excludeDefaultListeners");
+    	excludeDefaultListenersMapping.setGetMethodName("getExcludeDefaultListeners");
+    	excludeDefaultListenersMapping.setSetMethodName("setExcludeDefaultListeners");
+    	IsSetNullPolicy excludeDefaultListenersPolicy = new IsSetNullPolicy("excludeDefaultListeners");
+    	excludeDefaultListenersPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        excludeDefaultListenersMapping.setNullPolicy(excludeDefaultListenersPolicy);
+    	excludeDefaultListenersMapping.setNullPolicy(new IsSetNullPolicy("excludeDefaultListeners"));
+    	excludeDefaultListenersMapping.setXPath("orm:exclude-default-listeners");
+    	return excludeDefaultListenersMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getExcludeSuperclassListenersMapping() {
+    	XMLDirectMapping excludeSuperclassListenersMapping = new XMLDirectMapping();
+    	excludeSuperclassListenersMapping.setAttributeName("m_excludeSuperclassListeners");
+    	excludeSuperclassListenersMapping.setGetMethodName("getExcludeSuperclassListeners");
+    	excludeSuperclassListenersMapping.setSetMethodName("setExcludeSuperclassListeners");
+    	IsSetNullPolicy excludeSuperclassListenersPolicy = new IsSetNullPolicy("excludeSuperclassListeners");
+    	excludeSuperclassListenersPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+    	excludeSuperclassListenersMapping.setNullPolicy(excludeSuperclassListenersPolicy);
+    	excludeSuperclassListenersMapping.setXPath("orm:exclude-superclass-listeners/text()");
+    	return excludeSuperclassListenersMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getAttributesMapping() {
+    	XMLCompositeObjectMapping attributesMapping = new XMLCompositeObjectMapping();
+    	attributesMapping.setAttributeName("m_attributes");
+    	attributesMapping.setGetMethodName("getAttributes");
+    	attributesMapping.setSetMethodName("setAttributes");
+    	attributesMapping.setReferenceClass(XMLAttributes.class);
+    	attributesMapping.setXPath("orm:attributes");
+    	return attributesMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getAttributeOverrideMapping() {
+    	XMLCompositeCollectionMapping attributeOverridesMapping = new XMLCompositeCollectionMapping();
+    	attributeOverridesMapping.setAttributeName("m_attributeOverrides");
+    	attributeOverridesMapping.setGetMethodName("getAttributeOverrides");
+    	attributeOverridesMapping.setSetMethodName("setAttributeOverrides");
+    	attributeOverridesMapping.setReferenceClass(AttributeOverrideMetadata.class);
+    	attributeOverridesMapping.setXPath("orm:attribute-override");
+    	return attributeOverridesMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getCascadeMapping() {
+    	XMLCompositeObjectMapping cascadeMapping = new XMLCompositeObjectMapping();
+    	cascadeMapping.setAttributeName("m_cascadeTypes");
+    	cascadeMapping.setGetMethodName("getCascadeTypes");
+    	cascadeMapping.setSetMethodName("setCascadeTypes");
+    	cascadeMapping.setReferenceClass(CascadeTypes.class);
+    	cascadeMapping.setXPath("orm:cascade");
+    	return cascadeMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getCatalogAttributeMapping() {
+    	XMLDirectMapping catalogMapping = new XMLDirectMapping();
+    	catalogMapping.setAttributeName("m_catalog");
+    	catalogMapping.setGetMethodName("getCatalog");
+    	catalogMapping.setSetMethodName("setCatalog");
+    	catalogMapping.setXPath("@catalog");
+    	return catalogMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getCatalogMapping() {
+    	XMLDirectMapping catalogMapping = new XMLDirectMapping();
+    	catalogMapping.setAttributeName("m_catalog");
+    	catalogMapping.setGetMethodName("getCatalog");
+    	catalogMapping.setSetMethodName("setCatalog");
+    	catalogMapping.setXPath("orm:catalog/text()");
+    	return catalogMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getColumnAttributeMapping() {
+    	XMLDirectMapping columnMapping = new XMLDirectMapping();
+    	columnMapping.setAttributeName("m_column");
+    	columnMapping.setGetMethodName("getColumn");
+    	columnMapping.setSetMethodName("setColumn");
+    	columnMapping.setXPath("@column");
+    	return columnMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getColumnDefinitionAttributeMapping() {
+    	XMLDirectMapping columnDefinitionMapping = new XMLDirectMapping();
+    	columnDefinitionMapping.setAttributeName("m_columnDefinition");
+    	columnDefinitionMapping.setGetMethodName("getColumnDefinition");
+    	columnDefinitionMapping.setSetMethodName("setColumnDefinition");
+    	columnDefinitionMapping.setXPath("@column-definition");
+    	return columnDefinitionMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getColumnMapping() {
+    	XMLCompositeObjectMapping columnMapping = new XMLCompositeObjectMapping();
+    	columnMapping.setAttributeName("m_column");
+    	columnMapping.setGetMethodName("getColumn");
+    	columnMapping.setSetMethodName("setColumn");
+    	columnMapping.setReferenceClass(ColumnMetadata.class);
+    	columnMapping.setXPath("orm:column");
+    	return columnMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getClassAttributeMapping() {
+    	XMLDirectMapping classMapping = new XMLDirectMapping();
+    	classMapping.setAttributeName("m_className");
+    	classMapping.setGetMethodName("getClassName");
+    	classMapping.setSetMethodName("setClassName");
+    	classMapping.setXPath("@class");
+    	return classMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getDescriptionMapping() {
+    	XMLDirectMapping descriptionMapping = new XMLDirectMapping();
+    	descriptionMapping.setAttributeName("m_description");
+    	descriptionMapping.setGetMethodName("getDescription");
+    	descriptionMapping.setSetMethodName("setDescription");
+    	descriptionMapping.setXPath("orm:description/text()");
+    	return descriptionMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getFetchAttributeMapping() {
+    	XMLDirectMapping fetchMapping = new XMLDirectMapping();
+    	fetchMapping.setAttributeName("m_fetch");
+    	fetchMapping.setGetMethodName("getFetch");
+    	fetchMapping.setSetMethodName("setFetch");
+    	fetchMapping.setConverter(new EnumTypeConverter(fetchMapping, FetchType.class, false));
+    	fetchMapping.setXPath("@fetch");
+    	return fetchMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getHintMapping() {
+	    XMLCompositeCollectionMapping hintMapping = new XMLCompositeCollectionMapping();
+	    hintMapping.setAttributeName("m_hints");
+	    hintMapping.setGetMethodName("getHints");
+	    hintMapping.setSetMethodName("setHints");
+	    hintMapping.setReferenceClass(QueryHintMetadata.class);
+	    hintMapping.setXPath("orm:hint");
+	    return hintMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getIdClassMapping() {
+    	XMLDirectMapping idClassMapping = new XMLDirectMapping();
+    	idClassMapping.setAttributeName("m_idClassName");
+    	idClassMapping.setGetMethodName("getIdClassName");
+    	idClassMapping.setSetMethodName("setIdClassName");
+    	idClassMapping.setXPath("orm:id-class/@class");
+    	return idClassMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getInitialValueAttributeMapping() {
+    	XMLDirectMapping initialValueMapping = new XMLDirectMapping();
+    	initialValueMapping.setAttributeName("m_initialValue");
+    	initialValueMapping.setGetMethodName("getInitialValue");
+    	initialValueMapping.setSetMethodName("setInitialValue");
+    	initialValueMapping.setXPath("@initial-value");
+    	return initialValueMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getInsertableAttributeMapping() {
+    	XMLDirectMapping insertableMapping = new XMLDirectMapping();
+    	insertableMapping.setAttributeName("m_insertable");
+    	insertableMapping.setGetMethodName("getInsertable");
+    	insertableMapping.setSetMethodName("setInsertable");
+    	insertableMapping.setXPath("@insertable");
+    	return insertableMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getInverseJoinColumnMapping() {
+    	XMLCompositeCollectionMapping joinColumnMapping = new XMLCompositeCollectionMapping();
+    	joinColumnMapping.setAttributeName("m_inverseJoinColumns");
+    	joinColumnMapping.setGetMethodName("getInverseJoinColumns");
+    	joinColumnMapping.setSetMethodName("setInverseJoinColumns");
+    	joinColumnMapping.setReferenceClass(JoinColumnMetadata.class);
+    	joinColumnMapping.setXPath("orm:inverse-join-column");
+    	return joinColumnMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getJoinColumnMapping() {
+    	XMLCompositeCollectionMapping joinColumnMapping = new XMLCompositeCollectionMapping();
+    	joinColumnMapping.setAttributeName("m_joinColumns");
+    	joinColumnMapping.setGetMethodName("getJoinColumns");
+    	joinColumnMapping.setSetMethodName("setJoinColumns");
+    	joinColumnMapping.setReferenceClass(JoinColumnMetadata.class);
+    	joinColumnMapping.setXPath("orm:join-column");
+    	return joinColumnMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getJoinTableMapping() {
+    	XMLCompositeObjectMapping joinTableMapping = new XMLCompositeObjectMapping();
+    	joinTableMapping.setAttributeName("m_joinTable");
+    	joinTableMapping.setGetMethodName("getJoinTable");
+    	joinTableMapping.setSetMethodName("setJoinTable");
+    	joinTableMapping.setReferenceClass(JoinTableMetadata.class);
+    	joinTableMapping.setXPath("orm:join-table");
+    	return joinTableMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getLengthAttributeMapping() {
+    	XMLDirectMapping lengthMapping = new XMLDirectMapping();
+    	lengthMapping.setAttributeName("m_length");
+    	lengthMapping.setGetMethodName("getLength");
+    	lengthMapping.setSetMethodName("setLength");
+    	lengthMapping.setXPath("@length");
+    	return lengthMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getMappedByAttributeMapping() {
+        XMLDirectMapping mappedByMapping = new XMLDirectMapping();
+        mappedByMapping.setAttributeName("m_mappedBy");
+        mappedByMapping.setGetMethodName("getMappedBy");
+        mappedByMapping.setSetMethodName("setMappedBy");
+        mappedByMapping.setNullValue("");
+        mappedByMapping.setXPath("@mapped-by");
+    	return mappedByMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getMetadataCompleteAttributeMapping() {
+    	XMLDirectMapping metadataCompleteMapping = new XMLDirectMapping();
+    	metadataCompleteMapping.setAttributeName("m_metadataComplete");
+    	metadataCompleteMapping.setGetMethodName("getMetadataComplete");
+    	metadataCompleteMapping.setSetMethodName("setMetadataComplete");
+    	metadataCompleteMapping.setXPath("@metadata-complete");
+    	return metadataCompleteMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getNameAttributeMapping() {
+        XMLDirectMapping nameMapping = new XMLDirectMapping();
+        nameMapping.setAttributeName("m_name");
+        nameMapping.setGetMethodName("getName");
+        nameMapping.setSetMethodName("setName");
+        nameMapping.setXPath("@name");
+    	return nameMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getNullableAttributeMapping() {
+    	XMLDirectMapping nullableMapping = new XMLDirectMapping();
+    	nullableMapping.setAttributeName("m_nullable");
+    	nullableMapping.setGetMethodName("getNullable");
+    	nullableMapping.setSetMethodName("setNullable");
+    	nullableMapping.setXPath("@nullable");
+    	return nullableMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getOptionalAttributeMapping() {
+    	XMLDirectMapping optionalMapping = new XMLDirectMapping();
+        optionalMapping.setAttributeName("m_optional");
+        optionalMapping.setGetMethodName("getOptional");
+        optionalMapping.setSetMethodName("setOptional");
+        optionalMapping.setXPath("@optional");
+    	return optionalMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getOrderByMapping() {
+    	XMLDirectMapping orderByMapping = new XMLDirectMapping();
+    	orderByMapping.setAttributeName("m_orderBy");
+    	orderByMapping.setGetMethodName("getOrderBy");
+    	orderByMapping.setSetMethodName("setOrderBy");
+    	orderByMapping.setXPath("orm:order-by/text()");
+    	return orderByMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getMapKeyMapping() {
+    	XMLDirectMapping mapKeyMapping = new XMLDirectMapping();
+    	mapKeyMapping.setAttributeName("m_mapKey");
+    	mapKeyMapping.setGetMethodName("getMapKey");
+    	mapKeyMapping.setSetMethodName("setMapKey");
+    	mapKeyMapping.setXPath("orm:map-key/orm:name/text()");
+    	return mapKeyMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getTargetEntityAttributeMapping() {
+    	XMLDirectMapping targetEntityMapping = new XMLDirectMapping();
+    	targetEntityMapping.setAttributeName("m_targetEntity");
+    	targetEntityMapping.setGetMethodName("getTargetEntityName");
+    	targetEntityMapping.setSetMethodName("setTargetEntityName");
+    	targetEntityMapping.setXPath("@target-entity");
+    	return targetEntityMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getPostLoadMapping() {
+	    XMLDirectMapping postLoadMapping = new XMLDirectMapping();
+	    postLoadMapping.setAttributeName("m_postLoad");
+	    postLoadMapping.setGetMethodName("getPostLoad");
+	    postLoadMapping.setSetMethodName("setPostLoad");
+	    postLoadMapping.setXPath("orm:post-load/@method-name");
+	    return postLoadMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getPostPeristMapping() {
+	    XMLDirectMapping postPersistMapping = new XMLDirectMapping();
+	    postPersistMapping.setAttributeName("m_postPersist");
+	    postPersistMapping.setGetMethodName("getPostPersist");
+	    postPersistMapping.setSetMethodName("setPostPersist");
+	    postPersistMapping.setXPath("orm:post-persist/@method-name");
+	    return postPersistMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getPostRemoveMapping() {
+	    XMLDirectMapping postRemoveMapping = new XMLDirectMapping();
+	    postRemoveMapping.setAttributeName("m_postRemove");
+	    postRemoveMapping.setGetMethodName("getPostRemove");
+	    postRemoveMapping.setSetMethodName("setPostRemove");
+	    postRemoveMapping.setXPath("orm:post-remove/@method-name");
+	    return postRemoveMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getPostUpdateMapping() {
+	    XMLDirectMapping postUpdateMapping = new XMLDirectMapping();
+	    postUpdateMapping.setAttributeName("m_postUpdate");
+	    postUpdateMapping.setGetMethodName("getPostUpdate");
+	    postUpdateMapping.setSetMethodName("setPostUpdate");
+	    postUpdateMapping.setXPath("orm:post-update/@method-name");
+	    return postUpdateMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getPrePeristMapping() {
+    	XMLDirectMapping prePersistMapping = new XMLDirectMapping();
+    	prePersistMapping.setAttributeName("m_prePersist");
+    	prePersistMapping.setGetMethodName("getPrePersist");
+    	prePersistMapping.setSetMethodName("setPrePersist");
+    	prePersistMapping.setXPath("orm:pre-persist/@method-name");
+    	return prePersistMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getPreRemoveMapping() {
+	    XMLDirectMapping preRemoveMapping = new XMLDirectMapping();
+	    preRemoveMapping.setAttributeName("m_preRemove");
+	    preRemoveMapping.setGetMethodName("getPreRemove");
+	    preRemoveMapping.setSetMethodName("setPreRemove");
+	    preRemoveMapping.setXPath("orm:pre-remove/@method-name");
+	    return preRemoveMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getPreUpdateMapping() {
+    	XMLDirectMapping preUpdateMapping = new XMLDirectMapping();
+    	preUpdateMapping.setAttributeName("m_preUpdate");
+    	preUpdateMapping.setGetMethodName("getPreUpdate");
+    	preUpdateMapping.setSetMethodName("setPreUpdate");
+    	preUpdateMapping.setXPath("orm:pre-update/@method-name");
+    	return preUpdateMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getPrimaryKeyJoinColumnMapping() {
+    	XMLCompositeCollectionMapping primaryKeyJoinColumnMapping = new XMLCompositeCollectionMapping();
+    	primaryKeyJoinColumnMapping.setAttributeName("m_primaryKeyJoinColumns");
+    	primaryKeyJoinColumnMapping.setGetMethodName("getPrimaryKeyJoinColumns");
+    	primaryKeyJoinColumnMapping.setSetMethodName("setPrimaryKeyJoinColumns");
+    	primaryKeyJoinColumnMapping.setReferenceClass(PrimaryKeyJoinColumnMetadata.class);
+    	primaryKeyJoinColumnMapping.setXPath("orm:primary-key-join-column");
+    	return primaryKeyJoinColumnMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getQueryMapping() {
+	    XMLDirectMapping queryMapping = new XMLDirectMapping();
+	    queryMapping.setAttributeName("m_query");
+	    queryMapping.setGetMethodName("getQuery");
+	    queryMapping.setSetMethodName("setQuery");
+	    queryMapping.setXPath("orm:query");
+	    return queryMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getSchemaAttributeMapping() {
+        XMLDirectMapping schemaMapping = new XMLDirectMapping();
+        schemaMapping.setAttributeName("m_schema");
+        schemaMapping.setGetMethodName("getSchema");
+        schemaMapping.setSetMethodName("setSchema");
+        schemaMapping.setXPath("@schema");
+    	return schemaMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getSchemaMapping() {
+        XMLDirectMapping schemaMapping = new XMLDirectMapping();
+        schemaMapping.setAttributeName("m_schema");
+        schemaMapping.setGetMethodName("getSchema");
+        schemaMapping.setSetMethodName("setSchema");
+        schemaMapping.setXPath("orm:schema/text()");
+    	return schemaMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getSequenceGeneratorMapping() {
+    	XMLCompositeObjectMapping sequenceGeneratorMapping = new XMLCompositeObjectMapping();
+    	sequenceGeneratorMapping.setAttributeName("m_sequenceGenerator");
+    	sequenceGeneratorMapping.setGetMethodName("getSequenceGenerator");
+    	sequenceGeneratorMapping.setSetMethodName("setSequenceGenerator");
+    	sequenceGeneratorMapping.setReferenceClass(SequenceGeneratorMetadata.class);
+    	sequenceGeneratorMapping.setXPath("orm:sequence-generator");
+    	return sequenceGeneratorMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getTableAttributeMapping() {
+	    XMLDirectMapping tableMapping = new XMLDirectMapping();
+	    tableMapping.setAttributeName("m_table");
+	    tableMapping.setGetMethodName("getTable");
+	    tableMapping.setSetMethodName("setTable");
+	    tableMapping.setXPath("@table");
+	    return tableMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getTableGeneratorMapping() {
+    	XMLCompositeObjectMapping tableGeneratorMapping = new XMLCompositeObjectMapping();
+    	tableGeneratorMapping.setAttributeName("m_tableGenerator");
+    	tableGeneratorMapping.setGetMethodName("getTableGenerator");
+    	tableGeneratorMapping.setSetMethodName("setTableGenerator");
+    	tableGeneratorMapping.setReferenceClass(TableGeneratorMetadata.class);
+    	tableGeneratorMapping.setXPath("orm:table-generator");
+    	return tableGeneratorMapping;
+    }
+    
+    /**
+     * INTERNAL
+     */
+    protected XMLDirectMapping getTemporalMapping() {
+    	XMLDirectMapping temporalMapping = new XMLDirectMapping();
+    	temporalMapping.setAttributeName("m_temporal");
+    	temporalMapping.setGetMethodName("getTemporal");
+    	temporalMapping.setSetMethodName("setTemporal");
+    	temporalMapping.setConverter(new EnumTypeConverter(temporalMapping, TemporalType.class, false));
+    	temporalMapping.setXPath("orm:temporal/text()");	
+    	return temporalMapping;
+    }
+    
+    /**
+     * INTERNAL
+     */
+    protected XMLDirectMapping getUniqueAttributeMapping() {
+    	XMLDirectMapping uniqueMapping = new XMLDirectMapping();
+    	uniqueMapping.setAttributeName("m_unique");
+    	uniqueMapping.setGetMethodName("getUnique");
+    	uniqueMapping.setSetMethodName("setUnique");
+    	uniqueMapping.setXPath("@unique");
+    	return uniqueMapping;
+    }
+    
+    /**
+     * INTERNAL
+     */
+    protected XMLCompositeCollectionMapping getUniqueConstraintMapping() {
+    	XMLCompositeCollectionMapping uniqueConstraintMapping = new XMLCompositeCollectionMapping();
+    	uniqueConstraintMapping.setAttributeName("m_uniqueConstraints");
+    	uniqueConstraintMapping.setGetMethodName("getUniqueConstraints");
+    	uniqueConstraintMapping.setSetMethodName("setUniqueConstraints");
+    	uniqueConstraintMapping.setReferenceClass(UniqueConstraintMetadata.class);
+    	uniqueConstraintMapping.setXPath("orm:unique-constraint");
+    	return uniqueConstraintMapping;
+    }
+    
+    
+    /**
+     * INTERNAL
+     */
+    protected XMLDirectMapping getUpdatableAttributeMapping() {
+    	XMLDirectMapping updatableMapping = new XMLDirectMapping();
+    	updatableMapping.setAttributeName("m_updatable");
+    	updatableMapping.setGetMethodName("getUpdatable");
+    	updatableMapping.setSetMethodName("setUpdatable");
+    	updatableMapping.setXPath("@updatable");
+    	return updatableMapping;
+    }
+}

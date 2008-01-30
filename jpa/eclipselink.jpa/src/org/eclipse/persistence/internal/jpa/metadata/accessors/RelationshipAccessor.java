@@ -10,7 +10,7 @@
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import java.util.List;
-import java.util.ArrayList;
+import javax.persistence.FetchType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.JoinColumn;
@@ -21,25 +21,50 @@ import javax.persistence.PrimaryKeyJoinColumns;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
-import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataJoinColumn;
-import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataJoinColumns;
+import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnsMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
- * An relational accessor.
+ * A relational accessor.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class RelationshipAccessor extends MetadataAccessor {
     protected Class m_referenceClass;
+    private Class m_targetEntity;
+    
+    // OX will populate a string target entity name that will need 
+    // to be initialized (with the default package)
+    private String m_targetEntityName;
+    
+    // OX will populate null if not specified.
+    private CascadeTypes m_cascadeTypes;
+	
+    // OX will populate null if not specified.
+    private FetchType m_fetch; 
+    
+    // OX will populate "" if not specified
+	private String m_mappedBy; 
+	
+	// OX will populate null if none are specified.
+	private List<JoinColumnMetadata> m_joinColumns;
+	
+	/**
+	 * INTERNAL:
+	 */
+    protected RelationshipAccessor() {}
+    
     /**
      * INTERNAL:
      */
@@ -49,53 +74,45 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * 
-     * Return the cascade types for this accessor. This method is supported by 
-     * all relational accessors.
+     * Used for OX mapping.
      */
-    public abstract List<String> getCascadeTypes();
-    
-    /**
-     * INTERNAL:
-     * WIP: Probably should make cascade types into its own object eventually.
-     */
-    public ArrayList<String> getCascadeTypes(CascadeType[] cascadeTypes) {
-        ArrayList<String> cTypes = new ArrayList<String>();
-        
-        for (CascadeType cascadeType : cascadeTypes) {
-            cTypes.add(cascadeType.name());
-		}
-        
-        return cTypes;
+    public CascadeTypes getCascadeTypes() {
+    	return m_cascadeTypes;
     }
     
     /**
-     * INTERNAL: (Overridden in XMLOneToOneAccessor, XMLManyToManyAccessor and XMLOneToManyAccessor)
-     * Process the @JoinColumns and @JoinColumn.
+     * INTERNAL:
+     */
+    public abstract FetchType getDefaultFetchType();
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public FetchType getFetch() {
+    	return m_fetch;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
      */    
-    protected MetadataJoinColumns getJoinColumns() {
-        JoinColumn joinColumn = getAnnotation(JoinColumn.class);
-        JoinColumns joinColumns = getAnnotation(JoinColumns.class);
-        
-        return new MetadataJoinColumns(joinColumns, joinColumn);
+    public List<JoinColumnMetadata> getJoinColumns() {
+    	return m_joinColumns;
     }
     
     /**
      * INTERNAL:
-     * 
      * Return the logging context for this accessor.
      */
     protected abstract String getLoggingContext();
     
     /**
-     * INTERNAL:
-     * 
-     * Subclasses that support processing a mapped by should override this 
-     * method, otherwise a runtime development exception is thrown for those 
-     * accessors who call this method and don't implement it themselves.
+     * INTERNAL: (Overridden in ManyToOneAccessor)
+     * Used for OX mapping.
      */
     public String getMappedBy() {
-        throw new RuntimeException("Development exception. The accessor: [" + this + "] should not call the getMappedBy method unless it overrides it.");
+    	return m_mappedBy;
     }
     
     /**
@@ -104,14 +121,13 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
      * process itself if it hasn't already done so.
      */
     protected DatabaseMapping getOwningMapping() {
-        String ownerAttributeName = getMappedBy();
         MetadataDescriptor ownerDescriptor = getReferenceDescriptor();
-        DatabaseMapping mapping = ownerDescriptor.getMappingForAttributeName(ownerAttributeName, this);
+        DatabaseMapping mapping = ownerDescriptor.getMappingForAttributeName(getMappedBy(), this);
         
         // If no mapping was found, there is an error in the mappedBy field, 
         // therefore, throw an exception.
         if (mapping == null) {
-            m_validator.throwNoMappedByAttributeFound(ownerDescriptor.getJavaClass(), ownerAttributeName, getJavaClass(), getAttributeName());
+        	throw ValidationException.noMappedByAttributeFound(ownerDescriptor.getJavaClass(), getMappedBy(), getJavaClass(), getAttributeName());
         }
         
         return mapping;
@@ -133,7 +149,7 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
         }
        
         if (descriptor == null || descriptor.isEmbeddable() || descriptor.isEmbeddableCollection()) {
-            m_validator.throwNonEntityTargetInRelationship(getJavaClass(), getReferenceClass(), getAnnotatedElement());
+        	throw ValidationException.nonEntityTargetInRelationship(getJavaClass(), getReferenceClass(), getAnnotatedElement());
         }
        
         return descriptor;
@@ -141,14 +157,23 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Return the target entity for this accessor. This method is supported by 
-     * all relational accessors.
+     * Return the target entity for this accessor.
      */
-    public abstract Class getTargetEntity();
+    public Class getTargetEntity() {
+    	return m_targetEntity;
+    }
     
     /**
      * INTERNAL:
-	 * Method to check if an annotated element has a @JoinColumn.
+     * Used for OX mapping.
+     */
+    public String getTargetEntityName() {
+    	return m_targetEntityName;
+    }
+    
+    /**
+     * INTERNAL:
+	 * Method to check if an annotated element has a JoinColumn annotation.
      */
 	public boolean hasJoinColumn() {
 		return isAnnotationPresent(JoinColumn.class);
@@ -156,19 +181,37 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-	 * Method to check if an annotated element has a @JoinColumns.
+	 * Method to check if an annotated element has a JoinColumns annotation.
      */
 	public boolean hasJoinColumns() {
 		return isAnnotationPresent(JoinColumns.class);
     }
     
     /**
-     * INTERNAL: (Overridden in XMLOneToOneAccessor)
-	 * Method to check if an annotated element has a @PrimaryKeyJoinColumns or
-     * at the very least a @PrimaryKeyJoinColumn.
+     * INTERNAL:
+     * Return true if this accessor has any primary key join columns specified.
      */
 	public boolean hasPrimaryKeyJoinColumns() {
-		return isAnnotationPresent(PrimaryKeyJoinColumns.class) || isAnnotationPresent(PrimaryKeyJoinColumn.class);
+		if (getPrimaryKeyJoinColumns() != null && ! getPrimaryKeyJoinColumns().isEmpty()) {
+			return true;
+		} else {
+			return isAnnotationPresent(PrimaryKeyJoinColumns.class) || isAnnotationPresent(PrimaryKeyJoinColumn.class);
+		}
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
+    	super.init(accessibleObject, accessor);
+    	
+    	// Initialize the target entity name we read from XML.
+    	if (getTargetEntityName() != null) {
+    		XMLEntityMappings entityMappings = accessor.getEntityMappings();
+    		setTargetEntity(entityMappings.getClassForName(getTargetEntityName()));
+    	} else {
+    		setTargetEntity(void.class);
+    	}
     }
     
     /**
@@ -183,13 +226,15 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
      * INTERNAL:
      */
     protected void processCascadeTypes(ForeignReferenceMapping mapping) {
-        for (String cascadeType : getCascadeTypes()) {
-			setCascadeType(cascadeType, mapping);
-		}
+    	if (m_cascadeTypes != null) {
+    		for (CascadeType cascadeType : m_cascadeTypes.getTypes()) {
+    			setCascadeType(cascadeType, mapping);
+    		}
+    	}
         
         // Apply the persistence unit default cascade-persist if necessary.
-        if (m_descriptor.isCascadePersist() && ! mapping.isCascadePersist()) {
-        	setCascadeType(CascadeType.PERSIST.name(), mapping);
+        if (getDescriptor().isCascadePersist() && ! mapping.isCascadePersist()) {
+        	setCascadeType(CascadeType.PERSIST, mapping);
         }
     }
     
@@ -198,38 +243,46 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
      * Process a @JoinColumns or @JoinColumn. Will look for association
      * overrides.
      */	
-    protected List<MetadataJoinColumn> processJoinColumns() { 
-        if (m_descriptor.hasAssociationOverrideFor(getAttributeName())) {
-            return processJoinColumns(m_descriptor.getAssociationOverrideFor(getAttributeName()), getReferenceDescriptor());
+    protected List<JoinColumnMetadata> processJoinColumns() { 
+        if (getDescriptor().hasAssociationOverrideFor(getAttributeName())) {
+            return processJoinColumns(new JoinColumnsMetadata(getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinColumns()), getReferenceDescriptor());
         } else {
-            return processJoinColumns(getJoinColumns(), getReferenceDescriptor());
+        	if (m_joinColumns == null) {
+        		// Process the join columns from annotations.
+        		JoinColumn joinColumn = getAnnotation(JoinColumn.class);
+        		JoinColumns joinColumns = getAnnotation(JoinColumns.class);
+            
+        		return processJoinColumns(new JoinColumnsMetadata(joinColumns, joinColumn), getReferenceDescriptor());
+        	} else {
+        		// Process the join columns from XML.
+        		return processJoinColumns(new JoinColumnsMetadata(m_joinColumns), getReferenceDescriptor());
+        	}
         }
     }
     
     /**
      * INTERNAL:
      * 
-     * Process MetadataJoinColumns.
+     * Process JoinColumnsMetadata.
      */	
-    protected List<MetadataJoinColumn> processJoinColumns(MetadataJoinColumns joinColumns, MetadataDescriptor descriptor) { 
-        // This call will add any defaulted columns as necessary.
-        List<MetadataJoinColumn> jColumns = joinColumns.values(descriptor);
+    protected List<JoinColumnMetadata> processJoinColumns(JoinColumnsMetadata joinColumns, MetadataDescriptor descriptor) {
+    	List<JoinColumnMetadata> jColumns = joinColumns.values(descriptor);
         
         if (descriptor.hasCompositePrimaryKey()) {
             // The number of join columns should equal the number of primary key fields.
             if (jColumns.size() != descriptor.getPrimaryKeyFields().size()) {
-                m_validator.throwIncompleteJoinColumnsSpecified(getJavaClass(), getAnnotatedElement());
+            	throw ValidationException.incompleteJoinColumnsSpecified(getAnnotatedElement(), getJavaClass());
             }
             
             // All the primary and foreign key field names should be specified.
-            for (MetadataJoinColumn jColumn : jColumns) {
+            for (JoinColumnMetadata jColumn : jColumns) {
                 if (jColumn.isPrimaryKeyFieldNotSpecified() || jColumn.isForeignKeyFieldNotSpecified()) {
-                    m_validator.throwIncompleteJoinColumnsSpecified(getJavaClass(), getAnnotatedElement());
+                	throw ValidationException.incompleteJoinColumnsSpecified(getAnnotatedElement(), getJavaClass());
                 }
             }
         } else {
             if (jColumns.size() > 1) {
-                m_validator.throwExcessiveJoinColumnsSpecified(getJavaClass(), getAnnotatedElement());
+            	throw ValidationException.excessiveJoinColumnsSpecified(getAnnotatedElement(), getJavaClass());
             }
         }
         
@@ -245,13 +298,13 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
         // The processing of this accessor may have been fast tracked through a 
         // non-owning relationship. If so, no processing is required.
         if (! isProcessed()) {
-            if (m_descriptor.hasMappingForAttributeName(getAttributeName())) {
+            if (getDescriptor().hasMappingForAttributeName(getAttributeName())) {
                 // Only true if there is one that came from Project.xml
-                m_logger.logWarningMessage(m_logger.IGNORE_MAPPING, this);
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPING, this);
             } else {
                 // If a @Column is specified then throw an exception.
                 if (hasColumn()) {
-                    m_validator.throwRelationshipHasColumnSpecified(getJavaClass(), getAttributeName());
+                	throw ValidationException.invalidColumnAnnotationOnRelationship(getJavaClass(), getAttributeName());
                 }
                 
                 // Process the relationship accessor only if the target entity
@@ -272,17 +325,81 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
      * INTERNAL:
      * Set the cascade type on a mapping.
      */
-    protected void setCascadeType(String type, ForeignReferenceMapping mapping) {
-        if (type.equals(MetadataConstants.CASCADE_ALL) || type.equals(CascadeType.ALL.name())) {
-            mapping.setCascadeAll(true);
-        } else if (type.equals(MetadataConstants.CASCADE_MERGE) || type.equals(CascadeType.MERGE.name())) {
-            mapping.setCascadeMerge(true);
-        } else if (type.equals(MetadataConstants.CASCADE_PERSIST) || type.equals(CascadeType.PERSIST.name())) {
-            mapping.setCascadePersist(true);
-        }  else if (type.equals(MetadataConstants.CASCADE_REFRESH) || type.equals(CascadeType.REFRESH.name())) {
-            mapping.setCascadeRefresh(true);
-        } else if (type.equals(MetadataConstants.CASCADE_REMOVE) || type.equals(CascadeType.REMOVE.name())) {
-            mapping.setCascadeRemove(true);
-        }
+    protected void setCascadeType(CascadeType type, ForeignReferenceMapping mapping) {
+    	switch (type) {
+    		case ALL : mapping.setCascadeAll(true); break;
+    		case MERGE : mapping.setCascadeMerge(true); break;
+    		case PERSIST : mapping.setCascadePersist(true); break;
+    		case REFRESH : mapping.setCascadeRefresh(true); break;
+    		case REMOVE : mapping.setCascadeRemove(true); break;
+    		default : break;
+    	}
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setCascadeTypes(CascadeType[] cascadeTypes) {
+    	m_cascadeTypes = new CascadeTypes(cascadeTypes);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCascadeTypes(CascadeTypes cascadeTypes) {
+    	m_cascadeTypes = cascadeTypes;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setFetch(FetchType fetch) {
+    	m_fetch = fetch;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setJoinColumns(List<JoinColumnMetadata> joinColumns) {
+    	m_joinColumns = joinColumns;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMappedBy(String mappedBy) {
+    	m_mappedBy = mappedBy;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setTargetEntity(Class targetEntity) {
+    	m_targetEntity = targetEntity;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setTargetEntityName(String targetEntityName) {
+    	m_targetEntityName = targetEntityName;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean usesIndirection() {
+    	FetchType fetchType = getFetch();
+    	
+    	if (fetchType == null) {
+    		fetchType = getDefaultFetchType();
+    	}
+    	
+        return fetchType.equals(FetchType.LAZY);
     }
 }

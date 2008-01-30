@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
  */
 public class TableSequence extends QuerySequence {
     /** Default sequence table name */
-    protected static final String defaultTableName = "SEQUENCE";
+    public static final String defaultTableName = "SEQUENCE";
 
     /** Hold the database table */
     protected DatabaseTable table;

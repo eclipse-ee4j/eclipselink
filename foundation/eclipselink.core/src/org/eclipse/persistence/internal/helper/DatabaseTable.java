@@ -10,6 +10,7 @@
 package org.eclipse.persistence.internal.helper;
 
 import java.io.*;
+import java.util.List;
 import java.util.Vector;
 import org.eclipse.persistence.internal.databaseaccess.*;
 
@@ -26,7 +27,7 @@ public class DatabaseTable implements Cloneable, Serializable {
     protected String name;
     protected String tableQualifier;
     protected String qualifiedName;
-    protected Vector<String[]> uniqueConstraints; //Element is columnNames
+    protected Vector<List<String>> uniqueConstraints; //Element is columnNames
 
     /** 
      * Initialize the newly allocated instance of this class.
@@ -35,24 +36,24 @@ public class DatabaseTable implements Cloneable, Serializable {
     public DatabaseTable() {
         name = "";
         tableQualifier = "";
-        uniqueConstraints = new Vector<String[]>();
+        uniqueConstraints = new Vector<List<String>>();
     }
 
     public DatabaseTable(String possiblyQualifiedName) {
         setPossiblyQualifiedName(possiblyQualifiedName);
-        uniqueConstraints = new Vector<String[]>();
+        uniqueConstraints = new Vector<List<String>>();
     }
 
     public DatabaseTable(String tableName, String qualifier) {
         this.name = tableName;
         this.tableQualifier = qualifier;
-        uniqueConstraints = new Vector<String[]>();
+        uniqueConstraints = new Vector<List<String>>();
     }
 
     /**
      * Add the unique constraint for the columns names. Used for DDL generation.
      */
-    public void addUniqueConstraints(String[] columnNames) {
+    public void addUniqueConstraints(List<String> columnNames) {
         uniqueConstraints.add(columnNames);
     }
     
@@ -135,7 +136,7 @@ public class DatabaseTable implements Cloneable, Serializable {
      * Return a vector of the unique constraints for this table.
      * Used for DDL generation.
      */
-    public Vector<String[]> getUniqueConstraints() {
+    public Vector<List<String>> getUniqueConstraints() {
         return uniqueConstraints;
     }
 

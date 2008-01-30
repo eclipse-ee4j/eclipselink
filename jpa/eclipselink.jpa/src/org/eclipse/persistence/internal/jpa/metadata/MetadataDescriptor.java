@@ -16,6 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.InheritanceType;
+
+import org.eclipse.persistence.annotations.CacheType;
+import org.eclipse.persistence.annotations.CacheCoordinationType;
+import org.eclipse.persistence.annotations.ChangeTrackingType;
+
 import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.ChangedFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -32,6 +38,7 @@ import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectio
 
 import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
+import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 
@@ -44,12 +51,10 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.RelationshipAccessor;
 
-import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataColumn;
-import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataJoinColumns;
+import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 
-import org.eclipse.persistence.internal.jpa.metadata.listeners.MetadataEntityListener;
-
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLConstants;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -69,12 +74,13 @@ public class MetadataDescriptor {
     protected ClassDescriptor m_descriptor;
     protected DatabaseTable m_primaryTable;
     
-    protected boolean m_ignoreIDs;
+    // This is the parent class that defines the inheritance strategy, and
+    // not necessarily the immediate parent class.
+    protected MetadataDescriptor m_inheritanceParentDescriptor;
+    
     protected boolean m_isCacheSet;
-    protected boolean m_ignoreTables;
     protected boolean m_isCascadePersist;
     protected boolean m_ignoreAnnotations; // XML metadata complete
-    protected boolean m_ignoreInheritance;
     protected boolean m_hasChangeTracking;
     protected Boolean m_usesPropertyAccess;
     protected Boolean m_usesCascadedOptimisticLocking;
@@ -82,7 +88,6 @@ public class MetadataDescriptor {
     protected String m_xmlAccess;
     protected String m_xmlSchema;
     protected String m_xmlCatalog;
-    protected String m_customizerClassName;
     protected String m_embeddedIdAttributeName;
     
     protected List<String> m_idAttributeNames;
@@ -95,19 +100,52 @@ public class MetadataDescriptor {
     protected Map<String, Type> m_pkClassIDs;
     protected Map<String, MetadataAccessor> m_accessors;
     protected Map<String, String> m_pkJoinColumnAssociations;
-    protected Map<String, MetadataColumn> m_attributeOverrides;
-    protected Map<String, MetadataJoinColumns> m_associationOverrides;
+    protected Map<String, AttributeOverrideMetadata> m_attributeOverrides;
+    protected Map<String, AssociationOverrideMetadata> m_associationOverrides;
     protected Map<String, Map<String, MetadataAccessor>> m_biDirectionalManyToManyAccessors;
     
     /**
      * INTERNAL: 
      */
     public MetadataDescriptor(Class javaClass) {
-        init();
+    	m_xmlAccess = null;
+        m_xmlSchema = null;
+        m_xmlCatalog = null;
+        
+        m_inheritanceParentDescriptor = null;
+        
+        m_isCacheSet = false;
+        m_isCascadePersist = false;
+        m_ignoreAnnotations = false;
+        m_hasChangeTracking = false;
+        
+        m_idAttributeNames = new ArrayList<String>();
+        m_orderByAttributeNames = new ArrayList<String>();
+        m_idOrderByAttributeNames = new ArrayList<String>();
+        m_aggregateDescriptors = new ArrayList<MetadataDescriptor>();
+        m_relationshipAccessors = new ArrayList<RelationshipAccessor>();
+        m_basicCollectionAccessors = new ArrayList<BasicCollectionAccessor>();
+        
+        m_pkClassIDs = new HashMap<String, Type>();
+        m_accessors = new HashMap<String, MetadataAccessor>();
+        m_pkJoinColumnAssociations = new HashMap<String, String>();
+        m_attributeOverrides = new HashMap<String, AttributeOverrideMetadata>();
+        m_associationOverrides = new HashMap<String, AssociationOverrideMetadata>();
+        m_biDirectionalManyToManyAccessors = new HashMap<String, Map<String, MetadataAccessor>>();
+        
         m_descriptor = new RelationalDescriptor();
         m_descriptor.setExistenceChecking("Check database");
         m_descriptor.setAlias("");
+                
         setJavaClass(javaClass);
+    }
+    
+    /**
+     * INTERNAL: 
+     */
+    public MetadataDescriptor(Class javaClass, ClassAccessor classAccessor) {
+    	this(javaClass);
+        setClassAccessor(classAccessor);
     }
      
      /**
@@ -127,15 +165,15 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-     public void addAssociationOverride(String attributeName, MetadataJoinColumns joinColumns) {
-        m_associationOverrides.put(attributeName, joinColumns);   
+     public void addAssociationOverride(AssociationOverrideMetadata associationOverride) {
+        m_associationOverrides.put(associationOverride.getName(), associationOverride);   
      }
     
     /**
      * INTERNAL:
      */
-    public void addAttributeOverride(MetadataColumn column) {
-        m_attributeOverrides.put(column.getAttributeName(), column);
+    public void addAttributeOverride(AttributeOverrideMetadata attributeOverride) {
+        m_attributeOverrides.put(attributeOverride.getName(), attributeOverride);
     }
 
     /**
@@ -151,8 +189,8 @@ public class MetadataDescriptor {
      * INTERNAL:
      */
     public void addClassIndicator(Class entityClass, String value) {
-        if (m_accessor.isInheritanceSubclass()) {
-            m_accessor.getInheritanceParentDescriptor().addClassIndicator(entityClass, value);   
+        if (isInheritanceSubclass()) {
+            getInheritanceParentDescriptor().addClassIndicator(entityClass, value);   
         } else {
             m_descriptor.getInheritancePolicy().addClassNameIndicator(entityClass.getName(), value);
         }
@@ -161,14 +199,14 @@ public class MetadataDescriptor {
     /** 
      * INTERNAL:
      */
-    public void addDefaultEventListener(MetadataEntityListener listener) {
+    public void addDefaultEventListener(EntityListenerMetadata listener) {
         m_descriptor.getEventManager().addDefaultEventListener(listener);
     }
     
     /**
      * INTERNAL:
      */
-    public void addEntityListenerEventListener(MetadataEntityListener listener) {
+    public void addEntityListenerEventListener(EntityListenerMetadata listener) {
         m_descriptor.getEventManager().addEntityListenerEventListener(listener);
     }
 
@@ -217,7 +255,6 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * 
      * We store these to validate the primary class when processing
      * the entity class.
      */
@@ -257,7 +294,7 @@ public class MetadataDescriptor {
             }
         }
         
-        m_accessor.getProject().addRelationshipDescriptor(this);
+        m_accessor.getProject().addAccessorWithRelationships(m_accessor);
     }
     
     /**
@@ -293,8 +330,8 @@ public class MetadataDescriptor {
            
             // If still no accessor and we are an inheritance subclass, check 
             // the root descriptor now.
-            if (accessor == null && m_accessor.isInheritanceSubclass()) {
-                accessor = m_accessor.getInheritanceParentDescriptor().getAccessorFor(fieldOrPropertyName);
+            if (accessor == null && isInheritanceSubclass()) {
+                accessor = getInheritanceParentDescriptor().getAccessorFor(fieldOrPropertyName);
             }
         }
         
@@ -311,23 +348,30 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public MetadataJoinColumns getAssociationOverrideFor(String attributeName) {
+    public AssociationOverrideMetadata getAssociationOverrideFor(String attributeName) {
         return m_associationOverrides.get(attributeName);
     }
     
     /**
      * INTERNAL:
      */
-    public MetadataColumn getAttributeOverrideFor(String attributeName) {
+    public AttributeOverrideMetadata getAttributeOverrideFor(String attributeName) {
         return m_attributeOverrides.get(attributeName);
     }
 
     /**
      * INTERNAL:
      */
+    public List<BasicCollectionAccessor> getBasicCollectionAccessors() {
+        return m_basicCollectionAccessors;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public DatabaseField getClassIndicatorField() {
-        if (m_accessor.getInheritanceParentDescriptor() != null) {
-            return m_accessor.getInheritanceParentDescriptor().getClassDescriptor().getInheritancePolicy().getClassIndicatorField();
+        if (isInheritanceSubclass()) {
+            return getInheritanceParentDescriptor().getClassDescriptor().getInheritancePolicy().getClassIndicatorField();
         } else {
             if (getClassDescriptor().hasInheritance()) {
                 return getClassDescriptor().getInheritancePolicy().getClassIndicatorField();
@@ -339,13 +383,6 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     */
-    public String getCustomizerClassName() {
-        return m_customizerClassName;
-    }
-    
-    /**
-     * INTERNAL:
      * The default table name is the descriptor alias, unless this descriptor 
      * metadata is an inheritance subclass with a SINGLE_TABLE strategy. Then 
      * it is the table name of the root descriptor metadata.
@@ -353,20 +390,13 @@ public class MetadataDescriptor {
     public String getDefaultTableName() {
         String defaultTableName = getAlias().toUpperCase();
         
-        if (m_accessor.isInheritanceSubclass()) {    
-            if (m_accessor.getInheritanceParentDescriptor().usesSingleTableInheritanceStrategy()) {
-                defaultTableName = m_accessor.getInheritanceParentDescriptor().getPrimaryTableName();
+        if (isInheritanceSubclass()) {    
+            if (getInheritanceParentDescriptor().usesSingleTableInheritanceStrategy()) {
+                defaultTableName = getInheritanceParentDescriptor().getPrimaryTableName();
             }
         }
         
         return defaultTableName;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getCatalog() {
-    	return m_xmlCatalog;
     }
     
     /**
@@ -396,8 +426,8 @@ public class MetadataDescriptor {
      */
     public String getIdAttributeName() {
         if (getIdAttributeNames().isEmpty()) {
-            if (m_accessor.isInheritanceSubclass()) {
-                return m_accessor.getInheritanceParentDescriptor().getIdAttributeName();
+            if (isInheritanceSubclass()) {
+                return getInheritanceParentDescriptor().getIdAttributeName();
             } else {
                 return "";
             }
@@ -428,9 +458,9 @@ public class MetadataDescriptor {
     public List<String> getIdOrderByAttributeNames() {
         if (m_idOrderByAttributeNames.isEmpty()) {
             if (m_idAttributeNames.isEmpty()) {
-                if (m_accessor.isInheritanceSubclass()) {  
+                if (isInheritanceSubclass()) {  
                     // Get the id attribute names from our root parent.
-                    m_idOrderByAttributeNames = m_accessor.getInheritanceParentDescriptor().getIdAttributeNames();
+                    m_idOrderByAttributeNames = getInheritanceParentDescriptor().getIdAttributeNames();
                 } else {
                     // We must have a composite primary key as a result of an embedded id.
                     m_idOrderByAttributeNames = getAccessorFor(getEmbeddedIdAttributeName()).getReferenceDescriptor().getOrderByAttributeNames();
@@ -489,7 +519,14 @@ public class MetadataDescriptor {
      * INTERNAL:
      */
 	public MetadataLogger getLogger() {
-        return getClassAccessor().getLogger();
+        return getProject().getLogger();
+	}
+	
+	/** 
+	 * INTERNAL:
+	 */
+	public MetadataDescriptor getInheritanceParentDescriptor() {
+		return m_inheritanceParentDescriptor;
 	}
     
     /**
@@ -500,8 +537,7 @@ public class MetadataDescriptor {
     } 
     
     /**
-     * INTERNAL:
-     * 
+     * INTERNAL: 
      * Non-owning mappings that need to look up the owning mapping, should call 
      * this method with their respective accessor to check for circular mappedBy 
      * references. If the referencingAccessor is null, no check will be made.
@@ -520,7 +556,7 @@ public class MetadataDescriptor {
                 // Check that we don't have circular mappedBy values which 
                 // will cause an infinite loop.
                 if (referencingAccessor != null && ! relationshipAccessor.isManyToOne() && relationshipAccessor.getMappedBy().equals(referencingAccessor.getAttributeName())) {
-                    getValidator().throwCircularMappedByReferences(referencingAccessor.getJavaClass(), referencingAccessor.getAttributeName(), getJavaClass(), attributeName);
+                	throw ValidationException.circularMappedByReferences(referencingAccessor.getJavaClass(), referencingAccessor.getAttributeName(), getJavaClass(), attributeName);
                 }
                 
                 relationshipAccessor.processRelationship();
@@ -542,8 +578,8 @@ public class MetadataDescriptor {
         // We didn't find a mapping on the aggregate descriptors. If we are an
         // inheritance subclass, check for a mapping on the inheritance root
         // descriptor metadata.
-        if (m_accessor.isInheritanceSubclass()) {
-            return m_accessor.getInheritanceParentDescriptor().getMappingForAttributeName(attributeName, referencingAccessor);
+        if (isInheritanceSubclass()) {
+            return getInheritanceParentDescriptor().getMappingForAttributeName(attributeName, referencingAccessor);
         }
         
         // Found nothing ... return null.
@@ -605,8 +641,8 @@ public class MetadataDescriptor {
     public List<DatabaseField> getPrimaryKeyFields() {
         List<DatabaseField> primaryKeyFields = m_descriptor.getPrimaryKeyFields();
         
-        if (primaryKeyFields.isEmpty() && m_accessor.isInheritanceSubclass()) {
-            primaryKeyFields = m_accessor.getInheritanceParentDescriptor().getPrimaryKeyFields();
+        if (primaryKeyFields.isEmpty() && isInheritanceSubclass()) {
+            primaryKeyFields = getInheritanceParentDescriptor().getPrimaryKeyFields();
         }
         
         return primaryKeyFields;
@@ -620,11 +656,11 @@ public class MetadataDescriptor {
      */
     public String getPrimaryKeyJoinColumnAssociation(String foreignKeyName) {
         String primaryKeyName = m_pkJoinColumnAssociations.get(foreignKeyName);
-        
-        if (primaryKeyName == null || ! m_accessor.isInheritanceSubclass()) {
+
+        if (primaryKeyName == null || ! isInheritanceSubclass()) {
             return foreignKeyName;
         } else {
-            return m_accessor.getInheritanceParentDescriptor().getPrimaryKeyJoinColumnAssociation(primaryKeyName);
+            return getInheritanceParentDescriptor().getPrimaryKeyJoinColumnAssociation(primaryKeyName);
         } 
     }
     
@@ -647,8 +683,8 @@ public class MetadataDescriptor {
      * INTERNAL:
      */
     public DatabaseTable getPrimaryTable() {
-        if (m_primaryTable == null && m_accessor.isInheritanceSubclass()) {
-            return m_accessor.getInheritanceParentDescriptor().getPrimaryTable();
+        if (m_primaryTable == null && isInheritanceSubclass()) {
+            return getInheritanceParentDescriptor().getPrimaryTable();
         } else {
             if (m_descriptor.isAggregateDescriptor()) {
                 // Aggregate descriptors don't have tables, just return a 
@@ -677,13 +713,6 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public List<BasicCollectionAccessor> getBasicCollectionAccessors() {
-        return m_basicCollectionAccessors;
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public List<RelationshipAccessor> getRelationshipAccessors() {
         return m_relationshipAccessors;
     }
@@ -702,13 +731,6 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public String getSchema() {
-    	return m_xmlSchema;
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public DatabaseField getSequenceNumberField() {
         return m_descriptor.getSequenceNumberField();
     }
@@ -716,8 +738,22 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public MetadataValidator getValidator() {
-        return getClassAccessor().getValidator();
+    public String getXMLAccess() {
+        return m_xmlAccess;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public String getXMLCatalog() {
+    	return m_xmlCatalog;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public String getXMLSchema() {
+    	return m_xmlSchema;
     }
     
     /**
@@ -739,13 +775,6 @@ public class MetadataDescriptor {
      */
     public boolean hasCompositePrimaryKey() {
         return getPrimaryKeyFields().size() > 1 || getPKClassName() != null;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean hasCustomizer() {
-        return m_customizerClassName != null;
     }
     
     /**
@@ -794,57 +823,14 @@ public class MetadataDescriptor {
 	public boolean hasPrimaryKeyFields() {
 		return m_descriptor.getPrimaryKeyFields().size() > 0;
     }
-    
+ 
     /**
      * INTERNAL:
+     * Indicates whether or not annotations should be ignored, i.e. only default 
+     * values processed.
      */
-    public boolean ignoreIDs() {
-        return m_ignoreIDs;    
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean ignoreInheritance() {
-        return m_ignoreInheritance;    
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean ignoreTables() {
-        return m_ignoreTables;    
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    private void init() {
-        m_xmlAccess = "";
-        m_xmlSchema = "";
-        m_xmlCatalog = "";
-        
-        m_ignoreIDs = false;
-        m_isCacheSet = false;
-        m_ignoreTables = false;
-        m_isCascadePersist = false;
-        m_ignoreInheritance = false;
-        m_ignoreAnnotations = false;
-        m_hasChangeTracking = false;
-        
-        m_idAttributeNames = new ArrayList<String>();
-        m_orderByAttributeNames = new ArrayList<String>();
-        m_idOrderByAttributeNames = new ArrayList<String>();
-        m_aggregateDescriptors = new ArrayList<MetadataDescriptor>();
-        m_relationshipAccessors = new ArrayList<RelationshipAccessor>();
-        m_basicCollectionAccessors = new ArrayList<BasicCollectionAccessor>();
-        
-        m_pkClassIDs = new HashMap<String, Type>();
-        m_accessors = new HashMap<String, MetadataAccessor>();
-        m_pkJoinColumnAssociations = new HashMap<String, String>();
-        m_attributeOverrides = new HashMap<String, MetadataColumn>();
-        m_associationOverrides = new HashMap<String, MetadataJoinColumns>();
-        m_biDirectionalManyToManyAccessors = new HashMap<String, Map<String, MetadataAccessor>>();
+    public boolean ignoreAnnotations() {
+    	return m_ignoreAnnotations;
     }
     
     /**
@@ -881,11 +867,25 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     */
+    public boolean isInheritanceSubclass() {
+    	return m_inheritanceParentDescriptor != null;
+    }
+    
+    /**
+     * INTERNAL:
      * Indicates that we found an XML field access type for this metadata
      * descriptor.
      */
-    public boolean isXmlFieldAccess() {
-        return m_xmlAccess.equals(XMLConstants.FIELD);
+    protected boolean isXmlFieldAccess() {
+    	return isXmlFieldAccess(m_xmlAccess);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected boolean isXmlFieldAccess(String access) {
+    	return access != null && access.equals(MetadataConstants.FIELD);
     }
     
     /**
@@ -893,8 +893,15 @@ public class MetadataDescriptor {
      * Indicates that we found an XML property access type for this metadata
      * descriptor.
      */
-    public boolean isXmlPropertyAccess() {
-        return m_xmlAccess.equals(XMLConstants.PROPERTY);
+    protected boolean isXmlPropertyAccess() {
+    	return isXmlPropertyAccess(m_xmlAccess);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected boolean isXmlPropertyAccess(String access) {
+    	return access != null && access.equals(MetadataConstants.PROPERTY);
     }
     
     /**
@@ -902,13 +909,6 @@ public class MetadataDescriptor {
      */
     public boolean pkClassWasNotValidated() {
         return ! m_pkClassIDs.isEmpty();
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public void setAccess(String access) {
-        m_xmlAccess = access;
     }
     
     /**
@@ -921,21 +921,14 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public void setCatalog(String xmlCatalog) {
-    	m_xmlCatalog = xmlCatalog;
-    }
-    
-    /**
-     * INTERNAL:
-     */
     public void setChangeTracking(String changeTracking) {
         ObjectChangePolicy policy;
             
-        if (changeTracking.equals(MetadataConstants.ATTRIBUTE)) {
+        if (changeTracking.equals(ChangeTrackingType.ATTRIBUTE.name())) {
             policy = new AttributeChangeTrackingPolicy();
-        } else if (changeTracking.equals(MetadataConstants.OBJECT)) {
+        } else if (changeTracking.equals(ChangeTrackingType.OBJECT.name())) {
             policy = new ObjectChangeTrackingPolicy();
-        } else if (changeTracking.equals(MetadataConstants.DEFERRED)) {
+        } else if (changeTracking.equals(ChangeTrackingType.DEFERRED.name())) {
             policy = new DeferredChangeDetectionPolicy();
         } else { // Must be MetataConstants.AUTO
             // By setting the policy to null will unset any global settings.
@@ -957,19 +950,19 @@ public class MetadataDescriptor {
      * INTERNAL:
      */
     public void setCacheType(String cacheType) {
-        if (cacheType.equals(MetadataConstants.FULL)) {
+        if (cacheType.equals(CacheType.FULL.name())) {
             m_descriptor.useFullIdentityMap();
-        } else if (cacheType.equals(MetadataConstants.WEAK)) {
+        } else if (cacheType.equals(CacheType.WEAK.name())) {
             m_descriptor.useWeakIdentityMap();
-        }  else if (cacheType.equals(MetadataConstants.SOFT)) {
+        }  else if (cacheType.equals(CacheType.SOFT.name())) {
             m_descriptor.useSoftIdentityMap();
-        } else if (cacheType.equals(MetadataConstants.SOFT_WEAK)) {
+        } else if (cacheType.equals(CacheType.SOFT_WEAK.name())) {
             m_descriptor.useSoftCacheWeakIdentityMap();
-        } else if (cacheType.equals(MetadataConstants.HARD_WEAK)) {
+        } else if (cacheType.equals(CacheType.HARD_WEAK.name())) {
             m_descriptor.useHardCacheWeakIdentityMap();
-        } else if (cacheType.equals(MetadataConstants.CACHE)) {
+        } else if (cacheType.equals(CacheType.CACHE.name())) {
             m_descriptor.useCacheIdentityMap();
-        } else if (cacheType.equals(MetadataConstants.NONE)) {
+        } else if (cacheType.equals(CacheType.NONE.name())) {
             m_descriptor.useNoIdentityMap();
         }
         
@@ -988,11 +981,11 @@ public class MetadataDescriptor {
      */
     public void setCacheCoordinationType(String coordinationType) {
         int type;
-        if (coordinationType.equals(MetadataConstants.SEND_OBJECT_CHANGES)) {
+        if (coordinationType.equals(CacheCoordinationType.SEND_OBJECT_CHANGES.name())) {
             type = ClassDescriptor.SEND_OBJECT_CHANGES;
-        } else if (coordinationType.equals(MetadataConstants.INVALIDATE_CHANGED_OBJECTS)) {
+        } else if (coordinationType.equals(CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS.name())) {
             type = ClassDescriptor.INVALIDATE_CHANGED_OBJECTS;
-        } else if (coordinationType.equals(MetadataConstants.SEND_NEW_OBJECTS_WITH_CHANGES)) {
+        } else if (coordinationType.equals(CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES.name())) {
             type =  ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES;
         } else { // if (coordinationType.equals(MetadataConstants.NONE)) {
             type = ClassDescriptor.DO_NOT_SEND_CHANGES;
@@ -1006,6 +999,7 @@ public class MetadataDescriptor {
      */
     public void setClassAccessor(ClassAccessor accessor) {
         m_accessor = accessor;
+        accessor.setDescriptor(this);
     }
     
     /**
@@ -1013,13 +1007,6 @@ public class MetadataDescriptor {
      */
     public void setClassIndicatorField(DatabaseField field) {
         m_descriptor.getInheritancePolicy().setClassIndicatorField(field);    
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setCustomizerClassName(String customizerClassName) {
-        m_customizerClassName = customizerClassName;
     }
     
     /**
@@ -1046,7 +1033,7 @@ public class MetadataDescriptor {
     /** 
      * INTERNAL:
      */
-    public void setEntityEventListener(MetadataEntityListener listener) {
+    public void setEntityEventListener(EntityListenerMetadata listener) {
         m_descriptor.getEventManager().setEntityEventListener(listener);
     }
     
@@ -1066,21 +1053,29 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Indicates that all annotations should be ignored, and only default values 
+     * set by the annotations processor.
      */
-    public void setIgnoreFlags() {
-        m_ignoreInheritance = m_descriptor.hasInheritance();
-        m_ignoreTables = m_descriptor.getTableNames().size() > 0;
-        m_ignoreIDs = m_descriptor.getPrimaryKeyFieldNames().size() > 0;
+    public void setIgnoreAnnotations(boolean ignoreAnnotations) {
+    	m_ignoreAnnotations = ignoreAnnotations;
+    }
+    
+    /**
+     * INTERNAL:
+     * Store the root class of an inheritance hierarchy.
+     */
+    public void setInheritanceParentDescriptor(MetadataDescriptor inheritanceParentDescriptor) {
+    	m_inheritanceParentDescriptor = inheritanceParentDescriptor;
     }
     
     /**
      * INTERNAL:
      * Stored on the root class of an inheritance hierarchy.
      */
-    public void setInheritanceStrategy(String inheritanceStrategy) {
-        if (inheritanceStrategy.equals(MetadataConstants.TABLE_PER_CLASS)) {
-            getValidator().throwTablePerClassInheritanceNotSupported(getJavaClass());
-        } else if (inheritanceStrategy.equals(MetadataConstants.SINGLE_TABLE)) {
+    public void setInheritanceStrategy(InheritanceType inheritanceStrategy) {
+        if (inheritanceStrategy.equals(InheritanceType.TABLE_PER_CLASS)) {
+        	throw ValidationException.tablePerClassInheritanceNotSupported(getJavaClass());
+        } else if (inheritanceStrategy.equals(InheritanceType.SINGLE_TABLE)) {
             m_descriptor.getInheritancePolicy().setSingleTableStrategy();
         } else {
             m_descriptor.getInheritancePolicy().setJoinedStrategy();
@@ -1164,13 +1159,6 @@ public class MetadataDescriptor {
 	public void setReadOnly() {
         m_descriptor.setReadOnly();
 	}
-
-	/**
-	 * INTERNAL:
-	 */
-	public void setSchema(String xmlSchema) {
-    	m_xmlSchema = xmlSchema;
-    }
     
     /**
      * INTERNAL:
@@ -1209,15 +1197,6 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Indicates that all annotations should be ignored, and only default values 
-     * set by the annotations processor.
-     */
-    public void setIgnoreAnnotations(boolean ignoreAnnotations) {
-    	m_ignoreAnnotations = ignoreAnnotations;
-    }
-    
-    /**
-     * INTERNAL:
      * Sets the strategy on the descriptor's inheritance policy to SINGLE_TABLE.  
      * The default is JOINED.
      */
@@ -1231,15 +1210,7 @@ public class MetadataDescriptor {
     public void setTimeToLiveCacheInvalidationPolicy(int expiry) {
         m_descriptor.setCacheInvalidationPolicy(new TimeToLiveCacheInvalidationPolicy(expiry));
     }
-    
-    /**
-     * INTERNAL:
-     * Indicates whether or not annotations should be ignored, i.e. only default 
-     * values processed.
-     */
-    public boolean ignoreAnnotations() {
-    	return m_ignoreAnnotations;
-    }
+ 
 
     /**
      * INTERNAL:
@@ -1256,6 +1227,27 @@ public class MetadataDescriptor {
      */
     public void setUsesPropertyAccess(Boolean usesPropertyAccess) {
         m_usesPropertyAccess = usesPropertyAccess;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setXMLAccess(String xmlAccess) {
+        m_xmlAccess = xmlAccess;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setXMLCatalog(String xmlCatalog) {
+    	m_xmlCatalog = xmlCatalog;
+    }
+    
+    /**
+	 * INTERNAL:
+	 */
+	public void setXMLSchema(String xmlSchema) {
+    	m_xmlSchema = xmlSchema;
     }
     
     /**
@@ -1279,19 +1271,11 @@ public class MetadataDescriptor {
         SelectedFieldsLockingPolicy policy = new SelectedFieldsLockingPolicy();
                         
         // Process the selectedColumns
-        if (selectedColumns.isEmpty()) {
-            // WIP we should have more contextual ignore messages. 
-            // Ask for the context from the Metatatata object.  
-            getValidator().throwOptimisticLockingSelectedColumnNamesNotSpecified(getJavaClass());
-        } else {
-            for (String selectedColumn : selectedColumns) {
-                if (selectedColumn.equals("")) {
-                    // WIP we should have more contextual ignore messages. 
-                    // Ask for the context from the Metatatata object.  
-                    getValidator().throwOptimisticLockingSelectedColumnNamesNotSpecified(getJavaClass());
-                } else {
-                    policy.addLockFieldName(selectedColumn);
-                }
+        for (String selectedColumn : selectedColumns) {
+        	if (selectedColumn.equals("")) {  
+        		throw ValidationException.optimisticLockingSelectedColumnNamesNotSpecified(getJavaClass());
+            } else {
+            	policy.addLockFieldName(selectedColumn);
             }
         }
                         
@@ -1322,37 +1306,29 @@ public class MetadataDescriptor {
      * efficiency.
      */
 	public boolean usesPropertyAccess() {
-        if (m_accessor.isInheritanceSubclass()) {
-            return m_accessor.getInheritanceParentDescriptor().usesPropertyAccess();
+        if (isInheritanceSubclass()) {
+            return getInheritanceParentDescriptor().usesPropertyAccess();
         } else {
             if (m_usesPropertyAccess == null) {
                 if (MetadataHelper.havePersistenceAnnotationsDefined(MetadataHelper.getFields(getJavaClass())) || isXmlFieldAccess()) {
-                    if (isXmlPropertyAccess()) {
-                        // WIP - throw an exception.
-                    }
-                
                     // We have persistence annotations defined on a field from 
                     // the entity or field access has been set via XML, set the 
                     // access to FIELD.
                     m_usesPropertyAccess = Boolean.FALSE;
                 } else if (MetadataHelper.havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(getJavaClass())) || isXmlPropertyAccess()) {
-                    if (isXmlFieldAccess()) {
-                        // WIP - throw an exception.
-                    }
-                
                     // We have persistence annotations defined on a method from 
                     // the entity or method access has been set via XML, set the 
                     // access to PROPERTY.
                     m_usesPropertyAccess = Boolean.TRUE;
                 } else {
                     for (ClassAccessor mappedSuperclass : getClassAccessor().getMappedSuperclasses()) {
-                        if (MetadataHelper.havePersistenceAnnotationsDefined(MetadataHelper.getFields(mappedSuperclass.getJavaClass()))) {
+                        if (MetadataHelper.havePersistenceAnnotationsDefined(MetadataHelper.getFields(mappedSuperclass.getJavaClass())) || isXmlFieldAccess(mappedSuperclass.getAccess())) {
                             // We have persistence annotations defined on a 
                             // field from a mapped superclass, set the access 
                             // to FIELD.
                             m_usesPropertyAccess = Boolean.FALSE;
                             break;
-                        } else if (MetadataHelper.havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(mappedSuperclass.getJavaClass()))) {
+                        } else if (MetadataHelper.havePersistenceAnnotationsDefined(MetadataHelper.getDeclaredMethods(mappedSuperclass.getJavaClass())) || isXmlPropertyAccess(mappedSuperclass.getAccess())) {
                             // We have persistence annotations defined on a 
                             // method from a mapped superclass, set the access 
                             // to FIELD.
@@ -1436,7 +1412,7 @@ public class MetadataDescriptor {
             if (type == expectedType) {
                 m_pkClassIDs.remove(attributeName);
             } else {
-                getValidator().throwInvalidCompositePKAttribute(getJavaClass(), getPKClassName(), attributeName, expectedType, type);
+            	throw ValidationException.invalidCompositePKAttribute(getJavaClass(), getPKClassName(), attributeName, expectedType, type);
             }
         }
     }

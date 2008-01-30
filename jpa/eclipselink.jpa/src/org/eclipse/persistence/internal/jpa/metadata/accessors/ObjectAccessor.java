@@ -11,11 +11,16 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import java.util.List;
 
+import javax.persistence.FetchType;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.PrimaryKeyJoinColumns;
+
 import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
-import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataJoinColumn;
-import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataPrimaryKeyJoinColumn;
+import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -32,13 +37,30 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class ObjectAccessor extends RelationshipAccessor {
+	private Boolean m_isOptional;
+	
+	/**
+	 * INTERNAL:
+	 */
+    protected ObjectAccessor() {}
+    
+	/**
+	 * INTERNAL:
+	 */
     protected ObjectAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
     }
     
     /**
+     * INTERNAL:
+     * Return the default fetch type for an object mapping.
+     */
+    public FetchType getDefaultFetchType() {
+    	return FetchType.EAGER;
+    }
+    
+    /**
      * INTERNAL: (Override from MetadataAccessor)
-     * 
      * If a target entity is specified in metadata, it will be set as the 
      * reference class, otherwise we will use the raw class.
      */
@@ -50,11 +72,19 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                 // Get the reference class from the accessible object and
                 // log the defaulting contextual reference class.
                 m_referenceClass = super.getReferenceClass();
-                m_logger.logConfigMessage(getLoggingContext(), getAnnotatedElement(), m_referenceClass);
+                getLogger().logConfigMessage(getLoggingContext(), getAnnotatedElement(), m_referenceClass);
             } 
         }
         
         return m_referenceClass;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getOptional() {
+    	return m_isOptional;
     }
     
     /**
@@ -72,8 +102,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         
         // If the global weave for value holders is true, the use the value
         // from usesIndirection. Otherwise, force it to false.
-        boolean usesIndirection = (m_project.enableLazyForOneToOne()) ? usesIndirection() : false;
-        if (usesIndirection && m_descriptor.usesPropertyAccess()) {
+        boolean usesIndirection = (getProject().enableLazyForOneToOne()) ? usesIndirection() : false;
+        if (usesIndirection && getDescriptor().usesPropertyAccess()) {
             mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getSetMethodName()));
         } else {
             mapping.setUsesIndirection(usesIndirection);
@@ -89,6 +119,17 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         processReturnInsertAndUpdate();
         
         return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean isOptional() {
+    	if (m_isOptional == null) {
+    		return true;
+    	} else {
+    		return m_isOptional.booleanValue();
+    	}
     }
     
     /**
@@ -111,10 +152,10 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         String defaultFKFieldName = getUpperCaseAttributeName() + "_" + defaultPKFieldName;
             
         // Join columns will come from a @JoinColumn(s).
-        List<MetadataJoinColumn> joinColumns = processJoinColumns();
+        List<JoinColumnMetadata> joinColumns = processJoinColumns();
 
         // Add the source foreign key fields to the mapping.
-        for (MetadataJoinColumn joinColumn : joinColumns) {
+        for (JoinColumnMetadata joinColumn : joinColumns) {
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
             pkField.setName(getName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN));
             pkField.setTable(getReferenceDescriptor().getPrimaryKeyTable());
@@ -123,7 +164,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             fkField.setName(getName(fkField, defaultFKFieldName, MetadataLogger.FK_COLUMN));
             // Set the table name if one is not already set.
             if (fkField.getTableName().equals("")) {
-                fkField.setTable(m_descriptor.getPrimaryTable());
+                fkField.setTable(getDescriptor().getPrimaryTable());
             }
             
             // Add a source foreign key to the mapping.
@@ -146,21 +187,33 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * exception will be thrown).
      */
     protected void processOneToOnePrimaryKeyRelationship(OneToOneMapping mapping) {
-        // Join columns will come from a @PrimaryKeyJoinColumn(s).
         MetadataDescriptor referenceDescriptor = getReferenceDescriptor();
-        List<MetadataPrimaryKeyJoinColumn> primaryKeyJoinColumns = processPrimaryKeyJoinColumns(getPrimaryKeyJoinColumns(referenceDescriptor.getPrimaryTable(), m_descriptor.getPrimaryTable()));
+    	List<PrimaryKeyJoinColumnMetadata> pkJoinColumns;
+    	
+    	if (getPrimaryKeyJoinColumns() == null) {
+    		// Look for annotations.
+    		PrimaryKeyJoinColumn primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
+            PrimaryKeyJoinColumns primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
+            
+            pkJoinColumns = processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(primaryKeyJoinColumns, primaryKeyJoinColumn));
+    	} else {
+    		// Used what is specified in XML.
+    		pkJoinColumns = processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(getPrimaryKeyJoinColumns()));
+    	}
 
         // Add the source foreign key fields to the mapping.
-        for (MetadataPrimaryKeyJoinColumn primaryKeyJoinColumn : primaryKeyJoinColumns) {
+        for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : pkJoinColumns) {
             // The default primary key name is the primary key field name of the
             // referenced entity.
             DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, referenceDescriptor.getPrimaryKeyFieldName(), m_logger.PK_COLUMN));
+            pkField.setName(getName(pkField, referenceDescriptor.getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN));
+            pkField.setTable(referenceDescriptor.getPrimaryTable());
             
             // The default foreign key name is the primary key of the
             // referencing entity.
             DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, m_descriptor.getPrimaryKeyFieldName(), m_logger.FK_COLUMN));
+            fkField.setName(getName(fkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN));
+            fkField.setTable(getDescriptor().getPrimaryTable());
             
             // Add a source foreign key to the mapping.
             mapping.addForeignKeyField(fkField, pkField);
@@ -181,5 +234,13 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         } else {
             processOneToOneForeignKeyRelationship(mapping);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOptional(Boolean isOptional) {
+    	m_isOptional = isOptional;
     }
 }

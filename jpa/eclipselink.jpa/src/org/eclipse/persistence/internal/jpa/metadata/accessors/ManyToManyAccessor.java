@@ -11,9 +11,8 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import javax.persistence.ManyToMany;
 
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-
-import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -26,58 +25,36 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class ManyToManyAccessor extends CollectionAccessor {    
-    private ManyToMany m_manyToMany;
+public class ManyToManyAccessor extends CollectionAccessor {
+	/**
+     * INTERNAL:
+     */
+    public ManyToManyAccessor() {}
     
     /**
      * INTERNAL:
      */
     public ManyToManyAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
-        m_manyToMany = getAnnotation(ManyToMany.class);
+        
+        ManyToMany manyToMany = getAnnotation(ManyToMany.class);
+        setTargetEntity(manyToMany.targetEntity());
+        setCascadeTypes(manyToMany.cascade());
+        setFetch(manyToMany.fetch());
+        setMappedBy(manyToMany.mappedBy());
     }
     
     /**
-     * INTERNAL: (Overridden in XMLManyToManyAccessor)
-     */
-    public List<String> getCascadeTypes() {
-        return getCascadeTypes(m_manyToMany.cascade());
-    }
-    
-    /**
-     * INTERNAL: (Overridden in XMLManyToManyAccessor)
-     */
-    public String getFetchType() {
-        return m_manyToMany.fetch().name();
-    }
-    
-    /**
-     * INTERNAL:
-     * 
+     * INTERNAL: 
      * Return the logging context for this accessor.
      */
     protected String getLoggingContext() {
-        return m_logger.MANY_TO_MANY_MAPPING_REFERENCE_CLASS;
+        return MetadataLogger.MANY_TO_MANY_MAPPING_REFERENCE_CLASS;
     }
     
     /**
-     * INTERNAL: (Overridden in XMLManyToManyAccessor)
-     */
-    public String getMappedBy() {
-        return m_manyToMany.mappedBy();
-    }
-    
-    /**
-     * INTERNAL: (Overridden in XMLManyToManyAccessor)
-     */
-    public Class getTargetEntity() {
-        return m_manyToMany.targetEntity();
-    }
-    
-    /**
-     * INTERNAL: (OVERRIDE)
-     * 
-	 * A @PrivateOwned used with a @ManyToMany is ignored. A log warning is
+     * INTERNAL: (OVERRIDE) 
+	 * A PrivateOwned setting on a ManyToMany is ignored. A log warning is
      * issued.
      */
 	protected boolean hasPrivateOwned() {
@@ -99,17 +76,19 @@ public class ManyToManyAccessor extends CollectionAccessor {
     
     /**
      * INTERNAL:
-     * Process a @ManyToMany or many-to-many element into a TopLink MnayToMany 
-     * mapping.
+     * Process a many to many metadata accessor into a EclipseLink 
+     * ManyToManyMapping.
      */
     public void process() {
+    	super.process();
+    	
         // Create a M-M mapping and process common collection mapping metadata.
         ManyToManyMapping mapping = new ManyToManyMapping();
         process(mapping);
 
         if (getMappedBy().equals("")) { 
             // Processing the owning side of a M-M that is process a join table.
-            processJoinTable(getJoinTable(), mapping);
+            processJoinTable(mapping);
         } else {
             // We are processing the a non-owning side of a M-M. Must set the
             // mapping read-only.
@@ -121,7 +100,7 @@ public class ManyToManyAccessor extends CollectionAccessor {
             	ownerMapping = (ManyToManyMapping)getOwningMapping();
             } else {
             	// If improper mapping encountered, throw an exception.
-            	getValidator().throwInvalidMappingEncountered(getJavaClass(), getReferenceClass());
+            	throw ValidationException.invalidMapping(getJavaClass(), getReferenceClass());
             }
 
             // Set the relation table name from the owner.
@@ -137,6 +116,6 @@ public class ManyToManyAccessor extends CollectionAccessor {
         }
 
         // Add the mapping to the descriptor.
-        m_descriptor.addMapping(mapping);
+        getDescriptor().addMapping(mapping);
     }
 }

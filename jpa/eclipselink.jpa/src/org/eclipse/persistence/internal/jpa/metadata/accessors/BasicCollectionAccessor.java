@@ -9,16 +9,21 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import javax.persistence.FetchType;
+
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.CollectionTable;
+import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
-import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataColumn;
-import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataPrimaryKeyJoinColumn;
-import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataPrimaryKeyJoinColumns;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
 
-import org.eclipse.persistence.internal.jpa.metadata.tables.MetadataCollectionTable;
+import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -35,7 +40,7 @@ import org.eclipse.persistence.mappings.converters.Converter;
  * @since TopLink 11g
  */
 public class BasicCollectionAccessor extends DirectAccessor {
-    protected MetadataColumn m_valueColumn;
+    protected ColumnMetadata m_valueColumn;
     protected DatabaseTable m_collectionTable;
     protected BasicCollection m_basicCollection;
     
@@ -49,33 +54,39 @@ public class BasicCollectionAccessor extends DirectAccessor {
         
         // Must check, BasicMapAccessor calls this constructor ...
         if (m_basicCollection != null) {
-            m_valueColumn = new MetadataColumn(m_basicCollection.valueColumn(), this);
+            m_valueColumn = new ColumnMetadata(m_basicCollection.valueColumn(), this);
+            setFetch(m_basicCollection.fetch());
         }
     }
     
     /**
      * INTERNAL: 
-     * 
-     * Process a @CollectionTable.
+     * Process a CollectionTable annotation.
      */
-    protected MetadataCollectionTable getCollectionTable() {
+    protected CollectionTableMetadata getCollectionTable() {
         CollectionTable collectionTable = getAnnotation(CollectionTable.class);
-        return new MetadataCollectionTable(collectionTable, m_logger);
+        return new CollectionTableMetadata(collectionTable, getAnnotatedElementName());
     }
     
     /**
-     * INTERNAL: 
-     * 
+     * INTERNAL: (Override from BasicAccessor)
      * Method ignores logging context. Can't be anything but the value 
-     * column for a @BasicCollection. Used with @BasicMap however.
+     * column for a BasicCollection annotation. Used with the BasicMap 
+     * annotation however.
      */
-    protected MetadataColumn getColumn(String loggingCtx) {
+    protected ColumnMetadata getColumn(String loggingCtx) {
         return m_valueColumn;
     }
     
     /**
      * INTERNAL:
-     * 
+     */
+    public FetchType getDefaultFetchType() {
+    	return FetchType.LAZY; 
+    }
+    
+    /**
+     * INTERNAL: 
      * Return the default table name to be used with the database fields of 
      * this basic collection accessor.
      */
@@ -84,15 +95,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
     }
     
     /**
-     * INTERNAL: (Overridden in XMLBasicCollectionAccessor)
-     */
-    public String getFetchType() {
-        return m_basicCollection.fetch().name();
-    }
-    
-    /**
      * INTERNAL: (Override from MetadataAccessor)
-     * 
      * Return the reference class for this accessor. It will try to extract
      * a reference class from a generic specification. If no generics are used,
      * then it will return void.class. This avoids NPE's when processing
@@ -106,7 +109,6 @@ public class BasicCollectionAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
-     * 
      * Return true if this accessor represents a basic collection mapping.
      */
     public boolean isBasicCollection() {
@@ -117,26 +119,30 @@ public class BasicCollectionAccessor extends DirectAccessor {
      * INTERNAL: (Overridden in BasicMapAccessor)
      */
     public void process() {
-        // Initialize our mapping.
-        DirectCollectionMapping mapping = new DirectCollectionMapping();
-        
-        // Process common direct collection metadata. This must be done before
-        // any field processing since field processing requires that the
-        // collection table be processed before hand.
-        process(mapping);
-        
-        // Process the fetch type and set the correct indirection on the mapping.
-        setIndirectionPolicy(mapping, null);
-        
-        // Process the value column (we must process this field before the call
-        // to processConverter, since it may set a field classification)
-        mapping.setDirectField(getDatabaseField(m_logger.VALUE_COLUMN));
-        
-        // Process a converter for this mapping. We will look for a @Convert
-        // first. If none is found then we'll look for a JPA converter, that 
-        // is, @Enumerated, @Lob and @Temporal. With everything falling into 
-        // a serialized mapping if no converter whatsoever is found.
-        processMappingConverter(mapping);
+        if (MetadataHelper.isValidBasicCollectionType(getRawClass())) {
+            // Initialize our mapping.
+            DirectCollectionMapping mapping = new DirectCollectionMapping();
+            
+            // Process common direct collection metadata. This must be done before
+            // any field processing since field processing requires that the
+            // collection table be processed before hand.
+            process(mapping);
+            
+            // Process the fetch type and set the correct indirection on the mapping.
+            setIndirectionPolicy(mapping, null, usesIndirection());
+            
+            // Process the value column (we must process this field before the call
+            // to processConverter, since it may set a field classification)
+            mapping.setDirectField(getDatabaseField(MetadataLogger.VALUE_COLUMN));
+            
+            // Process a converter for this mapping. We will look for a @Convert
+            // first. If none is found then we'll look for a JPA converter, that 
+            // is, @Enumerated, @Lob and @Temporal. With everything falling into 
+            // a serialized mapping if no converter whatsoever is found.
+            processMappingConverter(mapping);        	
+        } else {
+        	throw ValidationException.invalidTypeForBasicCollectionAttribute(getAttributeName(), getRawClass(), getJavaClass());
+        }
     }
     
     /**
@@ -159,15 +165,14 @@ public class BasicCollectionAccessor extends DirectAccessor {
         processReturnInsertAndUpdate();
         
         // Add the mapping to the descriptor.
-        m_descriptor.addMapping(mapping);
+        getDescriptor().addMapping(mapping);
     }
     
     /**
      * INTERNAL:
-     * 
      * Process a MetadataCollectionTable.
      */
-    protected void processCollectionTable(MetadataCollectionTable collectionTable, DirectCollectionMapping mapping) {
+    protected void processCollectionTable(CollectionTableMetadata collectionTable, DirectCollectionMapping mapping) {
         // Build the default table name
         String defaultName = getUpperCaseShortJavaClassName() + "_" + getUpperCaseAttributeName(); 
         
@@ -181,15 +186,16 @@ public class BasicCollectionAccessor extends DirectAccessor {
         // Add all the primaryKeyJoinColumns (reference key fields) to the 
         // mapping. Primary key join column validation is performed in the
         // processPrimaryKeyJoinColumns call.
-        MetadataPrimaryKeyJoinColumns primaryKeyJoinColumns = collectionTable.getPrimaryKeyJoinColumns(m_descriptor.getPrimaryTable(), m_collectionTable);
-        for (MetadataPrimaryKeyJoinColumn primaryKeyJoinColumn : processPrimaryKeyJoinColumns(primaryKeyJoinColumns)) {
+        for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(collectionTable.getPrimaryKeyJoinColumns()))) {
             // The default name is the primary key of the owning entity.
             DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
-            pkField.setName(getName(pkField, m_descriptor.getPrimaryKeyFieldName(), m_logger.PK_COLUMN));
+            pkField.setName(getName(pkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN));
+            pkField.setTable(getDescriptor().getPrimaryTable());
             
             // The default name is the primary key of the owning entity.
             DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
-            fkField.setName(getName(fkField, m_descriptor.getPrimaryKeyFieldName(), m_logger.FK_COLUMN));
+            fkField.setName(getName(fkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN));
+            fkField.setTable(m_collectionTable);
             
             // Add the reference key field for the direct collection mapping.
             mapping.addReferenceKeyField(fkField, pkField);

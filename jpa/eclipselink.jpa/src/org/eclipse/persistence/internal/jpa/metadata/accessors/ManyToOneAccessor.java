@@ -9,8 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
-import java.util.List;
-
 import javax.persistence.ManyToOne;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -26,57 +24,50 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class ManyToOneAccessor extends ObjectAccessor {    
-    private ManyToOne m_manyToOne;
+public class ManyToOneAccessor extends ObjectAccessor {
+	/**
+     * INTERNAL:
+     */
+    public ManyToOneAccessor() {}
     
     /**
      * INTERNAL:
      */
     public ManyToOneAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
-        m_manyToOne = getAnnotation(ManyToOne.class);
-    }
-    
-    /**
-     * INTERNAL: (Overridden in XMLManyToOneAccessor)
-     */
-    public List<String> getCascadeTypes() {
-        return getCascadeTypes(m_manyToOne.cascade());
-    }
-    
-    /**
-     * INTERNAL: (Overridden in XMLManyToOneAccessor)
-     */
-    public String getFetchType() {
-        return m_manyToOne.fetch().name();
+        
+        ManyToOne manyToOne = getAnnotation(ManyToOne.class);
+        
+        setTargetEntity(manyToOne.targetEntity());
+        setCascadeTypes(manyToOne.cascade());
+        setFetch(manyToOne.fetch());
+        setOptional(manyToOne.optional());
     }
 
     /**
      * INTERNAL:
-     * 
      * Return the logging context for this accessor.
      */
     protected String getLoggingContext() {
-        return m_logger.MANY_TO_ONE_MAPPING_REFERENCE_CLASS;
+        return MetadataLogger.MANY_TO_ONE_MAPPING_REFERENCE_CLASS;
     }
     
     /**
-     * INTERNAL: (Overridden in XMLManyToOneAccessor)
+     * INTERNAL: 
+     * Mapped by is not supported on this accessor, this just ensures no 
+     * metadata processing code tries to call it on this accessor.
      */
-    public Class getTargetEntity() {
-        return m_manyToOne.targetEntity();
+    public String getMappedBy() {
+        throw new RuntimeException("Development exception. A mapped by value is not supported on a many to one.");
     }
     
     /**
      * INTERNAL: (OVERRIDE)
-     * 
-     * A @PrivateOwned used with a @ManyToOne is ignored. A log warning is
-     * issued.
+     * A PrivateOwned annotation used with a ManyToOne annotation is ignored. 
+     * A log warning is issued.
      */
 	protected boolean hasPrivateOwned() {
         if (super.hasPrivateOwned()) {
-            // Annotation specific message no private owned in XML yet. Will
-            // have to change when introduced in XML.
             getLogger().logWarningMessage(MetadataLogger.IGNORE_PRIVATE_OWNED_ANNOTATION, this);
         }
         
@@ -91,16 +82,8 @@ public class ManyToOneAccessor extends ObjectAccessor {
     }
     
     /**
-     * INTERNAL: (Overridden in XMLManyToOneAccessor)
-     */
-    public boolean isOptional() {
-        return m_manyToOne.optional();
-    }
-    
-    /**
      * INTERNAL:
-     * Process a @ManyToOne or many-to-one element into a TopLink OneToOne 
-     * mapping.
+     * Process a many to one setting into an EclipseLink OneToOneMapping.
      */
     public void process() {
         // Initialize our mapping now with what we found.
@@ -110,6 +93,6 @@ public class ManyToOneAccessor extends ObjectAccessor {
         processOwningMappingKeys(mapping);
         
         // Add the mapping to the descriptor.
-        m_descriptor.addMapping(mapping);
+        getDescriptor().addMapping(mapping);
     }
 }

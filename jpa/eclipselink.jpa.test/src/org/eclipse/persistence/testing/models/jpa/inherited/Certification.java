@@ -29,7 +29,7 @@ public class Certification  {
         return beerConsumer;
     }
     
-    @Basic
+    //@Basic
     public String getDescription() {
         return description;    
     }

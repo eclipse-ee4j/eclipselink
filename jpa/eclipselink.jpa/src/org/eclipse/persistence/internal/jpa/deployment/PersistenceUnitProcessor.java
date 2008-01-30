@@ -34,12 +34,12 @@ import org.xml.sax.InputSource;
 
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.XMLParseException;
+import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
+import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLException;
+import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLExceptionHandler;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLConstants;
-import org.eclipse.persistence.internal.jpa.metadata.xml.parser.PersistenceContentHandler;
-import org.eclipse.persistence.internal.jpa.metadata.xml.parser.XMLException;
-import org.eclipse.persistence.internal.jpa.metadata.xml.parser.XMLExceptionHandler;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -50,7 +50,6 @@ import org.eclipse.persistence.logging.SessionLog;
  * persistence.xml and searching for Entities in a Persistence archive
  */
 public class PersistenceUnitProcessor  {
-
     /**
      * Entries in a zip file are directory entries using slashes to separate 
      * them. Build a class name using '.' instead of slash and removing the 
@@ -58,7 +57,7 @@ public class PersistenceUnitProcessor  {
      */
     public static String buildClassNameFromEntryString(String classEntryString){
         String classNameForLoader = classEntryString;
-        if (classEntryString.endsWith(".class")){ // NOI18N
+        if (classEntryString.endsWith(".class")){
             classNameForLoader = classNameForLoader.substring(0, classNameForLoader.length() - 6);;
             classNameForLoader = classNameForLoader.replace("/", ".");              
         }
@@ -92,9 +91,9 @@ public class PersistenceUnitProcessor  {
      * used by TopLink to build a deployment project and to decide what classes 
      * to weave.
      */
-    public static Collection<Class> buildEntityList(MetadataProcessor processor, ClassLoader loader) {
+    public static Collection<Class> buildEntityList(MetadataProject project, ClassLoader loader) {
         ArrayList<Class> entityList = new ArrayList<Class>();
-        for (String className : processor.getProject().getWeavableClassNames()) {
+        for (String className : project.getWeavableClassNames()) {
             try {
                 Class entityClass = loader.loadClass(className);
                 entityList.add(entityClass);
@@ -111,15 +110,14 @@ public class PersistenceUnitProcessor  {
      * specified in info.
      */
     private static Set<String> buildPersistentClassSetFromXMLDocuments(PersistenceUnitInfo info, ClassLoader loader){
-        Set<String> classes = null;
-        
-        // Build a MetadataProcessor to search the mapped classes in orm xml documents
-        // We hand in a null session since none of the functionality required uses a session
+        // Build a MetadataProcessor to search the mapped classes in orm xml 
+        // documents. We hand in a null session since none of the functionality 
+        // required uses a session. (At least we hope not)
         MetadataProcessor processor = new MetadataProcessor(info, null, loader, false);
+        // Read the mapping files.
         processor.readMappingFiles(false);
-        classes = processor.buildPersistenceUnitClassSetFromXMLDocuments();
-        
-        return classes;
+        // Return the class set.
+        return processor.getPersistenceUnitClassSetFromMappingFiles();
     }
 
     public static URL computePURootURL(URL pxmlURL) throws IOException {
@@ -248,25 +246,20 @@ public class PersistenceUnitProcessor  {
     /**
      * Process the Object/relational metadata from XML and annotations
      */
-    public static void processORMetadata(MetadataProcessor processor, ClassLoader privateClassLoader, AbstractSession session, boolean throwExceptionOnFail){
+    public static void processORMetadata(MetadataProcessor processor, boolean throwExceptionOnFail) {
         // DO NOT CHANGE the order of invocation of various methods.
 
-        // Build the list of mapping files and read them. Need to do this before
-        // we start processing entities as the list of entity classes depend on 
-        // metadata read from mapping files.
+        // Build the list of mapping files and read them. Need to do this 
+    	// before we start processing entities as the list of entity classes 
+    	// depend on metadata read from mapping files.
         processor.readMappingFiles(throwExceptionOnFail);
 
-        // Process persistence unit metadata/defaults defined in ORM XML 
-        // instance documents in the persistence unit
-        processor.processPersistenceUnitMetadata();
-
-        //bug:2647 - need to find/process entities after the persistenceUnitMetadata to unsure defaults are overriden.  
-        processor.processPersistenceUnitClasses();
-
-        // Process the actual PU classes metadata from XML.
-        processor.processMappingFiles();
+        // Process each XML entity mappings file.
+        processor.processEntityMappings();
 
         // Process the actual PU classes metadata from annotations.
+        // Process the remaing persistence unit classes not defined in those 
+        // classes not defined in XML.
         processor.processAnnotations();        
     }
 
@@ -286,6 +279,7 @@ public class PersistenceUnitProcessor  {
 
     /**
      * Build a persistence.xml file into a SEPersistenceUnitInfo object.
+     * May eventually change this to use OX mapping as well.
      */
     private static List<SEPersistenceUnitInfo> processPersistenceXML(URL baseURL, InputStream input, ClassLoader loader){
         SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -299,7 +293,7 @@ public class PersistenceUnitProcessor  {
         // create a SAX parser
         try {
             sp = spf.newSAXParser();
-	        sp.setProperty(XMLConstants.SCHEMA_LANGUAGE, XMLConstants.XML_SCHEMA);
+	        sp.setProperty(MetadataConstants.SCHEMA_LANGUAGE, MetadataConstants.XML_SCHEMA);
 	    } catch (javax.xml.parsers.ParserConfigurationException exc){
 	    	throw XMLParseException.exceptionCreatingSAXParser(baseURL, exc);
 	    } catch (org.xml.sax.SAXException exc){
@@ -315,10 +309,10 @@ public class PersistenceUnitProcessor  {
         }
        
         // attempt to load the schema from the classpath
-        URL schemaURL = loader.getResource(XMLConstants.PERSISTENCE_SCHEMA_NAME);
+        URL schemaURL = loader.getResource(MetadataConstants.PERSISTENCE_SCHEMA_NAME);
         if (schemaURL != null) {
             try {
-            	sp.setProperty(XMLConstants.JAXP_SCHEMA_SOURCE, schemaURL.toString());
+            	sp.setProperty(MetadataConstants.JAXP_SCHEMA_SOURCE, schemaURL.toString());
             } catch (org.xml.sax.SAXException exc){
             	throw XMLParseException.exceptionSettingSchemaSource(baseURL, schemaURL, exc);
             }

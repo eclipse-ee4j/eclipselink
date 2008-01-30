@@ -25,14 +25,21 @@ public class MetadataMethod extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      */
-    public MetadataMethod(Method method) {
-        super(method);
+    public MetadataMethod(Method getMethod, Method setMethod) {
+        super(getMethod);
         
-        m_setMethod = MetadataHelper.getSetMethod(method, method.getDeclaringClass());
+        m_setMethod = setMethod;
         
-        setName(method.getName());
-        setAttributeName(MetadataHelper.getAttributeNameFromMethodName(method.getName()));
-        setRelationType(MetadataHelper.getGenericReturnType(method));
+        setName(getMethod.getName());
+        setAttributeName(MetadataHelper.getAttributeNameFromMethodName(getMethod.getName()));
+        setRelationType(MetadataHelper.getGenericReturnType(getMethod));
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public MetadataMethod(Method getMethod) {
+        this(getMethod, MetadataHelper.getSetMethod(getMethod, getMethod.getDeclaringClass()));
     }
     
     /**

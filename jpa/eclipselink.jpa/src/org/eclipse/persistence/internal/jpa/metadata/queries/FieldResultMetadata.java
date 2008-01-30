@@ -1,0 +1,70 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2007 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0, which accompanies this distribution
+ * and is available at http://www.eclipse.org/legal/epl-v10.html.
+ *
+ * Contributors:
+ *     Oracle - initial API and implementation from Oracle TopLink
+ ******************************************************************************/  
+package org.eclipse.persistence.internal.jpa.metadata.queries;
+
+import javax.persistence.FieldResult;
+
+/**
+ * INTERNAL:
+ * Object to hold onto an field result metadata.
+ * 
+ * @author Guy Pelletier
+ * @since TopLink EJB 3.0 Reference Implementation
+ */
+public class FieldResultMetadata {
+	// Both the name and column are required in XML and annotations.
+	private String m_name;
+	private String m_column;
+    
+    /**
+     * INTERNAL:
+     */
+    public FieldResultMetadata() {}
+
+    /**
+     * INTERNAL:
+     */
+    public FieldResultMetadata(FieldResult fieldResult) {
+    	m_name = fieldResult.name();
+    	m_column = fieldResult.column();
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getColumn() {
+        return m_column;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getName() {
+        return m_name;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setColumn(String column) {
+    	m_column = column;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setName(String name) {
+    	m_name = name;
+    }
+}

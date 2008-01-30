@@ -9,17 +9,15 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import java.util.Map;
 import javax.persistence.OneToMany;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
@@ -28,39 +26,33 @@ import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 
 /**
- * A OneToMany relationship accessor. A @OneToMany annotation currently is not
+ * A OneToMany relationship accessor. A OneToMany annotation currently is not
  * required to be on the accessible object, that is, a 1-M can default.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class OneToManyAccessor extends CollectionAccessor {
-    private OneToMany m_oneToMany;
+	/**
+     * INTERNAL:
+     */
+    public OneToManyAccessor() {}
     
     /**
      * INTERNAL:
      */
     public OneToManyAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
-        m_oneToMany = getAnnotation(OneToMany.class);
-    }
-    
-    /**
-     * INTERNAL: (Overridden in XMLOneToManyAccessor)
-     */
-    public List<String> getCascadeTypes() {
-        if (m_oneToMany == null) {
-            return new ArrayList<String>();
-        } else {
-            return getCascadeTypes(m_oneToMany.cascade());
-        } 
-    }
-    
-    /**
-     * INTERNAL: (Overridden in XMLOneToManyAccessor)
-     */
-    public String getFetchType() {
-        return (m_oneToMany == null) ? MetadataConstants.LAZY : m_oneToMany.fetch().name();
+        
+        OneToMany oneToMany = getAnnotation(OneToMany.class);
+        
+        // We must check because OneToMany's can default.
+        if (oneToMany != null) {
+        	setTargetEntity(oneToMany.targetEntity());
+        	setCascadeTypes(oneToMany.cascade());
+        	setFetch(oneToMany.fetch());
+        	setMappedBy(oneToMany.mappedBy());
+        }
     }
     
     /**
@@ -69,21 +61,7 @@ public class OneToManyAccessor extends CollectionAccessor {
      * Return the logging context for this accessor.
      */
     protected String getLoggingContext() {
-        return m_logger.ONE_TO_MANY_MAPPING_REFERENCE_CLASS;
-    }
-    
-    /**
-     * INTERNAL: (Overridden in XMLOneToManyAccessor)
-     */
-    public String getMappedBy() {
-        return (m_oneToMany == null) ? "" : m_oneToMany.mappedBy();
-    }
-    
-    /**
-     * INTERNAL: (Overridden in XMLOneToManyAccessor)
-     */
-    public Class getTargetEntity() {
-        return (m_oneToMany == null) ? void.class : m_oneToMany.targetEntity();
+        return MetadataLogger.ONE_TO_MANY_MAPPING_REFERENCE_CLASS;
     }
     
     /**
@@ -95,18 +73,18 @@ public class OneToManyAccessor extends CollectionAccessor {
     
     /**
      * INTERNAL:
-     * Process an @OneToMany or one-to-many element into a TopLink OneToMany 
-     * mapping. If a JoinTable is found however, we must create a ManyToMany 
-     * mapping.
+     * Process an OneToMany accessor into an EclipseLink OneToManyMapping. If a 
+     * JoinTable is found however, we must create a ManyToManyMapping.
      */
     public void process() {
+    	super.process();
         String mappedBy = getMappedBy();
         
         // Should be treated as a uni-directional mapping using a join table.
         if (mappedBy.equals("")) {
-            // If we find a JoinColumn(s), then throw an exception.
+            // If we find a JoinColumn(s) annotations, then throw an exception.
             if (hasJoinColumn() || hasJoinColumns()) {
-                getValidator().throwUniDirectionalOneToManyHasJoinColumnSpecified(getAttributeName(), getJavaClass());
+            	throw ValidationException.uniDirectionalOneToManyHasJoinColumnAnnotations(getAttributeName(), getJavaClass());
             }
             
             // Create a M-M mapping and process common collection mapping
@@ -123,11 +101,11 @@ public class OneToManyAccessor extends CollectionAccessor {
                 mapping.setIsPrivateOwned(false);
             }
             
-            // Process the @JoinTable.
-            processJoinTable(getJoinTable(), mapping);
+            // Process the JoinTable metadata.
+            processJoinTable(mapping);
             
             // Add the mapping to the descriptor.
-            m_descriptor.addMapping(mapping);
+            getDescriptor().addMapping(mapping);
         } else {
             // Create a 1-M mapping and process common collection mapping
             // metadata.
@@ -140,7 +118,7 @@ public class OneToManyAccessor extends CollectionAccessor {
             	ownerMapping = (OneToOneMapping) getOwningMapping();
             } else {
 				// If improper mapping encountered, throw an exception.
-            	getValidator().throwInvalidMappingEncountered(getJavaClass(), getReferenceClass()); 
+            	throw ValidationException.invalidMapping(getJavaClass(), getReferenceClass()); 
             }
                 
             Map<DatabaseField, DatabaseField> keys = ownerMapping.getSourceToTargetKeyFields();
@@ -149,7 +127,7 @@ public class OneToManyAccessor extends CollectionAccessor {
             }   
             
             // Add the mapping to the descriptor.
-            m_descriptor.addMapping(mapping);
+            getDescriptor().addMapping(mapping);
         }
     }
 }

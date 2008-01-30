@@ -11,132 +11,122 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import javax.persistence.FetchType;
 
 import org.eclipse.persistence.annotations.ReturnInsert;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
+
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
-import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataColumn;
-import org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataGeneratedValue;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 
 /**
- * A relational accessor. A @Basic annotation may or may not be present on the
+ * A relational accessor. A Basic annotation may or may not be present on the
  * accessible object.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class BasicAccessor extends DirectAccessor {
-    private Basic m_basic;
-
+	protected DatabaseField m_field;
+	
+	// OX will populate null if not specified.
+	private ColumnMetadata m_column;
+	
+    /**
+     * INTERNAL:
+     */
+    public BasicAccessor() {}
+    
+    /**
+     * INTERNAL:
+     */
     public BasicAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
-        m_basic = getAnnotation(Basic.class);
+        
+        Basic basic = getAnnotation(Basic.class);
+        
+        if (basic != null) {
+        	setFetch(basic.fetch());
+        	setOptional(basic.optional());
+        }
     }
-
+    
     /**
-     * INTERNAL: (Overridden in XMLBasicAccessor)
-     * 
-     * Build a metadata column.
+     * INTERNAL:
+     * Used for OX mapping.
      */
-    protected MetadataColumn getColumn(String loggingCtx) {
-        Column column = getAnnotation(Column.class);
-        return new MetadataColumn(column, this);
+    public ColumnMetadata getColumn() {
+    	return m_column;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the column from xml if there is one, otherwise look for an
+     * annotation.
+     */
+    protected ColumnMetadata getColumn(String loggingCtx) {
+    	if (m_column == null) {
+    		Column column = getAnnotation(Column.class);
+            return new ColumnMetadata(column, this);
+    	} else {
+    		// Set other column metadata that was not populated through OX.
+    		m_column.setAttributeName(getAttributeName());
+    		return m_column;
+    	}
     }
 
     /**
+     * INTERNAL:
+     */
+    public FetchType getDefaultFetchType() {
+    	return FetchType.EAGER; 
+    }
+    
+    /**
+     * INTERNAL:
      * Return the default table name to be used with the database field of this 
      * basic accessor.
      */
     protected DatabaseTable getDefaultTable() {
-        return m_descriptor.getPrimaryTable();
+        return getDescriptor().getPrimaryTable();
     }
-
+    
     /**
-     * INTERNAL: (Overridden in XMLBasicAccessor)
-     */
-    public String getFetchType() {
-        return (m_basic == null) ? MetadataConstants.EAGER : m_basic.fetch().name();
-    }
-
-    /**
-     * INTERNAL: (Override from MetadataAccessor)
-     */
-    public boolean isBasic() {
-        return true;
-    }
-
-    /**
-     * INTERNAL: (Overridden in XMLBasicAccessor)
-     * 
-     * Return true if this accessor represents an id field.
-     */
-    public boolean isId() {
-        return isAnnotationPresent(Id.class);
-    }
-
-    /**
-     * INTERNAL: (Overridden in XMLBasicAccessor)
-     */
-    public boolean isOptional() {
-        return (m_basic == null) ? true : m_basic.optional();
-    }
-
-    /**
-     * INTERNAL: (Overridden in XMLBasicAccessor)
-     * 
-     * Return true if this accessor represents an optimistic locking field.
-     */
-    public boolean isVersion() {
-        return isAnnotationPresent(Version.class);
-    }
-
-    /**
+     * INTERNAL:
      * Process a basic accessor.
      */
     public void process() {
         // Process the @Column or column element if there is one.
-        DatabaseField field = getDatabaseField(m_logger.COLUMN);
+        m_field = getDatabaseField(MetadataLogger.COLUMN);
 
         // Process a @ReturnInsert
-        processReturnInsert(field);
+        processReturnInsert(m_field);
 
         // Process a @ReturnUpdate.
-        processReturnUpdate(field);
+        processReturnUpdate(m_field);
 
-        // Process an @Version or version element if there is one.
-        if (isVersion()) {
-            if (m_descriptor.usesOptimisticLocking()) {
-                // Ignore the version locking if it is already set.
-                m_logger.logWarningMessage(m_logger.IGNORE_VERSION_LOCKING, this);
-            } else {
-                processVersion(field);
-            }
-        } else if (isId()) {
-            // Process an @Id or id element.
-            processId(field);
-        }
-
-        if (m_descriptor.hasMappingForAttributeName(getAttributeName())) {
+        if (getDescriptor().hasMappingForAttributeName(getAttributeName())) {
             // Ignore the mapping if one already exists for it.
-            m_logger.logWarningMessage(m_logger.IGNORE_MAPPING, this);
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPING, this);
         } else {
             // Process a DirectToFieldMapping, that is a Basic that could
             // be used in conjunction with a Lob, Temporal, Enumerated
             // or inferred to be used with a serialized mapping.
-            processDirectToFieldMapping(field);
+            processDirectToFieldMapping(m_field);
         }
     }
 
     /**
+     * INTERNAL:
      * Process a Serialized or Basic into a DirectToFieldMapping. If neither 
      * is found a DirectToFieldMapping is created regardless.
      */
@@ -162,12 +152,11 @@ public class BasicAccessor extends DirectAccessor {
         processMutable(mapping);
 
         // Add the mapping to the descriptor.
-        m_descriptor.addMapping(mapping);
+        getDescriptor().addMapping(mapping);
     }
 
     /**
      * INTERNAL: (Override from DirectAccessor)
-     * 
      * Process an @Enumerated. The method may still be called if no @Enumerated
      * has been specified but the accessor's reference class is a valid 
      * enumerated type.
@@ -185,70 +174,9 @@ public class BasicAccessor extends DirectAccessor {
     }
 
     /**
-     * INTERNAL: (Overridden In XMLBasicAccessor)
-     * 
-     * Process a @GeneratedValue.
-     */
-    protected void processGeneratedValue(DatabaseField field) {
-        GeneratedValue generatedValue = getAnnotation(GeneratedValue.class);
-
-        if (generatedValue != null) {
-            processGeneratedValue(new MetadataGeneratedValue(generatedValue), field);
-        }
-    }
-
-    protected void processGeneratedValue(MetadataGeneratedValue generatedValue, DatabaseField sequenceNumberField) {
-        // Set the sequence number field on the descriptor.		
-        DatabaseField existingSequenceNumberField = m_descriptor.getSequenceNumberField();
-
-        if (existingSequenceNumberField == null) {
-            m_descriptor.setSequenceNumberField(sequenceNumberField);
-            getProject().addGeneratedValue(generatedValue, getJavaClass());
-        } else {
-            m_validator.throwOnlyOneGeneratedValueIsAllowed(getJavaClass(), existingSequenceNumberField.getQualifiedName(), sequenceNumberField.getQualifiedName());
-        }
-    }
-
-    /**
-     * Process an @Id or id element if there is one.
-     */
-    protected void processId(DatabaseField field) {
-        if (m_descriptor.ignoreIDs()) {
-            // Project XML merging. XML wins, ignore annotations/orm xml.
-            m_logger.logWarningMessage(m_logger.IGNORE_PRIMARY_KEY, this);
-        } else {
-            String attributeName = getAttributeName();
-
-            if (m_descriptor.hasEmbeddedIdAttribute()) {
-                // We found both an Id and an EmbeddedId, throw an exception.
-                m_validator.throwEmbeddedIdAndIdFound(getJavaClass(), m_descriptor.getEmbeddedIdAttributeName(), attributeName);
-            }
-
-            // If this entity has a pk class, we need to validate our ids. 
-            m_descriptor.validatePKClassId(attributeName, getReferenceClass());
-
-            // Store the Id attribute name. Used with validation and OrderBy.
-            m_descriptor.addIdAttributeName(attributeName);
-
-            // Add the primary key field to the descriptor.            
-            m_descriptor.addPrimaryKeyField(field);
-
-            // Process the generated value for this id.
-            processGeneratedValue(field);
-
-            // Process a table generator.
-            processTableGenerator();
-
-            // Process a sequence generator.
-            processSequenceGenerator();
-        }
-    }
-
-    /**
      * INTERNAL: (Override from DirectAccessor)
-     * 
-     * Process a @Lob or lob sub-element. The lob must be specified to process 
-     * and create a lob type mapping.
+     * Process a Lob metadata. The lob must be specified to process and 
+     * create a lob type mapping.
      */
     protected void processLob(DatabaseMapping mapping) {
         // If the raw class is a collection or map (with generics or not), we 
@@ -263,7 +191,8 @@ public class BasicAccessor extends DirectAccessor {
     }
             
     /**
-     * Process the @Mutable annotation.
+     * INTERNAL:
+     * Process the Mutable annotation.
      */
     public void processMutable(DatabaseMapping mapping) {
         Boolean mutable = getMutableValue();
@@ -273,9 +202,8 @@ public class BasicAccessor extends DirectAccessor {
     }
 
     /**
-     * INTERNAL: (Overridden in XMLBasicAccessor)
-     *
-     * Process a @ReturnInsert.
+     * INTERNAL:
+     * Process a ReturnInsert annotation.
      */
     protected void processReturnInsert(DatabaseField field) {
         ReturnInsert returnInsert = getAnnotation(ReturnInsert.class);
@@ -288,49 +216,51 @@ public class BasicAccessor extends DirectAccessor {
 
     /**
      * INTERNAL: (Override from MetadataAccessor)
-     *
      * Process a return insert setting.
      */
     protected void processReturnInsert(DatabaseField field, boolean returnOnly) {
         if (returnOnly) {
-            m_descriptor.addFieldForInsertReturnOnly(field);
+        	getDescriptor().addFieldForInsertReturnOnly(field);
         } else {
-            m_descriptor.addFieldForInsert(field);
+        	getDescriptor().addFieldForInsert(field);
         }
     }
 
     /**
      * INTERNAL: (Override from MetadataAccessor)
-     * 
      * Process a return update setting.
      */
     protected void processReturnUpdate(DatabaseField field) {
         if (hasReturnUpdate()) {
-            m_descriptor.addFieldForUpdate(field);
+        	getDescriptor().addFieldForUpdate(field);
         }
     }
 
-    protected void processVersion(DatabaseField field) {
-        Class lockType = getRawClass();
-        field.setType(lockType);
-
-        if (MetadataHelper.isValidVersionLockingType(lockType)) {
-            m_descriptor.useVersionLockingPolicy(field);
-        } else if (MetadataHelper.isValidTimstampVersionLockingType(lockType)) {
-            m_descriptor.useTimestampLockingPolicy(field);
-        } else {
-            m_validator.throwInvalidTypeForVersionAttribute(getJavaClass(), getAttributeName(), lockType);
-        }
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setColumn(ColumnMetadata column) {
+    	m_column = column;
     }
-
+    
+    /**
+     * INTERNAL:
+     */
     public void setConverter(DatabaseMapping mapping, Converter converter) {
         ((DirectToFieldMapping)mapping).setConverter(converter);
     }
 
+    /**
+     * INTERNAL:
+     */
     public void setConverterClassName(DatabaseMapping mapping, String converterClassName) {
         ((DirectToFieldMapping)mapping).setConverterClassName(converterClassName);
     }
 
+    /**
+     * INTERNAL:
+     */
     public void setFieldClassification(DatabaseMapping mapping, Class classification) {
         ((DirectToFieldMapping)mapping).setFieldClassification(classification);
     }

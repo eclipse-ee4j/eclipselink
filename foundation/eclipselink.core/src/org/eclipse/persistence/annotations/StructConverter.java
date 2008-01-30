@@ -28,7 +28,11 @@ public @interface StructConverter {
 
     /**
      * (Required) The converter class to be used. This class must implement the
-     * TopLink org.eclipse.persistence.mappings.converters.Converter interface.
+     * EclipseLink org.eclipse.persistence.platform.database.converters.StructConverter 
+     * interface.
+     * 
+     * You may also alternatively specify a pre-defined EclipseLink 
+     * org.eclipse.persistence.jpa.config.StructConverterType 
      */
     String converter(); 
 }

@@ -10,10 +10,12 @@
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import org.eclipse.persistence.annotations.BasicMap;
+import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
-import org.eclipse.persistence.internal.jpa.metadata.columns.MetadataColumn;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
@@ -26,11 +28,10 @@ import org.eclipse.persistence.mappings.converters.Converter;
  * @since TopLink 11g
  */
 public class BasicMapAccessor extends BasicCollectionAccessor {    
-    protected BasicMap m_basicMap;
-    protected String m_keyConverter;
-    protected String m_valueConverter;
-    protected MetadataColumn m_keyColumn;
-    protected boolean m_keyContextProcessing;
+    private String m_keyConverter;
+    private String m_valueConverter;
+    private ColumnMetadata m_keyColumn;
+    private boolean m_keyContextProcessing;
     
     /**
      * INTERNAL:
@@ -38,30 +39,24 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     public BasicMapAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
         
-        m_basicMap = getAnnotation(BasicMap.class);
-        m_keyColumn = new MetadataColumn(m_basicMap.keyColumn(), this);
-        m_keyConverter = m_basicMap.keyConverter().value();
-        m_valueColumn = new MetadataColumn(m_basicMap.valueColumn(), this);
-        m_valueConverter = m_basicMap.valueConverter().value();
+        BasicMap basicMap = getAnnotation(BasicMap.class);
+        m_keyColumn = new ColumnMetadata(basicMap.keyColumn(), this);
+        m_keyConverter = basicMap.keyConverter().value();
+        m_valueColumn = new ColumnMetadata(basicMap.valueColumn(), this);
+        m_valueConverter = basicMap.valueConverter().value();
+        
+        setFetch(basicMap.fetch());
     }
    
     /**
-     * INTERNAL: (OVERRIDE)
+     * INTERNAL: (Override from BasicAccessor)
      */
-    protected MetadataColumn getColumn(String loggingCtx) {
+    protected ColumnMetadata getColumn(String loggingCtx) {
         return (loggingCtx.equals(MetadataLogger.VALUE_COLUMN)) ? m_valueColumn : m_keyColumn;
     }
     
     /**
-     * INTERNAL: (Overridden in XMLBasicMapAccessor)
-     */
-    public String getFetchType() {
-        return m_basicMap.fetch().name();
-    }
-    
-    /**
      * INTERNAL: (Override from MetadataAccessor)
-     * 
      * Return the reference class for this accessor.
      */
     public Class getReferenceClass() {
@@ -74,10 +69,9 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     
     /**
      * INTERNAL: (Override from MetadataAccessor)
-     * 
 	 * A BasicMap always has a @Convert specified. They are defaulted within
-     * the @BasicMap. This will be used to log warning messages when ignoring
-     * JPA converters for lob, temporal, enumerated and serialized.
+     * the BasicMap annotation. This will be used to log warning messages when 
+     * ignoring JPA converters for lob, temporal, enumerated and serialized.
      */
 	protected boolean hasConvert() {
 		return true;
@@ -85,7 +79,6 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     
     /**
      * INTERNAL:
-     * 
      * Return true if this accessor represents a basic map mapping.
      */
     public boolean isBasicMap() {
@@ -100,49 +93,51 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
      * details.
      */
     public void process() {
-        // Initialize our mapping.
-        DirectMapMapping mapping = new DirectMapMapping();
-        
-        // Process common direct collection metadata. This must be done before
-        // any field processing since field processing requires that the
-        // collection table be processed before hand.
-        process(mapping);
-        
-        // Process the fetch type
-        if (usesIndirection()) {
-            mapping.useTransparentMap();
+        if (MetadataHelper.isValidBasicMapType(getRawClass())) {
+            // Initialize our mapping.
+            DirectMapMapping mapping = new DirectMapMapping();
+            
+            // Process common direct collection metadata. This must be done before
+            // any field processing since field processing requires that the
+            // collection table be processed before hand.
+            process(mapping);
+            
+            // Process the fetch type
+            if (usesIndirection()) {
+                mapping.useTransparentMap();
+            } else {
+                mapping.dontUseIndirection();
+                mapping.useMapClass(java.util.Hashtable.class);
+            }
+            
+            // Process the key column (we must process this field before the call
+            // to processConverter, since it may set a field classification)
+            mapping.setDirectKeyField(getDatabaseField(MetadataLogger.MAP_KEY_COLUMN));
+            
+            // Process a converter for the key column of this mapping.
+            processMappingConverter(mapping, m_keyConverter);
+            
+            // Process the value column (we must process this field before the call
+            // to processConverter, since it may set a field classification)
+            mapping.setDirectField(getDatabaseField(MetadataLogger.VALUE_COLUMN));
+            
+            // Process a converter for value column of this mapping.
+            processMappingConverter(mapping, m_valueConverter);	
         } else {
-            mapping.dontUseIndirection();
-            mapping.useMapClass(java.util.Hashtable.class);
+        	throw ValidationException.invalidTypeForBasicMapAttribute(getAttributeName(), getRawClass(), getJavaClass());
         }
-        
-        // Process the key column (we must process this field before the call
-        // to processConverter, since it may set a field classification)
-        mapping.setDirectKeyField(getDatabaseField(m_logger.MAP_KEY_COLUMN));
-        
-        // Process a converter for the key column of this mapping.
-        processMappingConverter(mapping, m_keyConverter);
-        
-        // Process the value column (we must process this field before the call
-        // to processConverter, since it may set a field classification)
-        mapping.setDirectField(getDatabaseField(m_logger.VALUE_COLUMN));
-        
-        // Process a converter for value column of this mapping.
-        processMappingConverter(mapping, m_valueConverter);
     }
     
     /**
-     * INTERNAL: (OVERRIDE)
-     * 
-     * Process a @Convert annotation or convert element to apply to specfiied 
-     * TopLink converter (@Converter, @TypeConverter, @ObjectTypeConverter) to
-     * the given mapping.
+     * INTERNAL: (Override from BasicAccesor)
+     * Process a convert value to apply a specified EclipseLink converter 
+     * (Converter, TypeConverter, ObjectTypeConverter) to the given mapping.
      * 
      * This method is called in second stage processing and should only be
      * called on accessors that have a @Convert specified.
      */
     public void processConvert() {
-        DatabaseMapping mapping = m_descriptor.getMappingForAttributeName(getAttributeName());
+        DatabaseMapping mapping = getDescriptor().getMappingForAttributeName(getAttributeName());
         
         m_keyContextProcessing = true;
         processConvert(mapping, m_keyConverter);

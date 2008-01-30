@@ -15,7 +15,7 @@ import static javax.persistence.GenerationType.*;
 @Entity(name="FieldAccessItem")
 @Table(name="CMP3_FIELDACCESS_ITEM")
 @NamedQuery(
-	name="findAllItemsByName",
+	name="findAllFieldAccessItemsByName",
 	query="SELECT OBJECT(item) FROM FieldAccessItem item WHERE item.name = ?1"
 )
 public class Item implements java.io.Serializable {

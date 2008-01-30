@@ -793,11 +793,11 @@ public class DefaultTableGenerator {
         sourceTableDef.addForeignKeyConstraint(fkc);
     }
     
-    private void addUniqueKeyConstraints(TableDefinition sourceTableDef, Vector<String[]> uniqueConstraints) {
+    private void addUniqueKeyConstraints(TableDefinition sourceTableDef, Vector<List<String>> uniqueConstraints) {
         UniqueKeyConstraint uniqueKeyConstraint;
         int serialNumber = 0;
-        for (String[] uniqueConstraint : uniqueConstraints) {
-            if(uniqueConstraint == null || uniqueConstraint.length == 0) continue;
+        for (List<String> uniqueConstraint : uniqueConstraints) {
+            if(uniqueConstraint == null) continue;
             uniqueKeyConstraint = sourceTableDef.buildUniqueKeyConstraint(uniqueConstraint, serialNumber++, databasePlatform);
             sourceTableDef.addUniqueKeyConstraint(uniqueKeyConstraint);
         }

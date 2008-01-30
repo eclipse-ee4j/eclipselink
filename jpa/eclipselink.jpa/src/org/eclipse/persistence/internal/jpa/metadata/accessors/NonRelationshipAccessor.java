@@ -12,14 +12,14 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.TableGenerator;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
-
-import org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataTableGenerator;
-import org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataSequenceGenerator;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * An relational accessor.
@@ -28,11 +28,20 @@ import org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataSequence
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class NonRelationshipAccessor extends MetadataAccessor {
+	private SequenceGeneratorMetadata m_sequenceGenerator;
+	private TableGeneratorMetadata m_tableGenerator;
+	private XMLEntityMappings m_entityMappings;
+	
     /**
      * INTERNAL:
      */
-    public NonRelationshipAccessor(MetadataAccessibleObject accessibleObject, MetadataProcessor processor, MetadataDescriptor descriptor) {
-        super(accessibleObject, processor, descriptor);
+    public NonRelationshipAccessor() {}
+    
+	/**
+     * INTERNAL:
+     */
+    public NonRelationshipAccessor(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
+        super(accessibleObject, descriptor, project);
     }
     
     /**
@@ -43,113 +52,90 @@ public abstract class NonRelationshipAccessor extends MetadataAccessor {
     }
     
     /**
-     * INTERNAL: (Overridden in XMLClassAccessor and XMLBasicAccessor)
-	 * Process a @SequenceGenerator into a common metadata sequence generator.
+     * INTERNAL:
+     */
+    public XMLEntityMappings getEntityMappings() {
+    	return m_entityMappings;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public SequenceGeneratorMetadata getSequenceGenerator() {
+		return m_sequenceGenerator;
+	}
+	
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public TableGeneratorMetadata getTableGenerator() {
+		return m_tableGenerator;
+	}
+	
+    /**
+     * INTERNAL:
+	 * Process a SequenceGenerator annotation into a common metadata sequence 
+	 * generator.
      */
     protected void processSequenceGenerator() {
+    	// Process the xml defined sequence generator first.
+    	if (m_sequenceGenerator != null) {
+    		// Ask the common processor to process what we found.
+    		getEntityMappings().processSequenceGenerator(m_sequenceGenerator, getJavaClassName());
+    	}
+        
+        // Process the annotation defined sequence generator second.        
         SequenceGenerator sequenceGenerator = getAnnotation(SequenceGenerator.class);
         
         if (sequenceGenerator != null) {
             // Ask the common processor to process what we found.
-            processSequenceGenerator(new MetadataSequenceGenerator(sequenceGenerator, getJavaClassName()));
+        	getProject().processSequenceGenerator(new SequenceGeneratorMetadata(sequenceGenerator, getJavaClassName()));
         }
     }
     
     /**
      * INTERNAL:
-     * Process a MetadataSequenceGenerator and add it to the project.
-     */
-    protected void processSequenceGenerator(MetadataSequenceGenerator sequenceGenerator) {
-        // Check if the sequence generator name uses a reserved name.
-        String name = sequenceGenerator.getName();
-        
-         if (name.equals(MetadataConstants.DEFAULT_TABLE_GENERATOR)) {
-            m_validator.throwSequenceGeneratorUsingAReservedName(MetadataConstants.DEFAULT_TABLE_GENERATOR, sequenceGenerator.getLocation());
-        } else if (name.equals(MetadataConstants.DEFAULT_IDENTITY_GENERATOR)) {
-            m_validator.throwSequenceGeneratorUsingAReservedName(MetadataConstants.DEFAULT_IDENTITY_GENERATOR, sequenceGenerator.getLocation());
-        }
-            
-        // Conflicting means that they do not have all the same values.
-        if (m_project.hasConflictingSequenceGenerator(sequenceGenerator)) {
-            MetadataSequenceGenerator otherSequenceGenerator = m_project.getSequenceGenerator(name);
-            if (sequenceGenerator.loadedFromAnnotations() && otherSequenceGenerator.loadedFromXML()) {
-                // WIP - should log a warning that we are ignoring this table generator.
-                return;
-            } else {
-                m_validator.throwConflictingSequenceGeneratorsSpecified(name, sequenceGenerator.getLocation(), otherSequenceGenerator.getLocation());
-            }
-        }
-            
-        if (m_project.hasTableGenerator(name)) {
-            MetadataTableGenerator otherTableGenerator = m_project.getTableGenerator(name);
-            m_validator.throwConflictingSequenceAndTableGeneratorsSpecified(name, sequenceGenerator.getLocation(), otherTableGenerator.getLocation());
-        }
-            
-        for (MetadataTableGenerator otherTableGenerator : m_project.getTableGenerators()) {
-            if (otherTableGenerator.getPkColumnValue().equals(sequenceGenerator.getSequenceName())) {
-                // generator name will be used instead of an empty sequence name / pk column name
-                if(otherTableGenerator.getPkColumnValue().length() > 0) {
-                    m_validator.throwConflictingSequenceNameAndTablePkColumnValueSpecified(sequenceGenerator.getSequenceName(), sequenceGenerator.getLocation(), otherTableGenerator.getLocation());
-                }
-            }
-        }
-        
-        m_project.addSequenceGenerator(sequenceGenerator);
-    }
-    
-    /**
-     * INTERNAL: (Overridden in XMLClassAccessor and XMLBasicAccessor)
-	 * Process a @TableGenerator into a common metadata table generator.
+	 * Process a TableGenerator annotation into a common metadata table 
+	 * generator.
      */
     protected void processTableGenerator() {
+        // Process the xml defined table generator first.
+    	if (m_tableGenerator != null) {
+    		// Ask the common processor to process what we found.
+    		getEntityMappings().processTableGenerator(m_tableGenerator, getDescriptor().getXMLCatalog(), getDescriptor().getXMLSchema(), getJavaClassName());
+    	}
+        
+        // Process the annotation defined table generator second.
         TableGenerator tableGenerator = getAnnotation(TableGenerator.class);
         
         if (tableGenerator != null) {
             // Ask the common processor to process what we found.
-            processTableGenerator(new MetadataTableGenerator(tableGenerator, getJavaClassName()));
+            getProject().processTableGenerator(new TableGeneratorMetadata(tableGenerator, getJavaClassName()), getDescriptor().getXMLCatalog(), getDescriptor().getXMLSchema());
         }
     } 
+
+    /**
+     * INTERNAL:
+     */
+    public void setEntityMappings(XMLEntityMappings entityMappings) {
+    	m_entityMappings = entityMappings;
+    }
     
     /**
      * INTERNAL:
-     * Process a MetadataTableGenerator and add it to the project.
-     */     
-    protected void processTableGenerator(MetadataTableGenerator tableGenerator) {
-        // Check if the table generator name uses a reserved name.
-        String name = tableGenerator.getName();
-        
-        if (name.equals(MetadataConstants.DEFAULT_SEQUENCE_GENERATOR)) {
-            m_validator.throwTableGeneratorUsingAReservedName(MetadataConstants.DEFAULT_SEQUENCE_GENERATOR, tableGenerator.getLocation());
-        } else if (name.equals(MetadataConstants.DEFAULT_IDENTITY_GENERATOR)) {
-            m_validator.throwTableGeneratorUsingAReservedName(MetadataConstants.DEFAULT_IDENTITY_GENERATOR, tableGenerator.getLocation());
-        }
-
-        // Conflicting means that they do not have all the same values.
-        if (m_project.hasConflictingTableGenerator(tableGenerator)) {
-            MetadataTableGenerator otherTableGenerator = m_project.getTableGenerator(name);
-            if (tableGenerator.loadedFromAnnotations() && otherTableGenerator.loadedFromXML()) {
-                // WIP - should log a warning that we are ignoring this table generator.
-                return;
-            } else {
-                m_validator.throwConflictingTableGeneratorsSpecified(name, tableGenerator.getLocation(), otherTableGenerator.getLocation());
-            }
-        }
-        
-        if (m_project.hasSequenceGenerator(tableGenerator.getName())) {
-            MetadataSequenceGenerator otherSequenceGenerator = m_project.getSequenceGenerator(name);
-            m_validator.throwConflictingSequenceAndTableGeneratorsSpecified(name, otherSequenceGenerator.getLocation(), tableGenerator.getLocation());
-        }
-            
-        for (MetadataSequenceGenerator otherSequenceGenerator : m_project.getSequenceGenerators()) {
-            if (otherSequenceGenerator.getSequenceName().equals(tableGenerator.getPkColumnValue())) {
-                // generator name will be used instead of an empty sequence name / pk column name
-                if(otherSequenceGenerator.getSequenceName().length() > 0) {
-                    m_validator.throwConflictingSequenceNameAndTablePkColumnValueSpecified(otherSequenceGenerator.getSequenceName(), otherSequenceGenerator.getLocation(), tableGenerator.getLocation());
-                }
-            }
-        }
-            
-        // Add the table generator to the descriptor metadata.
-        m_project.addTableGenerator(tableGenerator);    
-    }
+     * Used for OX mapping.
+     */
+	public void setSequenceGenerator(SequenceGeneratorMetadata sequenceGenerator) {
+		m_sequenceGenerator = sequenceGenerator;
+	}
+	
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public void setTableGenerator(TableGeneratorMetadata tableGenerator) {
+		m_tableGenerator = tableGenerator;
+	}	 
 }

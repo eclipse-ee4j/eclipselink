@@ -45,7 +45,6 @@ public abstract class MetadataAccessibleObject  {
     
     /**
      * INTERNAL:
-     * Set the relation type of this accessible object.
      */
     public String getAttributeName() {
         return m_attributeName;
@@ -69,7 +68,6 @@ public abstract class MetadataAccessibleObject  {
     
     /**
      * INTERNAL:
-     * Set the relation type of this accessible object.
      */
     public String getName() {
         return m_name;
@@ -137,7 +135,6 @@ public abstract class MetadataAccessibleObject  {
     
     /**
      * INTERNAL:
-     * Set the relation type of this accessible object.
      */
     protected void setAttributeName(String attributeName) {
         m_attributeName = attributeName;
@@ -145,7 +142,6 @@ public abstract class MetadataAccessibleObject  {
     
     /**
      * INTERNAL:
-     * Set the relation type of this accessible object.
      */
     protected void setName(String name) {
         m_name = name;
