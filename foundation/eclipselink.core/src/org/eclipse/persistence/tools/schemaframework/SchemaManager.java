@@ -216,8 +216,18 @@ public class SchemaManager {
 
     /**
      * Common implementor for createSequence and replaceSequence
+     * @param create - true to create the sequences, false to replace them (dropped then create)
      */
     protected void createOrReplaceSequences(boolean create) throws EclipseLinkException {              
+        createOrReplaceSequences(create, create);
+    }
+    
+    /**
+     * Common implementor for createSequence and replaceSequence, distinguishes between sequence tables and sequence objects
+     * @param createSequenceTables - true to create the sequences tables, false to replace them (dropped then create)
+     * @param createSequenceObjects - true to create the sequences objects, false to replace them (dropped then create)
+     */
+    protected void createOrReplaceSequences(boolean createSequenceTables, boolean createSequenceObjects) throws EclipseLinkException {
         // PERF: Allow a special "fast" flag to be set on the session causes a delete from the table instead of a replace.
         boolean fast = FAST_TABLE_CREATOR;
         if (fast) {
@@ -240,35 +250,10 @@ public class SchemaManager {
 
         // remember the processed - to handle each sequence just once.
         HashSet processedSequenceNames = new HashSet();
-        buildTableAndSequenceDefinitions(sequenceDefinitions, processedSequenceNames, tableDefinitions);
-        processTableDefinitions(tableDefinitions, create);
-        processSequenceDefinitions(sequenceDefinitions, create);
-    }
-    
-    /**
-     * Common implementor for createSequence and replaceSequence
-     */
-    protected void createOrReplaceSequences(boolean create, boolean drop) throws EclipseLinkException {
-        Sequencing sequencing = getSession().getSequencing();
-
-        if ((sequencing == null) || (sequencing.whenShouldAcquireValueForAll() == Sequencing.AFTER_INSERT)) {
-            // Not required on Sybase native etc.
-            return;
-        }
-
-        // Prepare table and sequence definitions
-        // table name mapped to TableDefinition
-        HashMap tableDefinitions = new HashMap();
-
-        // sequence name to SequenceDefinition
-        HashSet sequenceDefinitions = new HashSet();
-
-        // remember the processed - to handle each sequence just once.
-        HashSet processedSequenceNames = new HashSet();
 
         buildTableAndSequenceDefinitions(sequenceDefinitions, processedSequenceNames, tableDefinitions);
-        processTableDefinitions(tableDefinitions, create);
-        processSequenceDefinitions(sequenceDefinitions, drop);
+        processTableDefinitions(tableDefinitions, createSequenceTables);
+        processSequenceDefinitions(sequenceDefinitions, createSequenceObjects);
     }    
 
     private void buildTableAndSequenceDefinitions(final HashSet sequenceDefinitions, 
@@ -317,64 +302,83 @@ public class SchemaManager {
         }
     }
 
+    /**
+     * Method creates database sequence tables.  If create is true, it will attempt to create the sequence tables and silently 
+     * ignore exceptions.  If create is false, it will drop the tables ignoring any exceptions, then create it.  
+     * @param tableDefinitions - HashMap of Sequence table definitions
+     * @param create - true if tables should be created, false if they should be replaced (dropped then created)
+     * @throws TopLinkException
+     */
     private void processTableDefinitions(final HashMap tableDefinitions, final boolean create) throws EclipseLinkException {
 
         // create tables
         Iterator itTableDefinitions = tableDefinitions.values().iterator();
+        
+        // CR 3870467, do not log stack
+        boolean shouldLogExceptionStackTrace = session.getSessionLog().shouldLogExceptionStackTrace();
 
         while (itTableDefinitions.hasNext()) {
             TableDefinition tableDefinition = (TableDefinition) itTableDefinitions.next();
 
-            // CR 3870467, do not log stack
-            boolean shouldLogExceptionStackTrace = session.getSessionLog().shouldLogExceptionStackTrace();
-
-            if (shouldLogExceptionStackTrace) {
-                session.getSessionLog().setShouldLogExceptionStackTrace(false);
-            }
-
-            if (create) {
-                try {
-                    createObject(tableDefinition);
-                } catch (DatabaseException exception) {
-                    // Ignore already created
-                } finally {
-                    if (shouldLogExceptionStackTrace) {
-                        session.getSessionLog().setShouldLogExceptionStackTrace(true);
-                    }
-                }
-            } else {
-                try {
-                    dropObject(tableDefinition);
-                } catch (DatabaseException exception) {
-                    // Ignore table not found for first creation
-                } finally {
-                    if (shouldLogExceptionStackTrace) {
-                        session.getSessionLog().setShouldLogExceptionStackTrace(true);
-                    }
-                }
-
-                createObject(tableDefinition);
-            }
+            processDatabaseObjectDefinition(tableDefinition, create, shouldLogExceptionStackTrace);
         }
     }
 
+    /**
+     * Method creates database sequence objects.  If create is true, it will attempt to create the sequence and silently ignore
+     * exceptions.  If create is false, it will drop the sequence ignoring any exceptions, then create it.  
+     * @param sequenceDefinitions - HashSet of Sequence object definitions
+     * @param create - true if sequenceDefinitions should be created, false if they should be replaced (dropped then created)
+     * @throws TopLinkException
+     */
     private void processSequenceDefinitions(final HashSet sequenceDefinitions, final boolean create) throws EclipseLinkException {
-
+        
+        // CR 3870467, do not log stack
+        boolean shouldLogExceptionStackTrace = session.getSessionLog().shouldLogExceptionStackTrace();
         // create sequence objects
         Iterator itSequenceDefinitions = sequenceDefinitions.iterator();
-
+        
         while (itSequenceDefinitions.hasNext()) {
             SequenceDefinition sequenceDefinition = (SequenceDefinition) itSequenceDefinitions.next();
+            
+            processDatabaseObjectDefinition(sequenceDefinition, create, shouldLogExceptionStackTrace);
+        }
+    }
 
-            if (!create) {
-                try {
-                    dropObject(sequenceDefinition);
-                } catch (DatabaseException exception) {
-                    // Ignore sequence not found for first creation
+    /**
+     * Method creates database tables/objects.  If create is true, it will attempt to create the object and silently ignore
+     * exceptions.  If create is false, it will drop the object ignoring any exceptions, then create it.  
+     * @param definition -the object definition
+     * @param create - true if the definition should be created, false if it should be replaced (dropped then created)
+     * @throws TopLinkException
+     */
+    private void processDatabaseObjectDefinition(DatabaseObjectDefinition definition, final boolean create, final boolean shouldLogExceptionStackTrace) throws EclipseLinkException {
+        if (shouldLogExceptionStackTrace) {
+            session.getSessionLog().setShouldLogExceptionStackTrace(false);
+        }
+
+        if (create) {
+            try {
+                createObject(definition);
+            } catch (DatabaseException exception) {
+                // Ignore already created
+            } finally {
+                if (shouldLogExceptionStackTrace) {
+                    session.getSessionLog().setShouldLogExceptionStackTrace(true);
+                }
+            }
+        } else {
+            try {
+                dropObject(definition);
+            } catch (DatabaseException exception) {
+                // Ignore table not found for first creation
+            } finally {
+                if (shouldLogExceptionStackTrace) {
+                    session.getSessionLog().setShouldLogExceptionStackTrace(true);
                 }
             }
 
-            createObject(sequenceDefinition);
+            createObject(definition);
         }
     }
 

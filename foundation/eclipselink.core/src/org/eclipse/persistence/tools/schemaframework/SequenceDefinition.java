@@ -65,10 +65,14 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
 
     /**
      * INTERNAL:
+     * Creates this sequence definition on the database.  If it already exists, the method will attempt
+     * to alter it based on what the platform supports.  
      */
     public void createOnDatabase(AbstractSession session) throws EclipseLinkException {
         if (checkIfExist(session)) {
-            alterOnDatabase(session);
+            if (this.isAlterSupported(session)) {
+                alterOnDatabase(session);
+            }
         } else {
             super.createOnDatabase(session);
         }
