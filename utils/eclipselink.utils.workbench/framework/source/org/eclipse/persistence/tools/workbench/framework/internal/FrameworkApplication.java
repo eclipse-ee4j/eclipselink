@@ -856,7 +856,7 @@ public final class FrameworkApplication
 	 * @see org.eclipse.persistence.tools.workbench.utility.ManifestInterrogator.Defaults#defaultReleaseDesignation()
 	 */
 	public String defaultReleaseDesignation() {
-		return "11g Release 1";
+		return "Version 1.0.0";
 	}
 
 	/**
@@ -870,7 +870,7 @@ public final class FrameworkApplication
 	 * @see org.eclipse.persistence.tools.workbench.utility.ManifestInterrogator.Defaults#defaultSpecificationVersion()
 	 */
 	public String defaultSpecificationVersion() {
-		return "11.1.1.0.0";
+		return "1.0.0";
 	}
 
 	/**

@@ -30,6 +30,7 @@ import javax.swing.border.EmptyBorder;
 import org.eclipse.persistence.tools.workbench.framework.action.AbstractFrameworkAction;
 import org.eclipse.persistence.tools.workbench.framework.context.ApplicationContext;
 import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContext;
+import org.eclipse.persistence.tools.workbench.uitools.LabelArea;
 
 
 /**
@@ -221,7 +222,7 @@ final class AboutDialog extends JDialog {
 		mainPanel.add(buildLabel, constraints);
 
 		// copyright
-		JLabel copyrightLabel = new JLabel(context.getResourceRepository().getString("COPYRIGHT"));
+		LabelArea copyrightLabel = new LabelArea(context.getResourceRepository().getString("COPYRIGHT"));
 		copyrightLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
 		constraints.gridx			= 0;

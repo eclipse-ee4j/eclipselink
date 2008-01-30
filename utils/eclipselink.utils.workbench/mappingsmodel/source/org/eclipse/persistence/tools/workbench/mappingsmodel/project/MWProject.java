@@ -1206,19 +1206,19 @@ public abstract class MWProject
 
 	private static class LocalManifestDefaults implements Defaults {
 		public String defaultSpecificationTitle() {
-			return "TopLink";
+			return "EclipseLink";
 		}
 		public String defaultSpecificationVendor() {
-			return "Oracle";
+			return "Eclipse";
 		}
 		public String defaultReleaseDesignation() {
-			return "11g Release 1";
+			return "Version 1.0.0";
 		}
 		public String defaultLibraryDesignation() {
 			return "Workbench";
 		}
 		public String defaultSpecificationVersion() {
-			return "11.1.1.0.0";
+			return "1.0.0";
 		}
 		public String defaultImplementationVersion() {
 			return this.defaultSpecificationVersion();
