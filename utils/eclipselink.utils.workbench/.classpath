@@ -12,7 +12,7 @@
 	<classpathentry kind="src" path="scplugin/source"/>
 	<classpathentry kind="lib" path="jlib/compile/ant.jar" sourcepath="jlib/source/ant_src.zip"/>
 	<classpathentry kind="lib" path="jlib/compile/eclipselink.jar"/>
-	<classpathentry kind="lib" path="jlib/compile/xercesImpl.jar" sourcepath="jlib/source/Xerces-J-src.2.9.0.zip"/>
+	<classpathentry kind="lib" path="jlib/compile/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="config"/>
 	<classpathentry kind="lib" path="iconlib/resource"/>
 	<classpathentry kind="output" path="class"/>
