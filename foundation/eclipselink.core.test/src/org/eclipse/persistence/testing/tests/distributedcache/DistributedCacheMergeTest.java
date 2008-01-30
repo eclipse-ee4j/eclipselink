@@ -50,7 +50,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
         createObject();
 
         try {
-            LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
+            LocateRegistry.createRegistry(41099);
         } catch (Exception e) {
             //hopefully this exception is just because the registry already exists            
         }
@@ -91,7 +91,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
         // ovewrite default to use RMI registry naming service  
         cm.getTransportManager().setNamingServiceType(TransportManager.REGISTRY_NAMING_SERVICE);
         // set full rmi URL of local host 
-        cm.setUrl("rmi://localhost:1099");
+        cm.setUrl("rmi://localhost:41099");
         // turn on cache sync with RCM
         session.setShouldPropagateChanges(true);
         cm.setServerPlatform(((org.eclipse.persistence.sessions.DatabaseSession)getSession()).getServerPlatform());
