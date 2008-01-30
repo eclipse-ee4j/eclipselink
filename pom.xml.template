@@ -34,7 +34,7 @@
   <distributionManagement>
     <repository>
       <id>eclipselink-maven-repo</id>
-      <url>file:///c:/Temp/TestSVN1</url>
+      <url>http://www.eclipse.org/downloads/download.php?r=1&amp;file=/technology/eclipselink/staging/maven.repo</url>
     </repository>
  </distributionManagement>
 </project>
