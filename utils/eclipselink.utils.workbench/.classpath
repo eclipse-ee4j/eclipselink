@@ -10,10 +10,10 @@
 	<classpathentry kind="src" path="mappingsio/source"/>
 	<classpathentry kind="src" path="mappingsplugin/source"/>
 	<classpathentry kind="src" path="scplugin/source"/>
-	<classpathentry kind="lib" path="jlib/compile/ant.jar" sourcepath="jlib/source/ant_src.zip"/>
-	<classpathentry kind="lib" path="jlib/compile/eclipselink.jar"/>
-	<classpathentry kind="lib" path="jlib/compile/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="config"/>
 	<classpathentry kind="lib" path="iconlib/resource"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/ant.jar"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/eclipselink.jar"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/xercesImpl.jar"/>
 	<classpathentry kind="output" path="class"/>
 </classpath>
