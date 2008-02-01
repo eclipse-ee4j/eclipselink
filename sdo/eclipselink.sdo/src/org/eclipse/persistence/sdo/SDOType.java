@@ -407,6 +407,9 @@ public class SDOType implements Type, Serializable {
     public void setSequenced(boolean sequenced) {
         // setting sequence to true will not generate any sequences on instances of this property
         isSequenced = sequenced;
+        if (xmlDescriptor != null) {
+            getXmlDescriptor().setSequencedObject(sequenced);
+        }
     }
 
     /**
@@ -660,6 +663,7 @@ public class SDOType implements Type, Serializable {
     public XMLDescriptor getXmlDescriptor(List namespaceResolvers) {
         if (!isDataType() && (xmlDescriptor == null)) {
             xmlDescriptor = new XMLDescriptor();
+            xmlDescriptor.setSequencedObject(isSequenced);
             NamespaceResolver nr = new NamespaceResolver();
 
             // copy namespaces between resolvers for well known and SDO namespaces

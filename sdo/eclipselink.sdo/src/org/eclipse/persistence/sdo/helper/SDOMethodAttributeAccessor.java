@@ -12,6 +12,7 @@ package org.eclipse.persistence.sdo.helper;
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 
+import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 
@@ -78,7 +79,7 @@ public class SDOMethodAttributeAccessor extends AttributeAccessor {
      * Sets the value of the instance variable in the object to the value.
      */
     public void setAttributeValueInObject(Object domainObject, Object attributeValue) throws DescriptorException {
-        ((DataObject)domainObject).set(property, attributeValue);
+        ((SDODataObject)domainObject).set(property, attributeValue, false);
 
     }
 

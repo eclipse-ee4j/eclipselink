@@ -40,6 +40,8 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.sequenced.SequencedObject;
+import org.eclipse.persistence.oxm.sequenced.Setting;
 
 /**
  * <p><b>Purpose</b>: A data object is a representation of some structured data.
@@ -71,7 +73,7 @@ import org.eclipse.persistence.oxm.XMLRoot;
  * as well as specific accessors for the primitive types and commonly used data types like
  * String, Date, List, BigInteger, and BigDecimal.
  */
-public class SDODataObject implements DataObject {
+public class SDODataObject implements DataObject, SequencedObject {
 
     /**
      * Development Guidelines:
@@ -2740,7 +2742,7 @@ public class SDODataObject implements DataObject {
                 if (prop.isMany()) {
                     ((ListWrapper)getList(prop)).add(value, false);
                 } else {
-                    set(prop, value);
+                    set(prop, value, false);
                 }
             }
         }
@@ -3219,13 +3221,6 @@ public class SDODataObject implements DataObject {
      * @param updateSequence (truncate call back from sequence when this function was called from sequence)
      */
     public void setPropertyInternal(Property property, Object value, boolean updateSequence) {
-        int index = ((SDOProperty)property).getIndexInType();
-        if (index == -1) {
-            _getCurrentValueStore().setOpenContentProperty(property, value);
-        } else {
-            _getCurrentValueStore().setDeclaredProperty(index, value);
-        }
-
         /*
          * Update sequence object if element and without invoking a back pointer from sequence.add() to this dataObject.
          * The sequence != null required in case where non-public type.setSequenced(true) called after type define.
@@ -3240,11 +3235,26 @@ public class SDODataObject implements DataObject {
          * we have 3 states( !attribute, !element and (!attribute && !element))
          * - two of which are valid for sequence setting creation.
          */
-        if (type.isSequenced() && (sequence != null) && updateSequence//
+        if (type.isSequenced() && updateSequence//
                  &&(property.getType() != SDOConstants.SDO_CHANGESUMMARY) && !aHelperContext.getXSDHelper().isAttribute(property)) {
             // As we do for ListWrappers and DataObjects we will need to remove the previous setting if this set is actually a modify
-            // keep sequence code here for backdoor sets           
-            ((SDOSequence)sequence).addWithoutUpdate(property, value);
+            // keep sequence code here for backdoor sets
+            if(property.isMany()) {
+                ((SDOSequence)sequence).addSettingWithoutModifyingDataObject(property, value);
+            } else {
+                if(isSet(property)) {
+                    ((SDOSequence)sequence).updateSettingWithoutModifyingDataObject(property, get(property), value);                                        
+                } else {
+                    ((SDOSequence)sequence).addSettingWithoutModifyingDataObject(property, value);                                        
+                }
+            }
+        }
+
+        int index = ((SDOProperty)property).getIndexInType();
+        if (index == -1) {
+            _getCurrentValueStore().setOpenContentProperty(property, value);
+        } else {
+            _getCurrentValueStore().setDeclaredProperty(index, value);
         }
     }
 
@@ -3341,7 +3351,7 @@ public class SDODataObject implements DataObject {
          */
         if (type.isSequenced() && (sequence != null) && updateSequence && aHelperContext.getXSDHelper().isElement(property)) {
             // remove all instances of the property from the sequence
-            ((SDOSequence)sequence).remove(property.getName(), property.getType().getURI(), false);
+            ((SDOSequence)sequence).removeSettingWithoutModifyingDataObject(property);
         }
     }
 
@@ -3363,5 +3373,13 @@ public class SDODataObject implements DataObject {
             openContentPropertiesAttributes = new ArrayList();
         }
         return openContentPropertiesAttributes;
+    }
+    
+    public List<Setting> getSettings() {
+        if(null != sequence) {
+            return ((SDOSequence)sequence).getSettings();
+        } else {
+            return null;
+        }
     }
 }

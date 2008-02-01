@@ -16,7 +16,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class SimpleAnyTestCases extends XMLMappingTestCases {
     
-    private static final String XML_RESOURCE = "oracle/toplink/testing/ox/mappings/sequenced/SimpleAny.xml";
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/sequenced/SimpleAny.xml";
     private static final String CONTROL_XML_ROOT_NAME = "STRING";
     private static final String CONTROL_XML_ROOT_VALUE = "Hello World";
   

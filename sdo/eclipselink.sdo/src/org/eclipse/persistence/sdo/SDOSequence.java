@@ -9,779 +9,667 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sdo;
 
+import commonj.sdo.DataObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.eclipse.persistence.sdo.helper.ListWrapper;
-import org.eclipse.persistence.exceptions.SDOException;
-import commonj.sdo.DataObject;
+import java.util.Map;
+import java.util.HashMap;
 import commonj.sdo.Property;
 import commonj.sdo.Sequence;
+import org.eclipse.persistence.sdo.SDODataObject;
+import org.eclipse.persistence.sdo.helper.ListWrapper;
+import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
+import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
+import org.eclipse.persistence.oxm.sequenced.Setting;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
-/**
- * INTERNAL:
- * <p/>
- * <b>Purpose:</b>
- * <ul><li>This class Implements the Sequence interface and provides a
- * sequence of Settings that preserve order accross heterogeneos properties.</li>
- * </ul>
- * <p/>
- * <b>Responsibilities:</b>
- * <ul>
- * <li>Provide access to a Sequence of Properties</li>
- * <li>Provide get/add/remove access to Property/Value pair at each Setting
- * index</li>
- * </ul>
- * <p/>
- * This class uses an implementation of the XMLSetting interface as its sequencing data type.
- * <br/>
- * Adding or removing settings will update the properties on the containing
- * {@link DataObject dataObject}. Any change to the containing dataObject such as deletion of a
- * sequenced property will result in removal of the setting from this sequence.
- * <p/>
- * The methods on XMLDescriptor -get/setGetSettingsMethodName are used to
- * get/set these settings on the {@link Sequence sequence}.
- *
- * @see org.eclipse.persistence.sdo.SDODataObject
- * @see org.eclipse.persistence.internal.oxm.XMLSetting
- * @since Oracle TopLink 11.1.1.0.0
- */
 public class SDOSequence implements Sequence {
-
-    /**
-     * NOTE:
-     * The reflective field names for the private instance variable holding the List of settings
-     * and the dataObject back pointer must match the name of the 2 private final fields referenced in SDOEqualityHelper.
-     */
-    /** DataObject back pointer to container of this sequence for Property resolution */
+    private static final String TEXT_XPATH = "text()";
     private SDODataObject dataObject;
+    private List<Setting> settings;
+    private Map<Key, Setting> valuesToSettings;
 
-    /** List of SDOSetting objects of type List<XMLSetting<Property, Object>> */
-    private List settingsList;
-
-    public SDOSequence(SDODataObject aDataObject) {
+    public SDOSequence(SDODataObject dataObject) {
         // catch a null dataObject early before we get NPE on any update operations during add/remove
-        if (null == aDataObject) {
+        if (null == dataObject) {
             throw SDOException.sequenceDataObjectInstanceFieldIsNull();
         }
-
-        // we reference an implementation SDODataObject instead of its interface because of the use of out of spec functions on this field
-        dataObject = aDataObject;
-        settingsList = new ArrayList();// type <XMLSetting>
+        this.dataObject = dataObject;
+        this.settings = new ArrayList<Setting>();
+        this.valuesToSettings = new HashMap<Key, Setting>();
     }
 
-    /**
-     * Returns the number of entries in the sequence.
-     *
-     * @return the number of entries.
-     */
-    public int size() {
-        return settingsList.size();
-    }
-
-    /**
-     * INTERNAL:
-     * Return the list of {@link SDOSetting SDOSetting} objects.
-     * @return
-     */
-    public List getSettings() {
-        return settingsList;
-    }
-
-    /**
-     * INTERNAL:
-     * Return the {@link SDODataObject} that this sequence is associated with.
-     * @return
-     */
     public SDODataObject getDataObject() {
-        // implemented by SDOCopyHelper.copyChangeSummary()
         return dataObject;
     }
 
-    /**
-     * Returns the property for the given entry index. Returns <code>null</code>
-     * for mixed text entries.
-     *
-     * @param index
-     *            the index of the entry.
-     * @return the property or <code>null</code> for the given entry index.
-     */
-    public Property getProperty(int index) {
-        SDOSetting aSetting = null;
-        try {
-            aSetting = (SDOSetting)settingsList.get(index);
-        } catch (IndexOutOfBoundsException e) {
-            throw SDOException.invalidIndex(e, index);
-        }
-
-        // TODO: aSetting will not be null unless we threw an exception above - do we want to throw our own?  
-        return aSetting.getProperty();
+    public List<Setting> getSettings() {
+        return settings;
     }
 
-    /**
-     * Returns the property value for the given entry index.
-     *
-     * @param index
-     *            the index of the entry.
-     * @return the value for the given entry index.
-     */
-    public Object getValue(int index) {
-        SDOSetting aSetting = getSetting(index);
-
-        // TODO: aSetting will not be null unless we threw an exception above - do we want to throw our own?  
-        return aSetting.getValue();
+    protected Map<Key, Setting> getValuesToSettings() {
+        return valuesToSettings;
     }
 
-    /**
-     * INTERNAL:
-     * Sets the entry at a specified index to the new value.
-     *
-     * @param index
-     *            the index of the entry.
-     * @param value
-     *            the new value for the entry.
-     * @param updateContainer
-     *            flag whether we update the backpointer dataObject..
-     */
-    private Object setValue(int index, Object value, boolean updateContainer) {
-        // TODO: Implement - no shift here
-        // get the Setting at this index and update the value        
-        SDOSetting aSetting = getSetting(index);
-
-        // handle changeSummary tracking by making the cs.originalSequences dirty 
-        if ((null == getProperty(index)) && updateContainer) {
-            setModified();
-        }
-
-        // TODO: require instanceof ListWrapper checking in the case we pass in a single index of a list
-        aSetting.setValue(value);
-        // update dataObject container only if we are not an unstructuredText setting
-        if ((null != aSetting.getProperty()) && updateContainer) {
-            dataObject.set(aSetting.getProperty(), value, false);
-        }
-        return value;
+    public void add(int index, int propertyIndex, Object value) {
+        Property property = dataObject.getInstanceProperty(propertyIndex);
+        add(index, property, value);
     }
 
-    /**
-     * Sets the entry at a specified index to the new value.
-     *
-     * @param index
-     *            the index of the entry.
-     * @param value
-     *            the new value for the entry.
-     */
-    public Object setValue(int index, Object value) {
-        return setValue(index, value, true);
-    }
-
-    /**
-     * Adds a new entry with the specified property name and value to the end of the entries.
-     *
-     * @param propertyName
-     *            the name of the entry's property.
-     * @param value
-     *            the value for the entry.
-     */
-    public boolean add(String propertyName, Object value) {
-        Property prop = dataObject.getInstanceProperty(propertyName);
-
-        return addPrivate(prop, value, true);
-    }
-
-    /**
-     * Adds a new entry with the specified property index and value to the end of the entries.
-     *
-     * @param propertyIndex
-     *            the index of the entry's property.
-     * @param value
-     *            the value for the entry.
-     */
     public boolean add(int propertyIndex, Object value) {
-        return addPrivate(dataObject.getInstanceProperty(propertyIndex), value, true);
+        Property property = dataObject.getInstanceProperty(propertyIndex);
+        return add(property, value);
     }
 
-    /**
-     * Adds a new entry with the specified property and value to the end of the entries.
-     *
-     * @param property
-     *            the property of the entry.
-     * @param value
-     *            the value for the entry.
-     */
-    public boolean add(Property property, Object value) {
-        return addPrivate(property, value, true);
-    }
+    public void add(int index, Property property, Object value) {
+        if (!isAllowedInSequence(property)) {
+            return;
+        }
 
-    /**
-     * INTERNAL:
-     * Adds a new entry with the specified property and value to the end of the entries.
-     * If this add is actually a modify then we will handle duplication.
-     * <p>
-     * Does not do an update of the container dataObject. This function is used
-     * internally by the SDODataObject implementation.
-     *
-     * @param aProperty
-     *            the property of the entry.
-     * @param anObject
-     *            the value for the entry.
-     */
-    public boolean addWithoutUpdate(Property aProperty, Object anObject) {
-        // do not update the container
-        return addPrivate(aProperty, anObject, false);
-    }
-
-    /**
-     * INTERNAL:
-     * Shared logic for add(*, value) Add a new setting to the end of the sequence.<br/>
-     * When there is an existing entry we move the entry when called from a sequence.add(),
-     * and we update any existing entry in place when called from DataObject - JIRA-242
-     *
-     * @param aProperty
-     * @param anObject
-     * @param fromSequenceAPI - a call from DataObject will not require an update of the container dataObject - itself
-     * @return
-     */
-    private boolean addPrivate(Property aProperty, Object anObject, boolean fromSequenceAPI) {
-        Object settingValue = anObject;
-
-        /**
-         * Logic: <br>
-         * 1. A single setting does not exist at index - we add the single object <br>
-         * 2. A single setting exists at index - single object is already set - we replace existing value <br>
-         * 3. A single setting exists at some other index - (modify op) - see JIRA-242<br>
-         *   3.1 - (from DataObject) we update the previous instance in place<br>
-         *   3.2a - (from Sequence.add) we add the new index and leave the existing index in place - creating duplicates.<br>
-         *   3.2b - (from Sequence.add) throw exception - current implementation.
-         * 4. A many setting does not exist at index - we add a new list with the new object<br>
-         * 5. A many setting exists at index - we add to the existing list
-         *
-         * The logic for this addPrivate(index) is different than addPrivate() because the
-         * latter function can be called from DataObject where will may convert an add
-         * into a setValue depending on whether an existing entry for a single property exists.
-
-         */
-
-        // add only element properties or null (unstructured text) properties
-        if ((aProperty != null) && dataObject._getHelperContext().getXSDHelper().isAttribute(aProperty)) {
-            throw SDOException.sequenceAttributePropertyNotSupported(aProperty.getName());
-        } else {
-            boolean existingEntryWasUpdatedInPlace = false;
-
-            // update(from DataObject) or add(from Sequence) an existing single entry
-            if ((null != aProperty) && !aProperty.isMany()) {
-                // search for an existing duplicate of the object we are preparing to add/modify
-                for (int index = settingsList.size() - 1; index >= 0; index--) {
-                    SDOSetting aSetting = getSetting(index);
-
-                    // setting value may be null but property must be !null
-                    Property settingProperty = aSetting.getProperty();
-
-                    // ignore unstructured text property==null
-                    if ((null != settingProperty) && (settingProperty == aProperty)) {
-                        if (!fromSequenceAPI) {
-                            // update the setting without updating the backpointer dataObject if we are called from DataObject
-                            setValue(index, anObject, false);
-                            existingEntryWasUpdatedInPlace = true;
-                        } else {
-
-                            /**
-                             * It has been decided that the case where an add of
-                             * an existing (non-many) object is attempted - we will throw a runtime
-                             * exception instead of assuming one of the following actions.
-                             * 1) remove previous and add new setting at the end of the sequence (in effect a move(x, end)
-                             * 2) add a duplicate of the object and retain the old one in place - creating
-                             * potential problems with getValue() setValue() (which one to get first, nth occurrence?)
-                             * We will return an exception when attempting to add a setting to a sequence that already has
-                             * an existing entry.  The existing entry will not be updated or moved to the end of the sequence.
-                             * This exception occurs only for complex single types.
-                            */
-
-                            // do not remove(i, false) an existing entry (we always add to the end of the sequence - spec. 3.4.3.1)
-                            throw SDOException.sequenceDuplicateSettingNotSupportedForComplexSingleObject(index, aProperty.getName());
-                        }
-                    }
+        if (property != null && property.isOpenContent() && dataObject.getType().isOpen()) {
+            dataObject.addOpenContentProperty(property);
+        }
+        // Update the data object
+        if (property.isMany()) {
+            ListWrapper listWrapper = (ListWrapper) dataObject.getList(property);
+            if (value instanceof List) {
+                // iterate list
+                for (Iterator i = ((List) value).iterator(); i.hasNext();) {
+                    // add a setting to the end of the sequence
+                    Object aValue = i.next();
+                    Setting setting = convertToSetting(property, aValue);
+                    valuesToSettings.put(new Key(property, aValue), setting);
+                    settings.add(index++, setting);
+                    // no need to check updateContainment flag - ListWrapper.add() will not pass an entire List here
+                    listWrapper.add(aValue, false);
+                }
+            } else {
+                // set individual list item
+                // add a setting to the end of the sequence
+                Setting setting = convertToSetting(property, value);
+                valuesToSettings.put(new Key(property, value), setting);
+                settings.add(index, setting);
+                int listIdx = getIndexInList(property, value);
+                if (listIdx != -1) {
+                    listWrapper.add(listIdx, value, false);
+                } else {
+                    listWrapper.add(value, false);
                 }
             }
+        } else {
+            dataObject.setPropertyInternal(property, value, false);
+            // Update the settings
+            Setting setting = convertToSetting(property, value);
+            valuesToSettings.put(new Key(property, value), setting);
+            settings.add(index, setting);
+        }
+    }
 
-            // update dataObject container if not unstructured text - add at the end of the list
-            if (!existingEntryWasUpdatedInPlace) {
-                addPrivateUpdateDataObjectContainer(settingsList.size(), aProperty, settingValue, fromSequenceAPI);
+    private boolean isAllowedInSequence(Property property) {
+        // Disallow the addition of a null Property
+        if (null == property) {
+            return false;
+        }
+        // Disallow the addition of a read only Property
+        if (property.isReadOnly()) {
+            return false;
+        }
+        // Disallow the addition of a Properties representing an XML attribute
+        if (dataObject._getHelperContext().getXSDHelper().isAttribute(property)) {
+            throw SDOException.sequenceAttributePropertyNotSupported(property.getName());
+        }
+        // Disallow an open Property on a closed Type
+        if (property.isOpenContent() && !dataObject.getType().isOpen()) {
+            return false;
+        }
+        // Disallow the addition of an isMany==false Property that is already set
+        if (property.isMany()) {
+            return true;
+        }
+        if (dataObject.isSet(property)) {
+            throw SDOException.sequenceDuplicateSettingNotSupportedForComplexSingleObject(getIndexForProperty(property), property.getName());
+        }
+        return true;
+    }
+
+    public void add(int index, String propertyName, Object value) {
+        Property property = dataObject.getInstanceProperty(propertyName);
+        add(index, property, value);
+    }
+
+    public void add(int index, String text) {
+        addText(index, text);
+    }
+
+    public boolean add(Property property, Object value) {
+        if (addSettingWithoutModifyingDataObject(property, value)) {
+            if (property != null && property.isOpenContent() && dataObject.getType().isOpen()) {
+                dataObject.addOpenContentProperty(property);
+            }
+            if (value instanceof XMLRoot) {
+                value = ((XMLRoot) value).getObject();
+            }
+            if (property.isMany()) {
+                ListWrapper listWrapper = (ListWrapper) dataObject.getList(property);
+                listWrapper.add(value, false);
+            } else {
+                dataObject.setPropertyInternal(property, value, false);
             }
             return true;
         }
+        return false;
     }
 
-    /**
-     * INTERNAL:
-     * @param aProperty
-     * @param settingValue
-     * @param updateContainment
-     * @return
-     */
-    private void addPrivateUpdateDataObjectContainer(int index, Property aProperty, Object settingValue, boolean updateContainment) {
-        // update dataObject container if not unstructured text
-        if (aProperty != null) {
+    public boolean add(String propertyName, Object value) {
+        Property property = dataObject.getInstanceProperty(propertyName);
+        return add(property, value);
+    }
 
-            /**
-             * Handle many properties: We will assume that If the
-             * property.isMany=true then the value passed in must be a List or
-             * the single Object must be added to an existing List when adding
-             * to the containing dataObject.
-             * If the current many value is not an empty ListWrapper then create one
-             * and add the settingValue as the first element.
-             */
-            if (aProperty.isMany()) {
-                // Note: this case is the same as the ListWrapper.addAll() case
-                // get existing list (will create an empy ListWrapper)
-                ListWrapper existingList = (ListWrapper)dataObject.get(aProperty);
+    public void add(String text) {
+        addText(text);
+    }
 
-                // create a single setting for each item in the list
-                if (settingValue instanceof List) {
-                    // iterate list
-                    int count = 0;
-                    for (Iterator i = ((List)settingValue).iterator(); i.hasNext();) {
-                        // add a setting to the end of the sequence
-                        Object aValue = i.next();
-                        SDOSetting aSetting = new SDOSetting(aProperty, aValue);
-                        settingsList.add(index + count++, aSetting);
-                        // no need to check updateContainment flag - ListWrapper.add() will not pass an entire List here
-                        existingList.add(aValue, false);
+    public void addText(int index, String text) {
+        // Trigger store of original sequence
+        dataObject._setModified(true);
+        Setting textSetting = new Setting(null, TEXT_XPATH);
+        textSetting.setObject(dataObject);
+        textSetting.setValue(text, false);
+        settings.add(index, textSetting);
+    }
+
+    public void addText(String text) {
+        // Trigger store of original sequence
+        dataObject._setModified(true);
+        Setting textSetting = new Setting(null, TEXT_XPATH);
+        textSetting.setObject(dataObject);
+        textSetting.setValue(text, false);
+        settings.add(textSetting);
+    }
+
+    public Property getProperty(int index) {
+        try {
+            return getProperty(settings.get(index));
+        } catch (IndexOutOfBoundsException iobex) {
+            throw SDOException.invalidIndex(iobex, index);
+        }
+    }
+
+    // TODO - NEED TO FACTOR IN NAMESPACE URI
+    public Property getProperty(Setting setting) {
+        DatabaseMapping mapping = setting.getMapping();
+        if (null == mapping) {
+            List<Setting> children = setting.getChildren();
+            if (null != children && children.size() > 0) {
+                return getProperty(children.get(0));
+            }
+        } else {
+            Property property = null;
+            if (null == setting.getName()) {
+                Object value = setting.getValue();
+                if (value instanceof DataObject) {
+                    // TODO: is it right to check containment property?
+                    Property containmentProp = ((DataObject) value).getContainmentProperty();
+                    if (containmentProp != null) {
+                        property = dataObject.getInstanceProperty(containmentProp.getName());
+                    }
+                    if (property == null) {
+                        XMLDescriptor desc = ((SDOType) ((DataObject) value).getType()).getXmlDescriptor();
+
+                        String qualifiedName = desc.getDefaultRootElement();
+                        int index = qualifiedName.indexOf(':');
+                        String localName = null;
+                        if (index > -1) {
+                            localName = qualifiedName.substring(index + 1, qualifiedName.length());
+                        } else {
+                            localName = qualifiedName;
+                        }
+                        property = dataObject.getInstanceProperty(localName);
                     }
                 } else {
-                    // set individual list ltem
-                    // add a setting to the end of the sequence
-                    SDOSetting aSetting = new SDOSetting(aProperty, settingValue);
-                    settingsList.add(index, aSetting);
-                    if (updateContainment) {
-                        // caller is sequence.add()
-                        // add to existing list                        
-                        int newIndex = getIndexInList(aProperty, settingValue);
-                        existingList.add(newIndex, settingValue, false);
+                    XMLRoot xmlRoot = (XMLRoot) value;
+                    if (null != xmlRoot) {
+                        property = dataObject.getInstanceProperty(xmlRoot.getLocalName());
                     }
                 }
             } else {
-                // add a setting to the end of the sequence
-                SDOSetting aSetting = new SDOSetting(aProperty, settingValue);
-                settingsList.add(index, aSetting);
-                if (updateContainment) {
-                    // caller is sequence.add()
-                    // update dataObject container only if we are not an unstructuredText setting
-                    dataObject.set(aProperty, settingValue, false);
-                }
+                property = dataObject.getInstanceProperty(mapping.getAttributeName());
             }
-        } else {
+            return property;
+        }
+        return null;
+    }
 
-            /**
-             * See SDODataObject.undoChanges() UC4.
-             * Modify sequence without modifying container DataObject.
-             * This is a use case where we must create an entry in changeSummary.originalSequences
-             * independent of any changes to the container.
-             * A subsequent undo of the container will pick up this change.
-             */
-
-            // handle changeSummary tracking by making the cs.originalSequences dirty
-            setModified();
-
-            /**
-             * TODO: possible refactor of these 3 setting blocks into 1
-             * create a new setting and insert at the index position Shifts the
-             * element currently at that position (if any) and any subsequent
-             * elements to the right (adds one to their indices).
-             */
-
-            // add a setting to the end of the sequence for unstructured text
-            SDOSetting aSetting = new SDOSetting(aProperty, settingValue);
-            settingsList.add(index, aSetting);
+    public Object getValue(int index) {
+        try {
+            return getValue(settings.get(index));
+        } catch (IndexOutOfBoundsException iobex) {
+            throw SDOException.invalidIndex(iobex, index);
         }
     }
 
-    /**
-     * INTERNAL:
-     * Save the original sequence on the changeSummary when logging is on
-     * for the first modification.
-     */
-    private void setModified() {
-        if ((dataObject.getChangeSummary() != null) &&//
-                ((SDOChangeSummary)dataObject.getChangeSummary()).isLogging()) {
-            // dont store an original sequence if there are already is one in the map 
-            // - this block is skipped if we attempt a second modification
-            if (!((SDOChangeSummary)dataObject.getChangeSummary()).isDirty(this)) {
-                // handle Sequences only in UC2 where we have modified the container object - not when only the sequence is dirty
-                // deep copy the list of settings so a modification of the current sequence will not affect a setting in the originalSequences map
-                SDOSequence copySequence = copy();
-
-                // store original sequence on ChangeSummary 
-                ((SDOChangeSummary)dataObject.getChangeSummary()).getOriginalSequences().put(dataObject, copySequence);
+    private Object getValue(Setting setting) {
+        if (null != setting.getMapping() || (setting.getName() != null && setting.getName().equals(TEXT_XPATH))) {
+            Object value = setting.getValue();
+            if (value instanceof XMLRoot) {
+                value = ((XMLRoot) value).getObject();
             }
-        }
-    }
-
-    /**
-     * INTERNAL: shared logic for add(index, *, value) Add a new setting at the specified index.
-     *
-     * @param index
-     * @param aProperty
-     * @param value
-     * @param allowNullProperties
-     */
-    private void addPrivate(int index, Property aProperty, Object anObject) {
-        Object settingValue = anObject;
-
-        /**
-         * Logic: 1. A single setting does not exist at index - we add the
-         * single object 2. A single setting exists at index - single object is
-         * already set - we replace existing value 3. A many setting does not
-         * exist at index - we add a new list with the new object 3. A many
-         * setting exists at index - we add to the existing list.
-         *
-         * The logic for this addPrivate(index) is different than addPrivate() because the
-         * latter function can be called from DataObject where will may convert an add
-         * into a setValue depending on whether an existing entry for a single property exists.
-         */
-
-        // TODO: 
-        // check out of bounds exceptions
-        if ((index < 0) || (index > size())) {
-            // TODO: throw exception or let the List generated one propagate
-            return;
+            return value;
         }
 
-        // add only element properties or null (unstructured text) properties
-        if ((aProperty != null) && dataObject._getHelperContext().getXSDHelper().isAttribute(aProperty)) {
-            throw SDOException.sequenceAttributePropertyNotSupported(aProperty.getName());
-        } else {
-            // update dataObject container if not unstructured text
-            addPrivateUpdateDataObjectContainer(index, aProperty, settingValue, true);
+        if (null == setting.getChildren() || setting.getChildren().size() == 0) {
+            return null;
         }
+        return getValue(setting.getChildren().get(0));
     }
 
-    /**
-     * Adds a new entry with the specified property name and value at the
-     * specified entry index.
-     *
-     * @param index
-     *            the index at which to add the entry.
-     * @param propertyName
-     *            the name of the entry's property.
-     * @param value
-     *            the value for the entry.
-     */
-    public void add(int index, String propertyName, Object value) {
-        addPrivate(index, dataObject.getInstanceProperty(propertyName), value);
-    }
-
-    /**
-     * Adds a new entry with the specified property index and value at the
-     * specified entry index.
-     *
-     * @param index
-     *            the index at which to add the entry.
-     * @param propertyIndex
-     *            the index of the entry's property.
-     * @param value
-     *            the value for the entry.
-     */
-    public void add(int index, int propertyIndex, Object value) {
-        addPrivate(index, dataObject.getInstanceProperty(propertyIndex), value);
-    }
-
-    /**
-     * Adds a new entry with the specified property and value at the specified
-     * entry index.
-     *
-     * @param index
-     *            the index at which to add the entry.
-     * @param property
-     *            the property of the entry.
-     * @param value
-     *            the value for the entry.
-     */
-    public void add(int index, Property property, Object value) {
-        addPrivate(index, property, value);
-    }
-
-    /**
-     * INTERNAL:
-     * Return the index corresponding the the setting based on the property value pair.
-     * Note: this function will only remove the first occurrence of multiple primitives like int.
-     * Returns -1 for index not found
-     * @param aProperty
-     * @param aValue
-     * @param occurrencePosition 0=first, 1=second..
-     * @return
-     */
-    public int getIndex(Property aProperty, Object aValue, int occurrencePosition) {
-        int index = -1;
-        for (int i = 0, size = size(), occurrence = 0; i < size; i++) {//
-            SDOSetting aSetting = getSetting(i);
-
-            // watch for null properties that match a null aProperty parameter - use to get the index of the first unstructured text setting
-            if (aSetting.getProperty() == aProperty) {
-                // check object equality and remove the first match
-                if (aValue == aSetting.getValue()) {
-                    occurrence++;
-                    // decide whether to keep searching
-                    if (occurrence > occurrencePosition) {
-                        index = i;
-                        // break out of loop
-                        i = size();
-                    }
-                }
-            }
-        }
-        return index;
-    }
-
-    /**
-     * Removes the entry at the given entry index.
-     *
-     * @param index
-     *            the index of the entry.
-     */
-    public void remove(int index) {
-        remove(index, true);
-    }
-
-    /**
-     * INTERNAL:
-     * Remove all entries at the indexes that correspond to the given propertyName.
-     *
-     * @see org.eclipse.persistence.sdo.SDODataObject unsetInternal()
-     * @param propertyName
-     * @param updateContainer
-     */
-    public void remove(String propertyName, String uri, boolean updateContainer) {
-        // search for the list and remove each indexed position in the sequence
-        // that corresponds to propertyName
-        // TODO: linear performance hit
-        int size = size();
-
-        // count down and handle decreasing size of settings list
-        for (int i = size - 1; i >= 0; i--) {
-            Property aProperty = getProperty(i);
-
-            // TODO: handle null property for unstructured text
-            if ((null != aProperty) && aProperty.getName().equals(propertyName) && aProperty.getType().getURI().equals(uri)) {
-                // do not breakout of loop with this property, iterate until no more are found
-                remove(i, updateContainer);
-            }
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Remove the entry at the given sequence index
-     *
-     * @param index
-     * @param updateContainer
-     */
-    public void remove(int index, boolean updateContainer) {
-        Property aProperty = getProperty(index);
-
-        /**
-            * Save object state for unstructured text settings before we remove them.
-            *
-         * See SDODataObject.undoChanges() UC4.
-         * Modify sequence without modifying container DataObject.
-         * This is a use case where we must create an entry in changeSummary.originalSequences
-         * independent of any changes to the container.
-         * Only unstructured text entries are not tracked by lw.remove or do.unset.
-         * A subsequent undo of the container will pick up this change.
-         */
-
-        // handle changeSummary tracking by making the cs.originalSequences dirty 
-        if ((null == aProperty) && updateContainer) {
-            setModified();
-        }
-
-        // shifting is handled by List during the remove
-        SDOSetting aSetting = (SDOSetting)settingsList.remove(index);// aSetting is the same as the get above
-
-        // update dataObject container
-        if ((aSetting != null) && (aProperty != null) && updateContainer) {
-            // Remove the property value or single many element from the containing dataObject
-            // we are calling unset/detach in a [fromDelete=true] context
-            if (aProperty.isMany()) {
-                // complex/simple many
-                ((ListWrapper)dataObject.getList(aProperty)).remove(aSetting.getValue(), false, false);
-            } else {
-                // complex/simple single
-                dataObject.unset(aProperty, true, false);
-            }
-        }
-    }
-
-    /**
-     * Moves the entry at <code>fromIndex</code> to <code>toIndex</code>.
-     *
-     * @param toIndex
-     *            the index of the entry destination.
-     * @param fromIndex
-     *            the index of the entry to move.
-     */
     public void move(int toIndex, int fromIndex) {
-        // perform index checking
         if (toIndex == fromIndex) {
             return;
         }
-
-        //call getSetting on toIndex to handle outofboundsexception
-        getSetting(toIndex);
-        Property aProperty = getProperty(fromIndex);
-
-        // handle changeSummary tracking by making the cs.originalSequences dirty 
-        if (null == aProperty) {
-            setModified();
+        // verify indexes are in range
+        int size = settings.size();
+        if (fromIndex < 0 || fromIndex >= size) {
+            throw SDOException.invalidIndex(null, fromIndex);
         }
+        if (toIndex < 0 || toIndex >= size) {
+            throw SDOException.invalidIndex(null, toIndex);
+        }
+        // trigger deep copy of sequence (if applicable)
+        dataObject._setModified(true);
 
-        // get the Setting to shift by removing it and shift settings
-        SDOSetting aSetting = (SDOSetting)settingsList.remove(fromIndex);
+        Setting setting = settings.remove(fromIndex);
+        settings.add(toIndex, setting);
 
-        // set the Setting into its new position and shift existing Settings
-        settingsList.add(toIndex, aSetting);
-
-        if ((aProperty != null) && aProperty.isMany()) {
-            ListWrapper lw = (ListWrapper)dataObject.getList(aProperty);
-            Object value = aSetting.getValue();
+        Property prop = getProperty(setting);
+        if (prop != null && prop.isMany()) {
+            ListWrapper lw = (ListWrapper) dataObject.getList(prop);
+            Object value = getValue(setting);
             int currentIndexInLw = lw.indexOf(value);
             lw.remove(currentIndexInLw, false);
-            int newIndexInLw = getIndexInList(aProperty, value);
+            int newIndexInLw = getIndexInList(prop, value);
             lw.add(newIndexInLw, value, false);
         }
     }
 
+    // TODO: add exception handling...
+    public void remove(int index) {
+        Setting setting = settings.get(index);
+        remove(setting);
+        settings.remove(setting);
+    }
+
+    // TODO - NEED TO FACTOR IN NAMESPACE URI
+    private void remove(Setting setting) {
+        DatabaseMapping mapping = setting.getMapping();
+        if (null != mapping) {
+            Property property = null;
+            if (null == setting.getName()) {
+                XMLRoot xmlRoot = (XMLRoot) setting.getValue();
+                if (null != xmlRoot) {
+                    property = dataObject.getInstanceProperty(xmlRoot.getLocalName());
+                    valuesToSettings.remove(new Key(property, setting.getValue()));
+                }
+            } else {
+                property = dataObject.getInstanceProperty(mapping.getAttributeName());
+                valuesToSettings.remove(new Key(property, setting.getValue()));
+            }
+            if (property.isMany()) {
+                ListWrapper listWrapper = (ListWrapper) dataObject.getList(property);
+                listWrapper.remove(setting.getValue(), false, false);
+            } else {
+                dataObject.unset(property, false, false);
+            }
+        } else if (setting.getName() != null && setting.getName().equals(TEXT_XPATH)) {
+            // Handle "text()"
+            dataObject._setModified(true);
+        }
+        List<Setting> children = setting.getChildren();
+        if (null != children) {
+            int childrenSize = children.size();
+            for (int x = 0; x < childrenSize; x++) {
+                remove(children.get(x));
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * 
+     * @param setting
+     */
+    public void addValueToSettings(Setting setting) {
+        valuesToSettings.put(new Key(getProperty(setting), getValue(setting)), setting);
+    }
+
+    /**
+     * INTERNAL:
+     * 
+     * @param setting
+     */
+    public void removeValueToSettings(Setting setting) {
+        valuesToSettings.remove(new Key(getProperty(setting), getValue(setting)));
+    }
+
+    public Object setValue(int index, Object value) {
+        return setValue(settings.get(index), value);
+    }
+
+    private Object setValue(Setting setting, Object value) {
+        if (null == setting.getMapping()) {
+            if (setting.getName() != null && setting.getName().equals(TEXT_XPATH)) {
+                dataObject._setModified(true);
+                Object oldValue = setting.getValue();
+                setting.setValue(value, false);
+                return oldValue;
+            }
+            List<Setting> children = setting.getChildren();
+            if (null != children && children.size() > 0) {
+                return setValue(children.get(0), value);
+            }
+            return null;
+        }
+        
+        Property property = getProperty(setting);
+        Object oldValue = setting.getValue();
+
+        if (property.isMany()) {
+            List listValue = dataObject.getList(property);
+            int valueIndex = listValue.indexOf(oldValue);
+            listValue.remove(valueIndex);
+            listValue.add(valueIndex, value);
+            setting.setValue(value, false);
+        } else {
+            if (dataObject.isSet(property)) {
+                updateSettingWithoutModifyingDataObject(property, dataObject.get(property), value);
+                setting.setValue(value);
+            } else {
+                addSettingWithoutModifyingDataObject(property, value);
+            }
+            dataObject.setPropertyInternal(property, value, false);
+        }
+        return oldValue;
+    }
+
+    public int size() {
+        return settings.size();
+    }
+
+    private Setting convertToSetting(Property property, Object value) {
+        SDOProperty sdoProperty = (SDOProperty) property;
+        DatabaseMapping mapping = sdoProperty.getXmlMapping();
+        Setting setting = new Setting();
+        SDOType sdoType = (SDOType) dataObject.getType();
+        XMLDescriptor xmlDescriptor = sdoType.getXmlDescriptor();
+        if (null == mapping) {
+            setting.setObject(dataObject);
+            // TODO: this seems odd...is always going to return null but I think we want the any mapping
+            // mapping = xmlDescriptor.getMappingForAttributeName(null);
+            mapping = xmlDescriptor.getMappingForAttributeName("openContentProperties");
+            setting.setMapping(mapping);
+            XMLRoot xmlRoot = new XMLRoot();
+            if (value instanceof XMLRoot) {
+                xmlRoot.setLocalName(((XMLRoot) value).getLocalName());
+                xmlRoot.setNamespaceURI(((XMLRoot) value).getNamespaceURI());
+                xmlRoot.setObject(((XMLRoot) value).getObject());
+            } else {
+                xmlRoot.setLocalName(sdoProperty.getName());
+                xmlRoot.setNamespaceURI(sdoProperty.getUri());
+                xmlRoot.setObject(value);
+            }
+            setting.setValue(xmlRoot, false);
+        } else {
+            setting = convertToSetting(mapping, value);
+        }
+        return setting;
+    }
+
+    private Setting convertToSetting(DatabaseMapping mapping, Object value) {
+        XMLDescriptor xmlDescriptor = (XMLDescriptor) mapping.getDescriptor();
+        NamespaceResolver nsResolver = xmlDescriptor.getNamespaceResolver();
+        Setting rootSetting = new Setting();
+        XMLField xmlField = (XMLField) mapping.getField();
+        if (xmlField == null) {
+            if (mapping instanceof XMLObjectReferenceMapping) {
+                xmlField = (XMLField) ((XMLObjectReferenceMapping) mapping).getFields().get(0);
+            } else if (mapping instanceof XMLCollectionReferenceMapping) {
+                xmlField = (XMLField) ((XMLCollectionReferenceMapping) mapping).getFields().get(0);
+            }
+        }
+        Setting setting = rootSetting;
+        if (xmlField != null) {
+            XPathFragment xPathFragment = xmlField.getXPathFragment();
+            rootSetting = convertToSetting(xPathFragment, nsResolver);
+            setting = rootSetting;
+
+            while (xPathFragment.getNextFragment() != null) {
+                xPathFragment = xPathFragment.getNextFragment();
+                Setting childSetting = convertToSetting(xPathFragment, nsResolver);
+                setting.addChild(childSetting);
+                setting = childSetting;
+            }
+        }
+        setting.setObject(dataObject);
+        setting.setMapping(mapping);
+        setting.setValue(value, false);
+        return rootSetting;
+    }
+
+    private Setting convertToSetting(XPathFragment xPathFragment, NamespaceResolver nsResolver) {
+        Setting setting = new Setting();
+        String name = xPathFragment.getLocalName();
+        if (null == name) {
+            name = xPathFragment.getShortName();
+        }
+        setting.setName(name);
+        if (xPathFragment.hasNamespace()) {
+            setting.setNamespaceURI(nsResolver.resolveNamespacePrefix(xPathFragment.getPrefix()));
+        }
+        return setting;
+    }
+
+    public SDOSequence copy() {
+        SDOSequence copy = new SDOSequence(dataObject);
+        for (int index = 0, size = settings.size(); index < size; index++) {
+            Setting settingCopy = settings.get(index).copy();
+            copy.getSettings().add(settingCopy);
+            copy.getValuesToSettings().put(new Key(getProperty(settingCopy), getValue(settingCopy)), settingCopy);
+        }
+        return copy;
+    }
+
+    /**
+     * INTERNAL:
+     * Add a setting to the list at the specified index.  The owning DataObject will not
+     * be made aware of this addition.
+     * 
+     * @param index the index at which to add the new Setting in the Settings list
+     * @param property
+     * @param value
+     * @return true if the a Setting was successfully added to the list, otherwise false
+     */
+    public boolean addSettingWithoutModifyingDataObject(int index, Property property, Object value) {
+        if (!isAllowedInSequence(property)) {
+            return false;
+        }
+        Setting setting = convertToSetting(property, value);
+        valuesToSettings.put(new Key(property, value), setting);
+        settings.add(setting);
+        return true;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public boolean addSettingWithoutModifyingDataObject(Property property, Object value) {
+        return addSettingWithoutModifyingDataObject(property, value, true);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public boolean addSettingWithoutModifyingDataObject(Property property, Object value, boolean checkAllowed) {
+        if (checkAllowed && !isAllowedInSequence(property)) {
+            return false;
+        }
+        Setting setting = convertToSetting(property, value);
+        valuesToSettings.put(new Key(property, value), setting);
+        settings.add(setting);
+        return true;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void updateSettingWithoutModifyingDataObject(Property property, Object oldValue, Object newValue) {
+        Key key = new Key(property, oldValue);
+        Setting setting = valuesToSettings.get(key);
+        valuesToSettings.remove(key);
+        valuesToSettings.put(new Key(property, newValue), setting);
+        // set the new value on the appropriate setting
+        while (setting.getMapping() == null) {
+            List<Setting> children = setting.getChildren();
+            if (children != null && children.size() > 0) {
+                setting = children.get(0);
+            }
+        }
+        setting.setValue(newValue, false);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void removeSettingWithoutModifyingDataObject(Property property, Object value) {
+        settings.remove(valuesToSettings.remove(new Key(property, value)));
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void removeSettingWithoutModifyingDataObject(Property property) {
+        List<Key> keys = new ArrayList<Key>(valuesToSettings.keySet());
+        int size = valuesToSettings.keySet().size();
+        for (int i = size - 1; i >= 0; i--) {
+            Key nextKey = keys.get(i);
+            if (nextKey.getProperty() == property) {
+                settings.remove(valuesToSettings.remove(nextKey));
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Convenience method that returns the index of the Setting associated 
+     * with a given property in the Settings list
+     * 
+     * @param property
+     * @return index of the Setting associated with a given property in 
+     * the Settings list or -1 if not found
+     */
+    public int getIndexForProperty(Property property) {
+        List<Key> keys = new ArrayList<Key>(valuesToSettings.keySet());
+        for (int i = 0; i < keys.size(); i++) {
+            Key nextKey = keys.get(i);
+            if (nextKey.getProperty() == property) {
+                return settings.indexOf(valuesToSettings.get(nextKey));
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * INTERNAL:
+     * Convenience method that, given a many property and a value, returns the
+     * associated Setting's index in the Settings list.  For example, if a 
+     * sequence contains many properties "letters" and "numbers", such as 
+     * [A, 1, C, 2, B, D], and we are looking for the letter B, this method
+     * will return 2.  Although B is at index 4 of the Settings list, it is at
+     * index 2 of the list of "letters" - [A, C, B, D].    
+     * 
+     * @param property
+     * @return index of the value's Setting in the list relative to a given 
+     * property or -1 if not found.
+     */
     private int getIndexInList(Property manyProp, Object value) {
         int returnIndex = -1;
-        for (int i = 0; i < settingsList.size(); i++) {
-            SDOSetting nextSetting = (SDOSetting)settingsList.get(i);
-            if (nextSetting.getProperty().equals(manyProp)) {
+        for (int i = 0; i < settings.size(); i++) {
+            Setting nextSetting = settings.get(i);
+            Property prop = getProperty(nextSetting);
+            if (prop.equals(manyProp)) {
                 returnIndex++;
-                if (value.equals(nextSetting.getValue())) {
+                if (value.equals(getValue(nextSetting))) {
                     return returnIndex;
                 }
             }
         }
         return returnIndex;
     }
-
-    /**
-     * Adds a new text entry to the end of the Sequence.
-     *
-     * @deprecated replaced by {@link #addText(String)} in 2.1.0
-     */
-    public void add(String text) {
-        addText(text);
-    }
-
-    /**
-     * Adds a new text entry at the given index.
-     *
-     * @deprecated replaced by {@link #addText(int, String)} in 2.1.0
-     */
-    public void add(int index, String text) {
-        addText(index, text);
-
-    }
-
-    /**
-     * Adds a new text entry to the end of the Sequence.
-     *
-     * @param text
-     *            value of the entry.
-     */
-    public void addText(String text) {
-        // add a new unstructured text entry with Property==null
-        addPrivate(size(), null, text);
-    }
-
-    /**
-     * Adds a new text entry at the given index.
-     *
-     * @param index
-     *            the index at which to add the entry.
-     * @param text
-     *            value of the entry.
-     */
-    public void addText(int index, String text) {
-        // add a new unstructured text entry with Property==null
-        addPrivate(index, null, text);
-    }
-
+    
     /**
      * INTERNAL:
-     * This function allows us to replace the entire list of settings with a new list.
-     * Use of this function to modify the sequence outside of the API functions is not
-     * advise as the state of the containing DataObject and the ChangeSummary will
-     * be out of synchronization.
-     * Use only to create a copy of a sequence that is not used in a live DataObject.
-     * @param newList
-     *             the list to replace the current list of settings.
+     * Get the root Setting for a given Setting.
+     * 
+     * @param setting
+     * @return the root Setting or this Setting if it is a root
      */
-    private void setSettings(List newList) {
-        // TODO: If the settingsList is replaced we are breaking any ChangeSummary or DataObject synchronization
-        // We want to keep this function private so that the user cannot modify the sequence outside of its DataObject/ChangeSummary context
-        settingsList = newList;
-    }
-
-    /**
-     * INTERNAL:
-     * Return a deep copy of the SDOSequence object.
-     * The settings in the sequence are not shared between the 2 sequence objects.
-     * @return
-     */
-    public SDOSequence copy() {
-        // any modification to the current sequence will not affect a copy in the originalSequences
-        SDOSequence copySequence = new SDOSequence(dataObject);
-        List copyList = new ArrayList();//getSettings()); // type <Setting>
-        for (Iterator i = getSettings().iterator(); i.hasNext();) {
-            SDOSetting aSetting = (SDOSetting)i.next();
-            SDOSetting copySetting = new SDOSetting(aSetting.getProperty(), aSetting.getValue());
-            copyList.add(copySetting);
+    public static Setting getRootSetting(Setting setting) {
+        Setting rootSetting = setting;
+        while (rootSetting.getParent() != null) {
+            rootSetting = rootSetting.getParent();
         }
-
-        // set the list of settings without affecting the container
-        copySequence.setSettings(copyList);
-        return copySequence;
+        return rootSetting;
     }
-
+    
     /**
-      * INTERNAL:
-      */
-    private SDOSetting getSetting(int index) {
-        try {
-            return (SDOSetting)settingsList.get(index);
-        } catch (IndexOutOfBoundsException e) {
-            throw SDOException.invalidIndex(e, index);
+     * INTERNAL:
+     * Ensure that each Setting in the settings list is also present in the
+     * valuesToSettings map 
+     */
+    public void afterUnmarshal() {
+        for (Iterator<Setting> setIt = getSettings().iterator(); setIt.hasNext(); ) {
+            addValueToSettings(setIt.next());
         }
     }
 
-    /**
-     * INTERNAL:
-     * Print out a String representation of this object
-     */
-    public String toString() {
-        // TODO: expand past HashCode output
-        StringBuffer aBuffer = new StringBuffer();
-        aBuffer.append(getClass().getName());
-        aBuffer.append("@");
-        aBuffer.append(hashCode());
-        aBuffer.append(", do: ");
-        aBuffer.append(dataObject);
-        // settingsList is always set in the constructor, therefore !null
-        List aList = getSettings();
-        aBuffer.append(", ");
-        aBuffer.append(aList.size());
-        aBuffer.append(" Settings: <");
-        boolean first = true;
-        for (Iterator i = aList.iterator(); i.hasNext();) {
-            if (first) {
-                first = false;
-            } else {
-                aBuffer.append(", ");
+    private static class Key {
+        private Property property;
+        private Object value;
+
+        public Key(Property property, Object value) {
+            this.property = property;
+            this.value = value;
+        }
+
+        protected Property getProperty() {
+            return this.property;
+        }
+
+        protected Object getValue() {
+            return this.value;
+        }
+
+        public boolean equals(Object object) {
+            try {
+                Key key = (Key) object;
+                return property == key.getProperty() && value == key.getValue();
+            } catch (ClassCastException e) {
+                return false;
             }
-            aBuffer.append(i.next());// null values are handled
+
         }
-        aBuffer.append(">]");
-        return aBuffer.toString();
+
+        public int hashCode() {
+            if (value == null) {
+                return 0;
+            }
+            return value.hashCode();
+        }
     }
 }

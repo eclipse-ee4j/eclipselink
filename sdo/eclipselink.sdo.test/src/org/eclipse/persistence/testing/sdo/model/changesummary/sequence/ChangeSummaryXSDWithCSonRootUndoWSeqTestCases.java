@@ -40,7 +40,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
     public void setUp() {
         super.setUp();// watch setup redundancy
     }
-
+/*
     public void prepareSetItemsAfterDetachUnsetOrDeleteAndUndo_MultiOperation_SetComplexSingleWithManyChildBelowRootAndUndo(
             DataObject itemsDO, //
             DataObject item1DO, //
@@ -655,7 +655,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertFalse(xsdHelper.isAttribute(openProp));
         return openProp;
     }
-    
+    */
     // PurchaseOrder needs to be isOpen=true
 /*    
     public void testAddOpenContentPropertyViaDataObject() {

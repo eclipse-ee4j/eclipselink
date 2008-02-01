@@ -487,11 +487,11 @@ public class ChangeSummaryGetOldSequenceTestCases extends SDOTestCase {
     }
 
     public void testGetOldSequenceSameSettings() {
-        ChangeSummary.Setting firstSetting = (ChangeSummary.Setting)((SDOSequence)address1Object.getSequence()).getSettings().get(0);
+        org.eclipse.persistence.oxm.sequenced.Setting firstSetting = ((SDOSequence)address1Object.getSequence()).getSettings().get(0);
         cs.beginLogging();
         //modify addressObject        
         address1Object.set("city", "aaa");
-        ChangeSummary.Setting secondSetting =(ChangeSummary.Setting)((SDOSequence)address1Object.getSequence()).getSettings().get(0);
+        org.eclipse.persistence.oxm.sequenced.Setting secondSetting = ((SDOSequence)address1Object.getSequence()).getSettings().get(0);
         assertTrue(firstSetting == secondSetting);
     }
 }

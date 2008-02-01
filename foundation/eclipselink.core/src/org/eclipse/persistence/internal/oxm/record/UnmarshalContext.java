@@ -59,6 +59,17 @@ public interface UnmarshalContext {
     public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value);
 
     /**
+     * When a collection mapping is processed the UnmarshalContext is responsible for
+     * handling the values one at a time.
+     * @param unmarshalRecord
+     * @param containerValue A container object such as a java.util.ArrayList, to which 
+     * the value will be added.
+     * @param value The value to be added to the container,
+     * @param collection
+     */
+    public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value, Object collection);
+
+    /*
      * When a Reference is built the UnmarshalContext is given the ability to perform
      * further processing on it. 
      * @param reference

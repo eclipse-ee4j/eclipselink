@@ -19,7 +19,8 @@ import java.util.List;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOSequence;
-import org.eclipse.persistence.sdo.SDOSetting;
+import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.sequenced.Setting;
 
 /**
  * <p><b>Purpose</b>: A helper class for checking deep or shallow equality of DataObjects.</p>
@@ -163,13 +164,14 @@ public class SDOEqualityHelper implements EqualityHelper {
              * There is no need to check sequenced state on both objects because they share the same SDOType instance.
              */
             if (dataObject1.getType().isSequenced()) {
-                return compareSequences((SDOSequence)dataObject1.getSequence(), (SDOSequence)dataObject2.getSequence(), isDeep);
+                if (!compareSequences((SDOSequence) dataObject1.getSequence(), (SDOSequence) dataObject2.getSequence(), isDeep)) {
+                    return false;
+                }
             }
 
             // First, compare properties that are not open content.
             // Attribute property differences will not be picked up in the sequence comparison
-            boolean result = compare(dataObject1, dataObject2, isDeep, dataObject1.getType().getProperties());
-            if (!result) {
+            if (!compare(dataObject1, dataObject2, isDeep, dataObject1.getType().getProperties())) {
                 return false;
             }
 
@@ -181,8 +183,7 @@ public class SDOEqualityHelper implements EqualityHelper {
             if ((properties_1.size() != properties_2.size()) || !properties_1.containsAll(properties_2)) {
                 return false;
             }
-            result = compare(dataObject1, dataObject2, isDeep, properties_1);
-            if (!result) {
+            if (!compare(dataObject1, dataObject2, isDeep, properties_1)) {
                 return false;
             }
 
@@ -193,8 +194,7 @@ public class SDOEqualityHelper implements EqualityHelper {
             if ((attrProperties_1.size() != attrProperties_2.size()) || !attrProperties_1.containsAll(attrProperties_2)) {
                 return false;
             }
-            result = compare(dataObject1, dataObject2, isDeep, attrProperties_1);
-            if (!result) {
+            if (!compare(dataObject1, dataObject2, isDeep, attrProperties_1)) {
                 return false;
             }
 
@@ -232,13 +232,10 @@ public class SDOEqualityHelper implements EqualityHelper {
         }
 
         // for shallow equal - match whether we skipped creating settings or set value=null for shallow copies
-        if (aSequence.size() != aSequenceCopy.size()) {
+        if (isDeep && aSequence.size() != aSequenceCopy.size()) {
             return false;
         }
-
-        // the settings inside the sequence must be new objects
-        SDOSetting originalSetting = null;
-        SDOSetting copySetting = null;
+        // the settings inside the sequence must be new objects        
         List originalSettingsList = aSequence.getSettings();
         List copySettingsList = aSequenceCopy.getSettings();
         if ((null == originalSettingsList) || (null == copySettingsList)) {
@@ -255,79 +252,162 @@ public class SDOEqualityHelper implements EqualityHelper {
          * shallowcopy  v1=String  v2=null(default)  v3=String
          * deepcopy       v1=String  v2=DataObject    v3=String
          */
-        for (int index = 0, size = aSequence.size(); index < size; index++) {
-            originalSetting = (SDOSetting)originalSettingsList.get(index);
-            copySetting = (SDOSetting)copySettingsList.get(index);
+        if (isDeep) {
+            for (int index = 0, size = aSequence.size(); index < size; index++) {
+                originalProperty = aSequence.getProperty((Setting) originalSettingsList.get(index));
+                copyProperty = aSequenceCopy.getProperty((Setting) copySettingsList.get(index));
 
-            originalProperty = originalSetting.getProperty();
-            copyProperty = copySetting.getProperty();
-
-            // we must handle null properties that represent unstructured text
-            // both null = unstructured
-            // one null = invalid state (return not equal)
-            // both !null = valid state (check equality)
-            if (((null == originalProperty) && (null != copyProperty)) || ((null != originalProperty) && (null == copyProperty))) {
-                return false;
-            }
-
-            // the property field on the setting must point to the same property instance as the original
-            if (originalProperty != copyProperty) {// handle both properties == null
-                return false;
-            }
-
-            Object originalValue = originalSetting.getValue();
-            Object copyValue = copySetting.getValue();
-
-            // for unstructuredText (null property) and simple dataTypes we check equality directly
-            if ((null == originalProperty) || originalProperty.getType().isDataType()) {
-                // if one of the values is null return false
-                if (((null == originalValue) && (null != copyValue)) ||//
-                        ((null != originalValue) && (null == copyValue))) {
+                // we must handle null properties that represent unstructured text
+                // both null = unstructured
+                // one null = invalid state (return not equal)
+                // both !null = valid state (check equality)
+                if (((null == originalProperty) && (null != copyProperty)) || ((null != originalProperty) && (null == copyProperty))) {
                     return false;
                 }
 
-                // if both values are null - they are equal
-                if ((null != originalValue) && !originalValue.equals(copyValue)) {// we can also use !.equals()
+                // the property field on the setting must point to the same property instance as the original
+                if (originalProperty != copyProperty) {// handle both properties == null
                     return false;
                 }
-            } else {
-                // For complex types
-                // we do not need to check deep equality on dataObjects twice here, just check instances
-                // because the dataObject compare will iterate all the properties of each dataObject
-                // only compare DataObjects when in a  deep equal
-                if (isDeep) {
-                    if ((null != originalValue) && (null != copyValue)) {
-                        // setting.isSet is ignored for sequences
-                        // perform a deep equal on the single item
-                        // the values may not match their types - return false instead of a CCE
-                        if (originalValue instanceof DataObject && copyValue instanceof DataObject) {
-                            if (!equal((DataObject)originalValue, (DataObject)copyValue)) {
+
+                Object originalValue = aSequence.getValue(index);
+                Object copyValue = aSequenceCopy.getValue(index);
+
+                // for unstructuredText (null property) and simple dataTypes we check equality directly
+                if ((null == originalProperty) || originalProperty.getType().isDataType()) {
+                    // if one of the values is null return false
+                    if (((null == originalValue) && (null != copyValue)) || //
+                            ((null != originalValue) && (null == copyValue))) {
+                        return false;
+                    }
+                    // if both values are null - they are equal
+                    if ((null != originalValue) && !originalValue.equals(copyValue)) {// we can also use !.equals()
+                        return false;
+                    }
+                } else {
+                    // For complex types
+                    // we do not need to check deep equality on dataObjects twice here, just check instances
+                    // because the dataObject compare will iterate all the properties of each dataObject
+                    // only compare DataObjects when in a  deep equal
+                    if (isDeep) {
+                        if ((null != originalValue) && (null != copyValue)) {
+                            // setting.isSet is ignored for sequences
+                            // perform a deep equal on the single item
+                            // the values may not match their types - return false instead of a CCE
+                            if (originalValue instanceof DataObject && copyValue instanceof DataObject) {
+                                if (!equal((DataObject) originalValue, (DataObject) copyValue)) {
+                                    return false;
+                                }
+                            } else if (originalValue instanceof XMLRoot && copyValue instanceof XMLRoot) {
+                                XMLRoot originalXMLRoot = (XMLRoot) originalValue;
+                                XMLRoot copyXMLRoot = (XMLRoot) copyValue;
+                                // compare local names of XMLRoot objects
+                                if (!originalXMLRoot.getLocalName().equals(copyXMLRoot.getLocalName())) {
+                                    return false;
+                                }
+                                // compare uris of XMLRoot objects
+                                if (!originalXMLRoot.getNamespaceURI().equals(copyXMLRoot.getNamespaceURI())) {
+                                    return false;
+                                }
+                                
+                                Object originalUnwrappedValue = (originalXMLRoot).getObject();
+                                Object copyUnwrappedValue = (copyXMLRoot).getObject();
+                                if (originalUnwrappedValue instanceof DataObject && copyUnwrappedValue instanceof DataObject) {
+                                    if (!equal((DataObject) originalUnwrappedValue, (DataObject) copyUnwrappedValue)) {
+                                        return false;
+                                    }
+                                }
+                            } else {
                                 return false;
                             }
                         } else {
-                            return false;
+                            // both values must be null to be equal
+                            if (((null == originalValue) && (null != copyValue)) || ((null == copyValue) && (null != originalValue))) {
+                                return false;
+                            }
                         }
                     } else {
-                        // both values must be null to be equal
-                        if (((null == originalValue) && (null != copyValue)) || ((null == copyValue) && (null != originalValue))) {
-                            return false;
+                        // For DataObjects in general anything that is deep equal is also shallow equal - but not the reverse.
+                        // In the case of shallow equal on sequences.  We can ignore the state of the 2 complex objects.
+                        //   UC1: if aSequenceCopy setting was from a shallowCopy then it will be unset.
+                        //   UC2: if aSequenceCopy setting was from a deepCopy or a reversed argument shallowCopy then it may be unset or set.
+                        // We will not check for a default value on either sequence setting.
+                    }
+                }
+            }
+        } else {
+            int cpyIdx = 0;
+            boolean locatedSetting;
+            // compare settings
+            for (int idx = 0; idx < aSequence.getSettings().size(); idx++) {
+                Property nextProperty = aSequence.getProperty(idx);
+                if (nextProperty == null || nextProperty.getType().isDataType()) {
+                    // compare to the next copy datatype setting
+                    Object nextValue = aSequence.getValue(idx);
+                    locatedSetting = false;
+                    for (; cpyIdx < aSequenceCopy.getSettings().size(); cpyIdx++) {
+                        Property nextCopyProperty = aSequenceCopy.getProperty(cpyIdx);
+                        if (nextCopyProperty == null || nextCopyProperty.getType().isDataType()) {
+                            // at this point we need to compare the two Settings and their properties
+                            Object nextCopyValue = aSequenceCopy.getValue(cpyIdx);
+                            if (nextValue == nextCopyValue && arePropertiesEqual(nextProperty, nextCopyProperty)) {
+                                locatedSetting = true;
+                            }
+                            cpyIdx++;
+                            break;
                         }
                     }
-                } else {
-
-                    /**
-                     * For DataObjects in general anything that is deep equal is also shallow equal - but not the reverse.
-                     * In the case of shallow equal on sequences.  We can ignore the state of the 2 complex objects.
-                     *     UC1: if aSequenceCopy setting was from a shallowCopy then it will be unset.
-                     *     UC2: if aSequenceCopy setting was from a deepCopy or a reversed argument shallowCopy then it may be unset or set.
-                     * We will not check for a default value on either sequence setting.
-                     */
+                    if (!locatedSetting) {
+                        return false;
+                    }
                 }
+            }
+            // at this point there should not be any more copy settings
+            if (getIndexOfNextDataTypeSetting(aSequenceCopy, cpyIdx) != -1) {
+                return false;
             }
         }
         return true;
     }
-
+    
+    /**
+     * INTERNAL:
+     * Convenience method for returning the index of the next DataType 
+     * Setting in a given sequence.
+     * 
+     * @param aSequence
+     * @param index
+     * @return the next Setting after index in the sequence, or -1 if none 
+     */
+    private int getIndexOfNextDataTypeSetting(SDOSequence aSequence, int index) {
+        List<Setting> settings = aSequence.getSettings();
+        for (int i = index; i < settings.size(); i++) {
+            Property nextProperty = aSequence.getProperty(i);
+            if (nextProperty == null || nextProperty.getType().isDataType()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    /**
+     * INTERNAL:
+     * Convenience method that compares two Property objects for equality
+     * @param prop1
+     * @param prop2
+     * @return
+     */
+    private boolean arePropertiesEqual(Property prop1, Property prop2) {
+        if (((null == prop1) && (null != prop2)) || ((null != prop1) && (null == prop2))) {
+            return false;
+        }
+        // the property field on the setting must point to the same property instance as the original
+        if (prop1 != prop2) {
+            return false;
+        }
+        return true;
+    }
+    
     /**
      * INTERNAL:
      * iterativly, compare the values of shared properties in two target DataObjects
@@ -471,11 +551,9 @@ public class SDOEqualityHelper implements EqualityHelper {
      */
     private boolean isADataObjectInList(DataObject dataObject1, List objects) {
         Iterator iterObjects = objects.iterator();
-        boolean result;
         while (iterObjects.hasNext()) {
             DataObject dataObject2 = (DataObject)iterObjects.next();
-            result = compareDataObjects(dataObject1, dataObject2, true);
-            if (result) {
+            if (compareDataObjects(dataObject1, dataObject2, true)) {
                 return true;
             }
         }

@@ -32,10 +32,6 @@ public class LoadAndSaveGroupTestCases extends LoadAndSaveTestCases {
         super.verifyAfterLoad(document);
     }
 
-    protected String getControlWriteFileName() {
-        return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/group/GroupWrite.xml";
-    }
-   
     protected String getControlFileName() {
         return "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/group/Group.xml";
     }
@@ -52,6 +48,13 @@ public class LoadAndSaveGroupTestCases extends LoadAndSaveTestCases {
         return "theURI";
     }
 
+    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
+    protected List<String> getPackages() {
+        List<String> packages = new ArrayList<String>();       
+        packages.add("theuri");
+        return packages;
+    }
+    
     protected String getControlRootName() {
         return "AAA";
     }
@@ -60,13 +63,6 @@ public class LoadAndSaveGroupTestCases extends LoadAndSaveTestCases {
         return "AAA";
     }
 
-    // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
-    protected List<String> getPackages() {
-        List<String> packages = new ArrayList<String>();       
-        packages.add("theuri");
-        return packages;
-    }
-    
     public void registerTypes() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
 

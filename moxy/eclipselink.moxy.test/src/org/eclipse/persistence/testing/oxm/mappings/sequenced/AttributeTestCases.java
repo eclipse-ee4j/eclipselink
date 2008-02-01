@@ -15,7 +15,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class AttributeTestCases extends XMLMappingTestCases {
     
-    private static final String XML_RESOURCE = "oracle/toplink/testing/ox/mappings/sequenced/Attribute.xml";
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/sequenced/Attribute.xml";
     private static final String CONTROL_EMPLOYEE_ID = "123";
     private static final String CONTROL_EMPLOYEE_FIRST_NAME = "Jane";
   

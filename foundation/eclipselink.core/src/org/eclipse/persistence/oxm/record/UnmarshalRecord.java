@@ -933,6 +933,10 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
     public void addAttributeValue(ContainerValue containerValue, Object value) {
         this.unmarshalContext.addAttributeValue(this, containerValue, value);
     }
+
+    public void addAttributeValue(ContainerValue containerValue, Object value, Object collection) {
+        this.unmarshalContext.addAttributeValue(this, containerValue, value, collection);
+    }
     
     public void reference(Reference reference) {
         this.unmarshalContext.reference(reference);

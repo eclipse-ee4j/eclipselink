@@ -235,7 +235,7 @@ public class ListWrapper implements List, Serializable {
         // create a new setting
         // Note: A non spec isSequenced=true after type define will throw a NPE    	
         if (dataObject.getType().isSequenced()) {
-            ((SDOSequence)dataObject.getSequence()).addWithoutUpdate(aProperty, item);
+            ((SDOSequence)dataObject.getSequence()).addSettingWithoutModifyingDataObject(property, item);
         }
     }
 
@@ -247,9 +247,8 @@ public class ListWrapper implements List, Serializable {
     private void removeSequenceSettingInternal(int occurrence, Property aProperty, Object item) {
         // get index corresponding to the property:value pair
         // Note: A non spec isSequenced=true after type define will throw a NPE
-        int index = ((SDOSequence)dataObject.getSequence()).getIndex(aProperty, item, occurrence);
-        if ((index > -1) && dataObject.getType().isSequenced()) {
-            ((SDOSequence)dataObject.getSequence()).remove(index, false);
+        if (dataObject.getType().isSequenced()) {
+            ((SDOSequence)dataObject.getSequence()).removeSettingWithoutModifyingDataObject(property, item);
         }
     }
 

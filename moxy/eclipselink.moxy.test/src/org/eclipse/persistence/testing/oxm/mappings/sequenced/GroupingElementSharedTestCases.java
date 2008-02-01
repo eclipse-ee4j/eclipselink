@@ -15,7 +15,7 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class GroupingElementSharedTestCases extends XMLMappingTestCases {
     
-    private static final String XML_RESOURCE = "oracle/toplink/testing/ox/mappings/sequenced/GroupingElementShared.xml";
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/sequenced/GroupingElementShared.xml";
     private static final String CONTROL_EMPLOYEE_FIRST_NAME = "Jane";
     private static final String CONTROL_EMPLOYEE_LAST_NAME = "Doe";
 

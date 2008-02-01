@@ -38,12 +38,16 @@ public class ObjectUnmarshalContext implements UnmarshalContext {
     public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, DatabaseMapping mapping) {
         mapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), value);
     }
-
+    
     public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value) {
         Object collection = unmarshalRecord.getContainerInstance(containerValue);
-        containerValue.getContainerPolicy().addInto(value, collection, unmarshalRecord.getSession());
+        addAttributeValue(unmarshalRecord, containerValue, value, collection);
     }
 
+    public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value, Object collection) {
+        containerValue.getContainerPolicy().addInto(value, collection, unmarshalRecord.getSession());
+    }
+    
     public void reference(Reference reference) {
     }
 

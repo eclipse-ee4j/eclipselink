@@ -712,37 +712,37 @@ public class SDOChangeSummary implements ChangeSummary {
         if (!isCreated(dataObject) && dataObject.getType().isSequenced()) {
             // check cache first
             if (getOldSequences().containsKey(dataObject)) {
-                return (Sequence)getOldSequences().get(dataObject);
+                return (Sequence) getOldSequences().get(dataObject);
             }
 
             // no sequence - get from the original sequence map
-            Sequence originalSeq = (Sequence)getOriginalSequences().get(dataObject);
+            SDOSequence originalSeq = (SDOSequence) getOriginalSequences().get(dataObject);
             if (originalSeq == null) {
-                originalSeq = dataObject.getSequence();
+                originalSeq = (SDOSequence) dataObject.getSequence();
             }
-
-            // create a deepcopy of this original sequence
-            SDOSequence seqWithDeepCopies = new SDOSequence((SDODataObject)dataObject);
+            
+            SDOSequence seqWithDeepCopies = new SDOSequence((SDODataObject) dataObject);
             for (int i = 0; i < originalSeq.size(); i++) {
-                // property may be null if the setting contains unstructured text
-                Property nextOriginalSettingProp = originalSeq.getProperty(i);
+                // setting/value may be null in some cases
                 Object nextOriginalSettingValue = originalSeq.getValue(i);
-                SDOSetting newSetting = new SDOSetting();
-                newSetting.setProperty(nextOriginalSettingProp);
-                Object newValue = null;
-                if ((nextOriginalSettingProp == null) || nextOriginalSettingProp.getType().isDataType()) {
-                    // handle unstructured text and simple types
-                    newValue = nextOriginalSettingValue;
-                } else {
-                    // handle complex types
-                    newValue = getOrCreateDeepCopy((DataObject)nextOriginalSettingValue);
+                if (nextOriginalSettingValue == null) {
+                    continue;
                 }
 
-                newSetting.setValue(newValue);
-                seqWithDeepCopies.getSettings().add(newSetting);
+                // property may be null if the setting contains unstructured text
+                Property nextOriginalSettingProp = originalSeq.getProperty(i);
+                if (nextOriginalSettingProp == null) {
+                    // handle unstructured text
+                    seqWithDeepCopies.addText(nextOriginalSettingValue.toString());
+                } else if (nextOriginalSettingProp.getType().isDataType()) {
+                    // handle simple types
+                    seqWithDeepCopies.addSettingWithoutModifyingDataObject(nextOriginalSettingProp, nextOriginalSettingValue, false);
+                } else {
+                    // handle complex types
+                    seqWithDeepCopies.addSettingWithoutModifyingDataObject(nextOriginalSettingProp, getOrCreateDeepCopy((DataObject) nextOriginalSettingValue), false);
+                }
             }
-
-            // store deepcopy of old sequence in cache 
+            // store deep copy of old sequence in cache
             getOldSequences().put(dataObject, seqWithDeepCopies);
             return seqWithDeepCopies;
         }

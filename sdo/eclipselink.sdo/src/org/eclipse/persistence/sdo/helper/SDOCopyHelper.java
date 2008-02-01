@@ -20,6 +20,7 @@ import java.util.Map;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
+import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.ValueStore;
@@ -31,6 +32,8 @@ import commonj.sdo.DataObject;
 import commonj.sdo.helper.CopyHelper;
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.impl.HelperProvider;
+import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.sequenced.Setting;
 
 /**
  * <b>Purpose:</b>
@@ -138,40 +141,34 @@ public class SDOCopyHelper implements CopyHelper {
         Iterator iterProperties = allProperties.iterator();
         while (iterProperties.hasNext()) {
             Property eachProperty = (Property)iterProperties.next();
-            Object o = getValue((SDODataObject)dataObject, eachProperty, null);
-            if (eachProperty.getType().isDataType()) {
-                if (eachProperty.getType() != SDOConstants.SDO_CHANGESUMMARY) {
-                    // we defer sequence updates at this point
-                    copy.set(eachProperty, o, false);// make copy if current property is datatype
+            if (dataObject.isSet(eachProperty)) {
+                Object o = getValue((SDODataObject)dataObject, eachProperty, null);
+                if (eachProperty.getType().isDataType()) {
+                    if (eachProperty.getType() != SDOConstants.SDO_CHANGESUMMARY) {
+                        // we defer sequence updates at this point
+                        copy.set(eachProperty, o, false);// make copy if current property is datatype
+                    }
                 }
             }
         }
+
+        if (dataObject.getType().isSequenced()) {
+            List settings = ((SDOSequence)dataObject.getSequence()).getSettings();
+            for (int index = 0, size = dataObject.getSequence().size(); index < size; index++) {
+                Setting nextSetting = (Setting)settings.get(index);
+
+                Property prop = dataObject.getSequence().getProperty(index);
+                if (prop == null || prop.getType().isDataType()) {
+                    Setting copySetting = nextSetting.copy(copy);
+                    ((SDOSequence)copy.getSequence()).getSettings().add(copySetting);
+                    ((SDOSequence)copy.getSequence()).addValueToSettings(copySetting);
+                }
+            }
+        }
+
         if ((copy != null) && (copy.getChangeSummary() != null) && (((SDOType)copy.getType()).getChangeSummaryProperty() != null)) {
             if (((SDODataObject)dataObject).getChangeSummary().isLogging()) {
                 ((SDOChangeSummary)copy.getChangeSummary()).setLogging(true);
-            }
-        }
-
-        // process sequences
-        if (dataObject.getType().isSequenced()) {
-            // iterate the original object sequence - in sequence and create settings on the copy
-            Property seqProperty = null;
-            Object seqValue = null;
-            for (int index = 0, size = dataObject.getSequence().size(); index < size; index++) {
-                seqProperty = dataObject.getSequence().getProperty(index);
-
-                // handle unstructuredText settings where property == null
-                if ((null == seqProperty) || ((null != seqProperty) && seqProperty.getType().isDataType())) {
-                    seqValue = dataObject.getSequence().getValue(index);
-                } else {
-
-                    /**
-                     * For shallow copy when dataType is false we unset (default value) the property in the copy, retaining sequenced position.
-                     * The following get will return the default value - usually null or an Object
-                     */
-                    seqValue = seqProperty.getDefault();
-                }
-                ((SDOSequence)copy.getSequence()).addWithoutUpdate(seqProperty, seqValue);
             }
         }
 
@@ -252,7 +249,7 @@ public class SDOCopyHelper implements CopyHelper {
             processNonContainmentNodesPrivate(doMap, ncPropMap);
 
             // Iterate the map of containment nodes and populate sequenced objects in the copy.
-            processContainmentSequencesPrivate(doMap);
+            processContainmentSequencesPrivate(doMap, cs);
 
             /**
              * ChangeSummary on Root Case:
@@ -389,10 +386,54 @@ public class SDOCopyHelper implements CopyHelper {
      * @param copySequence
      * @param doMap
      */
-    private void replicateAndRereferenceSequenceCopyPrivate(SDOSequence origSequence, SDOSequence copySequence, Map doMap) {
+    private void replicateAndRereferenceSequenceCopyPrivate(SDOSequence origSequence, SDOSequence copySequence, DataObject dataObject, DataObject copy, Map doMap, SDOChangeSummary cs) {
+        if (cs != null && cs.isDeleted(dataObject)) {
+            origSequence = (SDOSequence) cs.getOldSequence(dataObject);
+        }
+        
         Property seqProperty = null;
         try {
+            List settings = origSequence.getSettings();
             for (int index = 0, size = origSequence.size(); index < size; index++) {
+                Setting nextSetting = (Setting)settings.get(index);
+
+                //TODO:verify should this be seqProp not prop
+                //Property prop = dataObject.getSequence().getProperty(index);                                               
+                //seqProperty = dataObject.getSequence().getProperty(index);
+                
+                seqProperty = origSequence.getProperty(nextSetting);
+                if ((null == seqProperty) || seqProperty.getType().isDataType()) {
+                    Setting copySetting = nextSetting.copy(copy);
+                    copySequence.getSettings().add(copySetting);
+                    copySequence.addValueToSettings(copySetting);
+                } else {
+                    Object copySeqValue = null;
+                    Object origSeqValue = origSequence.getValue(index);
+                    
+                    if (cs != null) {
+                        Object orig = cs.getReverseDeletedMap().get(origSeqValue);
+                        if (orig != null) {
+                            origSeqValue = orig;
+                        }
+                    }
+                    
+                    if (origSeqValue instanceof XMLRoot) {
+                        origSeqValue = ((XMLRoot)origSeqValue).getObject();
+                    }
+
+                    // lookup copy if not null, if null then the copySeqValue will be null in the reduced scope assignment above
+                    if (null != origSeqValue) {
+                        copySeqValue = doMap.get(origSeqValue);
+                    } else {
+                        // as a secondary verification to the assignment above - make sure the copy is null as well
+                        copySeqValue = null;// this assignment is however redundant in our reduced scope assignment above
+                    }
+
+                    //now we have the new value
+                    Setting copySetting = nextSetting.copy(copy, copySeqValue);
+                    copySequence.getSettings().add(copySetting);
+                    copySequence.addValueToSettings(copySetting);
+                }
 
                 /**
                  * Move assignment inside the loop to minimize scope and to
@@ -402,30 +443,6 @@ public class SDOCopyHelper implements CopyHelper {
                  * with the previous iterations' value set for a complex object that is unset(null).
                  * see #6026714
                  */
-                Object copySeqValue = null;// always set to null
-                seqProperty = origSequence.getProperty(index);
-
-                // for unstructuredText (null property) and simple dataTypes
-                // we just reference the simple value.
-                // ListWrapper objects are not supported in sequences.
-                if ((null == seqProperty) || seqProperty.getType().isDataType()) {
-                    copySeqValue = origSequence.getValue(index);
-                } else {
-                    // get corresponding DataObject in doMap
-                    // handle many=true sequences by looking up copy object in doMap							
-                    DataObject origSeqValue = (DataObject)origSequence.getValue(index);
-
-                    // lookup copy if not null, if null then the copySeqValue will be null in the reduced scope assignment above
-                    if (null != origSeqValue) {
-                        copySeqValue = doMap.get(origSeqValue);
-                    } else {
-                        // as a secondary verification to the assignment above - make sure the copy is null as well
-                        copySeqValue = null;// this assignment is however redundant in our reduced scope assignment above
-                    }
-                }
-
-                // populate the copy sequence
-                copySequence.addWithoutUpdate(seqProperty, copySeqValue);
             }
         } catch (ClassCastException cce) {// catch any failure of a DataObject cast above          
             throw SDOException.foundSimpleValueForNonDataTypeProperty(seqProperty.getName());
@@ -437,7 +454,7 @@ public class SDOCopyHelper implements CopyHelper {
      * Iterate the map of containment nodes and populate sequenced objects in the copy.
      * @param doMap
      */
-    private void processContainmentSequencesPrivate(Map doMap) {
+    private void processContainmentSequencesPrivate(Map doMap, SDOChangeSummary cs) {
 
         /**
          * Prerequisites: - the copy tree has been built and the doMap has been
@@ -455,7 +472,7 @@ public class SDOCopyHelper implements CopyHelper {
                 SDOSequence origSequence = (SDOSequence)cObject.getSequence();
 
                 // iterate the original object sequence - in sequence and create settings on the copy
-                replicateAndRereferenceSequenceCopyPrivate(origSequence, (SDOSequence)copyDO.getSequence(), doMap);
+                replicateAndRereferenceSequenceCopyPrivate(origSequence, (SDOSequence)copyDO.getSequence(), cObject, copyDO, doMap, cs);
             }
         }
     }
@@ -817,7 +834,7 @@ public class SDOCopyHelper implements CopyHelper {
             SDODataObject copyOriginalSequenceDataObject = (SDODataObject)origDOCS1toCopyDOCS2Map.get(originalSequence.getDataObject());
             SDOSequence copySequence = new SDOSequence(copyOriginalSequenceDataObject);
 
-            replicateAndRereferenceSequenceCopyPrivate(originalSequence, copySequence, origDOCS1toCopyDOCS2Map);
+            replicateAndRereferenceSequenceCopyPrivate(originalSequence, copySequence, originalSequence.getDataObject(), copyOriginalSequenceDataObject, origDOCS1toCopyDOCS2Map, originalCS);
 
             // set the copy map entry keyed on copy with value a deep copy of the copy
             copyCS.getOriginalSequences().put(copyOriginalSequenceDataObject, copySequence);

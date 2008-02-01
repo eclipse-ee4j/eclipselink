@@ -522,24 +522,37 @@ public class ChangeSummaryXSDwSeqTestCases extends SDOTestCase {
 
         //Property containmentProp = shipToDO.getInstanceProperty("yard");
         DataObject yardDO = shipToDO.getDataObject("yard");
-        Object length = yardDO.get("length");
+        //Object length = yardDO.get("length");
         cs.beginLogging();
 
         Sequence aSequence = shipToDO.getSequence();
         
         // modify sequence without modifying container dataObject
-        int yardIndex = getNthSequenceIndexFor((SDOSequence)aSequence, "yard");
+        //int yardIndex = getNthSequenceIndexFor((SDOSequence)aSequence, "yard");
         //aSequence.remove(yardIndex);
         //yardDO.detach();
+
         aSequence.addText("Unstructured1");
 
         List yardDOSettings = cs.getOldValues(yardDO);
+        
         // no change to container when unstructured text is added
+        // TODO: is this the case? adding unstructured text 
+        // should cause the data object to be considered 'modified'
+        
         assertEquals(0, yardDOSettings.size());
+        
+        assertTrue(cs.isModified(shipToDO));
+        
         //assertDetached(yardDO, cs);
         //assertModified(shipToDO, cs);
         assertFalse(cs.isModified(yardDO));
-        assertEquals(0, cs.getChangedDataObjects().size());
+        
+        // TODO: since "addText()" now sets modified on the dataObject, we will
+        // have a changed dataObject.  Verify this...
+        //assertEquals(0, cs.getChangedDataObjects().size());
+        assertEquals(1, cs.getChangedDataObjects().size());
+        
         //return yardDOSettings;
         
         // check oldSequence before undo

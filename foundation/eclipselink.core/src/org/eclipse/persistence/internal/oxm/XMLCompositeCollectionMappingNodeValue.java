@@ -106,7 +106,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 objectValue = converter.convertObjectValueToDataValue(objectValue, unmarshalRecord.getSession());
             }
         }
-        xmlCompositeCollectionMapping.getContainerPolicy().addInto(objectValue, collection, unmarshalRecord.getSession());
+        unmarshalRecord.addAttributeValue(this, objectValue, collection);
         unmarshalRecord.setChildRecord(null);
 
     }

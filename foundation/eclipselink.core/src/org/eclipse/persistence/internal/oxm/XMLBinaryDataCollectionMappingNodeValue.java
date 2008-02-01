@@ -168,7 +168,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends NodeValue implement
         value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, xmlBinaryDataCollectionMapping.getAttributeClassification());
         if(value != null) {
             Object container = unmarshalRecord.getContainerInstance(this);
-            this.xmlBinaryDataCollectionMapping.getContainerPolicy().addInto(value, container, unmarshalRecord.getSession());
+            unmarshalRecord.addAttributeValue(this, value);
         }
 
     }

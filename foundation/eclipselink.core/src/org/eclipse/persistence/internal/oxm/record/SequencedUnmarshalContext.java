@@ -38,8 +38,7 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
         int levelIndex = unmarshalRecord.getLevelIndex();
         if(0 == levelIndex) {
         } else if(1 == levelIndex) {
-            SequencedObject sequencedObject = (SequencedObject) unmarshalRecord.getCurrentObject();
-            sequencedObject.getSettings().add(currentSetting);
+            ((SequencedObject) unmarshalRecord.getCurrentObject()).getSettings().add(currentSetting);
         } else {
             parentSetting.addChild(currentSetting);
         }
@@ -73,9 +72,13 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
     }
 
     public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value) {
+        addAttributeValue(unmarshalRecord, containerValue, value, unmarshalRecord.getContainerInstance(containerValue));
+    }
+    
+    public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value, Object collection) {
         currentSetting.setMapping(containerValue.getMapping());
         currentSetting.setObject(unmarshalRecord.getCurrentObject());
-        currentSetting.addValue(value, true, unmarshalRecord.getContainerInstance(containerValue));
+        currentSetting.addValue(value, true, collection);
     }
 
     public void reference(Reference reference) {

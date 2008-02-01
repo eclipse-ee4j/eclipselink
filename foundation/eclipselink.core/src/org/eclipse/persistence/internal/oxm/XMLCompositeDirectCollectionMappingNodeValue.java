@@ -202,8 +202,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
                 value = xmlCompositeDirectCollectionMapping.getValueConverter().convertDataValueToObjectValue(value, unmarshalRecord.getSession());
             }
         }
-
-        xmlCompositeDirectCollectionMapping.getContainerPolicy().addInto(value, collection, unmarshalRecord.getSession());
+        unmarshalRecord.addAttributeValue(this, value, collection);
     }
 
     public Object getContainerInstance() {

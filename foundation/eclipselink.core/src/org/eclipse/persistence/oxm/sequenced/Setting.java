@@ -245,7 +245,7 @@ public class Setting {
     /**
      * @param parentSetting The parent Setting or null if this setting has not parent. 
      */
-    protected void setParent(Setting parentSetting) {
+    public void setParent(Setting parentSetting) {
         this.parent = parentSetting;
     }
 
@@ -275,4 +275,37 @@ public class Setting {
         return copy;
     }
 
+    public Setting copy(Object newParent) {
+        Setting copy = new Setting();
+        copy.setName(name);
+        copy.setNamespaceURI(namespaceURI);
+        if(getObject() != null){
+          copy.setObject(newParent);
+        }
+        copy.setMapping(mapping);
+        copy.setValue(value, false);
+        if(null != children) {
+            for(int index=0, size=children.size(); index<size; index++) {
+                copy.addChild(children.get(index).copy(newParent));
+            }
+        }
+        return copy;
+    }
+    
+    public Setting copy(Object newParent, Object copyValue) {
+        Setting copy = new Setting();
+        copy.setName(name);
+        copy.setNamespaceURI(namespaceURI);
+        if(getObject() != null){
+          copy.setObject(newParent);
+        }
+        copy.setMapping(mapping);
+        copy.setValue(copyValue, false);
+        if(null != children) {
+            for(int index=0, size=children.size(); index<size; index++) {
+                copy.addChild(children.get(index).copy(newParent,copyValue));
+            }
+        }
+        return copy;
+    }
 }

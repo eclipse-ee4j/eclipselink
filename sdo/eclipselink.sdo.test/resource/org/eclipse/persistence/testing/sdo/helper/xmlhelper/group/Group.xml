@@ -1,6 +1,6 @@
 <tns:AAA xmlns:tns="theURI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <tns:BBB>111</tns:BBB>
-   <tns:CCC>xxx</tns:CCC> 
+   <tns:CCC>xxx</tns:CCC>
    <tns:testElement>testElementValue</tns:testElement>
    <tns:XXX>1</tns:XXX>
    <tns:YYY>2</tns:YYY>
