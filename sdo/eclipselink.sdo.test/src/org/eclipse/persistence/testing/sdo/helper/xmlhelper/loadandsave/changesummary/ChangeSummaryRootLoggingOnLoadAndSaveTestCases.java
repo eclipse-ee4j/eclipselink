@@ -33,9 +33,6 @@ public class ChangeSummaryRootLoggingOnLoadAndSaveTestCases extends ChangeSummar
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_log_default.xml");
     }
 
-    protected String getNoSchemaControlFileName() {
-        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_log_default_noschema.xml");
-    }
 
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);

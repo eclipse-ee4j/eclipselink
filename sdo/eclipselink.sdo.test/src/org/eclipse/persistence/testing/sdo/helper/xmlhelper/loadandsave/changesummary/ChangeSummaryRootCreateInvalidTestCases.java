@@ -26,9 +26,6 @@ public class ChangeSummaryRootCreateInvalidTestCases extends ChangeSummaryRootLo
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_create_error.xml");
     }
 
-    protected String getNoSchemaControlFileName() {
-        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_create_error_noschema.xml");
-    }
 
     public void testLoadFromAndSaveAfterDefineMultipleSchemas() throws Exception {
         try {

@@ -31,9 +31,6 @@ public class ChangeSummaryRootSimpleCreateManyTestCases extends ChangeSummaryRoo
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_create_simple_many.xml");
     }
 
-    protected String getNoSchemaControlFileName() {
-        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_create_simple_many_noschema.xml");
-    }
 
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);

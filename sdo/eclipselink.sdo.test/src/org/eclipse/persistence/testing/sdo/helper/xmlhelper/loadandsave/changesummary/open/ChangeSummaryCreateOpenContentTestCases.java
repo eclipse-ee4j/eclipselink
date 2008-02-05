@@ -32,14 +32,6 @@ public class ChangeSummaryCreateOpenContentTestCases extends ChangeSummaryRootLo
         TestRunner.main(arguments);
     }
 
-    /*protected String getControlWriteFileName() {
-        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/open/team_csroot_create_open_write.xml");
-    }
-
-    protected String getNoSchemaControlWriteFileName() {
-        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/open/team_csroot_create_open_write.xml");
-    }*/
-
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/open/team_csroot_create_open.xml");
     }
@@ -50,10 +42,13 @@ public class ChangeSummaryCreateOpenContentTestCases extends ChangeSummaryRootLo
 
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
+        
+        
         ChangeSummary teamCS = document.getRootObject().getChangeSummary();
         assertNotNull(teamCS);
         DataObject manager = document.getRootObject().getDataObject("manager");
         assertNotNull(manager);
+        assertTrue(manager.getType().isSequenced());
         ChangeSummary managerCS = manager.getChangeSummary();
         assertEquals(teamCS, managerCS);
         assertTrue(teamCS.isLogging());
@@ -63,37 +58,26 @@ public class ChangeSummaryCreateOpenContentTestCases extends ChangeSummaryRootLo
         assertNotNull(address);
         assertCreated(address, teamCS);
 
-        //DataObject yard = manager.getDataObject("theYard");
-        //Object yard = manager.get("theYard");
         List  yards = manager.getList("theYard");
         assertEquals(1, yards.size());
         DataObject yard = (DataObject)yards.get(0);
         assertNotNull(yard);
         assertCreated(yard, teamCS);
-    }
-    
-     protected void registerTypes() {
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
-        Type employeeType = registerEmployeeType();
-
-        // create a new Type for Customers
-        DataObject teamType = dataFactory.create("commonj.sdo", "Type");
-
-        SDOProperty prop = (SDOProperty)teamType.getType().getProperty("uri");
-        teamType.set(prop, getControlRootURI());
-
-        prop = (SDOProperty)teamType.getType().getProperty("name");
-        teamType.set(prop, "Team");
-        teamType.set("open", true);
-        addProperty(teamType, "name", stringType, true, false, true);
-        DataObject managerProp = addProperty(teamType, "manager", employeeType, true, false, true);
-        DataObject myChangeSummaryProp = addProperty(teamType, "myChangeSummary", SDOConstants.SDO_CHANGESUMMARY, true, false, true);
-
-        Type teamSDOType = typeHelper.define(teamType);
-
-        /*DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
-        propDO.set("name", getControlRootName());
-        propDO.set("type", teamSDOType);
-        typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);*/
+        
+        DataObject theYardDefined = manager.getDataObject("theYardDefined");
+        //assertEquals(1, yards.size());
+        //DataObject yard = (DataObject)yards.get(0);
+        assertNotNull(theYardDefined);
+        assertCreated(theYardDefined, teamCS);        
+        
+        List theYardUndefinedList = manager.getList("theYardUndefined");
+        assertEquals(1, theYardUndefinedList.size());
+        DataObject theYardUndefined = (DataObject)theYardUndefinedList.get(0);                
+        assertNotNull(theYardUndefined);
+        assertCreated(theYardUndefined, teamCS);
+        
+        assertNull(xsdHelper.getGlobalProperty("http://www.example.org","theYardUndefined",true));
+        assertNull(xsdHelper.getGlobalProperty("http://www.example.org","theYardUndefined",false));
+        
     }
 }

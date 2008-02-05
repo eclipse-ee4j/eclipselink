@@ -49,7 +49,7 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
     protected void registerTypes() {
         Type stringType = typeHelper.getType("commonj.sdo", "String");
         Type employeeType = registerEmployeeType();
-
+        
         // create a new Type for Customers
         DataObject teamType = dataFactory.create("commonj.sdo", "Type");
 
@@ -57,18 +57,34 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
         teamType.set(prop, getControlRootURI());
 
         prop = (SDOProperty)teamType.getType().getProperty("name");
-        teamType.set(prop, "team");
+        teamType.set(prop, "Team");
         teamType.set("open", true);
+        teamType.set("sequenced", true);
         addProperty(teamType, "name", stringType, true, false, true);
         DataObject managerProp = addProperty(teamType, "manager", employeeType, true, false, true);
+        DataObject empProp = addProperty(teamType, "employee", employeeType, true, true, true);
         DataObject myChangeSummaryProp = addProperty(teamType, "myChangeSummary", SDOConstants.SDO_CHANGESUMMARY, true, false, true);
 
         Type teamSDOType = typeHelper.define(teamType);
 
         DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
-        propDO.set("name", getControlRootName());
+        propDO.set("name", "team");
         propDO.set("type", teamSDOType);
-        typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);
+        propDO.set(SDOConstants.XMLELEMENT_PROPERTY, true);
+        typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);        
+        
+        DataObject propDO2 = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        propDO2.set("name", "simpleOpenTestDefined");
+        propDO2.set("type", SDOConstants.SDO_INT);
+        propDO2.set(SDOConstants.XMLELEMENT_PROPERTY, true);
+        typeHelper.defineOpenContentProperty(getControlRootURI(), propDO2);
+        
+        DataObject propDO3 = dataFactory.create(SDOConstants.SDO_PROPERTY);
+        propDO3.set("name", "theYardDefined");
+        propDO3.set(SDOConstants.XMLELEMENT_PROPERTY, true);
+        Type yardType = typeHelper.getType("http://www.example.org", "Yard");
+        propDO3.set("type", yardType);
+        typeHelper.defineOpenContentProperty(getControlRootURI(), propDO3);
     }
 
     protected Type registerEmployeeType() {
@@ -79,11 +95,12 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
         // create a new Type for addressType
         DataObject employeeType = dataFactory.create("commonj.sdo", "Type");
         employeeType.set("open",true);
+        employeeType.set("sequenced", true);
         SDOProperty prop = (SDOProperty)employeeType.getType().getProperty("uri");
         employeeType.set(prop, getControlRootURI());
 
         prop = (SDOProperty)employeeType.getType().getProperty("name");
-        employeeType.set(prop, "Employee");
+        employeeType.set(prop, "Employee");              
 
         addProperty(employeeType, "id", stringType, false, false, true);
         addProperty(employeeType, "name", stringType, false, false, true);
@@ -118,6 +135,7 @@ public abstract class ChangeSummaryRootLoadAndSaveTestCases extends LoadAndSaveT
         // create a new Type for addressType
         DataObject addressType = dataFactory.create("commonj.sdo", "Type");
         addressType.set("open",true);
+        addressType.set("sequenced",true);
 
         SDOProperty prop = (SDOProperty)addressType.getType().getProperty("uri");
         addressType.set(prop, getControlRootURI());

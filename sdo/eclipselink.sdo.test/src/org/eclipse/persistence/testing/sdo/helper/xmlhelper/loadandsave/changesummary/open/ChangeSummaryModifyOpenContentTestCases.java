@@ -13,6 +13,7 @@ import commonj.sdo.ChangeSummary;
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import commonj.sdo.helper.XMLDocument;
+import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
@@ -30,21 +31,11 @@ public class ChangeSummaryModifyOpenContentTestCases extends ChangeSummaryRootLo
         TestRunner.main(arguments);
     }
 
-   /* protected String getControlWriteFileName() {
-        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/open/team_csroot_modify_open_write.xml");
-    }
-
-    protected String getNoSchemaControlWriteFileName() {
-        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/open/team_csroot_modify_open_write.xml");
-    }*/
 
     protected String getControlFileName() {
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/open/team_csroot_modify_open.xml");
     }
 
-    protected String getNoSchemaControlFileName() {
-        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/open/team_csroot_modify_open.xml");
-    }
 
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);
@@ -59,7 +50,7 @@ public class ChangeSummaryModifyOpenContentTestCases extends ChangeSummaryRootLo
         assertTrue(((SDOChangeSummary)teamCS).isLogging());
 
         //DataObject yard = manager.getDataObject("theYard");
-        List  yards = manager.getList("theYard");
+        List yards = manager.getList("theYard");
         assertEquals(1, yards.size());
         DataObject yard = (DataObject)yards.get(0);
         assertNotNull(yard);
@@ -67,30 +58,42 @@ public class ChangeSummaryModifyOpenContentTestCases extends ChangeSummaryRootLo
         assertEquals("thelength", yard.get("length"));
         assertEquals("theWidth", yard.get("width"));
 
-    }
-    
-       protected void registerTypes() {
-        Type stringType = typeHelper.getType("commonj.sdo", "String");
-        Type employeeType = registerEmployeeType();
+        DataObject yardDefined = manager.getDataObject("theYardDefined");
+        assertNotNull(yardDefined);
+        assertEquals("theSqFootage", yardDefined.get("squarefootage"));
+        assertEquals("thelength", yardDefined.get("length"));
+        assertEquals("theWidth", yardDefined.get("width"));
+        
+        DataObject yardUndefined = (DataObject)(manager.getList("theYardUndefined").get(0));
+        assertNotNull(yardUndefined);
+        assertEquals("theSqFootageUndefined", yardUndefined.getList("squarefootage").get(0));
+        assertEquals("thelengthUndefined", yardUndefined.getList("length").get(0));
+        assertEquals("theWidthUndefined", yardUndefined.getList("width").get(0));
+                
+        String controlValue = "15";
+        assertEquals(controlValue, manager.get("simpleOpenTestDefined"));
+        
+        List simpleOpenList = manager.getList("simpleOpenTest");
+        assertEquals(1, simpleOpenList.size());
+        assertEquals(controlValue, simpleOpenList.get(0));
 
-        // create a new Type for Customers
-        DataObject teamType = dataFactory.create("commonj.sdo", "Type");
+        ChangeSummary.Setting simpleOpenTestDefinedSetting = managerCS.getOldValue(manager, manager.getInstanceProperty("simpleOpenTestDefined"));
+        assertNotNull(simpleOpenTestDefinedSetting);
+        assertEquals("10", simpleOpenTestDefinedSetting.getValue());
 
-        SDOProperty prop = (SDOProperty)teamType.getType().getProperty("uri");
-        teamType.set(prop, getControlRootURI());
 
-        prop = (SDOProperty)teamType.getType().getProperty("name");
-        teamType.set(prop, "Team");
-        teamType.set("open", true);
-        addProperty(teamType, "name", stringType, true, false, true);
-        DataObject managerProp = addProperty(teamType, "manager", employeeType, true, false, true);
-        DataObject myChangeSummaryProp = addProperty(teamType, "myChangeSummary", SDOConstants.SDO_CHANGESUMMARY, true, false, true);
-
-        Type teamSDOType = typeHelper.define(teamType);
-
-        /*DataObject propDO = dataFactory.create(SDOConstants.SDO_PROPERTY);
-        propDO.set("name", getControlRootName());
-        propDO.set("type", teamSDOType);
-        typeHelper.defineOpenContentProperty(getControlRootURI(), propDO);*/
+        ChangeSummary.Setting simpleSetting = managerCS.getOldValue(manager, manager.getInstanceProperty("simpleOpenTest"));
+        assertNotNull(simpleSetting);
+        List oldValueList = (List)simpleSetting.getValue();
+        List controlList = new ArrayList();
+        controlList.add("8");
+        controlList.add("10");
+        controlList.add("15");
+        assertEquals(controlList.size(),oldValueList.size());
+        assertTrue(controlList.containsAll(oldValueList));
+        assertTrue(oldValueList.containsAll(controlList));
+                  
+       
+                
     }
 }

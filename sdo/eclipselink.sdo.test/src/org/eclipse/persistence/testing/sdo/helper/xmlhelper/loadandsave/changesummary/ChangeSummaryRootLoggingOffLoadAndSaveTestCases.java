@@ -29,9 +29,6 @@ public class ChangeSummaryRootLoggingOffLoadAndSaveTestCases extends ChangeSumma
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_log_off.xml");
     }
 
-    protected String getNoSchemaControlFileName() {
-        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_log_off_noschema.xml");
-    }
 
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);

@@ -34,9 +34,6 @@ public class ChangeSummaryRootSimpleDeleteTestCases extends ChangeSummaryRootLoa
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_delete_simple.xml");
     }
 
-    protected String getNoSchemaControlFileName() {
-        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_delete_simple_noschema.xml");
-    }
 
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);

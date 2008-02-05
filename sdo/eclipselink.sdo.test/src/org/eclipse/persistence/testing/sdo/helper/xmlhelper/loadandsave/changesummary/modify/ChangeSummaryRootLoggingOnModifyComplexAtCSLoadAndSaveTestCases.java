@@ -37,9 +37,6 @@ public class ChangeSummaryRootLoggingOnModifyComplexAtCSLoadAndSaveTestCases ext
         return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_modify_complex_single.xml");
     }
 
-    protected String getNoSchemaControlFileName() {
-        return ("./org/eclipse/persistence/testing/sdo/helper/xmlhelper/changesummary/team_csroot_modify_complex_single_noschema.xml");
-    }
 
     protected void verifyAfterLoad(XMLDocument document) {
         super.verifyAfterLoad(document);

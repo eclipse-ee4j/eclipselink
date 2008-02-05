@@ -26,7 +26,9 @@ public class ChangeSummaryOpenContentTestSuite
         TestSuite suite = new TestSuite("All XMLHelper ChangeSummary Modify Tests");
         
         suite.addTest(new TestSuite(ChangeSummaryCreateOpenContentTestCases.class));
-        suite.addTest(new TestSuite(ChangeSummaryModifyOpenContentTestCases.class));        
+        suite.addTest(new TestSuite(ChangeSummaryModifyOpenContentTestCases.class));                
+        suite.addTest(new TestSuite(ChangeSummaryUnsetOpenContentTestCases.class));
+        //suite.addTest(new TestSuite(ChangeSummaryDeleteOpenContentTestCases.class));
         return suite;
     }
 }
