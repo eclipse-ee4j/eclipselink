@@ -9,10 +9,17 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.util.*;
-import java.sql.*;
-import java.io.*;
-import org.eclipse.persistence.exceptions.*;
+import java.io.StringWriter;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ModifyQuery;
@@ -22,18 +29,12 @@ import org.eclipse.persistence.sessions.SessionProfiler;
  * INTERNAL:
  *    ParameterizedSQLBatchWritingMechanism is a private class, used by the DatabaseAccessor. it provides the required
  *  behaviour for batching statements, for write, with parameter binding turned on.<p>
- *    In the future TopLink may be modified to control the order of statements passed to the accessor.  This
+ *    In the future EclipseLink may be modified to control the order of statements passed to the accessor.  This
  *  would prevent checking the last executed statement to ensure that they match.<p>
  *
  *    @since OracleAS TopLink 10<i>g</i> (9.0.4)
  */
-public class ParameterizedSQLBatchWritingMechanism implements BatchWritingMechanism {
-
-    /**
-     * This memeber variable stores the reference to the DatabaseAccessor that is
-     * using this Mechanism to handle the batch writing
-     */
-    protected DatabaseAccessor databaseAccessor;
+public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism {
 
     /**
      *  This member variable is used to keep track of the last SQL string that was executed
@@ -66,6 +67,11 @@ public class ParameterizedSQLBatchWritingMechanism implements BatchWritingMechan
      * possibly, switching out the mechanisms
      */
     public void appendCall(AbstractSession session, DatabaseCall dbCall) {
+        // Store the largest queryTimeout on a single call for later use by the single statement in prepareBatchStatements
+    	if(dbCall != null) {
+        	cacheQueryTimeout(session, dbCall);
+        }
+
         if (dbCall.hasParameters()) {
             //make an equality check on the String, because if we are caching statements then
             //we will not have to perform the string comparison multiple times.
@@ -101,12 +107,13 @@ public class ParameterizedSQLBatchWritingMechanism implements BatchWritingMechan
         this.previousCall = null;
         this.parameters.clear();
         statementCount = executionCount  = 0;
+        clearCacheQueryTimeout();
     }
 
     /**
      * INTERNAL:
      * This method is used by the DatabaseAccessor to clear the batched statements in the
-     * case that a non batchable statement is being execute
+     * case that a non batchable statement is being executed
      */
     public void executeBatchedStatements(AbstractSession session) {
         if (this.parameters.isEmpty()) {
@@ -163,11 +170,17 @@ public class ParameterizedSQLBatchWritingMechanism implements BatchWritingMechan
             try {
                 boolean shouldUnwrapConnection = session.getPlatform().usesNativeBatchWriting();
                 statement = (PreparedStatement)this.databaseAccessor.prepareStatement(this.previousCall, session, shouldUnwrapConnection);
+                // Perform platform specific preparations
                 databaseAccessor.getPlatform().prepareBatchStatement(statement);
+               	if(queryTimeoutCache > DescriptorQueryManager.NoTimeout) {
+                	// Set the query timeout that was cached during the multiple calls to appendCall
+               		statement.setQueryTimeout(queryTimeoutCache);
+                }
+               	
                 // iterate over the parameter lists that were batched.
                 for (int statementIndex = 0; statementIndex < this.parameters.size();
                          ++statementIndex) {
-                    // TopLink uses Vector internall, may want to change this
+                    // EclipseLink uses Vector internally, may want to change this
                     Vector parameterList = (Vector)this.parameters.get(statementIndex);
                     for (int index = 0; index < parameterList.size(); index++) {
                         session.getPlatform().setParameterValueInDatabaseCall(parameterList, statement, index, session);
@@ -183,7 +196,7 @@ public class ParameterizedSQLBatchWritingMechanism implements BatchWritingMechan
         } catch (SQLException exception) {
             //If this is a connection from an external pool then closeStatement will close the connection.
             //we must test the connection before that happens.
-            RuntimeException exceptionToThrow = this.databaseAccessor.processExceptionForCommError(session, exception, null);
+            RuntimeException exceptionToThrow = this.databaseAccessor.processExceptionForCommError(session, exception, lastCallAppended);
             try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 this.databaseAccessor.closeStatement(statement, session, null);
             } catch (SQLException closeException) {
@@ -200,13 +213,5 @@ public class ParameterizedSQLBatchWritingMechanism implements BatchWritingMechan
             throw exception;
         }
         return statement;
-    }
-
-    /**
-     * INTERNAL:
-     * Sets the accessor that this mechanism will be used
-     */
-    public void setAccessor(DatabaseAccessor accessor) {
-        this.databaseAccessor = accessor;
     }
 }

@@ -9,19 +9,76 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * INTERNAL:
  *    BatchWritingMechanism is a private interface, used by the DatabaseAccessor. it provides the required
  *  behaviour for batching statements, for write.<p>
- *    There are currently two types of the Mechanism impelement, one to handle the tradition dynamic SQL
+ *    There are currently two types of the Mechanism implemented, one to handle the tradition dynamic SQL
  *  batching and another to handle Parameterized SQL.  Depending on what is passed to these mechanisms
  *  they may decide to switch the current one out to the alternative type.<p>
+ *    In bug# 214910 this interface was switched to an abstract class<p>
  *
  *    @since OracleAS TopLink 10<i>g</i> (9.0.4)
  */
-public interface BatchWritingMechanism {
+public abstract class BatchWritingMechanism {
+
+    /**
+     * This member variable stores the reference to the DatabaseAccessor that is
+     * using this Mechanism to handle the batch writing
+     */
+    protected DatabaseAccessor databaseAccessor;
+	
+    /**
+     * INTERNAL:
+     * This variable is used to temporarily cache the largest queryTimeout among 
+     * a batch of queries for a particular mechanism.
+     * The default is NoTimeout.
+     */
+    protected int queryTimeoutCache = DescriptorQueryManager.NoTimeout;
+    
+    /**
+     * INTERNAL:
+     * This function caches the largest query timeout encountered within all the calls in this batch,
+     * or uses the parent timeout if one of the calls references the parent.
+     * @param session
+     * @param dbCall
+     */
+    protected void cacheQueryTimeout(AbstractSession session, DatabaseCall dbCall) {
+    	int callTimeout = dbCall.getQueryTimeout();
+    	/*
+    	 * Object queries that reference their parent will already be resolved .
+    	 * Data queries with a parent reference will be ignored.
+    	 * NoTimeout values will be ignored
+    	 */
+    	if(callTimeout == DescriptorQueryManager.DefaultTimeout || callTimeout == DescriptorQueryManager.NoTimeout) {
+    		return;
+    	} else {
+    		// Cache the highest individual query timeout
+    		if(callTimeout > queryTimeoutCache) {
+    			queryTimeoutCache = callTimeout;
+    		}
+    	}
+    }
+    
+    /**
+     * INTERNAL:
+     * Clear the cached timeout after the statement has been executed.
+     */
+    protected void clearCacheQueryTimeout() {
+    	queryTimeoutCache = DescriptorQueryManager.NoTimeout;
+    }
+    
+    /**
+     * INTERNAL:
+     * Sets the accessor that this mechanism will use
+     */
+    public void setAccessor(DatabaseAccessor accessor) {
+        databaseAccessor = accessor;
+    }
+	
 
     /**
      * INTERNAL:
@@ -45,9 +102,4 @@ public interface BatchWritingMechanism {
      */
     abstract public void executeBatchedStatements(AbstractSession session);
 
-    /**
-     * INTERNAL:
-     * Sets the accessor that this mechanism will be used
-     */
-    abstract public void setAccessor(DatabaseAccessor accessor);
 }

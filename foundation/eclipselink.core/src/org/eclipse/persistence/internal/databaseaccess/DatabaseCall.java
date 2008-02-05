@@ -460,7 +460,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Return if the call is dynamic SQL call.
      * This means the call has no parameters, is not using binding,
      * is not a stored procedure (CallableStatement), or cursor.
-     * This means that a Statement, not PrepareStatement will be used for the call.
+     * This means that a Statement, not a PreparedStatement will be used for the call.
      */
     protected boolean isDynamicCall(AbstractSession session) {
         return DatabaseAccessor.shouldUseDynamicStatements && (!usesBinding(session)) && (!isResultSetScrollable()) && (!hasParameters());

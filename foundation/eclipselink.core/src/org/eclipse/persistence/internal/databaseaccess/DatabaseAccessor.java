@@ -458,7 +458,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     }
 
     /**
-     * Execute the TopLink dynamicly batch/concat statement.
+     * Execute the EclipseLink dynamically batched/concatenated statement.
      */
     protected void executeBatchedStatement(PreparedStatement statement, AbstractSession session) throws DatabaseException {
         try {
@@ -472,7 +472,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             throw exception;
         }
 
-        // This is in seperate try block to ensure that the real exception is not masked by the close exception.
+        // This is in a separate try block to ensure that the real exception is not masked by the close exception.
         try {
             closeStatement(statement, session, null);
         } catch (SQLException exception) {
@@ -654,7 +654,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             throw exception;
         }
 
-        // This is in separate try block to ensure that the real exception is not masked by the close exception.
+        // This is in a separate try block to ensure that the real exception is not masked by the close exception.
         try {
             // Allow for caching of statement, forced closes are not cache as they failed execution so are most likely bad.
             releaseStatement(statement, dbCall.getSQLString(), dbCall, session);
@@ -707,7 +707,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     session.endOperationProfile(SessionProfiler.ROW_FETCH, dbCall.getQuery(), SessionProfiler.ALL);
                 }
 
-                // This is in seperate try block to ensure that the real exception is not masked by the close exception.
+                // This is in a separate try block to ensure that the real exception is not masked by the close exception.
                 try {
                     // Allow for caching of statement, forced closes are not cache as they failed execution so are most likely bad.
                     DatabaseAccessor.this.releaseStatement(statement, dbCall.getSQLString(), dbCall, session);
@@ -795,7 +795,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             throw exception;
         }
 
-        // This is in separate try block to ensure that the real exception is not masked by the close exception.
+        // This is in a separate try block to ensure that the real exception is not masked by the close exception.
         try {
             // if we are called from the ParameterizedBatchWritingMechanism then dbCall will not be null
             //and we should try an release the statement

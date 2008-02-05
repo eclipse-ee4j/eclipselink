@@ -9,10 +9,15 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.util.*;
-import java.sql.*;
-import java.io.*;
-import org.eclipse.persistence.exceptions.*;
+import java.io.StringWriter;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ModifyQuery;
@@ -20,14 +25,10 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
  * INTERNAL:
+ *    DynamicSQLBatchWritingMechanism is a private class, used by the DatabaseAccessor. 
+ *    It provides the required behaviour for batching statements, for write, with parameter binding turned off.<p>
  */
-public class DynamicSQLBatchWritingMechanism implements BatchWritingMechanism {
-
-    /**
-     * This memeber variable stores the reference to the DatabaseAccessor that is
-     * using this Mechanism to handle the batch writing
-     */
-    protected DatabaseAccessor databaseAccessor;
+public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
 
     /**
      * This variable is used to store the SQLStrings that are being batched
@@ -35,7 +36,7 @@ public class DynamicSQLBatchWritingMechanism implements BatchWritingMechanism {
     protected ArrayList sqlStrings;
 
     /**
-     * This attribute is uesed to store the maximum length of all strings batched together
+     * This attribute is used to store the maximum length of all strings batched together
      */
     protected long batchSize;
 
@@ -52,6 +53,11 @@ public class DynamicSQLBatchWritingMechanism implements BatchWritingMechanism {
      * possibly, switching out the mechanisms
      */
     public void appendCall(AbstractSession session, DatabaseCall dbCall) {
+        // Store the largest queryTimeout on a single call for later use by the single statement in prepareJDK12BatchStatement
+    	if(dbCall != null) {
+        	cacheQueryTimeout(session, dbCall);
+        }
+    	
         if (!dbCall.hasParameters()) {
             // Bug#3214927-fix - Also the size must be switched back when switch back from param to dynamic.
             // This must also be checked here, as the dynamic is the default, so the mechanism may have not have been switched.
@@ -82,12 +88,13 @@ public class DynamicSQLBatchWritingMechanism implements BatchWritingMechanism {
     public void clear() {
         this.sqlStrings.clear();
         this.batchSize = 0;
+        clearCacheQueryTimeout();
     }
 
     /**
      * INTERNAL:
      * This method is used by the DatabaseAccessor to execute and clear the batched statements in the
-     * case that a non batchable statement is being execute
+     * case that a non batchable statement is being executed
      */
     public void executeBatchedStatements(AbstractSession session) {
         if (this.sqlStrings.isEmpty()) {
@@ -130,7 +137,7 @@ public class DynamicSQLBatchWritingMechanism implements BatchWritingMechanism {
 
     /**
      * INTERNAL:
-     * This method is used to build the batch statement by concatinating the strings
+     * This method is used to build the batch statement by concatenating the strings
      * together.
      */
     protected PreparedStatement prepareBatchStatement(AbstractSession session) throws DatabaseException {
@@ -195,6 +202,10 @@ public class DynamicSQLBatchWritingMechanism implements BatchWritingMechanism {
                          sqlStringsIterator.hasNext();) {
                     statement.addBatch((String)sqlStringsIterator.next());
                 }
+            	// Set the query timeout that was cached during the multiple calls to appendCall
+                if(queryTimeoutCache > DescriptorQueryManager.NoTimeout) {
+                	statement.setQueryTimeout(queryTimeoutCache);
+                }
             } finally {
                 session.endOperationProfile(SessionProfiler.SQL_PREPARE, null, SessionProfiler.ALL);
             }
@@ -218,13 +229,5 @@ public class DynamicSQLBatchWritingMechanism implements BatchWritingMechanism {
             throw exception;
         }
         return statement;
-    }
-
-    /**
-     * INTERNAL:
-     * Sets the accessor that this mechanism will be used
-     */
-    public void setAccessor(DatabaseAccessor accessor) {
-        this.databaseAccessor = accessor;
     }
 }
