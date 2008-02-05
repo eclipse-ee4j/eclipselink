@@ -55,6 +55,18 @@ public class TopLinkBatchUpdatesTestModel extends TestModel {
         TestSuite suite = new TestSuite();
         suite.setName("BatchWriteTests");
         suite.addTest(new BatchWritingTest());
+        // Created for BUG# 214910 - Batch query timeout (Oracle 9.0.1+) 
+       	// The following 4 tests are expected to fail with an ORA-01013 user requested cancel of current operation (statement timeout)
+       	// Parameterized OraclePlatform|8 does not use the queryTimeout on the statement like 9|10 does
+       	suite.addTest(new QueryTimeoutBatchParameterizedDescriptorQueryManagerTest()); 
+        	
+       	suite.addTest(new QueryTimeoutBatchDynamicDescriptorQueryManagerTest());
+       	suite.addTest(new QueryTimeoutBatchParameterizedDatabaseQueryTest());        
+       	suite.addTest(new QueryTimeoutBatchDynamicDatabaseQueryTest());
+       	// Variant test cases for code coverage
+       	// Don't throw an exception/warning when a data query uses a parent reference query timeout
+       	suite.addTest(new QueryTimeoutBatchDynamicDataModifyDatabaseQueryParentRefExceptionTest());
+                
         addTest(EmployeeBasicTestModel.getReadObjectTestSuite());
         addTest(EmployeeBasicTestModel.getReadAllTestSuite());
         addTest(EmployeeBasicTestModel.getUpdateObjectTestSuite());
