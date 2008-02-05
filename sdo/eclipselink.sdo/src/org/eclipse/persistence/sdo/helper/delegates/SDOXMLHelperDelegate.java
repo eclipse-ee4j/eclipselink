@@ -31,6 +31,7 @@ import javax.xml.transform.Source;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.SDOXMLDocument;
+import org.eclipse.persistence.sdo.helper.SDOUnmappedContentHandler;
 import org.eclipse.persistence.sdo.helper.SDOClassLoader;
 import org.eclipse.persistence.sdo.helper.SDOMarshalListener;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
@@ -524,6 +525,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
             nr.put(sdoPrefix, SDOConstants.SDO_URL);
             SDOConstants.SDO_CHANGESUMMARY.getXmlDescriptor().setNamespaceResolver(nr);
             topLinkProject.addDescriptor(SDOConstants.SDO_CHANGESUMMARY.getXmlDescriptor());
+            topLinkProject.addDescriptor(SDOConstants.SDO_OPEN_SEQUENCED.getXmlDescriptor());
         }
         return topLinkProject;
     }
@@ -557,6 +559,8 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     	
     	if (unmarshaller == null) {
             unmarshaller = getXmlContext().createUnmarshaller();
+        unmarshaller.getProperties().put(SDOConstants.SDO_HELPER_CONTEXT, aHelperContext);
+        unmarshaller.setUnmappedContentHandlerClass(SDOUnmappedContentHandler.class);
             unmarshaller.setUnmarshalListener(new SDOUnmarshalListener(aHelperContext));
             unmarshaller.setResultAlwaysXMLRoot(true);
             xmlUnmarshallerMap.put(Thread.currentThread(), unmarshaller);
@@ -586,7 +590,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     }
     
     private void handleXMLMarshalException(XMLMarshalException xmlException) {    
-        if(xmlException.getErrorCode() == XMLMarshalException.NO_DESCRIPTOR_WITH_MATCHING_ROOT_ELEMENT){
+        if(xmlException.getErrorCode() == XMLMarshalException.NO_DESCRIPTOR_WITH_MATCHING_ROOT_ELEMENT || xmlException.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){
             throw SDOException.globalPropertyNotFound();                       
         }else{
             throw xmlException;

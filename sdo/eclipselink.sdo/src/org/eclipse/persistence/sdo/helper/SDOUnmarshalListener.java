@@ -121,6 +121,8 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                         nextModifiedDO._setModified(true);
                         SDOCSUnmarshalListener listener = new SDOCSUnmarshalListener(nextModifiedDO._getHelperContext(), true);
                         unmarshaller.setUnmarshalListener(listener);
+                        unmarshaller.getProperties().put("sdoHelperContext", aHelperContext);
+                        unmarshaller.setUnmappedContentHandlerClass(SDOUnmappedContentHandler.class);                        
                         Object unmarshalledNode = unmarshaller.unmarshal(nextNode, ((SDOType)nextModifiedDO.getType()).getXmlDescriptor().getJavaClass());
                         //unmarshalledDO is the modified dataobject from the changesummary xml
                         DataObject unmarshalledDO = null;
@@ -180,12 +182,15 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                             lw.add(toDeleteIndex, nextToDelete);
                                         }
                                         nextCS.setPropertyInternal(nextModifiedDO, nextProp, lw);
+                                        SDOSequence nextSeq = ((SDOSequence)nextCS.getOriginalSequences().get(nextModifiedDO));
                                         nextCS.resumeLogging();
                                         nextModifiedDO._setModified(true);
                                         for (int m = indexsToDelete.size() - 1; m >= 0; m--) {
                                             int toDeleteIndex = ((Integer)indexsToDelete.get(m)).intValue();
                                             SDODataObject nextToDelete = (SDODataObject)toDelete.get(m);
-
+                                            if(nextSeq != null){
+                                               nextSeq.addSettingWithoutModifyingDataObject(-1, nextProp, nextToDelete);
+                                            }
                                             nextToDelete.resetChanges();
 
                                             lw.remove(toDeleteIndex);
@@ -218,7 +223,12 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                                             value._setContainer(null);
                                             nextModifiedDO.set(nextProp, value);
                                             nextCS.setPropertyInternal(nextModifiedDO, nextProp, value);
-
+                                            SDOSequence nextSeq = ((SDOSequence)nextCS.getOriginalSequences().get(nextModifiedDO));
+                                            if(nextSeq != null){
+                                              nextSeq.addSettingWithoutModifyingDataObject(-1, nextProp, value);
+                                            }
+      
+  
                                             nextCS.resumeLogging();
                                             nextModifiedDO._setModified(true);
 
@@ -242,7 +252,22 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                             } else {
                                 nextModifiedDO._setModified(true);
                                 Object value = unmarshalledDO.get(nextProp);
-                                nextCS.setPropertyInternal(nextModifiedDO, nextProp, value);
+                                //lw is the list from the real current data object              
+                                
+                                if(nextProp.isMany()){                                       
+                                                                  
+                                  Property theProp = nextModifiedDO.getInstanceProperty(nextProp.getName());
+                                  if(theProp == null){
+                                    Property newProp = nextModifiedDO.defineOpenContentProperty(nextProp.getName(), new ArrayList(), nextProp.getType());
+                                    nextModifiedDO.set(newProp, new ArrayList());
+                                    theProp = newProp;
+                                  }
+                                  List lw = nextModifiedDO.getList(theProp.getName());                                                                    
+                                  nextCS.setPropertyInternal(nextModifiedDO, theProp, lw);
+                                  nextCS.getOriginalElements().put(lw, ((ListWrapper)value).getCurrentElements());
+                                }else{
+                                  nextCS.setPropertyInternal(nextModifiedDO, nextProp, value);  
+                                }
                             }
                         }
                         for (int k = 0; k < unsetValueList.size(); k++) {

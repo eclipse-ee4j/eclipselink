@@ -99,6 +99,7 @@ public class SDOConstants {
 
     // make the HelperContext global
     public static final HelperContext globalHelperContext = HelperProvider.getDefaultContext();
+    public static final SDOType SDO_OPEN_SEQUENCED = new SDOType(ORACLE_SDO_URL, "OpenSequencedType", globalHelperContext);
     public static final SDOType SDO_BOOLEAN = new SDOType(SDO_URL, BOOLEAN, globalHelperContext);
     public static final SDOType SDO_BYTE = new SDOType(SDO_URL, BYTE, globalHelperContext);
     public static final SDOType SDO_BYTES = new SDOType(SDO_URL, BYTES, globalHelperContext);
@@ -296,6 +297,7 @@ public class SDOConstants {
     /** Names for attributes available on ChangeSummary*/
     public static final String CHANGESUMMARY_REF = "ref";
     public static final String CHANGESUMMARY_UNSET = "unset";
+    public static final String SDO_HELPER_CONTEXT = "sdoHelperContext";
 
     /** Name of source attribute on appinfo*/
     public static final String APPINFO_SOURCE_ATTRIBUTE = "source";
@@ -356,6 +358,19 @@ public class SDOConstants {
 
     // perform initialization of constants in use by HelperDelegates
     static {
+        SDO_OPEN_SEQUENCED.setDataType(false);
+        SDO_OPEN_SEQUENCED.setInstanceClassName("oracle.sdo.OpenSequencedClass");        
+        //need to call getInstanceClass to initialize the class in the SDOClassLoader
+        Class instanceClass = SDO_OPEN_SEQUENCED.getInstanceClass();
+        Class implClass = SDO_OPEN_SEQUENCED.getImplClass();
+        XMLDescriptor xmlDescriptor = new XMLDescriptor();
+        xmlDescriptor.setJavaClass(implClass);          
+        SDO_OPEN_SEQUENCED.setXmlDescriptor(xmlDescriptor);
+        SDO_OPEN_SEQUENCED.setSequenced(true);
+        SDO_OPEN_SEQUENCED.setOpen(true);               
+        
+        SDO_OPEN_SEQUENCED.setFinalized(true);        
+
          /** JIRA-253 set pseudoDefaults on numeric primitives
          * see http://java.sun.com/docs/books/tutorial/java/nutsandbolts/datatypes.html (primary ref)
          * see p.45 of the Java Spec 4th edition (secondary ref)

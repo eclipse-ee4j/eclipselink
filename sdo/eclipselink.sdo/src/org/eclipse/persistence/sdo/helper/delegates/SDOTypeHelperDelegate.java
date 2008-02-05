@@ -136,6 +136,8 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
       typesHashMap = new HashMap();
       QName qname = new QName(SDOConstants.ORACLE_SDO_URL, SDOConstants.XMLHELPER_LOAD_OPTIONS);
       typesHashMap.put(qname, SDOConstants.SDO_XMLHELPER_LOAD_OPTIONS);
+        QName customTypeQname = new QName(SDOConstants.SDO_OPEN_SEQUENCED.getURI(), SDOConstants.SDO_OPEN_SEQUENCED.getName());
+        typesHashMap.put(customTypeQname, SDOConstants.SDO_OPEN_SEQUENCED);
     }
 
     /**
@@ -617,7 +619,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     public Map getTypesHashMap() {
         if (typesHashMap == null) {
-            typesHashMap = new HashMap();
+            initTypesHashMap();
         }
         return typesHashMap;
     }
@@ -626,6 +628,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         initTypesHashMap();
         namespaceResolver = new NamespaceResolver();
         initOpenProps();
+        SDOConstants.SDO_OPEN_SEQUENCED.getXmlDescriptor().setNamespaceResolver(null);
     }
 
     /**

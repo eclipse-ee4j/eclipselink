@@ -17,11 +17,14 @@ import java.util.Map;
 import java.util.HashMap;
 import commonj.sdo.Property;
 import commonj.sdo.Sequence;
+import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
+import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -410,8 +413,8 @@ public class SDOSequence implements Sequence {
         XMLDescriptor xmlDescriptor = sdoType.getXmlDescriptor();
         if (null == mapping) {
             setting.setObject(dataObject);
-            // TODO: this seems odd...is always going to return null but I think we want the any mapping
-            // mapping = xmlDescriptor.getMappingForAttributeName(null);
+            
+            
             mapping = xmlDescriptor.getMappingForAttributeName("openContentProperties");
             setting.setMapping(mapping);
             XMLRoot xmlRoot = new XMLRoot();
@@ -423,6 +426,11 @@ public class SDOSequence implements Sequence {
                 xmlRoot.setLocalName(sdoProperty.getName());
                 xmlRoot.setNamespaceURI(sdoProperty.getUri());
                 xmlRoot.setObject(value);
+              
+                QName schemaTypeQName = ((SDOTypeHelper)dataObject._getHelperContext().getTypeHelper()).getXSDTypeFromSDOType(property.getType());
+                if(schemaTypeQName != null && schemaTypeQName != XMLConstants.STRING_QNAME){
+                  xmlRoot.setSchemaType(schemaTypeQName);
+                }
             }
             setting.setValue(xmlRoot, false);
         } else {
@@ -495,13 +503,14 @@ public class SDOSequence implements Sequence {
      * @param value
      * @return true if the a Setting was successfully added to the list, otherwise false
      */
-    public boolean addSettingWithoutModifyingDataObject(int index, Property property, Object value) {
-        if (!isAllowedInSequence(property)) {
-            return false;
-        }
+    public boolean addSettingWithoutModifyingDataObject(int index, Property property, Object value) {        
         Setting setting = convertToSetting(property, value);
         valuesToSettings.put(new Key(property, value), setting);
-        settings.add(setting);
+        if(index >= 0) {
+          settings.add(index, setting);
+        }else {
+          settings.add(setting);
+        }
         return true;
     }
 

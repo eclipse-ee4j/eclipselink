@@ -1092,6 +1092,52 @@ public class SDODataObject implements DataObject, SequencedObject {
         propertyDO.set("containment", isContainment);
         return aHelperContext.getTypeHelper().defineOpenContentProperty(null, propertyDO);
     }
+    
+    public Property defineOpenContentProperty(String name, Object value, Type sdotype) throws UnsupportedOperationException, IllegalArgumentException {
+        if(sdotype == null){
+          return defineOpenContentProperty(name, value);
+        }
+        DataObject propertyDO = aHelperContext.getDataFactory().create(SDOConstants.SDO_PROPERTY);
+
+        propertyDO.set("name", name);        
+        boolean isMany = false;
+        boolean isContainment = false;
+        Class valueClass = value.getClass();
+
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Collection) {
+            if (((Collection)value).size() > 0) {
+                Object firstObject = ((Collection)value).iterator().next();
+                if (firstObject != null) {
+                    valueClass = firstObject.getClass();
+                    if (firstObject instanceof DataObject) {
+                        if (((DataObject)firstObject).getContainer() == null) {
+                            isContainment = true;
+                        }                        
+                        sdotype = ((DataObject)firstObject).getType();
+                    } else {
+                        sdotype = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getTypeForSimpleJavaType(valueClass);
+                    }
+                } 
+            }
+            isMany = true;
+        } else if (value instanceof DataObject) {
+            if (((DataObject)value).getContainer() == null) {
+                isContainment = true;
+            }
+            sdotype = ((DataObject)value).getType();
+        } else {
+            sdotype = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getTypeForSimpleJavaType(valueClass);
+        }
+        propertyDO.set("type", sdotype);
+
+        propertyDO.set("many", isMany);
+
+        propertyDO.set("containment", isContainment);
+        return aHelperContext.getTypeHelper().defineOpenContentProperty(null, propertyDO);
+    }
 
     /**
      * Sets the value of the given property of the object to the new value.
@@ -2711,7 +2757,7 @@ public class SDODataObject implements DataObject, SequencedObject {
                 if (value instanceof DataObject) {
                     theType = ((DataObject)value).getType();
                 } else {
-                    theType = aHelperContext.getTypeHelper().getType(value.getClass());
+                    theType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getTypeForSimpleJavaType(value.getClass());
                 }
             } else if (next instanceof DataObject) {
                 value = next;
@@ -2728,15 +2774,28 @@ public class SDODataObject implements DataObject, SequencedObject {
                 }
                 theType = ((DataObject)next).getType();
             }
+            else{
+              theType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getTypeForSimpleJavaType(value.getClass());
+            }
             if (propertyName != null) {
                 SDOProperty prop = (SDOProperty)aHelperContext.getXSDHelper().getGlobalProperty(propertyUri, propertyName, true);
                 if (prop == null) {
-                    DataObject propDo = aHelperContext.getDataFactory().create(SDOConstants.SDO_PROPERTY);
-                    propDo.set("name", propertyName);
-                    propDo.set("type", theType);
-                    propDo.set("many", true);
-                    prop = (SDOProperty)aHelperContext.getTypeHelper().defineOpenContentProperty(null, propDo);
-                    prop.setUri(propertyUri);
+                    prop = (SDOProperty)getInstanceProperty(propertyName);
+                    if(prop != null){
+                      if(prop.getUri() == null && propertyUri != null){
+                        prop  =createNewProperty(propertyName,propertyUri, theType);
+                      }else{
+                        if(prop.getUri() != null){
+                          if(propertyUri == null){
+                            prop  =createNewProperty(propertyName,propertyUri, theType);
+                          }else if(!prop.getUri().equals(propertyUri)){
+                             prop  =createNewProperty(propertyName,propertyUri, theType);
+                          }
+                        }
+                      }
+                    }else{
+                       prop =createNewProperty(propertyName,propertyUri, theType);
+                    }                                  
                 }
 
                 if (prop.isMany()) {
@@ -2746,6 +2805,16 @@ public class SDODataObject implements DataObject, SequencedObject {
                 }
             }
         }
+    }
+    
+    private SDOProperty createNewProperty(String propertyName,String propertyUri, Type theType){      
+       DataObject propDo = aHelperContext.getDataFactory().create(SDOConstants.SDO_PROPERTY);
+       propDo.set("name", propertyName);
+       propDo.set("type", theType);
+       propDo.set("many", true);
+       SDOProperty prop = (SDOProperty)aHelperContext.getTypeHelper().defineOpenContentProperty(null, propDo);
+       prop.setUri(propertyUri);
+       return prop;
     }
 
     /**
@@ -2762,11 +2831,11 @@ public class SDODataObject implements DataObject, SequencedObject {
             String localName = ((SDOProperty)next).getXPath();
             if (next.getType() != null) {
                 if (!next.getType().isDataType()) {
-                    String uri = next.getType().getURI();
-                    root.setNamespaceURI(uri);                    
+                    String uri = ((SDOProperty)next).getUri();
+                    root.setNamespaceURI(uri);
                 } else {
-                    String uri = getType().getURI();
-                    root.setNamespaceURI(uri);                    
+                    String uri = ((SDOProperty)next).getUri();
+                    root.setNamespaceURI(uri);
                 }
             }
 
@@ -3381,5 +3450,9 @@ public class SDODataObject implements DataObject, SequencedObject {
         } else {
             return null;
         }
+    }
+    
+    public void _setSdoRef(String newRef) {
+        sdoRef = newRef;
     }
 }
