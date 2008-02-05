@@ -36,12 +36,14 @@ public class UnmappedContentHandlerWrapper extends UnmarshalRecord {
         unmappedContentHandler.setUnmarshalRecord(this);
     }
 
-    public UnmappedContentHandlerWrapper(UnmappedContentHandler unmappedContentHandler, XMLUnmarshaller unmarshaller, XMLReader reader) {
+    public UnmappedContentHandlerWrapper(UnmappedContentHandler unmappedContentHandler, SAXUnmarshallerHandler saxUnmarshallerHandler) {
         super(null);
         this.depth = 0;
         this.unmappedContentHandler = unmappedContentHandler;
-        setUnmarshaller(unmarshaller);
-        setXMLReader(reader);
+        setUnmarshaller(saxUnmarshallerHandler.getUnmarshaller());
+        setXMLReader(saxUnmarshallerHandler.getXMLReader());
+        setUriToPrefixMap(saxUnmarshallerHandler.getUriToPrefixMap());
+        setNamespaceMap(saxUnmarshallerHandler.getNamespaceMap());
         unmappedContentHandler.setUnmarshalRecord(this);
     }
 

@@ -66,7 +66,11 @@ public abstract class DeferredContentHandler implements ContentHandler, LexicalH
 
     public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
         levelIndex++;
-        StartElementEvent event = new StartElementEvent(uri, localName, qName, atts);
+        
+        //Copy attributes because some parsers reuse the Attributes object across start element events
+        Attributes copiedAttrs = buildAttributeList(atts);
+        
+        StartElementEvent event = new StartElementEvent(uri, localName, qName, copiedAttrs);
         events.add(event);        
         
         if (startOccurred) {
@@ -76,6 +80,15 @@ public abstract class DeferredContentHandler implements ContentHandler, LexicalH
         }
         
         startOccurred = true;
+    }
+        
+    protected AttributeList buildAttributeList(Attributes attrs) throws SAXException {
+    	  AttributeList attributes = new AttributeList(attrs.getLength()); 
+    	
+        for (int i = 0; i < attrs.getLength(); i++) {        	        	    
+        	attributes.addAttribute(attrs.getLocalName(i), attrs.getQName(i), attrs.getURI(i), attrs.getType(i), attrs.getValue(i), i);        	              
+        }
+        return attributes;
     }
 
     public void endElement(String uri, String localName, String qName) throws SAXException {
@@ -173,5 +186,113 @@ public abstract class DeferredContentHandler implements ContentHandler, LexicalH
 
     protected List getEvents() {
         return events;
+    }
+    
+    /**
+     * Implementation of Attributes - used to pass along a given node's attributes
+     * to the startElement method of the reader's content handler.
+     */
+    public class AttributeList implements org.xml.sax.Attributes {
+      
+      private String[] localNames;      
+      private String[] uris;
+      private String[] values;
+      private String[] types;   	
+      private ArrayList<String> qNames;    	
+      
+        public AttributeList(int size) {
+          qNames = new ArrayList(size);
+          localNames = new String[size];        	
+          uris = new String[size];
+          types= new String[size];
+          values = new String[size];        	           
+        }
+        
+        public void addAttribute(String localName, String qName, String uri, String type, String value, int index) {        	
+          qNames.add(index, qName);
+          localNames[index] = localName;          
+          uris[index] = uri;
+          types[index] = type;
+          values[index] = value;          
+        }
+                    
+        public String getQName(int index) {
+            return qNames.get(index);            
+        }
+        
+        public String getType(String namespaceUri, String localName) {
+
+       	 for(int i=0;i <localNames.length; i++){
+           	 String nextLocalName = localNames[i];
+           	 if(nextLocalName != null && localName!= null && localName.equals(nextLocalName)){           		 
+               String uriAtIndex = uris[i];
+           		 if(namespaceUri != null && uriAtIndex != null && namespaceUri.equals(uriAtIndex)){               
+                  return types[i];           			 
+           		 }
+           	 }        	 
+            }             
+           return null;
+        	
+        }
+        
+        public String getType(int index) {                               
+          return types[index];            
+        }
+        
+        public String getType(String qname) {        	
+          return types[getIndex(qname)];    
+        }
+        
+        public int getIndex(String qname) {
+        	return qNames.indexOf(qname);        	          	
+        }
+        
+        public int getIndex(String uri, String localName) {
+    
+        	 for(int i=0;i <localNames.length; i++){
+            	 String nextLocalName = localNames[i];
+            	 if(nextLocalName != null && localName!= null && localName.equals(nextLocalName)){
+            		 String uriAtIndex = uris[i];
+            		 if(uri != null && uriAtIndex != null && uri.equals(uriAtIndex)){
+            			 return i;
+            		 }
+            	 }        	 
+             }             
+            return -1;
+        }
+       
+        public int getLength() {
+            return localNames.length;
+        }
+        
+        public String getLocalName(int index) {
+            return localNames[index];          	  
+        }        
+
+        public String getURI(int index) {
+            return uris[index];                	
+        }
+        
+        public String getValue(int index) {
+       	    return values[index];            
+        }
+        
+        public String getValue(String qname) {
+          return values[getIndex(qname)];        	
+        }
+
+        public String getValue(String uri, String localName) {
+         for(int i=0;i <localNames.length; i++){
+        	 String nextLocalName = localNames[i];
+        	 if(nextLocalName != null && localName!= null && localName.equals(nextLocalName)){
+        		 String uriAtIndex = uris[i];
+        		 if(uri != null && uriAtIndex != null && uri.equals(uriAtIndex)){
+        			 return values[i];
+        		 }
+        	 }        	 
+         }
+         return null;      	
+        }
+        
     }
 }

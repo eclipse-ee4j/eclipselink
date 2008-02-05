@@ -186,8 +186,8 @@ public class SAXUnmarshallerHandler implements ContentHandler {
                         } catch (InstantiationException e) {
                             throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
                         }
-
-                        UnmappedContentHandlerWrapper unmappedContentHandlerWrapper = new UnmappedContentHandlerWrapper(unmappedContentHandler, unmarshaller, getXMLReader());
+                        
+                        UnmappedContentHandlerWrapper unmappedContentHandlerWrapper = new UnmappedContentHandlerWrapper(unmappedContentHandler, this);
                         unmappedContentHandler.setUnmarshalRecord(unmappedContentHandlerWrapper);
 
                         unmappedContentHandler.startElement(namespaceURI, localName, qName, atts);
@@ -300,5 +300,9 @@ public class SAXUnmarshallerHandler implements ContentHandler {
 
     public void setUriToPrefixMap(Map uriToPrefixMap) {
         this.uriToPrefixMap = uriToPrefixMap;
+    }
+    
+    public Map getNamespaceMap() {
+        return this.namespaceMap;
     }
 }

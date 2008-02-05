@@ -174,9 +174,11 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             workingDescriptor = null;
         } else {
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
-            if (builder.getNodes().size() != 0) {
-                //Grab the fragment and put it into the collection
-                unmarshalRecord.addAttributeValue(this, builder.getNodes().pop());
+            
+            UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyCollectionMapping.getKeepAsElementPolicy();         
+            if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() != 0)) {
+               //Grab the fragment and put it into the collection
+               unmarshalRecord.addAttributeValue(this, builder.getNodes().pop());
             } else {
                 //TEXT VALUE
                 endElementProcessText(unmarshalRecord, collection, xPathFragment);
