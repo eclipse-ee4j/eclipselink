@@ -32,10 +32,6 @@ public class QueryTimeoutBatchParameterizedDescriptorQueryManagerTest extends Qu
     	super.test();        
         if(!limitExceeded) {
         	System.out.println("test completed without timeout.");
-        } else {
-        	if(unsupportedPlatform) {
-        		System.out.println("QueryTimeoutBatch test not run on unsupported Platform");
-        	}
         }
     }
     
