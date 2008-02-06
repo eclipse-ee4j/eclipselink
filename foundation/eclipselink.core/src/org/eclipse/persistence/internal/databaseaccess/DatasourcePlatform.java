@@ -423,6 +423,9 @@ public class DatasourcePlatform implements Platform {
         return false;
     }
 
+    public boolean isTimesTen7() {
+        return false;
+    }
 
     /**
      * OBSOLETE:

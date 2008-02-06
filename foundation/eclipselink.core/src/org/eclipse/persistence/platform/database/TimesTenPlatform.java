@@ -263,4 +263,12 @@ public class TimesTenPlatform extends DatabasePlatform {
         writer.write(fullSeqName);
         return writer;
     }
+
+    /**
+     * INTERNAL
+     * Allows platform to choose whether to bind literals in DatabaseCalls or not.
+     */
+    public boolean shouldBindLiterals() {
+        return false;
+    }
 }

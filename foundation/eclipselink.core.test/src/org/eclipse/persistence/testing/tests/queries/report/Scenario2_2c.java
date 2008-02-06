@@ -33,7 +33,7 @@ public class Scenario2_2c extends ReportQueryTestCase {
             Object[] result = new Object[2];
             result[0] = emp.getId();
             // Oracle returns a BigDecimal for count
-            if (getSession().getPlatform().isOracle()) {
+            if (getSession().getPlatform().isOracle() || getSession().getPlatform().isTimesTen7()) {
                 result[1] = new java.math.BigDecimal(3);
             } else if (getSession().getPlatform().isMySQL()) {
                 result[1] = new java.lang.Long(3);
@@ -44,8 +44,8 @@ public class Scenario2_2c extends ReportQueryTestCase {
             addResult(result, null);
         }
     }
-protected void setup()  throws Exception
-{
+    protected void setup()  throws Exception
+    {
         super.setup();
         reportQuery = new ReportQuery(new ExpressionBuilder());
 
