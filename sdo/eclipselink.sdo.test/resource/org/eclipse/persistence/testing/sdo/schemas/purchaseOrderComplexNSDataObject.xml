@@ -4,6 +4,7 @@
       <name>Alice Smith</name>
       <street>123 Maple Street</street>
       <city>Mill Valley</city>
+      <base64Test>eHdmb3Rh</base64Test>
       <state>CA</state>
    </shipTo>
    <billTo country="Canada" xsi:type="ns0:cdnAddressMailingType">

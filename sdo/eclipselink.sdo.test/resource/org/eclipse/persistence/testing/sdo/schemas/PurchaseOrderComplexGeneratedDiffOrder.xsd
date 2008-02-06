@@ -21,6 +21,7 @@
          <xsd:element name="name" type="xsd:string" minOccurs="0"/>
          <xsd:element name="street" type="xsd:string" minOccurs="0"/>
          <xsd:element name="city" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="base64Test" type="xsd:base64Binary" minOccurs="0"/>
       </xsd:sequence>
       <xsd:attribute name="country" type="xsd:string" default="US"/>
    </xsd:complexType>

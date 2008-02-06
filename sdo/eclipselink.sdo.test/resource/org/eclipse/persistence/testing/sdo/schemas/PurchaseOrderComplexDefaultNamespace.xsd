@@ -24,6 +24,7 @@
          <element name="name" type="string" minOccurs="0"/>
          <element name="street" type="string" minOccurs="0"/>
          <element name="city" type="string" minOccurs="0"/>
+         <element name="base64Test" type="base64Binary" minOccurs="0"/>
       </sequence>
       <attribute name="country" type="string" default="US"/>
    </complexType>

@@ -81,6 +81,18 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         cityProp.setContainment(true);
         cityProp.setContainingType(addrType);
         addrType.getDeclaredProperties().add(cityProp);
+        
+        
+        SDOProperty base64Prop = new SDOProperty(aHelperContext);
+        base64Prop.setName("base64Test");
+        base64Prop.setType(SDOConstants.SDO_BYTES);
+        base64Prop.setXsd(true);
+        base64Prop.setXsdLocalName("base64Test");
+        //cityProp.setElement(true);
+        base64Prop.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
+        base64Prop.setContainment(true);
+        base64Prop.setContainingType(addrType);
+        addrType.getDeclaredProperties().add(base64Prop);
 
         SDOProperty countryProp = new SDOProperty(aHelperContext);
         countryProp.setName("country");

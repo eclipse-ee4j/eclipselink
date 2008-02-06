@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="my.uri" xmlns="my.uri" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:schema targetNamespace="my.uri" xmlns="my.uri" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="my.uri">
    <xsd:include schemaLocation="QuantityInclude.xsd"/>
    <xsd:include schemaLocation="AddressInclude.xsd"/>
    <xsd:include schemaLocation="SKUInclude.xsd"/>
