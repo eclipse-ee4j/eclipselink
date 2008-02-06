@@ -45,7 +45,10 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsIntegerTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsComplexTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsCollectionTestCases.class);
-	//jaxb-mats bug due to time/timestamp changes to TopLink after 070609
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlanyelement.XmlAnyElementTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlanyelement.XmlAnyElementLaxTestCases.class);
+        
+        //jaxb-mats bug due to time/timestamp changes to TopLink after 070609
         //suite.addTestSuite(XmlSchemaTypeDateTestCases.class);
         //suite.addTestSuite(XmlSchemaTypeTwoDatesTestCases.class);
         suite.addTestSuite(XmlIdRefTestCases.class);
