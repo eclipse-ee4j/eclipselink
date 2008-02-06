@@ -42,7 +42,7 @@ public class PessimisticLockTest extends RefreshTest {
             throw new TestWarningException("This database does not support for update");
         }
 
-        if ((getSession().getPlatform().isMySQL() || getSession().getPlatform().isTimesTen()) && (lockMode == org.eclipse.persistence.queries.ObjectBuildingQuery.LOCK_NOWAIT)) {
+        if ((getSession().getPlatform().isMySQL() ) && (lockMode == org.eclipse.persistence.queries.ObjectBuildingQuery.LOCK_NOWAIT)) {
             throw new TestWarningException("This database does not support NOWAIT");
         }
 

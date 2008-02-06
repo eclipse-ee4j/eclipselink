@@ -390,7 +390,7 @@ public class ExpressionTestSuite extends TestSuite {
         expression = expression.and(builder.value(1).equal(builder.getParameter("1")));
 
         ReadAllQuery query = new ReadAllQuery(Employee.class, expression);
-        query.addArgument("1");
+        query.addArgument("1", Integer.class);
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 12);
         test.setExpression(expression);

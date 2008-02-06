@@ -31,7 +31,7 @@ public class PessimisticLockOutsideUnitOfWorkTest extends PessimisticLockFineGra
             throw new TestWarningException("This database does not support for update");
         }
 
-        if ((getSession().getPlatform().isMySQL() || getSession().getPlatform().isTimesTen()) && 
+        if ((getSession().getPlatform().isMySQL() ) && 
             lockMode == org.eclipse.persistence.queries.ObjectLevelReadQuery.LOCK_NOWAIT) {
             throw new TestWarningException("This database does not support NOWAIT");
         }

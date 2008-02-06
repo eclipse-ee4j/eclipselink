@@ -15,6 +15,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.queries.ValueReadQuery;
@@ -262,6 +263,26 @@ public class TimesTenPlatform extends DatabasePlatform {
         writer.write("DROP SEQUENCE ");
         writer.write(fullSeqName);
         return writer;
+    }
+
+    /**
+     * INTERNAL:
+     * TimesTen and DB2 require cast around parameter markers if both operands of certain
+     * operators are parameter markers
+     * This method generates CAST for parameter markers whose type is correctly
+     * identified by the query compiler
+     */
+    public void writeParameterMarker(Writer writer, ParameterExpression parameter) throws IOException {
+        String parameterMarker = "?";
+        Object type = parameter.getType();
+        if(type != null) {
+            FieldTypeDefinition fieldType;
+            fieldType = getFieldTypeDefinition((Class)type);
+            if (fieldType != null){
+                parameterMarker = "CAST (? AS " + fieldType.getName() + " )";
+            }
+        }
+        writer.write(parameterMarker);
     }
 
     /**

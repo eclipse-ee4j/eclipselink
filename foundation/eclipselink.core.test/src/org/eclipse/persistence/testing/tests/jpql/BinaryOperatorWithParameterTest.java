@@ -543,10 +543,11 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
     }
 
     public void setup() {
-        //To fix bug 6216738
-        if (getSession().getLogin().getDatasourcePlatform().isDB2() && (getEjbqlString()=="SELECT OBJECT(emp) FROM Employee emp WHERE emp.salary > (50000 + 10000 - 10000 / (?1 * ?2))"))
+        //To fix bug 6216738 and EclipseLink bug 218083
+        if ( (getSession().getLogin().getDatasourcePlatform().isDB2() || getSession().getLogin().getDatasourcePlatform().isTimesTen() )
+            && (getEjbqlString()=="SELECT OBJECT(emp) FROM Employee emp WHERE emp.salary > (50000 + 10000 - 10000 / (?1 * ?2))"))
         {
-          throw new TestWarningException("This test is not supported on DB2 Database");
+          throw new TestWarningException("This test is not supported on DB2 or TimesTen 7");
         }
         //JGL: If the arguments are already set by the test, don't 
         //set them again

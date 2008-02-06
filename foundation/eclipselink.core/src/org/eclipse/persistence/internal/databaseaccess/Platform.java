@@ -107,7 +107,9 @@ public interface Platform extends Serializable, Cloneable {
     public boolean isSybase();
 
     public boolean isTimesTen();
-
+    
+    public boolean isTimesTen7();
+    
     public boolean isPostgreSQL();
 
     /**
