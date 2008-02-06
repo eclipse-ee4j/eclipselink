@@ -32,10 +32,9 @@ import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
  *  @see org.eclipse.persistence.jaxb.compiler.TypeInfo
  *  @see org.eclipse.persistence.jaxb.compiler.AnnotationsProcessor
  *  
- *  @since   release specific (what release of product did this appear in)
  *  @author mmacivor
  */
-public class TypeProperty {
+public class Property {
     private String propertyName;
     private QName schemaName;
     private boolean isMethodProperty;
@@ -49,17 +48,15 @@ public class TypeProperty {
     private JavaHasAnnotations element;
     private JavaClass genericType;
     private boolean isAttribute = false;
-    private boolean isChoice = false;
     private Helper helper;
     private String getMethodName;
     private String setMethodName;
     private boolean isRequired = false;
-    private Collection<TypeProperty> choiceProperties;
     
-    public TypeProperty() {
+    public Property() {
     }
 
-    public TypeProperty(Helper helper) {
+    public Property(Helper helper) {
         this.helper = helper;
     }
 
@@ -213,19 +210,12 @@ public class TypeProperty {
         setMethodName = methodName;
     }
     
-    public void setChoice(boolean b) {
-        isChoice = b;
-    }
-    
     public boolean isChoice() {
-        return isChoice;
+        return false;
     }
     
-    public Collection<TypeProperty> getChoiceProperties() {
-        return this.choiceProperties;
+    public boolean isAny() {
+    	return false;
     }
     
-    public void setChoiceProperties(Collection<TypeProperty> properties) {
-        this.choiceProperties = properties;
-    }
 }

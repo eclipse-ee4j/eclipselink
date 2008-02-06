@@ -50,7 +50,7 @@ import org.eclipse.persistence.sessions.Project;
  * for that class as well.
  * @see org.eclipse.persistence.jaxb.compiler.Generator
  * @see org.eclipse.persistence.jaxb.compiler.TypeInfo
- * @see org.eclipse.persistence.jaxb.compiler.TypeProperty 
+ * @see org.eclipse.persistence.jaxb.compiler.Property 
  * @author mmacivor
  * @since Oracle TopLink 11.1.1.0.0
  *
@@ -123,7 +123,7 @@ public class MappingsGenerator {
         info.setDescriptor(descriptor);
     }
 
-    public void generateMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    public void generateMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         if (property.getAdapterClass() != null) {
             // need to check the adapter to determine whether we require a
             // direct mapping (anything we can create a descriptor for) or
@@ -170,6 +170,8 @@ public class MappingsGenerator {
             } else {
                 generateChoiceMapping(property, descriptor, namespaceInfo);
             }
+        } else if(property.isAny()) {
+        	generateAnyCollectionMapping(property, descriptor, namespaceInfo);
         } else if (isMapType(property) && helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
             generateAnyAttributeMapping(property, descriptor, namespaceInfo);
         } else if (isCollectionType(property)) {
@@ -197,16 +199,17 @@ public class MappingsGenerator {
         }
     }
     
-    public XMLChoiceObjectMapping generateChoiceMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespace) {
-        XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
+    public XMLChoiceObjectMapping generateChoiceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
+        ChoiceProperty prop = (ChoiceProperty)property;
+    	XMLChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
             mapping.setGetMethodName(property.getGetMethodName());
             mapping.setSetMethodName(property.getSetMethodName());
         }
-        Iterator<TypeProperty> choiceProperties = property.getChoiceProperties().iterator();
+        Iterator<Property> choiceProperties = prop.getChoiceProperties().iterator();
         while(choiceProperties.hasNext()) {
-            TypeProperty next = choiceProperties.next();
+            Property next = choiceProperties.next();
             JavaClass type = next.getType();
             XMLField xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
             mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());
@@ -214,8 +217,9 @@ public class MappingsGenerator {
         descriptor.addMapping(mapping);
         return mapping;
     }
-    public XMLChoiceCollectionMapping generateChoiceCollectionMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespace) {
-        XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
+    public XMLChoiceCollectionMapping generateChoiceCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
+        ChoiceProperty prop = (ChoiceProperty)property;
+    	XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
             mapping.setGetMethodName(property.getGetMethodName());
@@ -229,9 +233,9 @@ public class MappingsGenerator {
         }
         mapping.useCollectionClassName(collectionType.getRawName());
         
-        Iterator<TypeProperty> choiceProperties = property.getChoiceProperties().iterator();
+        Iterator<Property> choiceProperties = prop.getChoiceProperties().iterator();
         while(choiceProperties.hasNext()) {
-            TypeProperty next = choiceProperties.next();
+            Property next = choiceProperties.next();
             JavaClass type = next.getType();
             XMLField xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
             mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());
@@ -239,7 +243,20 @@ public class MappingsGenerator {
         descriptor.addMapping(mapping);
         return mapping;
     }
-    public XMLCompositeObjectMapping generateCompositeObjectMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
+    
+    public XMLAnyCollectionMapping generateAnyCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    	AnyProperty prop = (AnyProperty)property;
+    	XMLAnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
+    	mapping.setAttributeName(property.getPropertyName());
+    	if(prop.isLax()) {
+    		mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+    	} else {
+    		mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);
+    	}
+    	descriptor.addMapping(mapping);
+    	return mapping;
+    }
+    public XMLCompositeObjectMapping generateCompositeObjectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
         mapping.setReferenceClassName(referenceClass.getQualifiedName());
         mapping.setAttributeName(property.getPropertyName());
@@ -252,7 +269,7 @@ public class MappingsGenerator {
         return mapping;
         
     }
-    public XMLDirectMapping generateDirectMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    public XMLDirectMapping generateDirectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
@@ -263,7 +280,7 @@ public class MappingsGenerator {
         descriptor.addMapping(mapping);
         return mapping;
     }
-    public XMLBinaryDataMapping generateBinaryMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    public XMLBinaryDataMapping generateBinaryMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
@@ -286,7 +303,7 @@ public class MappingsGenerator {
         
         return mapping;
     }
-    public void generateDirectEnumerationMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, EnumTypeInfo enumInfo) {
+    public void generateDirectEnumerationMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, EnumTypeInfo enumInfo) {
         XMLDirectMapping mapping = new XMLDirectMapping();
         JAXBEnumTypeConverter converter = new JAXBEnumTypeConverter(mapping, enumInfo.getClassName(), false);
         mapping.setConverter(converter);
@@ -304,7 +321,7 @@ public class MappingsGenerator {
         descriptor.addMapping(mapping);
     }
     
-    public void generateCollectionMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    public void generateCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         // check to see if this should be a composite or direct mapping
         JavaClass javaClass = null;
         if (property.getGenericType() != null) {
@@ -333,7 +350,7 @@ public class MappingsGenerator {
         }
     }
 
-    public void generateEnumCollectionMapping(TypeProperty property, EnumTypeInfo info, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    public void generateEnumCollectionMapping(Property property, EnumTypeInfo info, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
@@ -364,7 +381,7 @@ public class MappingsGenerator {
         descriptor.addMapping(mapping);
     }
 
-    public void generateAnyAttributeMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    public void generateAnyAttributeMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLAnyAttributeMapping mapping = new XMLAnyAttributeMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
@@ -381,7 +398,7 @@ public class MappingsGenerator {
         return src.getRawName().equals(tgt.getCanonicalName());
     }
     
-    public XMLCompositeCollectionMapping generateCompositeCollectionMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
+    public XMLCompositeCollectionMapping generateCompositeCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
@@ -405,7 +422,7 @@ public class MappingsGenerator {
         return mapping;
     }
     
-    public XMLCompositeDirectCollectionMapping generateDirectCollectionMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    public XMLCompositeDirectCollectionMapping generateDirectCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         if(property.isMethodProperty()) {
@@ -444,7 +461,7 @@ public class MappingsGenerator {
         return prefix;
     }
 
-    public boolean isCollectionType(TypeProperty field) {
+    public boolean isCollectionType(Property field) {
         JavaClass type = field.getType();
         if (helper.getJavaClass(Collection.class).isAssignableFrom(type) 
                 || helper.getJavaClass(List.class).isAssignableFrom(type) 
@@ -480,12 +497,12 @@ public class MappingsGenerator {
             ArrayList<String> propertyNames = info.getPropertyNames();
             for (int i = 0; i < propertyNames.size(); i++) {
                 String nextPropertyKey = propertyNames.get(i);
-                TypeProperty next = info.getProperties().get(nextPropertyKey);
+                Property next = info.getProperties().get(nextPropertyKey);
                 generateMapping(next, descriptor, namespaceInfo);
             }
         } else {
             for (int i = 0; i < propOrder.length; i++) {
-                TypeProperty next = info.getProperties().get(propOrder[i]);
+                Property next = info.getProperties().get(propOrder[i]);
                 if (next != null) {
                     generateMapping(next, descriptor, namespaceInfo);
                 }
@@ -501,7 +518,7 @@ public class MappingsGenerator {
      * @param namespaceInfo
      * @param referenceClass
      */
-    public void generateXMLCollectionReferenceMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
+    public void generateXMLCollectionReferenceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
         XMLField srcXPath = getXPathForField(property, namespaceInfo, true);
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
@@ -518,7 +535,7 @@ public class MappingsGenerator {
         // here we need to setup source/target key field associations
         TypeInfo referenceType = typeInfo.get(referenceClass.getQualifiedName());
         if (referenceType.isIDSet()) {
-            TypeProperty prop = referenceType.getIDProperty();
+            Property prop = referenceType.getIDProperty();
             XMLField tgtXPath = getXPathForField(prop, namespaceInfo, !(helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class)));
             mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath.getXPath());
         }
@@ -535,7 +552,7 @@ public class MappingsGenerator {
      * @param namespaceInfo
      * @param referenceClass
      */
-    public void generateXMLObjectReferenceMapping(TypeProperty property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
+    public void generateXMLObjectReferenceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
         XMLField srcXPath = getXPathForField(property, namespaceInfo, true);
 
         XMLObjectReferenceMapping mapping = new XMLObjectReferenceMapping();
@@ -545,7 +562,7 @@ public class MappingsGenerator {
         // here we need to setup source/target key field associations
         TypeInfo referenceType = typeInfo.get(referenceClass.getQualifiedName());
         if (referenceType.isIDSet()) {
-            TypeProperty prop = referenceType.getIDProperty();
+            Property prop = referenceType.getIDProperty();
             XMLField tgtXPath = getXPathForField(prop, namespaceInfo, !(helper.isAnnotationPresent(prop.getElement(), XmlAttribute.class)));
             mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath.getXPath());
         }
@@ -555,7 +572,7 @@ public class MappingsGenerator {
         descriptor.addMapping(mapping);
     }
     
-    public XMLField getXPathForField(TypeProperty property, NamespaceInfo namespaceInfo, boolean isTextMapping) {
+    public XMLField getXPathForField(Property property, NamespaceInfo namespaceInfo, boolean isTextMapping) {
         String xPath = "";
         XMLField xmlField = null;
         if (helper.isAnnotationPresent(property.getElement(), XmlElementWrapper.class)) {
@@ -646,12 +663,12 @@ public class MappingsGenerator {
         return xmlField;
     }
 
-    public TypeProperty getXmlValueFieldForSimpleContent(ArrayList<TypeProperty> properties) {
+    public Property getXmlValueFieldForSimpleContent(ArrayList<Property> properties) {
         boolean foundValue = false;
         boolean foundNonAttribute = false;
-        TypeProperty valueField = null;
+        Property valueField = null;
 
-        for (TypeProperty prop : properties) {
+        for (Property prop : properties) {
             if (helper.isAnnotationPresent(prop.getElement(), XmlValue.class)) {
                 foundValue = true;
                 valueField = prop;
@@ -665,7 +682,7 @@ public class MappingsGenerator {
         return null;
     }
     
-    public ArrayList<TypeProperty> getPropertiesForClass(JavaClass cls, TypeInfo info) {
+    public ArrayList<Property> getPropertiesForClass(JavaClass cls, TypeInfo info) {
         if (info.getAccessType() == XmlAccessType.FIELD) {
             return getFieldPropertiesForClass(cls, info, false);
         } else if (info.getAccessType() == XmlAccessType.PROPERTY) {
@@ -677,13 +694,13 @@ public class MappingsGenerator {
         }
     }
     
-    public ArrayList<TypeProperty> getFieldPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
+    public ArrayList<Property> getFieldPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
         ArrayList properties = new ArrayList();
 
         for (JavaField nextField : new ArrayList<JavaField>(cls.getDeclaredFields())) {
             if (!helper.isAnnotationPresent(nextField, XmlTransient.class)) {
                 if ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic) {
-                    TypeProperty property = new TypeProperty();
+                    Property property = new Property();
                     property.setPropertyName(nextField.getName());
                     property.setElement(nextField);
                     property.setType(helper.getType(nextField));
@@ -695,7 +712,7 @@ public class MappingsGenerator {
         return properties;
     }
     
-    public ArrayList<TypeProperty> getPropertyPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
+    public ArrayList<Property> getPropertyPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
         ArrayList properties = new ArrayList();
         // First collect all the getters
         ArrayList<JavaMethod> getMethods = new ArrayList<JavaMethod>();
@@ -719,7 +736,7 @@ public class MappingsGenerator {
             // make the first Character lowercase
             propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
 
-            TypeProperty property = new TypeProperty(helper);
+            Property property = new Property(helper);
             property.setPropertyName(propertyName);
             property.setType((JavaClass) getMethod.getReturnType());
             property.setGenericType(helper.getGenericReturnType(getMethod));
@@ -744,8 +761,8 @@ public class MappingsGenerator {
     }
     
     public ArrayList getPublicMemberPropertiesForClass(JavaClass cls, TypeInfo info) {
-        ArrayList<TypeProperty> publicFieldProperties = getFieldPropertiesForClass(cls, info, true);
-        ArrayList<TypeProperty> publicMethodProperties = getPropertyPropertiesForClass(cls, info, true);
+        ArrayList<Property> publicFieldProperties = getFieldPropertiesForClass(cls, info, true);
+        ArrayList<Property> publicMethodProperties = getPropertyPropertiesForClass(cls, info, true);
         // Not sure who should win if a property exists for both or the correct
         // order
         if (publicFieldProperties.size() >= 0 && publicMethodProperties.size() == 0) {
@@ -759,7 +776,7 @@ public class MappingsGenerator {
             HashMap fieldPropertyMap = getPropertyMapFromArrayList(publicFieldProperties);
 
             for (int i = 0; i < publicMethodProperties.size(); i++) {
-                TypeProperty next = (TypeProperty) publicMethodProperties.get(i);
+                Property next = (Property) publicMethodProperties.get(i);
                 if (fieldPropertyMap.get(next.getPropertyName()) == null) {
                     publicFieldProperties.add(next);
                 }
@@ -768,11 +785,11 @@ public class MappingsGenerator {
         }
     }
     
-    public HashMap getPropertyMapFromArrayList(ArrayList<TypeProperty> props) {
+    public HashMap getPropertyMapFromArrayList(ArrayList<Property> props) {
         HashMap propMap = new HashMap(props.size());
         Iterator propIter = props.iterator();
         while (propIter.hasNext()) {
-            TypeProperty next = (TypeProperty) propIter.next();
+            Property next = (Property) propIter.next();
             propMap.put(next.getPropertyName(), next);
         }
         return propMap;
@@ -787,14 +804,14 @@ public class MappingsGenerator {
         // annotation and
         // Doesn't appear in the other list, add it to the final list
         for (int i = 0; i < fieldProperties.size(); i++) {
-            TypeProperty next = (TypeProperty) fieldProperties.get(i);
+            Property next = (Property) fieldProperties.get(i);
             JavaHasAnnotations elem = next.getElement();
             if (helper.isAnnotationPresent(elem, XmlElement.class) || helper.isAnnotationPresent(elem, XmlAttribute.class) || helper.isAnnotationPresent(elem, XmlAnyAttribute.class) || helper.isAnnotationPresent(elem, XmlAnyElement.class) || helper.isAnnotationPresent(elem, XmlValue.class)) {
                 list.add(next);
             }
         }
         for (int i = 0; i < methodProperties.size(); i++) {
-            TypeProperty next = (TypeProperty) methodProperties.get(i);
+            Property next = (Property) methodProperties.get(i);
             JavaHasAnnotations elem = next.getElement();
             if (helper.isAnnotationPresent(elem, XmlElement.class) || helper.isAnnotationPresent(elem, XmlAttribute.class) || helper.isAnnotationPresent(elem, XmlAnyAttribute.class) || helper.isAnnotationPresent(elem, XmlAnyElement.class) || helper.isAnnotationPresent(elem, XmlValue.class)) {
                 list.add(next);
@@ -823,7 +840,7 @@ public class MappingsGenerator {
         return typeName;
     }
     
-    public boolean isMapType(TypeProperty property) {
+    public boolean isMapType(Property property) {
         JavaClass mapCls = helper.getJavaClass(java.util.Map.class);
         return mapCls.isAssignableFrom(property.getType());
     }

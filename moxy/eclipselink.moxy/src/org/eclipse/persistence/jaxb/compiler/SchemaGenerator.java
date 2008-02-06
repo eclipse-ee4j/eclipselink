@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.javamodel.Helper;
@@ -99,7 +100,7 @@ public class SchemaGenerator {
         String[] propOrder = info.getPropOrder();
         String pfx = "";
         
-        TypeProperty valueField = null;
+        Property valueField = null;
         if (helper.isAnnotationPresent(myClass, XmlRootElement.class)) {
             //Create the root element and add it to the schema
             XmlRootElement rootElemAnnotation = (XmlRootElement) helper.getAnnotation(myClass, XmlRootElement.class);
@@ -281,8 +282,8 @@ public class SchemaGenerator {
         }
     }
     
-    public void addToSchemaType(ArrayList<TypeProperty> properties, TypeDefParticle compositor, ComplexType type, Schema schema) {
-        for (TypeProperty next : properties) {
+    public void addToSchemaType(ArrayList<Property> properties, TypeDefParticle compositor, ComplexType type, Schema schema) {
+        for (Property next : properties) {
             // TODO:  we seem to get a null property on occasion
             // need to look into this...
             if (next == null) { continue; }
@@ -401,14 +402,27 @@ public class SchemaGenerator {
                     }
                 } else if(next.isChoice()) {
                     Choice choice = new Choice();
-                    ArrayList<TypeProperty> choiceProperties = (ArrayList<TypeProperty>)next.getChoiceProperties();
+                    ArrayList<Property> choiceProperties = (ArrayList<Property>)((ChoiceProperty)next).getChoiceProperties();
                     addToSchemaType(choiceProperties, choice, parentType, schema);
                     if(parentCompositor instanceof Sequence) {
                         ((Sequence)parentCompositor).addChoice(choice);
                     } else if(parentCompositor instanceof Choice) {
                         ((Choice)parentCompositor).addChoice(choice);
                     }
+                } else if(next.isAny()) {
+                	Any any = new Any();
+                	AnyProperty anyProp = (AnyProperty)next;
+                	if(anyProp.isLax()) {
+                		any.setProcessContents("lax");
+                	}
+                    if(parentCompositor instanceof Sequence) {
+                        ((Sequence)parentCompositor).addAny(any);
+                    } else if(parentCompositor instanceof Choice) {
+                        ((Choice)parentCompositor).addAny(any);
+                    }
+                	
                 } else if (!helper.isAnnotationPresent(next.getElement(), XmlValue.class)) {
+
                     Element element = new Element();
                     // Set minOccurs based on the 'required' flag
                     element.setMinOccurs(next.isRequired() ? "1" : "0");
@@ -564,9 +578,9 @@ public class SchemaGenerator {
                 if (propOrder.length == 0 || propOrder[0].equals("")) {
                     propOrder = (String[])info.getPropertyNames().toArray(new String[info.getPropertyNames().size()]);
                 }
-                ArrayList<TypeProperty> properties = new ArrayList(propOrder.length); 
+                ArrayList<Property> properties = new ArrayList(propOrder.length); 
                 for (int i = 0; i < propOrder.length; i++) {
-                    TypeProperty next = info.getProperties().get(propOrder[i]);
+                    Property next = info.getProperties().get(propOrder[i]);
                     properties.add(next);
                 }
                 addToSchemaType(properties, compositor, type, info.getSchema());
@@ -584,12 +598,12 @@ public class SchemaGenerator {
         return new ArrayList(valuesCollection);
     }
 
-    public TypeProperty getXmlValueFieldForSimpleContent(ArrayList<TypeProperty> properties) {
+    public Property getXmlValueFieldForSimpleContent(ArrayList<Property> properties) {
         boolean foundValue = false;
         boolean foundNonAttribute = false;
-        TypeProperty valueField = null;
+        Property valueField = null;
         
-        for (TypeProperty prop : properties) {
+        for (Property prop : properties) {
             if (helper.isAnnotationPresent(prop.getElement(), XmlValue.class)) {
                 foundValue = true;
                 valueField = prop;
@@ -603,7 +617,7 @@ public class SchemaGenerator {
         return null;
     }
     
-    public boolean isCollectionType(TypeProperty field) {
+    public boolean isCollectionType(Property field) {
         JavaClass type = field.getType();
         return (helper.getJavaClass(java.util.Collection.class).isAssignableFrom(type) 
                 || helper.getJavaClass(java.util.List.class).isAssignableFrom(type) 

@@ -58,16 +58,16 @@ public class TypeInfo {
     private TypeDefParticle compositor;
     private XmlAccessType accessType;
     private ArrayList<String> propertyNames;
-    private ArrayList<TypeProperty> propertyList;//keep the keys in a list to preserve order
-    private HashMap<String, TypeProperty> properties;
-    private TypeProperty idProperty;  // if there is an XmlID annotation, set the property for mappings gen
+    private ArrayList<Property> propertyList;//keep the keys in a list to preserve order
+    private HashMap<String, Property> properties;
+    private Property idProperty;  // if there is an XmlID annotation, set the property for mappings gen
     private HashMap<String, JavaClass> adaptersByClass;
     private Helper helper;
     
     public TypeInfo(Helper helper) {
         propertyNames = new ArrayList<String>();
-        properties = new HashMap<String, TypeProperty>();
-        propertyList = new ArrayList<TypeProperty>();
+        properties = new HashMap<String, Property>();
+        propertyList = new ArrayList<Property>();
         adaptersByClass = new HashMap<String, JavaClass>();
         this.helper = helper;
     }
@@ -169,15 +169,15 @@ public class TypeInfo {
      * 
      * @return
      */
-    public TypeProperty getIDProperty() {
+    public Property getIDProperty() {
     	return idProperty;
     }
     
-    public HashMap<String, TypeProperty> getProperties() {
+    public HashMap<String, Property> getProperties() {
         return properties;
     }
     
-    public void addProperty(String name, TypeProperty property) {
+    public void addProperty(String name, Property property) {
         properties.put(name, property);
         propertyNames.add(name);
         propertyList.add(property);
@@ -194,14 +194,14 @@ public class TypeInfo {
      * 
      * @return
      */
-    public void setIDProperty(TypeProperty idProperty) {
+    public void setIDProperty(Property idProperty) {
     	this.idProperty = idProperty;
     }
     
-    public void setProperties(ArrayList<TypeProperty> properties) {
+    public void setProperties(ArrayList<Property> properties) {
         if(properties != null) {
             for(int i = 0; i < properties.size(); i++) {
-                TypeProperty next = properties.get(i);
+                Property next = properties.get(i);
                 this.addProperty(next.getPropertyName(), next);
             }
         }
@@ -231,7 +231,7 @@ public class TypeInfo {
     	return idProperty != null;
     }
     
-    public ArrayList<TypeProperty> getPropertyList() {
+    public ArrayList<Property> getPropertyList() {
         return propertyList;
     }
     

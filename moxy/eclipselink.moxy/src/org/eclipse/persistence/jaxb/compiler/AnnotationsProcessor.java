@@ -253,8 +253,8 @@ public class AnnotationsProcessor {
             createTypeInfoFor(superClass);
         }
         
-        ArrayList<TypeProperty> properties = info.getPropertyList();
-        for (TypeProperty property : properties) {
+        ArrayList<Property> properties = info.getPropertyList();
+        for (Property property : properties) {
             JavaClass propertyType = property.getType();
             if (this.isCollectionType(property)) {
                 // check for a generic type
@@ -315,7 +315,7 @@ public class AnnotationsProcessor {
         return true;
     }
     
-    public ArrayList<TypeProperty> getPropertiesForClass(JavaClass cls, TypeInfo info) {
+    public ArrayList<Property> getPropertiesForClass(JavaClass cls, TypeInfo info) {
         if (info.getAccessType() == XmlAccessType.FIELD) {
             return getFieldPropertiesForClass(cls, info, false);
         } else if (info.getAccessType() == XmlAccessType.PROPERTY) {
@@ -327,7 +327,7 @@ public class AnnotationsProcessor {
         }
     }
     
-    public ArrayList<TypeProperty> getFieldPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
+    public ArrayList<Property> getFieldPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
         ArrayList properties = new ArrayList();
         if (cls == null) { return properties; }
         
@@ -335,8 +335,42 @@ public class AnnotationsProcessor {
             JavaField nextField = fieldIt.next();
             if (!helper.isAnnotationPresent(nextField, XmlTransient.class)) {
                 if ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic) {
-                    TypeProperty property = new TypeProperty(helper);
-                    property.setElement((JavaHasAnnotations) nextField);
+                	Property property = null;
+                    if(helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlElements.class)) {
+                        property = new ChoiceProperty(helper);
+                        property.setElement((JavaHasAnnotations)nextField);
+                        XmlElements xmlElements = (XmlElements)helper.getAnnotation(property.getElement(), XmlElements.class);
+                        XmlElement[] elements = xmlElements.value();
+                        ArrayList<Property> choiceProperties = new ArrayList<Property>(elements.length);
+                        for(int i = 0; i < elements.length; i++) {
+                            XmlElement next = elements[i];
+                            Property choiceProp = new Property();
+                            String name = next.name();
+                            String namespace = next.namespace();
+                            QName qName = null;
+                            if (!namespace.equals("##default")) {
+                                qName = new QName(namespace, name);
+                            } else {
+                                qName = new QName(name);
+                            }
+                            choiceProp.setPropertyName(property.getPropertyName());
+                            choiceProp.setType(helper.getJavaClass(next.type()));
+                            choiceProp.setSchemaName(qName);
+                            choiceProp.setSchemaType(getSchemaTypeFor(helper.getJavaClass(next.type())));
+                            choiceProp.setElement(property.getElement());
+                            choiceProperties.add(choiceProp);
+                        }
+                        ((ChoiceProperty)property).setChoiceProperties(choiceProperties);
+                    }
+                    else if(helper.isAnnotationPresent((JavaHasAnnotations)nextField, XmlAnyElement.class)) {
+                        property = new AnyProperty(helper);
+                        property.setElement((JavaHasAnnotations)nextField);
+                        XmlAnyElement anyElement = (XmlAnyElement)helper.getAnnotation((JavaHasAnnotations)nextField, XmlAnyElement.class);
+                        ((AnyProperty)property).setLax(anyElement.lax());
+                    } else {
+                    	property = new Property(helper);
+                    	property.setElement((JavaHasAnnotations)nextField);
+                    }
                     
                     JavaClass ptype = (JavaClass) nextField.getResolvedType();
                     property.setType(ptype);
@@ -374,31 +408,6 @@ public class AnnotationsProcessor {
                     if(helper.isAnnotationPresent(property.getElement(), XmlAttribute.class) || helper.isAnnotationPresent(property.getElement(), XmlAnyAttribute.class)) {
                         property.setIsAttribute(true);
                     }                    
-                    if(helper.isAnnotationPresent(property.getElement(), XmlElements.class)) {
-                        property.setChoice(true);
-                        XmlElements xmlElements = (XmlElements)helper.getAnnotation(property.getElement(), XmlElements.class);
-                        XmlElement[] elements = xmlElements.value();
-                        ArrayList<TypeProperty> choiceProperties = new ArrayList<TypeProperty>(elements.length);
-                        for(int i = 0; i < elements.length; i++) {
-                            XmlElement next = elements[i];
-                            TypeProperty choiceProp = new TypeProperty();
-                            String name = next.name();
-                            String namespace = next.namespace();
-                            QName qName = null;
-                            if (!namespace.equals("##default")) {
-                                qName = new QName(namespace, name);
-                            } else {
-                                qName = new QName(name);
-                            }
-                            choiceProp.setPropertyName(property.getPropertyName());
-                            choiceProp.setType(helper.getJavaClass(next.type()));
-                            choiceProp.setSchemaName(qName);
-                            choiceProp.setSchemaType(getSchemaTypeFor(helper.getJavaClass(next.type())));
-                            choiceProp.setElement(property.getElement());
-                            choiceProperties.add(choiceProp);
-                        }
-                        property.setChoiceProperties(choiceProperties);
-                    }
 
                     // Check for XmlElement annotation and set required (a.k.a. minOccurs) accordingly
                     if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
@@ -442,7 +451,7 @@ public class AnnotationsProcessor {
         return src.getRawName().equals(tgtCanonicalName);
     }
     
-    public ArrayList<TypeProperty> getPropertyPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
+    public ArrayList<Property> getPropertyPropertiesForClass(JavaClass cls, TypeInfo info, boolean onlyPublic) {
         ArrayList properties = new ArrayList();
         if (cls == null) { return properties; }
 
@@ -468,30 +477,37 @@ public class AnnotationsProcessor {
             //make the first Character lowercase
             propertyName = Character.toLowerCase(propertyName.charAt(0)) + propertyName.substring(1);
 
-            TypeProperty property = new TypeProperty(helper);
+            
+            String setMethodName = "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+            JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
+            JavaMethod setMethod = cls.getMethod(setMethodName, paramTypes);
+            JavaMethod propertyMethod = null;
+            if (setMethod != null && !setMethod.getAnnotations().isEmpty()) {
+                // use the set method if it exists and is annotated
+                if (!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
+                    propertyMethod = setMethod;   
+                }
+            } else {
+                if (!helper.isAnnotationPresent(getMethod, XmlTransient.class)) {
+                    propertyMethod = getMethod;
+                }
+            }
+            Property property = null;
+            if(helper.isAnnotationPresent(propertyMethod, XmlElements.class)) {
+            	property = new ChoiceProperty(helper);
+            } else if (helper.isAnnotationPresent(propertyMethod, XmlAnyElement.class)) {
+            	property = new AnyProperty(helper);
+            } else {
+            	property = new Property(helper);
+            }
+            property.setElement(propertyMethod);
+            property.setSchemaName(getQNameForProperty(propertyName, propertyMethod));
             property.setPropertyName(propertyName);
             property.setType((JavaClass) getMethod.getReturnType());
             property.setGenericType(helper.getGenericReturnType(getMethod));
             property.setGetMethodName(getMethod.getName());
-            property.setMethodProperty(true);
-            
-            String setMethodName = "set" + Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
             property.setSetMethodName(setMethodName);
-            JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
-            JavaMethod setMethod = cls.getMethod(setMethodName, paramTypes);
-            if (setMethod != null && !setMethod.getAnnotations().isEmpty()) {
-                // use the set method if it exists and is annotated
-                if (!helper.isAnnotationPresent(setMethod, XmlTransient.class)) {
-                    property.setElement(setMethod);   
-                    property.setSchemaName(getQNameForProperty(propertyName, setMethod));
-                }
-            } else {
-                if (!helper.isAnnotationPresent(getMethod, XmlTransient.class)) {
-                    property.setElement(getMethod);
-                    property.setSchemaName(getQNameForProperty(propertyName, getMethod));
-                }
-            }
-            
+            property.setMethodProperty(true);
             JavaClass ptype = property.getType();
             if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
                 XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class);
@@ -521,7 +537,7 @@ public class AnnotationsProcessor {
                 property.setMimeType(((XmlMimeType) helper.getAnnotation(property.getElement(), XmlMimeType.class)).value());
             }
             if (helper.isAnnotationPresent(property.getElement(), XmlJavaTypeAdapter.class)) {
-                XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotaion(property.getElement(), XmlJavaTypeAdapter.class);
+                XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(property.getElement(), XmlJavaTypeAdapter.class);
                 property.setAdapterClass(adapter.value());
             } else if(info.getAdaptersByClass().get(ptype) != null) {
                 property.setAdapterClass(info.getAdaptersByClass().get(ptype));
@@ -530,13 +546,12 @@ public class AnnotationsProcessor {
                 property.setIsAttribute(true);
             }
             if(helper.isAnnotationPresent(property.getElement(), XmlElements.class)) {
-                property.setChoice(true);
                 XmlElements xmlElements = (XmlElements)helper.getAnnotation(property.getElement(), XmlElements.class);
                 XmlElement[] elements = xmlElements.value();
-                ArrayList<TypeProperty> choiceProperties = new ArrayList<TypeProperty>(elements.length);
+                ArrayList<Property> choiceProperties = new ArrayList<Property>(elements.length);
                 for(int j = 0; j < elements.length; j++) {
                     XmlElement next = elements[j];
-                    TypeProperty choiceProp = new TypeProperty();
+                    Property choiceProp = new Property();
                     String name = next.name();
                     String namespace = next.namespace();
                     QName qName = null;
@@ -552,8 +567,13 @@ public class AnnotationsProcessor {
                     choiceProp.setElement(property.getElement());
                     choiceProperties.add(choiceProp);
                 }
-                property.setChoiceProperties(choiceProperties);
-           }
+                ((ChoiceProperty)property).setChoiceProperties(choiceProperties);
+            }
+            if(helper.isAnnotationPresent(property.getElement(), XmlAnyElement.class)) {
+            	XmlAnyElement anyElement = (XmlAnyElement)helper.getAnnotation(property.getElement(), XmlAnyElement.class);
+            	((AnyProperty)property).setLax(anyElement.lax());
+            	
+            }
             if (!helper.isAnnotationPresent(property.getElement(), XmlTransient.class)) {
                 properties.add(property);
             }
@@ -566,8 +586,8 @@ public class AnnotationsProcessor {
     }
     
     public ArrayList getPublicMemberPropertiesForClass(JavaClass cls, TypeInfo info) {
-        ArrayList<TypeProperty> publicFieldProperties = getFieldPropertiesForClass(cls, info, true);
-        ArrayList<TypeProperty> publicMethodProperties = getPropertyPropertiesForClass(cls, info, true);
+        ArrayList<Property> publicFieldProperties = getFieldPropertiesForClass(cls, info, true);
+        ArrayList<Property> publicMethodProperties = getPropertyPropertiesForClass(cls, info, true);
         // Not sure who should win if a property exists for both or the correct order
         if (publicFieldProperties.size() >= 0 && publicMethodProperties.size() == 0) {
             return publicFieldProperties;
@@ -580,7 +600,7 @@ public class AnnotationsProcessor {
             HashMap fieldPropertyMap = getPropertyMapFromArrayList(publicFieldProperties);
             
             for (int i = 0; i < publicMethodProperties.size(); i++) {
-                TypeProperty next = (TypeProperty)publicMethodProperties.get(i);
+                Property next = (Property)publicMethodProperties.get(i);
                 if (fieldPropertyMap.get(next.getPropertyName()) == null) {
                     publicFieldProperties.add(next);
                 }
@@ -589,12 +609,12 @@ public class AnnotationsProcessor {
         }
     }
     
-    public HashMap getPropertyMapFromArrayList(ArrayList<TypeProperty> props) {
+    public HashMap getPropertyMapFromArrayList(ArrayList<Property> props) {
         HashMap propMap = new HashMap(props.size());
         
         Iterator propIter = props.iterator();
         while(propIter.hasNext()) {
-            TypeProperty next = (TypeProperty)propIter.next();
+            Property next = (Property)propIter.next();
             propMap.put(next.getPropertyName(), next);
         }
         return propMap;
@@ -609,24 +629,26 @@ public class AnnotationsProcessor {
         // Iterate over the field and method properties. If ANYTHING contains an annotation and
         // doesn't appear in the other list, add it to the final list
         for (int i=0; i<fieldProperties.size(); i++) {
-            TypeProperty next = (TypeProperty) fieldProperties.get(i);
+            Property next = (Property) fieldProperties.get(i);
             JavaHasAnnotations elem = next.getElement();
             if (helper.isAnnotationPresent(elem, XmlElement.class) 
                     || helper.isAnnotationPresent(elem, XmlAttribute.class)  
                     || helper.isAnnotationPresent(elem, XmlAnyElement.class) 
                     || helper.isAnnotationPresent(elem, XmlAnyAttribute.class) 
-                    || helper.isAnnotationPresent(elem, XmlValue.class)) {
+                    || helper.isAnnotationPresent(elem, XmlValue.class)
+                    || helper.isAnnotationPresent(elem, XmlElements.class)) {
                 list.add(next);
             }
         }
         for (int i=0; i<methodProperties.size(); i++) {
-            TypeProperty next = (TypeProperty) methodProperties.get(i);
+            Property next = (Property) methodProperties.get(i);
             JavaHasAnnotations elem = next.getElement();
             if (helper.isAnnotationPresent(elem, XmlElement.class) 
                     || helper.isAnnotationPresent(elem, XmlAttribute.class)  
                     || helper.isAnnotationPresent(elem, XmlAnyElement.class) 
                     || helper.isAnnotationPresent(elem, XmlAnyAttribute.class) 
-                    || helper.isAnnotationPresent(elem, XmlValue.class)) {
+                    || helper.isAnnotationPresent(elem, XmlValue.class)
+                    || helper.isAnnotationPresent(elem, XmlElements.class)) {
                 list.add(next);
             }
         }
@@ -704,7 +726,7 @@ public class AnnotationsProcessor {
         return schemaType;
     }    
 
-    public boolean isCollectionType(TypeProperty field) {
+    public boolean isCollectionType(Property field) {
         JavaClass type = field.getType();
         if (helper.getJavaClass(java.util.Collection.class).isAssignableFrom(type) 
                 || helper.getJavaClass(java.util.List.class).isAssignableFrom(type) 

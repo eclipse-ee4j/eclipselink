@@ -119,9 +119,9 @@ public class Helper {
         return javaTypes;
     }
     
-    public JavaAnnotation getAnnotaion(JavaHasAnnotations element, Class annotationClass) {
+    /*public JavaAnnotation getAnnotaion(JavaHasAnnotations element, Class annotationClass) {
         return element.getAnnotation(jModel.getClass(annotationClass));
-    }
+    }*/
     
     /**
      * Return a given field's generic type.
@@ -206,7 +206,7 @@ public class Helper {
      * @see isAnnotationPresent
      */
     public Annotation getAnnotation(JavaHasAnnotations element, Class annotationClass) {
-        JavaAnnotation janno = getAnnotaion(element, annotationClass);
+        JavaAnnotation janno = element.getAnnotation(jModel.getClass(annotationClass));
         if (janno == null) {
             return null;
         }
@@ -239,7 +239,7 @@ public class Helper {
         if(element == null || annotationClass == null) {
             return false;
         }
-        return (this.getAnnotaion(element, annotationClass) != null);
+        return (element.getAnnotation(jModel.getClass(annotationClass)) != null);
     }
 
     /**
