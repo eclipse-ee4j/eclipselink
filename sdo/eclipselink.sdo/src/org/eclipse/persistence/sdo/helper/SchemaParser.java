@@ -60,9 +60,9 @@ public abstract class SchemaParser {
         this.aHelperContext = aHelperContext;
     }
 
-    public abstract void startNewComplexType(String targetNamespace, String defaultNamespace, String name, String xsdLocalName, ComplexType complexType);
+    public abstract void startNewComplexType(String targetNamespace, String name, String xsdLocalName, ComplexType complexType);
 
-    public abstract void startNewSimpleType(String targetNamespace, String defaultNamespace, String name, String xsdLocalName,  SimpleType simpleType);
+    public abstract void startNewSimpleType(String targetNamespace, String name, String xsdLocalName,  SimpleType simpleType);
 
     public abstract void processSimpleElement(String targetNamespace, String defaultNamespace, String ownerName, TypeDefParticle typeDefParticle, Element element, boolean isQualified, boolean isGlobal, boolean isMany);
 
@@ -323,7 +323,7 @@ public abstract class SchemaParser {
         //check if already processed, if yes return false because a new type was not started else start new type and return true
         boolean alreadyExists = typesExists(targetNamespace, name);
         if (!alreadyExists) {
-            startNewComplexType(targetNamespace, defaultNamespace, name,originalName, complexType);
+            startNewComplexType(targetNamespace, name,originalName, complexType);
             return true;
         }
 
@@ -342,7 +342,7 @@ public abstract class SchemaParser {
     public boolean startSimpleType(String targetNamespace, String defaultNamespace, String name, String xsdLocalName,  SimpleType simpleType) {
         boolean alreadyExists = typesExists(targetNamespace, name);
         if (!alreadyExists) {
-            startNewSimpleType(targetNamespace, defaultNamespace, name, xsdLocalName, simpleType);
+            startNewSimpleType(targetNamespace, name, xsdLocalName, simpleType);
             return true;
         }
         return false;

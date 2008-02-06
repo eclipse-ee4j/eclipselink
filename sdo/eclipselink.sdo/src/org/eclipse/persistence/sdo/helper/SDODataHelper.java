@@ -588,6 +588,17 @@ public class SDODataHelper implements DataHelper {
       * @return the original value converted to a String based on the SDO type specified.
       */
     public String convertToStringValue(Object value, Type sdoType) {
+      return convertToStringValue(value, sdoType, null);
+    }
+
+
+    /**
+      * Convert to a String value based to the SDO type.
+      * @param value  The value to convert.
+      * @param sdoType the SDO type
+      * @return the original value converted to a String based on the SDO type specified.
+      */
+    private String convertToStringValue(Object value, Type sdoType, QName xsdType) {
         if (value.getClass() == ClassConstants.CALENDAR) {
             if (sdoType.equals(SDOConstants.SDO_DATETIME)) {
                 return toDateTime((Calendar)value);
@@ -629,7 +640,7 @@ public class SDODataHelper implements DataHelper {
                 return toYearMonthDay((Date)value);
             }
         }
-        return (String)getXMLConversionManager().convertObject(value, ClassConstants.STRING);
+        return (String)getXMLConversionManager().convertObject(value, ClassConstants.STRING, xsdType);
     }
 
     /**
@@ -707,7 +718,7 @@ public class SDODataHelper implements DataHelper {
                 return null;
             }
             if (convertToClass == ClassConstants.STRING) {
-                return convertToStringValue(valueToConvert, prop.getType());
+                return convertToStringValue(valueToConvert, prop.getType(), ((SDOProperty)prop).getXsdType());
             } else {
             	SDOProperty sdoProp = (SDOProperty) prop;
             	DatabaseMapping xmlMapping = sdoProp.getXmlMapping();

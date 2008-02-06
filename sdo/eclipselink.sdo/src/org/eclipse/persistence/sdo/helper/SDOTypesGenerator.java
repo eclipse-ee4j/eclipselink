@@ -182,7 +182,7 @@ public class SDOTypesGenerator extends SchemaParser {
         return alreadyProcessed;
     }
 
-    public void startNewComplexType(String targetNamespace, String defaultNamespace, String sdoTypeName, String xsdLocalName, ComplexType complexType) {
+    public void startNewComplexType(String targetNamespace, String sdoTypeName, String xsdLocalName, ComplexType complexType) {
         SDOType currentType = createSDOTypeForName(targetNamespace, sdoTypeName, xsdLocalName);
 
         if (complexType.isMixed()) {
@@ -228,7 +228,7 @@ public class SDOTypesGenerator extends SchemaParser {
     public void finishNestedComplexType(String targetNamespace, String defaultNamespace, TypeDefParticle typeDefParticle, String name) {
     }
 
-    public void startNewSimpleType(String targetNamespace, String defaultNamespace, String sdoTypeName, String xsdLocalName,SimpleType simpleType) {
+    public void startNewSimpleType(String targetNamespace, String sdoTypeName, String xsdLocalName,SimpleType simpleType) {
         SDOType currentType = createSDOTypeForName(targetNamespace, sdoTypeName,xsdLocalName);
         currentType.setDataType(true);
 
@@ -335,7 +335,7 @@ public class SDOTypesGenerator extends SchemaParser {
                     owner.setInstanceClass(baseType.getInstanceClass());
                 }
 
-                QName baseQName = getQNameForString(targetNamespace, qualifiedName);
+                QName baseQName = getQNameForString(defaultNamespace, qualifiedName);
                 if ((baseQName.equals(XMLConstants.BASE_64_BINARY_QNAME)) || (baseQName.equals(XMLConstants.HEX_BINARY_QNAME)) || (baseQName.equals(XMLConstants.DATE_QNAME)) || (baseQName.equals(XMLConstants.TIME_QNAME)) || (baseQName.equals(XMLConstants.DATE_TIME_QNAME))) {
                     owner.setXsdType(baseQName);
                 }
@@ -449,7 +449,7 @@ public class SDOTypesGenerator extends SchemaParser {
             if (index != -1) {
                 String prefix = ref.substring(0, index);
                 localName = ref.substring(index + 1, ref.length());
-                uri = getURIForPrefix(defaultNamespace, prefix);
+                uri = getURIForPrefix( prefix);
             } else {
                 localName = ref;
                 uri = defaultNamespace;
@@ -507,7 +507,7 @@ public class SDOTypesGenerator extends SchemaParser {
                 typeName = element.getType();
                 p.setName(element.getName());
                 String xsdType = element.getType();
-                QName qname = getQNameForString(targetNamespace, xsdType);
+                QName qname = getQNameForString(defaultNamespace, xsdType);
                 if (isGlobal) {
                     //if type is found set it other wise process new type                    
                     processGlobalItem(targetNamespace, defaultNamespace, xsdType);
@@ -580,7 +580,7 @@ public class SDOTypesGenerator extends SchemaParser {
         }
 
         if (typeDefParticle != null) {
-            updateOwnerAndBuildMapping(owningType, p, targetNamespace, element, typeName, mappingUri);
+            updateOwnerAndBuildMapping(owningType, p, defaultNamespace, targetNamespace, element, typeName, mappingUri);
         }
         if (isGlobal) {
             //we have a global element           
@@ -703,7 +703,7 @@ public class SDOTypesGenerator extends SchemaParser {
         }
     }
 
-    private void updateOwnerAndBuildMapping(SDOType owningType, SDOProperty p, String targetNamespace, SimpleComponent simpleComponent, String typeName, String mappingUri) {
+    private void updateOwnerAndBuildMapping(SDOType owningType, SDOProperty p, String defaultNamespace, String targetNamespace, SimpleComponent simpleComponent, String typeName, String mappingUri) {
         boolean buildMapping = true;
         Property lookedUp = owningType.getProperty(p.getName());
 
@@ -717,7 +717,7 @@ public class SDOTypesGenerator extends SchemaParser {
             owningType.addDeclaredProperty(p);
         }
 
-        QName xsdType = getQNameForString(targetNamespace, typeName);
+        QName xsdType = getQNameForString( defaultNamespace, typeName);
 
         if ((xsdType != null) && xsdType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
             if (xsdType.getLocalPart().equals(SDOConstants.ID)) {
@@ -788,7 +788,7 @@ public class SDOTypesGenerator extends SchemaParser {
             if (index != -1) {
                 String prefix = ref.substring(0, index);
                 localName = ref.substring(index + 1, ref.length());
-                uri = getURIForPrefix(defaultNamespace, prefix);
+                uri = getURIForPrefix(prefix);
             } else {
                 localName = ref;
                 uri = defaultNamespace;
@@ -846,7 +846,7 @@ public class SDOTypesGenerator extends SchemaParser {
             if (typeName != null) {
                 p.setName(attribute.getName());
                 //String xsdType = typeName;
-                QName qname = getQNameForString(targetNamespace, typeName);
+                QName qname = getQNameForString(defaultNamespace, typeName);
                 if (isGlobal) {
                     //if type is found set it other wise process new type                    
                     processGlobalItem(targetNamespace, defaultNamespace, typeName);
@@ -882,7 +882,7 @@ public class SDOTypesGenerator extends SchemaParser {
         }
 
         if (owningType != null) {
-            updateOwnerAndBuildMapping(owningType, p, targetNamespace, attribute, typeName, mappingUri);
+            updateOwnerAndBuildMapping(owningType, p, defaultNamespace, targetNamespace, attribute, typeName, mappingUri);
         }
         p.setFinalized(true);
     }
@@ -919,7 +919,7 @@ public class SDOTypesGenerator extends SchemaParser {
         //string annotation
         String stringValue = (String)simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_STRING_QNAME);
         if (stringValue != null) {            
-            QName xsdTypeQName = getQNameForString(targetNamespace, simpleComponent.getType());
+            QName xsdTypeQName = getQNameForString(defaultNamespace, simpleComponent.getType());
             p.setXsdType(xsdTypeQName);
             sdoPropertyType = SDOConstants.SDO_STRING;
         }
@@ -948,7 +948,7 @@ public class SDOTypesGenerator extends SchemaParser {
             int colonIndex = propertyTypeValue.indexOf(':');
             if (colonIndex > -1) {
                 String prefix = propertyTypeValue.substring(0, colonIndex);
-                uri = getURIForPrefix(targetNamespace, prefix);
+                uri = getURIForPrefix(prefix);
             }
             NonContainmentReference nonContainmentReference = new NonContainmentReference();
             nonContainmentReference.setPropertyTypeName(propertyTypeValue);
@@ -1053,7 +1053,7 @@ public class SDOTypesGenerator extends SchemaParser {
         if (index != -1) {
             String prefix = name.substring(0, index);
             String localName = name.substring(index + 1, name.length());
-            String theURI = getURIForPrefix(targetNamespace, prefix);
+            String theURI = getURIForPrefix(prefix);
             returnType = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(theURI, localName, xsdLocalName);
         } else {
             returnType = (SDOType)((SDOTypeHelper)aHelperContext.getTypeHelper()).getOrCreateType(targetNamespace, name, xsdLocalName);            
@@ -1074,7 +1074,7 @@ public class SDOTypesGenerator extends SchemaParser {
         if (index != -1) {
             String prefix = name.substring(0, index);
             String localName = name.substring(index + 1, name.length());
-            String theURI = getURIForPrefix(defaultNamespace, prefix);
+            String theURI = getURIForPrefix(prefix);
             QName qname = new QName(theURI, localName);
             SDOType sdoType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getSDOTypeFromXSDType(qname);
             if (null == sdoType) {
@@ -1175,7 +1175,7 @@ public class SDOTypesGenerator extends SchemaParser {
         }
     }
 
-    private QName getQNameForString(String targetNamespace, String name) {
+    private QName getQNameForString(String defaultNamespace, String name) {
         if (null == name) {
             return null;
         }
@@ -1183,31 +1183,28 @@ public class SDOTypesGenerator extends SchemaParser {
         if (index != -1) {
             String prefix = name.substring(0, index);
             String localName = name.substring(index + 1, name.length());
-            String theURI = getURIForPrefix(targetNamespace, prefix);
+            String theURI = getURIForPrefix(prefix);
             QName qname = new QName(theURI, localName);
             return qname;
         } else {
-            QName qname = new QName(targetNamespace, name);
+            QName qname = new QName(defaultNamespace, name);
             return qname;
         }
     }
 
-    protected String getURIForPrefix(String targetNamespace, String prefix) {
+    protected String getURIForPrefix(String prefix) {
         String uri = null;
-        if (prefix != null) {
-            if (rootSchema != null) {
-                for (int i = namespaceResolvers.size() - 1; i >= 0; i--) {
-                    NamespaceResolver next = (NamespaceResolver)namespaceResolvers.get(i);
-                    uri = next.resolveNamespacePrefix(prefix);
-                    if ((uri != null) && !uri.equals(SDOConstants.EMPTY_STRING)) {
-                        break;
-                    }
-                }
-            }
-        }
 
+        for (int i = namespaceResolvers.size() - 1; i >= 0; i--) {
+            NamespaceResolver next = (NamespaceResolver)namespaceResolvers.get(i);
+            uri = next.resolveNamespacePrefix(prefix);
+            if ((uri != null) && !uri.equals(SDOConstants.EMPTY_STRING)) {
+                break;
+            }
+        }                
+                
         if (null == uri) {
-            uri = targetNamespace;
+            throw SDOException.prefixUsedButNotDefined(prefix);            
         }
         return uri;
     }
