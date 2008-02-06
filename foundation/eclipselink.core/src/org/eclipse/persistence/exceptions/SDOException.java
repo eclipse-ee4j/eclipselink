@@ -66,6 +66,7 @@ public class SDOException extends EclipseLinkException {
     public static final int OPTIONS_MUST_BE_A_DATAOBJECT = 45034;
     public static final int TYPE_PROPERTY_MUST_BE_A_TYPE = 45035;
     public static final int GLOBAL_PROPERTY_NOT_FOUND = 45036;
+    public static final int PREFIX_USED_BUT_NOT_DEFINED = 45037;
     
     protected SDOException(String message) {
         super(message);
@@ -490,6 +491,17 @@ public class SDOException extends EclipseLinkException {
         Object[] args = {};
         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, TYPE_PROPERTY_MUST_BE_A_TYPE, args), nestedException);
         exception.setErrorCode(TYPE_PROPERTY_MUST_BE_A_TYPE);
+        return exception;
+    }
+    
+    /**
+     * INTERNAL:
+     * thrown from SDOTypesGenerator 
+     */
+     public static SDOException prefixUsedButNotDefined(String prefix) {
+        Object[] args = {prefix};
+        SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, PREFIX_USED_BUT_NOT_DEFINED, args));
+        exception.setErrorCode(PREFIX_USED_BUT_NOT_DEFINED);
         return exception;
     }
 }
