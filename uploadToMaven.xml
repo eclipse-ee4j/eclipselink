@@ -19,8 +19,7 @@
        <copy file="pom.xml.template" tofile="pom.xml" overwrite="true">
          <filterset>
            <filter token="release.version" value="${release.version}"/>
-           <!-- TODO Figure out how to map build_id from nightly to SNAPSHOT <filter token="qualifier"       value="${build_id}"/> -->
-           <filter token="qualifier"       value="SNAPSHOT"/>
+           <filter token="qualifier"       value="${build_id}"/>
            <filter token="subversion.revision" value="${subversion.revision}"/>
           </filterset>
        </copy>
