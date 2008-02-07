@@ -190,7 +190,8 @@ public class MetadataProcessor {
         // XML file and those with annotations and add only those that have not 
         // already been added via step 1.
         PersistenceUnitInfo persistenceUnitInfo = m_project.getPersistenceUnitInfo();
-        List<String> classNames = persistenceUnitInfo.getManagedClassNames();
+        List<String> classNames = new ArrayList<String>();
+        classNames.addAll(persistenceUnitInfo.getManagedClassNames());
 
         for (URL url : persistenceUnitInfo.getJarFileUrls()) {
         	classNames.addAll(PersistenceUnitProcessor.getClassNamesFromURL(url));
