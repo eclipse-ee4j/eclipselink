@@ -307,7 +307,7 @@ public class TestSystem {
     }
 
     /**
-     * You must have the Oracle 8.0.4 thin driver loaded.
+     * You must have the Informix thin driver loaded.
      */
     public void useInformixJDBC20() {
         DatabaseLogin login = new DatabaseLogin(new org.eclipse.persistence.platform.database.InformixPlatform());
@@ -322,6 +322,21 @@ public class TestSystem {
         setLogin(login);
     }
 
+    /**
+     * You must have the Informix drivers loaded.
+     */
+    public void useInformix11() {
+        DatabaseLogin dbLogin = new DatabaseLogin(new org.eclipse.persistence.platform.database.InformixPlatform());
+        dbLogin.useInformix();
+        dbLogin.setDriverClassName("com.informix.jdbc.IfxDriver");
+        dbLogin.setDriverURLHeader("jdbc:informix-sqli://");
+        dbLogin.setDatabaseURL("tlsvrdb6.ca.oracle.com:9088/toplink:INFORMIXSERVER=informix");
+        dbLogin.setUserName("informix"); 
+        //set the encrypted password will enable toplink to use the plain text password as is
+        dbLogin.setEncryptedPassword("password");
+        setLogin(dbLogin);
+    }
+    
     /**
      * This is a generic configuration, would should test this occationally to test generic drivers.
      * A "JDBC" ODBC entry must be setup, however table creation will fail for most databases, I think
