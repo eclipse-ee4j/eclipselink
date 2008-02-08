@@ -37,6 +37,9 @@ public class ChangeSummaryLoadAndSaveTestSuite {
         // Create CS on child
         suite.addTest(new TestSuite(ChangeSummaryChildCreateSimpleNestedManyTestCases.class));        
 
+
+        suite.addTest(new TestSuite(LoadAndSaveSetNullPropertyTestCases.class));        
+
         return suite;
     }
 }

@@ -60,12 +60,15 @@ public abstract class LoadAndSaveWithOptionsTestCases extends SDOXMLHelperTestCa
 
     abstract protected void registerTypes();
 
-    abstract protected String getControlRootURI();
 
     abstract protected String getControlRootName();
     
     protected String getControlWriteFileName() {
         return getControlFileName();
+    }
+
+    protected String getControlRootURI() {
+        return NON_DEFAULT_URI;
     }
 
     public String getFullClassPackageName(Type aType) {
