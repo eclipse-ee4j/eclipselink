@@ -68,7 +68,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
             //so it can't be calculated until we know what object is being marshalled
             List createdSet = changeSummary.getCreated();
             List xpaths = new ArrayList(createdSet.size());
-         
+
             if ((createdSet != null) && (createdSet.size() > 0)) {
                 Iterator anIterator = createdSet.iterator();
                 SDODataObject nextCreatedDO = null;
@@ -107,8 +107,9 @@ public class SDOMarshalListener implements XMLMarshalListener {
 
             //Iterate through CS modified items
             for (int i = 0; i < modifiedSize; i++) {
-                nextModifiedDO = (SDODataObject)modifiedItems.get(i);                
+                nextModifiedDO = (SDODataObject)modifiedItems.get(i);
                 String sdoPrefix = ((SDOTypeHelper)typeHelper).getPrefix(SDOConstants.SDO_URL);
+
                 //List unsetPropNames = new ArrayList();
                 String uri = getURI(nextModifiedDO);// TODO: see #5837243 for production fix after spec consultation for handling root property
                 String qualifiedName = getQualifiedName(nextModifiedDO);// TODO: see #5837243 for production fix after spec consultation for handling root property
@@ -155,10 +156,18 @@ public class SDOMarshalListener implements XMLMarshalListener {
                                           changeSummary, csNode, nextModifiedDO, deletedXPaths, xpathToCS, sdoPrefix);
                             }
                         } else {
-                            String xPath = getXPathForProperty((SDOProperty)nextSetting.getProperty());
-                            XMLField field = new XMLField(xPath);
-                            field.setNamespaceResolver(((SDOTypeHelper)typeHelper).getNamespaceResolver());
-                            row.put(field, nextSetting.getValue());
+                            //This writes out simple values                            
+                            Object value = nextSetting.getValue();
+
+                            if (value == null) {
+                                //Marshal out xsi:nil=true   
+                                marshalNilAttribute((SDOProperty)nextSetting.getProperty(), row);                            
+                            } else {
+                                String xPath = getXPathForProperty((SDOProperty)nextSetting.getProperty());
+                                XMLField field = new XMLField(xPath);
+                                field.setNamespaceResolver(((SDOTypeHelper)typeHelper).getNamespaceResolver());
+                                row.put(field, value);
+                            }
                         }
                     }
                 }
@@ -181,7 +190,8 @@ public class SDOMarshalListener implements XMLMarshalListener {
     private void doMarshal(SDOProperty prop, DataObject value, SDOChangeSummary cs,//
                            Element csNode, SDODataObject modifiedObject, List deletedXPaths, String xpathToCS, String sdoPrefix) {
         if (value == null) {
-            //TODO: this doesn't make sense
+            //Marshal out xsi:nil=true   
+            marshalNilAttribute(prop, new DOMRecord(csNode));                            
             return;
         }
 
@@ -193,15 +203,15 @@ public class SDOMarshalListener implements XMLMarshalListener {
         if ((original != null) && cs.isDeleted((DataObject)original)) {
             isDeleted = true;
         }
-      
+
         String qualifiedName = getXPathForProperty(prop);
         String uri = null;
-        if(prop.isOpenContent()){
-          uri = prop.getUri();
-        }else{      
-          uri = prop.getContainingType().getURI();          
+        if (prop.isOpenContent()) {
+            uri = prop.getUri();
+        } else {
+            uri = prop.getContainingType().getURI();
         }
-      
+
         if (isDeleted) {
             String pathToNode = getPathFromAncestor(((SDODataObject)original), modifiedObject, cs);
             String containerPath = null;
@@ -319,8 +329,16 @@ public class SDOMarshalListener implements XMLMarshalListener {
     }
 
     private String getXPathForProperty(SDOProperty prop) {
+        return getXPathForProperty(prop, false);
+    }
+
+    private String getXPathForProperty(SDOProperty prop, boolean removeText) {
         if ((prop).getXmlMapping() != null) {
-            return prop.getXmlMapping().getField().getName();
+            String xpath = prop.getXmlMapping().getField().getName();
+            if (removeText && xpath.endsWith("/text()")) {
+                xpath = xpath.substring(0, xpath.length() - 7);
+            }
+            return xpath;
         } else {
             String name = prop.getName();
             if (prop.isOpenContent()) {
@@ -487,5 +505,20 @@ public class SDOMarshalListener implements XMLMarshalListener {
                                               SDOConstants.EMPTY_STRING// we pass an empty separator so we have \a\b and not a\b\
             );
         }
+    }
+
+    private void marshalNilAttribute(SDOProperty property, DOMRecord row) {
+        //Marshal out xsi:nil=true   
+        String xsiPrefix = ((SDOTypeHelper)typeHelper).getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+        if ((xsiPrefix == null) || xsiPrefix.equals("")) {
+            xsiPrefix = ((SDOTypeHelper)typeHelper).getNamespaceResolver().generatePrefix("xsi");
+            ((SDOTypeHelper)typeHelper).getNamespaceResolver().put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+        }
+        String xPath = getXPathForProperty(property, true);
+        xPath = xPath + "/@" + xsiPrefix + ":nil";
+
+        XMLField field = new XMLField(xPath);
+        field.setNamespaceResolver(((SDOTypeHelper)typeHelper).getNamespaceResolver());
+        row.put(field, "true");
     }
 }
