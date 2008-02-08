@@ -74,7 +74,10 @@ public class Computer implements Serializable {
         Session session = event.getSession();
         long millis = System.currentTimeMillis();
         this.creationTimestamp = new Timestamp(millis);
-        if (session.getLogin().getPlatform().isAccess() || session.getLogin().getPlatform().isSQLServer() || session.getLogin().getPlatform().isOracle() || session.getLogin().getPlatform().isSybase() || session.getLogin().getPlatform().isAttunity() || session.getLogin().getPlatform().isMySQL()) {
+        if (session.getLogin().getPlatform().isAccess() || session.getLogin().getPlatform().isSQLServer() ||
+                session.getLogin().getPlatform().isOracle() || session.getLogin().getPlatform().isSybase() || 
+                session.getLogin().getPlatform().isAttunity() || session.getLogin().getPlatform().isMySQL() || 
+                session.getLogin().getPlatform().isTimesTen()) {
             // Oracle does not support millis, Sybase stores them only within 1-2 millis...
             //MySQL does not support millis as of 5.0
             this.creationTimestampMillis = this.creationTimestamp.getNanos();

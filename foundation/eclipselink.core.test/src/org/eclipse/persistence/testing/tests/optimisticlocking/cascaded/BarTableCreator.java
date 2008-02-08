@@ -41,7 +41,7 @@ public class BarTableCreator extends TableCreator {
         field1.setTypeName("VARCHAR");
         field1.setSize(50);
         field1.setShouldAllowNull(false);
-        field1.setIsPrimaryKey(true);
+        field1.setIsPrimaryKey(false);
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
@@ -127,7 +127,7 @@ public class BarTableCreator extends TableCreator {
         field1.setTypeName("VARCHAR");
         field1.setSize(20);
         field1.setShouldAllowNull(false);
-        field1.setIsPrimaryKey(true);
+        field1.setIsPrimaryKey(false);
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
