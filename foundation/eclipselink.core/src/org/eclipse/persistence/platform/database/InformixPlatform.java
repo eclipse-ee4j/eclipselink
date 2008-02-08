@@ -120,7 +120,8 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
         fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
         fieldTypeMapping.put(Long.class, new FieldTypeDefinition("NUMERIC", 19));
         fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT(16)", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("FLOAT(32)", false));
+        // Bug 218183: Informix 11 FLOAT precision max is 16 - substitute DECIMAL(32) for FLOAT(32)
+        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DECIMAL(32)", false));
         fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
         fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false));
         fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("DECIMAL", 32));
