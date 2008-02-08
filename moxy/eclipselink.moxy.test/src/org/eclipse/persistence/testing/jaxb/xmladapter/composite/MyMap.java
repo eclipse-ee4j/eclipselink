@@ -9,7 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmladapter.composite;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Iterator;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.bind.annotation.XmlElement;
@@ -19,13 +19,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class MyMap {
     @XmlElement(name="hashMap")
     @XmlJavaTypeAdapter(MyHashMapAdapter.class)
-    public HashMap hashMap;
+    public java.util.LinkedHashMap hashMap;
     
     public boolean equals(Object obj) {
         if (!(obj instanceof MyMap)) {
             return false;
         }
-        HashMap map = ((MyMap) obj).hashMap;
+        LinkedHashMap map = ((MyMap) obj).hashMap;
         for (Iterator keyIt = map.keySet().iterator(); keyIt.hasNext(); ) {
             Object key = keyIt.next();
             if (!this.hashMap.containsKey(key)) {

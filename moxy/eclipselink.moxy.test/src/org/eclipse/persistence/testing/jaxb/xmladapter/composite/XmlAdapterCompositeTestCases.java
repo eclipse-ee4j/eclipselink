@@ -31,7 +31,7 @@ public class XmlAdapterCompositeTestCases extends JAXBTestCases {
 
     protected Object getControlObject() {
         MyMap myMap = new MyMap();
-        myMap.hashMap = new HashMap();
+        myMap.hashMap = new java.util.LinkedHashMap();
         myMap.hashMap.put(ID_2, VALUE_2);
         myMap.hashMap.put(ID_1, VALUE_1);
         return myMap;

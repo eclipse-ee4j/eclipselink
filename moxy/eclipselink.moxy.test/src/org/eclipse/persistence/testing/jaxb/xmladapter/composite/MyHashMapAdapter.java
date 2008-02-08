@@ -9,14 +9,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmladapter.composite;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-public final class MyHashMapAdapter extends XmlAdapter<MyHashMapType, HashMap> {
-    public MyHashMapType marshal(HashMap arg0) throws Exception {
+public final class MyHashMapAdapter extends XmlAdapter<MyHashMapType, LinkedHashMap> {
+    public MyHashMapType marshal(LinkedHashMap arg0) throws Exception {
         MyHashMapType myHashMapType = new MyHashMapType();
         myHashMapType.entry = new ArrayList<MyHashMapEntryType>();
         
@@ -30,8 +30,8 @@ public final class MyHashMapAdapter extends XmlAdapter<MyHashMapType, HashMap> {
         return myHashMapType;
     }
     
-    public HashMap unmarshal(MyHashMapType arg0) throws Exception {
-        HashMap map = new HashMap<Integer, String>();
+    public LinkedHashMap unmarshal(MyHashMapType arg0) throws Exception {
+        LinkedHashMap map = new LinkedHashMap<Integer, String>();
         for (Iterator typeIt = arg0.entry.iterator(); typeIt.hasNext(); ) {
             MyHashMapEntryType eType = (MyHashMapEntryType) typeIt.next();
             map.put(eType.key, eType.value);
