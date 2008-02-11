@@ -10,6 +10,8 @@
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import java.util.Map;
+
+import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -52,6 +54,12 @@ public class OneToManyAccessor extends CollectionAccessor {
         	setCascadeTypes(oneToMany.cascade());
         	setFetch(oneToMany.fetch());
         	setMappedBy(oneToMany.mappedBy());
+        } else {
+        	// Set the annotation defaults.
+        	setTargetEntity(void.class);
+        	setCascadeTypes(new CascadeType[]{});
+        	setFetch(getDefaultFetchType());
+        	setMappedBy("");
         }
     }
     

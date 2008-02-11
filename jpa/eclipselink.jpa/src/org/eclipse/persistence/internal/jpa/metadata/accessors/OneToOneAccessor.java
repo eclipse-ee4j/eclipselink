@@ -9,6 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.OneToOne;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -47,6 +48,13 @@ public class OneToOneAccessor extends ObjectAccessor {
         	setFetch(oneToOne.fetch());
         	setOptional(oneToOne.optional());
         	setMappedBy(oneToOne.mappedBy());
+        } else {
+        	// Set the annotation defaults.
+        	setTargetEntity(void.class);
+        	setCascadeTypes(new CascadeType[]{});
+        	setFetch(getDefaultFetchType());
+        	setOptional(true);
+        	setMappedBy("");
         }
     }
     
