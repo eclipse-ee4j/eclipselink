@@ -57,7 +57,11 @@ public class EntityC
         this.name = name;
     }
 
-    @OneToMany(cascade={CascadeType.ALL})
+    // From what I can see there are no tests against this model (it looks
+    // like it was built for processing testing actually) therefore,
+    // no one depends on the cascade setting so I am commenting out the 
+    // @OneToMany annotation to test our defaulting of that annotation.
+    //@OneToMany(cascade={CascadeType.ALL})
     @JoinTable(
             name="CMP3_UNIDIR_ENTITYC_ENTITYD",
             joinColumns=
