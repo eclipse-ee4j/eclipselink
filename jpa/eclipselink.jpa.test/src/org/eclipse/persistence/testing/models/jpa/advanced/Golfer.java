@@ -24,8 +24,8 @@ public class Golfer implements java.io.Serializable {
         return golferPK;
     }
     
-    @OneToOne
-    @JoinColumn(name="ID", referencedColumnName="ID")
+    //@OneToOne - Test annotation defaulting.
+    //@JoinColumn(name="ID", referencedColumnName="ID")
     public WorldRank getWorldRank() {
         return worldRank;
     }

@@ -21,7 +21,7 @@ public class GolferPK implements java.io.Serializable {
         this.id = id;
     }
     
-    @Column(name="ID", nullable=false, insertable=false, updatable=false)
+    @Column(name="WORLDRANK_ID", nullable=false, insertable=false, updatable=false)
     public int getId() {
         return id;
     }

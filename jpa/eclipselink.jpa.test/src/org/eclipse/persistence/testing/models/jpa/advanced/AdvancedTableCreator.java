@@ -556,7 +556,7 @@ public class AdvancedTableCreator extends TableCreator {
         table.setName("CMP3_GOLFER");
         
         FieldDefinition IDfield = new FieldDefinition();
-        IDfield.setName("ID");
+        IDfield.setName("WORLDRANK_ID");
         IDfield.setTypeName("NUMERIC");
         IDfield.setSize(15);
         IDfield.setShouldAllowNull(false);
@@ -567,7 +567,7 @@ public class AdvancedTableCreator extends TableCreator {
         ForeignKeyConstraint foreignKeyGOLFER_WORLDRANK = new ForeignKeyConstraint();
         foreignKeyGOLFER_WORLDRANK.setName("WORLDRANK_ID");
         foreignKeyGOLFER_WORLDRANK.setTargetTable("CMP3_WORLDRANK"); 
-        foreignKeyGOLFER_WORLDRANK.addSourceField("ID");
+        foreignKeyGOLFER_WORLDRANK.addSourceField("WORLDRANK_ID");
         foreignKeyGOLFER_WORLDRANK.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyGOLFER_WORLDRANK);
         
