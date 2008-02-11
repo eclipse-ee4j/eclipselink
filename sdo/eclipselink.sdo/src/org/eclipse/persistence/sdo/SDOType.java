@@ -707,45 +707,90 @@ public class SDOType implements Type, Serializable {
         return xmlDescriptor;
     }
 
-    private void setupInheritance(SDOType parentType) {
-        if ((parentType.getURI() != null) && (!parentType.getURI().equals(SDOConstants.SDO_URL))) {
-            XMLField field = (XMLField)getXmlDescriptor().buildField("@xsi:type");
-            XMLDescriptor parentDescriptor = (XMLDescriptor)parentType.getXmlDescriptor().getInheritancePolicy().getRootParentDescriptor();
-            
-            parentDescriptor.getInheritancePolicy().setClassIndicatorField(field);
-            if (getInstanceClassName() != null) {
-                String indicator = getName();
-                String prefix = parentDescriptor.getNamespaceResolver().resolveNamespaceURI(getURI());
-                if (prefix == null) {
-                    prefix = getXmlDescriptor().getNamespaceResolver().resolveNamespaceURI(getURI());
-                    if (prefix != null) {
-                        parentDescriptor.getNamespaceResolver().put(prefix, getURI());
+    /**
+     * INTERNAL:
+     * Convenience method that sets up class indicator and @sdoRef
+     * attribute.
+     * 
+     * @param xdesc
+     * @param pCls
+     */
+    private void addClassIndicator(XMLDescriptor xdesc, Class pCls) {
+        XMLField field = (XMLField)getXmlDescriptor().buildField("@xsi:type");
+        xdesc.getInheritancePolicy().setClassIndicatorField(field);
+
+        String parentIndicator = getName();
+        String parentPrefix = xdesc.getNamespaceResolver().resolveNamespaceURI(getURI());
+        if (parentPrefix != null) {
+            parentIndicator = parentPrefix + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + parentIndicator;
+        }
+        xdesc.getInheritancePolicy().addClassIndicator(pCls, parentIndicator);
+
+        // only add the @sdoRef attribute if necessary
+        if (xdesc.getMappingForAttributeName(SDO_REF_MAPPING_ATTRIBUTE_NAME) == null) {
+            String sdoPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(SDOConstants.SDO_URL);
+            XMLDirectMapping sdoRefMapping = new XMLDirectMapping();
+            sdoRefMapping.setAttributeName(SDO_REF_MAPPING_ATTRIBUTE_NAME);
+
+            XMLField xmlField = new XMLField("@" + sdoPrefix + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + SDOConstants.CHANGESUMMARY_REF);
+            xmlField.getXPathFragment().setNamespaceURI(SDOConstants.SDO_URL);
+            xmlField.getLastXPathFragment().setNamespaceURI(SDOConstants.SDO_URL);
+
+            sdoRefMapping.setField(xmlField);
+            xdesc.addMapping(sdoRefMapping);
+        }
+    }
+    public void setupInheritance(SDOType parentType) {
+        if (parentType == null) {
+            // root of inheritance
+            addClassIndicator(getXmlDescriptor(), getImplClass());
+        } else {
+            if ((parentType.getURI() != null) && (!parentType.getURI().equals(SDOConstants.SDO_URL))) {
+                // set parent descriptor indicator if necessary
+                if (!parentType.getXmlDescriptor().hasInheritance()) {
+                    addClassIndicator(parentType.getXmlDescriptor(), parentType.getImplClass());
+                }
+
+                XMLDescriptor parentDescriptor = (XMLDescriptor)parentType.getXmlDescriptor().getInheritancePolicy().getRootParentDescriptor();
+                NamespaceResolver parentNR = parentDescriptor.getNonNullNamespaceResolver();
+                if (parentNR != null) {
+                    for (int i = 0; i < parentNR.getNamespaces().size(); i++) {
+                        Namespace nextNamespace = (Namespace)parentNR.getNamespaces().get(i);
+                        if ((!nextNamespace.getPrefix().equals(XMLConstants.XMLNS)) && (!nextNamespace.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) &&
+                            (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOXML_URL)) &&
+                            (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDO_URL))) {
+                            getXmlDescriptor().getNonNullNamespaceResolver().put(nextNamespace.getPrefix(), nextNamespace.getNamespaceURI());
+                        }
                     }
                 }
-                if (prefix != null) {
-                    indicator = prefix + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + indicator;
+                if (getInstanceClassName() != null) {
+                    String indicator = getName();
+                    String prefix = parentDescriptor.getNamespaceResolver().resolveNamespaceURI(getURI());
+                    if (prefix == null) {
+                        prefix = getXmlDescriptor().getNamespaceResolver().resolveNamespaceURI(getURI());
+                        if (prefix != null) {
+                            parentDescriptor.getNamespaceResolver().put(prefix, getURI());
+                        }
+                    }
+                    if (prefix != null) {
+                        indicator = prefix + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + indicator;
+                    }
+                    Class implClass = getImplClass();
+                    parentDescriptor.getInheritancePolicy().addClassIndicator(implClass, indicator);
+                    parentDescriptor.getInheritancePolicy().setShouldReadSubclasses(true);
+                    Class parentClass = parentType.getImplClass();
+                    getXmlDescriptor().getInheritancePolicy().setParentClass(parentClass);
+                    getXmlDescriptor().getInheritancePolicy().setParentDescriptor(parentType.getXmlDescriptor());
+                    parentType.getXmlDescriptor().getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+                    getXmlDescriptor().getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
                 }
-
-                Class implClass = getImplClass();
-                parentDescriptor.getInheritancePolicy().addClassIndicator(implClass, indicator);
-                parentDescriptor.getInheritancePolicy().setShouldReadSubclasses(true);
-
-                String parentIndicator = parentType.getName();
-                String parentPrefix = parentDescriptor.getNamespaceResolver().resolveNamespaceURI(parentType.getURI());
-                if (parentPrefix != null) {
-                    parentIndicator = parentPrefix + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + parentIndicator;
-                }
-
-                Class parentImplClass = parentType.getImplClass();
-                parentDescriptor.getInheritancePolicy().addClassIndicator(parentImplClass, parentIndicator);
-
-                Class parentClass = parentType.getImplClass();
-                getXmlDescriptor().getInheritancePolicy().setParentClass(parentClass);
-                getXmlDescriptor().getInheritancePolicy().setParentDescriptor(parentType.getXmlDescriptor());
-
-                parentType.getXmlDescriptor().getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-
-                getXmlDescriptor().getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+            }
+        }
+        // now setup inheritance for any subtypes
+        for (int i = 0; i < subTypes.size(); i++) {
+            SDOType nextSubType = (SDOType)subTypes.get(i);
+            if (!nextSubType.isDataType() && (nextSubType.getBaseTypes() != null) && (nextSubType.getBaseTypes().size() > 0)) {
+                nextSubType.setupInheritance(this);
             }
         }
     }
@@ -807,10 +852,6 @@ public class SDOType implements Type, Serializable {
       * INTERNAL:
       */
     public void postInitialize() {
-        if (!isDataType && (getBaseTypes() != null) && (getBaseTypes().size() > 0)) {
-            setupInheritance((SDOType)getBaseTypes().get(0));
-        }
-
         String idPropName = (String)get(SDOConstants.ID_PROPERTY);
         if (idPropName != null) {
             SDOProperty idProp = (SDOProperty)getProperty(idPropName);
@@ -819,25 +860,21 @@ public class SDOType implements Type, Serializable {
                 getXmlDescriptor().addPrimaryKeyFieldName(targetxpath);
             }
         }
-
         setFinalized(true);
         for (int i = 0; i < getNonFinalizedReferencingProps().size(); i++) {
             SDOProperty nextProp = (SDOProperty)getNonFinalizedReferencingProps().get(i);
             String nextURI = (String)getNonFinalizedMappingURIs().get(i);
             nextProp.buildMapping(nextURI);
         }
-
-        //Need to add these mappings here so that they don't get added to multiple descriptors in an inheritance hierarchy
-        if ((!getXmlDescriptor().hasInheritance()) || (getXmlDescriptor().getInheritancePolicy().isRootParentDescriptor())) {
+        // set @sdoRef attribute mapping for complex types that are not involved in inheritance
+        if (!isDataType() && getBaseTypes().size() == 0 && getSubTypes().size() == 0) {
             String sdoPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(SDOConstants.SDO_URL);
             XMLDirectMapping sdoRefMapping = new XMLDirectMapping();
             sdoRefMapping.setAttributeName(SDO_REF_MAPPING_ATTRIBUTE_NAME);
-            XMLField xmlField = new XMLField("@" + sdoPrefix + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT +//
-                                             SDOConstants.CHANGESUMMARY_REF);
 
+            XMLField xmlField = new XMLField("@" + sdoPrefix + SDOConstants.SDO_XPATH_NS_SEPARATOR_FRAGMENT + SDOConstants.CHANGESUMMARY_REF);
             xmlField.getXPathFragment().setNamespaceURI(SDOConstants.SDO_URL);
             xmlField.getLastXPathFragment().setNamespaceURI(SDOConstants.SDO_URL);
-
             sdoRefMapping.setField(xmlField);
             xmlDescriptor.addMapping(sdoRefMapping);
         }

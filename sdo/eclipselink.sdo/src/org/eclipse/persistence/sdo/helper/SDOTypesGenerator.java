@@ -134,33 +134,50 @@ public class SDOTypesGenerator extends SchemaParser {
         returnList.addAll(getGeneratedTypes().values());
         
         if(!this.isImportProcessor()){      
+            List descriptorsToAdd = new ArrayList(getGeneratedTypes().values());
             Iterator<Type> iter = getGeneratedTypes().values().iterator();            
             while (iter.hasNext()) {            
               SDOType nextSDOType = (SDOType)iter.next();
               if(!nextSDOType.isFinalized()) {
                 //Only throw this error if we're not processing an import.
                 throw SDOException.typeReferencedButNotDefined(nextSDOType.getURI(), nextSDOType.getName());
-              }              
+                }
+                if (!nextSDOType.isDataType() && nextSDOType.getBaseTypes().size() == 0 && nextSDOType.getSubTypes().size() > 0) {
+                    nextSDOType.setupInheritance(null);
+                } else if (!nextSDOType.isDataType() && nextSDOType.getBaseTypes().size() > 0 && !getGeneratedTypes().values().contains(nextSDOType.getBaseTypes().get(0))) {
+                    SDOType baseType = (SDOType)nextSDOType.getBaseTypes().get(0);
+                    while (baseType != null) {
+                        descriptorsToAdd.add(baseType);
+                        if (baseType.getBaseTypes().size() == 0) {
+                            descriptorsToAdd.add(baseType);
+                            //baseType should now be root of inheritance
+                            baseType.setupInheritance(null);
+                            baseType = null;
+                        } else {
+                            baseType = (SDOType)baseType.getBaseTypes().get(0);
+                        }
+                    }
+                }
             }
-            ((SDOXMLHelper)aHelperContext.getXMLHelper()).addDescriptors(new ArrayList(getGeneratedTypes().values()));
-            
-            Iterator<Property> propertiesIter = getGeneratedGlobalProperties().values().iterator();            
-            while (propertiesIter.hasNext()) {            
-              SDOProperty nextSDOProperty = (SDOProperty)propertiesIter.next();
-              if(!nextSDOProperty.isFinalized()) {
-                //Only throw this error if we're not processing an import.
-                throw SDOException.referencedPropertyNotFound(nextSDOProperty.getUri(), nextSDOProperty.getName());
-              }              
+            ((SDOXMLHelper)aHelperContext.getXMLHelper()).addDescriptors(descriptorsToAdd);
+
+            Iterator<Property> propertiesIter = getGeneratedGlobalProperties().values().iterator();
+            while (propertiesIter.hasNext()) {
+                SDOProperty nextSDOProperty = (SDOProperty)propertiesIter.next();
+                if (!nextSDOProperty.isFinalized()) {
+                    //Only throw this error if we're not processing an import.
+                    throw SDOException.referencedPropertyNotFound(nextSDOProperty.getUri(), nextSDOProperty.getName());
+                }
             }
-            
-            Iterator<List<GlobalRef>> globalRefsIter = getGlobalRefs().values().iterator();            
-            while (globalRefsIter.hasNext()) {            
-              List<GlobalRef> nextList = (List)globalRefsIter.next();
-              if(nextList.size() >0){
-                GlobalRef ref = nextList.get(0);
-                throw SDOException.referencedPropertyNotFound(((SDOProperty)ref.getProperty()).getUri(), ref.getProperty().getName());                
-              }
-            }            
+
+            Iterator<List<GlobalRef>> globalRefsIter = getGlobalRefs().values().iterator();
+            while (globalRefsIter.hasNext()) {
+                List<GlobalRef> nextList = (List)globalRefsIter.next();
+                if (nextList.size() > 0) {
+                    GlobalRef ref = nextList.get(0);
+                    throw SDOException.referencedPropertyNotFound(((SDOProperty)ref.getProperty()).getUri(), ref.getProperty().getName());
+                }
+            }
         }
 
         return returnList;
@@ -258,6 +275,7 @@ public class SDOTypesGenerator extends SchemaParser {
             //TODO: make sure extended Instance class extend the base Type's instance class
             currentType.setInstanceClassName(extendedInstanceClassValue);
         }
+        currentType.postInitialize();
     }
 
     protected void processUnion(String targetNamespace, String defaultNamespace, String sdoTypeName, Union union) {

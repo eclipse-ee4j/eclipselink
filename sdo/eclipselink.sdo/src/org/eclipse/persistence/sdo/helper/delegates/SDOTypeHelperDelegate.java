@@ -390,13 +390,33 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
     
     private void initializeTypes(List types){        
+        List descriptorsToAdd = new ArrayList(types);
         for (int i = 0; i < types.size(); i++) {
             SDOType nextType = (SDOType)types.get(i);
             if (!nextType.isDataType()) {
                 nextType.postInitialize();
             }
-        }        
-        ((SDOXMLHelper)aHelperContext.getXMLHelper()).addDescriptors(types);
+        }
+        for (int i = 0; i < types.size(); i++) {
+            SDOType nextType = (SDOType)types.get(i);
+            if ((!nextType.isDataType() && nextType.getBaseTypes() == null || nextType.getBaseTypes().size() == 0) && nextType.getSubTypes().size() > 0) {
+                nextType.setupInheritance(null);
+            } else if (!nextType.isDataType() && nextType.getBaseTypes().size() > 0 && !types.contains(nextType.getBaseTypes().get(0))) {
+                SDOType baseType = (SDOType)nextType.getBaseTypes().get(0);
+                while (baseType != null && !baseType.isDataType()) {
+                    descriptorsToAdd.add(baseType);
+                    if (baseType.getBaseTypes().size() == 0) {
+                        descriptorsToAdd.add(baseType);
+                        // baseType should now be root of inheritance
+                        baseType.setupInheritance(null);
+                        baseType = null;
+                    } else {
+                        baseType = (SDOType)baseType.getBaseTypes().get(0);
+                    }
+                }
+            }
+        }
+        ((SDOXMLHelper)aHelperContext.getXMLHelper()).addDescriptors(descriptorsToAdd);
     }
 
     /**
