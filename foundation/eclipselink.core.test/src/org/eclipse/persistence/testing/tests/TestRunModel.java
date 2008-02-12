@@ -194,7 +194,7 @@ public class TestRunModel extends TestModel {
         Vector models = new Vector();
 
         try {
-            models.addElement((TestModel)Class.forName("org.eclipse.persistence.testing.tests.SRGTestModel").newInstance());
+            models.addElement(Class.forName("org.eclipse.persistence.testing.tests.SRGTestModel").newInstance());
         } catch (Exception exception) {
             System.out.println("Failed to set up org.eclipse.persistence.testing.tests.SRGTestModel" + " \n" + exception);
         }
@@ -202,6 +202,7 @@ public class TestRunModel extends TestModel {
         models.addElement(buildNonLRGTestModel());
         models.addElement(buildAllTestModels());
         models.addElement(buildJPATestModel());
+        models.addElement(buildPerformanceTestModel());
 
         Vector manualTest = new Vector();
         manualTest.addElement("org.eclipse.persistence.testing.tests.stress.StressTestModel");
@@ -311,6 +312,31 @@ public class TestRunModel extends TestModel {
         return model.testList;
     }
 
+    /**
+     * Build and return a model of all performance tests.
+     */
+    public static TestModel buildPerformanceTestModel() {
+        Vector performanceTests = new Vector();
+        performanceTests.addElement("org.eclipse.persistence.testing.tests.performance.PerformanceComparisonModel");
+        performanceTests.addElement("org.eclipse.persistence.testing.tests.performance.PerformanceTestModel");
+        performanceTests.addElement("org.eclipse.persistence.testing.tests.performance.PerformanceTestModelRun");
+        performanceTests.addElement("org.eclipse.persistence.testing.tests.performance.ConcurrencyComparisonTestModel");
+        performanceTests.addElement("org.eclipse.persistence.testing.tests.performance.ConcurrencyRegressionTestModel");
+        performanceTests.addElement("org.eclipse.persistence.testing.tests.performance.JavaPerformanceComparisonModel");
+        performanceTests.addElement("org.eclipse.persistence.testing.tests.jpa.performance.JPAPerformanceTestModel");
+                    
+        TestModel performanceModel = new TestModel();
+        performanceModel.setName("Performance Tests");
+        for (int index = 0; index < performanceTests.size(); ++index) {
+            try {
+                performanceModel.addTest((TestModel)Class.forName((String)performanceTests.elementAt(index)).newInstance());
+            } catch (Exception exception) {
+                System.out.println("Failed to set up " + performanceTests.elementAt(index) + " \n" + exception);
+            }
+        }
+        return performanceModel;
+    }
+    
     /**
      * Reset to the old login.
      */
