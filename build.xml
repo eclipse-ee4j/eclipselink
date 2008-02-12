@@ -13,9 +13,18 @@
     </condition>
     <property name="build_number" value="SNAPSHOT"/>
     <property name="build_number_string" value="${build_number} - ${build_date}"/>
-
+    <path id="javadoc.path">
+        <pathelement path="${eclipselink.jar}"/>
+		<pathelement path="${commonj.sdo.lib}"/>
+		<pathelement path="${eclipselink.core.lib}/eclipselink-antlr.jar"/>
+        <pathelement path="${eclipselink.core.lib}/eclipselink-asm.jar"/>
+        <pathelement path="${jaxb-api.lib}"/>
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
+    </path>
   <!-- all -->
-  <target name="all" depends="package.eclipselink.jar, build.test, package.src.jar, package.package-renamer.jar, build.javadocs, package.javadoc.zip, package.installer.zip" description="build EclipseLink distribution files"/>
+  <target name="all" depends="package.eclipselink.jar, build.test, package.src.jar, package.package-renamer.jar, package.installer.zip" description="build EclipseLink distribution files"/>
 
     <target name="build.all" depends="build.core, build.test, build.extension"/>
 
@@ -36,7 +45,9 @@
     <target name="build.test">
         <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa.test}/build.xml" target="all"/>
-    </target>
+        <ant antfile="${eclipselink.moxy.test}/build.xml" target="compile.tests"/>
+        <ant antfile="${eclipselink.sdo.test}/build.xml" target="compile.sdo.tests"/>
+	</target>
 
     <target name="package.eclipselink.jar" depends="build.core" description="build EclipseLink jar">
       <unjar src="${eclipselink.extension.oracle}/${eclipselink.oracle.depend.jar}" dest="${build.dir}"/>
@@ -128,14 +139,19 @@
 
     <target name="build.javadocs"> 
         <property name="javadoc.title" value="${javadoc.prefixTitle}${release.version} ${build_number_string} ${javadoc.postfixTitle} - Incubation"/>
+
         <javadoc 
             maxmemory="384m"
+			Verbose="false"
             packagenames="org.eclipse.persistence.**" 
             destdir="${eclipselink.javadocs}"  
             useexternalfile="yes"
-            additionalparam="-breakiterator"
+            additionalparam="-breakiterator -quiet"
             windowtitle="${javadoc.title}"
             > 
+			<classpath>
+				<path refid="javadoc.path"/>
+			</classpath>
             <tag name ="author" enabled="true" description="Author:" />
             <tag name ="since" scope="all" description="Since:" />
             <tag name ="SBGen" scope="all" description="SBGen:" />
