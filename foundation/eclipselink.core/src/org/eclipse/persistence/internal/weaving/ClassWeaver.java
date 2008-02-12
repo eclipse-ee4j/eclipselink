@@ -12,6 +12,7 @@ package org.eclipse.persistence.internal.weaving;
 import java.util.*;
 
 import org.eclipse.persistence.internal.libraries.asm.*;
+import org.eclipse.persistence.internal.libraries.asm.commons.*;
 import org.eclipse.persistence.internal.libraries.asm.attrs.RuntimeVisibleAnnotations;
 import org.eclipse.persistence.internal.libraries.asm.attrs.Annotation;
 
@@ -64,7 +65,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     /** Stores information on the class gathered from the temp class loader and descriptor. */
     protected ClassDetails classDetails;
     /** Used to generate the serialization serial UUID based on the original class. */
-    protected UUIDGenerator uuidGenerator;
+    protected SerialVersionUIDAdder uuidGenerator;
     
     // Keep track of what was weaved.
     protected boolean alreadyWeaved = false;
@@ -116,7 +117,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
     public ClassWeaver(ClassWriter classWriter, ClassDetails classDetails) {
         super(classWriter);
         this.classDetails = classDetails;
-        this.uuidGenerator = new UUIDGenerator(classWriter);
+        this.uuidGenerator = new SerialVersionUIDAdder(classWriter);
     }
 
     /**
@@ -969,7 +970,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         
         if (this.classDetails.shouldWeaveInternal()) {
             // Add a serial UID if one was not defined in the class to allow portable serialization.
-            if (!this.uuidGenerator.hasSVUID) {
+            if (!this.uuidGenerator.hasSVUID()) {
                 long suid = this.uuidGenerator.computeSVUID();
                 this.cv.visitField(ACC_PUBLIC + ACC_STATIC + ACC_FINAL, "serialVersionUID", LONG_SIGNATURE, suid, null);
             }
