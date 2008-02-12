@@ -117,18 +117,16 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
     public void testConverFromObject_DateWithNullTypeNullQName() {
         String b = "2000";
         Date aDate = dataHelper.toDate(b);
-
-        SDOType d = new SDOType(aHelperContext);
-
+        
         this.assertEquals("2000-01-01T00:00:00.0Z", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DATETIME));
-        this.assertEquals("2000", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_YEAR));
-        this.assertEquals("2000-01", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_YEARMONTH));
+        this.assertEquals("1999", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_YEAR));
+        this.assertEquals("1999-12", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_YEARMONTH));
         this.assertEquals("2000-01-01T00:00:00.0Z", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DATE));
         this.assertEquals("00:00:00.0Z", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_TIME));
-        this.assertEquals("----01", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DAY));
+        this.assertEquals("----31", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DAY));
         this.assertEquals("P2000Y1M1DT0H0M0.0S", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_DURATION));
-        this.assertEquals("--01--", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_MONTH));
-        this.assertEquals("--01-01", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_MONTHDAY));
+        this.assertEquals("--12--", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_MONTH));
+        this.assertEquals("--12-31", (String)dataHelper.convertToStringValue((Object)aDate, (Type)SDOConstants.SDO_MONTHDAY));
     }
     
     public void testConverFromObject_Date_GMTDefault() {
