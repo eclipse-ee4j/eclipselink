@@ -189,7 +189,7 @@ public class CommitOrderCalculator {
     }
 
     /**
-     * Preform a sort using the specified comparitor object.
+     * Perform a sort using the specified comparator object.
      */
     private static void quicksort(Object[] arr) {
         quicksort(arr, 0, arr.length - 1);

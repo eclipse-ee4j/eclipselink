@@ -96,7 +96,7 @@ public class DefaultSequence extends Sequence {
 
     /**
     * INTERNAL:
-    * Indicates whether TopLink should internally call beginTransaction() before
+    * Indicates whether EclipseLink should internally call beginTransaction() before
     * getGeneratedValue/Vector, and commitTransaction after.
     * In default implementation, it is true for table sequencing and
     * false for native sequencing.

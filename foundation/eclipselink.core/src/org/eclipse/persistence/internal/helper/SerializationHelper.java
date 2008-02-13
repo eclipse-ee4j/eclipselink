@@ -24,7 +24,7 @@ import java.io.Serializable;
  * </p>
  *
  * <p>This class throws exceptions for invalid <code>null</code> inputs.
- * Each method documents its behaviour in more detail.</p>
+ * Each method documents its behavior in more detail.</p>
  *
  * @author Steven Vo
  * @since OracleAS 10.0.3

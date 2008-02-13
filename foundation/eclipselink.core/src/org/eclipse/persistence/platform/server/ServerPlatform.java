@@ -18,10 +18,10 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 /**
  * PUBLIC:
  *
- * This is the interface describing the behaviour for ServerPlatformBase, and any other
- * class that wants to provide behaviour for a server.
+ * This is the interface describing the behavior for ServerPlatformBase, and any other
+ * class that wants to provide behavior for a server.
  *
- * This interface provides the behaviour for
+ * This interface provides the behavior for
  *
  * - Which external transaction controller to use
  * - Whether or not to enable JTA (external transaction control)
@@ -179,7 +179,7 @@ public interface ServerPlatform {
      * INTERNAL: launchContainerRunnable(Runnable runnable): Use the container library to
      * start the provided Runnable.
      *
-     * Default behaviour is to use Thread(runnable).start()
+     * Default behavior is to use Thread(runnable).start()
      *
      * @param Runnable runnable: the instance of runnable to be "started"
      * @return void

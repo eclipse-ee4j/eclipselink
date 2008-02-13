@@ -33,7 +33,7 @@ import org.eclipse.persistence.internal.xr.XRServiceModel;
  * </li>
  * <li>a TopLink <tt>sessions.xml</tt> file called <tt><b>toplink-dbws-sessions.xml</b></tt> (in the
  * <code>META-INF/</code> directory)<br>
- * &nbsp; the naming convention for the <tt>sessions.xml</tt> files can be overriden by the<br>
+ * &nbsp; the naming convention for the <tt>sessions.xml</tt> files can be overridden by the<br>
  * <b>optional</b> <tt>&lt;sessions-file&gt;</tt> entry in the <code>toplink-dbws.xml</code>
  * descriptor file.
  * </li>

@@ -28,7 +28,7 @@ public class SoftCacheKey extends WeakCacheKey {
      * Initialize the newly allocated instance of this class.
      * @param primaryKey contains values extracted from the object
      * @param writeLockValue is the write lock value, null if optimistic locking not being used for this object.
-     * @param readTime the time TopLInk read the cache key
+     * @param readTime the time EclipseLInk read the cache key
      */
     public SoftCacheKey(Vector primaryKey, Object object, Object writeLockValue, long readTime) {
         super(primaryKey, object, writeLockValue, readTime);

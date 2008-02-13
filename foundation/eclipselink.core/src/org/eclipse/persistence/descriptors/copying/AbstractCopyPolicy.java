@@ -20,7 +20,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
 /**
  * <p><b>Purpose</b>: Allows customization of how an object is cloned.
- * This class defines common behavoir that allows a subclass to be used
+ * This class defines common behavior that allows a subclass to be used
  * and set on a descriptor to provide a special cloning routine for how an object
  * is cloned in a unit of work.
  */

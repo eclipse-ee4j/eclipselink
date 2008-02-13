@@ -544,7 +544,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * This method returns the current session to the requestor.  The current session
      * will be a the active UnitOfWork within a transaction and will be a 'scrap'
-     * UnitOfWork outside of a transaction.  The caller is conserned about the results
+     * UnitOfWork outside of a transaction.  The caller is concerned about the results
      * then the getSession() or getUnitOfWork() API should be called.
      */
     public Session getActiveSession() {

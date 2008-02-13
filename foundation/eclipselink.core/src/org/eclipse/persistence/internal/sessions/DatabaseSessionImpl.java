@@ -35,13 +35,13 @@ import org.eclipse.persistence.platform.server.NoServerPlatform;
  * @see org.eclipse.persistence.sessions.DatabaseSession
  *
  * <p>
- * <b>Purpose</b>: Define the implementation for a single user/single connection TopLink session.
+ * <b>Purpose</b>: Define the implementation for a single user/single connection EclipseLink session.
  * <p>
- * <b>Description</b>: The session is the primary interface into TopLink,
+ * <b>Description</b>: The session is the primary interface into EclipseLink,
  * the application should do all of its reading and writing of objects through the session.
  * The session also manages transactions and units of work.  The database session is intended
  * for usage in two-tier client-server applications.  Although it could be used in a server
- * situation, it is limitted to only having a single database connection and only allows
+ * situation, it is limited to only having a single database connection and only allows
  * a single open database transaction.
  * <p>
  * <b>Responsibilities</b>:
@@ -136,7 +136,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
     /**
      * INTERNAL:
-     * Called in the end of beforeCompletion of external transaction sychronization listener.
+     * Called in the end of beforeCompletion of external transaction synchronization listener.
      * Close the managed sql connection corresponding to the external transaction.
      */
     public void releaseJTSConnection() {
@@ -184,7 +184,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * Add the descriptor to the session.
      * All persistent classes must have a descriptor registered for them with the session.
      * It is best to add the descriptors before login, if added after login the order in which
-     * descriptors are added is dependant on inheritance and references unless the addDescriptors
+     * descriptors are added is dependent on inheritance and references unless the addDescriptors
      * method is used.
      *
      * @see #addDescriptors(Vector)
@@ -201,7 +201,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * PUBLIC:
      * Add the descriptors to the session.
      * All persistent classes must have a descriptor registered for them with the session.
-     * This method allows for a batch of descriptors to be added at once so that TopLink
+     * This method allows for a batch of descriptors to be added at once so that EclipseLink
      * can resolve the dependencies between the descriptors and perform initialization optimally.
      */
     public void addDescriptors(Collection descriptors) {
@@ -243,10 +243,10 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
     /**
      * PUBLIC:
-     * Answer the server platform to handle server specific behaviour for WLS, Oc4j, etc.
+     * Answer the server platform to handle server specific behavior for WLS, Oc4j, etc.
      *
      * If the user wants a different external transaction controller class or
-     * to provide some different behaviour than the provided ServerPlatform(s), we recommend
+     * to provide some different behavior than the provided ServerPlatform(s), we recommend
      * subclassing org.eclipse.persistence.platform.server.ServerPlatformBase (or a subclass),
      * and overriding:
      *
@@ -254,7 +254,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * ServerPlatformBase.registerMBean()
      * ServerPlatformBase.unregisterMBean()
      *
-     * for the desired behaviour.
+     * for the desired behavior.
      *
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase
      */
@@ -264,12 +264,12 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
     /**
      * PUBLIC:
-     * Set the server platform to handle server specific behaviour for WLS, Oc4j, etc
+     * Set the server platform to handle server specific behavior for WLS, Oc4j, etc
      *
      * This is not permitted after the session is logged in.
      *
      * If the user wants a different external transaction controller class or
-     * to provide some different behaviour than the provided ServerPlatform(s), we recommend
+     * to provide some different behavior than the provided ServerPlatform(s), we recommend
      * subclassing org.eclipse.persistence.platform.server.ServerPlatformBase (or a subclass),
      * and overriding:
      *
@@ -277,7 +277,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * ServerPlatformBase.registerMBean()
      * ServerPlatformBase.unregisterMBean()
      *
-     * for the desired behaviour.
+     * for the desired behavior.
      *
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase
      */
@@ -363,7 +363,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     /**
      * INTERNAL:
      * A descriptor may have been added after the session is logged in.
-     * In this case the descriptor must be allowed to initialize any dependancies on this session.
+     * In this case the descriptor must be allowed to initialize any dependencies on this session.
      * Normally the descriptors are added before login, then initialized on login.
      */
     public void initializeDescriptorIfSessionAlive(ClassDescriptor descriptor) {
@@ -390,8 +390,8 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
     /**
      * INTERNAL:
-     * Allow each descriptor to initialize any dependancies on this session.
-     * This is done in two passes to allow the inheritence to be resolved first.
+     * Allow each descriptor to initialize any dependencies on this session.
+     * This is done in two passes to allow the inheritance to be resolved first.
      * Normally the descriptors are added before login, then initialized on login.
      */
     public void initializeDescriptors() {
@@ -403,8 +403,8 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
     /**
      * INTERNAL:
-     * Allow each descriptor to initialize any dependancies on this session.
-     * This is done in two passes to allow the inheritence to be resolved first.
+     * Allow each descriptor to initialize any dependencies on this session.
+     * This is done in two passes to allow the inheritance to be resolved first.
      * Normally the descriptors are added before login, then initialized on login.
      * The descriptors session must be used, not the broker.
      */
@@ -563,7 +563,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * Connect to the database using the predefined login.
      * Durring connection attempt to auto detect the required database platform.
      * This method can be used in systems where for ease of use developers have
-     * TopLink autodetect the platform.
+     * EclipseLink autodetect the platform.
      * To be safe, however, the platform should be configured directly.
      * The login must have been assigned when or after creating the session.
      *
@@ -743,7 +743,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * The objects will be commited through a single transaction.
      *
      * @exception DatabaseException if an error occurs on the database,
-     * these include constraint violations, security violations and general database erros.
+     * these include constraint violations, security violations and general database errors.
      * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
      * the object has been updated or deleted by another user since it was last read.
      */
@@ -759,7 +759,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * The objects will be commited through a single transaction.
      *
      * @exception DatabaseException if an error occurs on the database,
-     * these include constraint violations, security violations and general database erros.
+     * these include constraint violations, security violations and general database errors.
      * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
      * the object has been updated or deleted by another user since it was last read.
      */

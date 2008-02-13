@@ -89,7 +89,7 @@ public class DotNode extends LogicalOperatorNode {
                 }
             } else {
                 // left most node is not an identification variable and
-                // dot expression doe not denote an enum literal access =>
+                // dot expression does not denote an enum literal access =>
                 // unknown identification variable
                 throw JPQLException.aliasResolutionException(
                     context.getQueryInfo(), leftMost.getLine(), 

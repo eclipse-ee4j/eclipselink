@@ -162,7 +162,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
 
     /**
      * Delete a collection of objects
-     * This should be overriden by subclasses.
+     * This should be overridden by subclasses.
      * @exception  DatabaseException - an error has occurred on the database
      */
     public boolean isJPQLCallQueryMechanism() {
@@ -182,7 +182,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
 
     /**
      * Delete an object
-     * This should be overriden by subclasses.
+     * This should be overridden by subclasses.
      * @exception DatabaseException
      * @return the row count.
      */
@@ -190,7 +190,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
 
     /**
      * Execute a non selecting SQL call
-     * This should be overriden by subclasses.
+     * This should be overridden by subclasses.
      * @exception DatabaseException
      * @return the row count.
      */

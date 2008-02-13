@@ -275,7 +275,7 @@ public abstract class OXTestCase extends XMLTestCase {
     		XMLProjectWriter.write(project, writer);
     		return;
     	}
-    	// Write out TL deployment XML 
+    	// Write out EL deployment XML 
         XMLContext context = new XMLContext(new ObjectPersistenceRuntimeXMLProject_11_1_1());
         context.getSession(project).getEventManager().addListener(new MissingDescriptorListener());
         XMLMarshaller marshaller = context.createMarshaller();

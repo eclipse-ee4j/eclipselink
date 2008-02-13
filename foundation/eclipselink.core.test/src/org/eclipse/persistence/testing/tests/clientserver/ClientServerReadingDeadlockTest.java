@@ -90,7 +90,7 @@ public class ClientServerReadingDeadlockTest extends org.eclipse.persistence.tes
     public void verify() {
         try {
             if (this.server.errorOccured) {
-                throw new TestErrorException("An error occured on one of the clients, check System.out.");
+                throw new TestErrorException("An error occurred on one of the clients, check System.out.");
             }
         } catch (Exception ex) {
             if ((ex instanceof ValidationException) && (((ValidationException)ex).getErrorCode() == 7090)) {

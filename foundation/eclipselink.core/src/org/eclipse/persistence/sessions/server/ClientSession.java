@@ -434,7 +434,7 @@ public class ClientSession extends AbstractSession {
 
         //removed is Lazy check as we should always release the connection once
         //the client session has been released.  It is also required for the 
-        //behaviour of a subclass ExclusiveIsolatedClientSession
+        //behavior of a subclass ExclusiveIsolatedClientSession
         if (hasWriteConnection()) {
             getParent().releaseClientSession(this);
         }

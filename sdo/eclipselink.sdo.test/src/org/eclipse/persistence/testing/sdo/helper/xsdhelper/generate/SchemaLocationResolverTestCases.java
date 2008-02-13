@@ -258,7 +258,7 @@ public class SchemaLocationResolverTestCases extends XSDHelperGenerateTestCases 
 
     // In the current spec when generate(List types) is called and additional types are generated inline 
     // then the types list is modified to include those types.  
-    // This behaviour will remain the same and additionally when an include is generated instead of 
+    // This behavior will remain the same and additionally when an include is generated instead of 
     // generating a type inline that type will be removed from the types List.
     public void testExample6New() throws Exception{
         // get schema types

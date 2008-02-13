@@ -24,10 +24,10 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p><b>Purpose</b>: The event manager allows for a descriptor to specify that 
- * an object should be notified when a TopLink event occurs.  It also determines 
+ * an object should be notified when a EclipseLink event occurs.  It also determines 
  * how the object will be notified. To specify an event a method name can be 
  * registered to be called on the object when the event occurs. Events can be 
- * used to extend the TopLink reading and writing behavior.
+ * used to extend the EclipseLink reading and writing behavior.
  * <p>
  * These events include:
  * <ul>
@@ -303,7 +303,7 @@ public class DescriptorEventManager implements Cloneable, Serializable {
      * @see #addListener(DescriptorEventListener)
      */
     public Vector getEventListeners() {
-        // Lazy initialize to avoid unessisary enumerations.
+        // Lazy initialize to avoid unnecessary enumerations.
         if (eventListeners == null) {
             eventListeners = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         }
@@ -582,7 +582,7 @@ public class DescriptorEventManager implements Cloneable, Serializable {
         }
              
         // Step 3 - Notify the Entity event listeners. top -> down, unless 
-        // they are overriden in a subclass.
+        // they are overridden in a subclass.
         for (int index = entityEventManagers.size() - 1; index >= 0; index--) {
             DescriptorEventListener entityEventListener = ((DescriptorEventManager) entityEventManagers.get(index)).getEntityEventListener();     
             
@@ -829,7 +829,7 @@ public class DescriptorEventManager implements Cloneable, Serializable {
      * PUBLIC:
      * A method can be registered to be called on a object that has just been 
      * merge from a unit of work. This uses the optional event argument of the 
-     * orignial object which is the object being merged from, the source object 
+     * original object which is the object being merged from, the source object 
      * is the object being merged into. This event can be used to correctly 
      * initialize an object's non-persistent attributes.
      */

@@ -11,7 +11,7 @@
 package org.eclipse.persistence.internal.helper;
 
 
-// Javse imports
+// Javase imports
 
 // Java extension imports
 

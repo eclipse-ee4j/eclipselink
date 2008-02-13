@@ -44,7 +44,7 @@ public class NotNode extends LogicalOperatorNode {
 
     /**
      * INTERNAL
-     * Return a TopLink expression by calling generateExpression on the right node and adding .not()
+     * Return a EclipseLink expression by calling generateExpression on the right node and adding .not()
      * to the returned expression
      */
     public Expression generateExpression(GenerationContext context) {

@@ -199,7 +199,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
             DatabaseField field = (DatabaseField)sourceKeyIterator.next();
             Object value = row.get(field);
 
-            // Must ensure the classificatin to get a cache hit.
+            // Must ensure the classification gets a cache hit.
             try {
                 value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(field));
             } catch (ConversionException e) {

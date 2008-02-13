@@ -152,7 +152,7 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
                     }
                 }
 
-                // Set the Object that was refereceing this value to reference null, or remove value from its collection
+                // Set the Object that was referencing this value to reference null, or remove value from its collection
                 if (oldParent != null) {
                     if (getMapping().isObjectReferenceMapping()) {
                         if (!partner.isCollectionMapping()) {

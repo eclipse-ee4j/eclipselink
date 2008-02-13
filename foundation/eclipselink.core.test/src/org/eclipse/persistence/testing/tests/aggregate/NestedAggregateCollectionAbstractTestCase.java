@@ -50,7 +50,7 @@ public class NestedAggregateCollectionAbstractTestCase extends org.eclipse.persi
 
     public void verify() {
         if (instantiationExceptionOccurred) {
-            throw new TestErrorException("TopLink attempted to merge an abstract class, when merging an aggregate collection.");
+            throw new TestErrorException("EclipseLink attempted to merge an abstract class, when merging an aggregate collection.");
         }
     }
 }

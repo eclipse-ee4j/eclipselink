@@ -53,7 +53,7 @@ public class LogicalExpression extends CompoundExpression {
     /**
      * INTERNAL:
      * Extract the primary key from the expression into the row.
-     * Ensure that the query is quering the exact primary key.
+     * Ensure that the query is querying the exact primary key.
      * Return false if not on the primary key.
      */
     public boolean extractPrimaryKeyValues(boolean requireExactMatch, ClassDescriptor descriptor, AbstractRecord primaryKeyRow, AbstractRecord translationRow) {

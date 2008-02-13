@@ -37,8 +37,8 @@ public class WeakIdentityMap extends FullIdentityMap {
 
     /**
      * Search for any cache keys that have been garbage collected and remove them.
-     * This must be done because allthough the objects held by the cache keys will garbage collect,
-     * the keys themselves will not and must be cleaned up.  This is a linear opperation so
+     * This must be done because although the objects held by the cache keys will garbage collect,
+     * the keys themselves will not and must be cleaned up.  This is a linear operation so
      * is amortized through the cleanupCount to occur only once per cycle averaging to make
      * the total time still constant.
      */

@@ -19,7 +19,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 /**
  * INTERNAL:
  * Define the TopLink project and descriptor information to read a TopLink project from an XML file.
- * The XDB meta-data must be defined seperately as it has seperate jar dependency that must not be required if not using XDB.
+ * The XDB meta-data must be defined separately as it has separate jar dependency that must not be required if not using XDB.
  */
 public class XDBObjectPersistenceXMLProject extends Project {
 

@@ -29,7 +29,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 /**
  * <p><b>Purpose</b>:
  * Concrete class to represent the EntityResult structure as defined by
- * the EJB 3.0 Persistence specification.  This class is a subcompent of the 
+ * the EJB 3.0 Persistence specification.  This class is a subcomponent of the 
  * SQLResultSetMapping
  * 
  * @see SQLResultSetMapping
@@ -134,7 +134,7 @@ public class EntityResult extends SQLResult {
 
     /**
      * INTERNAL:
-     * This method is a convience method for extracting values from Results
+     * This method is a convenience method for extracting values from Results
      */
     public Object getValueFromRecord(DatabaseRecord record, ResultSetMappingQuery query){
         // From the row data build result entity.

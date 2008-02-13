@@ -969,7 +969,7 @@ public class ConversionManager implements Serializable, Cloneable {
      * ADVANCED:
      * This flag should be set if the current thread classLoader should be used.
      * This is the case in certain Application Servers were the class loader must be
-     * retreived from the current Thread.  If classNotFoundExceptions are being thrown then set
+     * retrieved from the current Thread.  If classNotFoundExceptions are being thrown then set
      * this flag.  In certain cases it will resolve the problem
      */
     public void setShouldUseClassLoaderFromCurrentThread(boolean useCurrentThread) {

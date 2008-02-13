@@ -211,7 +211,7 @@ public class EntityManagerFactoryProvider {
 
     /**
      * Logs in to given session. If user has not specified  <codeTARGET_DATABASE</code>
-     * the plaform would be auto detected
+     * the platform would be auto detected
      * @param session The session to login to.
      * @param properties User specified properties for the persistence unit
      */
@@ -283,7 +283,7 @@ public class EntityManagerFactoryProvider {
     }
 
     protected static void writeDDLsToFiles(SchemaManager mgr,  String appLocation, String createDDLJdbc, String dropDDLJdbc) {
-    	// Ensure that the appLocation string ends with  File.seperator 
+    	// Ensure that the appLocation string ends with  File.separator 
         appLocation = addFileSeperator(appLocation);
         if (null != createDDLJdbc) {
         	String createJdbcFileName = appLocation + createDDLJdbc;

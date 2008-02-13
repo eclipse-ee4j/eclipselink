@@ -31,7 +31,7 @@ public class EmulatedStatement implements PreparedStatement {
 
     public void checkForError() throws SQLException{
         if ((connection).isInFailureState()){
-            SQLException exception = new SQLException("Communication Failure occured", "", 17004);
+            SQLException exception = new SQLException("Communication Failure occurred", "", 17004);
             throw exception;
         }
     }

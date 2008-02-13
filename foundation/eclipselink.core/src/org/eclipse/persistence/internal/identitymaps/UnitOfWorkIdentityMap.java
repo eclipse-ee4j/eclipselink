@@ -13,7 +13,7 @@ import java.util.*;
 
 /**
  * Unit of work specific identity map which avoid additional overhead not required in unit of work,
- * such as locking and synchronziation.
+ * such as locking and synchronization.
  * @author James Sutherland
  * @since TopLink 10.1.3.1
  */

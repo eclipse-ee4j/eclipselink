@@ -463,7 +463,7 @@ public class EJBQueryImpl implements org.eclipse.persistence.jpa.JpaQuery {
     }
 
     /**
-     * Non-standard method to return results of a ReadQuery that has a containerPoliry
+     * Non-standard method to return results of a ReadQuery that has a containerPolicy
      * that returns objects as a collection rather than a List
      * @return Collection of results
      */

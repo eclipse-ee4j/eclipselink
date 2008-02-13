@@ -35,7 +35,7 @@ public abstract class IdentityMap implements Serializable, Cloneable {
     
     /**
      * Instantiate an new IdentityMap with it's maximum size.<p>
-     * <b>NOTE</b>: Subclasses may provide different behaviour for maxSize.
+     * <b>NOTE</b>: Subclasses may provide different behavior for maxSize.
      * @param size is the maximum size to be allocated for the receiver.
      */
     public IdentityMap(int size) {
@@ -335,7 +335,7 @@ public abstract class IdentityMap implements Serializable, Cloneable {
     public abstract Object remove(CacheKey cacheKey);
 
     /**
-     * Set the maximum size for the recevier.
+     * Set the maximum size for the receiver.
      * @param size is the new maximum size.
      */
     protected synchronized void setMaxSize(int size) {

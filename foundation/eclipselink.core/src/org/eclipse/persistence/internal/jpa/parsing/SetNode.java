@@ -16,7 +16,7 @@ import java.util.*;
 /**
  * INTERNAL:
  * This node holds a list of all the updates that will occur in an Update Query.
- * Slightly differnt from other nodes since holds more than two children in a list.
+ * Slightly different from other nodes since holds more than two children in a list.
  */
 public class SetNode extends MajorNode {
     private List assignmentNodes = null;

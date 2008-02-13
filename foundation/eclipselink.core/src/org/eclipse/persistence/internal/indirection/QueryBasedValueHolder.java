@@ -83,7 +83,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
      * However only the wrapped valueholder knows how to trigger the indirection,
      * i.e. it may be a batchValueHolder, and it stores all the info like the row
      * and the query.
-     * Note: This method is not thread-safe.  It must be used in a synchronizaed manner
+     * Note: This method is not thread-safe.  It must be used in a synchronized manner
      */
     public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
         return instantiate(unitOfWorkValueHolder.getUnitOfWork());
@@ -125,14 +125,14 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
      * Answers if this valueholder is a pessimistic locking one.  Such valueholders
      * are special in that they can be triggered multiple times by different
      * UnitsOfWork.  Each time a lock query will be issued.  Hence even if
-     * instantiated it may have to be instantiated again, and once instantatiated
+     * instantiated it may have to be instantiated again, and once instantiated
      * all fields can not be reset.
      * <p>
      * Since locks will be issued each time this valueholder is triggered,
      * triggering this directly on the session in auto commit mode will generate
      * an exception.  This only UnitOfWorkValueHolder's wrapping this can trigger
      * it.
-     * Note: This method is not thread-safe.  It must be used in a synchronizaed manner
+     * Note: This method is not thread-safe.  It must be used in a synchronized manner
      */
     public boolean isPessimisticLockingValueHolder() {
         // Get the easy checks out of the way first.

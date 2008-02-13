@@ -543,11 +543,11 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
 
     /**
      * PUBLIC:
-     * Allow for the selection object of the query to be refreshed or put into the TopLink cache.
+     * Allow for the selection object of the query to be refreshed or put into the EclipseLink cache.
      * By default on a read or refresh the object in the cache is refreshed and returned or a new object is built from the database,
      * in some cases such as EJB BMP it is desirable to refresh or load into the object passed into the read object query.
      * <p>Note: This forces the selection object into the cache a replaces any existing object that may already be there,
-     * this is a strict violation of object identity and other objects can still be refering to the old object.
+     * this is a strict violation of object identity and other objects can still be referring to the old object.
      */
     public void loadResultIntoSelectionObject() {
         setShouldLoadResultIntoSelectionObject(true);
@@ -708,7 +708,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         checkDescriptor(session);
         // As the selection object is transient, compute the key.
         if (getSelectionObject() != null) {
-            // Must be checked seperately as the expression and row is not yet set.
+            // Must be checked separately as the expression and row is not yet set.
             setSelectionKey(getDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(getSelectionObject(), session));
         }
 
@@ -768,11 +768,11 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
 
     /**
      * PUBLIC:
-     * Allow for the selection object of the query to be refreshed or put into the TopLink cache.
+     * Allow for the selection object of the query to be refreshed or put into the EclipseLink cache.
      * By default on a read or refresh the object in the cache is refreshed and returned or a new object is built from the database,
      * in some cases such as EJB BMP it is desirable to refresh or load into the object passed into the read object query.
      * <p>Note: This forces the selection object into the cache a replaces any existing object that may already be there,
-     * this is a strict violation of object identity and other objects can still be refering to the old object.
+     * this is a strict violation of object identity and other objects can still be referring to the old object.
      */
     public void setShouldLoadResultIntoSelectionObject(boolean shouldLoadResultIntoSelectionObject) {
         this.shouldLoadResultIntoSelectionObject = shouldLoadResultIntoSelectionObject;

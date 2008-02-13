@@ -49,15 +49,15 @@ import org.eclipse.persistence.sessions.coordination.Command;
  * @see org.eclipse.persistence.sessions.Session
  *
  * <p>
- * <b>Purpose</b>: Define the interface and common protocol of a TopLink compliant session.
+ * <b>Purpose</b>: Define the interface and common protocol of an EclipseLink compliant session.
  * <p>
- * <b>Description</b>: The session is the primary interface into TopLink,
+ * <b>Description</b>: The session is the primary interface into EclipseLink,
  * the application should do all of its reading and writing of objects through the session.
  * The session also manages transactions and units of work.  Normally the session
- * is passed and used by the application controler objects.  Controler objects normally
- * sit behind the GUI and perform the buiness processes required for the application,
- * they should perform all explict database access and database access should be avoided from
- * the domain object model.  Do not use a globally accessable session instance, doing so does
+ * is passed and used by the application controller objects.  Controller objects normally
+ * sit behind the GUI and perform the business processes required for the application,
+ * they should perform all explicit database access and database access should be avoided from
+ * the domain object model.  Do not use a globally accessible session instance, doing so does
  * not allow for multiple sessions.  Multiple sessions may required when performing things like
  * data migration or multiple database access, as well the unit of work feature requires the usage
  * of multiple session instances.  Although session is abstract, any users of its subclasses
@@ -142,12 +142,12 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     protected boolean isInBroker;
 
     /**
-     * Used to connect this session to TopLink cluster for distributed command
+     * Used to connect this session to EclipseLink cluster for distributed command
      */
     transient protected CommandManager commandManager;
 
     /**
-     * Determined whether changes should be propagated to TopLink cluster
+     * Determined whether changes should be propagated to an EclipseLink cluster
      */
     protected boolean shouldPropagateChanges;
 
@@ -334,7 +334,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
-     * Called in the end of beforeCompletion of external transaction sychronization listener.
+     * Called in the end of beforeCompletion of external transaction synchronization listener.
      * Close the managed sql connection corresponding to the external transaction,
      * if applicable releases accessor.
      */
@@ -394,13 +394,13 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * Begin a transaction on the database.
-     * This allows a group of database modification to be commited or rolledback as a unit.
+     * This allows a group of database modification to be committed or rolled back as a unit.
      * All writes/deletes will be sent to the database be will not be visible to other users until commit.
      * Although databases do not allow nested transaction,
-     * TopLink supports nesting through only committing to the database on the outer commit.
+     * EclipseLink supports nesting through only committing to the database on the outer commit.
      *
      * @exception DatabaseException if the database connection is lost or the begin is rejected.
-     * @exception ConcurrencyException if this session's transaction is aquired by another thread and a timeout occurs.
+     * @exception ConcurrencyException if this session's transaction is acquired by another thread and a timeout occurs.
      *
      * @see #isInTransaction()
      */
@@ -446,7 +446,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * PUBLIC:
-     * Clear the profiler, this will end the current profile opperation.
+     * Clear the profiler, this will end the current profile operation.
      */
     public void clearProfile() {
         setProfiler(null);
@@ -492,10 +492,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * Commit the active database transaction.
-     * This allows a group of database modification to be commited or rolledback as a unit.
+     * This allows a group of database modification to be committed or rolled back as a unit.
      * All writes/deletes will be sent to the database be will not be visible to other users until commit.
      * Although databases do not allow nested transaction,
-     * TopLink supports nesting through only committing to the database on the outer commit.
+     * EclipseLink supports nesting through only committing to the database on the outer commit.
      *
      * @exception DatabaseException most databases validate changes as they are done,
      * normally errors do not occur on commit unless the disk fails or the connection is lost.
@@ -563,7 +563,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * Return a complete copy of the object.
-     * This can be used to obtain a scatch copy of an object,
+     * This can be used to obtain a scratch copy of an object,
      * or for templatizing an existing object into another new object.
      * The object and all of its privately owned parts will be copied, the object's primary key will be reset to null.
      *
@@ -612,7 +612,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * The objects will be deleted through a single transactions.
      *
      * @exception DatabaseException if an error occurs on the database,
-     * these include constraint violations, security violations and general database erros.
+     * these include constraint violations, security violations and general database errors.
      * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
      * the object has been updated or deleted by another user since it was last read.
      */
@@ -629,7 +629,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * The objects will be deleted through a single transactions.
      *
      * @exception DatabaseException if an error occurs on the database,
-     * these include constraint violations, security violations and general database erros.
+     * these include constraint violations, security violations and general database errors.
      * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
      * the object has been updated or deleted by another user since it was last read.
      */
@@ -645,7 +645,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * The delete operation can be customized through using a delete query.
      *
      * @exception DatabaseException if an error occurs on the database,
-     * these include constraint violations, security violations and general database erros.
+     * these include constraint violations, security violations and general database errors.
      * An database error is not raised if the object is already deleted or no rows are effected.
      * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
      * the object has been updated or deleted by another user since it was last read.
@@ -1569,9 +1569,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * PUBLIC:
-     * Used for JTS integration.  If your application requires to have JTS control transactions instead of TopLink an
+     * Used for JTS integration.  If your application requires to have JTS control transactions instead of EclipseLink an
      * external transaction controler must be specified.
-     * TopLink provides JTS controlers for several JTS implementations including JTS 1.0, Weblogic 5.1 and WebSphere 3.0.
+     * EclipseLink provides JTS controlers for several JTS implementations including JTS 1.0, Weblogic 5.1 and WebSphere 3.0.
      *
      * @see org.eclipse.persistence.transaction.JTATransactionController
      */
@@ -1710,7 +1710,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * INTERNAL:
      * Return the database platform currently connected to.
-     * The platform is used for database specific behavoir.
+     * The platform is used for database specific behavior.
      * NOTE: this must only be used for relational specific usage,
      * it will fail for non-relational datasources.
      */
@@ -1725,7 +1725,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * INTERNAL:
      * Return the database platform currently connected to.
-     * The platform is used for database specific behavoir.
+     * The platform is used for database specific behavior.
      */
     public Platform getDatasourcePlatform() {
         // PERF: Cache the platform.
@@ -1738,7 +1738,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * INTERNAL:
      * Marked internal as this is not customer API but helper methods for
-     * accessing the server platform from within TopLink's other sessions types
+     * accessing the server platform from within EclipseLink's other sessions types
      * (ie not DatabaseSession)
      */
     public ServerPlatform getServerPlatform() {
@@ -1749,7 +1749,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * INTERNAL:
      * Return the database platform currently connected to
      * for specified class.
-     * The platform is used for database specific behavoir.
+     * The platform is used for database specific behavior.
      */
     public Platform getPlatform(Class domainClass) {
         // PERF: Cache the platform.
@@ -1958,19 +1958,19 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * PUBLIC:
-     * Allow any WARNING level exceptions that occur within TopLink to be logged and handled by the exception handler.
+     * Allow any WARNING level exceptions that occur within EclipseLink to be logged and handled by the exception handler.
      */
     public Object handleException(RuntimeException exception) throws RuntimeException {
         if ((exception instanceof EclipseLinkException)) {
-            EclipseLinkException topLinkException = (EclipseLinkException)exception;
-            if (topLinkException.getSession() == null) {
-                topLinkException.setSession(this);
+            EclipseLinkException eclipseLinkException = (EclipseLinkException)exception;
+            if (eclipseLinkException.getSession() == null) {
+                eclipseLinkException.setSession(this);
             }
 
             //Bug#3559280  Avoid logging an exception twice
-            if (!topLinkException.hasBeenLogged()) {
+            if (!eclipseLinkException.hasBeenLogged()) {
                 logThrowable(SessionLog.WARNING, null, exception);
-                topLinkException.setHasBeenLogged(true);
+                eclipseLinkException.setHasBeenLogged(true);
             }
         } else {
             logThrowable(SessionLog.WARNING, null, exception);
@@ -2016,8 +2016,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * PUBLIC:
-     * Used for JTA integration.  If your application requires to have JTA control transactions instead of TopLink an
-     * external transaction controler must be specified.  TopLink provides JTA controlers for JTA 1.0 and application
+     * Used for JTA integration.  If your application requires to have JTA control transactions instead of EclipseLink an
+     * external transaction controler must be specified.  EclipseLink provides JTA controlers for JTA 1.0 and application
      * servers.
      * @see org.eclipse.persistence.transaction.JTATransactionController
      */
@@ -2043,7 +2043,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * The insert operation can be customized through using an insert query.
      *
      * @exception DatabaseException if an error occurs on the database,
-     * these include constraint violations, security violations and general database erros.
+     * these include constraint violations, security violations and general database errors.
      *
      * @see InsertObjectQuery
      * @see #writeObject(Object)
@@ -2059,7 +2059,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * INTERNAL:
      * Return the results from exeucting the database query.
      * The arguments should be a database row with raw data values.
-     * This method is provided to allow subclasses to change the default querying behavoir.
+     * This method is provided to allow subclasses to change the default querying behavior.
      * All querying goes through this method.
      */
     public Object internalExecuteQuery(DatabaseQuery query, AbstractRecord databaseRow) throws DatabaseException {
@@ -2169,7 +2169,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * Return if this session's decendants should use finalizers.
-     * The allows certain finalizers such as in ClientSesion to be enabled.
+     * The allows certain finalizers such as in ClientSession to be enabled.
      * These are disable by default for performance reasons.
      */
     public boolean isFinalizersEnabled() {
@@ -2196,7 +2196,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * Set if this session's decendants should use finalizers.
-     * The allows certain finalizers such as in ClientSesion to be enabled.
+     * The allows certain finalizers such as in ClientSession to be enabled.
      * These are disable by default for performance reasons.
      */
     public void setIsFinalizersEnabled(boolean isFinalizersEnabled) {
@@ -2298,7 +2298,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     }
 
     /**
-     * Log a untranslated message to the TopLink log at FINER level.
+     * Log a untranslated message to the EclipseLink log at FINER level.
      */
     public void logMessage(String message) {
         log(SessionLog.FINER, message, (Object[])null, null, false);
@@ -2592,7 +2592,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * This allows a group of database modification to be commited or rolledback as a unit.
      * All writes/deletes will be sent to the database be will not be visible to other users until commit.
      * Although databases do not allow nested transaction,
-     * TopLink supports nesting through only committing to the database on the outer commit.
+     * EclipseLink supports nesting through only committing to the database on the outer commit.
      *
      * @exception DatabaseException if the database connection is lost or the rollback fails.
      * @exception ConcurrencyException if this session is not within a transaction.
@@ -2875,7 +2875,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * The update operation can be customized through using an update query.
      *
      * @exception DatabaseException if an error occurs on the database,
-     * these include constraint violations, security violations and general database erros.
+     * these include constraint violations, security violations and general database errors.
      * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
      * the object has been updated or deleted by another user since it was last read.
      *
@@ -2967,7 +2967,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * The write operation can be customized through using an write query.
      *
      * @exception DatabaseException if an error occurs on the database,
-     * these include constraint violations, security violations and general database erros.
+     * these include constraint violations, security violations and general database errors.
      * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
      * the object has been updated or deleted by another user since it was last read.
      *
@@ -2997,7 +2997,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
       * RemoteCommandManager method. This is a required method in order
       * to implement the CommandProcessor interface.
       * Process the remote command from the RCM. The command may have come from
-      * any remote session or application. Since this is a TopLink session we can
+      * any remote session or application. Since this is a EclipseLink session we can
       * always assume that the object that we receive here will be a Command object.
       */
     public void processCommand(Object command) {
@@ -3008,7 +3008,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * PUBLIC:
      * Return the CommandManager that allows this session to act as a
      * CommandProcessor and receive or propagate commands from/to the
-     * TopLink cluster.
+     * EclipseLink cluster.
      *
      * @see CommandManager
      * @return The CommandManager instance that controls the remote command
@@ -3022,7 +3022,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * ADVANCED:
      * Set the CommandManager that allows this session to act as a
      * CommandProcessor and receive or propagate commands from/to the
-     * TopLink cluster.
+     * EclipseLink cluster.
      *
      * @see CommandManager
      * @param mgr The CommandManager instance to control the remote command
@@ -3035,7 +3035,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * Return whether changes should be propagated to other sessions or applications
-     * in a TopLink cluster through the Remote Command Manager mechanism. In order for
+     * in a EclipseLink cluster through the Remote Command Manager mechanism. In order for
      * this to occur the CommandManager must be set.
      *
      * @see #setCommandManager(CommandManager)
@@ -3048,7 +3048,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /**
      * ADVANCED:
      * Set whether changes should be propagated to other sessions or applications
-     * in a TopLink cluster through the Remote Command Manager mechanism. In order for
+     * in a EclipseLink cluster through the Remote Command Manager mechanism. In order for
      * this to occur the CommandManager must be set.
      *
      * @see #setCommandManager(CommandManager)
@@ -3127,7 +3127,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      *
      * @return the log level
      * </p><p>
-     * @param category  the string representation of a TopLink category, e.g. "sql", "transaction" ...
+     * @param category  the string representation of a EclipseLink category, e.g. "sql", "transaction" ...
      * </p>
      */
     public int getLogLevel(String category) {
@@ -3168,7 +3168,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * @return true if the given message level will be logged
      * </p><p>
      * @param level  the log request level
-     * @param category  the string representation of a TopLink category
+     * @param category  the string representation of a EclipseLink category
      * </p>
      */
     public boolean shouldLog(int Level, String category) {
@@ -3185,7 +3185,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p><p>
      * @param message  the string message
      * </p><p>
-     * @param category  the string representation of a TopLink category.
+     * @param category  the string representation of a EclipseLink category.
      * </p>
      */
     public void log(int level, String category, String message) {
@@ -3205,7 +3205,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p><p>
      * @param message  the string message
      * </p><p>
-     * @param category  the string representation of a TopLink category.
+     * @param category  the string representation of a EclipseLink category.
      * </p><p>
      * @param param  a parameter of the message
      * </p>
@@ -3227,7 +3227,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p><p>
      * @param message  the string message
      * </p><p>
-     * @param category  the string representation of a TopLink category.
+     * @param category  the string representation of a EclipseLink category.
      * </p><p>
      * @param param1  a parameter of the message
      * </p><p>
@@ -3251,7 +3251,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p><p>
      * @param message  the string message
      * </p><p>
-     * @param category  the string representation of a TopLink category.
+     * @param category  the string representation of a EclipseLink category.
      * </p><p>
      * @param param1  a parameter of the message
      * </p><p>
@@ -3277,7 +3277,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p><p>
      * @param message  the string message
      * </p><p>
-     * @param category  the string representation of a TopLink category.
+     * @param category  the string representation of a EclipseLink category.
      * </p><p>
      * @param params  array of parameters to the message
      * </p>
@@ -3300,7 +3300,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p><p>
      * @param accessor  the connection that generated the log entry
      * </p><p>
-     * @param category  the string representation of a TopLink category.
+     * @param category  the string representation of a EclipseLink category.
      * </p>
      */
     public void log(int level, String category, String message, Object[] params, Accessor accessor) {
@@ -3321,7 +3321,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * </p><p>
      * @param accessor  the connection that generated the log entry
      * </p><p>
-     * @param category  the string representation of a TopLink category.
+     * @param category  the string representation of a EclipseLink category.
      * </p><p>
      * @param shouldTranslate  true if the message needs to be translated.
      * </p>
@@ -3386,7 +3386,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      *
      * @param level  the log request level value
      * </p><p>
-     * @param category  the string representation of a TopLink category.
+     * @param category  the string representation of a EclipseLink category.
      * </p><p>
      * @param throwable  a Throwable
      * </p>
@@ -3500,7 +3500,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * PUBLIC:
-     * Allow any SEVERE level exceptions that occur within TopLink to be logged and handled by the exception handler.
+     * Allow any SEVERE level exceptions that occur within EclipseLink to be logged and handled by the exception handler.
      */
     public Object handleSevere(RuntimeException exception) throws RuntimeException {
         logThrowable(SessionLog.SEVERE, null, exception);
@@ -3521,7 +3521,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     
     /**
      * INTERNAL:
-     * This method will be used to copy all toplink named queries defined in descriptors into the session.
+     * This method will be used to copy all EclipseLink named queries defined in descriptors into the session.
      * @param allowSameQueryNameDiffArgsCopyToSession  if the value is true, it allow 
      * multiple queries of the same name but different arguments to be copied to the session.
      */

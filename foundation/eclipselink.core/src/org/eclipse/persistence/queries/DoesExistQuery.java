@@ -83,7 +83,7 @@ public class DoesExistQuery extends DatabaseQuery {
     /**
      * PUBLIC:
      * Assume that if the objects primary key does not include null then it must exist.
-     * This may be used if the user's system garentees that an object with non-null key exists.
+     * This may be used if the user's system guarantees that an object with non-null key exists.
      */
     public void assumeExistenceForDoesExist() {
         setExistencePolicy(AssumeExistence);
@@ -92,7 +92,7 @@ public class DoesExistQuery extends DatabaseQuery {
     /**
      * PUBLIC:
      * Assume that the object does not exist.
-     * This may be used if the user's system garentees objects must always be inserted.
+     * This may be used if the user's system guarantees objects must always be inserted.
      */
     public void assumeNonExistenceForDoesExist() {
         setExistencePolicy(AssumeNonExistence);
@@ -111,7 +111,7 @@ public class DoesExistQuery extends DatabaseQuery {
 
     /**
      * PUBLIC:
-     * Perform does exist check on the database through slecting the primary key.
+     * Perform does exist check on the database through selecting the primary key.
      */
     public void checkDatabaseForDoesExist() {
         setExistencePolicy(CheckDatabase);

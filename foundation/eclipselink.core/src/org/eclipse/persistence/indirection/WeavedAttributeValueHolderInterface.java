@@ -11,7 +11,7 @@ package org.eclipse.persistence.indirection;
 
 /**
  * INTERNAL:
- * This interface defines funtionality required by ValueHolders for OneToOneMappings that 
+ * This interface defines functionality required by ValueHolders for OneToOneMappings that 
  * have LAZY access weaved into them and use Property (method) based access
  * 
  * The weaving feature adds a paralell valueholder to the class it weaves and uses that valueholder

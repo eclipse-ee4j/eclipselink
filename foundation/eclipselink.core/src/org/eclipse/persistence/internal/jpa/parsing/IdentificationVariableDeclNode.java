@@ -22,7 +22,7 @@ public abstract class IdentificationVariableDeclNode extends Node {
     /** The variable name as specified. */
     private String name;
     
-    /** The canonical represenatation of the variable name. */
+    /** The canonical representation of the variable name. */
     private String canonicalName;
     
     /** */

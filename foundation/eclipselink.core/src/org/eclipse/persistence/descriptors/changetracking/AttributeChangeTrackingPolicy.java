@@ -105,7 +105,7 @@ public class AttributeChangeTrackingPolicy extends ObjectChangeTrackingPolicy {
 
     /**
      * INTERNAL:
-     * Assign Changelistner to an aggregate object
+     * Assign ChangeListener to an aggregate object
      */
     public void setAggregateChangeListener(Object parent, Object aggregate, UnitOfWorkImpl uow, ClassDescriptor descriptor, String mappingAttribute){
         ((ChangeTracker)aggregate)._persistence_setPropertyChangeListener(new AggregateAttributeChangeListener(descriptor, uow, (AttributeChangeListener)((ChangeTracker)parent)._persistence_getPropertyChangeListener(), mappingAttribute, aggregate)); 

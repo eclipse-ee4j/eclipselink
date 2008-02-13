@@ -45,7 +45,7 @@ public abstract class ManualVerifyTestCase extends TestCase {
             reset();
             resetVerify();
         } catch (Throwable runtimeException) {
-            TestErrorException EclipseLinkException = new TestErrorException("Error occured.", runtimeException);
+            TestErrorException EclipseLinkException = new TestErrorException("Error occurred.", runtimeException);
             setTestException(EclipseLinkException);
             throw EclipseLinkException;
         }

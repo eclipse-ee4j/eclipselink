@@ -46,7 +46,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
 
     /**
      * INTERNAL:
-     * Initialized the inheritence properties of the descriptor once the mappings are initialized.
+     * Initialized the inheritance properties of the descriptor once the mappings are initialized.
      * This is done before formal postInitialize during the end of mapping initialize.
      */
     public void initialize(AbstractSession session) {

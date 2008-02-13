@@ -15,7 +15,7 @@ import java.util.*;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 
 /**
- *    <p><b>Purpose</b>: Provides DBase specific behaviour.
+ *    <p><b>Purpose</b>: Provides DBase specific behavior.
  *    <p><b>Responsibilities</b>:<ul>
  *    <li> Writing Time & Timestamp as strings since they are not supported.
  *    </ul>

@@ -67,7 +67,7 @@ public class JavaSECMPInitializer implements PersistenceInitializationActivator 
     }
 
     /**
-     * Return whether initialization has occured without actually triggering
+     * Return whether initialization has occurred without actually triggering
      * initialization
      */
     public static boolean isSingletonInitialized(){

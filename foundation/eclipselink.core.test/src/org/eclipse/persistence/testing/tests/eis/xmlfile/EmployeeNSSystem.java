@@ -13,7 +13,7 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.factories.*;
 
 /**
- * <b>Purpose</b>: To define system behavoir.
+ * <b>Purpose</b>: To define system behavior.
  * 
  * <p>
  * <b>Responsibilities</b>:

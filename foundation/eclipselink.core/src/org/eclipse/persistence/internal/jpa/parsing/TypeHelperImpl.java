@@ -68,7 +68,7 @@ public class TypeHelperImpl
         return getType(mapping);
     }
     
-    /** Returns the type of the class corresponding to the spcified abstract
+    /** Returns the type of the class corresponding to the specified abstract
      * schema type. 
      */
     public Object resolveSchema(String schemaName) {
@@ -166,7 +166,7 @@ public class TypeHelperImpl
         return desc;
     }
 
-    /** Returns the mapping for the specified attribute of the psecified
+    /** Returns the mapping for the specified attribute of the specified
      * class. The method returns null if the class is not known or if the
      * class does not have an attribute of the specified name.
      */
@@ -187,7 +187,7 @@ public class TypeHelperImpl
             type = descriptor == null ? null : descriptor.getJavaClass();
         } else if (mapping.isAggregateMapping()) {
             // Return the ClassDescriptor as the type representation in case
-            // of an embeeded. This makese sure that any property or field
+            // of an embedded. This makes sure that any property or field
             // access of the embedded uses the correct mapping information and
             // not the shell of the descriptors as stored by the session.
             type = ((AggregateMapping)mapping).getReferenceDescriptor();

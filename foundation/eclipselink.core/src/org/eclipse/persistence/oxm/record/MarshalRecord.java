@@ -252,7 +252,7 @@ public abstract class MarshalRecord extends XMLRecord {
     public abstract void attribute(String namespaceURI, String localName, String qName, String value);
 
     /**
-     * Receive notification that all of the attribute events have occured for
+     * Receive notification that all of the attribute events have occurred for
      * the most recent element that has been started.
      */
     public abstract void closeStartElement();

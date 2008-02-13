@@ -25,7 +25,7 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
- *    <p><b>Purpose</b>: Provides Sybase specific behaviour.
+ *    <p><b>Purpose</b>: Provides Sybase specific behavior.
  *    <p><b>Responsibilities</b>:<ul>
  *    <li> Native SQL for byte[], Date, Time, & Timestamp.
  *    <li> Native sequencing using @@IDENTITY.
@@ -279,7 +279,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
                 session.getEventManager().outputParametersDetected(outputRow, dbCall);
             }
             return result;
-            // end special sybase behaviour.
+            // end special sybase behavior.
         }
         return result;
     }

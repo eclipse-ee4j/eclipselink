@@ -27,7 +27,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  */
 public class BasicTypeHelperImpl {
 
-    /** Set of intergral types and its wrapper classes. */
+    /** Set of integral types and its wrapper classes. */
     private static Set integralTypes = new HashSet();
     /** Set of floating point types and its wrapper classes. */
     private static Set floatingPointTypes = new HashSet();
@@ -39,7 +39,7 @@ public class BasicTypeHelperImpl {
     private static Map wrapperToPrimitive = new HashMap();
 
     static {
-        // Inilialize set of integral types plus their wrapper classes
+        // Initialize set of integral types plus their wrapper classes
         integralTypes.add(byte.class);
         integralTypes.add(Byte.class);
         integralTypes.add(short.class);
@@ -51,20 +51,20 @@ public class BasicTypeHelperImpl {
         integralTypes.add(long.class);
         integralTypes.add(Long.class);
         
-        // Inilialize set of floating point types plus their wrapper classes
+        // Initialize set of floating point types plus their wrapper classes
         floatingPointTypes.add(float.class);
         floatingPointTypes.add(Float.class);
         floatingPointTypes.add(double.class);
         floatingPointTypes.add(Double.class);
 
-        // Inilialize set of floating point types plus their wrapper classes
+        // Initialize set of floating point types plus their wrapper classes
         dateClasses.add(java.util.Date.class);
         dateClasses.add(java.util.Calendar.class);
         dateClasses.add(java.sql.Date.class);
         dateClasses.add(java.sql.Time.class);
         dateClasses.add(java.sql.Timestamp.class);
 
-        // Inilialize mapping primitives to their wrapper classes
+        // Initialize mapping primitives to their wrapper classes
         primitiveToWrapper.put(boolean.class, Boolean.class);
         primitiveToWrapper.put(byte.class, Byte.class);
         primitiveToWrapper.put(short.class, Short.class);
@@ -74,7 +74,7 @@ public class BasicTypeHelperImpl {
         primitiveToWrapper.put(float.class, Float.class);
         primitiveToWrapper.put(double.class, Double.class);
 
-        // Inilialize mapping wrapper classes to their primitives
+        // Initialize mapping wrapper classes to their primitives
         wrapperToPrimitive.put(Boolean.class, boolean.class);
         wrapperToPrimitive.put(Byte.class, byte.class);
         wrapperToPrimitive.put(Short.class, short.class);
@@ -324,7 +324,7 @@ public class BasicTypeHelperImpl {
         return type == getBigDecimalType();
     }
 
-    /** Returns true if the specified type denotes an orable type */
+    /** Returns true if the specified type denotes an orderable type */
     public boolean isOrderableType(Object type) {
         return isNumericType(type) || isStringType(type) || 
             isDateClass(type) || isEnumType(type);

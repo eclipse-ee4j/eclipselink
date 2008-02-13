@@ -150,7 +150,7 @@ public class IntegrityChecker implements Serializable {
 
     /**
      * INTERNAL:
-     * Return if any errors occured.
+     * Return if any errors occurred.
      */
     public boolean hasErrors() {
         if ((caughtExceptions != null) && (caughtExceptions.size() > 0)) {
@@ -161,7 +161,7 @@ public class IntegrityChecker implements Serializable {
 
     /**
      * INTERNAL:
-     * Return if any runtime errors occured.
+     * Return if any runtime errors occurred.
      */
     public boolean hasRuntimeExceptions() {
         if (hasErrors()) {

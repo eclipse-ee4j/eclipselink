@@ -148,7 +148,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
     /**
      * This method takes a hashtable of primitives and adds them to the commit list.
      * This count value provided is the number of instances that will need to be
-     * inserted into the database once a remove has occured.  This is only set
+     * inserted into the database once a remove has occurred.  This is only set
      * once for each object type.
      */
     public void setCommitAddition(Hashtable additions){

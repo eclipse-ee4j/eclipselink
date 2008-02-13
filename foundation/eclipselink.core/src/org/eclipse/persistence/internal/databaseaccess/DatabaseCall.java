@@ -389,7 +389,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     }
 
     /**
-     * get timeout limit from the call
+     * Get timeout limit from the call
      */
     public int getQueryTimeout() {
         return this.queryTimeout;
@@ -404,7 +404,7 @@ public abstract class DatabaseCall extends DatasourceCall {
 
     /**
      * ADVANCED:
-     * This method returns a value that represents if the customer has set whether or not TopLink should expect
+     * This method returns a value that represents if the customer has set whether or not EclipseLink should expect
      * the stored procedure to returning a JDBC ResultSet.  The result of the method corresponds
      * to false, true.
      */
@@ -765,7 +765,7 @@ public abstract class DatabaseCall extends DatasourceCall {
 
     /**
      * PUBLIC:
-     * Use this method to tell TopLink that the stored procedure will be returning a JDBC ResultSet
+     * Use this method to tell EclipseLink that the stored procedure will be returning a JDBC ResultSet
      */
     public void setReturnsResultSet(boolean returnsResultSet) {
         this.returnsResultSet = Boolean.valueOf(returnsResultSet);

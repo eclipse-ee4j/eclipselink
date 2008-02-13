@@ -18,7 +18,7 @@ import org.eclipse.persistence.queries.SQLResultSetMapping;
 import org.eclipse.persistence.sessions.server.*;
 
 /**
- * <b>Purpose</b>: Maintain all of the TopLink configuration information for a system.
+ * <b>Purpose</b>: Maintain all of the EclipseLink configuration information for a system.
  * <p><b>Responsibilities</b>:<ul>
  * <li> Project options and defaults
  * <li> Database login information
@@ -197,7 +197,7 @@ public class Project implements Serializable, Cloneable {
      * INTERNAL:
      * Add the descriptors to the session.
      * All persistent classes must have a descriptor registered for them with the session.
-     * This method allows for a batch of descriptors to be added at once so that TopLink
+     * This method allows for a batch of descriptors to be added at once so that EclipseLink
      * can resolve the dependencies between the descriptors and perform initialization optimally.
      */
     public void addDescriptors(Collection descriptors, DatabaseSessionImpl session) {
@@ -223,8 +223,8 @@ public class Project implements Serializable, Cloneable {
      * PUBLIC:
      * Merge the descriptors from another project into this one.
      * All persistent classes must have a descriptor registered for them with the session.
-     * This method allows for a batch of descriptors to be added at once so that TopLink
-     * can resolve the dependancies between the descriptors and perform initialization optimially.
+     * This method allows for a batch of descriptors to be added at once so that EclipseLink
+     * can resolve the dependencies between the descriptors and perform initialization optimally.
      */
     public void addDescriptors(Project project, DatabaseSessionImpl session) {
         Iterator descriptors = project.getDescriptors().values().iterator();
@@ -553,7 +553,7 @@ public class Project implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
-     * Set to true during descriptor initialize if any descriptor has hsitory.
+     * Set to true during descriptor initialize if any descriptor has history.
      */
     public void setHasGenericHistorySupport(boolean hasGenericHistorySupport) {
         this.hasGenericHistorySupport = hasGenericHistorySupport;

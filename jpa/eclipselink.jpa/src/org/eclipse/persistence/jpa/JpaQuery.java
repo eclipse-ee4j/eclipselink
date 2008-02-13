@@ -36,7 +36,7 @@ public interface JpaQuery extends javax.persistence.Query {
 
     /**
      * PUBLIC:
-     * Non-standard method to return results of a ReadQuery that has a containerPoliry
+     * Non-standard method to return results of a ReadQuery that has a containerPolicy
      * that returns objects as a collection rather than a List
      * @return Collection of results
      */

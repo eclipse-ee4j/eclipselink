@@ -59,7 +59,7 @@ public abstract class MWAbstractClassIndicatorPolicy
 	// ************* aggregate support *************
 	
 	public void addToAggregateFieldNameGenerators(Collection generators) {
-		//don't add self to Collection, overriden in MWRelationalClassIndicatorFieldPolicy
+		//don't add self to Collection, overridden in MWRelationalClassIndicatorFieldPolicy
 	}
 
 	// ************* Containment Hierarchy *************

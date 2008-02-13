@@ -445,7 +445,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             DatabaseField sourceField = getSourceKeyFields().elementAt(index);
             Object value = row.get(targetField);
 
-            // Must ensure the classificatin to get a cache hit.
+            // Must ensure the classification gets a cache hit.
             try {
                 value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(sourceField));
             } catch (ConversionException e) {
@@ -470,7 +470,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             DatabaseField field = (DatabaseField)fieldEnum.nextElement();
             Object value = row.get(field);
 
-            // Must ensure the classificatin to get a cache hit.
+            // Must ensure the classification gets a cache hit.
             try {
                 value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(field));
             } catch (ConversionException e) {
@@ -497,7 +497,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     
     /**
      * INTERNAL:
-     * Extract the value from the batch optmized query.
+     * Extract the value from the batch optimized query.
      */
     public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
         //this can be null, because either one exists in the query or it will be created
@@ -676,8 +676,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * For aggregate collection mapping the reference descriptor is cloned. The cloned descriptor is then
      * assigned primary keys and table names before initialize. Once cloned descriptor is initialized
-     * it is assigned as reference descriptor in the aggregate mapping. This is a very specifiec
-     * behaviour for aggregate mappings. The original descriptor is used only for creating clones and
+     * it is assigned as reference descriptor in the aggregate mapping. This is very specific
+     * behavior for aggregate mappings. The original descriptor is used only for creating clones and
      * after that mapping never uses it.
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */
@@ -706,15 +706,15 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * INTERNAL:
-     * For aggregate mapping the reference descriptor is cloned. Also the involved inheritanced descriptor, its childern
+     * For aggregate mapping the reference descriptor is cloned. Also the involved inheritance descriptor, its children
      * and parents all need to be cloned. The cloned descriptors are then assigned primary keys and table names before
      * initialize. Once cloned descriptor is initialized it is assigned as reference descriptor in the aggregate mapping.
-     * This is a very specifiec behaviour for aggregate mappings. The original descriptor is used only for creating clones
+     * This is very specific behavior for aggregate mappings. The original descriptor is used only for creating clones
      * and after that mapping never uses it.
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */
     public void initializeChildInheritance(ClassDescriptor parentDescriptor, AbstractSession session) throws DescriptorException {
-        //recursive call to the further childern descriptors
+        //recursive call to further children descriptors
         if (parentDescriptor.getInheritancePolicy().hasChildren()) {
             //setFields(clonedChildDescriptor.getFields());		
             Vector childDescriptors = parentDescriptor.getInheritancePolicy().getChildDescriptors();
@@ -756,10 +756,10 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * INTERNAL:
-     * For aggregate mapping the reference descriptor is cloned. Also the involved inheritanced descriptor, its childern
+     * For aggregate mapping the reference descriptor is cloned. Also the involved inheritance descriptor, its children
      * and parents all need to be cloned. The cloned descriptors are then assigned primary keys and table names before
      * initialize. Once cloned descriptor is initialized it is assigned as reference descriptor in the aggregate mapping.
-     * This is a very specifiec behaviour for aggregate mappings. The original descriptor is used only for creating clones
+     * This is very specific behavior for aggregate mappings. The original descriptor is used only for creating clones
      * and after that mapping never uses it.
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */
@@ -776,9 +776,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             initializeParentInheritance(parentToParentDescriptor, parentDescriptor, session);
         }
 
-        Vector childern = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        childern.addElement(childDescriptor);
-        clonedParentDescriptor.getInheritancePolicy().setChildDescriptors(childern);
+        Vector children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        children.addElement(childDescriptor);
+        clonedParentDescriptor.getInheritancePolicy().setChildDescriptors(children);
         clonedParentDescriptor.preInitialize(session);
         clonedParentDescriptor.initialize(session);
     }
@@ -1050,8 +1050,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * For aggregate collection mapping the reference descriptor is cloned. The cloned descriptor is then
      * assigned primary keys and table names before initialize. Once cloned descriptor is initialized
-     * it is assigned as reference descriptor in the aggregate mapping. This is a very specifiec
-     * behaviour for aggregate mappings. The original descriptor is used only for creating clones and
+     * it is assigned as reference descriptor in the aggregate mapping. This is very specific
+     * behavior for aggregate mappings. The original descriptor is used only for creating clones and
      * after that mapping never uses it.
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */

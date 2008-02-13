@@ -121,7 +121,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
     /**
      * Executes this test case.
      * Note:
-     * Only RuntimeExceptions are caught because all TopLink Exceptions are derived from
+     * Only RuntimeExceptions are caught because all EclipseLink Exceptions are derived from
      * RuntimeException. This takes care of other java runtime exceptions also.
      */
     public void execute(TestExecutor executor) {
@@ -159,7 +159,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
                 }
             } catch (Throwable runtimeException) {
                 executeFailed = true;
-                TestErrorException topLinkException = new TestErrorException("Fatal error occured.", runtimeException);
+                TestErrorException topLinkException = new TestErrorException("Fatal error occurred.", runtimeException);
                 if (getTestException() == null) {
                     setTestException(topLinkException);
                     throw topLinkException;
@@ -186,7 +186,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
                 long endTime = System.currentTimeMillis();
                 getTestResult().setTotalTime(endTime - startTime);
 
-                // If a failure occured allow recreation of the database and initialize the identity maps.
+                // If a failure occurred allow recreation of the database and initialize the identity maps.
                 if (executeFailed) {
                     // If this test is not local allow for cleanup.
                     if (!isLocalTest()) {
@@ -440,7 +440,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
         try {
             reset();
         } catch (Throwable runtimeException) {
-            TestProblemException validationException = new TestProblemException("Reset problem occured.", runtimeException);
+            TestProblemException validationException = new TestProblemException("Reset problem occurred.", runtimeException);
             if (getTestException() == null) {
                 setTestException(validationException);
             }

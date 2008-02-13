@@ -18,7 +18,7 @@ import org.eclipse.persistence.logging.JavaLog;
 /**
  * PUBLIC:
  *
- * This is the concrete subclass responsible for representing SunAS9-specific server behaviour.
+ * This is the concrete subclass responsible for representing SunAS9-specific server behavior.
  *
  * This platform overrides:
  *
@@ -29,7 +29,7 @@ public class SunAS9ServerPlatform extends ServerPlatformBase {
 
     /**
      * INTERNAL:
-     * Default Constructor: All behaviour for the default constructor is inherited
+     * Default Constructor: All behavior for the default constructor is inherited
      */
     public SunAS9ServerPlatform(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);

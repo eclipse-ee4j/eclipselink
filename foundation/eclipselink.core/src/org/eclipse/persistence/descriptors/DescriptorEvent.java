@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.sessions.*;
  * <p><b>Purpose</b>: Encapsulate the information provided with descriptor events.
  * This is used as the argument to any event raised by the descriptor.
  * Events can be registered for through two methods, the first is by providing a method
- * to be called on the object that a paticular operation is being performed on.
+ * to be called on the object that a particular operation is being performed on.
  * The second is by registering a manager object to be notified when any event occurs
  * for that descriptor.  The second method is more similar to the java beans event model
  * but requires the registered object to implement the DescriptorEventListener interface.
@@ -274,8 +274,8 @@ public class DescriptorEvent extends EventObject {
     /**
      * ADVANCED:
      * Use this method when updating object attribute values, with unmapped objects Integer, String or others. in events to ensure that all
-     * required objects are updated.  TopLink will automatically update all objects and changesets
-     * involved.  TopLink will update the field, in the row, to have the new value for the field
+     * required objects are updated.  EclipseLink will automatically update all objects and changesets
+     * involved.  EclipseLink will update the field, in the row, to have the new value for the field
      * that this mapping maps to.
      */
     public void updateAttributeWithObject(String attributeName, Object value) {
@@ -338,8 +338,8 @@ public class DescriptorEvent extends EventObject {
     /**
     * ADVANCED:
     * Use this method when updating object attribute values, with unmapped objects Integer, String or others. in events to ensure that all
-    * required objects are updated.  TopLink will automatically update all objects and changesets
-    * involved.  TopLink will update the field, in the row, to have the new value for the field
+    * required objects are updated.  EclipseLink will automatically update all objects and changesets
+    * involved.  EclipseLink will update the field, in the row, to have the new value for the field
     * that this mapping maps to.  If the attribute being updated is within an aggregate then pass the updated aggregate
     * and the attribute of the aggregate mapping into this method.
     */
@@ -404,8 +404,8 @@ public class DescriptorEvent extends EventObject {
     /**
     * ADVANCED:
     * Use this method when updating object attribute values, with unmapped objects Integer, String or others. in events to ensure that all
-    * required objects are updated.  TopLink will automaticaly update all objects and changesets
-    * envolved.  TopLink will update the field, in the row, to have the new value for the field
+    * required objects are updated.  EclipseLink will automatically update all objects and changesets
+    * involved.  EclipseLink will update the field, in the row, to have the new value for the field
     * that this mapping maps to.
     */
     public void updateAttributeRemoveObjectFromCollection(String attributeName, Object mapKey, Object value) {

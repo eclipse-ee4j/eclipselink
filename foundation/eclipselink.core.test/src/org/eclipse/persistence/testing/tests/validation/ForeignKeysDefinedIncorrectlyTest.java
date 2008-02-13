@@ -25,7 +25,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 public class ForeignKeysDefinedIncorrectlyTest extends ExceptionTest {
     public ForeignKeysDefinedIncorrectlyTest() {
         super();
-        setDescription("This tests Foreigh Keys Defined Incorrectly (TL-ERROR 11) " + "");
+        setDescription("This tests Foreign Keys Defined Incorrectly (TL-ERROR 11) " + "");
     }
 
     protected void setup() {

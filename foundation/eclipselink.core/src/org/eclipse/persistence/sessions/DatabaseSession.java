@@ -41,8 +41,8 @@ public interface DatabaseSession extends Session {
      * PUBLIC:
      * Add the descriptors to the session.
      * All persistent classes must have a descriptor registered for them with the session.
-     * This method allows for a batch of descriptors to be added at once so that TopLink
-     * can resolve the dependencies between the descriptors and perform initialization optimially.
+     * This method allows for a batch of descriptors to be added at once so that EclipseLink
+     * can resolve the dependencies between the descriptors and perform initialization optimally.
      */
     public void addDescriptors(Collection descriptors);
 
@@ -60,7 +60,7 @@ public interface DatabaseSession extends Session {
      * This allows a group of database modification to be committed or rolledback as a unit.
      * All writes/deletes will be sent to the database be will not be visible to other users until commit.
      * Although databases do not allow nested transaction,
-     * TopLink supports nesting through only committing to the database on the outer commit.
+     * EclipseLink supports nesting through only committing to the database on the outer commit.
      *
      * @exception DatabaseException if the database connection is lost or the begin is rejected.
      *
@@ -74,7 +74,7 @@ public interface DatabaseSession extends Session {
      * This allows a group of database modification to be committed or rolledback as a unit.
      * All writes/deletes will be sent to the database be will not be visible to other users until commit.
      * Although databases do not allow nested transaction,
-     * TopLink supports nesting through only committing to the database on the outer commit.
+     * EclipseLink supports nesting through only committing to the database on the outer commit.
      *
      * @exception DatabaseException most databases validate changes as they are done,
      * normally errors do not occur on commit unless the disk fails or the connection is lost.
@@ -211,7 +211,7 @@ public interface DatabaseSession extends Session {
     /**
      * PUBLIC:
      * Refresh the attributes of the object and of all of its private parts from the database.
-     * The object will be pessimisticly locked on the database for the duration of the transaction.
+     * The object will be pessimistically locked on the database for the duration of the transaction.
      * If the object is already locked this method will wait until the lock is released.
      * A no wait option is available through setting the lock mode.
      * @see #refreshAndLockObject(Object, lockMode)
@@ -221,7 +221,7 @@ public interface DatabaseSession extends Session {
     /**
      * PUBLIC:
      * Refresh the attributes of the object and of all of its private parts from the database.
-     * The object will be pessimisticly locked on the database for the duration of the transaction.
+     * The object will be pessimistically locked on the database for the duration of the transaction.
      * <p>Lock Modes: ObjectBuildingQuery.NO_LOCK, LOCK, LOCK_NOWAIT
      */
     public Object refreshAndLockObject(Object object, short lockMode);
@@ -229,10 +229,10 @@ public interface DatabaseSession extends Session {
     /**
      * PUBLIC:
      * Rollback the active database transaction.
-     * This allows a group of database modification to be committed or rolledback as a unit.
+     * This allows a group of database modification to be committed or rolled back as a unit.
      * All writes/deletes will be sent to the database be will not be visible to other users until commit.
      * Although databases do not allow nested transaction,
-     * TopLink supports nesting through only committing to the database on the outer commit.
+     * EclipseLink supports nesting through only committing to the database on the outer commit.
      *
      * @exception DatabaseException if the database connection is lost or the rollback fails.
      * @exception ConcurrencyException if this session is not within a transaction.
@@ -241,8 +241,8 @@ public interface DatabaseSession extends Session {
 
     /**
      * PUBLIC:
-     * Used for JTS integration.  If your application requires to have JTS control transactions instead of TopLink an
-     * external transaction controller must be specified.  TopLink provides JTS controllers for JTS 1.0 and Weblogic's JTS.
+     * Used for JTS integration.  If your application requires to have JTS control transactions instead of EclipseLink an
+     * external transaction controller must be specified.  EclipseLink provides JTS controllers for JTS 1.0 and Weblogic's JTS.
      * @see org.eclipse.persistence.transaction.JTATransactionController
      * @see org.eclipse.persistence.platform.server.CustomServerPlatform
      */
@@ -254,7 +254,7 @@ public interface DatabaseSession extends Session {
      * ADVANCED:
      * Return the CommandManager that allows this session to act as a
      * CommandProcessor and receive or propagate commands from/to the
-     * TopLink cluster.
+     * EclipseLink cluster.
      * This can be set to enable cache synchronization in a clustered environment where
      * multiple servers in the cluster update the same database.
      *
@@ -268,7 +268,7 @@ public interface DatabaseSession extends Session {
      * ADVANCED:
      * Set the CommandManager that allows this session to act as a
      * CommandProcessor and receive or propagate commands from/to the
-     * TopLink cluster.
+     * EclipseLink cluster.
      * This can be used to enable cache synchronization in a clustered environment where
      * multiple servers in the cluster update the same database.
      * To enable cache synchronization you must also set, setShouldPropagateChanges to true.
@@ -283,7 +283,7 @@ public interface DatabaseSession extends Session {
     /**
      * ADVANCED:
      * Set if cache changes should be propagated to other sessions or applications
-     * in a TopLink cluster through the Remote Command Manager mechanism.
+     * in a EclipseLink cluster through the Remote Command Manager mechanism.
      * This can be used to enable cache synchronization in a clustered environment where
      * multiple servers in the cluster update the same database.
      * In order for this to occur the CommandManager must be set.
@@ -296,7 +296,7 @@ public interface DatabaseSession extends Session {
     /**
      * ADVANCED:
      * Return whether changes should be propagated to other sessions or applications
-     * in a TopLink cluster through the Remote Command Manager mechanism. In order for
+     * in a EclipseLink cluster through the Remote Command Manager mechanism. In order for
      * this to occur the CommandManager must be set.
      *
      * @see #setCommandManager(CommandManager)

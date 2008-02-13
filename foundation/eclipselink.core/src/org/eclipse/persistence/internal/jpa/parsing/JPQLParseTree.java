@@ -72,7 +72,7 @@ public class JPQLParseTree extends ParseTree {
      * Add all of the relevant query settings from an EJBQLParseTree to the given
      * database query.
      * @param query The query to populate
-     * @param session The sessionto use to information such as descriptors.
+     * @param session The session to use to information such as descriptors.
      */
     public void populateQuery(DatabaseQuery query, AbstractSession session) {
         if (query.isObjectLevelReadQuery()) {

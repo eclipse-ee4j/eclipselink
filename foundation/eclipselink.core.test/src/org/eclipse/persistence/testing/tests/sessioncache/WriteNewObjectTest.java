@@ -43,7 +43,7 @@ public class WriteNewObjectTest extends TestCase {
         //ensure changes were merged into the session cache      				
         IdentityMap im = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getIdentityMap(Employee.class);
         if ((im == null) || (im.getSize() != 1)) {
-            throw new TestErrorException("Employee should have been put into sesion cache.");
+            throw new TestErrorException("Employee should have been put into session cache.");
         }
     }
 

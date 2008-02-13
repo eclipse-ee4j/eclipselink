@@ -294,7 +294,7 @@ public abstract class AbstractPanelTest extends TestCase
 	 * of this class that begin with {@link #TEST_COMPONENT_ENABLER_SIGNATURE}
 	 * and invoke them.
 	 * 
-	 * @throws Throwable If any problems occured during the execution of a method
+	 * @throws Throwable If any problems occurred during the execution of a method
 	 */
 	private void _testComponentEnabler() throws Throwable
 	{
@@ -306,7 +306,7 @@ public abstract class AbstractPanelTest extends TestCase
 	 * of this class that begin with {@link #TEST_COMPONENT_ENTRY_SIGNATURE}and
 	 * invoke them.
 	 * 
-	 * @throws Throwable If any problems occured during the execution of a method
+	 * @throws Throwable If any problems occurred during the execution of a method
 	 */
 	private void _testComponentEntry() throws Throwable
 	{
@@ -516,7 +516,7 @@ public abstract class AbstractPanelTest extends TestCase
 	 * of this class that begin with {@link #TEST_EXTRA_SIGNATURE} and invoke
 	 * them.
 	 * 
-	 * @throws Throwable If any problems occured during the execution of a method
+	 * @throws Throwable If any problems occurred during the execution of a method
 	 */
 	private void _testExtra() throws Throwable
 	{
@@ -573,7 +573,7 @@ public abstract class AbstractPanelTest extends TestCase
 	 * of this class that begin with {@link #TEST_SUB_PANE_SIGNATURE}and invoke
 	 * them.
 	 * 
-	 * @throws Throwable If any problems occured during the execution of a method
+	 * @throws Throwable If any problems occurred during the execution of a method
 	 */
 	private void _testSubTest() throws Throwable
 	{

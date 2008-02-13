@@ -615,7 +615,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * For an aggregate mapping the reference descriptor is cloned. The cloned descriptor is then
      * assigned primary keys and table names before initialize. Once the cloned descriptor is initialized
      * it is assigned as reference descriptor in the aggregate mapping. This is a very specific
-     * behaviour for aggregate mappings. The original descriptor is used only for creating clones and
+     * behavior for aggregate mappings. The original descriptor is used only for creating clones and
      * after that the aggregate mapping never uses it.
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */
@@ -650,10 +650,10 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * all the parent and child descriptors are cloned also.
      * The cloned descriptors are then assigned primary keys and
      * table names before initialize.
-     * This is a very specific behaviour for aggregate mappings.
+     * This is a very specific behavior for aggregate mappings.
      */
     public void initializeChildInheritance(ClassDescriptor parentDescriptor, AbstractSession session) throws DescriptorException {
-        //recursive call to the further childern descriptors
+        //recursive call to the further children descriptors
         if (parentDescriptor.getInheritancePolicy().hasChildren()) {
             //setFields(clonedChildDescriptor.getFields());		
             Vector childDescriptors = parentDescriptor.getInheritancePolicy().getChildDescriptors();
@@ -679,7 +679,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * all the parent and child descriptors are cloned also.
      * The cloned descriptors are then assigned primary keys and
      * table names before initialize.
-     * This is a very specific behaviour for aggregate mappings.
+     * This is a very specific behavior for aggregate mappings.
      */
     public void initializeParentInheritance(ClassDescriptor parentDescriptor, ClassDescriptor childDescriptor, AbstractSession session) throws DescriptorException {
         ClassDescriptor clonedParentDescriptor = (ClassDescriptor)parentDescriptor.clone();
@@ -772,7 +772,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * For an aggregate mapping the reference descriptor is cloned. The cloned descriptor is then
      * assigned primary keys and table names before initialize. Once the cloned descriptor is initialized
      * it is assigned as reference descriptor in the aggregate mapping. This is a very specific
-     * behaviour for aggregate mappings. The original descriptor is used only for creating clones and
+     * behavior for aggregate mappings. The original descriptor is used only for creating clones and
      * after that the aggregate mapping never uses it.
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */
@@ -940,7 +940,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
     /**
      * INTERNAL:
-     * A subclass should implement this method if it wants different behaviour.
+     * A subclass should implement this method if it wants different behavior.
      * Write the foreign key values from the attribute to the row.
      */
     public void writeFromAttributeIntoRow(Object attribute, AbstractRecord row, AbstractSession session){

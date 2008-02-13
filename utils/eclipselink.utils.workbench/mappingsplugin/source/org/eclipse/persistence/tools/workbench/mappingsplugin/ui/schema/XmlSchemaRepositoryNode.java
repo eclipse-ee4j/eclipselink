@@ -62,7 +62,7 @@ public final class XmlSchemaRepositoryNode
 	
 	// **************** Initialization ****************************************
 	
-	/** Overriden from AbstractTreeNode */
+	/** Overridden from AbstractTreeNode */
 	protected /*private-protected*/ ApplicationContext expandContext(ApplicationContext context) {
 		return super.expandContext(context).buildExpandedResourceRepositoryContext(UiSchemaResourceBundle.class);
 	}

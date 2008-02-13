@@ -80,7 +80,7 @@ public class RelationExpression extends CompoundExpression {
             // Vector may mean anyOf, or an IN.
             // CR#3240862, code for IN was incorrect, and was check for between which is a function not a relation.
             // Must check for IN and NOTIN, currently object comparison is not supported.
-            // IN must be handled seperately because right is always a vector of values, vector never means anyof.
+            // IN must be handled separately because right is always a vector of values, vector never means anyof.
             if ((getOperator().getSelector() == ExpressionOperator.In) || 
                 (getOperator().getSelector() == ExpressionOperator.NotIn)) {
                 if (isObjectComparison()) {
@@ -198,7 +198,7 @@ public class RelationExpression extends CompoundExpression {
     /**
      * INTERNAL:
      * Extract the primary key from the expression into the row.
-     * Ensure that the query is quering the exact primary key.
+     * Ensure that the query is querying the exact primary key.
      * @param requireExactMatch refers to the primary key extracted gaurenteeing the result,
      * if not exact it is a hueristic and the cache hit will be conformed to the expression after the lookup
      * Return false if not on the primary key.

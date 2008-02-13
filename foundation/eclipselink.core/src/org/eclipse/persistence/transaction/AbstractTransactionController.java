@@ -82,7 +82,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
 
     /**
      * INTERNAL:
-     * Associate the given unit of work and TopLink session with the active external
+     * Associate the given unit of work and EclipseLink session with the active external
      * transaction. This may be done by whatever means supported by the transaction
      * manager (i.e. through a synchronization protocol).
      *
@@ -252,7 +252,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
 
     /**
      * INTERNAL:
-     * Return true if the transaction is in the roleld back state.
+     * Return true if the transaction is in the rolled back state.
      */
     public abstract boolean isRolledBack_impl(Object status);
 
@@ -313,7 +313,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
         Object transactionKey = getTransactionKey(transaction);
 
         // PERF: Cache the active unit of work in a thread local.
-        // This is just a heuristic, so uses == and no tx-key and direct access as extreamly high throughput.
+        // This is just a heuristic, so uses == and no tx-key and direct access as extremely high throughput.
         UnitOfWorkImpl activeUnitOfWork = (UnitOfWorkImpl)this.activeUnitOfWorkThreadLocal.get();
         if (activeUnitOfWork != null) {
             if (transaction == activeUnitOfWork.getTransaction()) {
@@ -367,7 +367,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
 
     /**
      * INTERNAL:
-     * Return the hashtable keyed on the external transaction objectss with values
+     * Return the hashtable keyed on the external transaction objects with values
      * that are the associated units of work.
      */
     public Map getUnitsOfWork() {
@@ -401,7 +401,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
 
     /**
      * INTERNAL:
-     * Associate the given unit of work and TopLink session with the current external
+     * Associate the given unit of work and EclipseLink session with the current external
      * transaction. This method is offered only for backwards compatibility.
      */
     public void registerSynchronizationListener(UnitOfWorkImpl uow, AbstractSession session) throws DatabaseException {

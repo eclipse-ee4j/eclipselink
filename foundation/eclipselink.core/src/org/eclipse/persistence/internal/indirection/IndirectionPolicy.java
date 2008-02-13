@@ -72,7 +72,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL
-     * Return true if the refresh shoud refresh on this mapping or not.
+     * Return true if the refresh should refresh on this mapping or not.
      */
     protected ReadObjectQuery buildCascadeQuery(MergeManager mergeManager) {
         ReadObjectQuery cascadeQuery = new ReadObjectQuery();

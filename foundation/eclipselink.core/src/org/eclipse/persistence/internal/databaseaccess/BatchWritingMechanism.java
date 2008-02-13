@@ -15,7 +15,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  * INTERNAL:
  *    BatchWritingMechanism is a private interface, used by the DatabaseAccessor. it provides the required
- *  behaviour for batching statements, for write.<p>
+ *  behavior for batching statements, for write.<p>
  *    There are currently two types of the Mechanism implemented, one to handle the tradition dynamic SQL
  *  batching and another to handle Parameterized SQL.  Depending on what is passed to these mechanisms
  *  they may decide to switch the current one out to the alternative type.<p>

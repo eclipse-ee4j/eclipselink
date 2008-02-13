@@ -161,7 +161,7 @@ public abstract class ObjectLevelModifyQuery extends ModifyQuery {
     /**
      * INTERNAL:
      * Return the reference class for a query
-     * Note: Although the API is designed to avoid classpath dependancies for the MW, since the object
+     * Note: Although the API is designed to avoid classpath dependencies for the MW, since the object
      * is specified at runtime, this will not be an issue.
      */
     public String getReferenceClassName() {

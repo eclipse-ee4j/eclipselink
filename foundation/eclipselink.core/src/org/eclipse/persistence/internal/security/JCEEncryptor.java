@@ -72,7 +72,7 @@ public class JCEEncryptor implements Securable {
 
     /**
      * Decrypts a string. Will throw a validation exception.
-     * Handles backwards compatability for older encrypted strings.
+     * Handles backwards compatibility for older encrypted strings.
      */
     public String decryptPassword(String encryptedPswd) {
         String password = "";

@@ -19,7 +19,7 @@ import org.eclipse.persistence.sessions.coordination.corba.CORBATransportManager
  * transporting the remote command.
  * <p>
  * <b>Description</b>: This implementation class is the CORBA remote object that is
- * wrapped by the conection abstraction. It is the first point of entry of the
+ * wrapped by the connection abstraction. It is the first point of entry of the
  * command into the remote service. It simply hands the command to the RCM to be
  * processed.
  *

@@ -167,7 +167,7 @@ import javax.persistence.PersistenceException;
             em.getTransaction().commit();
             fail("updating object version with wrong value didn't throw exception");
         } catch (PersistenceException pe) {
-            // expected behaviour
+            // expected behavior
         } catch (Exception e) {
             fail("updating object version with wrong value threw a wrong exception: " + e.getMessage());
         } finally {
@@ -197,7 +197,7 @@ import javax.persistence.PersistenceException;
             em.getTransaction().commit();
             fail("employee.setVersion(null) didn't throw exception");
         } catch (PersistenceException pe) {
-            // expected behaviour
+            // expected behavior
         } catch (Exception e) {
             fail("employee.setVersion(null) threw a wrong exception: " + e.getMessage());
         } finally {

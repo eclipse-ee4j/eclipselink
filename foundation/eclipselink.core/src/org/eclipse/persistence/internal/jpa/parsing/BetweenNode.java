@@ -51,7 +51,7 @@ public class BetweenNode extends SimpleConditionalExpressionNode {
 
     /**
      * INTERNAL
-     * Validate node and calcualte its type.
+     * Validate node and calculate its type.
      */
     public void validate(ParseTreeContext context) {
         Object type = null;
@@ -73,7 +73,7 @@ public class BetweenNode extends SimpleConditionalExpressionNode {
 
     /**
      * INTERNAL
-     * Return a TopLink expression by 'BETWEEN' and 'AND'ing the expressions from the left,
+     * Return a EclipseLink expression by 'BETWEEN' and 'AND'ing the expressions from the left,
      * rightForBetween and rightForAnd nodes
      */
     public Expression generateExpression(GenerationContext context) {

@@ -216,7 +216,7 @@ public class EISAccessor extends DatasourceAccessor {
 
         boolean transactionCommitted = false;
         boolean countDecremented = false;
-        // This is in seperate try block to ensure that the real exception is not masked by the close exception.
+        // This is in separate try block to ensure that the real exception is not masked by the close exception.
         try {
             interaction.close();
             if (autoCommit) {

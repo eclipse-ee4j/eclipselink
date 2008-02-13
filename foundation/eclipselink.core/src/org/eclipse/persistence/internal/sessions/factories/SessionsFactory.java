@@ -68,7 +68,7 @@ import org.eclipse.persistence.internal.sessions.factories.model.transport.disco
 
 /**
  * INTERNAL:
- * Builds TopLink Sessions from the XML Session Config model.
+ * Builds EclipseLink Sessions from the XML Session Config model.
  * Model classes that are not built, are processed only.
  *
  * @author Guy Pelletier
@@ -98,7 +98,7 @@ public class SessionsFactory {
 
     /**
      * INTERNAL:
-     * To build TopLink sessions, users must call this method with a
+     * To build EclipseLink sessions, users must call this method with a
      * SessionConfigs object returned from an OX read in the
      * XMLSessionsConfigLoader
      */

@@ -141,7 +141,7 @@ public class DatabaseTable implements Cloneable, Serializable {
     }
 
     /** 
-     * Return the hashcode of the name, because it is fairly unqiue.
+     * Return the hashcode of the name, because it is fairly unique.
      */
     public int hashCode() {
         return getName().hashCode();
@@ -185,7 +185,7 @@ public class DatabaseTable implements Cloneable, Serializable {
     }
     
     /**
-     * Used to map the project xml. Anytime a string name is read from the
+     * Used to map the project xml. Any time a string name is read from the
      * project xml, we must check if it is fully qualified and split the
      * actual name from the qualifier.
      * 

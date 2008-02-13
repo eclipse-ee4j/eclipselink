@@ -25,7 +25,7 @@ import java.util.List;
  * automatically initialized.
  * <li>Note, this implementation has a state managing the parse tree context
  * and a list of parameter names for the current parse tree. This state needs
- * to be initilized before the same node factory implementation instacne may
+ * to be initialized before the same node factory implementation instance may
  * be used to create a second parse tree (see methods initContext and
  * initParameters).
  * <li> The implementation automatically adds the list of parameters to the

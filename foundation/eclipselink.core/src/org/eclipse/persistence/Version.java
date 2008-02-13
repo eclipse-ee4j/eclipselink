@@ -16,16 +16,16 @@ package org.eclipse.persistence;
  * @since 1.0,
  */
 public class Version {
-    // The current copyright info for TopLink. 
+    // The current copyright info for EclipseLink. 
     private static final String CopyrightString = "Copyright (c) 1998, 2007, Oracle.  All rights reserved.";
 
-    // The current version of TopLink. 
+    // The current version of EclipseLink. 
     // This will be used by all product components and included in exceptions.
     private static String product = "Eclipse Persistence Services";
     private static final String version = "@VERSION@";
     private static final String buildNumber = "@BUILD_NUMBER@";
 
-    /** Keep track of JDK version in order to make some decisions about datastructures. **/
+    /** Keep track of JDK version in order to make some decisions about data structures. **/
     public static final int JDK_VERSION_NOT_SET = 0;
     public static final int JDK_1_5 = 1;
     public static int JDK_VERSION = JDK_VERSION_NOT_SET;

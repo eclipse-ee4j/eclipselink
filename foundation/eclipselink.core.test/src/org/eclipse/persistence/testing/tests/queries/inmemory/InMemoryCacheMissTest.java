@@ -37,7 +37,7 @@ public class InMemoryCacheMissTest extends CacheMissTest {
 
     protected void verify() {
         if (tempStream.toString().length() == 0) {
-            throw new org.eclipse.persistence.testing.framework.TestErrorException("Cache hit occured, but should not have.");
+            throw new org.eclipse.persistence.testing.framework.TestErrorException("Cache hit occurred, but should not have.");
         }
     }
 }

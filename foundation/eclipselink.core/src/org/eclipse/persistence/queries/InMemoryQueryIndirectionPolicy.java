@@ -12,7 +12,7 @@ package org.eclipse.persistence.queries;
 
 /**
  * <p><b>Purpose</b>:
- * Provide a means of controling the behaviour of in-memory and conforming queries
+ * Provide a means of controlling the behavior of in-memory and conforming queries
  * that access un-instantiated indirection objects in processing the query against cached objects.
  *
  * <p><b>Description</b>:

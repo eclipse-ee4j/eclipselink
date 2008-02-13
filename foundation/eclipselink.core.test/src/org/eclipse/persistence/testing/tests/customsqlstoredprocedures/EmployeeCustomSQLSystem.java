@@ -21,7 +21,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
 
 /**
- * <b>Purpose</b>: To define system behavoir.
+ * <b>Purpose</b>: To define system behavior.
  * <p><b>Responsibilities</b>:    <ul>
  * <li> Login and return an initialize database session.
  * <li> Create and populate the database.

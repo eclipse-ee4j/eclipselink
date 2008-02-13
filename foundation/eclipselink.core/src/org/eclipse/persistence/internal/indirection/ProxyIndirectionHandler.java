@@ -27,7 +27,7 @@ import org.eclipse.persistence.exceptions.QueryException;
 /**
  * <H2>ProxyIndirectionHandler</H2>
  *
- * Transparently handles TopLink indirection for 1:1 relationships through use of  the Java Proxy framework
+ * Transparently handles EclipseLink indirection for 1:1 relationships through use of  the Java Proxy framework
  * in JDK 1.3.  This class intercepts messages sent to the proxy object, and instantiates its internal
  * <CODE>ValueHolder</CODE> when necessary.
  *

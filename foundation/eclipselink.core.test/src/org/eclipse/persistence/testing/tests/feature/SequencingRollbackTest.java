@@ -64,7 +64,7 @@ public class SequencingRollbackTest extends AutoVerifyTestCase {
 
     public void verify() {
         if (failed) {
-            throw new TestErrorException("Duplication of sequence number has occured");
+            throw new TestErrorException("Duplication of sequence number has occurred");
         }
     }
 

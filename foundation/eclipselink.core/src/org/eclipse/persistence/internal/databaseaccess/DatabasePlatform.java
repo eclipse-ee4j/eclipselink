@@ -68,8 +68,8 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 /**
- * DatabasePlatform is private to TopLink. It encapsulates behavior specific to a database platform
- * (eg. Oracle, Sybase, DBase), and provides protocol for TopLink to access this behavior. The behavior categories
+ * DatabasePlatform is private to EclipseLink. It encapsulates behavior specific to a database platform
+ * (eg. Oracle, Sybase, DBase), and provides protocol for EclipseLink to access this behavior. The behavior categories
  * which require platform specific handling are SQL generation and sequence behavior. While database platform
  * currently provides sequence number retrieval behavior, this will move to a sequence manager (when it is
  * implemented).
@@ -137,7 +137,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /** The transaction isolation level to be set on the connection (optional). */
     protected int transactionIsolation;
 
-    /** Some JDBC drivers do not support AutoCommit in the way TopLink expects.  (e.g. Attunity Connect, JConnect) */
+    /** Some JDBC drivers do not support AutoCommit in the way EclipseLink expects.  (e.g. Attunity Connect, JConnect) */
     protected boolean supportsAutoCommit;
 
     /**
@@ -711,7 +711,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * INTERNAL:
      * This method is used to unwrap the oracle connection wrapped by
-     * the application server.  TopLink needs this unwrapped connection for certain
+     * the application server.  EclipseLink needs this unwrapped connection for certain
      * Oracle Specific support. (ie TIMESTAMPTZ)
      * This is added as a workaround for bug 4565190
      */
@@ -1489,7 +1489,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Native batchwriting will result in the batch writing mechanisms to be used on objects
      * that have optimistic locking, and so execution of statements on these objects will be
      * delayed until the batch statement is executed.  Only use this method with platforms that
-     * have overriden the prepareBatchStatement, addBatch and executeBatch as required
+     * have overridden the prepareBatchStatement, addBatch and executeBatch as required
      * 
      * Current support is limited to the Oracle9Platform class.  
      * 
@@ -1977,7 +1977,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Indicates whether the platform supports global temporary tables.
      * "Global" means that an attempt to create temporary table with the same
      * name for the second time results in exception.
-     * TopLink attempts to create global temporary table in the beginning of UpdateAllQuery,
+     * EclipseLink attempts to create global temporary table in the beginning of UpdateAllQuery,
      * execution and assumes that it already exists in case SQLException results.
      * In the end of UpdateAllQuery execution all rows are removed from the temporary table -
      * it is necessary in case the same temporary table will be used by another UpdateAllQuery

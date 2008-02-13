@@ -66,7 +66,7 @@ public class Generator {
 
 	/**
 	 * Allows internal processing for exporting something from a project.
-	 * @return 0 if no exeption occured
+	 * @return 0 if no exeption occurred
 	 */
 	public int execute(String input, String output, PrintStream log) {
 		int status = 0;
@@ -93,7 +93,7 @@ public class Generator {
 
 	/**
 	 * Allows internal processing for exporting something from a project.
-	 * @return 0 if no exeption occured
+	 * @return 0 if no exeption occurred
 	 */
 	public int execute(String input, String output) {
 	    

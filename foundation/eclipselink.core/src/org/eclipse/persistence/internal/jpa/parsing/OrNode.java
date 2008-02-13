@@ -62,7 +62,7 @@ public class OrNode extends LogicalOperatorNode {
 
     /**
      * INTERNAL
-     * Return a TopLink expression by 'OR'ing the expressions from the left and right nodes
+     * Return a EclipseLink expression by 'OR'ing the expressions from the left and right nodes
      */
     public Expression generateExpression(GenerationContext context) {
         // Get the left expression

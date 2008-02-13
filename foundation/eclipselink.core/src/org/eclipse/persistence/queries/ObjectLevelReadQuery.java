@@ -72,7 +72,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public static final short DONT_USE_DISTINCT = 2;
 
     /**
-     * Used to determine behaviour of indirection in in-memory querying and conforming.
+     * Used to determine behavior of indirection in in-memory querying and conforming.
      */
     protected int inMemoryQueryIndirectionPolicy;
 
@@ -291,7 +291,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Additional fields can be added to a query.  This is used in m-m bacth reading to bring back the key from the join table.
+     * Additional fields can be added to a query.  This is used in m-m batch reading to bring back the key from the join table.
      */
     public void addAdditionalField(DatabaseField field) {
         getAdditionalFields().add(field);
@@ -301,7 +301,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Additional fields can be added to a query.  This is used in m-m bacth reading to bring back the key from the join table.
+     * Additional fields can be added to a query.  This is used in m-m batch reading to bring back the key from the join table.
      */
     public void addAdditionalField(Expression fieldExpression) {
         getAdditionalFields().add(fieldExpression);
@@ -317,7 +317,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * This should be used when the application knows that it requires the part for all of the objects being read.
      *
      * <p>Note: This cannot be used for objects where it is possible not to have a part,
-     * as these objects will be ommited from the result set,
+     * as these objects will be omitted from the result set,
      * unless an outer join is used through passing and expression using "getAllowingNull".
      * To join fetch collection relationships use the addJoinedAttribute(Expression) using "anyOf" ot "anyOfAllowingNone".
      *
@@ -338,7 +338,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * This should be used when the application knows that it requires the part for all of the objects being read.
      *
      * <p>Note: This cannot be used for objects where it is possible not to have a part,
-     * as these objects will be ommited from the result set,
+     * as these objects will be omitted from the result set,
      * unless an outer join is used through passing and expression using "getAllowingNull".
      *
      * <p>Example: 
@@ -386,7 +386,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * same class.
      *
      * <p>Note: This cannot be used for objects where it is possible not to have 
-     * a part, as these objects will be ommited from the result set, unless an 
+     * a part, as these objects will be omitted from the result set, unless an 
      * outer join is used through passing and expression using "getAllowingNull".
      *
      * <p>Example: query.addNonFetchJoinedAttribute("address")
@@ -412,7 +412,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * same class.
      *
      * <p>Note: This cannot be used for objects where it is possible not to have 
-     * a part, as these objects will be ommited from the result set, unless an 
+     * a part, as these objects will be omitted from the result set, unless an 
      * outer join is used through passing and expression using "getAllowingNull".
      *
      * <p>Example: query.addNonFetchJoinedAttribute(query.getExpressionBuilder().get("teamLeader").get("address"))
@@ -554,7 +554,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Check to see if this query already knows the return vale without preforming any further work.
+     * Check to see if this query already knows the return value without performing any further work.
      */
     public Object checkEarlyReturn(AbstractSession session, AbstractRecord translationRow) {
         // For bug 3136413/2610803 building the selection criteria from an EJBQL string or
@@ -740,7 +740,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * PUBLIC:
      * The cache will checked completely, if the object is not found the database will be queried,
      * and the database result will be verified with what is in the cache and/or unit of work including new objects.
-     * This can lead to poor performance so it is recomended that only the database be queried in most cases.
+     * This can lead to poor performance so it is recommended that only the database be queried in most cases.
      * Queries can be configured to use the cache at several levels.
      * Other caching option are available.
      * @see #setCacheUsage(int)
@@ -788,7 +788,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /**
      * ADVANCED:
      * If a distinct has been set the DISTINCT clause will be printed.
-     * This is used internally by TopLink for batch reading but may also be
+     * This is used internally by EclipseLink for batch reading but may also be
      * used directly for advanced queries or report queries.
      */
     public void dontUseDistinct() {
@@ -963,7 +963,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /**
      * ADVANCED:
      * If a distinct has been set the DISTINCT clause will be printed.
-     * This is used internally by TopLink for batch reading but may also be
+     * This is used internally by EclipseLink for batch reading but may also be
      * used directly for advanced queries or report queries.
      */
     public short getDistinctState() {
@@ -1612,7 +1612,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Prepare the query from the prepared query.
      * This allows a dynamic query to prepare itself directly from a prepared query instance.
      * This is used in the EJBQL parse cache to allow preparsed queries to be used to prepare
-     * dyanmic queries.
+     * dynamic queries.
      * This only copies over properties that are configured through EJBQL.
      */
     public void prepareFromQuery(DatabaseQuery query) {
@@ -1828,7 +1828,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * <li> CheckCacheByPrimaryKey - If the query contains the primary key and possible other values the cache will be checked.
      * <li> CheckCacheThenDatabase - The whole cache will be checked to see if there is any object matching the query, if not the database will be accessed.
      * <li> CheckCacheOnly - The whole cache will be checked to see if there is any object matching the query, if not null or an empty collection is returned.
-     * <li> ConformResultsAgainstUnitOfWork - The results will be checked againtst the changes within the unit of work and object no longer matching or deleted will be remove, matching new objects will also be added.
+     * <li> ConformResultsAgainstUnitOfWork - The results will be checked against the changes within the unit of work and object no longer matching or deleted will be remove, matching new objects will also be added.
      * <li> shouldCheckDescriptorForCacheUsage - This setting functions like CheckCacheByPrimaryKey, except checks the appropriate descriptor's
      * shouldDisableCacheHits setting when querying on the cache.
       * </ul>
@@ -1872,7 +1872,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * The example object is used for Query By Example.
      * When doing a Query By Example, an instance of the desired object is created, and the fields are filled with
      * the values that are required in the result set.  From these values the corresponding expression is built
-     * by TopLink, and the query is executed, returning the set of results.
+     * by EclipseLink, and the query is executed, returning the set of results.
      * <p>If a query already has a selection criteria this criteria and the generated
      * query by example criteria will be conjuncted.
      * <p>Once a query is executed you must make an explicit call to setExampleObject
@@ -2000,8 +2000,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * PUBLIC:
      * The QueryByExamplePolicy, is a useful to customize the query when Query By Example is used.
      * The policy will control what attributes should, or should not be included in the query.
-     * When dealing with nulls, using specail operations (notEqual, lessThan, like, etc.)
-     * for comparison, or chosing to include certain attributes at all times, it is useful to modify
+     * When dealing with nulls, using special operations (notEqual, lessThan, like, etc.)
+     * for comparison, or choosing to include certain attributes at all times, it is useful to modify
      * the policy accordingly.
      * <p>Once a query is executed you must make an explicit call to setQueryByExamplePolicy
      * when changing the policy, so the query will know to prepare itself again.
@@ -2150,7 +2150,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /**
      * PUBLIC:
      * Return if an outer join should be used to read subclasses.
-     * By default a seperate query is done for each subclass when querying for
+     * By default a separate query is done for each subclass when querying for
      * a root or branch inheritance class that has subclasses that span multiple tables.
      */
     public boolean shouldOuterJoinSubclasses() {
@@ -2163,7 +2163,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /**
      * PUBLIC:
      * Set if an outer join should be used to read subclasses.
-     * By default a seperate query is done for each subclass when querying for
+     * By default a separate query is done for each subclass when querying for
      * a root or branch inheritance class that has subclasses that span multiple tables.
      */
     public void setShouldOuterJoinSubclasses(boolean shouldOuterJoinSubclasses) {
@@ -2286,7 +2286,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /**
      * ADVANCED:
      * If a distinct has been set the DISTINCT clause will be printed.
-     * This is used internally by TopLink for batch reading but may also be
+     * This is used internally by EclipseLink for batch reading but may also be
      * used directly for advanced queries or report queries.
      */
     public void useDistinct() {
@@ -2380,7 +2380,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     
     /**
      * Return the fetch group set in the query.
-     * If a fetch group is not explicitly set in the query, default fetch group optionally defined in the decsiptor
+     * If a fetch group is not explicitly set in the query, default fetch group optionally defined in the descriptor
      * would be used, unless the user explicitly calls query.setShouldUseDefaultFetchGroup(false).
      */
     public FetchGroup getFetchGroup() {
@@ -2404,7 +2404,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 //named fetch group is not defined in the descriptor
                 throw QueryException.fetchGroupNotDefinedInDescriptor(fetchGroupName);
             }
-        } else {//not set fecth group at all
+        } else {//not set fetch group at all
             //use the default fetch group if not explicitly turned off
             if (shouldUseDefaultFetchGroup()) {
                 fetchGroup = getDescriptor().getDefaultFetchGroup();
@@ -2423,7 +2423,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Set a descriptor-level pre-defined named fetch group  to the query.
      */
     public void setFetchGroupName(String groupName) {
-        //nullify the fecth group refernce as one query can only has one fetch group.
+        //nullify the fetch group reference as one query can only has one fetch group.
         fetchGroup = null;
         fetchGroupName = groupName;
     }

@@ -12,7 +12,7 @@ package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 /**
  * This type is used to catch events thrown from session.  The constructor must have
  * when all is completed the events vector passed into the constructor will have
- * any evets that have occured up until that point.
+ * any evets that have occurred up until that point.
  */
 import java.util.Vector;
 

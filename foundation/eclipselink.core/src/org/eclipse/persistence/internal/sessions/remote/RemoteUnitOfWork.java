@@ -134,7 +134,7 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
             if (wasTransactionBegunPrematurely()) {
                 getParent().getTransactionMutex().release();
             }
-            // If an exception occured, the unit of work will have rolledback the early transaction
+            // If an exception occurred, the unit of work will have rolledback the early transaction
             // so must record this incase the unit of work re-commits.
             setWasTransactionBegunPrematurely(false);
             throw exception;
@@ -281,7 +281,7 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
     /**
      * INTERNAL:
      * Return the database platform currently connected to.
-     * The platform is used for database specific behavoir.
+     * The platform is used for database specific behavior.
      */
     public DatabasePlatform getPlatform() {
         return getParent().getPlatform();
@@ -290,7 +290,7 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
     /**
      * INTERNAL:
      * Return the database platform currently connected to.
-     * The platform is used for database specific behavoir.
+     * The platform is used for database specific behavior.
      */
     public Platform getDatasourcePlatform() {
         return getParent().getDatasourcePlatform();

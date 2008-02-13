@@ -12,7 +12,7 @@ package org.eclipse.persistence.internal.helper;
 
 import org.eclipse.persistence.platform.database.oracle.PLSQLStoredProcedureCall;
 
-// Javse imports
+// Javase imports
 
 // EclipseLink imports
 

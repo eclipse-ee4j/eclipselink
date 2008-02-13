@@ -98,7 +98,7 @@ public class ClientServerTest extends TestCase {
     public void verify() {
         try {
             if (this.server.errorOccured) {
-                throw new TestErrorException("An error occured on one of the clients, check System.out.");
+                throw new TestErrorException("An error occurred on one of the clients, check System.out.");
             }
 
             getExecutor().getSession().getIdentityMapAccessor().initializeIdentityMaps();

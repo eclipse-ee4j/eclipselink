@@ -60,7 +60,7 @@ public interface Connector extends Serializable, Cloneable {
     /**
      * INTERNAL:
      * Print something useful on the log. This information will be displayed
-     * on the TopLink log (by default <code>System.out</code>) at login.
+     * on the EclipseLink log (by default <code>System.out</code>) at login.
      * See the other implementations of this method for examples.
      */
     void toString(PrintWriter writer);

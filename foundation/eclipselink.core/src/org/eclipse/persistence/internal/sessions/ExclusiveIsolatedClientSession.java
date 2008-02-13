@@ -81,7 +81,7 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
      * INTERNAL:
      * This method is extended from the superclass ClientSession.  This class
      * uses only one accessor for all connections and as such does not need a
-     * seperate write connection.  The accessor will be used for all database
+     * separate write connection.  The accessor will be used for all database
      * access
      */
     public Accessor getWriteConnection() {
@@ -104,7 +104,7 @@ public class ExclusiveIsolatedClientSession extends IsolatedClientSession {
      * INTERNAL:
      * This method is extended from the superclass ClientSession.  This class
      * uses only one accessor for all connections and as such does not need a
-     * seperate write connection.  The accessor will be used for all database
+     * separate write connection.  The accessor will be used for all database
      * access
      */
     public void setWriteConnection(Accessor accessor) {

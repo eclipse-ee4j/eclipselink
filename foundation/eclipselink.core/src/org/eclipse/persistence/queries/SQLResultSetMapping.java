@@ -19,7 +19,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * <p><b>Purpose</b>:
  * Concrete class to represent the SQLResultSetMapping structure as defined by
  * the EJB 3.0 Persistence specification.  This class is used by the 
- * ResultSetMappingQuery and is a component of the TopLink Project
+ * ResultSetMappingQuery and is a component of the EclipsepLink Project
  * 
  * @see org.eclipse.persistence.sessions.Project
  * @author Gordon Yorke

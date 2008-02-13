@@ -197,7 +197,7 @@ public class LegacyEmployeeProject extends RelationalTestProject {
 
 	//remove new attributes that were added to the Employee class 
 	//for new features not supporting in legacy projects.
-	//this is overriden in EmployeeProject
+	//this is overridden in EmployeeProject
 	protected void legacyRemoveExtraAttributesFromEmployeeClass() {
 		MWClass employeeClass = getEmployeeDescriptor().getMWClass();
 		employeeClass.removeAttribute(employeeClass.attributeNamed("emailAddressMap"));

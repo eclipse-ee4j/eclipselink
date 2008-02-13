@@ -33,7 +33,7 @@ import org.eclipse.persistence.internal.sessions.remote.*;
 /**
  * <H2>ProxyIndirectionPolicy</H2>
  *
- * Define the behaviour for Proxy Indirection.<P>
+ * Define the behavior for Proxy Indirection.<P>
  *
  * Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
  * of JDK 1.3 to provide "transparent indirection" for 1:1 relationships.  In order to use Proxy

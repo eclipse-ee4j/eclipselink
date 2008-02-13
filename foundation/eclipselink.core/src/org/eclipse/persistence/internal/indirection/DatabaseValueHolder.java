@@ -43,7 +43,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * The variable below is used as part of the implementation of WeavedAttributeValueHolderInterface
      * It is used to track whether a valueholder that has been weaved into a class is coordinated
      * with the underlying property
-     * Set internally in TopLink when the state of coordination between a weaved valueholder and the underlying property is known
+     * Set internally in EclipseLink when the state of coordination between a weaved valueholder and the underlying property is known
      */
     protected boolean isCoordinatedWithProperty = false;
 
@@ -76,7 +76,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
         if (!isInstantiated()) {
             synchronized (this) {
                 if (!isInstantiated()) {
-                    // The value must be set directly because the setValue can also cause instatiation under UOW.
+                    // The value must be set directly because the setValue can also cause instantiation under UOW.
                     privilegedSetValue(instantiate());
                     setInstantiated();
                     resetFields();
@@ -101,7 +101,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * i.e. it may be a batchValueHolder, and it stores all the info like the row
      * and the query.
      * Note: Implementations of this method are not necessarily thread-safe.  They must 
-     * be used in a synchronizaed manner
+     * be used in a synchronized manner
      */
     public abstract Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder);
 
@@ -145,7 +145,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      * Answers if this valueholder is a pessimistic locking one.  Such valueholders
      * are special in that they can be triggered multiple times by different
      * UnitsOfWork.  Each time a lock query will be issued.  Hence even if
-     * instantiated it may have to be instantiated again, and once instantatiated
+     * instantiated it may have to be instantiated again, and once instantiated
      * all fields can not be reset.
      * Note: Implementations of this method are not necessarily thread-safe.  They must 
      * be used in a synchronizaed manner
@@ -209,7 +209,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
     
     /**
      * This method is used as part of the implementation of WeavedAttributeValueHolderInterface
-     * It is used internally by TopLink to set whether a valueholder that has been weaved into a class is coordinated
+     * It is used internally by EclipseLink to set whether a valueholder that has been weaved into a class is coordinated
      * with the underlying property
      */
     public void setIsCoordinatedWithProperty(boolean coordinated){
@@ -219,7 +219,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
     /**
      * This method is used as part of the implementation of WeavedAttributeValueHolderInterface
      * 
-     * A DatabaseValueHolder is set up by TopLink and will never be a newly weaved valueholder 
+     * A DatabaseValueHolder is set up by EclipseLink and will never be a newly weaved valueholder 
      * As a result, this method is stubbed out.
      */
     public void setIsNewlyWeavedValueHolder(boolean isNew){

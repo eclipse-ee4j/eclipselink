@@ -210,7 +210,7 @@ public class PlatformCreateDocumentTestCases extends OXTestCase {
         } catch (NoClassDefFoundError e) {
             // If the XDK is not on the classpath this error will be thrown.
         } catch (Exception e) {
-            fail("An unexpected error occured:" + e.getMessage());
+            fail("An unexpected error occurred:" + e.getMessage());
             return;
         } finally {
             XMLPlatformFactory.getInstance().setXMLPlatformClass(originalClass);

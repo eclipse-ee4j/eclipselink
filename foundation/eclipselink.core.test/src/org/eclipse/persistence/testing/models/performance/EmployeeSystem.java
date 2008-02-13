@@ -21,7 +21,7 @@ import org.eclipse.persistence.tools.schemaframework.*;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 
 /**
- * <b>Purpose</b>: To define system behavoir.
+ * <b>Purpose</b>: To define system behavior.
  * <p><b>Responsibilities</b>:    <ul>
  * <li> Login and return an initialize database session.
  * <li> Create and populate the database.

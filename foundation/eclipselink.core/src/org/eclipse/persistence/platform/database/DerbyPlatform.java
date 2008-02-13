@@ -26,7 +26,7 @@ import java.util.Iterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
 /**
- * <p><b>Purpose</b>: Provides Derby DBMS specific behaviour.
+ * <p><b>Purpose</b>: Provides Derby DBMS specific behavior.
  *
  * @since TOPLink Essentials 1.0
  */

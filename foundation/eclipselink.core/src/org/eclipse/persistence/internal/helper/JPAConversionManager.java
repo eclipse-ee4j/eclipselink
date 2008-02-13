@@ -20,8 +20,8 @@ package org.eclipse.persistence.internal.helper;
  * conversion manager, setting a null into a primitive causes and exception. 
  * This conversion manager was added to avoid that exception and therefore, add 
  * support for schemas that were built before the object model was mapped 
- * (using a primitive). Therefore, TopLink will not change the null column value 
- * in the database through this conversion. The value on the dataabse will only 
+ * (using a primitive). Therefore, EclipseLink will not change the null column value 
+ * in the database through this conversion. The value on the database will only 
  * be changed if the user actually sets a new primitive value.
  * <li> Allows users to define their own set of default null values to be used
  * in the conversion.

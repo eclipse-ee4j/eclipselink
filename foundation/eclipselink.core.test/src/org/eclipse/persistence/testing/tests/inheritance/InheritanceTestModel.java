@@ -91,8 +91,8 @@ public class InheritanceTestModel extends TestModel {
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
     public static TestSuite getSRGDeleteObjectTestSuite() {
         TestSuite suite = new TestSuite();
-        suite.setName("InheritenceDeleteObjectTestSuite");
-        suite.setDescription("This suite tests the deletion of each object in the inheritence model.");
+        suite.setName("InheritanceDeleteObjectTestSuite");
+        suite.setDescription("This suite tests the deletion of each object in the inheritance model.");
 
         PopulationManager manager = PopulationManager.getDefaultManager();
 
@@ -136,8 +136,8 @@ public class InheritanceTestModel extends TestModel {
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
     public static TestSuite getSRGDuplicateFieldTestSuite() {
         TestSuite suite = new TestSuite();
-        suite.setName("InheritenceDuplicateFieldTestSuite");
-        suite.setDescription("This suite tests ther read from the root class generated duplicate filed in SQL in the inheritence model.");
+        suite.setName("InheritanceDuplicateFieldTestSuite");
+        suite.setDescription("This suite tests ther read from the root class generated duplicate filed in SQL in the inheritance model.");
 
         //duplicate field SQL testing read
         ReadAllTest rs = new ReadAllTest(A_King2.class, 5);
@@ -158,8 +158,8 @@ public class InheritanceTestModel extends TestModel {
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
     public static TestSuite getSRGInsertObjectTestSuite() {
         TestSuite suite = new TestSuite();
-        suite.setName("InheritenceInsertObjectTestSuite");
-        suite.setDescription("This suite tests the insertion of each object in the inheritence model.");
+        suite.setName("InheritanceInsertObjectTestSuite");
+        suite.setDescription("This suite tests the insertion of each object in the inheritance model.");
 
         suite.addTest(new InsertObjectTest(Cat.example4()));
         suite.addTest(new InsertObjectTest(Dog.example4()));
@@ -209,8 +209,8 @@ public class InheritanceTestModel extends TestModel {
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
     public static TestSuite getSRGReadAllTestSuite() {
         TestSuite suite = new TestSuite();
-        suite.setName("InheritenceReadAllTestSuite");
-        suite.setDescription("This suite tests the reading of all the objects of each class in the inheritence model.");
+        suite.setName("InheritanceReadAllTestSuite");
+        suite.setDescription("This suite tests the reading of all the objects of each class in the inheritance model.");
 
         suite.addTest(new ReadAllTest(Cat.class, 3));
         suite.addTest(new ReadAllTest(Dog.class, 3));
@@ -251,8 +251,8 @@ public class InheritanceTestModel extends TestModel {
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
     public static TestSuite getSRGReadObjectTestSuite() {
         TestSuite suite = new TestSuite();
-        suite.setName("InheritenceReadObjectTestSuite");
-        suite.setDescription("This suite test the reading of each object in the inheritence model.");
+        suite.setName("InheritanceReadObjectTestSuite");
+        suite.setDescription("This suite test the reading of each object in the inheritance model.");
 
         PopulationManager manager = PopulationManager.getDefaultManager();
 
@@ -360,8 +360,8 @@ public class InheritanceTestModel extends TestModel {
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
     public static TestSuite getSRGUpdateObjectTestSuite() {
         TestSuite suite = new TestSuite();
-        suite.setName("InheritenceUpdateObjectTestSuite");
-        suite.setDescription("This suite tests the updating of each object in the inheritence model.");
+        suite.setName("InheritanceUpdateObjectTestSuite");
+        suite.setDescription("This suite tests the updating of each object in the inheritance model.");
 
         Class companyClass = Company.class;
         Class personClass = Person.class;
@@ -413,8 +413,8 @@ public class InheritanceTestModel extends TestModel {
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
     public static TestSuite getSRGSingleInheritanceTestSuite() {
         TestSuite suite = new TestSuite();
-        suite.setName("SingleInheritenceTestSuite");
-        suite.setDescription("This suite tests an inheritence model containing only a single class .");
+        suite.setName("SingleInheritanceTestSuite");
+        suite.setDescription("This suite tests an inheritance model containing only a single class .");
 
         PopulationManager manager = PopulationManager.getDefaultManager();
 

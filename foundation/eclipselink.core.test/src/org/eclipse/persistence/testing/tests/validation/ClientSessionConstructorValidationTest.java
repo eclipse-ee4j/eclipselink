@@ -20,7 +20,7 @@ public class ClientSessionConstructorValidationTest extends org.eclipse.persiste
 
     public ClientSessionConstructorValidationTest() {
         super();
-        setDescription("Verifies that the Client Sesion is constructed properly");
+        setDescription("Verifies that the Client Session is constructed properly");
     }
 
     public void test() {

@@ -14,7 +14,7 @@ import java.util.*;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 
 /**
- *    <p><b>Purpose</b>: Provides CloudScape DBMS specific behaviour.
+ *    <p><b>Purpose</b>: Provides CloudScape DBMS specific behavior.
  *
  * @since TOPLink/Java 3.0
  */

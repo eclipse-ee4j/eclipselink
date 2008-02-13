@@ -12,7 +12,7 @@ package org.eclipse.persistence.sessions;
 import java.util.Map;
 
 /**
- * This interface defines the public interface for the TopLink DatabaseRecord (was Record),
+ * This interface defines the public interface for the EclipseLink DatabaseRecord (was Record),
  * and the other record types XMLRecord, EISRecord.
  * The Map API should be used to access the record data.
  * The data is keyed on the field name, or XPath, and the value is the field data value.

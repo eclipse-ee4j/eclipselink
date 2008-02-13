@@ -87,14 +87,14 @@ public class CacheKey implements Serializable, Cloneable {
     }
 
     /**
-     * Acquire the lock on the cachek key object.
+     * Acquire the lock on the cache key object.
      */
     public void acquire() {
         getMutex().acquire(false);
     }
 
     /**
-     * Acquire the lock on the cachek key object. For the merge process
+     * Acquire the lock on the cache key object. For the merge process
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
     public void acquire(boolean forMerge) {
@@ -129,14 +129,14 @@ public class CacheKey implements Serializable, Cloneable {
     }
 
     /**
-     * Acquire the deferred lcok.
+     * Acquire the deferred lock.
      */
     public void acquireDeferredLock() {
         getMutex().acquireDeferredLock();
     }
     
     /**
-     * Check the read lock on the cachek key object.
+     * Check the read lock on the cache key object.
      * This can be called to ensure the cache key has a valid built object.
      * It does not hold a lock, so the object could be refreshed afterwards.
      */
@@ -145,7 +145,7 @@ public class CacheKey implements Serializable, Cloneable {
     }
         
     /**
-     * Check the deferred lock on the cachek key object.
+     * Check the deferred lock on the cache key object.
      * This can be called to ensure the cache key has a valid built object.
      * It does not hold a lock, so the object could be refreshed afterwards.
      */
@@ -154,7 +154,7 @@ public class CacheKey implements Serializable, Cloneable {
     }
     
     /**
-     * Acquire the read lock on the cachek key object.
+     * Acquire the read lock on the cache key object.
      */
     public void acquireReadLock() {
         getMutex().acquireReadLock();
@@ -361,7 +361,7 @@ public class CacheKey implements Serializable, Cloneable {
     }
 
     /**
-     * Release the lock on the cachek key object.
+     * Release the lock on the cache key object.
      */
     public void release() {
         getMutex().release();
@@ -375,7 +375,7 @@ public class CacheKey implements Serializable, Cloneable {
     }
 
     /**
-     * Release the read lock on the cachek key object.
+     * Release the read lock on the cache key object.
      */
     public void releaseReadLock() {
         getMutex().releaseReadLock();

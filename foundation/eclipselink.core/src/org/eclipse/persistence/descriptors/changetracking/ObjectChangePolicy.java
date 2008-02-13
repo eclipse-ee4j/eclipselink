@@ -22,7 +22,7 @@ import java.util.*;
 /**
  * INTERNAL:
  * Implementers of ObjectChangePolicy implement the code which computes changes sets
- * for TopLink's UnitOfWork commit process.  An ObjectChangePolicy is stored on an
+ * for ExclipseLink's UnitOfWork commit process.  An ObjectChangePolicy is stored on an
  * Object's descriptor.
  * @see DeferredChangeDetectionPolicy
  * @see ObjectChangeTrackingPolicy
@@ -53,7 +53,7 @@ public interface ObjectChangePolicy extends Serializable {
 
     /**
      * INTERNAL:
-     * This method is used to dissable changetracking temporarily
+     * This method is used to disable changetracking temporarily
      */
     public void dissableEventProcessing(Object changeTracker);
 
@@ -65,7 +65,7 @@ public interface ObjectChangePolicy extends Serializable {
     
     /**
      * INTERNAL:
-     * This may cause a property change event to be raised to a listner in the case that a listener exists.
+     * This may cause a property change event to be raised to a listener in the case that a listener exists.
      * If there is no listener then this call is a no-op
      */
     public void raiseInternalPropertyChangeEvent(Object source, String propertyName, Object oldValue, Object newValue);
@@ -102,7 +102,7 @@ public interface ObjectChangePolicy extends Serializable {
 
     /**
      * INTERNAL:
-     * Assign Changelistner to an aggregate object
+     * Assign Changelistener to an aggregate object
      */
     public void setAggregateChangeListener(Object parent, Object aggregate, UnitOfWorkImpl uow, ClassDescriptor descriptor, String mappingAttribute);
 

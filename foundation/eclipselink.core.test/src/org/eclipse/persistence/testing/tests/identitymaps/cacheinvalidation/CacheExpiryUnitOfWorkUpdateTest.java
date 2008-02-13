@@ -36,7 +36,7 @@ public class CacheExpiryUnitOfWorkUpdateTest extends CacheExpiryTest {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         employee = (Employee)getSession().readObject(employee);
         if (!employee.getFirstName().equals(employeeName + "-mutated")) {
-            throw new TestErrorException("UnitOfWork update did not work correctly when expiry occured " + 
+            throw new TestErrorException("UnitOfWork update did not work correctly when expiry occurred " + 
                                          "between registration and commit.");
         }
     }

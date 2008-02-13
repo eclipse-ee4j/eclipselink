@@ -13,7 +13,7 @@ package org.eclipse.persistence.internal.sequencing;
  * <p>
  * <b>Purpose</b>: Define interface for sequencing callback factory.
  * <p>
- * <b>Description</b>: Instantiated internaly by SequencingManager.
+ * <b>Description</b>: Instantiated internally by SequencingManager.
  * <p>
  * <b>Responsibilities</b>:
  * <ul>

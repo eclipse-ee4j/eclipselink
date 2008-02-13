@@ -26,7 +26,7 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 /**
  * INTERNAL:
  *    DynamicSQLBatchWritingMechanism is a private class, used by the DatabaseAccessor. 
- *    It provides the required behaviour for batching statements, for write, with parameter binding turned off.<p>
+ *    It provides the required behavior for batching statements, for write, with parameter binding turned off.<p>
  */
 public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
 

@@ -87,7 +87,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * Return the login to use for this connection.
-     * Client sessions support using a seperate user login for database modification.
+     * Client sessions support using a separate user login for database modification.
      */
     public Login getLogin() {
         return login;
@@ -191,7 +191,7 @@ public class ConnectionPolicy implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * Set the login to use for this connection.
-     * Client sessions support using a seperate user login for database modification.
+     * Client sessions support using a separate user login for database modification.
      * Pooled connections must use the pool's login and cannot define their own.
      */
     public void setLogin(Login login) {

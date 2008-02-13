@@ -19,7 +19,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
- * <p><b>Purpose</b>: Provides MySQL specific behaviour.
+ * <p><b>Purpose</b>: Provides MySQL specific behavior.
  * <p><b>Responsibilities</b>:<ul>
  * <li> Native SQL for Date, Time, & Timestamp.
  * <li> Native sequencing.

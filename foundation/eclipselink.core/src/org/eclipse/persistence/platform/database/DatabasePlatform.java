@@ -13,7 +13,7 @@ package org.eclipse.persistence.platform.database;
  * DatabasePlatform is private to TopLink. It encapsulates behavior specific to a database platform
  * (eg. Oracle, Sybase, DBase), and provides protocol for TopLink to access this behavior. The behavior categories
  * which require platform specific handling are SQL generation and sequence behavior. While database platform
- * currently provides sequence number retrieval behaviour, this will move to a sequence manager (when it is
+ * currently provides sequence number retrieval behavior, this will move to a sequence manager (when it is
  * implemented).
  *
  * @see AccessPlatform

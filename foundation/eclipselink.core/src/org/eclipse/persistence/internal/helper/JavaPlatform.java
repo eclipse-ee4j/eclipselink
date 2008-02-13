@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 /**
  *  INTERNAL:
  *  JavaPlatform abstracts the version of the JDK we are using.  It allows any operation
- *  which is dependant on JDK version to be called from a single place and then delegates
+ *  which is dependent on JDK version to be called from a single place and then delegates
  *  the call to its JDKPlatform
  *  @see JDPlatform
  *  @author Tom Ware
@@ -113,7 +113,7 @@ public class JavaPlatform {
 
     /**
      * INTERNAL
-     * return a boolean which determines where TopLink should include the TopLink-stored
+     * return a boolean which determines where EclipseLink should include the EclipseLink-stored
      * Internal exception in it's stack trace.  For JDK 1.4 VMs with exception chaining
      * the Internal exception can be redundant and confusing.
      * @return boolean

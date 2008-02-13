@@ -15,7 +15,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  * PUBLIC:
  *
  * This is the concrete subclass responsible for representing WebSphere 
- * 6.1-specific server behaviour.
+ * 6.1-specific server behavior.
  *
  * This platform has:
  * - No JMX MBean runtime services
@@ -24,7 +24,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 public class WebSphere_6_1_Platform extends WebSpherePlatform {
     /**
      * INTERNAL:
-     * Default Constructor: All behaviour for the default constructor is inherited
+     * Default Constructor: All behavior for the default constructor is inherited
      */
     public WebSphere_6_1_Platform(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);

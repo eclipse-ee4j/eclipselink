@@ -14,7 +14,7 @@ import org.eclipse.persistence.testing.framework.*;
 
 // Test for bug 3286022: BINDING CLOBS DOESN'T WORK WITH NON ASCII CHARACTERS.
 // It is possible to test Strings instead of CLOBs, because both handled with the same piece of code:
-// the same problem occured with Strings before the fix, too.
+// the same problem occurred with Strings before the fix, too.
 //
 // German umlauts are: O with : above it.
 public class GermanUmlautsWriteTest extends InsertObjectTest {

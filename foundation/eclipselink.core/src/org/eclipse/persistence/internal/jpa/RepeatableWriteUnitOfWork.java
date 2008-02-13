@@ -36,7 +36,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     protected boolean shouldTerminateTransaction;
     
     /** Used to determine if UnitOfWork.synchronizeAndResume method should
-     * resume (the normal behaviour); or alternatively clear the UnitOfWork.
+     * resume (the normal behavior); or alternatively clear the UnitOfWork.
      */
     protected boolean shouldClearForCloseInsteadOfResume = false;
     
@@ -128,7 +128,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     
     /**
      * INTERNAL:
-     * Indicates whether clearForClose methor should be called by release method.
+     * Indicates whether clearForClose method should be called by release method.
      */
     public boolean shouldClearForCloseOnRelease() {
         return true;
@@ -418,7 +418,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
     /**
      * INTERNAL:
-     * This is internal to the uow, transactions should not be used explictly in a uow.
+     * This is internal to the uow, transactions should not be used explicitly in a uow.
      * The uow shares its parents transactions.
      */
     public void commitTransaction() throws DatabaseException {

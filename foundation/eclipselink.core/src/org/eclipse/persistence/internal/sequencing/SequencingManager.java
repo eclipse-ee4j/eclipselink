@@ -25,7 +25,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
- * SequencingManager is private to TopLink.
+ * SequencingManager is private to EclipseLink.
  * It provides most of sequencing functionality.
  * It's accessed by DatabaseSession through getSequencingHome() method.
  *
@@ -516,7 +516,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     /**
      * Uses preallocation, uses transaction, and acquires an accessor.
      * This is used in a ServerSession with a sequence connection pool.
-     * This is typically the default behavoir.
+     * This is typically the default behavior.
      */
     class Preallocation_Transaction_Accessor_State extends State {
         public Object getNextValue(Sequence sequence, AbstractSession writeSession) {

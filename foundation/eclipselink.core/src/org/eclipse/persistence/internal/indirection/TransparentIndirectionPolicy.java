@@ -428,7 +428,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     public Object validateAttributeOfInstantiatedObject(Object attributeValue) {
         // PERF: If the value is null, create a new value holder instance for the attribute value,
         // this allows for indirection attributes to not be instantiated in the constructor as they
-        // are typically replaced when reading or cloning so is very inefficent to initialize.
+        // are typically replaced when reading or cloning so is very inefficient to initialize.
         if (attributeValue == null) {
             return buildIndirectContainer();
         }

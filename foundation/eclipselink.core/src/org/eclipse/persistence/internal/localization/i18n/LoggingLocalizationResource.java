@@ -266,7 +266,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "cannot_unwrap_connection", "Cannot unwrap the oracle connection wrapped by the application server because of the following exception.  {0}"},
         { "error_loading_xml_file", "Exception while loading ORM xml file: {0}: {1}"},
         // B5112171: XML AnyObject and AnyCollection throw NPE on null document root element
-        { "exception_loading_entity_class", "An exception while trying to initialize persistence.  {1} occured while trying to load entity class: {0}."},
+        { "exception_loading_entity_class", "An exception while trying to initialize persistence.  {1} occurred while trying to load entity class: {0}."},
         { "marshal_warning_null_document_root_element", "{0}: The undefined document root element of a referenced object [{1}] is ignored during marshalling with an any collection|object mapping." },
     
         { "update_all_query_cannot_use_binding_on_this_platform", "UpdateAllQuery cannot use binding on this database platform. Changed query setting to execute without binding." },

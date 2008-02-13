@@ -72,7 +72,7 @@ public class ConcurrentFixedCache implements Serializable {
             return;
         }
         this.cache.put(key, value);
-        // Currently just remvoes the first one encountered, not LRU,
+        // Currently just removes the first one encountered, not LRU,
         // this is not ideal, but the most concurrent and quickest way to ensure fixed size.
         if (this.cache.size() > this.maxSize) {
             Iterator iterator = this.cache.keySet().iterator();

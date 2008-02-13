@@ -25,7 +25,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 public class NoForeighKeysAreSpecifiedTest extends ExceptionTest {
     public NoForeighKeysAreSpecifiedTest() {
         super();
-        setDescription("This tests No Foreigh Keys Are Specified (TL-ERROR 51) " + "");
+        setDescription("This tests No Foreign Keys Are Specified (TL-ERROR 51) " + "");
     }
 
     protected void setup() {

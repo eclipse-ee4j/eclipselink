@@ -17,7 +17,7 @@ import java.util.jar.*;
 /**
  * INTERNAL:
  *
- * <b>Purpose</b>: Provide common file I/O utilites
+ * <b>Purpose</b>: Provide common file I/O utilities
  * @author Steven Vo
  * @since TopLink 4.5
  */

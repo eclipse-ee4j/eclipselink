@@ -14,7 +14,7 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.queries.*;
 
 /**
- * Call defines the interface used primarily by TopLink queries
+ * Call defines the interface used primarily by EclipseLink queries
  * and query mechanisms to perform the necessary actions
  * (read, insert, update, delete) on the data store.
  * A Call can collaborate with an Accessor to perform its

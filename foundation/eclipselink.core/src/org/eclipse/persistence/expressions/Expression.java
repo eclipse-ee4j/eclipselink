@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * <b>Responsibilities</b>:
  * <ul>
  * <li> Store the selection criteria in a tree-like structure.
- * <li> Support public manipulation protocols for all comparison and function opperators.
+ * <li> Support public manipulation protocols for all comparison and function operators.
  * <li> Use opperator overloading to support all primitive types as well as objects.
  * </ul></p>
  */
@@ -61,7 +61,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Function, return an expression that adds to a date based on
-     * the specified datePart.  This is eqivalent to the Sybase DATEADD funtion.
+     * the specified datePart.  This is equivalent to the Sybase DATEADD function.
      * <p>Example:
      * <blockquote><pre>
      * TopLink: employee.get("date").addDate("year", 2)
@@ -76,7 +76,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Function, return an expression that adds to a date based on
-     * the specified datePart.  This is eqivalent to the Sybase DATEADD funtion.
+     * the specified datePart.  This is equivalent to the Sybase DATEADD function.
      * <p>Example:
      * <blockquote><pre>
      * TopLink: employee.get("date").addDate("year", 2)
@@ -166,7 +166,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * <p>
      * Note if employee has no phone numbers allOf ~ noneOf.
      * @param criteria must have its own builder, as it will become the
-     * seperate selection criteria of a subQuery.
+     * separate selection criteria of a subQuery.
      * @return a notExists subQuery expression
      */
     public Expression allOf(String attributeName, Expression criteria) {
@@ -402,7 +402,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * <p>
      * If an as of clause is not explicitly set an expression will use the clause
      * of its base expression, and so on recursively until one is found or an
-     * ExpressionBuilder is reached.  Some useage scenarios follow:
+     * ExpressionBuilder is reached.  Some usage scenarios follow:
      * <ul>
      * <li>employee.asOf(pastTime).anyOf("projects"): projects as of past time.
      * <li>expressionBuilder.asOf(pastTime): entire expression as of past time.
@@ -670,8 +670,8 @@ public abstract class Expression implements Serializable, Cloneable {
      *     TopLink: project.get("description").containsAllKeyWords("TopLink rdbms java")
      * </blockquote></pre>
      */
-    public Expression containsAllKeyWords(String spaceSeperatedKeyWords) {
-        StringTokenizer tokenizer = new StringTokenizer(spaceSeperatedKeyWords);
+    public Expression containsAllKeyWords(String spaceSeparatedKeyWords) {
+        StringTokenizer tokenizer = new StringTokenizer(spaceSeparatedKeyWords);
         Expression expression = null;
         while (tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();
@@ -697,8 +697,8 @@ public abstract class Expression implements Serializable, Cloneable {
      *     TopLink: project.get("description").containsAllKeyWords("TopLink rdbms java")
      * </blockquote></pre>
      */
-    public Expression containsAnyKeyWords(String spaceSeperatedKeyWords) {
-        StringTokenizer tokenizer = new StringTokenizer(spaceSeperatedKeyWords);
+    public Expression containsAnyKeyWords(String spaceSeparatedKeyWords) {
+        StringTokenizer tokenizer = new StringTokenizer(spaceSeparatedKeyWords);
         Expression expression = null;
         while (tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();
@@ -1295,7 +1295,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * Extract the primary key from the expression into the row.
-     * Ensure that the query is quering the exact primary key.
+     * Ensure that the query is querying the exact primary key.
      * Return false if not on the primary key.
      */
     public boolean extractPrimaryKeyValues(boolean requireExactMatch, ClassDescriptor descriptor, AbstractRecord primaryKeyRow, AbstractRecord translationRow) {
@@ -1369,7 +1369,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * ADVANCED:
      * Return an expression that wraps the attribute or query key name.
      * This is only applicable to 1:1 relationships, and allows the target of
-     * the relationship to be null if there is no correspondingn relationship in the database.
+     * the relationship to be null if there is no corresponding relationship in the database.
      * Implemented via an outer join in the database.
      * <p>Example:
      * <pre><blockquote>
@@ -2449,7 +2449,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * The character "%" means any sequence of characters and the character "_" mean any character.
      * i.e. "B%" == "Bob", "B_B" == "BOB"
      * The escape sequence specifies a set of characters the may be used to indicate that
-     * an one of the wildcard characters should be interpretted literally.
+     * an one of the wildcard characters should be interpreted literally.
      * <p>Example:
      * <pre><blockquote>
      *     TopLink: employee.get("firstName").like("B\_SMITH", "\")
@@ -2490,7 +2490,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * The character "%" means any sequence of characters and the character "_" mean any character.
      * i.e. "B%" == "Bob", "B_B" == "BOB"
      * The escape sequence specifies a set of characters the may be used to indicate that
-     * an one of the wildcard characters should be interpretted literally.
+     * an one of the wildcard characters should be interpreted literally.
      * <p>Example:
      * <pre><blockquote>
      *     TopLink: employee.get("firstName").like("B\_SMITH", "\")
@@ -2689,7 +2689,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Expression exp = employee.notExists(subQuery);
      * </blockquote></pre>
      * @param criteria must have its own builder, as it will become the
-     * seperate selection criteria of a subQuery.
+     * separate selection criteria of a subQuery.
      * @return a notExists subQuery expression
      */
     public Expression noneOf(String attributeName, Expression criteria) {
@@ -4008,7 +4008,7 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
-     * Append the field name to the writer. Should be overriden for special operators such as functions.
+     * Append the field name to the writer. Should be overridden for special operators such as functions.
      */
     protected void writeField(ExpressionSQLPrinter printer, DatabaseField field, SQLSelectStatement statement) {
         //print ", " before each selected field except the first one

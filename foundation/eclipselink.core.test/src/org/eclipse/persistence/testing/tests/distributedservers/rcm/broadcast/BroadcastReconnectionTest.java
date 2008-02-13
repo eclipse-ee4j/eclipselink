@@ -177,7 +177,7 @@ public class BroadcastReconnectionTest extends TestWrapper {
             super.reset();
         }
 
-        // look at the state of eventLock to see whether any events of interest have occured during super.test()
+        // look at the state of eventLock to see whether any events of interest have occurred during super.test()
         int state = eventLock.getState();
 
         // should be equal to !shouldRemoveConnectionOnError:
@@ -230,7 +230,7 @@ public class BroadcastReconnectionTest extends TestWrapper {
             throw new TestErrorException("Unexpectedly firstRunTestException was thrown: ", firstRunTestException);
         }
 
-        // look at the state of eventLock to see whether any events of interest have occured during super.test()
+        // look at the state of eventLock to see whether any events of interest have occurred during super.test()
         int state = eventLock.getState();
         if (helper.shouldIgnoreTargetListenerInReconnectionTest()) {
             // because targetListener is disabled, the successful result would unlock by timer -

@@ -38,7 +38,7 @@ public class AllNode extends Node {
 
     /**
      * INTERNAL
-     * Generate the TopLink expression for this node
+     * Generate the EclipseLink expression for this node
      */
     public Expression generateExpression(GenerationContext context) {
         SubqueryNode subqueryNode = (SubqueryNode)getLeft();

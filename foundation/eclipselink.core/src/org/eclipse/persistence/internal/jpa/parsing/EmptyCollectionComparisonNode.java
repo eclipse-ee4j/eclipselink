@@ -46,7 +46,7 @@ public class EmptyCollectionComparisonNode extends SimpleConditionalExpressionNo
 
     /**
      * INTERNAL
-     * Return a TopLink expression for this node.
+     * Return a EclipseLink expression for this node.
      */
     public Expression generateExpression(GenerationContext context) {
         //get the variable name from the DotNode's right attribute

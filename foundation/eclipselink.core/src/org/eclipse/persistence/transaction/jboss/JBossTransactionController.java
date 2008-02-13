@@ -16,7 +16,7 @@ import org.eclipse.persistence.transaction.JTATransactionController;
  * <p>
  * <b>Purpose</b>: TransactionController implementation for JBoss JTA
  * <p>
- * <b>Description</b>: Implements the required behaviour for controlling JTA 1.0
+ * <b>Description</b>: Implements the required behavior for controlling JTA 1.0
  * transactions in JBoss. The JTA TransactionManager must be set on the instance.
  * <p>
  * @see org.eclipse.persistence.transaction.JTATransactionController

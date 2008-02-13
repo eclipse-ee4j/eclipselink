@@ -233,7 +233,7 @@ public class DefaultTableGenerator {
     } 
 
     /**
-     * Build tables/fields infomation into the table creator object from a TopLink descriptor.
+     * Build tables/fields information into the table creator object from a TopLink descriptor.
      * This should handle most of the direct/relational mappings except many-to-many and direct
      * collection/map mappings, witch must be down in postInit method.
      */

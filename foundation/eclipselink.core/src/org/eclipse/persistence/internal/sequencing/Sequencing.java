@@ -15,7 +15,7 @@ package org.eclipse.persistence.internal.sequencing;
  * <b>Purpose</b>: Define interface to use sequencing.
  * <p>
  * <b>Description</b>: This interface accessed through Session.getSequencing() method.
- * Used by TopLink internals to obtain sequencing values.
+ * Used by EclipseLink internals to obtain sequencing values.
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
@@ -35,7 +35,7 @@ public interface Sequencing {
 
     /**
     * INTERNAL:
-    * Indicates when sequencing value should be acqiured for all classes.
+    * Indicates when sequencing value should be acquired for all classes.
     * There are just three possible return values:
     * BEFORE_INSERT, UNDEFINED, AFTER_INSERT.
     * Used as a shortcut to avoid individual checks for each class:
@@ -47,7 +47,7 @@ public interface Sequencing {
 
     /**
     * INTERNAL:
-    * Indicates whether sequencing value should be acqiured
+    * Indicates whether sequencing value should be acquired
     * before or after INSERT
     */
     public boolean shouldAcquireValueAfterInsert(Class cls);

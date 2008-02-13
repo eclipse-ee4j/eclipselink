@@ -16,7 +16,7 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
  * A CacheInvalidationPolicy is used to set objects in TopLink's identity maps to be invalid
  * following given rules.  CacheInvalidationPolicy is the abstract superclass for all
  * policies used for cache invalidation.
- * By default in TopLink, objects do not expire in the cache.  Several different policies
+ * By default in EclipseLink, objects do not expire in the cache.  Several different policies
  * are available to allow objects to expire.  These can be set on the ClassDescriptor.
  * @see org.eclipse.persistence.descriptors.ClassDescriptor
  * @see org.eclipse.persistence.descriptors.cacheinvalidation.NoExpiryCacheInvalidationPolicy
@@ -65,7 +65,7 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable {
     /**
      * PUBLIC:
      * Set whether to update the stored time an object was read when an object is updated.
-     * When the read time is updated, it indicates to TopLink that the data in the object
+     * When the read time is updated, it indicates to EclipseLink that the data in the object
      * is up to date.  This means that cache invalidation checks will occur relative to the
      * new read time.
      * By default, the read time will not be updated when an object is updated.

@@ -257,7 +257,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
     /**
      * INTERNAL:
      * Return the value to be stored in the object's attribute.
-     * This value is determined by invoking the mapping's AttribueTransformer
+     * This value is determined by invoking the mapping's AttributeTransformer
      */
     public Object valueFromMethod(Object object, AbstractRecord row, AbstractSession session) {
         return getTransformationMapping().invokeAttributeTransformer(row, object, session);

@@ -98,11 +98,11 @@ public class TransparentIndirectionAddOverflowBehaviourTest extends org.eclipse.
         Resource cachedResource = (Resource)getSession().readObject(this.resource);
 
         if (cachedOffice2.getSalespeople().contains(cachedTransfer)) {
-            throw new TestErrorException("Failed to replicate Set behaviour for double add when tracking changes");
+            throw new TestErrorException("Failed to replicate Set behavior for double add when tracking changes");
         }
 
         if (!cachedOffice2.getResources().contains(cachedResource)) {
-            throw new TestErrorException("Failed to replicate List behaviour for double add when tracking changes");
+            throw new TestErrorException("Failed to replicate List behavior for double add when tracking changes");
         }
     }
 }

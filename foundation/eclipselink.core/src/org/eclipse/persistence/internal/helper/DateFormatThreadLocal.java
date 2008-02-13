@@ -17,7 +17,7 @@ import java.util.TimeZone;
 
 // Java extension imports
 
-// TopLink imports
+// EclipseLink imports
 
 /**
  * <p><b>INTERNAL:</b> <code>DateFormatThreadLocal<code> is a thread-safe helper class to handle 

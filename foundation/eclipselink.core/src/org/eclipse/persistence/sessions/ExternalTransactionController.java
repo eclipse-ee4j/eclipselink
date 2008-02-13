@@ -33,14 +33,14 @@ public interface ExternalTransactionController {
     /**
      * INTERNAL:
      * Begin a transaction externally.
-     * This allows for TopLink to force a JTS transaction.
+     * This allows for EclipseLink to force a JTS transaction.
      */
     void beginTransaction(AbstractSession session);
 
     /**
      * INTERNAL:
      * Commit a transaction externally.
-     * This allows for TopLink to force a JTS transaction.
+     * This allows for EclipseLink to force a JTS transaction.
      */
     void commitTransaction(AbstractSession session);
 
@@ -66,7 +66,7 @@ public interface ExternalTransactionController {
     /**
      * INTERNAL:
      * Rollback a transaction externally.
-     * This allows for TopLink to force a JTS transaction.
+     * This allows for EclipseLink to force a JTS transaction.
      */
     void rollbackTransaction(AbstractSession session);
 

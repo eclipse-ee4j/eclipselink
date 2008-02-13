@@ -85,7 +85,7 @@ public abstract class DatasourceAccessor implements Accessor {
     
     /**
      *  This attribute is used to determine if the connection should be returned to the pool or
-     *  removed from the pool and closed.  It will be set to false if an exception occurs durring
+     *  removed from the pool and closed.  It will be set to false if an exception occurs during
      *  Call execution.
      */
     protected boolean isValid;
@@ -314,7 +314,7 @@ public abstract class DatasourceAccessor implements Accessor {
 
     /**
      * Connect to the database.
-     * Exceptions are caught and re-thrown as TopLink exceptions.
+     * Exceptions are caught and re-thrown as EclipseLink exceptions.
      */
     protected void connectInternal(Login login, AbstractSession session) throws DatabaseException {
         setDatasourceConnection(login.connectToDatasource(this, session));
@@ -385,7 +385,7 @@ public abstract class DatasourceAccessor implements Accessor {
 
     /**
      * Connect to the datasource.  Through using a CCI ConnectionFactory.
-     * Catch exceptions and re-throw as TopLink exceptions.
+     * Catch exceptions and re-throw as EclipseLink exceptions.
      */
     public void connect(Login login, AbstractSession session) throws DatabaseException {
         session.startOperationProfile(SessionProfiler.CONNECT);
@@ -526,7 +526,7 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      * Attempt to save some of the cost associated with getting a fresh connection.
      * Assume the DatabaseDriver has been cached, if appropriate.
-     * Note: Connections that are participating in transactions will not be refreshd.^M
+     * Note: Connections that are participating in transactions will not be refreshed.^M
      */
     protected void reconnect(AbstractSession session) throws DatabaseException {
         session.log(SessionLog.FINEST, SessionLog.CONNECTION, "reconnecting_to_external_connection_pool");

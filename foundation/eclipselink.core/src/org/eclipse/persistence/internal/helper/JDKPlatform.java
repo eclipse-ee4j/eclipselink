@@ -14,7 +14,7 @@ import java.util.*;
 /**
  *  INTERNAL:
  *  Interface which abstracts the version of the JDK we are on.
- *  This should only implement methods that are dependant on JDK version
+ *  This should only implement methods that are dependent on JDK version
  *  The implementers should implement the minimum amount of functionality required to
  *  allow support of multiple versions of the JDK.
  *  @see JDK15Platform
@@ -49,7 +49,7 @@ public interface JDKPlatform {
     void setExceptionCause(Throwable exception, Throwable cause);
 
     /**
-     * Return a boolean which determines where TopLink should include the TopLink-stored
+     * Return a boolean which determines where EclipseLink should include the EclipseLink-stored
      * Internal exception in it's stack trace.  For JDK 1.4 VMs with exception chaining
      * the Internal exception can be redundant and confusing.
      */

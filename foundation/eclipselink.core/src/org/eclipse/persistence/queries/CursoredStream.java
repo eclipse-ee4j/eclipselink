@@ -47,7 +47,7 @@ public class CursoredStream extends Cursor {
      */
     public CursoredStream(DatabaseCall call, CursoredStreamPolicy policy) {
         super(call, policy);
-        // Must close on execption as stream will not be returned to user.
+        // Must close on exception as stream will not be returned to user.
         try {
             setLimits();
         } catch (RuntimeException exception) {
@@ -139,7 +139,7 @@ public class CursoredStream extends Cursor {
             Map clonedExpressions = new IdentityHashMap();
             selectStatement.setWhereClause(((ExpressionQueryMechanism)getQuery().getQueryMechanism()).buildBaseSelectionCriteria(false, clonedExpressions));
 
-            // Case, normal read for branch inheritence class that reads subclasses all in its own table(s).
+            // Case, normal read for branch inheritance class that reads subclasses all in its own table(s).
             if (getQuery().getDescriptor().hasInheritance() && (getQuery().getDescriptor().getInheritancePolicy().getWithAllSubclassesExpression() != null)) {
                 Expression branchIndicator = getQuery().getDescriptor().getInheritancePolicy().getWithAllSubclassesExpression();
                 if ((branchIndicator != null) && (selectStatement.getWhereClause() != null)) {
@@ -277,7 +277,7 @@ public class CursoredStream extends Cursor {
 
     /**
      * PUBLIC:
-     * Return the next object in the stream, without increamenting the stream's position.
+     * Return the next object in the stream, without incrementing the stream's position.
      */
     public Object peek() throws DatabaseException {
         Object object = read();
@@ -287,7 +287,7 @@ public class CursoredStream extends Cursor {
 
     /**
      * PUBLIC:
-     * This method differs slightly from conventinal read() operation on a Java stream.  This
+     * This method differs slightly from conventional read() operation on a Java stream.  This
      * method return the next object in the collection rather than specifying the number of
      * bytes to be read in.
      *
@@ -312,7 +312,7 @@ public class CursoredStream extends Cursor {
 
     /**
      * PUBLIC:
-     * This method differs slightly from conventinal read() operation on a Java stream.  This
+     * This method differs slightly from conventional read() operation on a Java stream.  This
      * method returns the next number of objects in the collection in a vector.
      *
      * Return the next object from the collection, if beyond the read limit read from the cursor

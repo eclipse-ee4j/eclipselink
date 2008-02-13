@@ -40,7 +40,7 @@ public abstract class QueryNode extends MajorNode {
 
     /**
      * INTERNAL
-     * Return a TopLink expression generated using the left node
+     * Return a EclipseLink expression generated using the left node
      */
     public abstract Expression generateExpression(GenerationContext context);
 

@@ -30,7 +30,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * <li> Maintain the primary class name for the query
  * <li> Maintain the root of the parse tree
  * <li> Maintain the context for the parse tree
- * <li> Maintainthe distinct state for the parse tree
+ * <li> Maintain the distinct state for the parse tree
  * <li> Print the contents of the parse tree on a string
  * </ul>
  *    @author Jon Driscoll and Joel Lucuik

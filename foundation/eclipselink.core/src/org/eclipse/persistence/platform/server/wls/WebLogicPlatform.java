@@ -16,7 +16,7 @@ import org.eclipse.persistence.transaction.wls.WebLogicTransactionController;
 /**
  * PUBLIC:
  *
- * This is the concrete subclass responsible for representing WebLogic-specific server behaviour.
+ * This is the concrete subclass responsible for representing WebLogic-specific server behavior.
  *
  * This platform overrides:
  *
@@ -27,7 +27,7 @@ public class WebLogicPlatform extends ServerPlatformBase {
 
     /**
      * INTERNAL:
-     * Default Constructor: All behaviour for the default constructor is inherited
+     * Default Constructor: All behavior for the default constructor is inherited
      */
     public WebLogicPlatform(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);

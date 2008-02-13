@@ -61,7 +61,7 @@ public class XDBTestModel extends TestModel {
             if ((message != null) && (message.indexOf("invalid datatype") > 0)) {
                 throw new TestProblemException("This model will only work on Oracle 9i and up");
             } else {
-                throw new TestProblemException("Error occured", ex);
+                throw new TestProblemException("Error occurred", ex);
             }
         }
     }

@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p><b>Purpose</b>: A FullIdentityMap holds all objects stored within it for the life of the application.
  * <p><b>Responsibilities</b>:<ul>
  *    <li> Guarantees identity
- * <li> Holds all cached objects indefinetly.
+ * <li> Holds all cached objects indefinitely.
  * </ul>
  * @since TOPLink/Java 1.0
  */

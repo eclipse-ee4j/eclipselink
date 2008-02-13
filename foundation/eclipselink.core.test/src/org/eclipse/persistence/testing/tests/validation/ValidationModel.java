@@ -19,7 +19,7 @@ import org.eclipse.persistence.testing.tests.validation.ClassIndicatorFieldNotFo
  */
 public class ValidationModel extends TestModel {
     public ValidationModel() {
-        setDescription("This model tests various TopLink exceptions thrown.");
+        setDescription("This model tests various EclipseLink exceptions thrown.");
     }
 
     public void addRequiredSystems() {

@@ -16,7 +16,7 @@ import java.util.*;
  * <b>Purpose</b>: This interface defines the API for the changeRecord that maintains the changes made to a collection attribute of
  * an object.
  * <p>
- * <b>Description</b>: The CollectionChangeRecord stores a list of objects removed from the collection and a seperate list of objects
+ * <b>Description</b>: The CollectionChangeRecord stores a list of objects removed from the collection and a separate list of objects
  * added to a collection
  */
 public interface CollectionChangeRecord extends ChangeRecord {

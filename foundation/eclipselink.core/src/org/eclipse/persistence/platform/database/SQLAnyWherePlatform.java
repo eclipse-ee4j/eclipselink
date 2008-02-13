@@ -11,7 +11,7 @@ package org.eclipse.persistence.platform.database;
 
 
 /**
- * <p><b>Purpose</b>: Provides SQL Anywhere specific behaviour.
+ * <p><b>Purpose</b>: Provides SQL Anywhere specific behavior.
  * <p> For the most part this is the same as Sybase, the outer join syntax is suppose to be different.
  *
  * @since TOPLink/Java 2.1

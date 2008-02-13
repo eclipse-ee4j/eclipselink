@@ -18,7 +18,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /** 
- * The TypeConverter annotation is used to specify a TopLink 
+ * The TypeConverter annotation is used to specify an EclipseLink 
  * org.eclipse.persistence.mappings.converters.TypeConversionConverter for modification 
  * of the data value(s) during the reading and writing of a mapped attribute.
  * 

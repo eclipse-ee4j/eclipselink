@@ -18,7 +18,7 @@ import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
  * unit of work and should be used to maintain complete compatibility.
  * <p>
  * <b>Description</b>: The unit of work is a session that implements all of the normal
- * protocol of a TopLink session. It can be spawned from any other session including another unit of work.
+ * protocol of an EclipseLink session. It can be spawned from any other session including another unit of work.
  * Objects can be brought into the unit of work through reading them or through registering them.
  * The unit of work will operate on its own object space, that is the objects within the unit of work
  * will be clones of the original objects.  When the unit of work is committed, all changes to any objects
@@ -261,7 +261,7 @@ public interface UnitOfWork extends Session {
     /**
      * ADVANCED:
      * The Unit of work is capable of preprocessing to determine if any on the clone have been changed.
-     * This is computationaly expensive and should be avoided on large object graphs.
+     * This is computationally expensive and should be avoided on large object graphs.
       */
     public boolean hasChanges();
 
@@ -358,7 +358,7 @@ public interface UnitOfWork extends Session {
     /**
      * PUBLIC:
      * Refresh the attributes of the object and of all of its private parts from the database.
-     * The object will be pessimisticly locked on the database for the duration of the transaction.
+     * The object will be pessimistically locked on the database for the duration of the transaction.
      * If the object is already locked this method will wait until the lock is released.
      * A no wait option is available through setting the lock mode.
      * @see #refreshAndLockObject(Object, lockMode)
@@ -368,7 +368,7 @@ public interface UnitOfWork extends Session {
     /**
      * PUBLIC:
      * Refresh the attributes of the object and of all of its private parts from the database.
-     * The object will be pessimisticly locked on the database for the duration of the transaction.
+     * The object will be pessimistically locked on the database for the duration of the transaction.
      * <p>Lock Modes: ObjectBuildingQuery.NO_LOCK, LOCK, LOCK_NOWAIT
      */
     public Object refreshAndLockObject(Object object, short lockMode);

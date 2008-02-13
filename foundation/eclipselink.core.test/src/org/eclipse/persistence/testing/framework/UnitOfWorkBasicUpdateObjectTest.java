@@ -25,7 +25,7 @@ import org.eclipse.persistence.sessions.*;
  * <ul>
  * <li> Be independent of the class being tested.
  * <li> Attempt to mutate a Direct to Field mapping if instructed to do so.
- * <li> Execute the insert object query and verify no errors occured.
+ * <li> Execute the insert object query and verify no errors occurred.
  * <li> Verify the object written matches the object that was written.
  * </ul>
  */

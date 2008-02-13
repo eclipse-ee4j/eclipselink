@@ -19,7 +19,7 @@ import org.eclipse.persistence.sessions.*;
  * <b>Responsibilities</b>:
  * <ul>
  * <li> Be independent of the class being tested.
- * <li> Execute the uow and verify no errors occured.
+ * <li> Execute the uow and verify no errors occurred.
  * <li> Verify the object written matches the object that was written.
  * </ul>
  */

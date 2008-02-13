@@ -13,7 +13,7 @@ import org.eclipse.persistence.sessions.Session;
 
 /**
  * <p><b>Purpose</b>: The fetch group tracker interface provides a set of APIs which
- * the domain object must implement, in order to take advantage of the TopLink fetch group
+ * the domain object must implement, in order to take advantage of the EclipseLink fetch group
  * performance enhancement feature.
  *
  * @see org.eclipse.persistence.queries.FetchGroup
@@ -44,12 +44,12 @@ public interface FetchGroupTracker {
     void _persistence_resetFetchGroup();
 
     /**
-     * Return true if the fecth group attributes should be refreshed.
+     * Return true if the fetch group attributes should be refreshed.
      */
     boolean _persistence_shouldRefreshFetchGroup();
 
     /**
-     * Set true if the fecth group attributes should be refreshed.
+     * Set true if the fetch group attributes should be refreshed.
      */
     void _persistence_setShouldRefreshFetchGroup(boolean shouldRefreshFetchGroup);
     
@@ -59,7 +59,7 @@ public interface FetchGroupTracker {
     Session _persistence_getSession();
 
     /**
-     * Set true if the fecth group attributes should be refreshed
+     * Set true if the fetch group attributes should be refreshed
      */
     void _persistence_setSession(Session session);
 }

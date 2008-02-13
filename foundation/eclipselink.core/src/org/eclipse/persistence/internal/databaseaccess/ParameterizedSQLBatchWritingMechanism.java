@@ -28,7 +28,7 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 /**
  * INTERNAL:
  *    ParameterizedSQLBatchWritingMechanism is a private class, used by the DatabaseAccessor. it provides the required
- *  behaviour for batching statements, for write, with parameter binding turned on.<p>
+ *  behavior for batching statements, for write, with parameter binding turned on.<p>
  *    In the future EclipseLink may be modified to control the order of statements passed to the accessor.  This
  *  would prevent checking the last executed statement to ensure that they match.<p>
  *

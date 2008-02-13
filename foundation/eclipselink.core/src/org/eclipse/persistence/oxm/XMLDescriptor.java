@@ -393,7 +393,7 @@ public class XMLDescriptor extends ClassDescriptor {
 
  /**
      * INTERNAL:
-     * Allow the descriptor to initialize any dependancies on this session.
+     * Allow the descriptor to initialize any dependencies on this session.
      */
  public void preInitialize(AbstractSession session) throws DescriptorException {
         // Avoid repetitive initialization (this does not solve loops)
@@ -475,7 +475,7 @@ public class XMLDescriptor extends ClassDescriptor {
         for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
             DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
 
-            // This causes post init to be called multiple times in inheritence.
+            // This causes post init to be called multiple times in inheritance.
             mapping.postInitialize(session);          
         }
 
@@ -516,8 +516,8 @@ public class XMLDescriptor extends ClassDescriptor {
 
     /**
      * INTERNAL:
-     * Initialize the mappings as a seperate step.
-     * This is done as a seperate step to ensure that inheritence has been first resolved.
+     * Initialize the mappings as a separate step.
+     * This is done as a separate step to ensure that inheritance has been first resolved.
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         if (this.hasInheritance()) {
@@ -551,7 +551,7 @@ public class XMLDescriptor extends ClassDescriptor {
             Helper.addAllUniqueToVector(getFields(), mapping.getFields());
         }   
 
-        // If this has inheritence then it needs to be initialized before all fields is set.
+        // If this has inheritance then it needs to be initialized before all fields is set.
         if (hasInheritance()) {
             getInheritancePolicy().initialize(session);          
         }

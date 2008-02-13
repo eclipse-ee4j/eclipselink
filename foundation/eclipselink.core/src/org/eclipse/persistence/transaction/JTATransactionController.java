@@ -16,7 +16,7 @@ import org.eclipse.persistence.exceptions.TransactionException;
  * <p>
  * <b>Purpose</b>: TransactionController implementation for JTA 1.0
  * <p>
- * <b>Description</b>: Implements the required behaviour for controlling JTA 1.0
+ * <b>Description</b>: Implements the required behavior for controlling JTA 1.0
  * transactions. Specific JTA implementations may need to extend this class
  * when special controller behavior is necessary.
  * <p>

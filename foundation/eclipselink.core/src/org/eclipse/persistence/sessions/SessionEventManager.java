@@ -49,8 +49,8 @@ public class SessionEventManager implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * Add the event listener to the session.
-     * The listner will receive all events raised by this session.
-     * Also unit of works acquire from this session will inherit the listenrs.
+     * The listener will receive all events raised by this session.
+     * Also unit of works acquire from this session will inherit the listeners.
      */
     public void addListener(SessionEventListener listener) {
         getListeners().addElement(listener);
@@ -83,8 +83,8 @@ public class SessionEventManager implements Cloneable, Serializable {
 
     /**
      * PUBLIC:
-     * The event listners will receive all events raised by this session.
-     * Also unit of works acquire from this session will inherit the listenrs.
+     * The event listeners will receive all events raised by this session.
+     * Also unit of works acquire from this session will inherit the listeners.
      */
     public Vector getListeners() {
         if (listeners == null) {

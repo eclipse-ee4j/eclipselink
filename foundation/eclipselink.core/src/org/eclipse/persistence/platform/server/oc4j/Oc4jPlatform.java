@@ -19,7 +19,7 @@ import org.eclipse.persistence.internal.databaseaccess.Platform;
 /**
  * PUBLIC:
  *
- * This is the concrete subclass responsible for representing Oc4j-specific server behaviour.
+ * This is the concrete subclass responsible for representing Oc4j-specific server behavior.
  *
  * This platform overrides:
  *
@@ -31,7 +31,7 @@ public class Oc4jPlatform extends ServerPlatformBase {
 
     /**
      * INTERNAL:
-     * Default Constructor: All behaviour for the default constructor is inherited
+     * Default Constructor: All behavior for the default constructor is inherited
      */
     public Oc4jPlatform(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);

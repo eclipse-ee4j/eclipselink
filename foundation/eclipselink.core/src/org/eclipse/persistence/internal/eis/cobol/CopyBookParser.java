@@ -510,7 +510,7 @@ public class CopyBookParser {
 
     /**
     * This method will create a invalid copybook exception and add the line number and line
-    * at which the exception occured
+    * at which the exception occurred
     */
     private CopyBookParseException invalidCopyBookException(String message) {
         return CopyBookParseException.invalidCopyBookException(message + " Error occrured on line " + currentLineNumber + ":" + currentLine);

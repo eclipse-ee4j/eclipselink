@@ -14,7 +14,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 /**
  * <p><b>Purpose</b>:
  * Abstract class for all modify queries.
- * Currently contains no behavoir.
+ * Currently contains no behavior.
  *
  * @author Yvon Lavoie
  * @since TOPLink/Java 1.0
@@ -55,7 +55,7 @@ public abstract class ModifyQuery extends DatabaseQuery {
      * and ensure it is flushed on execution.  Setting to true will cause the batch
      * statement to be sent to the database.  Default setting of false causes the batch 
      * statement execution to be delayed to allow additional statements to
-     * be added.  Setting to true reduces the efficiency of batch writting.  
+     * be added.  Setting to true reduces the efficiency of batch writing.  
      * 
      *  This has no effect if batch writing is not enabled.   
      */

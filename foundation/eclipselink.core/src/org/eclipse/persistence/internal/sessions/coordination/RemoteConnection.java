@@ -58,7 +58,7 @@ public abstract class RemoteConnection implements java.io.Serializable {
 
     /**
      * INTERNAL:
-     * cleanup whatever is neccessary.  Invoked when the TransportManager discard connections.
+     * cleanup whatever is necessary.  Invoked when the TransportManager discard connections.
      */
     public void close() {
     }

@@ -27,7 +27,7 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
  *
  * <p><b>Responsibilities</b>:<ul>
  * <li> Build the Oracle empty lob method call string for the insert call.
- * <li> Build the minimial SELECT call to retrieve the locator.
+ * <li> Build the minimal SELECT call to retrieve the locator.
  * <li> Write the lob value through the locator.
  * <li> Resolve the multiple table INSERT/SELECT orders.
  * <li> Resolve the nested unit of work commit issue.
@@ -102,7 +102,7 @@ public class LOBValueWriter {
             //the primary key expression from the primary table
             Expression expression = selectStatement.getWhereClause();
 
-            //additioanl join from the non-primary tables
+            //additional join from the non-primary tables
             Expression additionalJoin = writeQuery.getDescriptor().getQueryManager().getAdditionalJoinExpression();
             if (additionalJoin != null) {
                 expression = expression.and(additionalJoin);
@@ -125,7 +125,7 @@ public class LOBValueWriter {
 
         //the LOB context must be passed into the new call object
         call.setContexts(dbCall.getContexts());
-        //need to explictly define one rwo return, otherwise, TL assumes multiple rows return and confuses the accessor
+        //need to explicitly define one row return, otherwise, EL assumes multiple rows return and confuses the accessor
         call.returnOneRow();
         //the query object has to be set in order to access to the platform and login objects
         call.setQuery(writeQuery);
@@ -178,7 +178,7 @@ public class LOBValueWriter {
             }
         } finally {
             //after executing all select calls, need to empty the collection.
-            //this is neccessary in the nested unit of work cases.
+            //this is necessary in the nested unit of work cases.
             calls.clear();
         }
     }

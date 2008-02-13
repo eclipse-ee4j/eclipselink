@@ -80,7 +80,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
 
     /**
      * INTERNAL:
-     * Add indicators by classname.  For use by the Mapping Workbench to avoid classpath dependancies
+     * Add indicators by classname.  For use by the Mapping Workbench to avoid classpath dependencies
      */
     public void addClassNameIndicator(String className, Object typeIndicator) {
         if (typeIndicator == null) {
@@ -192,7 +192,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * Used for independent relationships.
      * This is used for testing and validation purposes.
      *
-     * Must get seperate fields for the objects because we may be adding a different class to the
+     * Must get separate fields for the objects because we may be adding a different class to the
      * attribute because of the interface
      */
     protected boolean compareObjectsWithoutPrivateOwned(Object firstObject, Object secondObject, AbstractSession session) {
@@ -409,7 +409,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
     /**
      * INTERNAL:
      * Return the typeIndicatorName translation
-     * Used by the Mapping Workbbench to avoid classpath dependancies
+     * Used by the Mapping Workbench to avoid classpath dependencies
      */
     public Map getTypeIndicatorNameTranslation() {
         if (typeIndicatorNameTranslation.isEmpty() && !typeIndicatorTranslation.isEmpty()) {
@@ -664,7 +664,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
 
     /**
      * INTERNAL:
-     * For avoiding classpath dependancies on the Mapping Workbench
+     * For avoiding classpath dependencies on the Mapping Workbench
      */
     protected void setTypeIndicatorNameTranslation(Map translations) {
         this.typeIndicatorNameTranslation = translations;

@@ -232,7 +232,7 @@ public class DataReadQuery extends ReadQuery {
 
     /**
      * INTERNAL:
-     * Allow changing the default behaviour so that AbstractRecords are not returned as query results.  
+     * Allow changing the default behavior so that AbstractRecords are not returned as query results.  
      */
     public void setUseAbstractRecord(boolean useAbstractRecord){
         this.useAbstractRecord = useAbstractRecord;

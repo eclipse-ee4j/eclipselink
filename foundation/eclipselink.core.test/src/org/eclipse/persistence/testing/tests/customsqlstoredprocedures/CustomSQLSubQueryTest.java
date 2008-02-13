@@ -20,7 +20,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
- * <li> Execute the read all query with the subquery and verify no erros occured.
+ * <li> Execute the read all query with the subquery and verify no errors occurred.
  * <li> Verify the objects returned match the original number of objects.
  * </ul>
  */

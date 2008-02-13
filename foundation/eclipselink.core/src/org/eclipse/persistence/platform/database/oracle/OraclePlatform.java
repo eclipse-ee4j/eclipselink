@@ -615,7 +615,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * ADVANCED:
      * Oracle db doesn't support identity.
-     * However it's possible to get identity-like behaviour
+     * However it's possible to get identity-like behavior
      * using sequence in an insert trigger - that's the only 
      * case when supportsIdentity should be set to true:
      * in this case all the sequences that have shouldAcquireValueAfterInsert
@@ -779,7 +779,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * INTERNAL:
      * A call to this method will perform a platform based check on the connection and exception
-     * error code to dermine if the connection is still valid or if a communication error has occurred.
+     * error code to determine if the connection is still valid or if a communication error has occurred.
      * If a communication error has occurred then the query may be retried.
      * If this platform is unable to determine if the error was communication based it will return
      * false forcing the error to be thrown to the user.

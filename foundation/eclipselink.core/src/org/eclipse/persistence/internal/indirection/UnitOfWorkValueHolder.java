@@ -47,7 +47,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
     protected UnitOfWorkImpl remoteUnitOfWork;
     protected Object sourceObject;
 
-    /** This attribute is used specifically for relationship support.  It mimicks the
+    /** This attribute is used specifically for relationship support.  It mimics the
      * sourceObject attribute which is used for RemoteValueholder
      */
     protected transient Object relationshipSourceObject;
@@ -246,7 +246,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder {
      * and the query.
      */
     public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
-        // This abstract method needs to be implemented but is not meaningfull for
+        // This abstract method needs to be implemented but is not meaningful for
         // this subclass.
         return instantiate();
     }

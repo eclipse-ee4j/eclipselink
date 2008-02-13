@@ -17,7 +17,7 @@ import org.eclipse.persistence.testing.tests.writing.ComplexUpdateTest;
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
- * <li> Execute the insert object query and verify no errors occured.
+ * <li> Execute the insert object query and verify no errors occurred.
  * <li> Verify the object written matches the object that was written.	
  * </ul>
  * 

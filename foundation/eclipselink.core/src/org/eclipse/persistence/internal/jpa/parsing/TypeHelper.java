@@ -29,7 +29,7 @@ public interface TypeHelper {
      * specified owner class. */ 
     public Object resolveAttribute(Object ownerClass, String attribute);
 
-    /** Returns the type of the class corresponding to the spcified abstract
+    /** Returns the type of the class corresponding to the specified abstract
      * schema type. */
     public Object resolveSchema(String schemaName);
 
@@ -98,7 +98,7 @@ public interface TypeHelper {
     /** Returns true if the specified type represents java.math.BigDecimal. */
     public boolean isBigDecimalType(Object type);
 
-    /** Returns true if the specified type denotes an orable type. */
+    /** Returns true if the specified type denotes an orderable type. */
     public boolean isOrderableType(Object type);
 
     /** Returns true if the specified type denotes an entity class. */

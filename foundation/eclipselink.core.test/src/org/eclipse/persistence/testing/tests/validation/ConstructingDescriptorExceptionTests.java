@@ -36,7 +36,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 
 public class ConstructingDescriptorExceptionTests extends AutoVerifyTestCase {
     public ConstructingDescriptorExceptionTests() {
-        setDescription("This creates all untestable Descriptor Exceptions by calling each static method contructor for Code Coverage (methods and error codes could be Depricated)");
+        setDescription("This creates all untestable Descriptor Exceptions by calling each static method contructor for Code Coverage (methods and error codes could be Deprecated)");
     }
 
     Vector testResults = new Vector();

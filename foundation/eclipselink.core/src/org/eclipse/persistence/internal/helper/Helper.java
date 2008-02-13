@@ -27,7 +27,7 @@ import org.eclipse.persistence.exceptions.*;
 /**
  * INTERNAL:
  * <p>
- * <b>Purpose</b>: Define any usefull methods that are missing from the base Java.
+ * <b>Purpose</b>: Define any useful methods that are missing from the base Java.
  */
 public class Helper implements Serializable {
 

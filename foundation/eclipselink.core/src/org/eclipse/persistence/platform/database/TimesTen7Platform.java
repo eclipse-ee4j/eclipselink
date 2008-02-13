@@ -17,7 +17,7 @@ import java.util.Hashtable;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 
 /**
- *    <p><b>Purpose</b>: Provides TimesTen 7 specific behaviour.
+ *    <p><b>Purpose</b>: Provides TimesTen 7 specific behavior.
  *
  */
 

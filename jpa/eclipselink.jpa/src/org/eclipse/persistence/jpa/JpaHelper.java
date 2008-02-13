@@ -63,7 +63,7 @@ public class JpaHelper {
 
     /** 
      * Determine if the JPA query is a EclipseLink ReportQuery. Useful for 
-     * frameworks that want to dtermine which get_X_Query method they can 
+     * frameworks that want to determine which get_X_Query method they can 
      * safely invoke. 
      */ 
     public static boolean isReportQuery(Query query) { 

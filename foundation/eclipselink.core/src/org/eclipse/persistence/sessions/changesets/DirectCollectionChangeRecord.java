@@ -16,7 +16,7 @@ package org.eclipse.persistence.sessions.changesets;
  * an object.
  * <p>
  * <b>Description</b>: Collections are compared to each other and added and removed objects are
- * recorded seperately
+ * recorded separately
  */
 public interface DirectCollectionChangeRecord extends ChangeRecord {
 

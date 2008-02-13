@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.queries.*;
 
 /**
- * <p><b>Purpose</b>: Provides SQL Server specific behaviour.
+ * <p><b>Purpose</b>: Provides SQL Server specific behavior.
  * <p><b>Responsibilities</b>:<ul>
  * <li> Native SQL for byte[], Date, Time, & Timestamp.
  * <li> Native sequencing using @@IDENTITY.

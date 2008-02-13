@@ -106,7 +106,7 @@ public interface SessionProfiler {
     /**
      * INTERNAL:
      * Finish a profile operation if profiling.
-     * This assumes the start operation preceeds on the stack.
+     * This assumes the start operation proceeds on the stack.
      * The session must be passed to allow units of work etc. to share their parents profiler.
      *
      * @return the execution result of the query.
@@ -115,7 +115,7 @@ public interface SessionProfiler {
 
     /**
      * INTERNAL:
-     * Set the sesssion.
+     * Set the session.
      */
     public void setSession(Session session);
 
@@ -157,7 +157,7 @@ public interface SessionProfiler {
 
     /**
      * INTERNAL:
-     * Initialize TopLink noun tree(DMS)
+     * Initialize EclipseLink noun tree(DMS)
      */
     public void initialize();
 }

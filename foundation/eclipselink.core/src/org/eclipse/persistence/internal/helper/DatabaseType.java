@@ -10,7 +10,7 @@
 
 package org.eclipse.persistence.internal.helper;
 
-// Javse imports
+// Javase imports
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Vector;

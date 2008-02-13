@@ -13,7 +13,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
  * PUBLIC:
- * This interface is to allow extra customization on a TopLink Session
+ * This interface is to allow extra customization on a EclipseLink Session
  */
 public interface DescriptorCustomizer {
     public void customize(ClassDescriptor Descriptor) throws Exception;

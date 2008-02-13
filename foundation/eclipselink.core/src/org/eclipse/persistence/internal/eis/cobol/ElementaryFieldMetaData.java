@@ -15,7 +15,7 @@ import org.eclipse.persistence.internal.eis.cobol.helper.*;
 
 /**
 * <b>Purpose</b>: This class defines the <code>FieldMetaData</code> interface it defines
-* various behaviour associated with a field and stores meta-information about the field.
+* various behavior associated with a field and stores meta-information about the field.
 * <code>ElementaryFieldMetaData</code> represents a field that contains a direct value and
 * no subordinate fields, a root in the hierarchy.
 */

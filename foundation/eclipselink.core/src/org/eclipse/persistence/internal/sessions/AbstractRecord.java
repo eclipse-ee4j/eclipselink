@@ -57,7 +57,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
 
     /**
      * INTERNAL:
-     * TopLink converts JDBC results to collections of rows.
+     *  converts JDBC results to collections of rows.
      */
     public AbstractRecord() {
         this.fields = new Vector();
@@ -67,7 +67,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
 
     /**
      * INTERNAL:
-     * TopLink converts JDBC results to collections of rows.
+     *  converts JDBC results to collections of rows.
      */
     public AbstractRecord(int initialCapacity) {
         this.fields = new Vector(initialCapacity);
@@ -77,7 +77,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
 
     /**
      * INTERNAL:
-     * TopLink converts JDBC results to collections of rows.
+     *  converts JDBC results to collections of rows.
      */
     public AbstractRecord(Vector fields, Vector values) {
         this.fields = fields;

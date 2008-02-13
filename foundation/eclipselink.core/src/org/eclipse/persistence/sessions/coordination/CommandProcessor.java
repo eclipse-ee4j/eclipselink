@@ -97,7 +97,7 @@ public interface CommandProcessor {
      * command service. The implementation may choose to simply rethrow the
      * exception if it does not want to handle it.
      *
-     * NOTE: Handlers that simply ignore exceptions may cause unexpected behaviour
+     * NOTE: Handlers that simply ignore exceptions may cause unexpected behavior
      * that can be detrimental to the application and difficult to debug.
      *
      * @param exception The exception being thrown

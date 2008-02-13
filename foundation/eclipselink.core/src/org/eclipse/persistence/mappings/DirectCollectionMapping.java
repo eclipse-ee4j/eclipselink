@@ -575,7 +575,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             DatabaseField sourceField = getSourceKeyFields().elementAt(index);
             Object value = row.get(relationField);
 
-            // Must ensure the classificatin to get a cache hit.
+            // Must ensure the classification gets a cache hit.
             try {
                 value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(sourceField));
             } catch (ConversionException e) {
@@ -600,7 +600,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             DatabaseField field = (DatabaseField)fieldEnum.nextElement();
             Object value = row.get(field);
 
-            // Must ensure the classificatin to get a cache hit.
+            // Must ensure the classification to get a cache hit.
             try {
                 value = session.getDatasourcePlatform().getConversionManager().convertObject(value, getDescriptor().getObjectBuilder().getFieldClassification(field));
             } catch (ConversionException e) {
@@ -615,7 +615,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
     /**
      * INTERNAL:
-     * Extract the value from the batch optmized query.
+     * Extract the value from the batch optimized query.
      */
     public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord databaseRow, AbstractSession session, AbstractRecord argumentRow) {
         //this can be null, because either one exists in the query or it will be created

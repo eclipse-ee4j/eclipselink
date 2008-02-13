@@ -279,7 +279,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
     /**
      * INTERNAL:
-     * Extract the value from the batch optmized query.
+     * Extract the value from the batch optimized query.
      */
     public Object extractResultFromBatchQuery(DatabaseQuery query, AbstractRecord row, AbstractSession session, AbstractRecord argumentRow) {
         //this can be null, because either one exists in the query or it will be created

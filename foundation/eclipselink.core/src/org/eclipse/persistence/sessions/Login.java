@@ -18,10 +18,10 @@ import org.eclipse.persistence.platform.database.DatabasePlatform;
 
 /**
  * <p>
- * <b>Purpose</b>: Define the information required to connect to a TopLink session.
+ * <b>Purpose</b>: Define the information required to connect to a EclipseLink session.
  * <p>
  * <b>Description</b>: This interface represents a generic concept of a login to be used
- * when connecting to a data-store.  It is independant of JDBC so that the TopLink
+ * when connecting to a data-store.  It is independant of JDBC so that the EclipseLink
  * session interface can be used for JCA, XML, non-relational or three-tiered frameworks.
  * <p>
  * @see DatabaseLogin
@@ -43,11 +43,11 @@ public interface Login {
     /**
      * PUBLIC:
      * This value defaults to false when not on a DatabaseLogin as the functionality has not been implemented
-     * for other datasource type.  On an SQL Exception TopLink will ping the database to determine
+     * for other datasource type.  On an SQL Exception EclipseLink will ping the database to determine
      * if the connection used can continue to be used for queries.  This should have no impact on applications
      * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
      * If that is the case and the application is experiencing a performance impact from the health check then
-     * this feature can be turned off. Turning this feature off will prevent TopLink from being able to
+     * this feature can be turned off. Turning this feature off will prevent EclipseLink from being able to
      * retry queries in the case of database failure. 
      */
     public boolean isConnectionHealthValidatedOnError();
@@ -66,20 +66,20 @@ public interface Login {
 
     /**
      * PUBLIC:
-     * Return whether TopLink uses some externally managed connection pooling.
+     * Return whether EclipseLink uses some externally managed connection pooling.
      */
     boolean shouldUseExternalConnectionPooling();
 
     /**
      * PUBLIC:
-     * Return whether TopLink uses some externally managed transaction service such as JTS.
+     * Return whether EclipseLink uses some externally managed transaction service such as JTS.
      */
     boolean shouldUseExternalTransactionController();
 
     /**
      * INTERNAL:
      * Return the database platform specific information.
-     * This allows TopLink to configure certain advanced features for the database desired.
+     * This allows EclipseLink to configure certain advanced features for the database desired.
      * The platform also allows configuration of sequence information.
      * NOTE: this must only be used for relational specific usage and will not work for
      * non-relational datasources.
@@ -89,7 +89,7 @@ public interface Login {
     /**
      * PUBLIC:
      * Return the datasource platform specific information.
-     * This allows TopLink to configure certain advanced features for the datasource desired.
+     * This allows EclipseLink to configure certain advanced features for the datasource desired.
      * The platform also allows configuration of sequence information.
      */
     Platform getDatasourcePlatform();
@@ -97,7 +97,7 @@ public interface Login {
     /**
      * INTERNAL:
      * Set the database platform specific information.
-     * This allows TopLink to configure certain advanced features for the database desired.
+     * This allows EclipseLink to configure certain advanced features for the database desired.
      * The platform also allows configuration of sequence information.
      */
     void setPlatform(Platform platform);
@@ -105,7 +105,7 @@ public interface Login {
     /**
      * PUBLIC:
      * Set the database platform specific information.
-     * This allows TopLink to configure certain advanced features for the database desired.
+     * This allows EclipseLink to configure certain advanced features for the database desired.
      * The platform also allows configuration of sequence information.
      */
     void setDatasourcePlatform(Platform platform);
@@ -142,21 +142,21 @@ public interface Login {
 
     /**
      * INTERNAL:
-     * Used for Cache Isolation.  Causes TopLink to lock at the class level on
+     * Used for Cache Isolation.  Causes EclipseLink to lock at the class level on
      * cache updates.
      */
     public boolean shouldSynchronizeWrites();
     
     /**
      * INTERNAL:
-     * Used for Cache Isolation.  Causes TopLink to lock at the object level on
+     * Used for Cache Isolation.  Causes EclipseLink to lock at the object level on
      * cache updates and cache access.
      */
     public boolean shouldSynchronizeObjectLevelReadWrite();
     
     /**
      * INTERNAL:
-     * Used for Cache Isolation.  Causes TopLink to lock at the object level on
+     * Used for Cache Isolation.  Causes EclipseLink to lock at the object level on
      * cache updates and cache access, based on database transaction.
      */
     public boolean shouldSynchronizeObjectLevelReadWriteDatabase();

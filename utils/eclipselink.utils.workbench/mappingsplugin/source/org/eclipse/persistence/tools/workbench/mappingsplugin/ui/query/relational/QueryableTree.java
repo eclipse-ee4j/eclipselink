@@ -410,7 +410,7 @@ final class QueryableTree extends SwingComponentFactory.AccessibleTree
 
 		public boolean isCellEditable(EventObject e)
 		{
-			// Retrieve the node where the mouse event location occured
+			// Retrieve the node where the mouse event location occurred
 			TreePath path = null;
 			MouseEvent mouseEvent = null;
 

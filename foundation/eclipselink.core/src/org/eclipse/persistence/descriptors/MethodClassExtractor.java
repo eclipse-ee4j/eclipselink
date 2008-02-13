@@ -48,7 +48,7 @@ public class MethodClassExtractor extends ClassExtractor {
      * The method registered must be a static method on the class that the descriptor is for,
      * the method must take DatabaseRow as argument, and must return the class to use for that row.
      * This method will be used to decide which class to instantiate when reading from the database.
-     * It is the application's responsiblity to populate any typing information in the database required
+     * It is the application's responsibility to populate any typing information in the database required
      * to determine the class from the row.
      * If this method is used then the class indicator field and mapping cannot be used,
      * also the descriptor's withAllSubclasses and onlyInstances expressions must also be setup correctly.
@@ -71,7 +71,7 @@ public class MethodClassExtractor extends ClassExtractor {
      * The method registered must be a static method on the class that the descriptor is for,
      * the method must take DatabaseRow as argument, and must return the class to use for that row.
      * This method will be used to decide which class to instantiate when reading from the database.
-     * It is the application's responsiblity to populate any typing information in the database required
+     * It is the application's responsibility to populate any typing information in the database required
      * to determine the class from the row.
      * If this method is used then the class indicator field and mapping cannot be used,
      * also the descriptor's withAllSubclasses and onlyInstances expressions must also be setup correctly.

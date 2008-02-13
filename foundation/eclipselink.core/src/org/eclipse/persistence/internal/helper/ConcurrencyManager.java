@@ -21,7 +21,7 @@ import org.eclipse.persistence.logging.*;
 /**
  * INTERNAL:
  * <p>
- * <b>Purpose</b>: To maintain concurrency for a paticular task.
+ * <b>Purpose</b>: To maintain concurrency for a particular task.
  * It is a wrappers of a semaphore that allows recursive waits by a single thread.
  * <p>
  * <b>Responsibilities</b>:
@@ -39,7 +39,7 @@ public class ConcurrencyManager implements Serializable {
     public static Map<Thread, DeferredLockManager> deferredLockManagers = initializeDeferredLockManagers();
     protected boolean lockedByMergeManager;
 
-    /** Cachkey owner set when ConcurrencyMananger is used within an cachekey on an idenity map
+    /** Cachekey owner set when ConcurrencyMananger is used within an cachekey on an identity map
      * Used to store the owner so that the object involved can be retrieved from the cachekey
      */
     protected CacheKey ownerCacheKey;
@@ -55,7 +55,7 @@ public class ConcurrencyManager implements Serializable {
     }
 
     /**
-     * Initialize a new ConcurrencyManger, seting depth to zero and setting the
+     * Initialize a new ConcurrencyManger, setting depth to zero and setting the
      * owner cacheKey.
      */
     public ConcurrencyManager(CacheKey cacheKey) {
@@ -65,7 +65,7 @@ public class ConcurrencyManager implements Serializable {
 
     /**
      * Wait for all threads except the active thread.
-     * If the active thread just increament the depth.
+     * If the active thread just increment the depth.
      * This should be called before entering a critical section.
      */
     public void acquire() throws ConcurrencyException {
@@ -74,7 +74,7 @@ public class ConcurrencyManager implements Serializable {
 
     /**
      * Wait for all threads except the active thread.
-     * If the active thread just increament the depth.
+     * If the active thread just increment the depth.
      * This should be called before entering a critical section.
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
@@ -97,8 +97,8 @@ public class ConcurrencyManager implements Serializable {
     }
 
     /**
-     * If the lock is not acquired allready acquire it and return true.
-     * If it has been acquired allready return false
+     * If the lock is not acquired already acquire it and return true.
+     * If it has been acquired already return false
      * Added for CR 2317
      */
     public boolean acquireNoWait() throws ConcurrencyException {
@@ -154,8 +154,8 @@ public class ConcurrencyManager implements Serializable {
                 // There are readers of this object, wait until they are done before determining if
                 //there are any other writers.  If not we will wait on the readers for acquire.  If another
                 //thread is also waiting on the acquire then a deadlock could occur.  See bug 3049635
-                //We could release all active locks before relesing defered but the object may not be finished building
-                //we could make the readers get a hard lock, but then we would just build a defered lock even though
+                //We could release all active locks before releasing deferred but the object may not be finished building
+                //we could make the readers get a hard lock, but then we would just build a deferred lock even though
                 //the object is not being built.
                 try {
                     this.numberOfWritersWaiting++;
@@ -290,7 +290,7 @@ public class ConcurrencyManager implements Serializable {
     }
 
     /**
-     * Return if a thread has aquire this manager.
+     * Return if a thread has acquire this manager.
      */
     public boolean isAcquired() {
         return depth > 0;
@@ -351,7 +351,7 @@ public class ConcurrencyManager implements Serializable {
     }
 
     /**
-     * Return if this manager is within a nested aquire.
+     * Return if this manager is within a nested acquire.
      */
     public boolean isNested() {
         return depth > 1;
@@ -383,9 +383,9 @@ public class ConcurrencyManager implements Serializable {
 
     /**
      * Release the deferred lock.
-     * This uses a deadlock detection and resoultion algorthm to avoid cache deadlocks.
+     * This uses a deadlock detection and resolution algorithm to avoid cache deadlocks.
      * The deferred lock manager keeps track of the lock for a thread, so that other
-     * thread know when a deadlock has occured and can resolve it.
+     * thread know when a deadlock has occurred and can resolve it.
      */
     public void releaseDeferredLock() throws ConcurrencyException {
         Thread currentThread = Thread.currentThread();

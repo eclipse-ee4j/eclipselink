@@ -111,7 +111,7 @@ public class TransformerBasedValueHolder extends DatabaseValueHolder {
      * However only the wrapped valueholder knows how to trigger the indirection,
      * i.e. it may be a batchValueHolder, and it stores all the info like the row
      * and the query.
-     * Note: This method is not thread-safe.  It must be used in a synchronizaed manner
+     * Note: This method is not thread-safe.  It must be used in a synchronized manner
      */
     public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
         return instantiate(getObject(), unitOfWorkValueHolder.getUnitOfWork());
@@ -122,9 +122,9 @@ public class TransformerBasedValueHolder extends DatabaseValueHolder {
      * Answers if this valueholder is a pessimistic locking one.  Such valueholders
      * are special in that they can be triggered multiple times by different
      * UnitsOfWork.  Each time a lock query will be issued.  Hence even if
-     * instantiated it may have to be instantiated again, and once instantatiated
+     * instantiated it may have to be instantiated again, and once instantiated
      * all fields can not be reset.
-     * Note: This method is not thread-safe.  It must be used in a synchronizaed manner
+     * Note: This method is not thread-safe.  It must be used in a synchronized manner
      */
     public boolean isPessimisticLockingValueHolder() {
         // there is no way to tell, as a transformation mapping may have

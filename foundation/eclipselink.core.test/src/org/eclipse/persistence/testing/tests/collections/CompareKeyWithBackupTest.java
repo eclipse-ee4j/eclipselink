@@ -18,9 +18,9 @@ import org.eclipse.persistence.sessions.*;
 
 /**
  * This test fakes an issue where if you use a perstistant object as the key in a Map
- * TopLink may determine that a change in the key has occured because the clone is a different
+ * EclipseLink may determine that a change in the key has occurred because the clone is a different
  * object than the one in the cache.  the UnitOfWork should not deterine that a change to the
- * identityMap has occured simply because the clone does not match the original.
+ * identityMap has occurred simply because the clone does not match the original.
  */
 public class CompareKeyWithBackupTest extends TestCase {
     protected Restaurant originalRestaurant = null;

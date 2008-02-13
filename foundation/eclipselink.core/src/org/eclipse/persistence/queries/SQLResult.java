@@ -13,7 +13,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * <p><b>Purpose</b>:
- * An abstract superclass that represents the comonalities between the main
+ * An abstract superclass that represents the commonalities between the main
  * result types of the SQLResultSetMapping
  * 
  * @see EntityResult
@@ -44,7 +44,7 @@ public abstract class SQLResult {
     
     /**
      * INTERNAL:
-     * This method is a convience method for extracting values from Results
+     * This method is a convenience method for extracting values from Results
      */
     public abstract Object getValueFromRecord(DatabaseRecord record, ResultSetMappingQuery query);
     

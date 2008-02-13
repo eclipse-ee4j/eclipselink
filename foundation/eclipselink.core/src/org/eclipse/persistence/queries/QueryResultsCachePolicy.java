@@ -14,11 +14,11 @@ import org.eclipse.persistence.descriptors.invalidation.*;
 /**
  * PUBLIC:
  *
- * A QueryResultsCache policy dicates how a query's results will be cached.
+ * A QueryResultsCache policy dictates how a query's results will be cached.
  *
  * It allows an invalidation policy and a maximum number of results to be set.
  * Query results are cached based on the parameter values of a query, and the maximum number
- * of results refers to the maxmium number of parameter sets results will be ached for.
+ * of results refers to the maximum number of parameter sets results will be ached for.
  *
  * @see org.eclipse.persistence.queries.ReadQuery#setQueryCachePolicy(QueryResultsCachePolicy)
  */

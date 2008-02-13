@@ -269,7 +269,7 @@ public class PersistenceUnitProperties {
     public static final String TEMPORAL_MUTABLE = "eclipselink.temporal.mutable";
     
     /**
-     * Defines EntityManager cache behaviour after  a call to flush method
+     * Defines EntityManager cache behavior after  a call to flush method
      * followed by a call to clear method.
      * This property could be specified while creating either EntityManagerFactory 
      * (either in the map passed to createEntityManagerFactory method or in persistence.xml)

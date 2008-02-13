@@ -19,7 +19,7 @@ import org.eclipse.persistence.queries.*;
  * <b>Responsibilities</b>:
  * <ul>
  * <li> Be independent of the class being tested.
- * <li> Execute the read all query and verify no erros occured.
+ * <li> Execute the read all query and verify no errors occurred.
  * <li> Verify the objects returned match the original number of objects.
  * </ul>
  */

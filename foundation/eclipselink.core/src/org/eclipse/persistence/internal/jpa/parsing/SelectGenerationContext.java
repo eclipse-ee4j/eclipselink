@@ -17,7 +17,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * INTERNAL:
- * An extension of GenerationContext the provides SELECT specfic behavior.
+ * An extension of GenerationContext the provides SELECT specific behavior.
  * Used when building the query features that are not usable in other types of queries
  */
 public class SelectGenerationContext extends GenerationContext {
@@ -124,7 +124,7 @@ public class SelectGenerationContext extends GenerationContext {
     
     /** 
      * Iterate the set of variables declared in an outer scope and
-     * connect the inner varaible expression with the outer one.
+     * connect the inner variable expression with the outer one.
      */
     public Expression joinVariables(Set variables) {
         if ((outer == null) || (variables == null) || variables.isEmpty()) {

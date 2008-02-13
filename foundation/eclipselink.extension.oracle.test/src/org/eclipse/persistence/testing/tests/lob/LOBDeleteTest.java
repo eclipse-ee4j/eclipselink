@@ -20,7 +20,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
  * <b>Responsibilities</b>:
  * <ul>
  * <li> Insert a new object (with BLOB/CLOB value) ready for deleting
- * <li> Execute the delete object query to delete the inserted object and verify no errors occured.
+ * <li> Execute the delete object query to delete the inserted object and verify no errors occurred.
  * <li> Verify the object has been completely deleted from the database.	
  * </ul>
  * 

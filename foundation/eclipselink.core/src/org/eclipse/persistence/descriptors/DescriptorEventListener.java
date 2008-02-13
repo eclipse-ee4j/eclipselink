@@ -14,7 +14,7 @@ import java.util.*;
 /**
  * <p><b>Purpose</b>: Used to support Java event listener event model on descriptors.
  * Events can be registered for, through two methods, the first is by providing a method
- * to be called on the object that a paticualr operation is being performed on.
+ * to be called on the object that a particular operation is being performed on.
  * The second is by registering an event listener object to be notified when any event occurs
  * for that descriptor.  The second method is more similar to the java beans event model
  * and requires the registered listener to implement the DescriptorEventListener interface.

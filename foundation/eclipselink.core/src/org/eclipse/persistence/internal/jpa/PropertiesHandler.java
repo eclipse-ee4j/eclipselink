@@ -23,7 +23,7 @@ import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * 
- * The class processes some of TopLink properties.
+ * The class processes some of EclipseLink properties.
  * The class may be used for any properties, but it only makes sense 
  * to use it in the following two cases:
  *      1. There is a set of legal values defined
@@ -34,7 +34,7 @@ import org.eclipse.persistence.logging.SessionLog;
  *      it corresponds to "eclipselink.descriptor.customizer." prefix that allows to
  *      define propereties like "eclipselink.descriptor.customizer.myPackage.MyClass"). 
  * 
- * TopLink properties and their values defined in org.eclipse.persistence.jpa.config package.
+ * EclipseLink properties and their values defined in org.eclipse.persistence.jpa.config package.
  * 
  * To add a new property:
  *   Define a new property in PersistenceUnitProperties;

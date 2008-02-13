@@ -13,7 +13,7 @@ import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.sessions.server.ClientSession;
 
 /**
- * ClientSessionSequencing is private to TopLink.
+ * ClientSessionSequencing is private to EclipseLink.
  * It provides sequencing for ClientSession.
  * It contains a reference to SequencingServer object owned by
  * ClientSession's parent ServerSession.
@@ -26,7 +26,7 @@ class ClientSessionSequencing implements Sequencing {
     // ownerClientSession
     protected ClientSession clientSession;
 
-    // SequencingServer owned by clientSession's parent SrverSession
+    // SequencingServer owned by clientSession's parent ServerSession
     protected SequencingServer sequencingServer;
 
     /**

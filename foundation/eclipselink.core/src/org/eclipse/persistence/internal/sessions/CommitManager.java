@@ -24,7 +24,7 @@ import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackin
 public class CommitManager {
     protected Vector commitOrder;
 
-    /** Changed the folowing line to work like mergemanager.  The commitManager
+    /** Changed the following line to work like mergemanager.  The commitManager
      * will now track what has been processed as apposed to removing from the list
      * objects that have been processed.  This must be done to allow for customers
      * modifying the changesets in events
@@ -87,7 +87,7 @@ public class CommitManager {
 
     /**
      * Commit all of the objects as a single transaction.
-     * This should commit the object in the correct order to maintain referencial integrity.
+     * This should commit the object in the correct order to maintain referential integrity.
      */
     public void commitAllObjects(Map domainObjects) throws RuntimeException, DatabaseException, OptimisticLockException {
         reinitialize();
@@ -96,7 +96,7 @@ public class CommitManager {
         setIsActive(true);
         getSession().beginTransaction();
         try {
-            // The commit order is all of the classes ordered by dependencies, this is done for dealock avoidance.
+            // The commit order is all of the classes ordered by dependencies, this is done for deadlock avoidance.
             for (Enumeration classesEnum = getCommitOrder().elements();
                      classesEnum.hasMoreElements();) {
                 Class theClass = (Class)classesEnum.nextElement();
@@ -154,7 +154,7 @@ public class CommitManager {
 
     /**
      * Commit all of the objects as a single transaction.
-     * This should commit the object in the correct order to maintain referencial integrity.
+     * This should commit the object in the correct order to maintain referential integrity.
      */
     public void commitAllObjectsWithChangeSet(UnitOfWorkChangeSet uowChangeSet) throws RuntimeException, DatabaseException, OptimisticLockException {
         reinitialize();
@@ -175,7 +175,7 @@ public class CommitManager {
                     commitChangedObjectsForClassWithChangeSet(uowChangeSet, className);
                 }
             } else {
-                // The commit order is all of the classes ordered by dependencies, this is done for dealock avoidance.
+                // The commit order is all of the classes ordered by dependencies, this is done for deadlock avoidance.
                 for (Enumeration classesEnum = getCommitOrder().elements();
                          classesEnum.hasMoreElements();) {
                     Class theClass = (Class)classesEnum.nextElement();
@@ -302,7 +302,7 @@ public class CommitManager {
 
     /**
      * delete all of the objects as a single transaction.
-     * This should delete the object in the correct order to maintain referencial integrity.
+     * This should delete the object in the correct order to maintain referential integrity.
      */
     public void deleteAllObjects(Vector objectsForDeletion) throws RuntimeException, DatabaseException, OptimisticLockException {
         setIsActive(true);
@@ -337,8 +337,8 @@ public class CommitManager {
     }
 
     /**
-     * Return the order in which objects should be commited to the database.
-     * This order is based on ownership in the descriptors and is require for referencial integrity.
+     * Return the order in which objects should be committed to the database.
+     * This order is based on ownership in the descriptors and is require for referential integrity.
      * The commit order is a vector of vectors,
      * where the first vector is all root level classes, the second is classes owned by roots and so on.
      */
@@ -410,7 +410,7 @@ public class CommitManager {
 
     /**
      * Return any objects that should be written during post modify commit process.
-     * These objects should be order by their ownership constraints to maintain referencial integrity.
+     * These objects should be order by their ownership constraints to maintain referential integrity.
      */
     protected Map getPostModifyCommits() {
         if (postModifyCommits == null) {
@@ -422,7 +422,7 @@ public class CommitManager {
 
     /**
      * Return any objects that should be written during pre modify commit process.
-     * These objects should be order by their ownership constraints to maintain referencial integrity.
+     * These objects should be order by their ownership constraints to maintain referential integrity.
      */
     protected Map getPreModifyCommits() {
         if (preModifyCommits == null) {
@@ -440,7 +440,7 @@ public class CommitManager {
     }
 
     /**
-     * Return any objects that have been shallow comitted during this commit process.
+     * Return any objects that have been shallow committed during this commit process.
      */
     protected Map getShallowCommits() {
         if (shallowCommits == null) {
@@ -456,7 +456,7 @@ public class CommitManager {
      * to decide which descriptors are dependent on which other descriptors.
      * Multiple computations of the commit order should produce the same ordering.
      * This is done to improve performance on unit of work writes through decreasing the
-     * stack size, and acts as a deadlock avoidance mechansim.
+     * stack size, and acts as a deadlock avoidance mechanism.
      */
     public void initializeCommitOrder() {
         Vector descriptors = Helper.buildVectorFromMapElements(getSession().getDescriptors());
@@ -523,7 +523,7 @@ public class CommitManager {
 
     /**
      * Return if the object is shallow committed.
-     * This is required to resolve bidirection references.
+     * This is required to resolve bidirectional references.
      */
     public boolean isShallowCommitted(Object domainObject) {
         return getShallowCommits().containsKey(domainObject);
@@ -536,7 +536,7 @@ public class CommitManager {
     public void markCommitCompleted(Object domainObject) {
         getPreModifyCommits().remove(domainObject);
         getPostModifyCommits().remove(domainObject);
-        // If not in a unit of work commit and the commit of this object is done reset the comitt manager
+        // If not in a unit of work commit and the commit of this object is done reset the commit manager
         if ((!isActive()) && getPostModifyCommits().isEmpty() && getPreModifyCommits().isEmpty()) {
             reinitialize();
             return;
@@ -545,7 +545,7 @@ public class CommitManager {
     }
 
     /**
-     * Add an object as being in progress of being commited.
+     * Add an object as being in progress of being committed.
      * This should be called by any query that is writing an object.
      */
     public void markPostModifyCommitInProgress(Object domainObject) {
@@ -554,7 +554,7 @@ public class CommitManager {
     }
 
     /**
-     * Add an object as being in progress of being commited.
+     * Add an object as being in progress of being committed.
      * This should be called by any query that is writing an object.
      */
     public void markPreModifyCommitInProgress(Object domainObject) {
@@ -565,7 +565,7 @@ public class CommitManager {
 
     /**
      * Mark the object as shallow committed.
-     * This is required to resolve bidirection references.
+     * This is required to resolve bidirectional references.
      */
     public void markShallowCommit(Object domainObject) {
         getShallowCommits().put(domainObject, domainObject);// Use as set.
@@ -594,8 +594,8 @@ public class CommitManager {
     }
 
     /**
-     * Set the order in which objects should be commited to the database.
-     * This order is based on ownership in the descriptors and is require for referencial integrity.
+     * Set the order in which objects should be committed to the database.
+     * This order is based on ownership in the descriptors and is require for referential integrity.
      * The commit order is a vector of vectors,
      * where the first vector is all root level classes, the second is classes owned by roots and so on.
      */
@@ -611,7 +611,7 @@ public class CommitManager {
     }
 
     /**
-     * Used to store data querys to be performed at the end of the commit.
+     * Used to store data queries to be performed at the end of the commit.
      * This is done to decrease dependencies and avoid deadlock.
      */
     protected void setDataModifications(Hashtable dataModifications) {
@@ -648,7 +648,7 @@ public class CommitManager {
 
     /**
      * Set any objects that should be written during post modify commit process.
-     * These objects should be order by their ownership constraints to maintain referencial integrity.
+     * These objects should be order by their ownership constraints to maintain referential integrity.
      */
     protected void setPostModifyCommits(Map postModifyCommits) {
         this.postModifyCommits = postModifyCommits;
@@ -656,7 +656,7 @@ public class CommitManager {
 
     /**
      * Set any objects that should be written during pre modify commit process.
-     * These objects should be order by their ownership constraints to maintain referencial integrity.
+     * These objects should be order by their ownership constraints to maintain referential integrity.
      */
     protected void setPreModifyCommits(Map preModifyCommits) {
         this.preModifyCommits = preModifyCommits;
@@ -670,7 +670,7 @@ public class CommitManager {
     }
 
     /**
-     * Set any objects that have been shallow comitted during this commit process.
+     * Set any objects that have been shallow committed during this commit process.
      */
     protected void setShallowCommits(Map shallowCommits) {
         this.shallowCommits = shallowCommits;

@@ -28,7 +28,7 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 
 /**
- * <p>An <code>EISPlatform</code> defines any EIS adapter specific behavoir.
+ * <p>An <code>EISPlatform</code> defines any EIS adapter specific behavior.
  * This may include:
  * <ul>
  * <li>Instantiation of the adapter InteractionSpec
@@ -38,7 +38,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
  * <li>Provide sequence support
  * </ul>
  * 
- * <p><code>EISPlatform</code> also supports behavoir for specifing the record 
+ * <p><code>EISPlatform</code> also supports behavior for specifying the record 
  * types supported and automatic data-conversion to strings.
  *
  * <p>Although use of the generic <code>EISPlatform</code> may be sufficient, 

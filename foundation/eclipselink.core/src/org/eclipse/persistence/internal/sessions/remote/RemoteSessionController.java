@@ -41,7 +41,7 @@ public class RemoteSessionController {
     /** The original cursor (either CursoredStream or ScrollableCursor, before they were serialized; keyed by ID */
     protected Hashtable remoteCursors;
 
-    /** This is the Synchronization policy used to synchronise remote caches */
+    /** This is the Synchronization policy used to synchronize remote caches */
     protected CommandManager commandManager;
 
     public RemoteSessionController(AbstractSession session) {

@@ -16,7 +16,7 @@ import org.eclipse.persistence.internal.eis.adapters.xmlfile.*;
 import org.eclipse.persistence.exceptions.*;
 
 /**
- * Provides the behavoir of instantiating a XML file adapter ConnectionSpec.
+ * Provides the behavior of instantiating a XML file adapter ConnectionSpec.
  *
  * @author James
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)

@@ -349,14 +349,14 @@ public abstract class MWCollectionMapping
 	public void addWrittenFieldsTo(Collection writtenFields) {
 		//m-m and 1-m mappings do not directly write their fields
 	}
-	// overriden from MWTableReferenceMapping
+	// overridden from MWTableReferenceMapping
 	protected void mappingAndVariableDontUseIndirectionTest(List newProblems) {
 		if (! this.usesValueHolderIndirection() && this.getInstanceVariable().isValueHolder()) {
 			newProblems.add(this.buildProblem(ProblemConstants.MAPPING_VALUE_HOLDER_ATTRIBUTE_WITHOUT_VALUE_HOLDER_INDIRECTION));
 		}
 	} 
 	
-	// overriden from MWTableReferenceMapping
+	// overridden from MWTableReferenceMapping
 	protected void mappingAndVariableUseIndirectionTest(List newProblems) {
 		if ( ! this.getProject().usesWeaving() && this.usesValueHolderIndirection() && ! getInstanceVariable().isValueHolder()) {
 			newProblems.add(this.buildProblem(ProblemConstants.MAPPING_VALUE_HOLDER_INDIRECTION_WITHOUT_VALUE_HOLDER_ATTRIBUTE));

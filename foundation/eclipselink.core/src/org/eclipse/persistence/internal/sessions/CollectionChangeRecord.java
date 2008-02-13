@@ -439,7 +439,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
     }
     
     /**
-     * Sets collection of ChangeSets that they were remvoved from the collection.
+     * Sets collection of ChangeSets that they were removed from the collection.
      */
     public void setOrderedRemoveObjects(Hashtable orderedRemoveObjects) {
         this.orderedRemoveObjects = orderedRemoveObjects;

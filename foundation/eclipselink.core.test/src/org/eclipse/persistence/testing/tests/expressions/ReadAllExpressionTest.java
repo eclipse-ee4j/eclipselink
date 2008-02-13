@@ -163,7 +163,7 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
                 if ((!supportedInMemory) && (exception.getErrorCode() == QueryException.CANNOT_CONFORM_EXPRESSION)) {
                     throw new TestWarningException("This test is not supported In-Memory");
                 } else {
-                    throw new TestErrorException("Fatal query exception occured.", exception);
+                    throw new TestErrorException("Fatal query exception occurred.", exception);
                 }
             }
         }

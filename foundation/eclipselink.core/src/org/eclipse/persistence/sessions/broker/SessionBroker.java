@@ -194,7 +194,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * INTERNAL:
      * Commit the transaction on all child sessions.
      * This assumes that the commit of the transaction will not fail because all of the
-     * modification has already taken place and no errors would have occured.
+     * modification has already taken place and no errors would have occurred.
      */
     protected void basicCommitTransaction() throws DatabaseException {
         // Do one last check it make sure that all sessions are still connected.
@@ -512,8 +512,8 @@ public class SessionBroker extends DatabaseSessionImpl {
 
     /**
      * INTERNAL:
-     * Allow each descriptor to initialize any dependancies on this session.
-     * This is done in two passes to allow the inheritence to be resolved first.
+     * Allow each descriptor to initialize any dependencies on this session.
+     * This is done in two passes to allow the inheritance to be resolved first.
      * Normally the descriptors are added before login, then initialized on login.
      */
     public void initializeDescriptors() {

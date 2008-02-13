@@ -184,7 +184,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
 
     /**
      * INTERNAL:
-     * Retrun an expression that updates the write lock
+     * Return an expression that updates the write lock
      */
     public Expression getWriteLockUpdateExpression(ExpressionBuilder builder) {
         return builder.value(getInitialWriteValue(builder.getSession()));
@@ -192,7 +192,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
 
     /**
      * INTERNAL:
-     * Timestamp versioning should not be able to do this.  Override the superclass behaviour.
+     * Timestamp versioning should not be able to do this.  Override the superclass behavior.
      */
     protected Number incrementWriteLockValue(Number numberValue) {
         return null;

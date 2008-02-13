@@ -13,7 +13,7 @@ import org.eclipse.persistence.testing.framework.TestSystem;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
 /**
- * <b>Purpose</b>: To define a LOB testing system behavoir.
+ * <b>Purpose</b>: To define a LOB testing system behavior.
  * <p><b>Responsibilities</b>:	<ul>
  * <li> Login and return an initialize database session.
  * <li> Create the database.

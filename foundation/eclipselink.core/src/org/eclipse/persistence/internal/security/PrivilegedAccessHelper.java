@@ -211,7 +211,7 @@ public class PrivilegedAccessHelper {
     
     /**
      * Get a method declared in the given class. Wrap the call in doPrivileged 
-     * if necessary. This call will traver the superclasses. The 
+     * if necessary. This call will traverse the superclasses. The 
      * shouldSetAccessible parameter allows the the setAccessible API to be 
      * called as well. This option was added to avoid making multiple 
      * doPrivileged calls within MethodBasedAttributeAccessor.
@@ -280,7 +280,7 @@ public class PrivilegedAccessHelper {
     
     /**
      * Get the list of methods in a class. Wrap the call in doPrivileged if 
-     * necessary. This call will traver the superclasses.
+     * necessary. This call will traverse the superclasses.
      * @param clazz the class to get the methods from.
      */
     public static Method[] getMethods(final Class clazz) {

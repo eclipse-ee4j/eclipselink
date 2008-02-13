@@ -57,7 +57,7 @@ public class DateFunctionNode extends FunctionalExpressionNode {
 
     /**
      * INTERNAL
-     * Generate the TopLink expression for this node
+     * Generate the EclipseLink expression for this node
      */
     public Expression generateExpression(GenerationContext context) {
         Expression expr = context.getBaseExpression();

@@ -42,7 +42,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory {
     protected Map properties;
 
     /**
-     * Will return an instance of the Factory.  Should only be called by TopLink.
+     * Will return an instance of the Factory.  Should only be called by EclipseLink.
      * @param serverSession
      */
     public EntityManagerFactoryImpl(ServerSession serverSession){

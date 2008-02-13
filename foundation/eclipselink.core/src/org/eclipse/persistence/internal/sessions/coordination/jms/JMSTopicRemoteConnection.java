@@ -180,7 +180,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
      * INTERNAL:
      * Indicates whether all the resources used by connection are freed after close method returns.
      * Usually that's the case. However in case of local (listening) JMSTopicRemoteConnection
-     * close merely indicates to the listening thread that it shoud free TopicConnection and exit.
+     * close merely indicates to the listening thread that it should free TopicConnection and exit.
      * Note that it may take a while: the listening thread waits until subscriber.receive method either
      * returns a message or throws an exception.
      */

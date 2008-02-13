@@ -24,8 +24,8 @@ import org.eclipse.persistence.sessions.*;
  * <li> Dynamically configure the query options based on the arguments (i.e. ordering, query optimization... etc.).
  * <li> Dynamically define the selection criteria based on the arguments.
  * <li> Pass Query By Example objects or Expressions as the arguments.
- * <li> Post prosses the query results.
- * <li> Perform multiple queries or non-TopLink operations.
+ * <li> Post process the query results.
+ * <li> Perform multiple queries or non-EclipseLink operations.
  * </ul>
  * <p>
  * Note: If you execute the query on a UnitOfWork, the results register with that

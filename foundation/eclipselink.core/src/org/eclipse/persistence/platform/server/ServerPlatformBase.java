@@ -41,7 +41,7 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
  * Subclasses already exist to provide configurations for Oc4J, WebLogic, and WebSphere.
  *
  * If the user wants a different external transaction controller class or
- * to provide some different behaviour than the provided ServerPlatform(s), we recommend
+ * to provide some different behavior than the provided ServerPlatform(s), we recommend
  * subclassing org.eclipse.persistence.platform.server.ServerPlatformBase (or a subclass),
  * and overriding:
  *
@@ -49,7 +49,7 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
  * ServerPlatformBase.registerMBean()
  * ServerPlatformBase.unregisterMBean()
  *
- * for the desired behaviour.
+ * for the desired behavior.
  *
  * @see org.eclipse.persistence.platform.server.ServerPlatformBase
  *
@@ -153,7 +153,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
        * is associated with.
        * Answer "unknown" if there is no module name available.
        *
-       * Default behaviour is to return "unknown".
+       * Default behavior is to return "unknown".
      *
      * @return String moduleName
      */
@@ -171,7 +171,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
        *
        * ServerPlatformBase.getExternalTransactionControllerClass()
        *
-       * for the desired behaviour.
+       * for the desired behavior.
      *
      * @return Class externalTransactionControllerClass
      *
@@ -399,7 +399,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * INTERNAL: launchContainerRunnable(Runnable runnable): Use the container library to
      * start the provided Runnable.
      *
-     * Default behaviour is to use Thread(runnable).start()
+     * Default behavior is to use Thread(runnable).start()
      *
      * @param Runnable runnable: the instance of runnable to be "started"
      * @return void

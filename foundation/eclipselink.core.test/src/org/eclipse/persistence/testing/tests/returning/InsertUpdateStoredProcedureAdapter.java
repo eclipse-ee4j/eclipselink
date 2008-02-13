@@ -78,7 +78,7 @@ public class InsertUpdateStoredProcedureAdapter implements ProjectAndDatabaseAda
         if (((DatabaseSessionImpl)session).getSequencing() != null) {
             if (((DatabaseSessionImpl)session).getSequencing().whenShouldAcquireValueForAll() != Sequencing.BEFORE_INSERT) {
                 // On Sybase, Infomix, SQLServer native sequencing is provided by calling @@IDENTITY after insert
-                // Apparently if INSERT has occured inside stored procedure, SELECT @@IDENTITY returns 0.
+                // Apparently if INSERT has occurred inside stored procedure, SELECT @@IDENTITY returns 0.
                 throw new TestWarningException("InsertUpdateStoredProcedureAdapter can't handle native sequencing on this platform. Use table sequencing instead");
             }
         }

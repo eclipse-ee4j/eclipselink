@@ -17,7 +17,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
  * A custom implementation of a linked list.  This list exposes the linked nodes
  * directly to the developer.  It allows nodes to be referenced in code for quick
  * list manipulation (ie reshuffle, remove, or queueing)
- * It is specifically used in the TopLink cache write lock mechanism in order
+ * It is specifically used in the EclipseLink cache write lock mechanism in order
  * to allow quick removal of objects from the list while still providing the getFirst()
  * addLast() functionality of a queue.  The alternative java classes LinkedList, LinkedHashMap
  * do not provide both functional requirements.
@@ -204,16 +204,16 @@ public class ExposedNodeLinkedList implements List {
     }
 
     /**
-     * Returns the number of contentss in this list.
+     * Returns the number of contents in this list.
      *
-     * @return the number of contentss in this list.
+     * @return the number of contents in this list.
      */
     public int size() {
         return size;
     }
 
     /**
-     * Removes all of the contentss from this list.
+     * Removes all of the contents from this list.
      */
     public void clear() {
         header.next = header;

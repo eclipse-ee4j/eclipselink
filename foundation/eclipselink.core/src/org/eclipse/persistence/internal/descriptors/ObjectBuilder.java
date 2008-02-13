@@ -41,7 +41,7 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
- * <p><b>Purpose</b>: Object builder is one of the behaviour class attached to descriptor.
+ * <p><b>Purpose</b>: Object builder is one of the behavior class attached to descriptor.
  * It is responsible for building objects, rows, and extracting primary keys from
  * the object and the rows.
  *
@@ -580,7 +580,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     domainObject = concreteDescriptor.getObjectBuilder().buildNewInstance();
                 }
 
-                // The object must be registered before building its attributes to resolve circular dependancies.
+                // The object must be registered before building its attributes to resolve circular dependencies.
                 if (query.shouldMaintainCache()) {
                     cacheKey.setObject(domainObject);
                     copyQueryInfoToCacheKey(cacheKey, query, databaseRow, session, concreteDescriptor);
@@ -827,7 +827,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             mapping.writeFromObjectIntoRow(object, databaseRow, session);
         }
 
-        // If this descriptor is involved in inheritence add the class type.
+        // If this descriptor is involved in inheritance add the class type.
         if (getDescriptor().hasInheritance()) {
             getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
         }
@@ -862,7 +862,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             mapping.writeFromObjectIntoRowForShallowInsert(object, databaseRow, session);
         }
 
-        // If this descriptor is involved in inheritence add the class type.
+        // If this descriptor is involved in inheritance add the class type.
         if (getDescriptor().hasInheritance()) {
             getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
         }
@@ -894,7 +894,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             mapping.writeFromObjectIntoRowWithChangeRecord(changeRecord, databaseRow, session);
         }
 
-        // If this descriptor is involved in inheritence add the class type.
+        // If this descriptor is involved in inheritance add the class type.
         if (getDescriptor().hasInheritance()) {
             getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
         }
@@ -922,7 +922,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             mapping.writeFromObjectIntoRowForShallowInsertWithChangeRecord(changeRecord, databaseRow, session);
         }
 
-        // If this descriptor is involved in inheritence add the class type.
+        // If this descriptor is involved in inheritance add the class type.
         if (getDescriptor().hasInheritance()) {
             getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
         }
@@ -971,7 +971,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             mapping.writeFromObjectIntoRowForUpdate(query, databaseRow);
         }
 
-        // If this descriptor is involved in inheritence and is an Aggregate, add the class type.
+        // If this descriptor is involved in inheritance and is an Aggregate, add the class type.
         // Added Nov 8, 2000 Mostly by PWK but also JED
         // Prs 24801
         // Modified  Dec 11, 2000 TGW with assitance from PWK
@@ -1062,7 +1062,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             mapping.writeInsertFieldsIntoRow(databaseRow, session);
         }
 
-        // If this descriptor is involved in inheritence add the class type.
+        // If this descriptor is involved in inheritance add the class type.
         if (getDescriptor().hasInheritance()) {
             getDescriptor().getInheritancePolicy().addClassIndicatorFieldToInsertRow(databaseRow);
         }

@@ -108,7 +108,7 @@ public class ClientServerOptimisticLockingTest extends AutoVerifyTestCase {
         try {
             for (int i = 0; i < NUM_CLIENTS; i++) {
                 if (this.clients[i].exception != null) {
-                    throw new TestErrorException("Error occured, check system.out");
+                    throw new TestErrorException("Error occurred, check system.out");
                 }
             }
         } catch (Exception ex) {

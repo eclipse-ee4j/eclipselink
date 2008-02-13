@@ -31,7 +31,7 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 /**
  * <p><b>Purpose</b>:
  * Abstract class for all database query objects.
- * DatabaseQuery is a visible class to the TopLink user. Users create an appropriate
+ * DatabaseQuery is a visible class to the EclipseLink user. Users create an appropriate
  * query by creating an instance of a concrete subclasses of DatabaseQuery.
  *
  * <p><b>Responsibilities</b>:
@@ -154,13 +154,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /* Used by aggregate Collections:  As aggregates delete at update time, cascaded deletes
      * must know to stop when entering postDelete for a particular mapping.  Only used by the
-     * aggregate collection when update is occuring in a UnitOfWork
+     * aggregate collection when update is occurring in a UnitOfWork
      * CR 2811
      */
     public static final int CascadeAggregateDelete = 5;
 
     /*
-     * Used when refreshing should check the mappings to determin if a particular
+     * Used when refreshing should check the mappings to determine if a particular
      * mapping should be cascaded.
      */
     public static final int CascadeByMapping = 6;
@@ -305,7 +305,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * PUBLIC:
      * Used to define a statement level query.
      * This may be used for multiple SQL executions to be mapped to a single query.
-     * This cannot be used for cursored selects, delete alls or does exists.
+     * This cannot be used for cursored selects, delete all(s) or does exists.
      */
     public void addStatement(SQLStatement statement) {
         // bug 3524620: lazy-init query mechanism
@@ -392,7 +392,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Check to see if this query already knows the return vale without preforming any further work.
+     * Check to see if this query already knows the return value without performing any further work.
      */
     public Object checkEarlyReturn(AbstractSession session, AbstractRecord translationRow) {
         return null;
@@ -450,7 +450,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                     setSession(session);// Session is required for some init stuff.
                     prepare();
                     setSession(null);
-                    setIsPrepared(true);// MUST not set prepare until done as other thread may hit before finihsing the prepare.
+                    setIsPrepared(true);// MUST not set prepare until done as other thread may hit before finishing the prepare.
                 }
             }
             // Profile the query preparation time.
@@ -490,7 +490,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /**
      * INTERNAL
-     * Used to give the subclasses oportunity to copy aspects of the cloned query
+     * Used to give the subclasses opportunity to copy aspects of the cloned query
      * to the original query.
      */
     protected void clonedQueryExecutionComplete(DatabaseQuery query, AbstractSession session) {
@@ -540,7 +540,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * PUBLIC:
      * Set for the identity map (cache) to be ignored completely.
      * The cache check will be skipped and the result will not be put into the identity map.
-     * This can be used to retreive the exact state of an object on the database.
+     * This can be used to retrieve the exact state of an object on the database.
      * By default the identity map is always maintained.
      */
     public void dontMaintainCache() {
@@ -636,7 +636,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             queryToExecute = (DatabaseQuery)queryToExecute.clone();
         }
         queryToExecute.setTranslationRow(translationRow);
-        // If the prepare has been disbale the clone is prepare dynamically to not parameterize the SQL.
+        // If the prepare has been disable the clone is prepare dynamically to not parameterize the SQL.
         if (!queryToExecute.shouldPrepare()) {
             queryToExecute.checkPrepare(session, translationRow);
         }
@@ -649,7 +649,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         // Then executed.
         Object result = queryToExecute.executeDatabaseQuery();
 
-        // Give the subclasses the oportunity to retreive aspects of the cloned query.
+        // Give the subclasses the opportunity to retrieve aspects of the cloned query.
         clonedQueryExecutionComplete(queryToExecute, session);
         return result;
     }
@@ -926,7 +926,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * return the name of the reference class.  Added for Mapping Workbench removal
-     * of classpath dependancy.  Overriden by subclasses.
+     * of classpath dependancy.  Overridden by subclasses.
      */
     public String getReferenceClassName() {
         return null;
@@ -1063,7 +1063,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Returns the internal tri-state calue of shouldBindParameters
+     * Returns the internal tri-state value of shouldBindParameters
      * used far cascading these settings
      */
     public Boolean getShouldBindAllParameters() {
@@ -1282,7 +1282,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * If executed against a RepeatableWriteUnitOfWork if this attribute is true
-     * TopLink will write changes to the database before executing the query.
+     * EclipseLink will write changes to the database before executing the query.
      */
     public Boolean getFlushOnExecute(){
         return this.flushOnExecute;
@@ -1341,7 +1341,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /**
      * PUBLIC:
-     * Return ture if this is a read object query.
+     * Return true if this is a read object query.
      */
     public boolean isReadObjectQuery() {
         return false;
@@ -1517,7 +1517,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Use a TopLink redirector to redirect this query to a method.
+     * Use a EclipseLink redirector to redirect this query to a method.
      * Added for bug 3241138
      *
      */
@@ -1667,7 +1667,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * If executed against a RepeatableWriteUnitOfWork if this attribute is true
-     * TopLink will write changes to the database before executing the query.
+     * EclipseLink will write changes to the database before executing the query.
      */
     public void setFlushOnExecute(Boolean flushMode){
         this.flushOnExecute = flushMode;
@@ -1776,7 +1776,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Property support used by mappings to stache temporary stuff.
+     * Property support used by mappings to stash temporary stuff.
      */
     public synchronized void setProperty(Object property, Object value) {
         getProperties().put(property, value);
@@ -1896,7 +1896,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * Set if the query should be prepared.
-     * TopLink automatically prepares queries to generate their SQL only once,
+     * EclipseLink automatically prepares queries to generate their SQL only once,
      * one each execution of the query the SQL does not need to be generated again only the arguments need to be translated.
      * This option is provide to disable this optimization as in can cause problems with certain types of queries that require dynamic SQL basd on their arguments.
      * <p>These queries include:
@@ -2046,7 +2046,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * Return if the query should be prepared.
-     * TopLink automatically prepares queries to generate their SQL only once,
+     * EclipseLink automatically prepares queries to generate their SQL only once,
      * one each execution of the query the SQL does not need to be generated again only the arguments need to be translated.
      * This option is provide to disable this optimization as in can cause problems with certain types of queries that require dynamic SQL basd on their arguments.
      * <p>These queries include:

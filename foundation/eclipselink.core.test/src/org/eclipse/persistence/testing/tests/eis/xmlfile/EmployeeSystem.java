@@ -20,7 +20,7 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
- * <b>Purpose</b>: To define system behavoir.
+ * <b>Purpose</b>: To define system behavior.
  * 
  * <p>
  * <b>Responsibilities</b>:

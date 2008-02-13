@@ -65,8 +65,8 @@ public abstract class DatasourceCall implements Call {
     }
 
     /**
-     * The parameters are the values in order of occurance in the SQL statement.
-     * This is lazy initialized to conserv space on calls that have no parameters.
+     * The parameters are the values in order of occurrence in the SQL statement.
+     * This is lazy initialized to conserve space on calls that have no parameters.
      */
     public Vector getParameters() {
         if (parameters == null) {
@@ -76,7 +76,7 @@ public abstract class DatasourceCall implements Call {
     }
 
     /**
-     * The parameter types determine if the parameter is a modify, translation or litteral type.
+     * The parameter types determine if the parameter is a modify, translation or litreral type.
      */
     public Vector getParameterTypes() {
         if (parameterTypes == null) {
@@ -100,8 +100,8 @@ public abstract class DatasourceCall implements Call {
     }
 
     /**
-     * The parameters are the values in order of occurance in call.
-     * This is lazy initialized to conserv space on calls that have no parameters.
+     * The parameters are the values in order of occurrence in call.
+     * This is lazy initialized to conserve space on calls that have no parameters.
      */
     public boolean hasParameters() {
         return (parameters != null) && (!getParameters().isEmpty());

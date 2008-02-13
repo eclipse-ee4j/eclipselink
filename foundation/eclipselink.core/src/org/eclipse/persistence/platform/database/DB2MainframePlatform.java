@@ -12,7 +12,7 @@ package org.eclipse.persistence.platform.database;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 
 /**
- *    <B>Purpose</B>: Provides DB2 Mainframe specific behaviour.<P>
+ *    <B>Purpose</B>: Provides DB2 Mainframe specific behavior.<P>
  *    <B>Responsibilities</B>:
  *        <UL>
  *            <LI>Specialized CONCAT syntax

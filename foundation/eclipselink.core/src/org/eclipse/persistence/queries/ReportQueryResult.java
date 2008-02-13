@@ -35,7 +35,7 @@ import org.eclipse.persistence.sessions.Session;
  *
  * <b>Responsibilities</b>:<ul>
  * <li> Converted field values into object attribute values.
- * <li> Provide acces to values by index or item name
+ * <li> Provide access to values by index or item name
  * </ul>
  *
  * @author Doug Clarke

@@ -77,7 +77,7 @@ public class InNode extends SimpleConditionalExpressionNode {
 
     /**
      * INTERNAL
-     * Return the TopLink expression for this node
+     * Return the EclipseLink expression for this node
      */
     public Expression generateExpression(GenerationContext context) {
         Expression whereClause = getLeft().generateExpression(context);

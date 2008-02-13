@@ -75,7 +75,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
 
     /**
      * INTERNAL:  This is the key for accessing unregistered and locked result in the query's properties.
-     * The uow and  QueryBaseValueHolder use this property to record amd to retreive the result respectively.
+     * The uow and  QueryBaseValueHolder use this property to record and to retrieve the result respectively.
      */
     public static final String LOCK_RESULT_PROPERTY = "LOCK_RESULT";
 
@@ -174,7 +174,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * Prepare the query from the prepared query.
      * This allows a dynamic query to prepare itself directly from a prepared query instance.
      * This is used in the EJBQL parse cache to allow preparsed queries to be used to prepare
-     * dyanmic queries.
+     * dynamic queries.
      * This only copies over properties that are configured through EJBQL.
      */
     public void prepareFromQuery(DatabaseQuery query) {
@@ -206,7 +206,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
 
     /**
      * Return the fetch group set in the query.
-     * If a fetch group is not explicitly set in the query, default fetch group optionally defined in the decsiptor
+     * If a fetch group is not explicitly set in the query, default fetch group optionally defined in the descriptor
      * would be used, unless the user explicitly calls query.setShouldUseDefaultFetchGroup(false).
      */
     public FetchGroup getFetchGroup() {
@@ -560,7 +560,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * ADVANCED:
      * If the user has isolated data and specified that the client session should
      * use an exclusive connection then by setting this condition to true
-     * TopLink will ensure that the query is executed through the exclusive
+     * EclipseLink will ensure that the query is executed through the exclusive
      * connection.  This may be required in certain cases.  An example being
      * where database security will prevent a query joining to a secure table
      * from returning the correct results when executed through the shared

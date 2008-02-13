@@ -181,7 +181,7 @@ public class LoadBuildSystem {
             login();
             populate();
         } catch (Exception e) {
-            System.out.println("Error occured during saving of test results to database.");
+            System.out.println("Error occurred during saving of test results to database.");
             e.printStackTrace();
             System.out.println("Saving of test results failed.");
             success = false;

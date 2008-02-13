@@ -56,7 +56,7 @@ public class ReadReferencedObjectNotInSessionCacheTest extends TestCase {
     protected void verify() {
         Employee empVerify = (Employee)getSession().readObject(objectInCache);
         if (empVerify == null) {
-            throw new TestErrorException("Employee should have been in sesion cache.");
+            throw new TestErrorException("Employee should have been in session cache.");
         } else if (empVerify.getShipments() == null) {
             throw new TestErrorException("Employee's shipments should not be null.");
         } else if (empVerify.getShipments().size() != (originalSize + 1)) {
@@ -67,7 +67,7 @@ public class ReadReferencedObjectNotInSessionCacheTest extends TestCase {
         //ensure changes were merged into the session cache      				
         IdentityMap im = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getIdentityMap(Shipment.class);
         if ((im == null) || (im.getSize() == 0)) {
-            throw new TestErrorException("Shipment should have been put into sesion cache.");
+            throw new TestErrorException("Shipment should have been put into session cache.");
         }
     }
 

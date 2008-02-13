@@ -22,7 +22,7 @@ import java.util.*;
  * group feature, as the extra round-trip would well offset the gain from the deferred loading in
  * many cases.
  * <p>
- * TopLink fetch group support is twofold: the pre-defined fetch groups at the descriptor level; and
+ * EclipseLink fetch group support is twofold: the pre-defined fetch groups at the descriptor level; and
  * dynamic (use case) fetch groups at the query level.
  * <p>
  * Every query can has at most one fetch group. There is an optional pre-defined default fetch group

@@ -22,7 +22,7 @@ import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.queries.*;
 
 /**
- * <p><b>Purpose</b>: Provides DB2 specific behaviour.
+ * <p><b>Purpose</b>: Provides DB2 specific behavior.
  * <p><b>Responsibilities</b>:<ul>
  * <li> Native SQL for byte[], Date, Time, & Timestamp.
  * <li> Support for table qualified names.

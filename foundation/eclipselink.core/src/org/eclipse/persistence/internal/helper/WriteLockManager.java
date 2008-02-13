@@ -30,7 +30,7 @@ import org.eclipse.persistence.logging.SessionLog;
  * <b>Responsibilities</b>:
  * <ul>
  * <li> Acquires locks for writing threads.
- * <li> Provides deadlock avoidance behaviour.
+ * <li> Provides deadlock avoidance behavior.
  * <li> Releases locks for writing threads.
  * </ul>
  *  @author Gordon Yorke
@@ -58,7 +58,7 @@ public class WriteLockManager {
         boolean successful = false;
         IdentityHashMap lockedObjects = new IdentityHashMap();
         try {
-            // if the descriptor has indirectin for all mappings then wait as there will be no deadlock risks
+            // if the descriptor has indirection for all mappings then wait as there will be no deadlock risks
             CacheKey toWaitOn = acquireLockAndRelatedLocks(objectForClone, lockedObjects, primaryKeys, descriptor, session);
             int tries = 0;
             while (toWaitOn != null) {// loop until we've tried too many times.

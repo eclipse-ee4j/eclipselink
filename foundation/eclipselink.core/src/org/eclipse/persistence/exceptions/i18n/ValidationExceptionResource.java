@@ -130,7 +130,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7134", "Server platform {0} is read only after login." },
                                            { "7135", "You cannot commit and resume a unit of work containing any modify all queries" },
                                            { "7136", "Nested unit of work is not supported for a modify all query" },
-                                           { "7137", "The object is partially fetched (using fecth group), the unfetched attribute ({0}) is not editable." },
+                                           { "7137", "The object is partially fetched (using fetch group), the unfetched attribute ({0}) is not editable." },
                                            { "7139", "Modify all queries cannot be issued within a unit of work containing other write operations." },
                                            { "7140", "Sequence type {0} doesn''t have method {1}." },
                                            { "7141", "{0} sequence is of type DefaultSequence, which cannot be used in setDefaultSequence method." },

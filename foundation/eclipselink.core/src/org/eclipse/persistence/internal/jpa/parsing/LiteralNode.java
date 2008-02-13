@@ -50,7 +50,7 @@ public class LiteralNode extends Node {
 
     /**
      * INTERNAL
-     * Generate the a new TopLink ConstantExpression for this node.
+     * Generate the a new EclipseLink ConstantExpression for this node.
      */
     public Expression generateExpression(GenerationContext context) {
         Expression whereClause = new ConstantExpression(getLiteral(), new ExpressionBuilder());

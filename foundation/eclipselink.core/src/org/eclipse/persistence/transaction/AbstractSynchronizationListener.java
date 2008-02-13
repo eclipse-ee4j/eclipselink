@@ -31,7 +31,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  * AbstractTransactionController class. It contains most of the implementation
  * logic to handle callback notifications from an external transaction
  * manager to ensure consistency between the global transaction and the
- * TopLink unit of work. It does not assume any particular specification
+ * EclipseLink unit of work. It does not assume any particular specification
  * or interface, but can be called by any implementation subclass.
  *
  * @see AbstractTransactionController

@@ -173,7 +173,7 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
 
     /**
      * INTERNAL:
-     * Assign Changelistner to an aggregate object
+     * Assign ChangeListener to an aggregate object
      */
     public void setAggregateChangeListener(Object parent, Object aggregate, UnitOfWorkImpl uow, ClassDescriptor descriptor, String mappingAttribute){
         //no-op

@@ -13,7 +13,7 @@ package org.eclipse.persistence.testing.tests.proxyindirection;
 /*
  * Large Project interface.
  *
- * Define behaviour for Large Project objects.
+ * Define behavior for Large Project objects.
  *
  * @author        Rick Barkhouse
  * @since        08/24/2000 11:11:05

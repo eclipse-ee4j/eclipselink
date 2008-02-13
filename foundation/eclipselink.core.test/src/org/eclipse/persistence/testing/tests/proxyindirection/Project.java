@@ -13,7 +13,7 @@ package org.eclipse.persistence.testing.tests.proxyindirection;
 /*
  * Project interface.
  *
- * Define behaviour for Project objects.
+ * Define behavior for Project objects.
  *
  * @author        Rick Barkhouse
  * @since        08/23/2000 15:51:34

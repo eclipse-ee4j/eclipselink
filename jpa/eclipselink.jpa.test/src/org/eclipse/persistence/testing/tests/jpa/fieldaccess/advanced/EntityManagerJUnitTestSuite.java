@@ -220,7 +220,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             em.refresh(emp);
             fail("entityManager.refresh(notManagedObject) didn't throw exception");
         } catch (IllegalArgumentException illegalArgumentException) {
-            // expected behaviour
+            // expected behavior
         } catch (Exception exception ) {
             fail("entityManager.refresh(notManagedObject) threw a wrong exception: " + exception.getMessage());
         } finally {
@@ -265,7 +265,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail("entityManager.refresh(removedObject) didn't throw exception");
         } catch (EntityNotFoundException entityNotFoundException) {
             rollbackTransaction(em);
-            // expected behaviour
+            // expected behavior
         } catch (Exception exception ) {
             rollbackTransaction(em);
             fail("entityManager.refresh(removedObject) threw a wrong exception: " + exception.getMessage());
@@ -603,7 +603,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             createEntityManager("fieldaccess").flush();
             noException = noException + " flush;";
         } catch (TransactionRequiredException transactionRequiredException) {
-            // expected behaviour
+            // expected behavior
         } catch (RuntimeException ex) {
             wrongException = wrongException + " flush: " + ex.getMessage() +";";
         }

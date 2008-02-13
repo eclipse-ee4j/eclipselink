@@ -73,7 +73,7 @@ public class LocateNode extends ArithmeticFunctionNode {
 
     /**
      * INTERNAL
-     * Generate the TopLink expression for this node
+     * Generate the EclipseLink expression for this node
      */
     public Expression generateExpression(GenerationContext context) {
         Expression whereClause = getFindIn().generateExpression(context);

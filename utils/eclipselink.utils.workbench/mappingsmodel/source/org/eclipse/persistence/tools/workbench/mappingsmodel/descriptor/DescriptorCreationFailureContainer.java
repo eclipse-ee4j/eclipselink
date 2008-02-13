@@ -45,7 +45,7 @@ public class DescriptorCreationFailureContainer
 		};
 	}
 
-	/** return the source when the failure occured */
+	/** return the source when the failure occurred */
 	public String failureResourceStringKeyForClassNamed(String className) {
 		for(Iterator failureEvents = failureEvents(); failureEvents.hasNext(); ) {
 			DescriptorCreationFailureEvent event = (DescriptorCreationFailureEvent) failureEvents.next();

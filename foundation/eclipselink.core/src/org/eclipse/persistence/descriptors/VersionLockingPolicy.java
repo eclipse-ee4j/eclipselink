@@ -690,7 +690,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * PUBLIC:
      * Configure the version lock value to be stored in the object.
      * The object must define a mapping and an attribute to store the version value.
-     * Note: the value will be updated internally by TopLink and should not be updated
+     * Note: the value will be updated internally by EclipseLink and should not be updated
      * by the application.
      */
     public void storeInObject() {

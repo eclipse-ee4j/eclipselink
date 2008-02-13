@@ -45,8 +45,8 @@ public interface SessionEventListener extends EventListener {
     /**
      * PUBLIC:
      * This event is raised on the session after a stored procedure call has been executed that had output parameters.
-     * If the proc was used to override an insert/update/delete operation then TopLink will not be expecting any return value.
-     * This event mechanism allows for a listner to be registered before the proc is call to process the output values.
+     * If the proc was used to override an insert/update/delete operation then EclipseLink will not be expecting any return value.
+     * This event mechanism allows for a listener to be registered before the proc is call to process the output values.
      * The event "result" will contain a Record of the output values, and property "call" will be the StoredProcedureCall.
      */
     public void outputParametersDetected(SessionEvent event);

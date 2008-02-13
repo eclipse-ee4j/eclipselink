@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
 
 /**
  * <p>
- * <b>Purpose</b>: Any TopLink message in Foundation Library & J2EE Integration JARs
+ * <b>Purpose</b>: Any EclipseLink message in Foundation Library & J2EE Integration JARs
  * should be a subclass of this class.
  *
  * Creation date: (7/12/00)

@@ -36,7 +36,7 @@ public class ChangedFieldsLockingPolicy extends FieldsLockingPolicy {
      * their previous values to detect field-level collisions.
      *
      * Note: the unit of work must be used for all updates when using field locking. Without
-     * a unit of work, there is no way for TopLink to know what the original values were
+     * a unit of work, there is no way for  to know what the original values were
      * without the back up clone in the unit of work.
      */
     public ChangedFieldsLockingPolicy() {

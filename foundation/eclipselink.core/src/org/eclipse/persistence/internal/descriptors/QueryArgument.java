@@ -58,7 +58,7 @@ public class QueryArgument extends TypedAssociation {
     /**
      * INTERNAL:
      * Set the classname of the type.
-     * This information will be used to avoid Mapping Workbench classpath dependancies by
+     * This information will be used to avoid Mapping Workbench classpath dependencies by
      * allowing the type to be set by classname instead of the class itself.
      */
     public void setTypeName(String typeName) {

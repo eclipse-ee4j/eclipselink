@@ -197,7 +197,7 @@ public class TestResult implements ResultInterface, Comparable, Serializable {
     }
 
     /**
-     * A fatal error means that an unhandled exception occured during the test.
+     * A fatal error means that an unhandled exception occurred during the test.
      */
     public boolean hasFatalError() {
         return getOutcome().equals(FATAL_ERROR);
@@ -211,7 +211,7 @@ public class TestResult implements ResultInterface, Comparable, Serializable {
     }
 
     /**
-     * A problem means a error occured during setup or reset.
+     * A problem means a error occurred during setup or reset.
      */
     public boolean hasProblem() {
         return getOutcome().equals(PROBLEM);

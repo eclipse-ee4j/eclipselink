@@ -947,7 +947,7 @@ public class JoinedAttributeAdvancedJunitTest extends JUnitTestCase {
             assertTrue("Address were not joined correctly, emp.getAddress() = null", (emp2.getAddress() != null));
             assertTrue("Employees were not joined correctly, addr.employees.size = " + addr.getEmployees().size() + "addr2.employees.size = " + addr2.getEmployees().size(), (addr.getEmployees().size() == addr2.getEmployees().size()));
             if (!emp2.getFirstName().equals(((Object[])result.firstElement())[1])){
-                fail("Failed to return employee name as an seperate item");
+                fail("Failed to return employee name as an separate item");
             }
     
         }finally{

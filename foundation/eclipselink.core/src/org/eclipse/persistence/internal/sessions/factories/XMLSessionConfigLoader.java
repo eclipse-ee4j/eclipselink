@@ -39,7 +39,7 @@ import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
  * Several loading options are provided,
  * <ul>
  * <li> resourceName : The reasource path and file name to the sessions XML file,
- * default is /sessions.xml or /META-INF/sessions.xml. (enusre "/" is used, not "\").
+ * default is /sessions.xml or /META-INF/sessions.xml. (ensure "/" is used, not "\").
  * A file path can also be provided, although a resource is typically used.
  * <li> shouldLogin : Define if the loaded session should be connected, default true.
  * <li> shouldRefresh : Define if the loaded session should be refreshed from the file,
@@ -69,7 +69,7 @@ public class XMLSessionConfigLoader {
     protected ClassLoader classLoader;
     /** Defines if the session will be refreshed from the file if the class loader requesting the load is different than the loaded session's class loader. */
     protected boolean shouldCheckClassLoader = false;
-    /** Stores any exceptions that occured to provide all the exceptions up front if the load fails. */
+    /** Stores any exceptions that occurred to provide all the exceptions up front if the load fails. */
     protected Vector exceptionStore;
     /** Used to store the entity resolver to validate the XML schema when parsing. */
     protected PersistenceEntityResolver entityResolver;    
@@ -245,7 +245,7 @@ public class XMLSessionConfigLoader {
     }
     
     private boolean buildSessionConfigs(SessionManager sessionManager, ClassLoader loader,Document document, Project project){
-        // No errors occured, unmasrshal the document which will return a 
+        // No errors occurred, unmasrshal the document which will return a 
         // SessionConfigs containing 0 or more SessionConfigs and send
         // them through the factory to create actual Sessions
         XMLContext context = new XMLContext(project);
@@ -282,7 +282,7 @@ public class XMLSessionConfigLoader {
 
         if (getExceptionStore().isEmpty()) {
             if (document.getDocumentElement().getTagName().equals("sessions")) {
-                // No errors occured, unmarshal the document which will return a 
+                // No errors occurred, unmarshal the document which will return a 
                 // SessionConfigs containing 0 or more SessionConfigs
                 XMLContext context = new XMLContext(getProject());
                 XMLUnmarshaller unmarshaller = context.createUnmarshaller();
@@ -293,7 +293,7 @@ public class XMLSessionConfigLoader {
             }
         } else {
             if (document.getDocumentElement().getTagName().equals("toplink-sessions")) {
-                // No errors occured, unmarshal the document which will return a 
+                // No errors occurred, unmarshal the document which will return a 
                 // SessionConfigs containing 0 or more SessionConfigs
                 XMLContext context = new XMLContext(new XMLSessionConfigToplinkProject());
                 XMLUnmarshaller unmarshaller = context.createUnmarshaller();

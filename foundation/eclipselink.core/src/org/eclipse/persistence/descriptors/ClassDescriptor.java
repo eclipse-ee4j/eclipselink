@@ -98,7 +98,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     // for bug 2612601 allow ability not to register results in UOW.
     protected boolean shouldRegisterResultsInUnitOfWork = true;
 
-    // Delegation objects, these perform most of the behavoir.
+    // Delegation objects, these perform most of the behavior.
     protected DescriptorEventManager eventManager;
     protected DescriptorQueryManager queryManager;
     protected ObjectBuilder objectBuilder;
@@ -236,7 +236,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * ADVANCED:
-     * TopLink automatically orders database access through the foreign key information provided in 1:1 and 1:m mappings.
+     *  automatically orders database access through the foreign key information provided in 1:1 and 1:m mappings.
      * In some case when 1:1 are not defined it may be required to tell the descriptor about a constraint,
      * this defines that this descriptor has a foreign key constraint to another class and must be inserted after
      * instances of the other class.
@@ -737,7 +737,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     protected void checkMultipleTableForeignKeys(boolean userSpecifiedOrder) {
         // Loop through n times to be sure that the insert order is correct. 
-        // Loop n times eliminates our dependence on the order of the foreighKey 
+        // Loop n times eliminates our dependence on the order of the foreignKey 
         // relationships specified. We could do this adjustment in one pass but 
         // we would have to put the foreignKeyTables in the same order as the 
         // tables being sorted.
@@ -976,7 +976,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * Sets the descriptor to be part of an aggregate collection.
-     * An aggregate collection descriptor stored in a seperate table but some of the fields (the primary key) comes from its owner.
+     * An aggregate collection descriptor stored in a separate table but some of the fields (the primary key) comes from its owner.
      * Aggregate collection descriptors are insert/updated/deleted with their owner and cannot exist without their owner as they share the primary key.
      * Aggregate collections are not cached (they are cached as part of their owner) and cannot be read/written/deleted/registered.
      * All aggregate collection descriptors must call this.
@@ -988,7 +988,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * Sets the descriptor to be for an interface.
-     * An interface descriptor allows for other classes to reference an interface or one of serveral other classes.
+     * An interface descriptor allows for other classes to reference an interface or one of several other classes.
      * The implementor classes can be completely unrelated in term of the database stored in distinct tables.
      * Queries can also be done for the interface which will query each of the implementor classes.
      * An interface descriptor cannot define any mappings as an interface is just API and not state,
@@ -1023,7 +1023,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * Allow for remote session cache hits on primary key read object queries to be disabled.
-     * This can be used with alwaysRefreshCacheOnRemote() to ensure queries always go to the server sesion cache.
+     * This can be used with alwaysRefreshCacheOnRemote() to ensure queries always go to the server session cache.
      *
      * @see #alwaysRefreshCacheOnRemote()
      */
@@ -1244,7 +1244,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * ADVANCED:
-     * TopLink automatically orders database access through the foreign key information provided in 1:1 and 1:m mappings.
+     *  automatically orders database access through the foreign key information provided in 1:1 and 1:m mappings.
      * In some case when 1:1 are not defined it may be required to tell the descriptor about a constraint,
      * this defines that this descriptor has a foreign key constraint to another class and must be inserted after
      * instances of the other class.
@@ -1630,7 +1630,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * PUBLIC:
      * Return the queryManager.
      * The query manager can be used to specify customization of the SQL
-     * that TopLink generates for this descriptor.
+     * that  generates for this descriptor.
      */
     public DescriptorQueryManager getDescriptorQueryManager() {
         return this.getQueryManager();
@@ -1640,7 +1640,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * PUBLIC:
      * Return the queryManager.
      * The query manager can be used to specify customization of the SQL
-     * that TopLink generates for this descriptor.
+     * that  generates for this descriptor.
      */
     public DescriptorQueryManager getQueryManager() {
         // Lazy initialize for XML deployment.
@@ -1820,7 +1820,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /**
      * ADVANCED:
      * Return the WrapperPolicy for this descriptor.
-     * This advacned feature can be used to wrap objects with other classes such as CORBA TIE objects or EJBs.
+     * This advanced feature can be used to wrap objects with other classes such as CORBA TIE objects or EJBs.
      */
     public WrapperPolicy getWrapperPolicy() {
         return wrapperPolicy;
@@ -1843,7 +1843,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Return if this descriptor is involved in inheritence, (is child or parent).
+     * Return if this descriptor is involved in inheritance, (is child or parent).
      */
     public boolean hasInheritance() {
         return (inheritancePolicy != null);
@@ -1906,8 +1906,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Initialize the mappings as a seperate step.
-     * This is done as a seperate step to ensure that inheritence has been first resolved.
+     * Initialize the mappings as a separate step.
+     * This is done as a separate step to ensure that inheritance has been first resolved.
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         // These cached settings on the project must be set even if descriptor is initialized.
@@ -2002,7 +2002,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             queryKey.initialize(this);
         }
 
-        // If this has inheritence then it needs to be initialized before all fields is set.
+        // If this has inheritance then it needs to be initialized before all fields is set.
         if (hasInheritance()) {
             getInheritancePolicy().initialize(session);
             if (getInheritancePolicy().isChildDescriptor()) {
@@ -2220,7 +2220,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Initialize the descriptor properties such as write lock and sequecning.
+     * Initialize the descriptor properties such as write lock and sequencing.
      */
     protected void initializeProperties(AbstractSession session) throws DescriptorException {
         if (!isAggregateDescriptor()) {
@@ -2253,7 +2253,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Allow the descriptor to initialize any dependancies on this session.
+     * Allow the descriptor to initialize any dependencies on this session.
      */
     public void interfaceInitialization(AbstractSession session) throws DescriptorException {
         if (isInterfaceInitialized(INITIALIZED)) {
@@ -2310,7 +2310,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * PUBLIC:
-     * Return if the descriptor defines inheritence and is a child.
+     * Return if the descriptor defines inheritance and is a child.
      */
     public boolean isChildDescriptor() {
         return hasInheritance() && getInheritancePolicy().isChildDescriptor();
@@ -2345,7 +2345,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Return if the descriptor defines inheritence and is a child.
+     * Return if the descriptor defines inheritance and is a child.
      */
     public boolean isInterfaceChildDescriptor() {
         return hasInterfacePolicy() && getInterfacePolicy().isInterfaceChildDescriptor();
@@ -2364,7 +2364,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Return if an error occured during initialization which should abort any further initialization.
+     * Return if an error occurred during initialization which should abort any further initialization.
      */
     public boolean isInvalid() {
         return this.initializationStage == ERROR;
@@ -2453,7 +2453,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
             DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
 
-            // This causes post init to be called multiple times in inheritence.
+            // This causes post init to be called multiple times in inheritance.
             mapping.postInitialize(session);
             // PERF: computed if deferred locking is required.
             if (!shouldAcquireCascadedLocks()) {
@@ -2504,7 +2504,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Allow the descriptor to initialize any dependancies on this session.
+     * Allow the descriptor to initialize any dependencies on this session.
      */
     public void preInitialize(AbstractSession session) throws DescriptorException {
         // Avoid repetitive initialization (this does not solve loops)
@@ -2613,7 +2613,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Allow the descriptor to initialize any dependancies on this session.
+     * Allow the descriptor to initialize any dependencies on this session.
      */
     public void preInterfaceInitialization(AbstractSession session) throws DescriptorException {
         if (isInterfaceInitialized(PREINITIALIZED)) {
@@ -2859,7 +2859,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * PUBLIC:
-     * Set the type of cache synchonization that will be used on objects of this type.  Possible values
+     * Set the type of cache synchronization that will be used on objects of this type.  Possible values
      * are:
      * SEND_OBJECT_CHANGES
      * INVALIDATE_CHANGED_OBJECTS
@@ -2907,7 +2907,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * ADVANCED:
-     * TopLink automatically orders database access through the foreign key information provided in 1:1 and 1:m mappings.
+     *  automatically orders database access through the foreign key information provided in 1:1 and 1:m mappings.
      * In some case when 1:1 are not defined it may be required to tell the descriptor about a constraint,
      * this defines that this descriptor has a foreign key constraint to another class and must be inserted after
      * instances of the other class.
@@ -3000,7 +3000,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
-     * This method is used by the TopLink XML Deployment ClassDescriptor to read and write these mappings
+     * This method is used by the  XML Deployment ClassDescriptor to read and write these mappings
      */
     public void setForeignKeyFieldNamesForMultipleTable(Vector associations) throws DescriptorException {
         Enumeration foreignKeys = associations.elements();
@@ -3116,7 +3116,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * This is the best method for disabling caching.
      * Isolated objects cannot be referenced by non-isolated (shared) objects.
      * Note: Calling this method with true will also set the cacheSynchronizationType to DO_NOT_SEND_CHANGES
-     * since isolated objects cannot be sent by TopLink cache synchronization.
+     * since isolated objects cannot be sent by  cache synchronization.
      */
     public void setIsIsolated(boolean isIsolated) {
         this.isIsolated = isIsolated;
@@ -3208,7 +3208,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * Sets the descriptor to be for an interface.
-     * An interface descriptor allows for other classes to reference an interface or one of serveral other classes.
+     * An interface descriptor allows for other classes to reference an interface or one of several other classes.
      * The implementor classes can be completely unrelated in term of the database stored in distinct tables.
      * Queries can also be done for the interface which will query each of the implementor classes.
      * An interface descriptor cannot define any mappings as an interface is just API and not state,
@@ -3271,7 +3271,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /**
      * ADVANCED:
      * Sets the Vector of DatabaseTables in the order which INSERTS should take place.
-     * This is normally computed correctly by TopLink, however in advanced cases in it may be overridden.
+     * This is normally computed correctly by , however in advanced cases in it may be overridden.
      */
     public void setMultipleTableInsertOrder(Vector<DatabaseTable> newValue) {
         this.multipleTableInsertOrder = newValue;
@@ -3508,7 +3508,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * PUBLIC:
      * Set the descriptor to be read-only.
      * Declaring a descriptor is read-only means that instances of the reference class will never be modified.
-     * Read-only descriptor is usually used in the unit of work to gain porformance as there is no need for
+     * Read-only descriptor is usually used in the unit of work to gain performance as there is no need for
      * the registration, clone and merge for the read-only classes.
      */
     public void setReadOnly() {
@@ -3569,9 +3569,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * This is set to turn off the ordering of mappings.  By Default this is set to true.
-     * By ordering the mappings TopLink insures that object are merged in the right order.
+     * By ordering the mappings  insures that object are merged in the right order.
      * If the order of the mappings needs to be specified by the developer then set this to
-     * false and TopLink will use the order that the mappings were added to the descriptor
+     * false and  will use the order that the mappings were added to the descriptor
      */
     public void setShouldOrderMappings(boolean shouldOrderMappings) {
         this.shouldOrderMappings = shouldOrderMappings;
@@ -4462,7 +4462,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Return if the descriptor has a fecth group manager asociated with.
+     * Return if the descriptor has a fetch group manager associated with.
      */
     public boolean hasFetchGroupManager() {
         return (fetchGroupManager != null);

@@ -310,7 +310,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
 
         writeOutMappings(row, object, session);
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        // If this descriptor is involved in inheritence add the class type.
+        // If this descriptor is involved in inheritance add the class type.
         if (getDescriptor().hasInheritance()) {
             boolean shouldAddClassIndicatorFieldToRow = true;
             if (isXmlDescriptor() && !wasXMLRoot) {
@@ -413,7 +413,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
 
         writeOutMappings(record, object, session);
-        // If this descriptor is involved in inheritence add the class type.
+        // If this descriptor is involved in inheritance add the class type.
         if (isXmlDescriptor()) {
             XMLDescriptor xmlDescriptor = (XMLDescriptor)getDescriptor();
 

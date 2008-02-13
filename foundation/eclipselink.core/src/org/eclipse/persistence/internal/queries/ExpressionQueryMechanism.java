@@ -119,7 +119,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         DescriptorQueryManager queryManager = getDescriptor().getQueryManager();
 
         
-        // Leaf inheritence and multiple table join.
+        // Leaf inheritance and multiple table join.
         if (queryManager.getAdditionalJoinExpression() != null) {
             // CR#3701077, additional join not required for view, view does join.
             if (! (getDescriptor().hasInheritance() && (getDescriptor().getInheritancePolicy().hasView()))) {
@@ -441,7 +441,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         SQLSelectStatement selectStatement = buildBaseSelectStatement(false, clonedExpressions);
 
         ObjectLevelReadQuery query = ((ObjectLevelReadQuery)getQuery());
-        // Case, normal read for branch inheritence class that reads subclasses all in its own table(s).
+        // Case, normal read for branch inheritance class that reads subclasses all in its own table(s).
         if (getDescriptor().hasInheritance()) {
             getDescriptor().getInheritancePolicy().appendWithAllSubclassesExpression(selectStatement);
             if ((!query.isReportQuery()) && query.shouldOuterJoinSubclasses()) {
@@ -714,7 +714,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if ((selectionKey != null) || (selectionObject != null)) {
             if ((selectionKey == null) && (selectionObject != null)) {
                 selectionKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(selectionObject, session);
-                // Must be checked seperately as the expression and row is not yet set.
+                // Must be checked separately as the expression and row is not yet set.
                 query.setSelectionKey(selectionKey);
             }
             if (selectionKey != null) {

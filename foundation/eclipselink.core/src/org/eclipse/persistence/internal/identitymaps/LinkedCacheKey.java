@@ -14,7 +14,7 @@ import java.util.*;
 /**
  *    <p><b>Purpose</b>: Provides the capability to insert CacheKeys into a Linked List.
  *    <p><b>Responsibilities</b>:<ul>
- *    <li> Provide same cabailities as superclass.
+ *    <li> Provide same capabilities as superclass.
  *    <li> Maintain within linked list.
  *    </ul>
  *    @see CacheIdentityMap
@@ -22,7 +22,7 @@ import java.util.*;
  */
 public class LinkedCacheKey extends CacheKey {
 
-    /** Handle on previos element in cache */
+    /** Handle on previous element in cache */
     protected LinkedCacheKey previous;
 
     /** Handle on next element in cache */

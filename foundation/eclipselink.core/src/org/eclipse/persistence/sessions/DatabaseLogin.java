@@ -26,7 +26,7 @@ import org.eclipse.persistence.exceptions.*;
  * Hold the configuration information necessary to connect to a JDBC driver.
  * <p>
  * <b>Description</b>:
- * A DatabaseLogin is used by a TopLink database session to connect to a
+ * A DatabaseLogin is used by an EclipseLink database session to connect to a
  * JDBC server.
  * <p>
  * <b>Responsibilities</b>:
@@ -62,24 +62,24 @@ public class DatabaseLogin extends DatasourceLogin {
     public static final int TRANSACTION_SERIALIZABLE = Connection.TRANSACTION_SERIALIZABLE;
 
 
-    /** Stores the value for the number of time TopLink will attempt to reconnect the connection on a comm failure
-     *  in the case TopLink is attempting to retry a query.  TopLink will retry a read query outside of a transaction
-     *  if TopLink can determine that a communication error occurred with the database.  
+    /** Stores the value for the number of time EclipseLink will attempt to reconnect the connection on a comm failure
+     *  in the case EclipseLink is attempting to retry a query.  EclipseLink will retry a read query outside of a transaction
+     *  if EclipseLink can determine that a communication error occurred with the database.  
      */
     protected int queryRetryAttemptCount;
     
-    /** Stores the number of milliseconds that TopLink will wait between attempts to reconnect a DatabaseConnection
-     *  in the case TopLink is attempting to retry a query.  TopLink will retry a read query outside of a transaction
-     *  if TopLink can determine that a communication error occurred with the database.
+    /** Stores the number of milliseconds that EclipseLink will wait between attempts to reconnect a DatabaseConnection
+     *  in the case EclipseLink is attempting to retry a query.  EclipseLink will retry a read query outside of a transaction
+     *  if EclipseLink can determine that a communication error occurred with the database.
      */
     protected int delayBetweenConnectionAttempts;
     
     /**
-     * This value defaults to true and on an SQL Exception TopLink will ping the database to determine
+     * This value defaults to true and on an SQL Exception EclipseLink will ping the database to determine
      * if the connection used can continue to be used for queries.  This should have no impact on applications
      * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
      * If that is the case and the application is experiencing a performance impact from the health check then
-     * this feature can be turned off. Turning this feature off will prevent TopLink from being able to
+     * this feature can be turned off. Turning this feature off will prevent EclipseLink from being able to
      * retry queries in the case of database failure. 
      */
     protected boolean connectionHealthValidatedOnError;
@@ -175,7 +175,7 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use batch writing. This facility allows multiple write operations to be
+     * EclipseLink can be configured to use batch writing. This facility allows multiple write operations to be
      * submitted to a database for processing at once. Submitting multiple updates together, instead of
      * individually, can greatly improve performance in some situations.
      */
@@ -185,8 +185,8 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use parameter binding for large binary data.
-     * By default TopLink will print this data as hex through the JDBC binary excape clause.
+     * EclipseLink can be configured to use parameter binding for large binary data.
+     * By default EclipseLink will print this data as hex through the JDBC binary escape clause.
      * Both binding and printing have various limits on all databases (e.g. 5k - 32k).
      */
     public void dontUseByteArrayBinding() {
@@ -194,8 +194,8 @@ public class DatabaseLogin extends DatasourceLogin {
     }
 
     /**
-     * PUBLIC: Indicate to TopLink that the JDBC driver does not support batch writing.
-     * This will revert to the default behaviour which is to delegate to TopLink's
+     * PUBLIC: Indicate to EclipseLink that the JDBC driver does not support batch writing.
+     * This will revert to the default behavior which is to delegate to EclipseLink's
      * internal batch writing.
          * @see #useJDBCBatchWriting
          * @see #setUsesJDBCBatchWriting(boolean usesJDBCBatchWriting)
@@ -206,10 +206,10 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use database-specific SQL grammar,
+     * EclipseLink can be configured to use database-specific SQL grammar,
      * as opposed to the JDBC standard grammar.
      * This is because, unfortunately, some drivers to not support the full JDBC standard.
-     * By default TopLink uses the JDBC SQL grammar.
+     * By default EclipseLink uses the JDBC SQL grammar.
      */
     public void dontUseNativeSQL() {
         setUsesNativeSQL(false);
@@ -217,7 +217,7 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use streams to store large binary data.
+     * EclipseLink can be configured to use streams to store large binary data.
      */
     public void dontUseStreamsForBinding() {
         setUsesStreamsForBinding(false);
@@ -346,9 +346,9 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink will attempt to test a connection if it encounters an exception on the connection
-     * when executing SQL.  This attribute represents the SQL query that will be executed by TopLink.
-     * By default TopLink uses a query that should be correct for the specified platform but users
+     * EclipseLink will attempt to test a connection if it encounters an exception on the connection
+     * when executing SQL.  This attribute represents the SQL query that will be executed by EclipseLink.
+     * By default EclipseLink uses a query that should be correct for the specified platform but users
      * may need or want to override that query.
      */
     public String getPingSQL(){
@@ -358,11 +358,11 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * Return the number of attempts TopLink should make to re-connect to a database and re-execute 
+     * Return the number of attempts EclipseLink should make to re-connect to a database and re-execute 
      * a query after a query has failed because of a communication issue.
-     * TopLink will only attempt to reconnect when TopLink can determine that a communication failure occurred
-     * on a read query executed outside of a transaction.  By default TopLink will attempt to retry the
-     * query 3 times, by setting this value to 0 TopLink will not retry queries.
+     * EclipseLink will only attempt to reconnect when EclipseLink can determine that a communication failure occurred
+     * on a read query executed outside of a transaction.  By default EclipseLink will attempt to retry the
+     * query 3 times, by setting this value to 0 EclipseLink will not retry queries.
      */
     public int getQueryRetryAttemptCount() {
         return queryRetryAttemptCount;
@@ -479,7 +479,7 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * Force TopLink to manually begin transactions instead of using autoCommit.
+     * Force EclipseLink to manually begin transactions instead of using autoCommit.
      * Although autoCommit should be used, and work, under JDBC,
      * some drivers (e.g. Sybase JConnect)
      * do not correctly map autoCommit to transactions, so stored procedures
@@ -664,7 +664,7 @@ public class DatabaseLogin extends DatasourceLogin {
     /**
      * PUBLIC:
      * Set the JDBC connection string.
-     * This is the full JDBC connect URL. Normally TopLink breaks this into two parts to
+     * This is the full JDBC connect URL. Normally EclipseLink breaks this into two parts to
      * allow for the driver header to be automatically set, however sometimes it is easier just to set the
      * entire URL at once.
      */
@@ -716,9 +716,9 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink will attempt to test a connection if it encounters an exception on the connection
-     * when executing SQL.  This attribute represents the SQL query that will be executed by TopLink.
-     * By default TopLink uses a query that should be correct for the specified platform but users
+     * EclipseLink will attempt to test a connection if it encounters an exception on the connection
+     * when executing SQL.  This attribute represents the SQL query that will be executed by EclipseLink.
+     * By default EclipseLink uses a query that should be correct for the specified platform but users
      * may need or want to override that query.
      */
     public void setPingSQL(String pingSQL){
@@ -727,11 +727,11 @@ public class DatabaseLogin extends DatasourceLogin {
     
     /**
      * PUBLIC:
-     * Set the number of attempts TopLink should make to re-connect to a database and re-execute 
+     * Set the number of attempts EclipseLink should make to re-connect to a database and re-execute 
      * a query after a query has failed because of a communication issue.
-     * TopLink will only attempt to reconnect when TopLink can determine that a communication failure occurred
-     * on a read query executed outside of a transaction.  By default TopLink will attempt to retry the
-     * query 3 times, by setting this value to 0 TopLink will not retry queries.
+     * EclipseLink will only attempt to reconnect when EclipseLink can determine that a communication failure occurred
+     * on a read query executed outside of a transaction.  By default EclipseLink will attempt to retry the
+     * query 3 times, by setting this value to 0 EclipseLink will not retry queries.
      */
     public void setQueryRetryAttemptCount(int queryRetryAttemptCount) {
         this.queryRetryAttemptCount = queryRetryAttemptCount;
@@ -888,7 +888,7 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use batch writing. This facility allows multiple write operations to be
+     * EclipseLink can be configured to use batch writing. This facility allows multiple write operations to be
      * submitted to a database for processing at once. Submitting multiple updates together, instead of
      * individually, can greatly improve performance in some situations.
      */
@@ -899,8 +899,8 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use parameter binding for large binary data.
-     * By default TopLink will print this data as hex through the JDBC binary excape clause.
+     * EclipseLink can be configured to use parameter binding for large binary data.
+     * By default EclipseLink will print this data as hex through the JDBC binary excape clause.
      * Both binding and printing have various limits on all databases (e.g. 5k - 32k).
      */
     public void setUsesByteArrayBinding(boolean value) {
@@ -908,13 +908,13 @@ public class DatabaseLogin extends DatasourceLogin {
     }
 
     /**
-     * PUBLIC: Calling this method with an argument of true indicates to TopLink that
-     * the JDBC driver supports batch writing. TopLink's internal batch writing is disabled.<p></p>
-     * Calling this method with an argument of false indicates to TopLink that the
+     * PUBLIC: Calling this method with an argument of true indicates to EclipseLink that
+     * the JDBC driver supports batch writing. EclipseLink's internal batch writing is disabled.<p></p>
+     * Calling this method with an argument of false indicates to EclipseLink that the
      * JDBC driver does not support batch writing. This will revert to the default
-     * behaviour which is to delegate to TopLink's internal batch writing.
+     * behavior which is to delegate to EclipseLink's internal batch writing.
      * @param usesJDBCBatchWriting boolean true delegates batch writing to the
-     * JDBC driver and false delegates batch writing to TopLink.
+     * JDBC driver and false delegates batch writing to EclipseLink.
      */
     public void setUsesJDBCBatchWriting(boolean usesJDBCBatchWriting) {
         getPlatform().setUsesJDBCBatchWriting(usesJDBCBatchWriting);
@@ -922,9 +922,9 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use database specific sql grammar not JDBC specific.
+     * EclipseLink can be configured to use database specific sql grammar not JDBC specific.
      * This is because unfortunately some bridges to not support the full JDBC standard.
-     * By default TopLink uses the JDBC sql grammar.
+     * By default EclipseLink uses the JDBC sql grammar.
      */
     public void setUsesNativeSQL(boolean value) {
         getPlatform().setUsesNativeSQL(value);
@@ -932,7 +932,7 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use streams to store large binary data.
+     * EclipseLink can be configured to use streams to store large binary data.
      * This can improve the max size for reading/writing on some JDBC drivers.
      */
     public void setUsesStreamsForBinding(boolean value) {
@@ -999,7 +999,7 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use batch writing. This facility allows multiple write operations to be
+     * EclipseLink can be configured to use batch writing. This facility allows multiple write operations to be
      * submitted to a database for processing at once. Submitting multiple updates together, instead of
      * individually, can greatly improve performance in some situations.
      */
@@ -1009,8 +1009,8 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use parameter binding for large binary data.
-     * By default TopLink will print this data as hex through the JDBC binary excape clause.
+     * EclipseLink can be configured to use parameter binding for large binary data.
+     * By default EclipseLink will print this data as hex through the JDBC binary escape clause.
      * Both binding and printing have various limits on all databases (e.g. 5k - 32k).
      */
     public boolean shouldUseByteArrayBinding() {
@@ -1018,10 +1018,10 @@ public class DatabaseLogin extends DatasourceLogin {
     }
 
     /**
-     * PUBLIC: Answers true if TopLink has JDBC batch writing enabled.
+     * PUBLIC: Answers true if EclipseLink has JDBC batch writing enabled.
      * This is the case if setUsesJDBCBatchWriting(true) has been called.
      * @return boolean true if batch writing is delegated to the JDBC driver.
-     * Returns false if delegated to TopLink.
+     * Returns false if delegated to EclipseLink.
      * @see #useJDBCBatchWriting
      * @see #dontUseJDBCBatchWriting
      * @see #setUsesJDBCBatchWriting(boolean usesJDBCBatchWriting)
@@ -1032,7 +1032,7 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use a sequence table
+     * EclipseLink can be configured to use a sequence table
      * or native sequencing to generate unique object IDs.
      * Native sequencing uses the ID generation service provided by the database
      * (e.g. SEQUENCE objects on Oracle and IDENTITY columns on Sybase).
@@ -1048,10 +1048,10 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use database-specific SQL grammar,
+     * EclipseLink can be configured to use database-specific SQL grammar,
      * as opposed to the JDBC standard grammar.
      * This is because, unfortunately, some drivers to not support the full JDBC standard.
-     * By default TopLink uses the JDBC SQL grammar.
+     * By default EclipseLink uses the JDBC SQL grammar.
      */
     public boolean shouldUseNativeSQL() {
         return getPlatform().usesNativeSQL();
@@ -1059,7 +1059,7 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use streams to store large binary data.
+     * EclipseLink can be configured to use streams to store large binary data.
      */
     public boolean shouldUseStreamsForBinding() {
         return getPlatform().usesStreamsForBinding();
@@ -1067,7 +1067,7 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to bind large strings.
+     * EclipseLink can be configured to bind large strings.
      */
     public boolean shouldUseStringBinding() {
         return getPlatform().usesStringBinding();
@@ -1111,7 +1111,7 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use batch writing. This facility allows multiple write operations to be
+     * EclipseLink can be configured to use batch writing. This facility allows multiple write operations to be
      * submitted to a database for processing at once. Submitting multiple updates together, instead of
      * individually, can greatly improve performance in some situations.
      */
@@ -1121,8 +1121,8 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use parameter binding for large binary data.
-     * By default TopLink will print this data as hex through the JDBC binary excape clause.
+     * EclipseLink can be configured to use parameter binding for large binary data.
+     * By default EclipseLink will print this data as hex through the JDBC binary excape clause.
      * Both binding and printing have various limits on all databases (e.g. 5k - 32k).
      */
     public void useByteArrayBinding() {
@@ -1388,9 +1388,9 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink support batch writing in both JDK 1.1 abd JDK 1.2.
+     * EclipseLink support batch writing in both JDK 1.1 abd JDK 1.2.
      * In JDK 1.2 either the batch support provided by the JDBC driver can be used,
-     * or TopLink's built-in support, this allow for this to be set.
+     * or EclipseLink's built-in support, this allow for this to be set.
      * By default the driver is used in JDK 1.2.
      * Some JDBC 2 drivers to not support batching, so this lets are own batching be used.
      */
@@ -1441,7 +1441,7 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use a sequence table
+     * EclipseLink can be configured to use a sequence table
      * or native sequencing to generate unique object IDs.
      * Native sequencing uses the ID generation service provided by the database
      * (e.g. SEQUENCE objects on Oracle and IDENTITY columns on Sybase).
@@ -1461,10 +1461,10 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use database-specific SQL grammar,
+     * EclipseLink can be configured to use database-specific SQL grammar,
      * as opposed to the JDBC standard grammar.
      * This is because, unfortunately, some drivers to not support the full JDBC standard.
-     * By default TopLink uses the JDBC SQL grammar.
+     * By default EclipseLink uses the JDBC SQL grammar.
      */
     public void useNativeSQL() {
         setUsesNativeSQL(true);
@@ -1575,7 +1575,7 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * TopLink can be configured to use streams to store large binary data.
+     * EclipseLink can be configured to use streams to store large binary data.
      */
     public void useStreamsForBinding() {
         setUsesStreamsForBinding(true);
@@ -1699,9 +1699,9 @@ public class DatabaseLogin extends DatasourceLogin {
     }
     /** 
      * PUBLIC:
-     * Returns the number of milliseconds that TopLink will wait between attempts to reconnect a DatabaseConnection
-     * in the case TopLink is attempting to retry a query, the default is 5000.  TopLink will retry a read query outside of a transaction
-     * if TopLink can determine that a communication error occured with the database.
+     * Returns the number of milliseconds that EclipseLink will wait between attempts to reconnect a DatabaseConnection
+     * in the case EclipseLink is attempting to retry a query, the default is 5000.  EclipseLink will retry a read query outside of a transaction
+     * if EclipseLink can determine that a communication error occured with the database.
      */
     public int getDelayBetweenConnectionAttempts() {
         return delayBetweenConnectionAttempts;
@@ -1709,9 +1709,9 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /** 
      * PUBLIC:
-     * Stores the number of milliseconds that TopLink will wait between attempts to reconnect a DatabaseConnection
-     * in the case TopLink is attempting to retry a query.  TopLink will retry a read query outside of a transaction
-     * if TopLink can determine that a communication error occured with the database.
+     * Stores the number of milliseconds that EclipseLink will wait between attempts to reconnect a DatabaseConnection
+     * in the case EclipseLink is attempting to retry a query.  EclipseLink will retry a read query outside of a transaction
+     * if EclipseLink can determine that a communication error occurred with the database.
      */
     public void setDelayBetweenConnectionAttempts(int delayBetweenConnectionAttempts) {
         this.delayBetweenConnectionAttempts = delayBetweenConnectionAttempts;
@@ -1720,11 +1720,11 @@ public class DatabaseLogin extends DatasourceLogin {
     /**
      * PUBLIC:
      * This value defaults to true if 'ping SQL' is available on the platform.
-     * On an SQL Exception TopLink will ping the database to determine
+     * On an SQL Exception EclipseLink will ping the database to determine
      * if the connection used can continue to be used for queries.  This should have no impact on applications
      * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
      * If that is the case and the application is experiencing a performance impact from the health check then
-     * this feature can be turned off. Turning this feature off will prevent TopLink from being able to
+     * this feature can be turned off. Turning this feature off will prevent EclipseLink from being able to
      * retry queries in the case of database failure. 
      */
     public boolean isConnectionHealthValidatedOnError() {
@@ -1733,11 +1733,11 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * This value defaults to true and on an SQL Exception TopLink will ping the database to determine
+     * This value defaults to true and on an SQL Exception EclipseLink will ping the database to determine
      * if the connection used can continue to be used for queries.  This should have no impact on applications
      * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
      * If that is the case and the application is experiencing a performance impact from the health check then
-     * this feature can be turned off. Turning this feature off will prevent TopLink from being able to
+     * this feature can be turned off. Turning this feature off will prevent EclipseLink from being able to
      * retry queries in the case of database failure. 
      */
     public void setConnectionHealthValidatedOnError(boolean isConnectionHealthValidatedOnError) {

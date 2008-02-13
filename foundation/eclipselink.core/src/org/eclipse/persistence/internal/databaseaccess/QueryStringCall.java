@@ -19,7 +19,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  * INTERNAL:
  * <b>Purpose<b>: Used to define query string calls.
- * These include SQLCall, XQueryInteraction which reuse translation behavoir through
+ * These include SQLCall, XQueryInteraction which reuse translation behavior through
  * this interface.
  *
  * @author James Sutherland

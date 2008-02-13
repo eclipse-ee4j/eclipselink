@@ -30,7 +30,7 @@ public class InfiniteRecursionWithNoDescriptorTest extends TestCase {
             uow.unregisterObject(person);
             uow.release();
             getAbstractSession().rollbackTransaction();
-            throw new TestErrorException("Stack overflow occured");
+            throw new TestErrorException("Stack overflow occurred");
         }
     }
 }

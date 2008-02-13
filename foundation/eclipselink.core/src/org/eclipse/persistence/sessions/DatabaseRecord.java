@@ -18,7 +18,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
  * <p>
  * <b>Purpose</b>: Define a representation of a database row as field=>value pairs.
  * This is the database row implementation class, the Record or java.util.Map interfaces
- * should be used to access this class instead of the implemention class.
+ * should be used to access this class instead of the implementation class.
  * <p>
  * <b>Responsibilities</b>: <ul>
  *        <li> Implement the common hashtable collection protocol.

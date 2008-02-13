@@ -23,7 +23,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 public class SetExistanceCheckingNotUnderstoodTest extends ExceptionTestSaveDescriptor {
     public SetExistanceCheckingNotUnderstoodTest() {
         super();
-        setDescription("This tests Foreigh Keys Defined Incorrectly (TL-ERROR 122) " + "");
+        setDescription("This tests Foreign Keys Defined Incorrectly (TL-ERROR 122) " + "");
     }
 
     protected void setup() {

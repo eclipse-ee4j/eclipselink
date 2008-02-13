@@ -13,7 +13,7 @@ package org.eclipse.persistence.testing.tests.proxyindirection;
 /*
  * Contact interface.
  *
- * Define behaviour for Contact objects.
+ * Define behavior for Contact objects.
  *
  * @author        Rick Barkhouse
  * @since        08/25/2000 16:31:46

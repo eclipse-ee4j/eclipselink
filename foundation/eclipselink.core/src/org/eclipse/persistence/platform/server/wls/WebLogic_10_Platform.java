@@ -14,13 +14,13 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 /**
  * PUBLIC:
  *
- * This is the concrete subclass responsible for representing WebLogic10 specific behaviour.
+ * This is the concrete subclass responsible for representing WebLogic10 specific behavior.
  *
  */
 public class WebLogic_10_Platform extends WebLogic_9_Platform {
     /**
      * INTERNAL:
-     * Default Constructor: All behaviour for the default constructor is inherited
+     * Default Constructor: All behavior for the default constructor is inherited
      */
     public WebLogic_10_Platform(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);

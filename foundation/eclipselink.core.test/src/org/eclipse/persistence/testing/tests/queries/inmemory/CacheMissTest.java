@@ -39,7 +39,7 @@ public class CacheMissTest extends CacheHitTest {
         }
 
         if (tempStream.toString().length() == 0) {
-            throw new TestErrorException("Cache hit occured, but should not have.");
+            throw new TestErrorException("Cache hit occurred, but should not have.");
         }
     }
 }

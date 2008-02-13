@@ -35,7 +35,7 @@ public abstract class TopLinkOption {
 	private String resourceKey;
 	
 	/**
-	 * Optional if the runtime has seperate model options instead of setShould*() methods and no
+	 * Optional if the runtime has separate model options instead of setShould*() methods and no
 	 * corresponding model options.
 	 */
 	private Object topLinkModelOption;

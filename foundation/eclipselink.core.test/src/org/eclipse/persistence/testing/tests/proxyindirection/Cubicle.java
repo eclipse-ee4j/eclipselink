@@ -13,7 +13,7 @@ package org.eclipse.persistence.testing.tests.proxyindirection;
 /*
  * Cubicle interface.
  *
- * Define behaviour for Cubicle objects.
+ * Define behavior for Cubicle objects.
  *
  * @author        Rick Barkhouse
  * @since        08/15/2000 15:51:05

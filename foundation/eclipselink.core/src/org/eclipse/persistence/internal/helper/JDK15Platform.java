@@ -129,7 +129,7 @@ public class JDK15Platform implements JDKPlatform {
 
     /**
      * INTERNAL
-     * return a boolean which determines where TopLink should include the TopLink-stored
+     * return a boolean which determines where EclipseLink should include the EclipseLink-stored
      * Internal exception in it's stack trace.  For JDK 1.4 VMs with exception chaining
      * the Internal exception can be redundant and confusing.
      * @return boolean will return false since JDK 1.4 does supports exception chaining

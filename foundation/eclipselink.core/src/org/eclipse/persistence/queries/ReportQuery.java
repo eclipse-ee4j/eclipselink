@@ -32,7 +32,7 @@ import org.eclipse.persistence.mappings.*;
  * <li>addAttribute("attributeName", expBuilder.getField("TABLE.FIELD")) allows the addition of raw values or values which were not mapped in the object model directly (i.e. FK attributes).
  * <li>addAttribute("attributeName", null) Leave a place holder (NULL) value in the result (used for included values from other systems or calculated values).
  * </ol>
- * <b>Retrieving Primary Keys</b>:     It is possble to retrieve the primary key raw values within each result, but stored in a separate (internal) vector. This
+ * <b>Retrieving Primary Keys</b>:     It is possible to retrieve the primary key raw values within each result, but stored in a separate (internal) vector. This
  *                                            primary key vector can later be used to retrieve the real object.
  *                                            @see #retrievePrimaryKeys()
  *                                            @see #readObject(Class, Session)
@@ -57,7 +57,7 @@ public class ReportQuery extends ReadAllQuery {
     /** For EJB 3 support returns results without using the ReportQueryResult */
     public static final int ShouldReturnWithoutReportQueryResult = 4;
 
-    /** Specifies whether to retreive primary keys, first primary key, or no primary key.*/
+    /** Specifies whether to retrieve primary keys, first primary key, or no primary key.*/
     public static final int FULL_PRIMARY_KEY = 2;
     public static final int FIRST_PRIMARY_KEY = 1;
     public static final int NO_PRIMARY_KEY = 0;
@@ -66,7 +66,7 @@ public class ReportQuery extends ReadAllQuery {
     protected static final Boolean RESULT_IGNORED = Boolean.valueOf(true);
     //end GF_ISSUE
     
-    /** Flag indicating wether the primary key values should also be retrieved for the reference class. */
+    /** Flag indicating whether the primary key values should also be retrieved for the reference class. */
     protected int shouldRetrievePrimaryKeys;
 
     /** Collection of names for use by results. */
@@ -547,7 +547,7 @@ public class ReportQuery extends ReadAllQuery {
     public ConstructorReportItem beginAddingConstructorArguments(Class constructorClass){
         ConstructorReportItem citem = new ConstructorReportItem(constructorClass.getName());
         citem.setResultType(constructorClass);
-        //add directly to avoid addToConstructorItem behaviour
+        //add directly to avoid addToConstructorItem behavior
         getItems().add(citem);
         //Bug2804042 Must un-prepare if prepared as the SQL may change.
         setIsPrepared(false);

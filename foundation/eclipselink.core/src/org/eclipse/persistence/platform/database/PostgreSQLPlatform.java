@@ -24,7 +24,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
- * <p><b>Purpose</b>: Provides Postgres specific behaviour.
+ * <p><b>Purpose</b>: Provides Postgres specific behavior.
  * <p><b>Responsibilities</b>:<ul>
  * <li> Native SQL for Date, Time, & Timestamp.
  * <li> Native sequencing.

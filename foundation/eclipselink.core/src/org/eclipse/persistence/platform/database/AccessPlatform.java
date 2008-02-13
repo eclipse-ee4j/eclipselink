@@ -16,7 +16,7 @@ import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
- *    <p><b>Purpose</b>: Provides Microsoft Access specific behaviour.
+ *    <p><b>Purpose</b>: Provides Microsoft Access specific behavior.
  *
  * @since TOPLink/Java 1.0
  */

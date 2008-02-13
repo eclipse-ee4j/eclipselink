@@ -17,7 +17,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.queries.*;
 
 /**
- *    <p><b>Purpose</b>: Provides Informix specific behaviour.
+ *    <p><b>Purpose</b>: Provides Informix specific behavior.
  *    <p><b>Responsibilities</b>:<ul>
  *    <li> Types for schema creation.
  *    <li> Native sequencing using @@SERIAL.

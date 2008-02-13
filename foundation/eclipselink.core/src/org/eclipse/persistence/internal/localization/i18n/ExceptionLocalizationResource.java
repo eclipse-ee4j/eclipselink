@@ -46,7 +46,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "error_marshalling_arguments", "Error marshalling arguments" },
                                            { "error_unmarshalling_return", "error unmarshalling return" },
                                            { "null_jar_file_names", "Null jar file names" },
-                                           { "oc4jruntime_exception", "An exception occured while creating an OC4J runtime service for exposing toplink session information, exception is: {0}" },
+                                           { "oc4jruntime_exception", "An exception occurred while creating an OC4J runtime service for exposing toplink session information, exception is: {0}" },
                                            
     { "error_loading_resources", "Error loading resources {0} from the classpath" },
                                            { "error_parsing_resources", "Error parsing resources {0}" },
@@ -80,7 +80,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "called_get_entity_manager_from_non_jta", "getEntityManager() is being called from a non-JTA enable EntityManagerFactory.  Please ensure JTA is properly set-up on your EntityManagerFactory."},
                                            { "illegal_state_while_closing", "Attempting to close an EntityManager with a transaction state other than NO_TRANSACTION, COMMITTED, or ROLLEDBACK."},
                                            { "operation_on_closed_entity_manager", "Attempting to execute an operation on a closed EntityManager."},
-                                           { "wrap_ejbql_exception", "An exception occured while creating a query in EntityManager"},
+                                           { "wrap_ejbql_exception", "An exception occurred while creating a query in EntityManager"},
                                            { "cant_refresh_not_managed_object", "Can not refresh not managed object: {0}." },
                                            { "entity_no_longer_exists_in_db", "Entity no longer exists in the database: {0}." },
                                            { "incorrect_query_for_get_result_list", "You cannot call getResultList() on this query.  It is the incorrect query type." },

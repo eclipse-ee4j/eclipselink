@@ -16,7 +16,7 @@ import org.eclipse.persistence.platform.server.ServerPlatformBase;
 /**
  * PUBLIC:
  *
- * This is the concrete subclass responsible for representing JBoss-specific server behaviour.
+ * This is the concrete subclass responsible for representing JBoss-specific server behavior.
  *
  * This platform overrides:
  *
@@ -27,7 +27,7 @@ public class JBossPlatform extends ServerPlatformBase {
 
     /**
      * INTERNAL:
-     * Default Constructor: All behaviour for the default constructor is inherited
+     * Default Constructor: All behavior for the default constructor is inherited
      */
     public JBossPlatform(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);

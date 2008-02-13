@@ -17,9 +17,9 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 
 /**
- * SequencingFactory is private to TopLink.
+ * SequencingFactory is private to EclipseLink.
  * It instantiates sequencing classes for sessions.
- * It allows sequencing classes to be incupsulated in
+ * It allows sequencing classes to be encapsulated in
  * this package.
  *
  * @see ClientSessionSequencing

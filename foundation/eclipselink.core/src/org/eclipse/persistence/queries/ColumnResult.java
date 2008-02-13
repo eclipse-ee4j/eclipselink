@@ -15,7 +15,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 /**
  * <p><b>Purpose</b>:
  * Concrete class to represent the ColumnResult structure as defined by
- * the EJB 3.0 Persistence specification.  This class is a subcompent of the 
+ * the EJB 3.0 Persistence specification.  This class is a subcomponent of the 
  * EntityResult
  * 
  * @see EntityResult

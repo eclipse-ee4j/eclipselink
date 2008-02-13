@@ -19,7 +19,7 @@ import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.internal.security.*;
 
 /**
- * <p><b>Purpose</b>: A wrapper class for handling cases when the domain object has instance varible
+ * <p><b>Purpose</b>: A wrapper class for handling cases when the domain object has instance variable
  * to map to the database field.
  *
  * @author Sati

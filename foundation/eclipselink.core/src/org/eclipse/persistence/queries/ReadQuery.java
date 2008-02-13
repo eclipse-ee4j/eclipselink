@@ -39,7 +39,7 @@ public abstract class ReadQuery extends DatabaseQuery {
 
     /* used on read queries to stamp the object to determine the last time it was refreshed to
      * reduce work and prevent inifinite recursion on Refreshes
-     *CR #4365 - used to prevent infinit recursion on refresh object cascade all
+     *CR #4365 - used to prevent infinite recursion on refresh object cascade all
      * CR #2698903 - fix for the previous fix. No longer using millis but ids now.
      */
     protected long queryId;
@@ -81,7 +81,7 @@ public abstract class ReadQuery extends DatabaseQuery {
       * provides a performance enhancement for queries known to always return the
       * same result set. Oracle recommends that you use this method only for such
       * queries.</P>
-      * <P>To disable this behaviour, call {@link #doNotCacheQueryResults} or
+      * <P>To disable this behavior, call {@link #doNotCacheQueryResults} or
       * {@link #setQueryResultsCachePolicy} passing in null.</P>
       */
     public void cacheQueryResults() {
@@ -125,7 +125,7 @@ public abstract class ReadQuery extends DatabaseQuery {
       * executions return result sets according to the current configuration of
       * query parameters. After calling this method, any previously cached result
       * set will be discarded the next time the query is executed.</P>
-      * <P>To enable this behaviour, call {@link #cacheQueryResults} or
+      * <P>To enable this behavior, call {@link #cacheQueryResults} or
       * {@link #setQueryResultsCachePolicy} passing in a valid QueryResultsCachePolicy.</P>
       * Note: If this method is called on a query that initially cached query results, 
       * clearQueryResults(Session) should also be called.  Otherwise, the results of
@@ -433,7 +433,7 @@ public abstract class ReadQuery extends DatabaseQuery {
     
     /**
      * INTERNAL:
-     * Put results in the remporary cache.
+     * Put results in the temporary cache.
      * Used when caching query results on a clone so they can be copied to the original
      * query
      */

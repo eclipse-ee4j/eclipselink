@@ -56,7 +56,7 @@ public class LoadFailsAfterDefineFailsTestCases extends XSDHelperDefineTestCases
           assertEquals(SDOException.GLOBAL_PROPERTY_NOT_FOUND, sdoException.getErrorCode());
           return;
         }
-        fail("An SDOException should have occured but did not");
+        fail("An SDOException should have occurred but did not");
     }
 
     public List getControlTypes() {

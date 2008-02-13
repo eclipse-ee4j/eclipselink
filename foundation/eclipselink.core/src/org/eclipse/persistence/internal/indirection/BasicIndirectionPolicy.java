@@ -89,7 +89,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
                 result = new ValueHolder();
                 result.setValue(this.getMapping().buildCloneForPartObject(valueHolder.getValue(), original, clone, unitOfWork, false));
             } else {
-                //if I have a relationsip partner trigger the indiretion so that the value will be inserted
+                //if I have a relationship partner trigger the indirection so that the value will be inserted
                 // because of this call the entire tree should be recursively cloned
                 AbstractRecord row = null;
                 if (valueHolder instanceof DatabaseValueHolder) {
@@ -299,7 +299,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
     public Object validateAttributeOfInstantiatedObject(Object attributeValue) {
         // PERF: If the value is null, create a new value holder instance for the attribute value,
         // this allows for indirection attributes to not be instantiated in the constructor as they
-        // are typically replaced when reading or cloning so is very inefficent to initialize.
+        // are typically replaced when reading or cloning so is very inefficient to initialize.
         if (attributeValue == null) {
             return new ValueHolder();
         }

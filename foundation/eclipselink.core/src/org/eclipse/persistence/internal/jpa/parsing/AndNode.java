@@ -31,7 +31,7 @@ public class AndNode extends LogicalOperatorNode {
 
     /**
      * INTERNAL
-     * Return a TopLink expression by 'AND'ing the expressions from the left and right nodes
+     * Return a EclipseLink expression by 'AND'ing the expressions from the left and right nodes
      */
     public Expression generateExpression(GenerationContext context) {
         // Get the left expression

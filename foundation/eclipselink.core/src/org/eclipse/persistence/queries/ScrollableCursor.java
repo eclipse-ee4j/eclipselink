@@ -151,7 +151,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
 
     /**
      * INTERNAL:
-     * Retreive the size of the open cursor by executing a count on the same query as the cursor.
+     * Retrieve the size of the open cursor by executing a count on the same query as the cursor.
      */
     protected int getCursorSize() throws DatabaseException {
         if (getKnownCursorSize() != -1) {
@@ -205,7 +205,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
 
     /**
      * PUBLIC:
-     * Retrieves the current cursor positon (current row).  The first row is number 1, the second number 2, and so on.
+     * Retrieves the current cursor position (current row).  The first row is number 1, the second number 2, and so on.
      * Unlike java.sql.ResultSet.getRow(), 0 is not returned if afterLast.
      * Instead size() + 1 is returned.
      * @return the current row number; 0 if there is no current row
@@ -423,7 +423,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
 
     /**
      * PUBLIC:
-     * This method differs slightly from conventinal read() operation on a Java stream.  This
+     * This method differs slightly from conventional read() operation on a Java stream.  This
      * method returns the next number of objects in the collection in a vector.
      *
      * Return the next specified number of objects from the collection, if beyond the read limit read from the cursor

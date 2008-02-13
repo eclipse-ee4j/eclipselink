@@ -16,7 +16,7 @@ import org.eclipse.persistence.transaction.JTATransactionController;
  * <p>
  * <b>Purpose</b>: TransactionController implementation for OC4J JTA
  * <p>
- * <b>Description</b>: Implements the required behaviour for controlling JTA
+ * <b>Description</b>: Implements the required behavior for controlling JTA
  * transactions in OC4J. The JTA TransactionManager must be set on the instance.
  * <p>
  * @see org.eclipse.persistence.transaction.JTATransactionController

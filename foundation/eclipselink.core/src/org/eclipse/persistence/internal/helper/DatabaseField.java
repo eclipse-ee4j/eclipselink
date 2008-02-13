@@ -250,9 +250,9 @@ public class DatabaseField implements Cloneable, Serializable {
     }
     
     /**
-     * Return the JDBC type that coresponds to the field.
+     * Return the JDBC type that corresponds to the field.
      * The JDBC type is normally determined from the class type,
-     * but this allows it to be overriden for types that do not match directly to a Java type,
+     * but this allows it to be overridden for types that do not match directly to a Java type,
      * such as MONEY or ARRAY, STRUCT, XMLTYPE, etc.
      * This can be used for binding or stored procedure usage.
      */
@@ -261,7 +261,7 @@ public class DatabaseField implements Cloneable, Serializable {
     }
 
     /**
-     * Return the hashcode of the name, because it is fairly unqiue.
+     * Return the hashcode of the name, because it is fairly unique.
      */
     public int hashCode() {
         return getName().hashCode();
@@ -294,7 +294,7 @@ public class DatabaseField implements Cloneable, Serializable {
     }
     
     /**
-     * Used for generatating DDL. Returns true if the database column is 
+     * Used for generating DDL. Returns true if the database column is 
      * nullable. 
      */ 
     public boolean isNullable() {
@@ -302,7 +302,7 @@ public class DatabaseField implements Cloneable, Serializable {
     }
     
     /**
-     * Used for generatating DDL. Returns true if the field is a unique key. 
+     * Used for generating DDL. Returns true if the field is a unique key. 
      */
     public boolean isUnique() {
         return this.isUnique;
@@ -379,7 +379,7 @@ public class DatabaseField implements Cloneable, Serializable {
     }
     
     /**
-     * Used for generatating DDL. Set to true if the database column is 
+     * Used for generating DDL. Set to true if the database column is 
      * nullable. 
      */
     public void setNullable(boolean isNullable) {
@@ -401,9 +401,9 @@ public class DatabaseField implements Cloneable, Serializable {
     }
     
     /**
-     * Set the JDBC type that coresponds to the field.
+     * Set the JDBC type that corresponds to the field.
      * The JDBC type is normally determined from the class type,
-     * but this allows it to be overriden for types that do not match directly 
+     * but this allows it to be overridden for types that do not match directly 
      * to a Java type, such as MONEY or ARRAY, STRUCT, XMLTYPE, etc.
      * This can be used for binding or stored procedure usage.
      */
@@ -420,7 +420,7 @@ public class DatabaseField implements Cloneable, Serializable {
     }
     
     /**
-     * Set the Java class type that coresponds to the field.
+     * Set the Java class type that corresponds to the field.
      * The JDBC type is determined from the class type,
      * this is used to optimize performance, and for binding.
      */
@@ -429,7 +429,7 @@ public class DatabaseField implements Cloneable, Serializable {
     }
     
     /**
-     * Used for generatating DDL. Set to true if the field is a unique key. 
+     * Used for generating DDL. Set to true if the field is a unique key. 
      */
     public void setUnique(boolean isUnique) {
         this.isUnique = isUnique;

@@ -50,7 +50,7 @@ import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackin
  * <li> Allow parallel transactions against a session's objects.
  * <li> Allow nested transactions.
  * <li> Not require the application to write objects that is changes, automatically determine what has changed.
- * <li> Perform a minimal commit/update of all changes that occured.
+ * <li> Perform a minimal commit/update of all changes that occurred.
  * <li> Resolve foreign keys for newly created objects and maintain referencial integrity.
  * <li> Allow for the object transaction to use its own object space.
  * </ul>
@@ -207,7 +207,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     
     /**
      * True if either DataModifyQuery or ModifyAllQuery was executed.
-     * Gets reset on commit, effects DoesExistQuery behaviour and reading.
+     * Gets reset on commit, effects DoesExistQuery behavior and reading.
      */
     protected boolean wasNonObjectLevelModifyQueryExecuted;
 
@@ -1448,7 +1448,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Delete operations are delayed in a unit of work until commit.
      */
     public void deleteAllObjects(Vector domainObjects) {
-        // This must be overriden to avoid dispatching to the commit manager.
+        // This must be overridden to avoid dispatching to the commit manager.
         for (Enumeration objectsEnum = domainObjects.elements(); objectsEnum.hasMoreElements();) {
             deleteObject(objectsEnum.nextElement());
         }
@@ -4439,7 +4439,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * By default new objects are not cached until the exist on the database.
      * Occasionally if mergeClone is used on new objects and is required to allow multiple merges
      * on the same new object, then if the new objects are not cached, each mergeClone will be
-     * interpretted as a different new object.
+     * interpreted as a different new object.
      * By setting new objects to be cached mergeClone can be performed multiple times before commit.
      * New objects cannot be cached unless they have a valid assigned primary key before being registered.
      * New object with non-null invalid primary keys such as 0 or '' can cause problems and should not be used with this option.
@@ -4599,7 +4599,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * By default new objects are not cached until the exist on the database.
      * Occasionally if mergeClone is used on new objects and is required to allow multiple merges
      * on the same new object, then if the new objects are not cached, each mergeClone will be
-     * interpretted as a different new object.
+     * interpreted as a different new object.
      * By setting new objects to be cached mergeClone can be performed multiple times before commit.
      * New objects cannot be cached unless they have a valid assigned primary key before being registered.
      * New object with non-null invalid primary keys such as 0 or '' can cause problems and should not be used with this option.

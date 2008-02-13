@@ -14,7 +14,7 @@ import java.util.*;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 
 /**
- *    <p><b>Purpose</b>: Provides HSQL specific behaviour.
+ *    <p><b>Purpose</b>: Provides HSQL specific behavior.
  *
  * @since TOPLink/Java 4.5
  */

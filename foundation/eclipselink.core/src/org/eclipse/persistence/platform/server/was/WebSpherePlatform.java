@@ -18,7 +18,7 @@ import org.eclipse.persistence.transaction.was.WebSphereTransactionController;
 /**
  * PUBLIC:
  *
- * This is the concrete subclass responsible for representing WebSphere-specific server behaviour.
+ * This is the concrete subclass responsible for representing WebSphere-specific server behavior.
  *
  * This platform has:
  * - No JMX MBean runtime services
@@ -28,7 +28,7 @@ public class WebSpherePlatform extends ServerPlatformBase {
 
     /**
      * INTERNAL:
-     * Default Constructor: All behaviour for the default constructor is inherited
+     * Default Constructor: All behavior for the default constructor is inherited
      */
     public WebSpherePlatform(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);

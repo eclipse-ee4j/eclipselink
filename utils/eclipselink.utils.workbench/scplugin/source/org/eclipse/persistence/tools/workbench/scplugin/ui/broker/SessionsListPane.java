@@ -157,7 +157,7 @@ final class SessionsListPane extends AbstractSessionsListPane
 
 	/**
 	 * Creates a new <code>CollectionValueModel</code> where the items are the
-	 * unmanaged sesions (excluding session brokers and managed sessions).
+	 * unmanaged sessions (excluding session brokers and managed sessions).
 	 *
 	 * @return A new <code>CollectionValueModel</code>
 	 */

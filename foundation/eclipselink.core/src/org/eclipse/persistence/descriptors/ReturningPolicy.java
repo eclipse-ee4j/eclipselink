@@ -52,7 +52,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
     protected Vector infos = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
 
     // The following attributes are initialized by initialize() method.
-    // Contains the actual DatabaseFields to be retuned.
+    // Contains the actual DatabaseFields to be returned.
     // Populated during descriptor initialization using infos.
     // Here's the order:
     // main[INSERT][RETURN_ONLY]  main[INSERT][WRITE_RETURN]  main[INSERT][MAPPED]	main[INSERT][UNMAPPED]	main[INSERT][ALL]

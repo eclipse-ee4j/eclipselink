@@ -13,7 +13,7 @@ package org.eclipse.persistence.testing.tests.proxyindirection;
 /*
  * Address interface.
  *
- * Define behaviour for Address objects.
+ * Define behavior for Address objects.
  *
  * @author        Rick Barkhouse
  * @since        08/15/2000 15:51:05

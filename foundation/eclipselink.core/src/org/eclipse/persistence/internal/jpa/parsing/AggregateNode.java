@@ -60,7 +60,7 @@ public abstract class AggregateNode extends Node {
 
     /**
      * INTERNAL
-     * Return a TopLink expression generated using the left node
+     * Return a EclipseLink expression generated using the left node
      */
     public Expression generateExpression(GenerationContext context) {
         String name = getAsString();

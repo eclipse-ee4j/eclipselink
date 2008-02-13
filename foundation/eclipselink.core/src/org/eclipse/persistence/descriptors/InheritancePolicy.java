@@ -82,7 +82,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * Create a new policy.
-     * Only descriptors involved in inheritence should have a policy.
+     * Only descriptors involved in inheritance should have a policy.
      */
     public InheritancePolicy() {
         this.classIndicatorMapping = new HashMap(10);
@@ -96,7 +96,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * Create a new policy.
-     * Only descriptors involved in inheritence should have a policy.
+     * Only descriptors involved in inheritance should have a policy.
      */
     public InheritancePolicy(ClassDescriptor descriptor) {
         this();
@@ -154,7 +154,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      */
     public void addClassIndicator(Class childClass, Object typeValue) {
         // Note we should think about supporting null values.
-        // Store as key and value for bi-diractional lookup.
+        // Store as key and value for bi-directional lookup.
         getClassIndicatorMapping().put(typeValue, childClass);
         getClassIndicatorMapping().put(childClass, typeValue);
     }
@@ -289,7 +289,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
         selectStatement.setTables(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1));
         selectStatement.addTable(getReadAllSubclassesView());
 
-        // Case, normal read for branch inheritence class that reads subclasses all in its own table(s).
+        // Case, normal read for branch inheritance class that reads subclasses all in its own table(s).
         if (getWithAllSubclassesExpression() != null) {
             Expression branchIndicator = (Expression)getWithAllSubclassesExpression().clone();
             if (branchIndicator != null) {
@@ -537,7 +537,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * The method registered must be a static method on the class which has that descriptor. The method must take a 
      * Record as an argument (for example, a DatabaseRecord), and must return the class to use for that record. 
      * This method will be used to decide which class to instantiate when reading from the database. 
-     * It is the application's responsiblity to populate any typing information in the database required
+     * It is the application's responsibility to populate any typing information in the database required
      * to determine the class from the record. 
      * If this method is used, then the class indicator field and mapping cannot be used, and in addition, 
      * the descriptor's withAllSubclasses and onlyInstances expressions must also be setup correctly.
@@ -560,7 +560,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * The instance registered must extend the ClassExtractor class and implement the extractClass(Map) method.
      * The method must take database row (a Record/Map) as an argument and must return the class to use for that row.
      * This method will be used to decide which class to instantiate when reading from the database.
-     * It is the application's responsiblity to populate any typing information in the database required
+     * It is the application's responsibility to populate any typing information in the database required
      * to determine the class from the row, such as usage of a direct or transformation mapping for the type fields.
      * If this method is used then the class indicator field and mapping cannot be used, and in addition, 
      * the descriptor's withAllSubclasses and onlyInstances expressions must also be setup correctly.
@@ -579,7 +579,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * The instance registered must extend the ClassExtractor class and implement the extractClass(Map) method.
      * The method must take database row (a Record/Map) as an argument and must return the class to use for that row.
      * This method will be used to decide which class to instantiate when reading from the database.
-     * It is the application's responsiblity to populate any typing information in the database required
+     * It is the application's responsibility to populate any typing information in the database required
      * to determine the class from the row, such as usage of a direct or transformation mapping for the type fields.
      * If this method is used then the class indicator field and mapping cannot be used, and in addition, 
      * the descriptor's withAllSubclasses and onlyInstances expressions must also be setup correctly.
@@ -616,7 +616,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
-     * Returns field that the class type indicator is store when using inheritence.
+     * Returns field that the class type indicator is store when using inheritance.
      */
     public DatabaseField getClassIndicatorField() {
         return classIndicatorField;
@@ -731,7 +731,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * The view can be used to optimize/customize the query for all subclasses where they have multiple tables.
-     * This view can do the outer join, we require the view because we cannot generate dynmic platform independent SQL
+     * This view can do the outer join, we require the view because we cannot generate dynamic platform independent SQL
      * for outer joins (i.e. not possible to do so either).
      */
     public DatabaseTable getReadAllSubclassesView() {
@@ -818,7 +818,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
-     * Checks if the class is invloved in inheritence
+     * Checks if the class is invloved in inheritance
      */
     public boolean hasClassIndicator() {
         return getClassIndicatorField() != null;
@@ -843,7 +843,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
-     * Initialized the inheritence properties of the descriptor once the mappings are initialized.
+     * Initialized the inheritance properties of the descriptor once the mappings are initialized.
      * This is done before formal postInitialize during the end of mapping initialize.
      */
     public void initialize(AbstractSession session) {
@@ -1011,7 +1011,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
-     * Initialized the inheritence properties that cannot be initialized
+     * Initialized the inheritance properties that cannot be initialized
      * unitl after the mappings have been.
      */
     public void postInitialize(AbstractSession session) {
@@ -1019,7 +1019,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
-     * Allow the inheritence properties of the descriptor to be initialized.
+     * Allow the inheritance properties of the descriptor to be initialized.
      * The descriptor's parent must first be initialized.
      */
     public void preInitialize(AbstractSession session) throws DescriptorException {
@@ -1160,7 +1160,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * INTERNAL:
      * Select all rows from a abstract table descriptor.
      * This is accomplished by selecting for all of the concrete classes and then merging the rows.
-     * This does not optimize using type select, as the type infomation is not known.
+     * This does not optimize using type select, as the type information is not known.
      * @return vector containing database rows.
      * @exception  DatabaseException - an error has occurred on the database.
      */
@@ -1274,7 +1274,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * INTERNAL:
      * Select one rows from a abstract table descriptor.
      * This is accomplished by selecting for all of the concrete classes until a row is found.
-     * This does not optimize using type select, as the type infomation is not known.
+     * This does not optimize using type select, as the type information is not known.
      * @exception  DatabaseException - an error has occurred on the database.
      */
     protected AbstractRecord selectOneRowUsingCustomMultipleTableSubclassRead(ReadObjectQuery query) throws DatabaseException {
@@ -1369,7 +1369,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * The method registered must be a static method on the class which has that descriptor. The method must take Record 
      * as an argument (for example, a DatabaseRecord), and must return the class to use for that record.
      * This method will be used to decide which class to instantiate when reading from the database.
-     * It is the application's responsiblity to populate any typing information in the database required
+     * It is the application's responsibility to populate any typing information in the database required
      * to determine the class from the record.
      * If this method is used then the class indicator field and mapping cannot be used, and in addition, 
      * the descriptor's withAllSubclasses and onlyInstances expressions must also be set up correctly.
@@ -1433,7 +1433,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Set the association of indicators and classes.
-     * This may be desired to be used by clients in strange inheritence models.
+     * This may be desired to be used by clients in strange inheritance models.
      */
     public void setClassIndicatorMapping(Map classIndicatorMapping) {
         this.classIndicatorMapping = classIndicatorMapping;
@@ -1507,7 +1507,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * The view can be used to optimize/customize the query for all subclasses where they have multiple tables.
-     * This view can do the outer join, we require the view because we cannot generate dynmic platform independent SQL
+     * This view can do the outer join, we require the view because we cannot generate dynamic platform independent SQL
      * for outer joins (i.e. not possible to do so either).
      */
     protected void setReadAllSubclassesView(DatabaseTable readAllSubclassesView) {
@@ -1531,8 +1531,8 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * Set the descriptor to read instance of itself and its subclasses when queried.
-     * This is used with inheritence to configure the result of queries.
-     * By default this is true for root inheritence descriptors, and false for all others.
+     * This is used with inheritance to configure the result of queries.
+     * By default this is true for root inheritance descriptors, and false for all others.
      */
     public void setShouldReadSubclasses(Boolean shouldReadSubclasses) {
         this.shouldReadSubclasses = shouldReadSubclasses;
@@ -1541,8 +1541,8 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Set the descriptor to read instance of itself and its subclasses when queried.
-     * This is used with inheritence to configure the result of queries.
-     * By default this is true for root inheritence descriptors, and false for all others.
+     * This is used with inheritance to configure the result of queries.
+     * By default this is true for root inheritance descriptors, and false for all others.
      */
     public void setShouldReadSubclasses(boolean shouldReadSubclasses) {
         this.shouldReadSubclasses = Boolean.valueOf(shouldReadSubclasses);
@@ -1551,7 +1551,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Set if the descriptor uses the classes fully qualified name as the indicator.
-     * The class indicator is used with inheritence to determine the class from a row.
+     * The class indicator is used with inheritance to determine the class from a row.
      * By default a class indicator mapping is required, this can be set to true if usage of the class
      * name is desired.
      * The field must be of a large enough size to store the fully qualified class name.
@@ -1562,7 +1562,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
 
     /**
      * PUBLIC:
-     * Sets the inheritance policy to always use an outer join when quering across a relationship of class.
+     * Sets the inheritance policy to always use an outer join when querying across a relationship of class.
      * used when using getAllowingNull(), or anyOfAllowingNone()
      */
 
@@ -1595,7 +1595,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * ADVANCED:
      * Sets the expression to be used for querying for a class and all its subclasses. Can be used
-     * to customize the inheritence class indicator expression.
+     * to customize the inheritance class indicator expression.
      */
     public void setWithAllSubclassesExpression(Expression withAllSubclassesExpression) {
         this.withAllSubclassesExpression = withAllSubclassesExpression;
@@ -1634,7 +1634,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return if an outer join should be used to read subclasses.
-     * By default a seperate query is done for each subclass when querying for
+     * By default a separate query is done for each subclass when querying for
      * a root or branch inheritance class that has subclasses that span multiple tables.
      */
     public boolean shouldOuterJoinSubclasses() {
@@ -1644,7 +1644,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Set if an outer join should be used to read subclasses.
-     * By default a seperate query is done for each subclass when querying for
+     * By default a separate query is done for each subclass when querying for
      * a root or branch inheritance class that has subclasses that span multiple tables.
      */
     public void setShouldOuterJoinSubclasses(boolean shouldOuterJoinSubclasses) {

@@ -37,7 +37,7 @@ public class WhereNode extends MajorNode {
     /**
      * INTERNAL
      * @param context The generation context
-     * @return A TopLink expression
+     * @return An EclipseLink expression
      */
     public Expression generateExpression(GenerationContext context) {
         Expression whereClause = null;

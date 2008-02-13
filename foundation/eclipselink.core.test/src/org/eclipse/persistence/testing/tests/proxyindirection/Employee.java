@@ -14,7 +14,7 @@ import java.util.Collection;
 /*
  * Employee interface.
  *
- * Define behaviour for Employee objects.
+ * Define behavior for Employee objects.
  *
  * @author        Rick Barkhouse
  * @since        08/15/2000 15:51:05

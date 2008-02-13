@@ -74,9 +74,9 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
     }
 
     /**
-     * This method is used to bridge the behaviour between Attribute Change Tracking and
+     * This method is used to bridge the behavior between Attribute Change Tracking and
      * deferred change tracking with respect to adding the sam einstance multiple times.
-     * Each containerplicy type will implement specific behaviour for the collection 
+     * Each containerplicy type will implement specific behavior for the collection 
      * type it is wrapping.  These methods are only valid for collections containing object references
      */
     public void recordAddToCollectionInChangeRecord(ObjectChangeSet changeSetToAdd, CollectionChangeRecord collectionChangeRecord){
@@ -92,9 +92,9 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
     }
     
     /**
-     * This method is used to bridge the behaviour between Attribute Change Tracking and
+     * This method is used to bridge the behavior between Attribute Change Tracking and
      * deferred change tracking with respect to adding the sam einstance multiple times.
-     * Each containerplicy type will implement specific behaviour for the collection 
+     * Each containerplicy type will implement specific behavior for the collection 
      * type it is wrapping.  These methods are only valid for collections containing object references
      */
     public void recordRemoveFromCollectionInChangeRecord(ObjectChangeSet changeSetToRemove, CollectionChangeRecord collectionChangeRecord){

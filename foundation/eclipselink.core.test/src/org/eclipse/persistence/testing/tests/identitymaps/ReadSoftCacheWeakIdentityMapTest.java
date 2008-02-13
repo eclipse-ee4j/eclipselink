@@ -54,7 +54,7 @@ public class ReadSoftCacheWeakIdentityMapTest extends ReadWeakIdentityMapTest {
 
     public void verify() {
         // Ensure that some ref have garbage collected,
-        // if not all through warning as different VM have different gc behavoir.
+        // if not all through warning as different VM have different gc behavior.
         Map cache = getIdentityMap().getCacheKeys();
         int numObjects = 0;
         for (Iterator iterator = cache.values().iterator(); iterator.hasNext();) {

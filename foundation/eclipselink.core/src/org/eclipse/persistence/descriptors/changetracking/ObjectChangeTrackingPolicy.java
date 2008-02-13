@@ -35,7 +35,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
 
     /**
      * INTERNAL:
-     * This method is used to dissable changetracking temporarily
+     * This method is used to disable changetracking temporarily
      */
     public void dissableEventProcessing(Object changeTracker) {
         ObjectChangeListener listener = (ObjectChangeListener)((ChangeTracker)changeTracker)._persistence_getPropertyChangeListener();
@@ -102,7 +102,7 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
 
     /**
      * INTERNAL:
-     * Assign Changelistner to an aggregate object
+     * Assign ChangeListener to an aggregate object
      */
     public void setAggregateChangeListener(Object parent, Object aggregate, UnitOfWorkImpl uow, ClassDescriptor descriptor, String mappingAttribute) {
         ((ChangeTracker)aggregate)._persistence_setPropertyChangeListener(new AggregateObjectChangeListener((ObjectChangeListener)((ChangeTracker)parent)._persistence_getPropertyChangeListener(), mappingAttribute));

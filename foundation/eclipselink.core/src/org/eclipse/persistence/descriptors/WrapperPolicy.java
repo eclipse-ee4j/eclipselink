@@ -15,7 +15,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p><b>Purpose</b>: The wrapper policy can be used to wrap all objects read from the database in another object.
- * This allows for TopLink to utilize one version of the class for its purposes and allows for the
+ * This allows for EclipseLink to utilize one version of the class for its purposes and allows for the
  * application to deal with another version of the object.
  * The wrapper policy is used for things such as EJB Entity Beans and is directly used by the
  * TopLink for WebLogic product for EJB Container Managed Persistence.
@@ -54,7 +54,7 @@ public interface WrapperPolicy extends Serializable {
 
     /**
      * PUBLIC:
-     * Required: Unwrap the object to return the implementation that is meant to be used by TopLink.
+     * Required: Unwrap the object to return the implementation that is meant to be used by EclipseLink.
      * The object may already be unwrapped in which case the object should be returned.
      * @param proxy the wrapped object
      * @param session the session to unwrap into

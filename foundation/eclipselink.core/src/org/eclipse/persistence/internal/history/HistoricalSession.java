@@ -156,7 +156,7 @@ public class HistoricalSession extends AbstractSession {
 
     /**
      * INTERNAL:
-     * Return the results from exeucting the database query.
+     * Return the results from executing the database query.
      * the arguments should be a database row with raw data values.
      * No modify queries are allowed through a HistoricalSession.
      */

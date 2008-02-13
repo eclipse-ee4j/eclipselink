@@ -18,7 +18,7 @@ import org.eclipse.persistence.sessions.Session;
 /**
  * <p>An <code>EISLogin</code> defines connection information and datasource 
  * properties.  There are three ways to connect to an EIS datasource through 
- * TopLink EIS:
+ * EclipseLink EIS:
  * <ul>
  * <li>Provide a JNDI name to the ConnectionFactory and use the default 
  * getConnection
@@ -32,7 +32,7 @@ import org.eclipse.persistence.sessions.Session;
  * connect to the EIS adapter.
  *
  * <p> The EIS platform can be used to provide datasource/driver specific 
- * behavoir such as InteractionSpec and Record conversion.
+ * behavior such as InteractionSpec and Record conversion.
  *
  * @see EISConnectionSpec
  *
@@ -118,7 +118,7 @@ public class EISLogin extends DatasourceLogin {
 
     /**
      * PUBLIC:
-     * Set the TopLink connection spec.
+     * Set the EclipseLink connection spec.
      * The connection spec defines how to connect to the EIS adapter.
      */
     public void setConnectionSpec(EISConnectionSpec connectionSpec) {

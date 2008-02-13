@@ -151,7 +151,7 @@ public class MethodBaseQueryRedirector implements QueryRedirector {
             throw QueryException.redirectionClassOrMethodNotSet(query);
         }
 
-        // Must check 3 possible argment sets for backward compatibility.
+        // Must check 3 possible argument sets for backward compatibility.
         // The DatabaseQuery, Record, Session should be used, check last the throw correct exception.
         // Check Session, Vector.
         Class[] arguments = new Class[2];

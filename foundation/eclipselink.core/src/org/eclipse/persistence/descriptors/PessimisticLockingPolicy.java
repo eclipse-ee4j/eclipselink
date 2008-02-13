@@ -13,7 +13,7 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 /**
- * <p> <b>Description</b>: This policy is used to configure bean level pessimistic locking feautre.
+ * <p> <b>Description</b>: This policy is used to configure bean level pessimistic locking feature.
  * It is set on the CMPPolicy instance of the ClassDescriptor
  *
  * Note that bean is not pessimistic locked in the following scenarios:
@@ -28,7 +28,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
  * <b>Responsibilities</b>:
  * <ul>
  * <li> Configure locking modes of WAIT or NO_WAIT
- * <li> Provide utitity to configure an ObjectLevelReadQuery with pessimstic locking based on this policy.
+ * <li> Provide utility to configure an ObjectLevelReadQuery with pessimistic locking based on this policy.
  * </ul>
  *
  * @see org.eclipse.persistence.descriptors.CMPPolicy

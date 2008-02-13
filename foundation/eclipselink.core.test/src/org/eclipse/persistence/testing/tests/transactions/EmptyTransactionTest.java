@@ -32,7 +32,7 @@ public class EmptyTransactionTest extends AutoVerifyTestCase {
     };
 
     /**
-     * Set the transaction occured flag.
+     * Set the transaction occurred flag.
      */
     public void transactionOccurred(SessionEvent event) {
         transactionOccurred = true;

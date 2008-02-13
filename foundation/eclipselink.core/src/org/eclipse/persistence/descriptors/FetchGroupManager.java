@@ -26,13 +26,13 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 
 /**
  * <p><b>Purpose</b>: The fetch group manager controls the named fetch groups defined at
- * the descriptor level. TopLink supports multiple, overlapped fetch groups, optionally with
+ * the descriptor level. EclipseLink supports multiple, overlapped fetch groups, optionally with
  * one of them as the default fetch group.
  * <p>
  * The domain object must implement org.eclipse.persistence.queries.FetchGroupTracker interface,
  * in order to make use of the fetch group performance enhancement feature.
  * <p>
- * Please refer to FetchGroup class for the prons and cons of fetch group usage.
+ * Please refer to FetchGroup class for the pros and cons of fetch group usage.
  *
  * @see org.eclipse.persistence.queries.FetchGroup
  * @see org.eclipse.persistence.queries.FetchGroupTracker
@@ -235,7 +235,7 @@ public class FetchGroupManager implements Cloneable {
         for (int index = 0; index < size; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             String attributeName = mapping.getAttributeName();
-            // Only revert the attribute which is fetched by the cached object, but not fecthed by the clone.
+            // Only revert the attribute which is fetched by the cached object, but not fetched by the clone.
             if (((fetchedAttributesCached == null) || fetchedAttributesCached.contains(attributeName)) && (!fetchedAttributesClone.contains(attributeName))) {
                 mapping.buildClone(cachedObject, workingClone, uow);
                 if (workingClone != backupClone) {
@@ -247,7 +247,7 @@ public class FetchGroupManager implements Cloneable {
 
     /**
      * INTERNAL:
-     * Copy fetch group refrerence from the source object to the target
+     * Copy fetch group reference from the source object to the target
      */
     public void copyFetchGroupInto(Object source, Object target, AbstractSession session) {
         if (isPartialObject(source)) {

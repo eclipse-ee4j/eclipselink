@@ -389,7 +389,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the field/argument name to be substitute for the index argument.
-     * This method is used if the procedure is not named and the order is explict, names must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, names must be added in the correct order.
      * The argumentFieldName is the field or argument name to be used to pass to the procedure.
      */
     public void addUnamedArgument(String argumentFieldName) {
@@ -401,7 +401,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the argument to the stored procedure for the index argument.
-     * This method is used if the procedure is not named and the order is explict, arguments must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, arguments must be added in the correct order.
      * The argumentValue is the value of the argument to be used to pass to the procedure.
      */
     public void addUnamedArgumentValue(Object argumentValue) {
@@ -412,7 +412,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the argument to the stored procedure for the index argument.
-     * This method is used if the procedure is not named and the order is explict, arguments must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, arguments must be added in the correct order.
      * The argumentFieldName is the field or argument name to be used to pass to the user.
      * The type is the type of Java class for the field, and is dependent on the type required by the procedure.  This is used
      * to set the type in case null is passed in.
@@ -427,7 +427,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the argument to the stored procedure for the index argument.
-     * This method is used if the procedure is not named and the order is explict, arguments must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, arguments must be added in the correct order.
      * The argumentFieldName is the field or argument name to be used to pass to the user.
      * If these names are the same (as they normally are) this method can be called with a single argument.
      * The type is the JDBC type code, this is dependent on the type required by the procedure.
@@ -442,7 +442,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the argument to the stored procedure for the index argument.
-     * This method is used if the procedure is not named and the order is explict, arguments must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, arguments must be added in the correct order.
      * The argumentFieldName is the field or argument name to be used to pass to the procedure.
      * If these names are the same (as they normally are) this method can be called with a single argument.
      * The type is the JDBC type code, this is dependent on the type required by the procedure.
@@ -459,7 +459,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the argument to the stored procedure for the index argument.
-     * This method is used if the procedure is not named and the order is explict, arguments must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, arguments must be added in the correct order.
      * The argumentFieldName is the field or argument name to be used to pass to the procedure.
      * If these names are the same (as they normally are) this method can be called with a single argument.
      * The type is the JDBC type code, this is dependent on the type required by the procedure.
@@ -478,7 +478,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the argument to the stored procedure for the index argument.
-     * This method is used if the procedure is not named and the order is explict, arguments must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, arguments must be added in the correct order.
      * The inArgumentFieldName is the field name of the argument to be used to pass to the procedure.
      * The outArgumentFieldName is the field or argument name to be used is the result of the output row.
      * If these names are the same (as they normally are) this method can be called with a single argument.
@@ -500,7 +500,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the argument to the stored procedure for the index argument.
-     * This method is used if the procedure is not named and the order is explict, arguments must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, arguments must be added in the correct order.
      * The inArgumentFieldName is the field name of the argument to be used to pass to the procedure.
      * The outArgumentFieldName is the field or argument name to be used is the result of the output row.
      * If these names are the same (as they normally are) this method can be called with a single argument.
@@ -522,7 +522,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the inoutput argument to the stored procedure for the index argument and the field/argument name to be substitute for it on the way in and out.
-     * This method is used if the procedure is not named and the order is explict, arguments must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, arguments must be added in the correct order.
      * The inArgumentFieldName is the field name of the argument to be used to pass to the procedure.
      * The outArgumentFieldName is the field or argument name to be used is the result of the output row.
      * If these names are the same (as they normally are) this method can be called with a single argument.
@@ -547,7 +547,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the inoutput argument to the stored procedure for the index argument and the field/argument name to be substitute for it on the way in and out.
-     * This method is used if the procedure is not named and the order is explict, arguments must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, arguments must be added in the correct order.
      * The argumentFieldName is the field name of the argument to be used to pass to the procedure
      * and to be used is the result of the output row.
      * The type is the type of Java class desired back from the procedure, this is dependent on the type returned from the procedure.
@@ -559,7 +559,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the inoutput argument to the stored procedure for the index argument and the field/argument name to be substitute for it on the way in and out.
-     * This method is used if the procedure is not named and the order is explict, arguments must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, arguments must be added in the correct order.
      * The argumentFieldName is the field name of the argument to be used to pass to the procedure
      * and to be used is the result of the output row.
      */
@@ -570,7 +570,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the inoutput argument to the stored procedure for the index argument and the field/argument name to be substitute for it on the way in and out.
-     * This method is used if the procedure is not named and the order is explict, arguments must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, arguments must be added in the correct order.
      * The inArgumentFieldName is the field or argument name to be used to pass to the procedure.
      * The outArgumentFieldName is the field or argument name to be used is the result of the output row.
      * If these names are the same (as they normally are) this method can be called with a single argument.
@@ -585,7 +585,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the inoutput argument to the stored procedure for the index argument and the field/argument name to be substitute for it on the way in and out.
-     * This method is used if the procedure is not named and the order is explict, arguments must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, arguments must be added in the correct order.
      * The argumentFieldName is the field or argument name to be used is the result of the output row.
      * The jdbcType is the JDBC type code, this dependent on the type returned from the procedure.
      * The typeName is the JDBC type name, this may be required for ARRAY and STRUCT types.
@@ -599,7 +599,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the inoutput argument to the stored procedure for the index argument and the field/argument name to be substitute for it on the way in and out.
-     * This method is used if the procedure is not named and the order is explict, arguments must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, arguments must be added in the correct order.
      * The inArgumentValue is the value of the argument to be used to pass to the procedure.
      * The outArgumentFieldName is the field or argument name to be used is the result of the output row.
      * If these names are the same (as they normally are) this method can be called with a single argument.
@@ -615,7 +615,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the field/argument name to be substitute for the index output argument.
-     * This method is used if the procedure is not named and the order is explict, names must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, names must be added in the correct order.
      * The argumentFieldName is the field or argument name to be used to pass to the procedure.
      * The type is the type of Java class desired back from the procedure, this is dependent on the type returned from the procedure.
      */
@@ -627,7 +627,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the field/argument name to be substitute for the index output argument.
-     * This method is used if the procedure is not named and the order is explict, names must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, names must be added in the correct order.
      * The argumentFieldName is the field or argument name to be used to pass to the procedure.
      * The type is the type of Java class desired back from the procedure, this is dependent on the type returned from the procedure.
      */
@@ -641,7 +641,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the field/argument name to be substitute for the index output argument.
-     * This method is used if the procedure is not named and the order is explict, names must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, names must be added in the correct order.
      * The argumentFieldName is the field or argument name to be used to pass to the procedure.
      * The type is the JDBC type code, this is dependent on the type returned from the procedure.
      */
@@ -655,7 +655,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the field/argument name to be substitute for the index output argument.
-     * This method is used if the procedure is not named and the order is explict, names must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, names must be added in the correct order.
      * The argumentFieldName is the field or argument name to be used to pass to the procedure.
      * The type is the JDBC type code, this is dependent on the type returned from the procedure.
      * The typeName is the JDBC type name, this may be required for ARRAY or STRUCT types.
@@ -671,7 +671,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the field/argument name to be substitute for the index output argument.
-     * This method is used if the procedure is not named and the order is explict, names must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, names must be added in the correct order.
      * The argumentFieldName is the field or argument name to be used is the result of the output row.
      * The jdbcType is the JDBC type code, this dependent on the type returned from the procedure.
      * The typeName is the JDBC type name, this may be required for ARRAY and STRUCT types.
@@ -684,7 +684,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * PUBLIC:
      * Define the field/argument name to be substitute for the index output argument.
-     * This method is used if the procedure is not named and the order is explict, names must be added in the correct order.
+     * This method is used if the procedure is not named and the order is explicit, names must be added in the correct order.
      * The argumentFieldName is the field or argument name to be used is the result of the output row.
      * The jdbcType is the JDBC type code, this dependent on the type returned from the procedure.
      * The typeName is the JDBC type name, this may be required for ARRAY and STRUCT types.
@@ -715,7 +715,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * INTERNAL:
      * The if the names are provide the order is not required to match the call def.
-     * This is lazy initialized to conserv space on calls that have no parameters.
+     * This is lazy initialized to conserve space on calls that have no parameters.
      */
     public Vector getProcedureArgumentNames() {
         if (procedureArgumentNames == null) {
@@ -748,7 +748,7 @@ public class StoredProcedureCall extends DatabaseCall {
     /**
      * INTERNAL:
      * The if the names are provide the order is not required to match the call def.
-     * This is lazy initialized to conserv space on calls that have no parameters.
+     * This is lazy initialized to conserve space on calls that have no parameters.
      */
     public void setProcedureArgumentNames(Vector procedureArgumentNames) {
         this.procedureArgumentNames = procedureArgumentNames;

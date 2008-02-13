@@ -262,7 +262,7 @@ public class ParseTreeContext {
     }
 
     /** 
-     * Associate the given variableName with the given node representating a
+     * Associate the given variableName with the given node representing a
      * JOIN FETCH node.
      */
     public void registerFetchJoin(String variableName, Node node) {
@@ -274,7 +274,7 @@ public class ParseTreeContext {
         joins.add(node);
     }
 
-    /** Returns alist of FETCH JOIN nodes for the specified attached to the
+    /** Returns a list of FETCH JOIN nodes for the specified attached to the
      * specified variable. */
     public List getFetchJoins(String variableName) {
         return (List)fetchJoins.get(variableName);
@@ -425,7 +425,7 @@ public class ParseTreeContext {
      * isRangeVariable - true if the variable is declared as range variable
      * schema - the abstract for a range variable
      * path - the path for join or collection member variable
-     * scope - the scope of teh variable
+     * scope - the scope of the variable
      * used - true if the variable is used in any of the clauses
      */
     static class VariableDecl {

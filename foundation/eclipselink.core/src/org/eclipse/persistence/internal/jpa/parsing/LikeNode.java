@@ -54,7 +54,7 @@ public class LikeNode extends SimpleConditionalExpressionNode {
 
     /**
      * INTERNAL
-     * Return a TopLink expression for this node.
+     * Return a EclipseLink expression for this node.
      */
     public Expression generateExpression(GenerationContext context) {
         Expression whereClause = getLeft().generateExpression(context);

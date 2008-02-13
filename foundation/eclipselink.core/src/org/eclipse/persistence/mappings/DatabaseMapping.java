@@ -991,7 +991,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * A subclass should implement this method if it wants different behaviour.
+     * A subclass should implement this method if it wants different behavior.
      * Recurse thru the parts to delete the reference objects after the actual object is deleted.
      */
     public void postDelete(DeleteObjectQuery query) throws DatabaseException {
@@ -1009,7 +1009,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * A subclass should implement this method if it wants different behaviour.
+     * A subclass should implement this method if it wants different behavior.
      * Recurse thru the parts to insert the reference objects after the actual object is inserted.
      */
     public void postInsert(WriteObjectQuery query) throws DatabaseException {
@@ -1018,7 +1018,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * A subclass should implement this method if it wants different behaviour.
+     * A subclass should implement this method if it wants different behavior.
      * Recurse thru the parts to update the reference objects after the actual object is updated.
      */
     public void postUpdate(WriteObjectQuery query) throws DatabaseException {
@@ -1027,7 +1027,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * A subclass should implement this method if it wants different behaviour.
+     * A subclass should implement this method if it wants different behavior.
      * Recurse thru the parts to delete the reference objects before the actual object is deleted.
      */
     public void preDelete(DeleteObjectQuery query) throws DatabaseException {
@@ -1049,7 +1049,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * A subclass should implement this method if it wants different behaviour.
+     * A subclass should implement this method if it wants different behavior.
      * Recurse thru the parts to insert the reference objects before the actual object is inserted.
      */
     public void preInsert(WriteObjectQuery query) throws DatabaseException {
@@ -1069,7 +1069,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * A subclass should implement this method if it wants different behaviour.
+     * A subclass should implement this method if it wants different behavior.
      * Recurse thru the parts to update the reference objects before the actual object is updated.
      */
     public void preUpdate(WriteObjectQuery query) throws DatabaseException {
@@ -1393,7 +1393,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * A subclass should implement this method if it wants different behaviour.
+     * A subclass should implement this method if it wants different behavior.
      * Returns the value for the mapping from the database row.
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query) throws DatabaseException {
@@ -1402,7 +1402,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * A subclass should implement this method if it wants different behaviour.
+     * A subclass should implement this method if it wants different behavior.
      * Returns the value for the mapping from the database row.
      * The execution session is the session the query was executed on,
      * and its platform should be used for data conversion.
@@ -1430,7 +1430,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * A subclass should implement this method if it wants different behaviour.
+     * A subclass should implement this method if it wants different behavior.
      * Write the foreign key values from the attribute to the row.
      */
      
@@ -1441,7 +1441,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
-     * A subclass should implement this method if it wants different behaviour.
+     * A subclass should implement this method if it wants different behavior.
      * Write the attribute value from the object to the row.
      */
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
@@ -1458,7 +1458,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * A subclass should implement this method if it wants different behaviour.
+     * A subclass should implement this method if it wants different behavior.
      * Write the attribute value from the object to the row.
      */
     public void writeFromObjectIntoRowWithChangeRecord(ChangeRecord changeRecord, AbstractRecord row, AbstractSession session) {
@@ -1483,7 +1483,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * A subclass should implement this method if it wants different behaviour.
+     * A subclass should implement this method if it wants different behavior.
      * Write the attribute value from the object to the row.
      */
     public void writeFromObjectIntoRowForWhereClause(ObjectLevelModifyQuery query, AbstractRecord row) {

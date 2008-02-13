@@ -18,7 +18,7 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
  * <p>
  * <b>Description</b>: This command is used by the RCM when it receives a connection
  * from a remote service. It adds the connection to its own list, and then sends this command 
- * back to the remote service  to estabish the backward connection from the remote service to 
+ * back to the remote service  to establish the backward connection from the remote service to 
  * this service, accompanying the command with a reference to this own service id.  The 
  * remote service can then create a connection using the service id stored in the command and 
  * add the connection to its connection list.

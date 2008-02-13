@@ -23,12 +23,12 @@ import org.eclipse.persistence.logging.SessionLogEntry;
 
 /**
  * <p>
- * <b>Purpose</b>: Define the TopLink session public interface.
+ * <b>Purpose</b>: Define the EclipseLink session public interface.
  * <p>
- * <b>Description</b>: This interface is meant to clarify the public protocol into TopLink.
- * It also allows for non-subclasses of Session to conform to the TopLink API.
- * It should be used as the applications main interface into the TopLink API to
- * ensure compatibility between all TopLink sessions.
+ * <b>Description</b>: This interface is meant to clarify the public protocol into EclipseLink.
+ * It also allows for non-subclasses of Session to conform to the EclipseLink API.
+ * It should be used as the applications main interface into the EclipseLink API to
+ * ensure compatibility between all EclipseLink sessions.
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
@@ -48,7 +48,7 @@ public interface Session {
      * Returns a light weight read-only session where all
      * objects are automatically read as of the specified past time.
      * <p>Use this Session to take advantage of Oracle 9 Release 2 Flashback or
-     * TopLink general history support and still be able to cache query results.
+     * EclipseLink general history support and still be able to cache query results.
      * <p>A special historical session is required as all objects read may
      * be of different versions than those stored in the global session cache.
      * Hence also known as IsolationSession, as all reads bypass the global
@@ -122,7 +122,7 @@ public interface Session {
 
     /**
      * PUBLIC:
-     * Clear the profiler, this will end the current profile opperation.
+     * Clear the profiler, this will end the current profile operation.
      */
     public void clearProfile();
 
@@ -136,7 +136,7 @@ public interface Session {
     /**
      * PUBLIC:
      * Return a complete copy of the object.
-     * This can be used to obtain a scatch copy of an object,
+     * This can be used to obtain a scratch copy of an object,
      * or for templatizing an existing object into another new object.
      * The object and all of its privately owned parts will be copied, the object's primary key will be reset to null.
      *
@@ -418,8 +418,8 @@ public interface Session {
 
     /**
      * PUBLIC:
-     * Used for JTS integration.  If your application requires to have JTS control transactions instead of TopLink an
-     * external transaction controller must be specified.  TopLink provides JTS controllers for JTS 1.0 and Weblogic's JTS.
+     * Used for JTS integration.  If your application requires to have JTS control transactions instead of EclipseLink an
+     * external transaction controller must be specified.  EclipseLink provides JTS controllers for JTS 1.0 and Weblogic's JTS.
      * @see org.eclipse.persistence.transaction.JTATransactionController
      */
     public ExternalTransactionController getExternalTransactionController();
@@ -560,7 +560,7 @@ public interface Session {
 
     /**
      * PUBLIC:
-     * Allow any WARNING level exceptions that occur within TopLink to be logged and handled by the exception handler.
+     * Allow any WARNING level exceptions that occur within EclipseLink to be logged and handled by the exception handler.
      */
     public Object handleException(RuntimeException exception) throws RuntimeException;
 
@@ -579,8 +579,8 @@ public interface Session {
 
     /**
      * PUBLIC:
-     * Used for JTS integration.  If your application requires to have JTS control transactions instead of TopLink an
-     * external transaction controller must be specified.  TopLink provides JTS controllers for JTS 1.0 and Weblogic's JTS.
+     * Used for JTS integration.  If your application requires to have JTS control transactions instead of EclipseLink an
+     * external transaction controller must be specified.  EclipseLink provides JTS controllers for JTS 1.0 and Weblogic's JTS.
      * @see org.eclipse.persistence.transaction.JTATransactionController
      */
     public boolean hasExternalTransactionController();
@@ -659,7 +659,7 @@ public interface Session {
     public void log(SessionLogEntry entry);
 
     /**
-     * Log a untranslated message to the TopLink log at FINER level.
+     * Log a untranslated message to the EclipseLink log at FINER level.
      */
     public void logMessage(String message);
 
@@ -890,22 +890,22 @@ public interface Session {
 
     /**
      * PUBLIC:
-     * Allow any SEVERE level exceptions that occur within TopLink to be logged and handled by the exception handler.
+     * Allow any SEVERE level exceptions that occur within EclipseLink to be logged and handled by the exception handler.
      */
     public Object handleSevere(RuntimeException exception) throws RuntimeException;
     
     /**
      * PUBLIC:
-     * Return if this session's decendents should use finalizers.
-     * The allows certain finalizers such as in ClientSesion to be enabled.
+     * Return if this session's descendants should use finalizers.
+     * The allows certain finalizers such as in ClientSession to be enabled.
      * These are disable by default for performance reasons.
      */
     public boolean isFinalizersEnabled();
     
     /**
      * PUBLIC:
-     * Set if this session's decendents should use finalizers.
-     * The allows certain finalizers such as in ClientSesion to be enabled.
+     * Set if this session's descendants should use finalizers.
+     * The allows certain finalizers such as in ClientSession to be enabled.
      * These are disable by default for performance reasons.
      */
     public void setIsFinalizersEnabled(boolean isFinalizersEnabled);

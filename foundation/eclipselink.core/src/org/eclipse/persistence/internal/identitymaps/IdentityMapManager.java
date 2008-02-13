@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
- * <p><b>Purpose</b>: Maintain identity maps for domain classes mapped with TopLink.
+ * <p><b>Purpose</b>: Maintain identity maps for domain classes mapped with EclipseLink.
  * <p><b>Responsibilities</b>:<ul>
  *    <li> Build new identity maps lazily using info from the descriptor
  *    <li> Insert objects into appropriate identity map
@@ -58,7 +58,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /** Ensure mutual exclusion depending on the cache isolation.*/
     protected transient ConcurrencyManager cacheMutex;
 
-    /** PERF: Optimize the object retrival from the identity map. */
+    /** PERF: Optimize the object retrieval from the identity map. */
     protected IdentityMap lastAccessedIdentityMap = null;
 
     /** Used to store the write lock manager used for merging. */
@@ -510,7 +510,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             // This is ok if you get the object first, as the object cannot gc and identity is always maintained.
             domainObject = cacheKey.getObject();
             cacheKey.checkReadLock();
-            // Reslove the inheritance issues.
+            // Resolve the inheritance issues.
             domainObject = checkForInheritance(domainObject, theClass, descriptor);
         }
 
@@ -650,7 +650,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Return the identity map for the class, if missing create a new one.
      */
     public IdentityMap getIdentityMap(ClassDescriptor descriptor) {
-        // Enusre that an im is only used for the root descriptor for inheritence.
+        // Enusre that an im is only used for the root descriptor for inheritance.
         // This is required to obtain proper cache hits.
         if (descriptor.hasInheritance()) {
             descriptor = descriptor.getInheritancePolicy().getRootParentDescriptor();
@@ -778,7 +778,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
 
     /**
      * Reset the identity map for only the instances of the class.
-     * For inheritence the user must make sure that they only use the root class.
+     * For inheritance the user must make sure that they only use the root class.
      */
     public void initializeIdentityMap(Class theClass) throws EclipseLinkException {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
@@ -1117,9 +1117,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
 
     /**
      * This method is used to resolve the inheritance issues arisen when conforming from the identity map
-     * 1. Avoid reading the unintended subclass during in-memory queyr(e.g. when querying on large project, do not want
-     *    to check small project,  both are inheritanced from the project, and stored in the same identity map).
-     * 2. EJB container-generated classes broke the inheritance hirearchy. Need to use associated descriptor to track
+     * 1. Avoid reading the unintended subclass during in-memory query(e.g. when querying on large project, do not want
+     *    to check small project,  both are inherited from the project, and stored in the same identity map).
+     * 2. EJB container-generated classes broke the inheritance hierarchy. Need to use associated descriptor to track
      *    the relationship. CR4005-2612426, King-Sept-18-2002
      */
     protected Object checkForInheritance(Object domainObject, Class superClass, ClassDescriptor descriptor) {

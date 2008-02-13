@@ -65,7 +65,7 @@ public class WorkingCloneCopyPolicyTest extends AutoVerifyTestCase {
 
         /**
          * This method will be called when a UnitOfWork is attempting to create a Working Copy clone.
-         * In certain cases (ie CMP) where the behaviour of creating a working copy can be different then
+         * In certain cases (ie CMP) where the behavior of creating a working copy can be different then
          * when creating the other clones.
          */
         public Object buildWorkingCopyClone(Object domainObject, Session session) throws DescriptorException {

@@ -757,7 +757,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     }
 
     /**
-     * A subclass should implement this method if it wants non default behaviour.
+     * A subclass should implement this method if it wants non default behavior.
      */
     protected void initializeSelectionQuery(AbstractSession session) throws DescriptorException {
         if (((ObjectLevelReadQuery)getSelectionQuery()).getReferenceClass() == null) {
@@ -860,7 +860,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     /**
      * PUBLIC:
      * Sets the reference object to be a private owned.
-     * The default behaviour is non private owned, or independent.
+     * The default behavior is non private owned, or independent.
      * @see #setIsPrivateOwned(boolean)
      */
     public void privateOwnedRelationship() {

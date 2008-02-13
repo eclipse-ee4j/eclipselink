@@ -52,13 +52,13 @@ public class ExistsNode extends Node {
 
     /**
      * INTERNAL
-     * Generate the TopLink expression for this node
+     * Generate the EclipseLink expression for this node
      */
     public Expression generateExpression(GenerationContext context) {
         SubqueryNode subqueryNode = (SubqueryNode)getLeft();
         ReportQuery reportQuery = subqueryNode.getReportQuery(context);
         // Replace the SELECT clause of the exists subquery by SELECT 1 to
-        // avoid problems with databases not supporting mutiple columns in the
+        // avoid problems with databases not supporting multiple columns in the
         // subquery SELECT clause in SQL.
         // The original select clause expressions might include relationship
         // navigations which should result in FK joins in the generated SQL,

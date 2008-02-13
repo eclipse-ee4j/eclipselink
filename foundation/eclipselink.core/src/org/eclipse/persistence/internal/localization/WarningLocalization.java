@@ -12,7 +12,7 @@ package org.eclipse.persistence.internal.localization;
 
 /**
  *  <p>
- * <b>Purpose</b>: This is for non TopLink exceptions
+ * <b>Purpose</b>: This is for non EclipseLink exceptions
  *
  * @author: Gordon Yorke
  * @since TOPLink/Java 5.0

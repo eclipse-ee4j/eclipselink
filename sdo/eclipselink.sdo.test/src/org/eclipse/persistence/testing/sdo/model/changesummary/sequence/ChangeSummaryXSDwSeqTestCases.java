@@ -92,7 +92,7 @@ public class ChangeSummaryXSDwSeqTestCases extends SDOTestCase {
         DataObject copy = null;
         try {
             String s = xmlHelper.save(anObject, "http://example.org",// this uri does not affect unmarshal 
-                                      "dataObject");// this name is overriden by the xsi:type            
+                                      "dataObject");// this name is overridden by the xsi:type            
             XMLDocument document = xmlHelper.load(s);
             copy = document.getRootObject();
         } catch (Exception e) {

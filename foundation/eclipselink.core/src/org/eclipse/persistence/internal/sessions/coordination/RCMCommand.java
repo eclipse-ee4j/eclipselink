@@ -18,7 +18,7 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
  * commands need to be added.
  * <p>
  * <b>Description</b>: This command provides a framework for execution of
- * commands that are internal to TopLink. Commands that subclass this class will
+ * commands that are internal to EclipseLink. Commands that subclass this class will
  * not get converted or handed off to the CommandProcessor to be executed. They
  * will instead be executed by the RemoteCommandManager directly. Subclasses
  * should implement the executeWithRCM method to perform the execution steps that

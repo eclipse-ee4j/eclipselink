@@ -46,7 +46,7 @@ import static org.eclipse.persistence.internal.xr.Util.SEARCH_PATHS;
  * <li>an XML Schema Definition (<tt>.xsd</tt>) file called <tt><b>toplink-dbws-schema.xsd</b></tt>
  * </li>
  * <li>a TopLink <tt>sessions.xml</tt> file called <tt><b>toplink-dbws-sessions.xml</b></tt><br>
- * &nbsp; the naming convention for the <tt>sessions.xml</tt> files can be overriden by the
+ * &nbsp; the naming convention for the <tt>sessions.xml</tt> files can be overridden by the
  * <b>optional</b> <tt>&lt;sessions-file&gt;</tt> entry in the <code>toplink-dbws.xml</code>
  * descriptor file.
  * </li>
@@ -131,7 +131,7 @@ public class XRServiceFactory  {
 
     public XRServiceAdapter buildService() {
 
-        // sub-classes override with specific behaviour
+        // sub-classes override with specific behavior
 
         initializeService(parentClassLoader, xrSchemaStream);
         return xrService;
@@ -139,7 +139,7 @@ public class XRServiceFactory  {
 
     public XRServiceAdapter buildService(XRServiceModel xrServiceModel) {
 
-        // sub-classes override with specific behaviour
+        // sub-classes override with specific behavior
 
         xrService = new XRServiceAdapter();
         xrService.setName(xrServiceModel.getName());

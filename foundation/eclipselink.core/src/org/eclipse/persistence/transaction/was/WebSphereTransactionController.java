@@ -26,7 +26,7 @@ import org.eclipse.persistence.transaction.JTATransactionController;
  * <p>
  * <b>Purpose</b>: TransactionController implementation for WebSphere
  * <p>
- * <b>Description</b>: Implements the required behaviour for controlling transactions
+ * <b>Description</b>: Implements the required behavior for controlling transactions
  * in WebSphere
  * <p>
  * @see org.eclipse.persistence.transaction.JTATransactionController

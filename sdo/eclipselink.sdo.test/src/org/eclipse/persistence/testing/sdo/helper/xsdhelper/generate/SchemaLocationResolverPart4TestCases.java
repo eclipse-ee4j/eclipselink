@@ -66,7 +66,7 @@ public class SchemaLocationResolverPart4TestCases extends XSDHelperGenerateTestC
         return schemaLocationMap;
     }
 
-    // With the proposed API the behaviour from Example 2 Current Specification can be maintained.
+    // With the proposed API the behavior from Example 2 Current Specification can be maintained.
     public void testExample3NewMultipleImport() throws Exception {
         // get schema types
         defineTypesFromSchema();

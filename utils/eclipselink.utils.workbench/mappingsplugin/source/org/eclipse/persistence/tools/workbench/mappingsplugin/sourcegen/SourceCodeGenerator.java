@@ -101,7 +101,7 @@ public final class SourceCodeGenerator
 	}
 	
 
-	// **************** behaviour *********************************************
+	// **************** behavior *********************************************
 	
 	public void generateSourceCode(MWProject project, Collection descriptors)
 	{

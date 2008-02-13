@@ -3726,7 +3726,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 getLoginEditorPanel().getLogin().setUsesExternalConnectionPooling(true);
             } catch (Exception e){
                 System.out.println("Got exception while updating Session console login.  This usually results from running on a system not compiled with " +
-                        " Oracle dependancies.  If you are not running on Oracle, this is not a problem.");
+                        " Oracle dependencies.  If you are not running on Oracle, this is not a problem.");
                 handleException(e);
             }
         }

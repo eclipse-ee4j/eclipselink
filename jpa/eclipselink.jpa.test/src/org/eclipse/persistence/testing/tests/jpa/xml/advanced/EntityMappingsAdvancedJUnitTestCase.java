@@ -168,7 +168,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             em.refresh(emp);
             fail("entityManager.refresh(notManagedObject) didn't throw exception");
         } catch (IllegalArgumentException illegalArgumentException) {
-            // expected behaviour
+            // expected behavior
         } catch (RuntimeException e ) {
             throw e;
         } finally {
@@ -215,7 +215,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             em.refresh(emp);
             fail("entityManager.refresh(removedObject) didn't throw exception");
         } catch (EntityNotFoundException entityNotFoundException) {
-            // expected behaviour
+            // expected behavior
         } finally {
             if (em.getTransaction().isActive()){
                 em.getTransaction().rollback();

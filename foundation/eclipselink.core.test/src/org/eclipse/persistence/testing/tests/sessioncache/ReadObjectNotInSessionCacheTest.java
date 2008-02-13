@@ -50,7 +50,7 @@ public class ReadObjectNotInSessionCacheTest extends TestCase {
     protected void verify() {
         IdentityMap im = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getIdentityMap(Employee.class);
         if ((im != null) && (im.getSize() > 0)) {
-            throw new TestErrorException("Employee read should not have been put into sesion cache.");
+            throw new TestErrorException("Employee read should not have been put into session cache.");
         }
     }
 

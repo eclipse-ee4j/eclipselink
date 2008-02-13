@@ -16,7 +16,7 @@ import org.eclipse.persistence.exceptions.*;
 /**
  * <p>
  * <b>Purpose</b>: This subclass is intended to be used with external connection pools.
- * For these pools, TopLink does not control the pooling behaviour.
+ * For these pools, TopLink does not control the pooling behavior.
  * The login should have the usesExternalConnectionPooling set to "true".
  */
 public class ExternalConnectionPool extends ConnectionPool {

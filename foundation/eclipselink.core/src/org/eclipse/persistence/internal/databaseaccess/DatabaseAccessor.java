@@ -51,10 +51,10 @@ import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYP
 
 /**
  * INTERNAL:
- *    DatabaseAccessor is private to TopLink. It encapsulates low level database operations (such as executing
- *    SQL and reading data by row). Database accessor defines a protocol by which TopLink may invoke these
+ *    DatabaseAccessor is private to EclipseLink. It encapsulates low level database operations (such as executing
+ *    SQL and reading data by row). Database accessor defines a protocol by which EclipseLink may invoke these
  *    operations. <p>
- *    DatabaseAccessor also defines a single reference through which all configuration dependent behaviour may
+ *    DatabaseAccessor also defines a single reference through which all configuration dependent behavior may
  *    be invoked. <p>
  *
  *    DabaseAccessor implements the following behavior. <ul>
@@ -87,8 +87,8 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
     /**
      * These two attributes store the available BatchWritingMechanisms.  We sacrifice a little space to
-     * prevent the work envolved in recreating these objects each time a different type of SQL statement is
-     * executed.  Depending on user behaviour we may want to review this.
+     * prevent the work involved in recreating these objects each time a different type of SQL statement is
+     * executed.  Depending on user behavior we may want to review this.
      */
     protected DynamicSQLBatchWritingMechanism dynamicSQLMechanism;
     protected ParameterizedSQLBatchWritingMechanism parameterizedMechanism;
@@ -225,7 +225,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     }
 
     /**
-     * Return the field sorted in the correct order coresponding to the result set.
+     * Return the field sorted in the correct order corresponding to the result set.
      * This is used for cursored selects where custom sql was provided.
      * If the fields passed in are null, this means that the field are not known and should be
      * built from the column names.  This case occurs for DataReadQuery's.
@@ -253,7 +253,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
     /**
      * Connect to the database.
-     * Exceptions are caught and re-thrown as TopLink exceptions.
+     * Exceptions are caught and re-thrown as EclipseLink exceptions.
      * Must set the transaction isolation.
      */
     protected void connectInternal(Login login, AbstractSession session) throws DatabaseException {
@@ -265,7 +265,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * Check to see if the transaction isolation needs to
      * be set for the newly created connection. This must
      * be done outside of a transaction.
-     * Exceptions are caught and re-thrown as TopLink exceptions.
+     * Exceptions are caught and re-thrown as EclipseLink exceptions.
      */
     protected void checkTransactionIsolation(AbstractSession session) throws DatabaseException {
         if ((!isInTransaction()) && (getLogin() != null) && (((DatabaseLogin)getLogin()).getTransactionIsolation() != -1)) {
@@ -337,7 +337,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
     /**
      * INTERNAL:
-     * Closes a PreparedStatment (which is supposed to close it's current resultSet).
+     * Closes a PreparedStatement (which is supposed to close it's current resultSet).
      * Factored out to simplify coding and handle exceptions.
      */
     public void closeStatement(Statement statement, AbstractSession session, DatabaseCall call) throws SQLException {
@@ -623,7 +623,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                         }
                         result = results;
                     }
-                    resultSet.close();// This must be closed incase the statement is cached and not closed.
+                    resultSet.close();// This must be closed in case the statement is cached and not closed.
                 } finally {
                     session.endOperationProfile(SessionProfiler.ROW_FETCH, dbCall.getQuery(), SessionProfiler.ALL);
                 }
@@ -987,7 +987,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         for (int index = 0; index < metaData.getColumnCount(); index++) {
             // Changed the following code to use metaData#getColumnLabel() instead of metaData.getColumnName()
             // This is as required by JDBC spec to access metadata for queries using column aliases.
-            // Reconsider whether to migrate this change to other versions of Toplink with older native query support
+            // Reconsider whether to migrate this change to other versions of Eclipselink with older native query support
             String columnName = metaData.getColumnLabel(index + 1);
             if ((columnName == null) || columnName.equals("")) {
                 columnName = "C" + (index + 1);// Some column may be unnamed.
@@ -1004,7 +1004,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
     /**
      *    Return the receiver's connection to its data source. A connection is used to execute queries on,
-     *    and retreive data from, a data source.
+     *    and retrieve data from, a data source.
      *    @see java.sql.Connection
      */
     public Connection getConnection() throws DatabaseException {
@@ -1114,7 +1114,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * If the type is not one that can be optimized return null.
      */
     protected Object getObjectThroughOptimizedDataConversion(ResultSet resultSet, DatabaseField field, int type, int columnNumber, DatabasePlatform platform, AbstractSession session) throws SQLException {
-        Object value = this;// Means no optimization, need to distighuuish from null.
+        Object value = this;// Means no optimization, need to distinguish from null.
         Class fieldType = field.type;
         boolean isPrimitive = false;
 
@@ -1360,7 +1360,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Attempt to save some of the cost associated with getting a fresh connection.
      * Assume the DatabaseDriver has been cached, if appropriate.
-     * Note: Connections that are participating in transactions will not be refreshd.^M
+     * Note: Connections that are participating in transactions will not be refreshed.^M
      * Added for bug 3046465 to ensure the statement cache is cleared
      */
     protected void reconnect(AbstractSession session) {

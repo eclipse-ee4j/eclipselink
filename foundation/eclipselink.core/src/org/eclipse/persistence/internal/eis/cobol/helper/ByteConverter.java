@@ -242,7 +242,7 @@ public class ByteConverter {
         //build hex string
         for (int i = offset; i < (offset + size); i++) {
             stringValue = Integer.toHexString(Helper.intFromByte(myRecordData[i]));
-            //added to handle strange behaviour of toHexString method with negative numbers
+            //added to handle strange behavior of toHexString method with negative numbers
             if (stringValue.length() > 2) {
                 stringValue = stringValue.substring(stringValue.length() - 2);
             }

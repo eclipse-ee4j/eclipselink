@@ -69,8 +69,8 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * By default concurrency is optimized and the cache is not locked during reads or writes,
      * This allows for concurrent reading and writing and should never cause any problems.  If the application
      * uses no form of locking the last unit of work to merge changes will win, with no locking it is possible
-     * only under this senerio for two unit of works to merge changes different than the database although highly unlikely
-     * and if occured is the entire purpose of locking.  This property allows for the isolation level of changes to the
+     * only under this scenario for two unit of works to merge changes different than the database although highly unlikely
+     * and if occurred is the entire purpose of locking.  This property allows for the isolation level of changes to the
      * cache to be configured for sever situation and it is not suggest that this be changed.
      */
     protected int cacheTransactionIsolation = SYNCRONIZED_OBJECT_LEVEL_READ_WRITE_DATABASE; 
@@ -166,8 +166,8 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * By default concurrency is optimized and the cache is not locked more than required during reads or writes,
      * This allows for virtual concurrent reading and writing and should never cause any problems.  If the application
      * uses no form of locking the last unit of work to merge changes will win, with no locking it is possible
-     * only under this senerio for two unit of works to merge changes different than the database although highly unlikely
-     * and if occured is the entire purpose of locking and locking is the suggested solution if this is a problem.
+     * only under this scenario for two unit of works to merge changes different than the database although highly unlikely
+     * and if occurred is the entire purpose of locking and locking is the suggested solution if this is a problem.
      * This property allows for the isolation level of changes to the
      * cache to be configured for sever situations and it is not suggest that this be changed.
      * <p>Setting are:<ul>
@@ -190,7 +190,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     /**
      * INTERNAL:
      * Return the database platform specific information.
-     * This allows TopLink to configure certain advanced features for the database desired.
+     * This allows EclipseLink to configure certain advanced features for the database desired.
      * NOTE: this must only be used for relational specific usage and will not work for
      * non-relational datasources.
      */
@@ -205,7 +205,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * Return the datasource platform specific information.
-     * This allows TopLink to configure certain advanced features for the datasource desired.
+     * This allows EclipseLink to configure certain advanced features for the datasource desired.
      */
     public Platform getDatasourcePlatform() {
         return platform;
@@ -235,7 +235,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
 
     /**
      * PUBLIC:
-     * Return the qualifier for the all of the tables referenced by TopLink.
+     * Return the qualifier for the all of the tables referenced by EclipseLink.
      * This can be the creator of the table or database name the table exists on.
      * This is required by some databases such as Oracle and DB2.
      * This should only be used if all of the tables have the same qualifier.
@@ -259,11 +259,11 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * This value defaults to false when not on a DatabaseLogin as the functionality has not been implemented
-     * for other datasource type.  On an SQL Exception TopLink will ping the database to determine
+     * for other datasource type.  On an SQL Exception EclipseLink will ping the database to determine
      * if the connection used can continue to be used for queries.  This should have no impact on applications
      * unless the user is using pessimistic locking queries with 'no wait' or are using a query timeout feature.
      * If that is the case and the application is experiencing a performance impact from the health check then
-     * this feature can be turned off. Turning this feature off will prevent TopLink from being able to
+     * this feature can be turned off. Turning this feature off will prevent EclipseLink from being able to
      * retry queries in the case of database failure. 
      */
     public boolean isConnectionHealthValidatedOnError(){
@@ -272,8 +272,8 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     
     /**
      * PUBLIC:
-     * Return the TopLink version.
-     * @return version of TopLink
+     * Return the EclipseLink version.
+     * @return version of EclipseLink
      */
     public static String getVersion() {
         if (versionString == null) {
@@ -336,14 +336,14 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * By default concurrency is optimized and the cache is not locked more than required during reads or writes,
      * This allows for virtual concurrent reading and writing and should never cause any problems.  If the application
      * uses no form of locking the last unit of work to merge changes will win, with no locking it is possible
-     * only under this senerio for two unit of works to merge changes different than the database although highly unlikely
-     * and if occured is the entire purpose of locking and locking is the suggested solution if this is a problem.
+     * only under this scenario for two unit of works to merge changes different than the database although highly unlikely
+     * and if occurred is the entire purpose of locking and locking is the suggested solution if this is a problem.
      * This property allows for the isolation level of changes to the
      * cache to be configured for sever situations and it is not suggest that this be changed.
      * <p>Setting are:<ul>
      * <li>ConcurrentReadWrite - default
      * <li>SynchronizedWrite - only allow a single writer (i.e. unit of work merge) to the cache at once
-     * <li>SynchronizedReadOnWrite - do not allow reading or other unit of work merge ehile a unit of work is in merge
+     * <li>SynchronizedReadOnWrite - do not allow reading or other unit of work merge while a unit of work is in merge
      */
     public void setCacheTransactionIsolation(int cacheTransactionIsolation) {
         this.cacheTransactionIsolation = cacheTransactionIsolation;
@@ -437,7 +437,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     /**
      * INTERNAL:
      * Set the database platform specific information.
-     * This allows TopLink to configure certain advanced features for the database desired.
+     * This allows EclipseLink to configure certain advanced features for the database desired.
      */
     public void setPlatform(Platform platform) {
         setDatasourcePlatform(platform);
@@ -446,7 +446,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * Set the database platform specific information.
-     * This allows TopLink to configure certain advanced features for the database desired.
+     * This allows EclipseLink to configure certain advanced features for the database desired.
      */
     public void setDatasourcePlatform(Platform platform) {
         this.platform = platform;
@@ -565,7 +565,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
 
     /**
      * PUBLIC:
-     * Return whether TopLink uses some external connection pooling service such as a JDBC 2.0 driver.
+     * Return whether EclipseLink uses some external connection pooling service such as a JDBC 2.0 driver.
      */
     public void setUsesExternalConnectionPooling(boolean usesExternalConnectionPooling) {
         this.usesExternalConnectionPooling = usesExternalConnectionPooling;
@@ -573,7 +573,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
 
     /**
      * PUBLIC:
-     * Return whether TopLink uses some external transaction service such as JTS.
+     * Return whether EclipseLink uses some external transaction service such as JTS.
      */
     public void setUsesExternalTransactionController(boolean usesExternalTransactionController) {
         this.usesExternalTransactionController = usesExternalTransactionController;
@@ -582,7 +582,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     /**
      * PUBLIC:
      * Do not use external connection pooling. This is appropriate if using regular
-     * TopLink connection pooling and regular JDBC drivers.
+     * EclipseLink connection pooling and regular JDBC drivers.
      *
      * @see #useExternalConnectionPooling()
      */
@@ -592,7 +592,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
 
     /**
      * PUBLIC:
-     * Let TopLink control transactions instead of some external transaction
+     * Let EclipseLink control transactions instead of some external transaction
      * service such as JTS.
      *
      * @see #useExternalTransactionController()
@@ -619,7 +619,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
-     * Used for Cache Isolation.  Causes TopLink to lock at the class level on
+     * Used for Cache Isolation.  Causes EclipseLink to lock at the class level on
      * cache updates.
      */
     public boolean shouldSynchronizeWrites() {
@@ -628,7 +628,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     
     /**
      * INTERNAL:
-     * Used for Cache Isolation.  Causes TopLink to lock at the object level on
+     * Used for Cache Isolation.  Causes EclipseLink to lock at the object level on
      * cache updates and cache access.
      */
     public boolean shouldSynchronizeObjectLevelReadWrite(){
@@ -637,7 +637,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     
     /**
      * INTERNAL:
-     * Used for Cache Isolation.  Causes TopLink to lock at the object level on
+     * Used for Cache Isolation.  Causes EclipseLink to lock at the object level on
      * cache updates and cache access, based on database transaction.
      */
     public boolean shouldSynchronizeObjectLevelReadWriteDatabase(){
@@ -646,7 +646,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     
     /**
      * PUBLIC:
-     * Return whether TopLink uses some external connection pooling
+     * Return whether EclipseLink uses some external connection pooling
      * (e.g. WebLogic's JTS driver).
      *
      * @see #useExternalConnectionPooling()
@@ -658,7 +658,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
 
     /**
      * PUBLIC:
-     * Return whether TopLink uses some external transaction service such as JTS.
+     * Return whether EclipseLink uses some external transaction service such as JTS.
      *
      * @see #useExternalTransactionController()
      * @see #dontUseExternalTransactionController()

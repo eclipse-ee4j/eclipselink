@@ -16,8 +16,8 @@ public class AntExtensionBundle extends ListResourceBundle {
 	private static final Object[][] contents = {
 		{ "ignoringProblems", "Ignoring: {0} problem(s) ( "},
 		{ "numberOfProblems", "{0}.mwp project has {1} problem(s)."},
-		{ "errorWhileExporting", "An error occured while exporting project: {0}"},
-		{ "errorWhileValidating", "An error occured while validating project: {0}"},
+		{ "errorWhileExporting", "An error occurred while exporting project: {0}"},
+		{ "errorWhileValidating", "An error occurred while validating project: {0}"},
 		{ "couldNotLogin", "Could not log in to database. Make sure your database server is running: {0}"},
 		{ "notDefined", "{0} not defined"},
 		{ "errorDescription", "Error: {0}"},

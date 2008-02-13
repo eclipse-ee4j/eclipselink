@@ -284,7 +284,7 @@ public class SelectNode extends QueryNode {
     }
     
     /**
-     * Return a TopLink expression generated using the left node.
+     * Return a EclipseLink expression generated using the left node.
      */
     public Expression generateExpression(GenerationContext context) {
         return null;

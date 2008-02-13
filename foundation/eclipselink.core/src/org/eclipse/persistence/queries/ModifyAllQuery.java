@@ -100,7 +100,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
 
     /**
      * INTERNAL
-     * Used to give the subclasses oportunity to copy aspects of the cloned query
+     * Used to give the subclasses opportunity to copy aspects of the cloned query
      * to the original query.  The clones of all the ModifyAllQueries will be added to modifyAllQueries for validation.
      */
     protected void clonedQueryExecutionComplete(DatabaseQuery query, AbstractSession session) {
@@ -175,7 +175,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
     /**
      * INTERNAL:
      * Return the name of the reference class of the query.
-     * Used by the Mappign Workbench to avoid classpath dependancies
+     * Used by the Mapping Workbench to avoid classpath dependencies
      */
     public String getReferenceClassName() {
         if ((referenceClassName == null) && (referenceClass != null)) {
@@ -265,7 +265,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
     /**
      * INTERNAL:
      * Set the class name of the reference class of this query.
-     * Used by the Mapping Workbench to avoid classpath dependancies.
+     * Used by the Mapping Workbench to avoid classpath dependencies.
      */
     public void setReferenceClassName(String className) {
         referenceClassName = className;

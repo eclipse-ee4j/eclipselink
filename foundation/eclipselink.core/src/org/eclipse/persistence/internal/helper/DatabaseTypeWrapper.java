@@ -2,14 +2,14 @@
 
 package org.eclipse.persistence.internal.helper;
 
-// javse imports
+// javase imports
 
 // Java extension imports
 
 // EclipseLink imports
 
 /**
- * <b>INTERNAL</b>: a helper class that holds DatabaseType's. Used to support marshalling
+ * <b>INTERNAL</b>: a helper class that holds DatabaseType's. Used to support marshaling
  * PLSQLStoredProcedureCall's 
  * 
  * @author Mike Norman - michael.norman@oracle.com

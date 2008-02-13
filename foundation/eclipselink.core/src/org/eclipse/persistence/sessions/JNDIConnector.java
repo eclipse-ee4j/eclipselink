@@ -23,7 +23,7 @@ import org.eclipse.persistence.internal.localization.*;
  * to connect to a server's connection pool defined by the DataSource name.
  * The JNDI name that the DataSource is registered under must be specified,
  * this must include any required prefix such as "java:comp/env/", (unless a DataSource object is given).
- * A Context is only required if not running on the server, otheriwse default to a new InitialContext().
+ * A Context is only required if not running on the server, otherwise default to a new InitialContext().
  * @author Big Country
  * @since TOPLink/Java 2.1
  */

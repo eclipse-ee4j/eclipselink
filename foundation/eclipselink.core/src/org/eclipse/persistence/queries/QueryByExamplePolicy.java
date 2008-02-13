@@ -48,7 +48,7 @@ import org.eclipse.persistence.exceptions.*;
 * {@link #excludeValue(Object) excludeValue}.
 *
 * <li>Match a <code>null</code> attribute on the example object with domain objects that have
-* either <code>null</code> for that attribute also, or have set a meaningfull (<code>notNull</code>) value
+* either <code>null</code> for that attribute also, or have set a meaningful (<code>notNull</code>) value
 * for that attribute.  See {@link #setShouldUseEqualityForNulls}.
 *
 * <li>Use specialized operations when comparing attributes set in the example object
@@ -164,7 +164,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
 
     /**
      * PUBLIC:
-     * Always considers the value for a particular attribute as meaningfull in a
+     * Always considers the value for a particular attribute as meaningful in a
      * query by example.
      * <p>
      * Required to override the normal behavior which is to ignore an
@@ -414,7 +414,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
 
     /**
      * PUBLIC:
-     * Considers all mapped attributes in the example object as meaningfull in a
+     * Considers all mapped attributes in the example object as meaningful in a
      * Query By Example.<p>
      * Note: Even attributes of the example object that are
      * not set, and therefore zero or empty by default, will be included.<p>

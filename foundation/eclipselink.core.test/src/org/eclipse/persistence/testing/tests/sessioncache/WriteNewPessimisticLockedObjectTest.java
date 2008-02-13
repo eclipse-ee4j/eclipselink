@@ -66,7 +66,7 @@ public class WriteNewPessimisticLockedObjectTest extends TestCase {
         //ensure changes were merged into the session cache      				
         IdentityMap im = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getIdentityMap(Employee.class);
         if (im.getSize() > 0) {
-            throw new TestErrorException("Employee should not have been put into sesion cache.");
+            throw new TestErrorException("Employee should not have been put into session cache.");
         }
     }
 

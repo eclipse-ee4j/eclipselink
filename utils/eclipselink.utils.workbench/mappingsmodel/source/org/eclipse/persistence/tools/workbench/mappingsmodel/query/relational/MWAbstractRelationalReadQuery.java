@@ -51,7 +51,7 @@ public abstract class MWAbstractRelationalReadQuery
 		private static TopLinkOptionSet cacheUsageOptions;
 
 
-	/** Used to determine behaviour of indirection in InMemoryQuerying */
+	/** Used to determine behavior of indirection in InMemoryQuerying */
 	private volatile InMemoryQueryIndirectionPolicyModel inMemoryQueryIndirectionPolicy;
 		private static TopLinkOptionSet inMemoryQueryIndirectionPolicyOptions;
 

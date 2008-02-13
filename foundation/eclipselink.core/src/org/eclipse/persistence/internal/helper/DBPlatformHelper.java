@@ -89,7 +89,7 @@ public class DBPlatformHelper {
     }
 
     /**
-     * Match vendorName in properties specifieid by _nameToVendorPlatform.
+     * Match vendorName in properties specified by _nameToVendorPlatform.
      */
     private static String matchVendorNameInProperties(String vendorName,
             Properties nameToVendorPlatform, SessionLog logger) {
@@ -165,7 +165,7 @@ public class DBPlatformHelper {
     }
 
     /**
-     * Open resourcenName as input stream inside doPriviledged block
+     * Open resourceName as input stream inside doPriviledged block
      */
     private static InputStream openResourceInputStream(final String resourceName, final ClassLoader classLoader) {
         return (InputStream) AccessController.doPrivileged(
