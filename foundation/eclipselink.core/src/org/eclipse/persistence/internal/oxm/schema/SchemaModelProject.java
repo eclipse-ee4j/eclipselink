@@ -63,15 +63,13 @@ public class SchemaModelProject extends Project {
 
         XMLCompositeCollectionMapping importsMapping = new XMLCompositeCollectionMapping();
         importsMapping.setReferenceClass(Import.class);
-        importsMapping.setAttributeName("imports");
-        importsMapping.useMapClass(java.util.HashMap.class, "getSchemaLocation");
+        importsMapping.setAttributeName("imports");        
         importsMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "import");
         descriptor.addMapping(importsMapping);
 
         XMLCompositeCollectionMapping includesMapping = new XMLCompositeCollectionMapping();
         includesMapping.setReferenceClass(Include.class);
-        includesMapping.setAttributeName("includes");
-        includesMapping.useMapClass(java.util.HashMap.class, "getSchemaLocation");
+        includesMapping.setAttributeName("includes");        
         includesMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "include");
         descriptor.addMapping(includesMapping);
 

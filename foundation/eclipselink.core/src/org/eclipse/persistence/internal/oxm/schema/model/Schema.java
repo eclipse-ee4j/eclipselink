@@ -9,6 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm.schema.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -18,8 +19,8 @@ import org.eclipse.persistence.oxm.XMLConstants;
 
 public class Schema {
     private String name;//non-persistant, used to give a schema an identifier
-    private Map imports;
-    private Map includes;
+    private java.util.List imports;
+    private java.util.List includes;
     private String targetNamespace;
     private String defaultNamespace;
 
@@ -38,8 +39,8 @@ public class Schema {
 
     public Schema() {
         namespaceResolver = new NamespaceResolver();
-        imports = new HashMap();
-        includes = new HashMap();
+        imports = new ArrayList();
+        includes = new ArrayList();
         topLevelSimpleTypes = new HashMap();
         topLevelComplexTypes = new HashMap();
         topLevelElements = new HashMap();
@@ -143,19 +144,19 @@ public class Schema {
         return namespaceResolver;
     }
 
-    public void setImports(Map imports) {
+    public void setImports(java.util.List imports) {
         this.imports = imports;
     }
 
-    public Map getImports() {
+    public java.util.List getImports() {
         return imports;
     }
 
-    public void setIncludes(Map includes) {
+    public void setIncludes(java.util.List includes) {
         this.includes = includes;
     }
 
-    public Map getIncludes() {
+    public java.util.List getIncludes() {
         return includes;
     }
 
@@ -212,17 +213,17 @@ public class Schema {
 
     protected AttributeGroup getAttributeGroupFromReferencedSchemas(String uri, String localName) {
         AttributeGroup globalAttributeGroup = null;
-        Iterator iter = getIncludes().values().iterator();
+        Iterator iter = getIncludes().iterator();
         while (iter.hasNext() && (globalAttributeGroup == null)) {
             Schema includedSchema = ((Include)iter.next()).getSchema();
             globalAttributeGroup = includedSchema.getAttributeGroup(uri, localName);
         }
         if (globalAttributeGroup == null) {
-            iter = getImports().values().iterator();
-            while (iter.hasNext() && (globalAttributeGroup == null)) {
+            iter = getImports().iterator();
+             while (iter.hasNext() && (globalAttributeGroup == null)) {
                 Schema importedSchema = ((Import)iter.next()).getSchema();
                 globalAttributeGroup = importedSchema.getAttributeGroup(uri, localName);
-            }
+            }                    
         }
         return globalAttributeGroup;
     }
@@ -249,14 +250,14 @@ public class Schema {
     }
 
     protected Group getGroupFromReferencedSchemas(String uri, String localName) {
-        Group globalGroup = null;
-        Iterator iter = getIncludes().values().iterator();
+        Group globalGroup = null;        
+        Iterator iter = getIncludes().iterator();
         while (iter.hasNext() && (globalGroup == null)) {
             Schema includedSchema = ((Include)iter.next()).getSchema();
             globalGroup = includedSchema.getGroup(uri, localName);
         }
-        if (globalGroup == null) {
-            iter = getImports().values().iterator();
+        if (globalGroup == null) {            
+            iter = getImports().iterator();
             while (iter.hasNext() && (globalGroup == null)) {
                 Schema importedSchema = ((Import)iter.next()).getSchema();
                 globalGroup = importedSchema.getGroup(uri, localName);
