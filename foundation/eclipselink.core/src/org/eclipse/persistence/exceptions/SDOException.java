@@ -67,6 +67,7 @@ public class SDOException extends EclipseLinkException {
     public static final int TYPE_PROPERTY_MUST_BE_A_TYPE = 45035;
     public static final int GLOBAL_PROPERTY_NOT_FOUND = 45036;
     public static final int PREFIX_USED_BUT_NOT_DEFINED = 45037;
+    public static final int CANNOT_PERFORM_OPERATION_ON_PROPERTY = 45038;
     
     protected SDOException(String message) {
         super(message);
@@ -404,8 +405,18 @@ public class SDOException extends EclipseLinkException {
         return exception;
     }
  
- 
-   /**
+    /**
+     * INTERNAL:
+     * Exception when trying to set a property via path based access.
+     */
+     public static SDOException cannotPerformOperationOnProperty(String propertyName, String path) {
+         Object[] args = { propertyName, path };
+         SDOException exception = new SDOException(ExceptionMessageGenerator.buildMessage(SDOException.class, CANNOT_PERFORM_OPERATION_ON_PROPERTY, args));        
+         exception.setErrorCode(CANNOT_PERFORM_OPERATION_ON_PROPERTY);
+         return exception;
+     }
+     
+    /**
      * INTERNAL:
      * Exception trying to load the instance class for a given type
      */

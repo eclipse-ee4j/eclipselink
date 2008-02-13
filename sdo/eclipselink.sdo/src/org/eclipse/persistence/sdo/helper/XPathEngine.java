@@ -15,6 +15,7 @@ import java.util.List;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
@@ -158,12 +159,15 @@ public class XPathEngine {
         DataObject lastDataObject;
         if (-1 < lastSlashIndex) {
             lastDataObject = (SDODataObject)get(path.substring(0, lastSlashIndex), caller);// get last dataobject on path
+            if (lastDataObject == null) {
+                throw SDOException.cannotPerformOperationOnProperty(lastPropertyName, path);
+            }
         } else {
             lastDataObject = caller;
         }
         Property lastProperty = lastDataObject.getInstanceProperty(lastPropertyName);// get property of this dataobject
         
-        //ToDo: int equalSignIndex = isQueryPath(frag, indexOfOpenBracket, indexOfCloseBracket);
+        //TODO: int equalSignIndex = isQueryPath(frag, indexOfOpenBracket, indexOfCloseBracket);
         switch (_case) {
         case SET:                        
             if (lastProperty == null) {

@@ -15,7 +15,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 import junit.textui.TestRunner;
+import org.eclipse.persistence.sdo.SDODataObject;
+import org.eclipse.persistence.sdo.helper.SDODataFactory;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
+import org.eclipse.persistence.exceptions.SDOException;
 
 public class XPathEngineSimpleTestCases extends SDOTestCase {
     private DataObject rootObject;
@@ -163,5 +166,66 @@ public class XPathEngineSimpleTestCases extends SDOTestCase {
         Object returnValue = rootObject.get("items/item[specialOrder =true]");
         assertTrue(returnValue instanceof DataObject);
         assertEquals("Lawnmower", ((DataObject)returnValue).get("productName"));
+    }
+    
+    // ------------------- Set with unreachable path tests -------------------//
+    public void testSetPropertyOnNullDataObject() {
+        boolean expectedEx = false;
+        boolean unexpectedEx = false;
+        
+        try {
+            SDODataFactory factory = new SDODataFactory(getHelperContext());
+            SDODataObject po = (SDODataObject) factory.create("http://www.example.org", "PurchaseOrderType");
+            po.set("customer/gender", "male");
+        } catch (SDOException sdoex) {
+            // ensure the correct SDO exception was thrown
+            if (sdoex.getMessage().lastIndexOf("Cannot perform operation on property") != -1) {
+                expectedEx = true;
+            }
+        } catch (Exception x) {
+            unexpectedEx = true;
+        }
+        assertTrue("An SDOException was not thrown as expceted.", expectedEx);
+        assertFalse("An unexpected exception occurred.", unexpectedEx);
+    }
+
+    public void testSetPropertyOnNullNestedDataObject() {
+        boolean expectedEx = false;
+        boolean unexpectedEx = false;
+        
+        try {
+            SDODataFactory factory = new SDODataFactory(getHelperContext());
+            SDODataObject po = (SDODataObject) factory.create("http://www.example.org", "PurchaseOrderType");
+            SDODataObject items = (SDODataObject) po.createDataObject("items");
+            items.createDataObject("item");
+            po.set("items/item.0/partslist/partNumber", "989");
+        } catch (SDOException sdoex) {
+            // ensure the correct SDO exception was thrown
+            if (sdoex.getMessage().lastIndexOf("Cannot perform operation on property") != -1) {
+                expectedEx = true;
+            }
+        } catch (Exception x) {
+            unexpectedEx = true;
+        }
+        assertTrue("An SDOException was not thrown as expceted.", expectedEx);
+        assertFalse("An unexpected exception occurred.", unexpectedEx);
+    }
+
+    public void testSetPropertyOnNullListWrapper() {
+        boolean expectedEx = false;
+        boolean unexpectedEx = false;
+        
+        try {
+            SDODataFactory factory = new SDODataFactory(getHelperContext());
+            SDODataObject po = (SDODataObject) factory.create("http://www.example.org", "PurchaseOrderType");
+            po.createDataObject("items");
+            po.set("items/item[1]/productName", "Gizmo");
+        } catch (IndexOutOfBoundsException iobe) {
+            expectedEx = true;
+        } catch (Exception x) {
+            unexpectedEx = true;
+        }
+        assertTrue("An IndexOutOfBoundsException was not thrown as expceted.", expectedEx);
+        assertFalse("An unexpected exception occurred.", unexpectedEx);
     }
 }
