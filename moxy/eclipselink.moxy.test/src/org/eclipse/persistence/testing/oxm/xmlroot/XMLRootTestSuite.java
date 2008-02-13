@@ -12,6 +12,7 @@ package org.eclipse.persistence.testing.oxm.xmlroot;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.eclipse.persistence.testing.oxm.xmlroot.complex.MarshalToNodeTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.complex.XMLRootComplexDifferentPrefixTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.complex.XMLRootComplexDifferentPrefixWithDRTestCases;
 import org.eclipse.persistence.testing.oxm.xmlroot.complex.XMLRootComplexNoNRWithPrefixTestCases;
@@ -41,6 +42,7 @@ public class XMLRootTestSuite extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("XMLRoot Test Cases");
+        suite.addTestSuite(MarshalToNodeTestCases.class);
         suite.addTestSuite(XMLRootComplexTestCases.class);
         suite.addTestSuite(XMLRootComplexDifferentPrefixWithDRTestCases.class);
         suite.addTestSuite(XMLRootComplexNoPrefixTestCases.class);

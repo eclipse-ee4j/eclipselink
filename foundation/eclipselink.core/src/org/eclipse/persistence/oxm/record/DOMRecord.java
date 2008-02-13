@@ -375,7 +375,7 @@ public class DOMRecord extends XMLRecord {
         // Assumption:  NodeList contains nodes of the same type
         Node firstNode = nodeList.item(0);
         if ((firstNode == null) || (firstNode.getNodeType() != Node.ELEMENT_NODE)) {
-            if ((field).usesSingleNode() && (resultSize == 1)) {
+            if (field.usesSingleNode() && (resultSize == 1)) {
                 Node next = nodeList.item(0);
                 if (next == null) {
                     result.add(null);
@@ -579,10 +579,12 @@ public class DOMRecord extends XMLRecord {
      */
     public void setDOM(Node element) {
         this.dom = element;
+        this.getNamespaceResolver().setDOM(element);
     }
     
     public void setDOM(Element element) {
         this.dom = element;
+        this.getNamespaceResolver().setDOM(element);
     }
 
     /**

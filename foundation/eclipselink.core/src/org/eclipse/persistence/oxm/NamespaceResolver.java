@@ -15,6 +15,9 @@ import java.util.Vector;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+
 /**
  * <p >It is common for an XML document to include one or more namespaces.
  * TopLink supports this using its NamespaceResolver. The namespace resolver maintains
@@ -46,8 +49,11 @@ import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
  *
  */
 public class NamespaceResolver implements XMLNamespaceResolver {
+    private static final String BASE_PREFIX = "ns";
+
     private Properties namespaces;
     int prefixCounter;
+    private Node dom;
 
     /**
     * Default constructor, creates a new NamespaceResolver.
@@ -55,6 +61,10 @@ public class NamespaceResolver implements XMLNamespaceResolver {
     public NamespaceResolver() {
         super();
         namespaces = new Properties();
+    }
+
+    public void setDOM(Node dom) {
+        this.dom = dom;
     }
 
     /**
@@ -80,6 +90,10 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @return The prefix associated with the namespace URI.
      */
     public String resolveNamespaceURI(String uri) {
+        if(null == uri) {
+            return null;
+        }
+
         Enumeration keys = namespaces.keys();
         String prefix;
         while (keys.hasMoreElements()) {
@@ -88,14 +102,40 @@ public class NamespaceResolver implements XMLNamespaceResolver {
                 return prefix;
             }
         }
-        if (uri != null) {
-            if (uri.equalsIgnoreCase(XMLConstants.XMLNS_URL)) {
-                return XMLConstants.XMLNS;
-            } else if (uri.equalsIgnoreCase(XMLConstants.XML_NAMESPACE_URL)) {
-                return XMLConstants.XML_NAMESPACE_PREFIX;
+        if (uri.equalsIgnoreCase(XMLConstants.XMLNS_URL)) {
+            return XMLConstants.XMLNS;
+        } else if (uri.equalsIgnoreCase(XMLConstants.XML_NAMESPACE_URL)) {
+            return XMLConstants.XML_NAMESPACE_PREFIX;
+        }
+        return resolveNamespaceURI(dom, uri);
+    }
+
+    private String resolveNamespaceURI(Node node, String uri) {
+        if(null == node) {
+            return null;
+        }
+        
+        // If the element is of the same namespace URI, then return the prefix.
+        if(uri.equals(node.getNamespaceURI())) {
+            return node.getPrefix();
+        } 
+        
+        // Check the namespace URI declarations.
+        NamedNodeMap namedNodeMap = node.getAttributes();
+        if(null != namedNodeMap) {
+            int namedNodeMapSize = namedNodeMap.getLength();
+            for(int x=0; x<namedNodeMapSize; x++) {
+                Node attr = namedNodeMap.item(x);
+                if(XMLConstants.XMLNS_URL.equals(attr.getNamespaceURI())) {
+                    if(uri.equals(attr.getNodeValue())) {
+                        return attr.getLocalName();
+                    }
+                }
             }
         }
-        return null;
+
+        // Repeat the process on the parent node.
+        return resolveNamespaceURI(node.getParentNode(), uri);
     }
 
     /**
@@ -156,7 +196,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
     }
 
     private String getNextPrefix() {
-        return "ns" + prefixCounter++;
+        return BASE_PREFIX + prefixCounter++;
     }
 
     public String generatePrefix(String defaultPrefix) {

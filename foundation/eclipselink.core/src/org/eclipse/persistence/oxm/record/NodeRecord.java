@@ -165,6 +165,7 @@ public class NodeRecord extends MarshalRecord {
         } else if ((dom.getNodeType() == Node.ELEMENT_NODE) || (dom.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE)) {
             document = dom.getOwnerDocument();
             nodes.push(dom);
+            getNamespaceResolver().setDOM(dom);
         } else {
             throw XMLMarshalException.marshalException(null);
         }
