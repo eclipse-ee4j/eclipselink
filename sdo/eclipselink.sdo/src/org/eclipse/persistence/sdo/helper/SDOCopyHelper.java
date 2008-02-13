@@ -146,7 +146,7 @@ public class SDOCopyHelper implements CopyHelper {
                 if (eachProperty.getType().isDataType()) {
                     if (eachProperty.getType() != SDOConstants.SDO_CHANGESUMMARY) {
                         // we defer sequence updates at this point
-                        copy.set(eachProperty, o, false);// make copy if current property is datatype
+                        copy.setInternal(eachProperty, o, false);// make copy if current property is datatype
                     }
                 }
             }
@@ -910,7 +910,7 @@ public class SDOCopyHelper implements CopyHelper {
                          * The cs is off by default in the copy object.
                          * updateSequence flag is false - we will populate the sequence in order after subtree creation
                          */
-                        copy.set(eachProperty, o, false);
+                        copy.setInternal(eachProperty, o, false);
                     }
                 } else {
                     // case matrix for containment and opposite combinations
@@ -965,7 +965,7 @@ public class SDOCopyHelper implements CopyHelper {
 
             // set the copy to an empty list and add each items from the original in sequence
             // updateSequence flag is false - we will populate the sequence in order after subtree creation
-            copy.set(property, copyValue, false);
+            copy.setInternal(property, copyValue, false);
             for (Iterator iterValues = ((List)value).iterator(); iterValues.hasNext();) {
                 SDODataObject o = (SDODataObject)iterValues.next();
                 DataObject copyO = copyPrivate(o, doMap, ncPropMap, cs);
@@ -987,7 +987,7 @@ public class SDOCopyHelper implements CopyHelper {
             //  #5852525 handle null properties with isSet=true - fixed 20070130
             // we will set the isSet index in the ValueStore to true for all isSet=true objects, even NULL ones.
             // updateSequence flag is false - we will populate the sequence in order after subtree creation
-            copy.set(property, copyO, false);
+            copy.setInternal(property, copyO, false);
 
             // set changeSummary on all cs-root elements in the list after they are added to the containment tree using the original logging value
             if ((copyO != null) && (copyO.getChangeSummary() != null) && (((SDOType)copyO.getType()).getChangeSummaryProperty() != null)) {

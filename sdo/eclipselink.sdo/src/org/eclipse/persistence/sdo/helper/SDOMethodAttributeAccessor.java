@@ -79,7 +79,7 @@ public class SDOMethodAttributeAccessor extends AttributeAccessor {
      * Sets the value of the instance variable in the object to the value.
      */
     public void setAttributeValueInObject(Object domainObject, Object attributeValue) throws DescriptorException {
-        ((SDODataObject)domainObject).set(property, attributeValue, false);
+        ((SDODataObject)domainObject).setInternal(property, attributeValue, false);
 
     }
 

@@ -1161,28 +1161,8 @@ public class SDODataObject implements DataObject, SequencedObject {
         set(property, value, true);
     }
 
-    /**
-     * INTERNAL:
-     * Sets the value of the given property of the object to the new value.
-     * <p>
-     * The use of a false updateSequence flag is internally implemented during an SDOSequence.add() call.
-     * Refactor: we need to abstract this function using a type of Command pattern to handle the sequence context.
-     * @param property
-     * @param value
-     * @param updateSequence
-     * @throws UnsupportedOperationException
-     * @throws IllegalArgumentException
-     */
-    public void set(Property property, Object value, boolean updateSequence) throws UnsupportedOperationException, IllegalArgumentException {
-        if (null == property) {
-            throw new IllegalArgumentException("Illegal Argument.");
-        }
-
-        if (property.isReadOnly()) {
-            throw new UnsupportedOperationException("Property is Readonly." + property.getName() + "  " + getType().getName());
-        }
-
-        //TODO: if property is many do we check that the value is a list and if not create one				
+    public void setInternal(Property property, Object value, boolean updateSequence) throws UnsupportedOperationException, IllegalArgumentException {
+        //TODO: if property is many do we check that the value is a list and if not create one              
         //TODO: if is many do we clear current list or just replace with the new one
         if (null == getType()) {
             throw new UnsupportedOperationException("Type is null");
@@ -1263,6 +1243,30 @@ public class SDODataObject implements DataObject, SequencedObject {
         //add would produce a containment cycle, an exception is thrown.
         //account for Lists in circular cycles    
     }
+        
+    /**
+     * INTERNAL:
+     * Sets the value of the given property of the object to the new value.
+     * <p>
+     * The use of a false updateSequence flag is internally implemented during an SDOSequence.add() call.
+     * Refactor: we need to abstract this function using a type of Command pattern to handle the sequence context.
+     * @param property
+     * @param value
+     * @param updateSequence
+     * @throws UnsupportedOperationException
+     * @throws IllegalArgumentException
+     */
+    public void set(Property property, Object value, boolean updateSequence) throws UnsupportedOperationException, IllegalArgumentException {
+        if (null == property) {
+            throw new IllegalArgumentException("Illegal Argument.");
+        }
+
+        if (property.isReadOnly()) {
+            throw new UnsupportedOperationException("Property is Readonly." + property.getName() + "  " + getType().getName());
+        }
+        setInternal(property, value, updateSequence);
+    }
+
 
     /**
      * Returns whether the property of the object is considered to be set.
