@@ -139,8 +139,8 @@ public class SchemaGenerator {
             if (schema != rootSchema) {
                 Import schemaImport = new Import();
                 schemaImport.setNamespace(schema.getTargetNamespace());
-                schemaImport.setSchemaLocation(schema.getName());
-                rootSchema.getImports().put(schemaImport.getSchemaLocation(), schemaImport);
+                schemaImport.setSchemaLocation(schema.getName());                
+                rootSchema.getImports().add(schemaImport);
             }
             // setup a prefix, if necessary
             if (!info.getClassNamespace().equals("")) {
@@ -364,11 +364,11 @@ public class SchemaGenerator {
                             //don't overwrite existing global elements and attributes.
                             attributeSchema.getTopLevelAttributes().put(attribute.getName(), attribute);
                         }
-                        if (schema.getImports().get(attributeSchema.getName()) == null) {
+                        if(!importExists(schema, attributeSchema.getName())){                        
                             Import schemaImport = new Import();
                             schemaImport.setNamespace(attributeSchema.getTargetNamespace());
-                            schemaImport.setSchemaLocation(attributeSchema.getName());
-                            schema.getImports().put(schemaImport.getSchemaLocation(), schemaImport);
+                            schemaImport.setSchemaLocation(attributeSchema.getName());                            
+                            schema.getImports().add(schemaImport);
                             schema.getNamespaceResolver().put(schema.getNamespaceResolver().generatePrefix(), attributeSchema.getTargetNamespace());
                         }
                         Attribute reference = new Attribute();
@@ -467,11 +467,11 @@ public class SchemaGenerator {
                         }
                         // check to see if we need to add an import
                         if (info.getSchema() != schema) {
-                            if (schema.getImports().get(info.getSchema().getName()) == null) {
+                            if(!importExists(schema, info.getSchema().getName())){                            
                                 Import schemaImport = new Import();
                                 schemaImport.setSchemaLocation(info.getSchema().getName());
-                                schemaImport.setNamespace(info.getSchema().getTargetNamespace());
-                                schema.getImports().put(schemaImport.getSchemaLocation(), schemaImport);
+                                schemaImport.setNamespace(info.getSchema().getTargetNamespace());                                
+                                schema.getImports().add(schemaImport);
                                 if (schemaImport.getNamespace() != null) {
                                     schema.getNamespaceResolver().put(schema.getNamespaceResolver().generatePrefix(), schemaImport.getNamespace());
                                 }
@@ -531,11 +531,11 @@ public class SchemaGenerator {
                             //don't overwrite global elements. May have been defined by a type.
                             attributeSchema.getTopLevelElements().put(element.getName(), element);
                         }
-                        if (attributeSchema != schema && schema.getImports().get(attributeSchema.getName()) == null) {
+                        if (attributeSchema != schema && (!importExists(schema, attributeSchema.getName()))){ 
                             Import schemaImport = new Import();
                             schemaImport.setNamespace(attributeSchema.getTargetNamespace());
-                            schemaImport.setSchemaLocation(attributeSchema.getName());
-                            schema.getImports().put(schemaImport.getSchemaLocation(), schemaImport);
+                            schemaImport.setSchemaLocation(attributeSchema.getName());                            
+                            schema.getImports().add(schemaImport);
                             schema.getNamespaceResolver().put(schema.getNamespaceResolver().generatePrefix(), attributeSchema.getTargetNamespace());
                         }
                         //add an import here
@@ -717,12 +717,12 @@ public class SchemaGenerator {
                         String complexTypeSchemaNS = complexTypeSchema.getTargetNamespace();
                         if(complexTypeSchemaNS == null) {
                             complexTypeSchemaNS = "";
-                        }
-                        if (targetSchema.getImports().get(complexTypeSchema.getName()) == null) {
+                        }                        
+                        if(!importExists(targetSchema, complexTypeSchema.getName())){
                             Import schemaImport = new Import();
                             schemaImport.setNamespace(complexTypeSchema.getTargetNamespace());
-                            schemaImport.setSchemaLocation(complexTypeSchema.getName());
-                            targetSchema.getImports().put(schemaImport.getSchemaLocation(), schemaImport);
+                            schemaImport.setSchemaLocation(complexTypeSchema.getName());                            
+                            targetSchema.getImports().add(schemaImport);
                             // Don't need to generate prefix for default namespace
                             if (!complexTypeSchemaNS.equals("")) {
                                 targetSchema.getNamespaceResolver().put(targetSchema.getNamespaceResolver().generatePrefix(), complexTypeSchemaNS);
@@ -747,5 +747,17 @@ public class SchemaGenerator {
     
     public HashMap<String, SchemaTypeInfo> getSchemaTypeInfo() {
         return this.schemaTypeInfo;
+    }
+    
+    private boolean importExists(Schema schema, String schemaName){
+        
+        java.util.List imports = schema.getImports();
+        for(int i=0;i < imports.size();i++){
+          Import nextImport = (Import)imports.get(i);
+          if(nextImport.getSchemaLocation() != null && nextImport.getSchemaLocation().equals(schemaName)){
+            return true;
+          }
+        }
+        return false;                
     }
 }
