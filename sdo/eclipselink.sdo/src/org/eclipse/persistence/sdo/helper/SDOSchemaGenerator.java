@@ -94,7 +94,7 @@ public class SDOSchemaGenerator {
             desc.getNamespaceResolver().put(next.getPrefix(), next.getNamespaceURI());
 
             if (next.getNamespaceURI().equals(SDOConstants.SDO_URL) || next.getNamespaceURI().equals(SDOConstants.SDOXML_URL) || next.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) {
-                if (generatedSchema.getImports().get(next.getNamespaceURI()) == null) {
+                if (!importExists(generatedSchema.getImports(), next.getNamespaceURI())) {
                     Import theImport = new Import();
                     theImport.setNamespace(next.getNamespaceURI());
                     String schemaLocation = "classpath:/xml/";
@@ -110,8 +110,8 @@ public class SDOSchemaGenerator {
                         theImport.setSchemaLocation(schemaLocation);
                     } catch (MalformedURLException e) {
                         // DO NOTHING - fix for bug 6054754 to add custom schemalocation if possible
-                    }
-                    generatedSchema.getImports().put(next.getNamespaceURI(), theImport);
+                    }                    
+                    generatedSchema.getImports().add(theImport);
                 }
             }
         }
@@ -771,33 +771,30 @@ public class SDOSchemaGenerator {
                         allTypes.add(targetType);
                     }
                 } else {
-                    Import theImport = (Import)generatedSchema.getImports().get(schemaLocation);
-                    if (theImport == null) {
-                        theImport = new Import();
+                    if(!importExists(generatedSchema.getImports(), schemaLocation)){                    
+                        Import theImport = new Import();
                         theImport.setSchemaLocation(schemaLocation);
-                        theImport.setNamespace(targetType.getURI());
-                        generatedSchema.getImports().put(schemaLocation, theImport);
+                        theImport.setNamespace(targetType.getURI());                        
+                        generatedSchema.getImports().add(theImport);
                     }
                 }
             } else if (schemaLocationResolver != null) {
                 schemaLocation = schemaLocationResolver.resolveSchemaLocation(sourceType, targetType);
                 if (schemaLocation != null) {
-                    if (targetType.getURI().equals(generatedSchema.getTargetNamespace())) {
-                        Include include = (Include)generatedSchema.getIncludes().get(schemaLocation);
-                        if (include == null) {
-                            include = new Include();
+                    if (targetType.getURI().equals(generatedSchema.getTargetNamespace())) {                        
+                        if(!importExists(generatedSchema.getIncludes(), schemaLocation)){                        
+                            Include include = new Include();
                             include.setSchemaLocation(schemaLocation);
-                            generatedSchema.getIncludes().put(schemaLocation, include);
+                            generatedSchema.getIncludes().add(include);                            
                             // 20060713 remove type from List of types when adding an include
                             allTypes.remove(targetType);
                         }
-                    } else {
-                        Import theImport = (Import)generatedSchema.getImports().get(schemaLocation);
-                        if (theImport == null) {
-                            theImport = new Import();
+                    } else {                        
+                        if(!importExists(generatedSchema.getImports(), schemaLocation)){
+                            Import theImport = new Import();
                             theImport.setSchemaLocation(schemaLocation);
                             theImport.setNamespace(targetType.getURI());
-                            generatedSchema.getImports().put(schemaLocation, theImport);
+                            generatedSchema.getImports().add(theImport);                            
                         }
                     }
                 } else {
@@ -923,5 +920,15 @@ public class SDOSchemaGenerator {
             return SDOConstants.SDO_DATETIME;
         }
         return null;
+    }
+    
+     private boolean importExists(java.util.List imports, String schemaName){                
+        for(int i=0;i < imports.size();i++){
+          Import nextImport = (Import)imports.get(i);
+          if(nextImport.getSchemaLocation() != null && nextImport.getSchemaLocation().equals(schemaName)){
+            return true;
+          }
+        }
+        return false;                
     }
 }

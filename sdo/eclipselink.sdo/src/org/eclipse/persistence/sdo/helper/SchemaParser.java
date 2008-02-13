@@ -103,26 +103,24 @@ public abstract class SchemaParser {
     protected void postProcessing() {
     }
 
-    private void processImports(Map imports) {
+    private void processImports(java.util.List imports) {
         if ((imports == null) || (imports.size() == 0) || !isProcessImports()) {
             return;
         }
-        Iterator keysIter = imports.keySet().iterator();
-        while (keysIter.hasNext()) {
-            String key = (String)keysIter.next();
-            Import nextImport = (Import)imports.get(key);
+        Iterator iter = imports.iterator();
+        while (iter.hasNext()) {
+            Import nextImport = (Import)iter.next();
             processImport(nextImport);
         }
     }
 
-    private void processIncludes(Map includes) {
+    private void processIncludes(java.util.List includes) {
         if ((includes == null) || (includes.size() == 0) || !isProcessImports()) {
             return;
         }
-        Iterator keysIter = includes.keySet().iterator();
-        while (keysIter.hasNext()) {
-            String key = (String)keysIter.next();
-            Include nextInclude = (Include)includes.get(key);
+        Iterator iter = includes.iterator();
+        while (iter.hasNext()) {
+            Include nextInclude = (Include)iter.next();            
             processInclude(nextInclude);
         }
     }
@@ -708,13 +706,11 @@ public abstract class SchemaParser {
             XMLUnmarshaller unmarshaller = context.createUnmarshaller();
 
             Schema schema = (Schema)unmarshaller.unmarshal(xsdSource);
-
-            //populate Imports
-            Map imports = schema.getImports();
-            Iterator keysIter = imports.keySet().iterator();
-            while (keysIter.hasNext()) {
-                String key = (String)keysIter.next();
-                Import nextImport = (Import)imports.get(key);
+            //populate Imports            
+            java.util.List imports = schema.getImports();            
+            Iterator iter = imports.iterator();
+            while (iter.hasNext()) {                
+                Import nextImport = (Import)iter.next();
 
                 Source referencedSchema = getReferencedSchema(xsdSource, nextImport.getNamespace(), nextImport.getSchemaLocation(), schemaResolverWrapper);
                 if (referencedSchema != null) {
@@ -722,14 +718,12 @@ public abstract class SchemaParser {
                     nextImport.setSchema(importedSchema);
                 }
             }
-
-            //processImport(schemaLocation, nextImport);
-            //populate includes
-            Map includes = schema.getIncludes();
-            Iterator includesIter = includes.keySet().iterator();
+            
+            //populate includes            
+            java.util.List includes = schema.getIncludes();
+            Iterator includesIter = includes.iterator();
             while (includesIter.hasNext()) {
-                String key = (String)includesIter.next();
-                Include nextInclude = (Include)includes.get(key);
+                Include nextInclude = (Include)includesIter.next();
 
                 Source referencedSchema = getReferencedSchema(xsdSource, schema.getTargetNamespace(), nextInclude.getSchemaLocation(), schemaResolverWrapper);
                 if (referencedSchema != null) {
