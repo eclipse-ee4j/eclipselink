@@ -10,7 +10,6 @@
 package org.eclipse.persistence.jaxb.compiler;
 
 import java.util.Iterator;
-import java.util.Collection;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;

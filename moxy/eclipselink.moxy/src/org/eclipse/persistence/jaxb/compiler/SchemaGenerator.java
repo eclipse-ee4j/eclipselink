@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.javamodel.Helper;
