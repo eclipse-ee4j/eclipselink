@@ -361,7 +361,7 @@ public class SDOConstants {
         SDO_OPEN_SEQUENCED.setDataType(false);
         SDO_OPEN_SEQUENCED.setInstanceClassName("oracle.sdo.OpenSequencedClass");        
         //need to call getInstanceClass to initialize the class in the SDOClassLoader
-        Class instanceClass = SDO_OPEN_SEQUENCED.getInstanceClass();
+        SDO_OPEN_SEQUENCED.getInstanceClass();
         Class implClass = SDO_OPEN_SEQUENCED.getImplClass();
         XMLDescriptor xmlDescriptor = new XMLDescriptor();
         xmlDescriptor.setJavaClass(implClass);          

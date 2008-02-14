@@ -29,7 +29,6 @@ import org.eclipse.persistence.sdo.helper.SDOClassLoader;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.sessions.Project;

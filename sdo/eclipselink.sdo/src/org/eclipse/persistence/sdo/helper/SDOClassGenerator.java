@@ -15,7 +15,6 @@ import commonj.sdo.impl.HelperProvider;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.lang.UnsupportedOperationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -29,7 +28,6 @@ import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
-import org.eclipse.persistence.internal.oxm.schema.model.*;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 
 /**

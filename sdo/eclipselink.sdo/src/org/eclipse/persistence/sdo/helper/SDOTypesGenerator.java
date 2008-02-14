@@ -38,7 +38,6 @@ import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
 import org.eclipse.persistence.internal.oxm.schema.model.Union;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;

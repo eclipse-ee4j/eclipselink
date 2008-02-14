@@ -20,7 +20,6 @@ import java.util.Map;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
-import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSequence;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.ValueStore;

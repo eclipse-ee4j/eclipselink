@@ -14,7 +14,6 @@ import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.impl.HelperProvider;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
