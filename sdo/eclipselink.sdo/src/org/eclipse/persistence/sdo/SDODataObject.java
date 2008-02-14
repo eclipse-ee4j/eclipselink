@@ -3036,14 +3036,15 @@ public class SDODataObject implements DataObject, SequencedObject {
      * @param updateSequence
      */
     public void updateContainment(Property property, Collection values, boolean updateSequence) {
-        if (property.isContainment() || isContainedByDataGraph(property)) { //
-            Iterator valuesIter = values.iterator();
-            while (valuesIter.hasNext()) {
-                Object next = valuesIter.next();
+        if (property.isContainment() || isContainedByDataGraph(property)) {//
+          
+            Object[] valuesArray = values.toArray();
+            for(int i=0; i<valuesArray.length; i++){
+               Object next = valuesArray[i];
                 if (next instanceof DataObject) {
                     updateContainment(property, (DataObject)next, updateSequence);
                 }
-            }
+            }                                  
         }
     }
 
