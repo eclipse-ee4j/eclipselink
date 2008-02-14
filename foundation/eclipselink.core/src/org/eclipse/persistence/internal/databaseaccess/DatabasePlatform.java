@@ -2228,7 +2228,7 @@ public class DatabasePlatform extends DatasourcePlatform {
          }catch (SQLException ex){
              try{
                  //try to close statement again in case the query or result.close() caused an exception.
-                 statement.close();
+                 if (statement != null) statement.close();
              }catch (SQLException exception2){
                  //ignore;
              }
