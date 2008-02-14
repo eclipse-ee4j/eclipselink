@@ -559,7 +559,7 @@ public abstract class POJOValueStore implements ValueStore {
         // Option 1: just return yourself - no ChangeSummary functionality will work with this approach
         //return this;
         // Option 2: return a shallow copy of this custom ValueStore
-        POJOValueStore anOriginalValueStore = getInstance(((SDODataObject)dataObject)._getHelperContext());
+        POJOValueStore anOriginalValueStore = getInstance(((SDOType)dataObject.getType()).getHelperContext());
 
         // container (of Types from XSD) for wrapping POJO        
         anOriginalValueStore.setDataObject(dataObject);
