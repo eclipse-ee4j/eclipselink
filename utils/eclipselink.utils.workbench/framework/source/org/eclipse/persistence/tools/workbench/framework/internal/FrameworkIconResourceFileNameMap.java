@@ -25,7 +25,7 @@ public final class FrameworkIconResourceFileNameMap extends AbstractIconResource
 		{"file.xml.new",           "basic/file/File.xml.new.gif"},
 		{"file.xml.multi.refresh", "basic/file/File.xml.multi.refresh.gif"},
 		{"file.xml.refresh",       "basic/file/File.xml.refresh.gif"},
-		{"file.mwp.large",         "basic/file/File.large"},
+		{"file.mwp.large",         "basic/file/File.large.gif"},
 		
 		{"navigator", "basic/file/Projects.gif"},
 		{"editor", "basic/misc/Text.gif"},

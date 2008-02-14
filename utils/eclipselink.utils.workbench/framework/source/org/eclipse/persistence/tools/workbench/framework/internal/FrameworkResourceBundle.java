@@ -303,7 +303,10 @@ public final class FrameworkResourceBundle extends ListResourceBundle {
 
 		// RecentsAction
 		{"recentProjectFileNotFound.title", "Project File Not Found"},
-		{"recentProjectFileNotFound.message", "The file ''{0}'' cannot be found and will be removed from the recents list."},		
+		{"recentProjectFileNotFound.message", "The file ''{0}'' cannot be found and will be removed from the recents list."},	
+		
+		//DefaultHelpManager
+		{"TOPLIC_ID_DOESNT_EXIST", "The help topic {0} doesn't not exist."},
 
 	};
 

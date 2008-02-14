@@ -86,7 +86,7 @@ public class UIToolsIconResourceFileNameMap extends AbstractIconResourceFileName
 		{"file", "basic/file/File.gif"},
 		{"file.xml", "basic/file/File.xml.gif"},
 		{"file.xml.large", "basic/file/File.xml.large.gif"},
-		{"file.mwp.large", "basic/file/File.large"},
+		{"file.mwp.large", "basic/file/File.large.gif"},
 		{"file.close", "basic/file/File.close.gif"},
 		{"file.closeAll", "basic/file/File.closeAll.gif"},
 		{"file.export", "basic/file/File.export.gif"},

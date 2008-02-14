@@ -15,14 +15,14 @@ set CLASSPATH=%THIS%..\..\eclipselink.utils.workbench.lib\compile\xercesImpl.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\..\eclipselink.utils.workbench.lib\run\connector.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\..\eclipselink.utils.workbench.lib\compile\eclipselink.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\..\eclipselink.utils.workbench.lib\mw\elmwcore.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\..\eclipselink.utils.workbench.lib\compile\eclipselinkmw.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\..\eclipselink.utils.workbench.lib\mw\eclipselinkmw.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\config
 set CLASSPATH=%CLASSPATH%;%THIS%..\lib\java\internal
 set CLASSPATH=%CLASSPATH%;%DRIVER_CLASSPATH%
 
 set WORKBENCH_ARGS=-open %*
  
-start %JAVA_HOME%\bin\javaw.exe %JVM_ARGS% -cp %CLASSPATH% org.eclipse.persistence.workbench.Main %WORKBENCH_ARGS%
+start %JAVA_HOME%\bin\javaw.exe %JVM_ARGS% -cp %CLASSPATH% org.eclipse.persistence.tools.workbench.Main %WORKBENCH_ARGS%
 
 endlocal
 goto :EOF
