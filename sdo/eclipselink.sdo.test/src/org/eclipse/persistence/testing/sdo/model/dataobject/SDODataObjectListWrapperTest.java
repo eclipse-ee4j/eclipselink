@@ -21,6 +21,7 @@
 
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
+import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import commonj.sdo.helper.XMLDocument;
 import java.io.FileInputStream;
@@ -1250,6 +1251,13 @@ public class SDODataObjectListWrapperTest extends SDOTestCase {
         return;
       }
       fail("A CANNOT_PERFORM_OPERATION_ON_NULL_ARGUMENT exception should have occurred");
+    }
+    
+    public void testMoveItemBetweenLists(){
+     ListWrapper aList = (ListWrapper)aRoot5.getList("items/item");
+     DataObject newItemsDO = dataFactory.create("http://www.example.org", "Items");
+     
+     newItemsDO.set("item", aList);
     }
 
     public static void main(String[] args) {
