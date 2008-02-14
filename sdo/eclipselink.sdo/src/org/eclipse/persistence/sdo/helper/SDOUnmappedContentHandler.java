@@ -160,7 +160,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             } else if (SDOConstants.CHANGESUMMARY_REF.equals(attrName) && SDOConstants.SDO_URL.equals(uri)) {
                 ((SDODataObject)dataObject)._setSdoRef(stringValue);
             } else {
-                HelperContext aHelperContext = ((SDODataObject)dataObject)._getHelperContext();
+                HelperContext aHelperContext = ((SDOType)dataObject.getType()).getHelperContext();
                 Property prop = aHelperContext.getXSDHelper().getGlobalProperty(uri, attrName, false);
                 if (prop != null) {
                     Object convertedValue = ((SDODataHelper)aHelperContext.getDataHelper()).convertFromStringValue(stringValue, prop.getType());
@@ -256,7 +256,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                     currentDataObject = (DataObject)currentDataObjects.peek();
                 }
             }
-            HelperContext aHelperContext = ((SDODataObject)currentDataObject)._getHelperContext();
+            HelperContext aHelperContext = ((SDOType)currentDataObject.getType()).getHelperContext();
             if (currentSchemaType != null) {
                 Type sdoType = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getSDOTypeFromXSDType(currentSchemaType);
 

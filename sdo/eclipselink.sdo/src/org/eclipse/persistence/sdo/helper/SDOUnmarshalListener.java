@@ -119,7 +119,7 @@ public class SDOUnmarshalListener extends SDOCSUnmarshalListener {
                     }
                     if (nextModifiedDO != null) {
                         nextModifiedDO._setModified(true);
-                        SDOCSUnmarshalListener listener = new SDOCSUnmarshalListener(nextModifiedDO._getHelperContext(), true);
+                        SDOCSUnmarshalListener listener = new SDOCSUnmarshalListener(((SDOType)nextModifiedDO.getType()).getHelperContext(), true);
                         unmarshaller.setUnmarshalListener(listener);
                         unmarshaller.getProperties().put("sdoHelperContext", aHelperContext);
                         unmarshaller.setUnmappedContentHandlerClass(SDOUnmappedContentHandler.class);                        

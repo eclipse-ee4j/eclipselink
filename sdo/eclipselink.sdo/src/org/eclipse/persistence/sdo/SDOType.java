@@ -681,22 +681,6 @@ public class SDOType implements Type, Serializable {
                     }
                 }
             }
-
-            if ((getBaseTypes() != null) && (getBaseTypes().size() > 0)) {
-                SDOType baseType = (SDOType)getBaseTypes().get(0);
-                if (!baseType.isDataType) {
-                    NamespaceResolver parentNR = baseType.getXmlDescriptor().getNonNullNamespaceResolver();//.getInheritancePolicy().getRootParentDescriptor()).getNamespaceResolver();
-                    if (parentNR != null) {
-                        for (int i = 0; i < parentNR.getNamespaces().size(); i++) {
-                            Namespace nextNamespace = (Namespace)parentNR.getNamespaces().get(i);
-                            if ((!nextNamespace.getPrefix().equals(XMLConstants.XMLNS)) && (!nextNamespace.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOXML_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDO_URL))) {
-                                nr.put(nextNamespace.getPrefix(), nextNamespace.getNamespaceURI());
-                            }
-                        }
-                    }
-                }
-            }
-
             xmlDescriptor.setNamespaceResolver(nr);
             if (getURI() != null) {
                 String prefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(getURI());
@@ -1125,5 +1109,13 @@ public class SDOType implements Type, Serializable {
      */
     public void setPseudoDefault(Object anObject) {
         pseudoDefault = anObject;
+    }
+    
+    /**
+     * Return the HelperContext object associated with this type.
+     * For example, the typeHelper associated with the returned HelperContext would contain this type
+     */
+    public HelperContext getHelperContext(){
+      return aHelperContext;
     }
 }

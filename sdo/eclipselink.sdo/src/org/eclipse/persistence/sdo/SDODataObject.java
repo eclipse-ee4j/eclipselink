@@ -167,16 +167,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
-    /**
-     * INTERNAL:
-     * Return the HelperContext associated with this DataObject.
-     * @return
-     */
-    public HelperContext _getHelperContext() {
-        return aHelperContext;
-    }
-
-    /**
+   /**
      * Returns the value of a property of either this object or an object reachable from it, as identified by the
      * specified path.
      * @param path the path to a valid object and property.

@@ -125,7 +125,7 @@ public class SDOSequence implements Sequence {
             return false;
         }
         // Disallow the addition of a Properties representing an XML attribute
-        if (dataObject._getHelperContext().getXSDHelper().isAttribute(property)) {
+        if (((SDOType)dataObject.getType()).getHelperContext().getXSDHelper().isAttribute(property)) {
             throw SDOException.sequenceAttributePropertyNotSupported(property.getName());
         }
         // Disallow an open Property on a closed Type
@@ -427,7 +427,7 @@ public class SDOSequence implements Sequence {
                 xmlRoot.setNamespaceURI(sdoProperty.getUri());
                 xmlRoot.setObject(value);
               
-                QName schemaTypeQName = ((SDOTypeHelper)dataObject._getHelperContext().getTypeHelper()).getXSDTypeFromSDOType(property.getType());
+                QName schemaTypeQName = ((SDOTypeHelper)((SDOType)dataObject.getType()).getHelperContext().getTypeHelper()).getXSDTypeFromSDOType(property.getType());
                 if(schemaTypeQName != null && schemaTypeQName != XMLConstants.STRING_QNAME){
                   xmlRoot.setSchemaType(schemaTypeQName);
                 }
