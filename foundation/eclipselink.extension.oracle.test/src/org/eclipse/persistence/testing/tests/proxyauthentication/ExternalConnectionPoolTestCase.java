@@ -16,11 +16,11 @@ import org.eclipse.persistence.sessions.server.*;
 
 /**
  * ProxyAuthentication_FS: 4.3.1.1.	Realizations of Main use case:
- * “ServerSession uses main connection; each ClientSession uses its own proxy connection”. (see 3.1.2.1)
+ * "ServerSession uses main connection; each ClientSession uses its own proxy connection". (see 3.1.2.1)
  * All we have to do is to make sure that proxy properties are found in the login,
- * which is used to connect ClientSession’s write connection.
+ * which is used to connect ClientSession's write connection.
  * There are three alternative approaches to realize the use case.
- * C.  Each proxy authentication is mapped to a separate external connection pool – proxy properties set into pool’s login.
+ * C.  Each proxy authentication is mapped to a separate external connection pool – proxy properties set into pool's login.
  * Proxy properties could be set either before ClientSession is created (useEvent=false);
  * or in postAcquireClientSession event (useEvent=true).
  */
@@ -67,10 +67,10 @@ public class ExternalConnectionPoolTestCase extends ProxyAuthenticationConnectio
         // The ClientSession will connect  using the pool with the same mane as proxy user
         String proxyUser = proxyProperties.getProperty("PROXY_USER_NAME");
         policy.setPoolName(proxyUser);
-        // if the pool doesn’t exist – create and start up it
+        // if the pool doesn't exist – create and start up it
         ConnectionPool pool = ss.getConnectionPool(proxyUser);
         if (pool == null) {
-            // Clone serverSession’s login – the clone will be used by the new connection pool
+            // Clone serverSession's login – the clone will be used by the new connection pool
             Login login = (Login)ss.getLogin().clone();
             // set proxy properties in the login
             addProxyPropertiesToLogin(login);

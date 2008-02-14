@@ -21,7 +21,7 @@
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
     <property file="${user.home}/test.properties"/>
-	<property file="./build.properties"/>
+    <property file="./build.properties"/>
     <property file="${eclipselink.jpa.test}/build.properties"/>
     <property file="${eclipselink.jpa.test}/local.build.properties"/>
     <property file="${eclipselink.jpa.test}/${test.properties}"/>
@@ -285,7 +285,7 @@
     <target name="run.test" depends="config.trunk, config.flat">
         <echo>Running test with ${test.properties} on ${db.url}</echo>
         <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
-        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="256m" dir="${eclipselink.jpa.test}/${run.dir}">
+        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
             <jvmarg value="${test.agent}"/>
             <jvmarg value="${test.weaving}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>

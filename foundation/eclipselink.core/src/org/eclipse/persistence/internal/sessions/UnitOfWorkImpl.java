@@ -27,6 +27,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
+import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.UnitOfWork
@@ -38,10 +39,10 @@ import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackin
  * <b>Description</b>: The unit of work is a session that implements all of the normal
  * protocol of a TopLink session. It can be spawned from any other session including another unit of work.
  * Objects can be brought into the unit of work through reading them or through registering them.
- * The unit of work will opperate on its own object space, that is the objects within the unit of work
- * will be clones of the orignial objects.  When the unit of work is commited, all changes to any objects
- * registered within the unit of work will be commited to the database.  A minimal commit/update will
- * be performed and any foreign keys/circular reference/referencial integrity will be resolved.
+ * The unit of work will operate on its own object space, that is the objects within the unit of work
+ * will be clones of the original objects.  When the unit of work is committed, all changes to any objects
+ * registered within the unit of work will be committed to the database.  A minimal commit/update will
+ * be performed and any foreign keys/circular reference/referential integrity will be resolved.
  * If the commit to the database is successful the changed objects will be merged back into the unit of work
  * parent session.
  * <p>
@@ -51,7 +52,7 @@ import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackin
  * <li> Allow nested transactions.
  * <li> Not require the application to write objects that is changes, automatically determine what has changed.
  * <li> Perform a minimal commit/update of all changes that occurred.
- * <li> Resolve foreign keys for newly created objects and maintain referencial integrity.
+ * <li> Resolve foreign keys for newly created objects and maintain referential integrity.
  * <li> Allow for the object transaction to use its own object space.
  * </ul>
  */
@@ -62,7 +63,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected transient Map cloneToOriginals;
     protected transient AbstractSession parent;
 
-    /** Hashtable of all the clones.  The key contains the clone of the object. */
+    /** Map of all the clones.  The key contains the clone of the object. */
     protected Map cloneMapping;
     protected Map newObjectsCloneToOriginal;
     protected Map newObjectsOriginalToClone;
@@ -130,7 +131,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * With the new synchronized unit of work, need a lifecycle state variable to
-     * track birth, commited, pending_merge and death.
+     * track birth, committed, pending_merge and death.
      */
     protected int lifecycle;
     public static final int Birth = 0;
@@ -222,7 +223,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * Create and return a new unit of work with the sesson as its parent.
+     * Create and return a new unit of work with the session as its parent.
      */
     public UnitOfWorkImpl(AbstractSession parent) {
         super();
@@ -364,7 +365,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         try {
             ObjectBuilder builder = getDescriptor(object).getObjectBuilder();
 
-            // This is done outside of a transaction to ensure optimial concurrency and deadlock avoidance in the sequence table.
+            // This is done outside of a transaction to ensure optimal concurrency and deadlock avoidance in the sequence table.
             if (builder.getDescriptor().usesSequenceNumbers() && !getSequencing().shouldAcquireValueAfterInsert(object.getClass())) {
                 Object implementation = builder.unwrapObject(object, this);
                 builder.assignSequenceNumber(implementation, this);
@@ -431,8 +432,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Tell the unit of work to begin a transaction now.
      * By default the unit of work will begin a transaction at commit time.
      * The default is the recommended approach, however sometimes it is
-     * neccessary to start the transaction before commit time.  When the
-     * unit of work commits, this transcation will be commited.
+     * necessary to start the transaction before commit time.  When the
+     * unit of work commits, this transaction will be committed.
      *
      * @see #commit()
      * @see #release()
@@ -444,7 +445,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * This is internal to the uow, transactions should not be used explictly in a uow.
+     * This is internal to the uow, transactions should not be used explicitly in a uow.
      * The uow shares its parents transactions.
      */
     public void beginTransaction() throws DatabaseException {
@@ -733,6 +734,26 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     
     /**
      * INTERNAL:
+     * Check if the object is invalid and refresh it.
+     * This is used to ensure that no invalid objects are registered.
+     */
+    public void checkInvalidObject(Object object, CacheKey cacheKey, ClassDescriptor descriptor) {
+        if (!isNestedUnitOfWork()) {
+            CacheInvalidationPolicy cachePolicy = descriptor.getCacheInvalidationPolicy();
+            // BUG#6671556 refresh invalid objects when accessed in the unit of work.
+            if (cachePolicy.shouldRefreshInvalidObjectsInUnitOfWork() && cachePolicy.isInvalidated(cacheKey)) {
+                ReadObjectQuery query = new ReadObjectQuery();
+                query.setReferenceClass(object.getClass());
+                query.setSelectionKey(cacheKey.getKey());
+                query.refreshIdentityMapResult();
+                query.setIsExecutionClone(true);
+                parent.executeQuery(query);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Clone and register the object.
      * The cache key must the cache key from the session cache,
      * as it will be used for locking.
@@ -752,7 +773,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         Object workingClone = null;
         
         // The cache/objects being registered must first be locked to ensure
-        // that a merge or refresh does not oocur on the object while being cloned to
+        // that a merge or refresh does not occur on the object while being cloned to
         // avoid cloning a partially merged/refreshed object.
         // If a cache isolation level is used, then lock the entire cache.
         // otherwise lock the object and it related objects (not using indirection) as a unit.
@@ -760,14 +781,20 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // PERF: Cache if check to write is required.
         boolean identityMapLocked = this.shouldCheckWriteLock && getParent().getIdentityMapAccessorInstance().acquireWriteLock();
         boolean rootOfCloneRecursion = false;
-        if ((!identityMapLocked) && (this.objectsLockedForClone == null)) {//we may have locked all required objects already
-            // PERF: If a simple object just acquire a simple read-lock.
-            if (concreteDescriptor.shouldAcquireCascadedLocks()) {
-                this.objectsLockedForClone = getParent().getIdentityMapAccessorInstance().getWriteLockManager().acquireLocksForClone(original, concreteDescriptor, parentCacheKey.getKey(), getParent());
-            } else {
-                parentCacheKey.acquireReadLock();
+        if (identityMapLocked) {
+            checkInvalidObject(original, parentCacheKey, descriptor);
+        } else {
+            // Check if we have locked all required objects already.
+            if (this.objectsLockedForClone == null) {
+                // PERF: If a simple object just acquire a simple read-lock.
+                if (concreteDescriptor.shouldAcquireCascadedLocks()) {
+                    this.objectsLockedForClone = getParent().getIdentityMapAccessorInstance().getWriteLockManager().acquireLocksForClone(original, concreteDescriptor, parentCacheKey, getParent(), this);
+                } else {
+                    checkInvalidObject(original, parentCacheKey, descriptor);
+                    parentCacheKey.acquireReadLock();
+                }
+                rootOfCloneRecursion = true;
             }
-            rootOfCloneRecursion = true;
         }
         try {
             // bug:6167576   Must acquire the lock before cloning.
@@ -1111,7 +1138,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     // bug # 3132979 if the deleted object is new in the parent
                     //then  unregister in the parent.
                     //else add it to the deleted object list to be removed from the parent's parent
-                    //this prevents eronious insert and delete sql
+                    //this prevents erroneous insert and delete sql
                     if ((originalObject != null) && ((UnitOfWorkImpl)getParent()).getNewObjectsCloneToOriginal().containsKey(originalObject)) {
                         ((UnitOfWorkImpl)getParent()).unregisterObject(originalObject);
                     } else {
@@ -1228,14 +1255,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     commitTransaction();
                 } catch (RuntimeException throwable) {
                     if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase() && (getMergeManager() != null)) {
-                        // exception occurred durring the commit.
+                        // exception occurred during the commit.
                         getParent().getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
                         this.setMergeManager(null);
                     }
                     throw throwable;
                 } catch (Error throwable) {
                     if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase() && (getMergeManager() != null)) {
-                        // exception occurred durring the commit.
+                        // exception occurred during the commit.
                         getParent().getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
                         this.setMergeManager(null);
                     }
@@ -1287,7 +1314,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 calculateChanges(getAllClones(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), true);
             } catch (RuntimeException exception){
                 // The number of SQL statements been prepared need be stored into UOW 
-                // before any exeception being thrown.
+                // before any exception being thrown.
                 copyStatementsCountIntoProperties();
                 throw exception;
             }
@@ -1309,7 +1336,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     getCommitManager().setIsActive(false);
                 }catch(RuntimeException exception){
                     // The number of SQL statements been prepared need be stored into UOW 
-                    // before any exeception being thrown.
+                    // before any exception being thrown.
                     copyStatementsCountIntoProperties();
                     throw exception;
                 }
@@ -1373,7 +1400,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 commitTransaction();
             } catch (RuntimeException exception) {
                 if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase() && (getMergeManager() != null)) {
-                    // exception occurred durring the commit.
+                    // exception occurred during the commit.
                     getParent().getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
                     this.setMergeManager(null);
                 }
@@ -1382,7 +1409,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 handleException(exception);
             } catch (Error throwable) {
                 if (getDatasourceLogin().shouldSynchronizeObjectLevelReadWriteDatabase() && (getMergeManager() != null)) {
-                    // exception occurred durring the commit.
+                    // exception occurred during the commit.
                     getParent().getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(getMergeManager());
                     this.setMergeManager(null);
                 }
@@ -1496,7 +1523,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Traverse the object to find references to objects not registered in this unit of work.
      */
     public void discoverUnregisteredNewObjects(Map clones, final Map knownNewObjects, final Map unregisteredExistingObjects, Map visitedObjects) {
-        // This define an inner class for process the itteration operation, don't be scared, its just an inner class.
+        // This define an inner class for process the iteration operation, don't be scared, its just an inner class.
         DescriptorIterator iterator = new DescriptorIterator() {
             public void iterate(Object object) {
                 // If the object is read-only the do not continue the traversal.
@@ -1547,8 +1574,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
-     * ensures that objects from the parent cache are not refered in the unit of work cache.
+     * ensuring deleted objects are not referred after commit,
+     * ensures that objects from the parent cache are not referred in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
@@ -1582,7 +1609,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * ADVANCED:
-     * Set optmistic read lock on the object.  This feature is overide by normal optimistic lock.
+     * Set optimistic read lock on the object.  This feature is override by normal optimistic lock.
      * when the object is changed in UnitOfWork. The cloneFromUOW must be the clone of from this
      * UnitOfWork and it must implements version locking or timestamp locking.
      * The SQL would look like the followings.
@@ -1611,7 +1638,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * The commit manager is used to resolve referncial integrity on commits of multiple objects.
+     * The commit manager is used to resolve referential integrity on commits of multiple objects.
      * The commit manage is lazy init from parent.
      */
     public CommitManager getCommitManager() {
@@ -1706,7 +1733,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
 
         /* CR3440: Steven Vo
-         * Smart merge if neccessary in isObjectRegistered()
+         * Smart merge if necessary in isObjectRegistered()
          */
         if (isObjectRegistered(clone)) {
             return getCloneMapping().get(clone);
@@ -1771,8 +1798,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * ADVANCED:
-     * This method Will Calculate the chages for the UnitOfWork.  Without assigning sequence numbers
-     * This is a computationaly intensive operation and should be avoided unless necessary.
+     * This method Will Calculate the changes for the UnitOfWork.  Without assigning sequence numbers
+     * This is a computationally intensive operation and should be avoided unless necessary.
      * A valid changeSet, with sequencenumbers can be collected from the UnitOfWork after the commit
      * is complete by calling unitOfWork.getUnitOfWorkChangeSet()
      */
@@ -1839,8 +1866,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return the clone mapping.
      * The clone mapping contains clone of all registered objects,
      * this is required to store the original state of the objects when registered
-     * so that only what is changed will be commited to the database and the parent,
-     * (this is required to support parralel unit of work).
+     * so that only what is changed will be committed to the database and the parent,
+     * (this is required to support parallel unit of work).
      */
     public Map getCloneMapping() {
         // PERF: lazy-init (3286089)
@@ -1857,12 +1884,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * Hashtable used to avoid garbage collection in weak caches.
-     * ALSO, hashtable used as lookup when originals used for merge when original in
+     * Map used to avoid garbage collection in weak caches.
+     * Also, map used as lookup when originals used for merge when original in
      * identitymap can not be found.  As in a CacheIdentityMap
      */
     public Map getCloneToOriginals() {
-        //Helper.toDo("proper fix, collection merge can have objects disapear for original.");
+        //Helper.toDo("proper fix, collection merge can have objects disappear for original.");
         if (cloneToOriginals == null) {// Must lazy initialize for remote.
             // 2612538 - the default size of Map (32) is appropriate
             cloneToOriginals = new IdentityHashMap();
@@ -1898,7 +1925,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * Return if there are any registered new objects.
      * This is used for both newObjectsOriginalToClone and newObjectsCloneToOriginal as they are always in synch.
-     * PERF: Used to avoid initialization of new objects hashtable unless required.
+     * PERF: Used to avoid initialization of new objects map unless required.
      */
     public boolean hasNewObjects() {
         return ((newObjectsOriginalToClone != null) && !newObjectsOriginalToClone.isEmpty());
@@ -1964,7 +1991,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * The hashtable stores any new aggregates that have been cloned.
+     * The map stores any new aggregates that have been cloned.
      */
     public Map getNewAggregates() {
         if (this.newAggregates == null) {
@@ -2037,7 +2064,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * Marked internal as this is not customer API but helper methods for
      * accessing the server platform from within TopLink's other sessions types
-     * (ie not DatabaseSession)
+     * (i.e. not DatabaseSession)
      */
     public ServerPlatform getServerPlatform() {
         return getParent().getServerPlatform();
@@ -2078,7 +2105,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * Called in the end of beforeCompletion of external transaction sychronization listener.
+     * Called in the end of beforeCompletion of external transaction synchronization listener.
      * Close the managed sql connection corresponding to the external transaction.
      */
     public void releaseJTSConnection() {
@@ -2455,7 +2482,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * ADVANCED:
      * Returns the currentChangeSet from the UnitOfWork.
-     * This is only valid after the UnitOfWOrk has commited successfully
+     * This is only valid after the UnitOfWOrk has committed successfully
      */
     public org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet getUnitOfWorkChangeSet() {
         return unitOfWorkChangeSet;
@@ -2476,7 +2503,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * This is used to store unregistred objects discovered in the parent so that the child
+     * This is used to store unregistered objects discovered in the parent so that the child
      * unit of work knows not to register them on commit.
      */
     protected Map getUnregisteredNewObjects() {
@@ -2489,7 +2516,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * This is used to store unregistred objects discovered in the parent so that the child
+     * This is used to store unregistered objects discovered in the parent so that the child
      * unit of work knows not to register them on commit.
      */
     protected Map getUnregisteredNewObjectsInParent() {
@@ -2504,8 +2531,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
-     * ensures that objects from the parent cache are not refered in the unit of work cache.
+     * ensuring deleted objects are not referred after commit,
+     * ensures that objects from the parent cache are not referred in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
@@ -2517,7 +2544,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * ADVANCED:
      * The Unit of work is capable of preprocessing to determine if any on the clone have been changed.
-     * This is computationaly expensive and should be avoided on large object graphs.
+     * This is computationally expensive and should be avoided on large object graphs.
      */
     public boolean hasChanges() {
         if (hasNewObjects()) {
@@ -2558,7 +2585,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * Return the results from exeucting the database query.
+     * Return the results from executing the database query.
      * the arguments should be a database row with raw data values.
      */
     public Object internalExecuteQuery(DatabaseQuery query, AbstractRecord databaseRow) throws DatabaseException, QueryException {
@@ -2699,7 +2726,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * INTERNAL:
      * Has writeChanges() been attempted on this UnitOfWork?  It may have
-     * either suceeded or failed but either way the UnitOfWork is in a highly
+     * either succeeded or failed but either way the UnitOfWork is in a highly
      * restricted state.
      */
     public boolean isAfterWriteChangesButBeforeCommit() {
@@ -2883,7 +2910,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected void mergeChangesIntoParent() {
         UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
         if (uowChangeSet == null) {
-            // may be using the old commit prosess usesOldCommit()
+            // may be using the old commit process usesOldCommit()
             setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
             uowChangeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
             calculateChanges(getAllClones(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
@@ -4439,7 +4466,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * By default new objects are not cached until the exist on the database.
      * Occasionally if mergeClone is used on new objects and is required to allow multiple merges
      * on the same new object, then if the new objects are not cached, each mergeClone will be
-     * interpreted as a different new object.
+     * interpretted as a different new object.
      * By setting new objects to be cached mergeClone can be performed multiple times before commit.
      * New objects cannot be cached unless they have a valid assigned primary key before being registered.
      * New object with non-null invalid primary keys such as 0 or '' can cause problems and should not be used with this option.
@@ -4599,7 +4626,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * By default new objects are not cached until the exist on the database.
      * Occasionally if mergeClone is used on new objects and is required to allow multiple merges
      * on the same new object, then if the new objects are not cached, each mergeClone will be
-     * interpreted as a different new object.
+     * interpretted as a different new object.
      * By setting new objects to be cached mergeClone can be performed multiple times before commit.
      * New objects cannot be cached unless they have a valid assigned primary key before being registered.
      * New object with non-null invalid primary keys such as 0 or '' can cause problems and should not be used with this option.

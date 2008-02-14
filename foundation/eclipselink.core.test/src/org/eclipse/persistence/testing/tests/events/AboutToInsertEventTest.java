@@ -14,14 +14,13 @@ import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 
 /**
- *  CR#3237
- *  Test to make sure when the row provided in an aboutToInsert event is added to,
+ * CR#3237
+ * Test to make sure when the row provided in an aboutToInsert event is added to,
  * the addition will be reflected in the insert.
  */
-public abstract class AboutToInsertEventTest extends AutoVerifyTestCase {
+public abstract class AboutToInsertEventTest extends TestCase {
     protected Object objectToInsert = null;
     protected Accessor writeConnection = null;
     protected boolean isMultithreaded = false;
@@ -31,9 +30,9 @@ public abstract class AboutToInsertEventTest extends AutoVerifyTestCase {
         this.isMultithreaded = isMultithreaded;
     }
 
-    /*
-     *  Sub classes will build an SQL string that returns results if the test
-     *  passes and does not return results if the test fails.
+    /**
+     * Sub classes will build an SQL string that returns results if the test
+     * passes and does not return results if the test fails.
      */
     public abstract String getSQLVerificationString();
 
@@ -53,7 +52,7 @@ public abstract class AboutToInsertEventTest extends AutoVerifyTestCase {
 
         // Save the accessor so we can the same accessor for reading was 
         // we use in our transaction.  This allows us to do reads on the
-        // data we change in our transaxtion
+        // data we change in our transaction
         if (isMultithreaded) {
             writeConnection = getAbstractSession().getAccessor();
         }
@@ -82,7 +81,9 @@ public abstract class AboutToInsertEventTest extends AutoVerifyTestCase {
     }
 
     public void reset() {
-        rollbackTransaction();
+        if (getAbstractSession().isInTransaction()) {
+            rollbackTransaction();
+        }
         writeConnection = null;
 
         // We can only initialize the identity maps when we are not multithreaded so as

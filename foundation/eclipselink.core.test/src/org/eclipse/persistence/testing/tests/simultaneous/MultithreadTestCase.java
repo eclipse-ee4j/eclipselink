@@ -171,6 +171,8 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
             // the thread - currently used is testFinished notification.
             testThreadListener[i] = new SynchronizedTesterImpl();
 
+            test[i].setExecutor(testExecutorWithClientSession[i]);
+                 
             // That's a personal thread for the test
             testThread[i] = new SynchronizedTestExecutor(testExecutorWithClientSession[i], test[i], testThreadListener[i]);
             testThread[i].setName("Test Thread " + i);

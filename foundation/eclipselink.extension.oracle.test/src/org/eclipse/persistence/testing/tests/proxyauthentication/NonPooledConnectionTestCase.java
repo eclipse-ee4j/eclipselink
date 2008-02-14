@@ -15,9 +15,9 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.*;
 
 // ProxyAuthentication_FS: 4.3.1.1.	Realizations of Main use case:
-// “ServerSession uses main connection; each ClientSession uses its own proxy connection”. (see 3.1.2.1)
+// "ServerSession uses main connection; each ClientSession uses its own proxy connection". (see 3.1.2.1)
 // All we have to do is to make sure that proxy properties are found in the login,
-// which is used to connect ClientSession’s write connection. 
+// which is used to connect ClientSession's write connection. 
 // There are three alternative approaches to realize the use case.
 //
 // A. Client Session uses non-pooled connection – proxy properties set on its login.

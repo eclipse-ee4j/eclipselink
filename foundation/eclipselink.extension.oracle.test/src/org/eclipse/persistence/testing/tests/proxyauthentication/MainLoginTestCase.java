@@ -14,8 +14,8 @@ import java.util.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.*;
 
-// ProxyAuthentication_FS: 4.3.1.2.	Realization of “DatabaseSession uses proxy connection” use case (see 3.1.2.2).
-// In preLoginEvent user set proxy properties into DatabaseSession’s (or ServerSession’s) login.
+// ProxyAuthentication_FS: 4.3.1.2.	Realization of "DatabaseSession uses proxy connection" use case (see 3.1.2.2).
+// In preLoginEvent user set proxy properties into DatabaseSession's (or ServerSession's) login.
 public class MainLoginTestCase extends ProxyAuthenticationConnectionTestCase {
 
     Properties originalWriteProperties;

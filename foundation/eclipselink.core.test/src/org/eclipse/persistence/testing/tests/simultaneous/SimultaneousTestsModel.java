@@ -22,7 +22,16 @@ import org.eclipse.persistence.testing.tests.events.SingleTableAboutToInsertTest
 
 public class SimultaneousTestsModel extends TestModel {
     protected Session originalSession;
-
+    
+    /**
+     * Return the JUnit suite to allow JUnit runner to find it.
+     * Unfortunately JUnit only allows suite methods to be static,
+     * so it is not possible to generically do this.
+     */
+    public static junit.framework.TestSuite suite() {
+        return new SimultaneousTestsModel();
+    }
+    
     public SimultaneousTestsModel() {
         setDescription("This model runs MultithreadTestCases.");
     }
@@ -105,7 +114,7 @@ public class SimultaneousTestsModel extends TestModel {
         MultithreadTestCase test = new MultithreadTestCase(tests);
 
         // Using a sequence connection pool gives us closer to real multithreaded operation since it 
-        // moves the sequence number aquisition outside of the transaction in our tests
+        // moves the sequence number acquisition outside of the transaction in our tests
         test.useSequenceConnectionPool();
         suite.addTest(test);
 

@@ -29,10 +29,13 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable {
     /** this will represent objects that do not expire */
     protected boolean shouldUpdateReadTimeOnUpdate = false;
 
+    /** Determines if expired object registered in the unit of work should be refreshed, default true. */
+    protected boolean shouldRefreshInvalidObjectsInUnitOfWork = true;
+    
     /**
-       * INTERNAL:
-       * Get the next time when this object will become invalid
-       */
+     * INTERNAL:
+     * Get the next time when this object will become invalid
+     */
     public abstract long getExpiryTimeInMillis(CacheKey key);
 
     /**
@@ -83,5 +86,21 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable {
      */
     public boolean shouldUpdateReadTimeOnUpdate() {
         return shouldUpdateReadTimeOnUpdate;
+    }
+    
+    /** 
+     * PUBLIC:
+     * Set if expired object registered in the unit of work should be refreshed, default is true.
+     */
+    public void setShouldRefreshInvalidObjectsInUnitOfWork(boolean shouldRefreshInvalidObjectsInUnitOfWork) {
+        this.shouldRefreshInvalidObjectsInUnitOfWork = shouldRefreshInvalidObjectsInUnitOfWork;
+    }
+    
+    /** 
+     * PUBLIC:
+     * Return if expired object registered in the unit of work should be refreshed.
+     */
+    public boolean shouldRefreshInvalidObjectsInUnitOfWork() {
+        return shouldRefreshInvalidObjectsInUnitOfWork;
     }
 }

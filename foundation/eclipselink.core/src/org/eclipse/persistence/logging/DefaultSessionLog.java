@@ -57,7 +57,6 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
      */
     public DefaultSessionLog() {
         super();
-        this.level = INFO;
         for (int i = 0; i < loggerCatagories.length; i++) {
             String loggerCategory = loggerCatagories[i]; 
             categoryLogLevelMap.put(loggerCategory, null);

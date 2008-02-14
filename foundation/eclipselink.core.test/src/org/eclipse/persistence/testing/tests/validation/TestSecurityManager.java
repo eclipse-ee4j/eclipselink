@@ -9,6 +9,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.validation;
 
+import java.security.Permission;
+
 //This is an assisting class for SecurityException tests.  This is a lazy yet efficient way to 
 //trigger SecurityException since triggering the real SecurityException is too much involved.
 public class TestSecurityManager extends SecurityManager {
@@ -25,5 +27,9 @@ public class TestSecurityManager extends SecurityManager {
 
         }
         super.checkMemberAccess(clazz, which);
+    }
+    
+    public void checkPermission(Permission perm) {
+        // don't throw an error, so reset can reset security manager.
     }
 }
