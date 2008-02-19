@@ -30,9 +30,9 @@ import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.QueryHintsHandler;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.DirectAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MappedSuperclassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.RelationshipAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverterMetadata;
@@ -134,7 +134,7 @@ public class MetadataProject {
     protected HashMap<String, AbstractConverterMetadata> m_converters;
     
     // Accessors that use an EclipseLink converter.
-    protected HashSet<MetadataAccessor> m_convertAccessors;
+    protected HashSet<DirectAccessor> m_convertAccessors;
 
     // MetadataStructConverters, these are StructConverters that get added to 
     // the session.
@@ -168,7 +168,7 @@ public class MetadataProject {
         m_sequenceGenerators = new HashMap<String, SequenceGeneratorMetadata>();
         
         m_converters = new HashMap<String, AbstractConverterMetadata>();
-        m_convertAccessors = new HashSet<MetadataAccessor>();
+        m_convertAccessors = new HashSet<DirectAccessor>();
         m_structConverters = new HashMap<String, StructConverterMetadata>();
     }
 
@@ -236,7 +236,7 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public void addConvertAccessor(MetadataAccessor accessor) {
+    public void addConvertAccessor(DirectAccessor accessor) {
         m_convertAccessors.add(accessor);
     }
     
@@ -548,7 +548,7 @@ public class MetadataProject {
         
         processAccessorsWithRelationships();
     }
-	
+    
     /**
      * INTERNAL:
      * Process the related descriptors.
@@ -563,15 +563,39 @@ public class MetadataProject {
 
     /**
      * INTERNAL:
-     * Process those accessors that are decorated with a @Convert annotation. 
-     * A @Convert is used to process a TopLink defined annotation converter 
-     * (@Converter, @TypeConverter and @ObjectTypeConverter) for an accessor's 
-     * database mapping.
+     * Process those accessors that have a convert value. A convert value is 
+     * used to process an EclipseLink converter (Converter, TypeConverter and 
+     * ObjectTypeConverter) for an accessor's database mapping.
      */
     protected void processConvertAccessors() {
-        for (MetadataAccessor accessor : m_convertAccessors) {
+        for (DirectAccessor accessor : m_convertAccessors) {
             accessor.processConvert();
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process an AbstractMetadataConverter and add it to the project. 
+     */
+    public void processConverter(AbstractConverterMetadata converter) {
+    	// Check for a struct converter with the same name.
+    	StructConverterMetadata existingStructConverter = m_structConverters.get(converter.getName());
+    	if (existingStructConverter != null) {
+    		throw ValidationException.multipleConvertersOfTheSameName(converter.getName(), existingStructConverter.getLocation(), converter.getLocation());
+    	}
+    	
+    	// Check for another converter with the same name.
+    	AbstractConverterMetadata existingConverter = m_converters.get(converter.getName());
+    	if (existingConverter == null || existingConverter.loadedFromAnnotation() && converter.loadedFromXML()) {
+    		if (existingConverter != null) {
+    			// XML -> Annotation override, log a warning.
+				getLogger().logWarningMessage(MetadataLogger.IGNORE_CONVERTER_ANNOTATION, existingConverter.getName(), existingConverter.getLocation(), converter.getLocation());
+    		}
+    		
+    		addConverter(converter);
+    	} else if (! existingConverter.equals(converter)) {
+    		throw ValidationException.multipleConvertersOfTheSameName(converter.getName(), existingConverter.getLocation(), converter.getLocation());
+    	}
     }
     
     /**
@@ -1063,17 +1087,42 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * Process a StructConverterMetadata. 
+     */
+    public void processStructConverter(StructConverterMetadata structConverter) {
+    	// Check for a mapping converter with the same name.
+    	AbstractConverterMetadata existingConverter = m_converters.get(structConverter.getName());
+    	if (existingConverter != null) {
+    		throw ValidationException.multipleConvertersOfTheSameName(structConverter.getName(), existingConverter.getLocation(), structConverter.getLocation());
+    	}
+    	
+    	// Check for a struct converter with the same name.
+    	StructConverterMetadata existingStructConverter = m_structConverters.get(structConverter.getName());
+    	if (existingStructConverter == null || existingConverter.loadedFromAnnotation() && structConverter.loadedFromXML()) {
+    		if (existingConverter != null) {
+    			// XML -> Annotation override, log a warning.
+				getLogger().logWarningMessage(MetadataLogger.IGNORE_STRUCT_CONVERTER_ANNOTATION, existingConverter.getName(), existingConverter.getLocation(), structConverter.getLocation());
+    		}
+    		
+    		addStructConverter(structConverter);
+    	} else if (! existingStructConverter.equals(structConverter)) {
+    		throw ValidationException.multipleConvertersOfTheSameName(structConverter.getName(), existingStructConverter.getLocation(), structConverter.getLocation());
+    	}
+    }
+    
+    /**
+     * INTERNAL:
      * Common table processing for table, secondary table, join table, 
      * collection table and table generators
      */
     public void processTable(TableMetadata table, String defaultName, String defaultCatalog, String defaultSchema) {
-        // Name could be "", need to check against the default name.
+        // Name could be "" or null, need to check against the default name.
 		String name = MetadataHelper.getName(table.getName(), defaultName, table.getNameContext(), m_logger, table.getLocation());
         
-        // Catalog could be "", need to check for an XML default.
+        // Catalog could be "" or null, need to check for an XML default.
         String catalog = MetadataHelper.getName(table.getCatalog(), defaultCatalog, table.getCatalogContext(), m_logger, table.getLocation());
         
-        // Schema could be "", need to check for an XML default.
+        // Schema could be "" or null, need to check for an XML default.
         String schema = MetadataHelper.getName(table.getSchema(), defaultSchema, table.getSchemaContext(), m_logger, table.getLocation());
         
         // Build a fully qualified name and set it on the table.

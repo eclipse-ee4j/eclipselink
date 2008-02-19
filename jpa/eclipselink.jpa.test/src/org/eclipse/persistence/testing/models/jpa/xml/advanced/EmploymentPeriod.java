@@ -20,7 +20,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
-import java.sql.Date;
+import java.util.Date;
 import java.io.*;
 
 /**

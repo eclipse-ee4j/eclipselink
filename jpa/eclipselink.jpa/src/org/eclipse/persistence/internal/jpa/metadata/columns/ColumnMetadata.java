@@ -44,6 +44,15 @@ public class ColumnMetadata  {
     
     /**
      * INTERNAL:
+     * Called when defaulting a value column for a basic collection or
+     * basic map. Also called when defaulting a key column for a basic map.
+     */
+    public ColumnMetadata(MetadataAccessor accessor) {
+        this(null, accessor.getAttributeName());
+    }
+    
+    /**
+     * INTERNAL:
      * Called for basic mappings.
      */
     public ColumnMetadata(Column column, MetadataAccessor accessor) {

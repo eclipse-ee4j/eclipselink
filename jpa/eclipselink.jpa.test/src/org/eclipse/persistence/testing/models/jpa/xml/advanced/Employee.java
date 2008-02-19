@@ -12,12 +12,9 @@ package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 import java.util.*;
 import java.io.Serializable;
 
+import javax.persistence.Transient;
+
 /**
- * Bean class: EmployeeBean
- * Remote interface: Employee
- * Primary key class: EmployeePK
- * Home interface: EmployeeHome
- *
  * Employees have a one-to-many relationship with Employees through the 
  * managedEmployees attribute.
  * Addresses exist in one-to-one relationships with Employees through the
@@ -36,22 +33,37 @@ import java.io.Serializable;
  * XML)
  */
 public class Employee implements Serializable {
-	private Integer id;
+	public enum Gender { Female, Male }
+	
+	private int salary;
 	private int version;
+	private Integer id;
+	
 	private String firstName;
 	private String lastName;
+	
+	private Gender gender;
 	private Address address;
-	private Collection<PhoneNumber> phoneNumbers;
-	private Collection<Project> projects;
-	private int salary;
+	private Employee manager;
 	private EmploymentPeriod period;
     private Collection<Employee> managedEmployees;
-    private Employee manager;
+    
+    private Collection<PhoneNumber> phoneNumbers;
+	private Collection<Project> projects;
+	private Collection<String> responsibilities;
+	
+	private Map<String, Long> creditCards;
+    private static final String AMEX = "Amex";
+    private static final String DINERS = "DinersClub";
+    private static final String MASTERCARD = "Mastercard";
+    private static final String VISA = "Visa";
     
 	public Employee () {
-        this.phoneNumbers = new Vector<PhoneNumber>();
-        this.projects = new Vector<Project>();
-        this.managedEmployees = new Vector<Employee>();
+        phoneNumbers = new Vector<PhoneNumber>();
+        projects = new Vector<Project>();
+        managedEmployees = new Vector<Employee>();
+        responsibilities = new Vector<String>();
+        creditCards = new HashMap<String, Long>();
 	}
     
     public Employee(String firstName, String lastName){
@@ -60,99 +72,23 @@ public class Employee implements Serializable {
         this.lastName = lastName;
     }
 
-	public Integer getId() { 
-        return id; 
+    public void addAmex(long number) {
+        getCreditCards().put(AMEX, new Long(number));
     }
     
-	public void setId(Integer id) { 
-        this.id = id; 
-    }
-
-	public int getVersion() { 
-        return version; 
+    public void addDinersClub(long number) {
+        getCreditCards().put(DINERS, new Long(number));
     }
     
-	protected void setVersion(int version) {
-		this.version = version;
-	}
-
-	public String getFirstName() { 
-        return firstName; 
-    }
-    
-	public void setFirstName(String name) { 
-        this.firstName = name; 
-    }
-
-	public String getLastName() { 
-        return lastName; 
-    }
-    
-	public void setLastName(String name) { 
-        this.lastName = name; 
-    }
-
-	public Address getAddress() { 
-        return address; 
-    }
-    
-	public void setAddress(Address address) {
-		this.address = address;
-	}
-
-	public Collection<PhoneNumber> getPhoneNumbers() { 
-        return phoneNumbers; 
-    }
-    
-	public void setPhoneNumbers(Collection<PhoneNumber> phoneNumbers) {
-		this.phoneNumbers = phoneNumbers;
-	}
-
-	public Collection<Employee> getManagedEmployees() { 
-        return managedEmployees; 
-    }
-    
-	public void setManagedEmployees(Collection<Employee> managedEmployees) {
-		this.managedEmployees = managedEmployees;
-	}
-
-	public Employee getManager() { 
-        return manager; 
-    }
-    
-	public void setManager(Employee manager) {
-		this.manager = manager;
-	}
-
-	public Collection<Project> getProjects() { 
-        return projects; 
-    }
-    
-	public void setProjects(Collection<Project> projects) {
-		this.projects = projects;
-	}
-
-	public int getSalary() { 
-        return salary; 
-    }
-    
-	public void setSalary(int salary) { 
-        this.salary = salary; 
-    }
-
-	public EmploymentPeriod getPeriod() {
-		return period;
-	}
-    
-	public void setPeriod(EmploymentPeriod period) {
-		this.period = period;
-	}
-
     public void addManagedEmployee(Employee emp) {
         getManagedEmployees().add(emp);
         emp.setManager(this);
     }
 
+    public void addMastercard(long number) {
+        getCreditCards().put(MASTERCARD, new Long(number));
+    }
+    
     public void addPhoneNumber(PhoneNumber phone) {
         phone.setOwner(this);
         getPhoneNumbers().add(phone);
@@ -161,7 +97,129 @@ public class Employee implements Serializable {
     public void addProject(Project theProject) {
         getProjects().add(theProject);
     }
+    
+    public void addResponsibility(String responsibility) {
+        getResponsibilities().add(responsibility);
+    }
 
+    public void addVisa(long number) {
+        getCreditCards().put(VISA, new Long(number));
+    }
+    
+    public String displayString() {
+        StringBuffer sbuff = new StringBuffer();
+        sbuff.append("Employee ").append(getId()).append(": ").append(getLastName()).append(", ").append(getFirstName()).append(getSalary());
+
+        return sbuff.toString();
+    }
+    
+    // Static method should be ignored
+    static public void getAbsolutelyNothing() {}
+    
+	public Address getAddress() { 
+        return address; 
+    }
+    
+    // Get methods with no corresponding set method, should be ignored.
+    // logs a warning though.
+    public String getAnEmptyString() {
+        return "";
+    }
+    
+    // EclipseLink feature, mark it transient so JPA ORM doesn't process it.
+    @Transient
+    public Map<String, Long> getCreditCards() {
+        return creditCards;
+    }
+    
+    public String getFirstName() { 
+        return firstName; 
+    }
+    
+    public Gender getGender() { 
+        return gender; 
+    }
+    
+    public Integer getId() { 
+        return id; 
+    }
+    
+    public String getLastName() { 
+        return lastName; 
+    }
+
+	public Collection<Employee> getManagedEmployees() { 
+        return managedEmployees; 
+    }
+
+	public Employee getManager() { 
+        return manager; 
+    }
+	
+	public EmploymentPeriod getPeriod() {
+		return period;
+	}
+	
+    public Collection<PhoneNumber> getPhoneNumbers() { 
+        return phoneNumbers; 
+    }
+    
+    public Collection<Project> getProjects() { 
+        return projects; 
+    }
+    
+    // EclipseLink feature, mark it transient so JPA ORM doesn't process it.
+    @Transient
+    public Collection getResponsibilities() {
+        return responsibilities;
+    }
+    
+    public int getSalary() { 
+        return salary; 
+    }
+    
+    public int getVersion() { 
+        return version; 
+    }
+    
+    // Get methods with parameters should be ignored
+    public String getYourStringBack(String str) {
+        return str;
+    }
+    
+    
+    public boolean hasAmex(long number) {
+        return hasCard(creditCards.get(AMEX), number);
+    }
+    
+    private boolean hasCard(Long cardNumber, long number) {
+        if (cardNumber == null) {
+            return false;
+        } else {
+            return cardNumber.longValue() == number;
+        }
+    }
+    
+    public boolean hasDinersClub(long number) {
+        return hasCard(creditCards.get(DINERS), number);
+    }
+    
+    public boolean hasMastercard(long number) {
+        return hasCard(creditCards.get(MASTERCARD), number);
+    }
+    
+    public boolean hasVisa(long number) {
+        return hasCard(creditCards.get(VISA), number);
+    }
+    
+    public boolean isFemale() {
+        return gender.equals(Gender.Female);
+    }
+    
+    public boolean isMale() {
+        return gender.equals(Gender.Male);
+    }
+    
     public void removeManagedEmployee(Employee emp) {
         getManagedEmployees().remove(emp);
     }
@@ -176,31 +234,76 @@ public class Employee implements Serializable {
     public void removeProject(Project theProject) {
         getProjects().remove(theProject);
     }
+    
+    public void removeResponsibility(String responsibility) {
+        getResponsibilities().remove(responsibility);
+    }
 
+    public void setAddress(Address address) {
+		this.address = address;
+	}
+    
+    protected void setCreditCards(Map<String, Long> creditCards) {
+        this.creditCards = creditCards;
+    }  
+    
+    public void setFemale() {
+        this.gender = Gender.Female;
+    }
+    
+    public void setFirstName(String name) { 
+        this.firstName = name; 
+    }
+    
+    public void setGender(Gender gender) { 
+        this.gender = gender; 
+    }
+    
+	public void setId(Integer id) { 
+        this.id = id; 
+    }
+	
+	public void setLastName(String name) { 
+        this.lastName = name; 
+    }
+
+    public void setMale() {
+        this.gender = Gender.Male;
+    }
+    
+	public void setManagedEmployees(Collection<Employee> managedEmployees) {
+		this.managedEmployees = managedEmployees;
+	}
+    
+	public void setManager(Employee manager) {
+		this.manager = manager;
+	}
+	
+	public void setPeriod(EmploymentPeriod period) {
+		this.period = period;
+	}
+	
+	public void setPhoneNumbers(Collection<PhoneNumber> phoneNumbers) {
+		this.phoneNumbers = phoneNumbers;
+	}
+	
+	public void setProjects(Collection<Project> projects) {
+		this.projects = projects;
+	}
+	
+	public void setResponsibilities(Collection<String> responsibilities) {
+        this.responsibilities = responsibilities;
+    }
+	
+	public void setSalary(int salary) { 
+        this.salary = salary; 
+    }
+	
+	protected void setVersion(int version) {
+		this.version = version;
+	}    
+    
     public String toString() {
         return "Employee: " + getId();
-    }
-
-    public String displayString() {
-        StringBuffer sbuff = new StringBuffer();
-        sbuff.append("Employee ").append(getId()).append(": ").append(getLastName()).append(", ").append(getFirstName()).append(getSalary());
-
-        return sbuff.toString();
-    }
-    
-    // These methods were added for testing purpose only - BUG 4349991
-    
-    // Static method should be ignored
-    static public void getAbsolutelyNothing() {}
-    
-    // Get methods with parameters should be ignored
-    public String getYourStringBack(String str) {
-        return str;
-    }
-    
-    // Get methods with no corresponding set method, should be ignored.
-    // logs a warning though.
-    public String getAnEmptyString() {
-        return "";
     }
 }

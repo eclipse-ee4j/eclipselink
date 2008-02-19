@@ -196,7 +196,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     protected void process(CollectionMapping mapping) {
         mapping.setIsReadOnly(false);
         mapping.setIsPrivateOwned(hasPrivateOwned());
-        mapping.setJoinFetch(getMappingJoinFetchType());
+        mapping.setJoinFetch(getMappingJoinFetchType(getJoinFetch()));
         mapping.setAttributeName(getAttributeName());
         mapping.setReferenceClassName(getReferenceClassName());
         

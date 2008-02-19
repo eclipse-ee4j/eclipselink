@@ -101,7 +101,7 @@ public abstract class AbstractDirectMapping extends DatabaseMapping {
     }
     
     /**
-     * PUBLIC: Guy
+     * PUBLIC:
      * Set the converter class name on the mapping. It will be instantiated 
      * during the convertClassNamesToClasses.
      * A converter can be used to convert between the object's value and 

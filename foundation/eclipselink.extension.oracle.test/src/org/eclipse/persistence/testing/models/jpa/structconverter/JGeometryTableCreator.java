@@ -13,6 +13,7 @@ public class JGeometryTableCreator extends org.eclipse.persistence.tools.schemaf
 
     public JGeometryTableCreator(){
         buildSimpleSpatialTable();
+        buildSimpleXmlSpatialTable();
     }
     
     protected void buildSimpleSpatialTable() {
@@ -20,6 +21,36 @@ public class JGeometryTableCreator extends org.eclipse.persistence.tools.schemaf
 
         // SECTION: TABLE
         tabledefinition.setName("JPA_JGEOMETRY");
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        tabledefinition.addField(field);
+
+        // SECTION: FIELD
+        org.eclipse.persistence.tools.schemaframework.FieldDefinition field1 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
+        field1.setName("JGEOMETRY");
+        field1.setTypeName("MDSYS.SDO_GEOMETRY");
+        field1.setShouldAllowNull(true);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        tabledefinition.addField(field1);
+
+        addTableDefinition(tabledefinition);
+    }
+    
+    protected void buildSimpleXmlSpatialTable() {
+        org.eclipse.persistence.tools.schemaframework.TableDefinition tabledefinition = new org.eclipse.persistence.tools.schemaframework.TableDefinition();
+
+        // SECTION: TABLE
+        tabledefinition.setName("JPA_XML_JGEOMETRY");
 
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();

@@ -39,6 +39,9 @@ public class NamedQueryMetadata extends QueryMetadata {
         setHints(namedQuery.hints());     
     }
     
+    /**
+     * INTERNAL:
+     */
     public boolean equals(Object objectToCompare) {
     	if (objectToCompare instanceof NamedQueryMetadata) {
     		NamedQueryMetadata namedQuery = (NamedQueryMetadata) objectToCompare;

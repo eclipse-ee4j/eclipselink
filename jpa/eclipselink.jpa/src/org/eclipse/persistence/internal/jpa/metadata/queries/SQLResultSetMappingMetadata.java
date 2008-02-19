@@ -70,14 +70,14 @@ public class SQLResultSetMappingMetadata {
      * INTERNAL:
      */
     public boolean hasColumnResults() {
-        return m_columnResults != null && ! m_columnResults.isEmpty();
+        return ! m_columnResults.isEmpty();
     }
     
     /**
      * INTERNAL:
      */
     public boolean hasEntityResults() {
-        return m_entityResults != null && ! m_entityResults.isEmpty();
+        return ! m_entityResults.isEmpty();
     }
     
     /**
@@ -85,13 +85,11 @@ public class SQLResultSetMappingMetadata {
      * Called from annotation population.
      */
     protected void setColumnResults(ColumnResult[] columnResults) {
-    	if (columnResults.length > 0) {
-    		m_columnResults = new ArrayList<String>();
+    	m_columnResults = new ArrayList<String>();
     		
-    		for (ColumnResult columnResult : columnResults) {
-    			m_columnResults.add(columnResult.name());
-    		}
-    	}
+   		for (ColumnResult columnResult : columnResults) {
+   			m_columnResults.add(columnResult.name());
+   		}
     }
     
     /**
@@ -107,13 +105,11 @@ public class SQLResultSetMappingMetadata {
      * Called from annotation population.
      */
     public void setEntityResults(EntityResult[] entityResults) {
-    	if (entityResults.length > 0) {
-    		m_entityResults = new ArrayList<EntityResultMetadata>();
+    	m_entityResults = new ArrayList<EntityResultMetadata>();
     		
-    		for (EntityResult entityResult : entityResults) {
-    			m_entityResults.add(new EntityResultMetadata(entityResult));
-    		}
-    	}
+   		for (EntityResult entityResult : entityResults) {
+   			m_entityResults.add(new EntityResultMetadata(entityResult));
+   		}
     }
     
     /**

@@ -62,7 +62,7 @@ public class ManyToOneAccessor extends ObjectAccessor {
     }
     
     /**
-     * INTERNAL: (OVERRIDE)
+     * INTERNAL: (Override from RelationshipAccessor)
      * A PrivateOwned annotation used with a ManyToOne annotation is ignored. 
      * A log warning is issued.
      */

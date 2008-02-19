@@ -28,9 +28,7 @@ import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.JoinFetchType;
-import org.eclipse.persistence.annotations.Mutable;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
-import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.annotations.ReturnInsert;
 import org.eclipse.persistence.annotations.ReturnUpdate;
 import org.eclipse.persistence.annotations.TypeConverter;
@@ -45,18 +43,17 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataM
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
 
-import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
@@ -79,13 +76,19 @@ public abstract class MetadataAccessor  {
     private boolean m_isProcessed;
     private Boolean m_isRelationship;
    
+    private List<ConverterMetadata> m_converters;
+    private List<ObjectTypeConverterMetadata> m_objectTypeConverters;
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns;
+    private List<StructConverterMetadata> m_structConverters;
+    private List<TypeConverterMetadata> m_typeConverters;
     
     private MetadataAccessibleObject m_accessibleObject;
     private MetadataDescriptor m_descriptor;
     private MetadataProject m_project;
-    
+   
     private String m_name;
+    
+    private XMLEntityMappings m_entityMappings;
     
     /**
      * INTERNAL: 
@@ -104,27 +107,7 @@ public abstract class MetadataAccessor  {
      * INTERNAL:
      */
     public MetadataAccessor(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
-    	init(accessibleObject, descriptor, project);
-    }
-    
-    /**
-     * INTERNAL: 
-     * Overridden in those XML accessor classes that need to initialize
-     * any classes or other metadata before processing.
-     * - RelationshipAccessor - target entity name
-     */
-    public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
-    	init(accessibleObject, accessor.getDescriptor(), accessor.getProject());
-    }
-    
-    /**
-     * INTERNAL: 
-     */
-    public void init(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
-    	m_isProcessed = false;
-    	m_project = project;
-        m_descriptor = descriptor;
-        m_accessibleObject = accessibleObject;
+    	init(accessibleObject, descriptor, project,  null);
     }
     
     /**
@@ -176,33 +159,13 @@ public abstract class MetadataAccessor  {
         return m_accessibleObject.getAttributeName();
     }
     
-    /**
+	/**
      * INTERNAL:
-     * Return the value() of a @Convert if specified. Otherwise, return null.
+     * Used for OX mapping.
      */
-    protected String getConvertValue() {
-        Convert convert = getAnnotation(Convert.class);
-        
-        if (convert == null) {
-            return null;
-        } else {
-            return convert.value();
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the value() of a @Mutable if specified. Otherwise, return null.
-     */
-    protected Boolean getMutableValue() {
-        Mutable mutable = getAnnotation(Mutable.class);
-        
-        if (mutable == null) {
-            return null;
-        } else {
-            return Boolean.valueOf(mutable.value());
-        }
-    }
+	public List<ConverterMetadata> getConverters() {
+		return m_converters;
+	}
     
     /**
      * INTERNAL:
@@ -218,7 +181,14 @@ public abstract class MetadataAccessor  {
     public MetadataDescriptor getDescriptor() {
         return m_descriptor;
     }
-        
+       
+    /**
+     * INTERNAL:
+     */
+    public XMLEntityMappings getEntityMappings() {
+    	return m_entityMappings;
+    }
+    
     /**
      * INTERNAL: (Overridden in ClassAccessor)
      * Return the java class associated with this accessor's descriptor.
@@ -234,7 +204,7 @@ public abstract class MetadataAccessor  {
     protected String getJavaClassName() {
         return getJavaClass().getName();
     }
-
+    
     /**
      * INTERNAL:
      * Return the metadata logger.
@@ -250,6 +220,26 @@ public abstract class MetadataAccessor  {
      */
     protected Class getMapKeyClass() {
         return m_accessibleObject.getMapKeyClass();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the mapping join fetch type.
+     */
+    protected int getMappingJoinFetchType(JoinFetchType joinFetchType) {
+    	if (joinFetchType == null) {
+    		// Will check against metadata complete.
+    		JoinFetch joinFetch = getAnnotation(JoinFetch.class);            
+    		if (joinFetch == null) {
+    			return ForeignReferenceMapping.NONE;	
+    		} else if (joinFetch.value().equals(JoinFetchType.INNER)) {
+    			return ForeignReferenceMapping.INNER_JOIN;
+    		}
+    	} else if (joinFetchType.equals(JoinFetchType.INNER)) {
+			return ForeignReferenceMapping.INNER_JOIN;
+    	}
+    	
+    	return ForeignReferenceMapping.OUTER_JOIN;
     }
     
     /**
@@ -287,6 +277,14 @@ public abstract class MetadataAccessor  {
     	return MetadataHelper.getName(name, defaultName, context, getLogger(), getAnnotatedElement().toString());
     }
     
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public List<ObjectTypeConverterMetadata> getObjectTypeConverters() {
+		return m_objectTypeConverters;
+	}
+	
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -374,6 +372,22 @@ public abstract class MetadataAccessor  {
         return ((MetadataMethod) m_accessibleObject).getSetMethodName();
     }
     
+	/**
+	 * INTERNAL:
+	 * Used for OX mapping.
+	 */
+	public List<StructConverterMetadata> getStructConverters() {
+		return m_structConverters;
+	}
+	
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public List<TypeConverterMetadata> getTypeConverters() {
+		return m_typeConverters;
+	}
+	
     /**
      * INTERNAL:
      * Return the upper cased attribute name for this accessor. Used when
@@ -430,8 +444,8 @@ public abstract class MetadataAccessor  {
     }
     
     /**
-     * INTERNAL: (Overridden in BasicMapAccessor)
-     * Method to check if an annotated element has a @Convert.
+     * INTERNAL: (Overridden in DirectAccessor and BasicMapAccessor)
+     * Method to check if an annotated element has a convert specified.
      */
     protected boolean hasConvert() {
         return isAnnotationPresent(Convert.class);
@@ -443,14 +457,6 @@ public abstract class MetadataAccessor  {
      */
     protected boolean hasPrimaryKeyJoinColumns() {
         return isAnnotationPresent(PrimaryKeyJoinColumns.class);
-    }
-    
-    /**
-     * INTERNAL: (Overridden in ManyToOneAccessor)
-     * Method to check if this accesosr has a @PrivateOwned.
-     */
-    protected boolean hasPrivateOwned() {
-        return isAnnotationPresent(PrivateOwned.class);
     }
     
     /**
@@ -467,6 +473,30 @@ public abstract class MetadataAccessor  {
      */
     protected boolean hasReturnUpdate() {
         return isAnnotationPresent(ReturnUpdate.class);
+    }
+    
+    /**
+     * INTERNAL: 
+     * Overridden in those accessor classes that need to initialize
+     * any classes or other metadata before processing.
+     * - RelationshipAccessor - target entity name
+     * - BasicAccessor - attribute name on the column
+     * - BasicCollectionAccessor - attribute name on the value column
+     * - BasicMapAccessor - attribute name on the key column
+     */
+    public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
+    	init(accessibleObject, accessor.getDescriptor(), accessor.getProject(), accessor.getEntityMappings());
+    }
+    
+    /**
+     * INTERNAL: 
+     */
+    public void init(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project, XMLEntityMappings entityMappings) {
+    	m_isProcessed = false;
+    	m_project = project;
+        m_descriptor = descriptor;
+        m_entityMappings = entityMappings;
+        m_accessibleObject = accessibleObject;
     }
     
     /** 
@@ -570,7 +600,15 @@ public abstract class MetadataAccessor  {
     public boolean isOptional() {
         throw new RuntimeException("Development exception. The accessor: [" + this + "] should not call the isOptional method unless it overrides it.");
     }
-	
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor has been processed.
+     */
+    public boolean isProcessed() {
+        return m_isProcessed;
+    }
+    
     /**
      * INTERNAL:
      * Return true if this accessor method represents a relationship. It will
@@ -586,14 +624,6 @@ public abstract class MetadataAccessor  {
     
     /**
      * INTERNAL:
-     * Return true if this accessor has already been processed.
-     */
-    public boolean isProcessed() {
-        return m_isProcessed;    
-    }
-    
-    /**
-     * INTERNAL:
      * Every accessor knows how to process themselves since they have all the
      * information they need.
      */
@@ -601,119 +631,55 @@ public abstract class MetadataAccessor  {
     
     /**
      * INTERNAL:
-     * Process an AbstractMetadataConverter and add it to the project. 
-     */
-    protected void processAbstractConverter(AbstractConverterMetadata converter) {
-        if (m_project.hasStructConverter(converter.getName())){
-        	throw ValidationException.structConverterOfSameNameAsConverter(converter.getName());
-        } else if (m_project.hasConverter(converter.getName())) {
-        	AbstractConverterMetadata existingConverter = m_project.getConverter(converter.getName());
-            
-            if (existingConverter.loadedFromAnnotations() && converter.loadedFromXML()) {
-                // Override the existing converter.
-                m_project.addConverter(converter);
-            } else {
-            	throw ValidationException.multipleConvertersOfTheSameName(converter.getName());
-            }
-        } else {
-            m_project.addConverter(converter);
-        }
-    }
-    
-    /**
-     * INTERNAL: (Overridden in DirectAccessor)
-     * If this method is called on an accessor that does not override this
-     * method (that is, doesn't support this functionality) then throw an
-     * exception.
-     */
-    public void processConvert() {
-    	throw ValidationException.invalidMappingForConverter(getJavaClass(), getAnnotatedElement());
-    }
-    
-    /**
-     * INTERNAL:
-     * Process a Convert annotation which specifies the name of an EclipseLink
-     * converter to process with this accessor's mapping. EclipseLink converters 
-     * (which are global to the persistent unit) can not be processed till we 
-     * have processed all the classes in the persistence unit. So for now, add 
-     * this accessor to the project list of convert dependant accessors, and 
-     * process it in stage 2, that is, during the project process.
-     * 
-     * Those accessor's that which to have an exception thrown if a Convert
-     * annotation is specified, should call this method in their process() 
-     * method. That is, processConvert(getConvertValue());
-     */
-    protected void processConvert(String convertValue) {
-        if (convertValue != null && !convertValue.equals(MetadataConstants.CONVERT_NONE)) {
-            // TopLink converter specified, defer this accessors converter
-            // processing to stage 2 project processing.
-            m_project.addConvertAccessor(this);
-        } 
-    }
-    
-    /**
-     * INTERNAL:
-     * Process a Converter annotation if defined for this accessor. 
-     */
-    protected void processConverter() {
-        // Will check against metadata complete.
-        Converter converter = getAnnotation(Converter.class);
-            
-        if (converter != null) {
-            processAbstractConverter(new ConverterMetadata(converter));
-        }
-    }
-    
-    /**
-     * INTERNAL:
      * Process the globally defined converters.
      */
     protected void processConverters() {
-        // Process a custom converter if defined.
-        processConverter();
+        // Process the custom converters if defined.
+        processCustomConverters();
         
-        // Process an object type converter if defined.
-        processObjectTypeConverter();
+        // Process the object type converters if defined.
+        processObjectTypeConverters();
         
-        // Process a type converter if defined.
-        processTypeConverter();
+        // Process the type converters if defined.
+        processTypeConverters();
         
-        // Process struct converter if defined
+        // Process the struct converters if defined
         processStructConverter();
     }
     
     /**
      * INTERNAL:
-     * Process an ObjectTypeConverter annotation if defined for this accessor. 
+     * Process the XML defined converters and check for a Converter annotation. 
      */
-    protected void processObjectTypeConverter() {        
-        // Will check against metadata complete.
-        ObjectTypeConverter converter = getAnnotation(ObjectTypeConverter.class);
-            
+    protected void processCustomConverters() {
+    	// Check for XML defined converters.
+    	if (m_converters != null) {
+    		getEntityMappings().processConverters(m_converters);
+    	}
+    	
+        // Check for a Converter annotation.
+        Converter converter = getAnnotation(Converter.class);
         if (converter != null) {
-            processAbstractConverter(new ObjectTypeConverterMetadata(converter));
+            m_project.processConverter(new ConverterMetadata(converter, getAnnotatedElement()));
         }
     }
     
     /**
      * INTERNAL:
-     * Return the mapping joinFetch constant for the JoinFetch annotation if 
-     * present.
+     * Process the XML defined object type converters and check for an 
+     * ObjectTypeConverter annotation. 
      */
-    protected int getMappingJoinFetchType() {        
-        // Will check against metadata complete.
-        JoinFetch joinFetch = getAnnotation(JoinFetch.class);            
-        if (joinFetch == null) {
-            return ForeignReferenceMapping.NONE;
+    protected void processObjectTypeConverters() {        
+    	// Check for XML defined object type converters.
+    	if (m_objectTypeConverters != null) {
+    		getEntityMappings().processObjectTypeConverters(m_objectTypeConverters);
+    	}
+    	
+        // Check for an ObjectTypeConverter annotation.
+        ObjectTypeConverter converter = getAnnotation(ObjectTypeConverter.class);
+        if (converter != null) {
+        	m_project.processConverter(new ObjectTypeConverterMetadata(converter, getAnnotatedElement()));
         }
-        
-        if (joinFetch.value().equals(JoinFetchType.INNER)) {
-            return ForeignReferenceMapping.INNER_JOIN;
-        } else if (joinFetch.value().equals(JoinFetchType.OUTER)) {
-            return ForeignReferenceMapping.OUTER_JOIN;
-        }
-        
-        return ForeignReferenceMapping.NONE;
     }
     
     /**
@@ -777,35 +743,19 @@ public abstract class MetadataAccessor  {
       
     /**
      * INTERNAL:
-     * Process a TypeConverter annotation if defined for this accessor. 
+     * Process the XML defined struct converters and check for a StructConverter 
+     * annotation. 
      */
     protected void processStructConverter() {
-        // Will check against metadata complete.
+    	// Check for XML defined struct converters.
+    	if (m_structConverters != null) {
+    		getEntityMappings().processStructConverters(m_structConverters);
+    	}
+    	
+        // Check for a StructConverter annotation.
         StructConverter converter = getAnnotation(StructConverter.class);
-            
         if (converter != null) {
-            processStructConverter(new StructConverterMetadata(converter));
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process an AbstractMetadataConverter and add it to the project. 
-     */
-    protected void processStructConverter(StructConverterMetadata converter) {
-        if (m_project.hasConverter(converter.getName())) {
-        	throw ValidationException.structConverterOfSameNameAsConverter(converter.getName());
-        } else if (m_project.hasStructConverter(converter.getName())){
-        	StructConverterMetadata existingConverter = m_project.getStructConverter(converter.getName());
-            
-            if (existingConverter.loadedFromAnnotations() && converter.loadedFromXML()) {
-                // Override the existing converter.
-                m_project.addStructConverter(converter);
-            } else {
-            	throw ValidationException.multipleStructConvertersOfTheSameName(converter.getName());
-            }          
-        } else {
-            m_project.addStructConverter(converter);
+            m_project.processStructConverter(new StructConverterMetadata(converter, getAnnotatedElement()));
         }
     }
     
@@ -820,14 +770,19 @@ public abstract class MetadataAccessor  {
     
     /**
      * INTERNAL:
-     * Process a TypeConverter annotation if defined for this accessor. 
+     * Process a the XML defined type converters and check for a TypeConverter 
+     * annotation. 
      */
-    protected void processTypeConverter() {
-        // Will check against metadata complete.
+    protected void processTypeConverters() {
+    	// Check for XML defined type converters.
+    	if (m_typeConverters != null) {
+    		getEntityMappings().processTypeConverters(m_typeConverters);
+    	}
+    	
+        // Check for an TypeConverter annotation.
         TypeConverter converter = getAnnotation(TypeConverter.class);
-            
         if (converter != null) {
-            processAbstractConverter(new TypeConverterMetadata(converter));
+        	m_project.processConverter(new TypeConverterMetadata(converter, getAnnotatedElement()));
         }
     }
    
@@ -858,12 +813,27 @@ public abstract class MetadataAccessor  {
         m_accessibleObject.setAnnotatedElement(annotatedElement);
     }
     
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public void setConverters(List<ConverterMetadata> converters) {
+		m_converters = converters;
+	}
+	
     /**
      * INTERNAL: 
      * Set the metadata descriptor for this accessor.
      */
     public void setDescriptor(MetadataDescriptor descriptor) {
     	m_descriptor = descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setEntityMappings(XMLEntityMappings entityMappings) {
+    	m_entityMappings = entityMappings;
     }
     
     /** 
@@ -916,6 +886,14 @@ public abstract class MetadataAccessor  {
         m_name = name;
     }
     
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public void setObjectTypeConverters(List<ObjectTypeConverterMetadata> objectTypeConverters) {
+		m_objectTypeConverters = objectTypeConverters;
+	}
+	
     /**
      * INTERNAL: 
      * Used for OX mapping.
@@ -923,4 +901,20 @@ public abstract class MetadataAccessor  {
     public void setPrimaryKeyJoinColumns(List<PrimaryKeyJoinColumnMetadata> primaryKeyJoinColumns) {
     	m_primaryKeyJoinColumns = primaryKeyJoinColumns;
     }
+    
+	/**
+	 * INTERNAL:
+	 * Used for OX mapping.
+	 */
+	public void setStructConverters(List<StructConverterMetadata> structConverters) {
+		m_structConverters = structConverters;
+	}
+	
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public void setTypeConverters(List<TypeConverterMetadata> typeConverters) {
+		m_typeConverters = typeConverters;
+	}
 }

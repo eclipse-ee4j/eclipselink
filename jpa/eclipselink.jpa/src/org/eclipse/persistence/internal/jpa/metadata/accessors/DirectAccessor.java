@@ -18,6 +18,7 @@ import javax.persistence.Lob;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
@@ -42,8 +43,7 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 /**
  * A direct accessor.
  * 
- * Subclasses: BasicAccessor, XMLBasicAccessor, BasicCollectionAccessor,
- * BasicMapAccessor.
+ * Subclasses: BasicAccessor, BasicCollectionAccessor, BasicMapAccessor.
  * 
  * @author Guy Pelletier
  * @since TopLink 11g
@@ -55,8 +55,9 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
 	private Boolean m_optional;
 	private Boolean m_lob;
 	private EnumType m_enumerated;
+	private String m_convert;
 	private TemporalType m_temporal;
-    
+	
     /**
      * INTERNAL:
      */
@@ -73,11 +74,18 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * INTERNAL:
      * This is used to return the column for a BasicAccessor. In the case
      * of a BasicCollectionAccessor or BasicMapAccessor, this method should
-     * return the value column.
-     * 
-     * See BasicMapAccessor for processing on the key column.
+     * return the value column. NOTE: In the case of a BasicMapAccessor, the
+     * key column could be returned instead.
      */
     protected abstract ColumnMetadata getColumn(String loggingCtx);
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getConvert() {
+        return m_convert;
+    }
     
     /**
      * INTERNAL:
@@ -91,7 +99,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * 
      * @See BasicCollectionAccessor and BasicMapAccessor.
      */
-    protected DatabaseField getDatabaseField(String loggingCtx) {
+    protected DatabaseField getDatabaseField(DatabaseTable defaultTable, String loggingCtx) {
         // Check if we have an attribute override first, otherwise process for 
         // a column (ignoring if for a key column on a basic map)
         ColumnMetadata column;
@@ -106,7 +114,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
         
         // Make sure there is a table name on the field.
         if (field.getTableName().equals("")) {
-            field.setTable(getDefaultTable());
+        	field.setTable(defaultTable);
         }
         
         // Set the correct field name, defaulting and logging when necessary.
@@ -126,11 +134,6 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * INTERNAL:
      */
     public abstract FetchType getDefaultFetchType();
-    
-    /**
-     * INTERNAL:
-     */
-    protected abstract DatabaseTable getDefaultTable();
     
     /**
      * INTERNAL:
@@ -172,17 +175,19 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
     	return m_temporal;
     }
     
+    /**
+     * INTERNAL:
+     */
+    protected boolean hasConvert() {
+    	return m_convert != null || isAnnotationPresent(Convert.class);
+    }
     
     /**
      * INTERNAL:
 	 * Method to check if this basic accessor has an enumerated sub-element.
      */
 	public boolean hasEnumerated() {
-		if (m_enumerated == null) {
-			return isAnnotationPresent(Enumerated.class);
-		} else {
-			return true;
-		}
+		return m_enumerated != null || isAnnotationPresent(Enumerated.class);
     }
 	
     
@@ -191,11 +196,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * Return true if this accessor represents an BLOB/CLOB mapping.
      */
     public boolean hasLob() {
-    	if (m_lob == null) {
-    		return isAnnotationPresent(Lob.class);
-    	} else {
-    		return true;
-    	}
+    	return m_lob != null || isAnnotationPresent(Lob.class);
     }
     
     /**
@@ -203,11 +204,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * Return true if this accessor is a temporal.
      */
     public boolean hasTemporal() {
-    	if (m_temporal == null) {
-    		return isAnnotationPresent(Temporal.class);
-    	} else {
-    		return true;
-    	}
+    	return m_temporal != null || isAnnotationPresent(Temporal.class);
     }
 
     /**
@@ -294,17 +291,17 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
     }
     
     /**
-     * INTERNAL:
-     * (OVERRIDE) and (Overridden in BasicMapAccessor)
-     * Process a @Convert annotation or convert element to apply the specified 
-     * TopLink converter (@Converter, @TypeConverter, @ObjectTypeConverter) to
-     * the given mapping.
+     * INTERNAL: (Overridden in BasicMapAccessor)
+     * Process a convert value to apply the specified EclipseLink converter 
+     * (Converter, TypeConverter, ObjectTypeConverter) to the given mapping.
      * 
      * This method is called in second stage processing and should only be
-     * called on accessors that have a @Convert specified.
+     * called on accessors that have a convert value specified.
      */
     public void processConvert() {
-    	processConvert(getDescriptor().getMappingForAttributeName(getAttributeName()), getConvertValue());
+    	Convert convert = getAnnotation(Convert.class);
+    	String convertValue  = (m_convert == null) ? convert.value() : m_convert;
+    	processConvert(getDescriptor().getMappingForAttributeName(getAttributeName()), convertValue);
     }
     
     /**
@@ -322,20 +319,19 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
             if (converterName.equals(MetadataConstants.CONVERT_SERIALIZED)) {
                 processSerialized(mapping);
             } else {
-
             	AbstractConverterMetadata converter = getProject().getConverter(converterName);
-                if (converter == null) {
+                
+            	if (converter == null) {
                 	StructConverterMetadata structConverter = getProject().getStructConverter(converterName);
-                    if (structConverter != null){
-                        structConverter.process(mapping, this);
-                        return;
-                    } else {
+                    if (structConverter == null) {
                     	throw ValidationException.converterNotFound(getJavaClass(), converterName, getAnnotatedElement());
+                    } else {
+                        structConverter.process(mapping, this);
                     }
+                } else {
+                	// Process the converter for this mapping.
+                	converter.process(mapping, this);
                 }
-            
-                // Process the converter for this mapping.
-                converter.process(mapping, this);
             }
         }
     }
@@ -381,6 +377,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
     protected void processJPAConverters(DatabaseMapping mapping) {
         // Check for an enum first since it will fall into a serializable 
         // mapping otherwise (Enums are serialized)
+    	
         if (isEnumerated()) {
             processEnumerated(mapping);
         } else if (isLob()) {
@@ -418,31 +415,50 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
  
     /**
      * INTERNAL:
-     * 
      * Process a converter for the given mapping. Will look for a converter
-     * name from a Convert annotation specified on this accessor.
+     * name from a convert specification.
      */
     protected void processMappingConverter(DatabaseMapping mapping) {
-        processMappingConverter(mapping, getConvertValue());
+    	if (m_convert == null) {
+            Convert convert = getAnnotation(Convert.class);
+            
+            if (convert == null) {
+            	processJPAConverters(mapping);
+            } else {
+            	processMappingConverter(mapping, convert.value());
+            }
+    	} else {
+    		processMappingConverter(mapping, m_convert);
+    	}
     }
     
     /**
      * INTERNAL:
+     * Process a convert value which specifies the name of an EclipseLink
+     * converter to process with this accessor's mapping. EclipseLink converters 
+     * (which are global to the persistent unit) can not be processed till we 
+     * have processed all the classes in the persistence unit. So for now, add 
+     * this accessor to the project list of convert dependant accessors, and 
+     * process it in stage 2, that is, during the project process.
      * 
-     * Process a converter for the given mapping. The method will look for
-     * a TopLink converter first (based on the converter name provided) and
-     * will override any JPA annotations. Log warnings will be issued for any
-     * annotations that are being ignore because of a @Convert override.
+     * The method will look for an EclipseLink converter first (based on the 
+     * converter name provided) and will override any JPA annotations. Log 
+     * warnings will be issued for any annotations that are being ignore 
+     * because of a Convert override.     
      */
     protected void processMappingConverter(DatabaseMapping mapping, String convertValue) {
-        super.processConvert(convertValue);
+        if (convertValue != null && ! convertValue.equals(MetadataConstants.CONVERT_NONE)) {
+            // EclipseLink converter specified, defer this accessors converter
+            // processing to stage 2 project processing.
+            getProject().addConvertAccessor(this);
+        } 
         
-        // Regardless if we found a @Covert or not, look for JPA converters. 
+        // Regardless if we found a convert or not, look for JPA converters. 
         // This ensures two things; 
-        // 1 - if no @Convert is specified, then any JPA converter that is 
+        // 1 - if no Convert is specified, then any JPA converter that is 
         // specified will be applied (see BasicMapAccessor's override of the
         // method hasConvert()). 
-        // 2 - if a @Convert and a JPA converter are specified, then a log 
+        // 2 - if a convert and a JPA converter are specified, then a log 
         // warning will be issued stating that we are ignoring the JPA 
         // converter.
         processJPAConverters(mapping);
@@ -494,6 +510,14 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
             	throw ValidationException.invalidTypeForTemporalAttribute(getAttributeName(), getReferenceClass(), getJavaClass());
             }    
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setConvert(String convert) {
+        m_convert = convert;
     }
     
     /**

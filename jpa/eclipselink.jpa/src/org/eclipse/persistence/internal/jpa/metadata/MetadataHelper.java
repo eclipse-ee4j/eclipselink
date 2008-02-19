@@ -224,6 +224,14 @@ public class MetadataHelper {
      * Load a class from a given class name.
      */
     public static Class getClassForName(String classname, ClassLoader loader) {
+    	return getClassForName(classname, true, loader);
+    }
+    
+    /**
+     * INTERNAL:
+     * Load a class from a given class name.
+     */
+    public static Class getClassForName(String classname, boolean initialize, ClassLoader loader) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -232,7 +240,7 @@ public class MetadataHelper {
                     throw ValidationException.unableToLoadClass(classname, exception.getException());
                 }
             } else {
-                return PrivilegedAccessHelper.getClassForName(classname, true, loader);
+                return PrivilegedAccessHelper.getClassForName(classname, initialize, loader);
             }
         } catch (ClassNotFoundException exception) {
             throw ValidationException.unableToLoadClass(classname, exception);
@@ -808,7 +816,7 @@ public class MetadataHelper {
                java.util.Date.class.isAssignableFrom(cls) ||
                java.util.Calendar.class.isAssignableFrom(cls);
     }
-     
+    
     /**
      * INTERNAL:
      * Method to return whether a class is a supported Collection. EJB 3.0 spec 

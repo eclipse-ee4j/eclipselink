@@ -48,12 +48,12 @@ public class VersionAccessor extends BasicAccessor {
             getLogger().logWarningMessage(MetadataLogger.IGNORE_VERSION_LOCKING, this);
     	} else {
     		Class lockType = getRawClass();
-    		m_field.setType(lockType);
+    		getField().setType(lockType);
 
             if (MetadataHelper.isValidVersionLockingType(lockType)) {
-                getDescriptor().useVersionLockingPolicy(m_field);
+                getDescriptor().useVersionLockingPolicy(getField());
             } else if (MetadataHelper.isValidTimstampVersionLockingType(lockType)) {
-                getDescriptor().useTimestampLockingPolicy(m_field);
+                getDescriptor().useTimestampLockingPolicy(getField());
             } else {
             	throw ValidationException.invalidTypeForVersionAttribute(getAttributeName(), lockType, getJavaClass());
             }

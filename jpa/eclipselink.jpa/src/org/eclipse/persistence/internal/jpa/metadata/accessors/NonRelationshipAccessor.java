@@ -19,7 +19,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * An relational accessor.
@@ -30,7 +29,6 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 public abstract class NonRelationshipAccessor extends MetadataAccessor {
 	private SequenceGeneratorMetadata m_sequenceGenerator;
 	private TableGeneratorMetadata m_tableGenerator;
-	private XMLEntityMappings m_entityMappings;
 	
     /**
      * INTERNAL:
@@ -49,13 +47,6 @@ public abstract class NonRelationshipAccessor extends MetadataAccessor {
      */
     public NonRelationshipAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public XMLEntityMappings getEntityMappings() {
-    	return m_entityMappings;
     }
     
     /**
@@ -115,13 +106,6 @@ public abstract class NonRelationshipAccessor extends MetadataAccessor {
             getProject().processTableGenerator(new TableGeneratorMetadata(tableGenerator, getJavaClassName()), getDescriptor().getXMLCatalog(), getDescriptor().getXMLSchema());
         }
     } 
-
-    /**
-     * INTERNAL:
-     */
-    public void setEntityMappings(XMLEntityMappings entityMappings) {
-    	m_entityMappings = entityMappings;
-    }
     
     /**
      * INTERNAL:

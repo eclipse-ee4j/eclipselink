@@ -9,6 +9,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import java.lang.reflect.AnnotatedElement;
+
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.DirectAccessor;
@@ -21,10 +23,21 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.DirectAccessor;
  * @since TopLink 11g
  */
 public abstract class AbstractConverterMetadata  {
+	private boolean m_loadedFromXML;
+	
+	private String m_location;
 	private String m_name;
 	
     /**
      * INTERNAL:
+     */
+    public String getLocation() {
+        return m_location;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
      */
     public String getName() {
     	return m_name;
@@ -33,15 +46,15 @@ public abstract class AbstractConverterMetadata  {
     /**
      * INTERNAL:
      */
-    public boolean loadedFromAnnotations() {
-        return true;
+    public boolean loadedFromAnnotation() {
+        return !m_loadedFromXML;
     }
     
     /**
      * INTERNAL:
      */
     public boolean loadedFromXML() {
-        return false;
+        return m_loadedFromXML;
     }  
     
     /**
@@ -52,6 +65,35 @@ public abstract class AbstractConverterMetadata  {
     
     /**
      * INTERNAL:
+     */
+    public void setLoadedFromAnnotation() {
+        m_loadedFromXML = false;
+    } 
+    
+    /**
+     * INTERNAL:
+     */
+    public void setLoadedFromXML() {
+        m_loadedFromXML = true;
+    } 
+    
+    /**
+     * INTERNAL:
+     */
+    public void setLocation(AnnotatedElement annotatedElement) {
+        m_location = annotatedElement.toString();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setLocation(String location) {
+        m_location = location;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
      */
     public void setName(String name) {
     	m_name = name;

@@ -37,6 +37,7 @@ public class ConversionValueMetadata {
 	
 	/**
 	 * INTERNAL:
+	 * Used for OX mapping.
 	 */
 	public String getDataValue() {
 		return m_dataValue;
@@ -44,6 +45,7 @@ public class ConversionValueMetadata {
 	
 	/**
 	 * INTERNAL:
+	 * Used for OX mapping.
 	 */
 	public String getObjectValue() {
 		return m_objectValue;
@@ -51,6 +53,7 @@ public class ConversionValueMetadata {
 	
 	/**
 	 * INTERNAL:
+	 * Used for OX mapping.
 	 */
 	public void setDataValue(String dataValue) {
 		m_dataValue = dataValue;
@@ -58,6 +61,7 @@ public class ConversionValueMetadata {
 	
 	/**
 	 * INTERNAL:
+	 * Used for OX mapping.
 	 */
 	public void setObjectValue(String objectValue) {
 		m_objectValue = objectValue;

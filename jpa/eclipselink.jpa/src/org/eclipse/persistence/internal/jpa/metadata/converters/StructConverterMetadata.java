@@ -9,11 +9,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import java.lang.reflect.AnnotatedElement;
 import java.sql.Types;
 
 import org.eclipse.persistence.annotations.StructConverter;
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.DirectAccessor;
 
 import org.eclipse.persistence.jpa.config.StructConverterType;
@@ -34,18 +36,41 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public StructConverterMetadata() {}
+    public StructConverterMetadata() {
+    	setLoadedFromXML();
+    }
     
     /**
      * INTERNAL:
      */
-    public StructConverterMetadata(StructConverter converter){
+    public StructConverterMetadata(StructConverter converter, AnnotatedElement annotatedElement) {
+    	setLoadedFromAnnotation();
+    	setLocation(annotatedElement);
+    	
     	setName(converter.name());
         setConverter(converter.converter());
     }
     
     /**
      * INTERNAL:
+     */
+    public boolean equals(Object objectToCompare) {
+    	if (objectToCompare instanceof StructConverterMetadata) {
+    		StructConverterMetadata structConverter = (StructConverterMetadata) objectToCompare;
+    		
+    		if (! MetadataHelper.valuesMatch(getName(), structConverter.getName())) {
+    			return false;
+    		}
+    		
+    		return MetadataHelper.valuesMatch(m_converter, structConverter.getConverter());
+    	}
+    	
+    	return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
      */
     public String getConverter() {
     	return m_converter;
@@ -78,6 +103,7 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public void setConverter(String converter) {
     	m_converter = converter;

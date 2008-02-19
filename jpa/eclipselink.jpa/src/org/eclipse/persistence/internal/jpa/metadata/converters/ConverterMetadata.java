@@ -9,8 +9,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import java.lang.reflect.AnnotatedElement;
+
 import org.eclipse.persistence.annotations.Converter;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.DirectAccessor;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -23,51 +26,65 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @since TopLink 11g
  */
 public class ConverterMetadata extends AbstractConverterMetadata {
-    private Class m_converterClass;
+    private String m_className;
     
     /**
      * INTERNAL:
      */
-    public ConverterMetadata() {}
+    public ConverterMetadata() {
+    	setLoadedFromXML();
+    }
     
     /**
      * INTERNAL:
      */
-    public ConverterMetadata(Converter converter) {
-    	m_converterClass = converter.converterClass();
+    public ConverterMetadata(Converter converter, AnnotatedElement annotatedElement) {
+    	setLoadedFromAnnotation();
+    	setLocation(annotatedElement);
     	
-        setName(converter.name());
-    }
-    
-    /**
-     * INTERNAL:
-     * 
-     * Converter class is a required attribute, so it can not be null.
-     */
-    public Class getConverterClass() {
-        return m_converterClass;
+    	setName(converter.name());
+    	
+    	m_className = converter.converterClass().getName();        
     }
     
     /**
      * INTERNAL:
      */
-    public String getConverterClassName() {
-        return getConverterClass().getName();
+    public boolean equals(Object objectToCompare) {
+    	if (objectToCompare instanceof ConverterMetadata) {
+    		ConverterMetadata converter = (ConverterMetadata) objectToCompare;
+    		
+    		if (! MetadataHelper.valuesMatch(getName(), converter.getName())) {
+    			return false;
+    		}
+    		
+    		return MetadataHelper.valuesMatch(m_className, converter.getClassName());
+    	}
+    	
+    	return false;
     }
     
     /**
      * INTERNAL:
-     * 
+     * Used for OX mapping.
+     */
+    public String getClassName() {
+        return m_className;
+    }
+    
+    /**
+     * INTERNAL:
      * Process this converter for the given mapping.
      */
     public void process(DatabaseMapping mapping, DirectAccessor accessor) {
-        accessor.setConverterClassName(mapping, getConverterClassName());
+        accessor.setConverterClassName(mapping, getClassName());
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public void setConverterClass(Class converterClass) {
-        m_converterClass = converterClass;
+    public void setClassName(String className) {
+        m_className = className;
     }
 }

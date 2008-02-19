@@ -9,7 +9,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
-import java.io.InputStream;
 import java.io.IOException;
 
 import java.net.URISyntaxException;
@@ -322,14 +321,7 @@ public class MetadataProcessor {
                     }
                     
                     // Read the document through OX and add it to the project.
-                    InputStream stream = nextURL.openStream();
-                    XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(stream, m_loader);
-                	entityMappings.setMappingFile(nextURL);
-                	m_project.addEntityMappings(entityMappings);
-                	
-                    try {
-                        stream.close();
-                    } catch (IOException e) {}
+                	m_project.addEntityMappings(XMLEntityMappingsReader.read(nextURL, m_loader));
                 } else {
                     handleORMException(ValidationException.mappingFileNotFound(puInfo.getPersistenceUnitName(), mappingFileName), mappingFileName, throwExceptionOnFail);
                 }
@@ -351,33 +343,26 @@ public class MetadataProcessor {
         for (URL rootURL : rootUrls) {
             logMessage("Searching for default mapping file in " + rootURL);
             URL ormURL = null;
-            InputStream stream = null;
             
             try {
                 Archive m_par = null;
                 m_par = new ArchiveFactoryImpl().createArchive(rootURL);
                 ormURL = m_par.getEntryAsURL(ormXMLFile);
-                stream = m_par.getEntry(ormXMLFile);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
         
-            if (stream != null){
+            if (ormURL != null) {
                 logMessage("Found a default mapping file at " + ormURL + " for root URL " + rootURL);
                 
                 try {
-                	// Guy
                 	// Read the document through OX and add it to the project.
-                    XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(stream, m_loader);
-                	entityMappings.setMappingFile(ormURL);
-                	m_project.addEntityMappings(entityMappings);
-                } finally {
-                    try {
-                        stream.close();
-                    } catch (IOException e) {}
-                }
+                	m_project.addEntityMappings(XMLEntityMappingsReader.read(ormURL, m_loader));
+                } catch (IOException e) {
+                	throw new RuntimeException(e);
+                } 
             }
         }
     }

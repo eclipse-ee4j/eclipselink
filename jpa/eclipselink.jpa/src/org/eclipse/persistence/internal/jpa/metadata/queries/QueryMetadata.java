@@ -102,13 +102,11 @@ public abstract class QueryMetadata  {
      * INTERNAL:
      */
     protected void setHints(QueryHint[] hints) {
-    	if (hints.length > 0) {
-    		m_hints = new ArrayList<QueryHintMetadata>();
+    	m_hints = new ArrayList<QueryHintMetadata>();
 
-    		for (QueryHint hint : hints) {
-    			m_hints.add(new QueryHintMetadata(hint.name(), hint.value()));
-    		}
-    	}
+   		for (QueryHint hint : hints) {
+   			m_hints.add(new QueryHintMetadata(hint.name(), hint.value()));
+   		}
     }
     
     /**

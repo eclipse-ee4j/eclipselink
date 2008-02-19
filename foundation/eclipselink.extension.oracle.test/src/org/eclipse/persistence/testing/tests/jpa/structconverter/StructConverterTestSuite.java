@@ -20,6 +20,7 @@ import org.eclipse.persistence.platform.database.converters.StructConverter;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.structconverter.SimpleSpatial;
+import org.eclipse.persistence.testing.models.jpa.structconverter.SimpleXMLSpatial;
 import org.eclipse.persistence.testing.models.jpa.structconverter.JGeometryTableCreator;
 import org.eclipse.persistence.testing.models.jpa.structconverter.DummyStructConverterType;
 
@@ -34,6 +35,8 @@ import org.eclipse.persistence.testing.models.jpa.structconverter.DummyStructCon
 public class StructConverterTestSuite extends JUnitTestCase {
 
     public static final String STRUCT_CONVERTER_PU = "structConverter";
+    public static final String XML_STRUCT_CONVERTER_PU = "xmlStructConverter";
+    
     public boolean supported = false;
 
     public StructConverterTestSuite(){
@@ -46,8 +49,9 @@ public class StructConverterTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("Struct Converter Test Suite");
         suite.addTest(new StructConverterTestSuite("testPlatform"));
-        suite.addTest(new StructConverterTestSuite("testSimpleWrite"));
-
+        suite.addTest(new StructConverterTestSuite("testXMLPlatform"));
+        suite.addTest(new StructConverterTestSuite("testSimpleSpatialWrite"));
+        suite.addTest(new StructConverterTestSuite("testSimpleXMLSpatialWrite"));
 
         return new TestSetup(suite) {
 
@@ -73,7 +77,6 @@ public class StructConverterTestSuite extends JUnitTestCase {
     
     /**
      * Ensure the DatabasePlatform is setup with the proper StructConverters
-     *
      */
     public void testPlatform(){
         if (supported){
@@ -82,9 +85,11 @@ public class StructConverterTestSuite extends JUnitTestCase {
                 // trigger deploy
                 em.find(SimpleSpatial.class, new Long(1));
             } catch (Exception e){};
+            
             StructConverter converter = ((org.eclipse.persistence.jpa.JpaEntityManager)em).getActiveSession().getPlatform().getTypeConverters().get(JGeometry.class);
             assertNotNull("Platform does not have correct JGeometryConverter.", converter);
             assertTrue("JGeometery struct converter is wrong type.", converter.getClass().getName().indexOf("JGeometryConverter") >= 0);
+            
             converter = ((org.eclipse.persistence.jpa.JpaEntityManager)em).getActiveSession().getPlatform().getTypeConverters().get(DummyStructConverterType.class);
             assertNotNull("Platform does not have correct DummyStructConverter.", converter);
             assertTrue("JGeometery struct converter is wrong type.", converter.getClass().getName().indexOf("DummyStructConverter") >= 0);
@@ -92,10 +97,32 @@ public class StructConverterTestSuite extends JUnitTestCase {
     }
     
     /**
-     * Sanity test to ensure a read and a write with a Converter specified by annotations
-     * work properly
+     * Ensure the DatabasePlatform is setup with the proper StructConverters
      */
-    public void testSimpleWrite(){
+    public void testXMLPlatform(){
+        if (supported){
+            EntityManager em = createEntityManager(XML_STRUCT_CONVERTER_PU);
+            
+            try {
+                // trigger deploy
+                em.find(SimpleXMLSpatial.class, new Long(1));
+            } catch (Exception e){};
+            
+            StructConverter converter = ((org.eclipse.persistence.jpa.JpaEntityManager)em).getActiveSession().getPlatform().getTypeConverters().get(JGeometry.class);
+            assertNotNull("Platform does not have correct JGeometryConverter.", converter);
+            assertTrue("JGeometery struct converter is wrong type.", converter.getClass().getName().indexOf("JGeometryConverter") >= 0);
+            
+            converter = ((org.eclipse.persistence.jpa.JpaEntityManager)em).getActiveSession().getPlatform().getTypeConverters().get(DummyStructConverterType.class);
+            assertNotNull("Platform does not have correct DummyStructConverter.", converter);
+            assertTrue("DummyStructConveter is wrong type.", converter.getClass().getName().indexOf("DummyStructConverter") >= 0);
+        }
+    }
+    
+    /**
+     * Sanity test to ensure a read and a write with a Converter specified by 
+     * annotations work properly
+     */
+    public void testSimpleSpatialWrite(){
         if (supported){
             EntityManager em = createEntityManager(STRUCT_CONVERTER_PU);
 
@@ -114,6 +141,28 @@ public class StructConverterTestSuite extends JUnitTestCase {
     }
     
     /**
+     * Sanity test to ensure a read and a write with a Converter specified by 
+     * xml work properly
+     */
+    public void testSimpleXMLSpatialWrite(){
+        if (supported){
+            EntityManager em = createEntityManager(XML_STRUCT_CONVERTER_PU);
+
+            em.getTransaction().begin();
+            SimpleXMLSpatial simpleXmlSpatial = new SimpleXMLSpatial(1000, pointCluster1());
+            em.persist(simpleXmlSpatial);
+            em.flush();
+            
+            em.clear();
+            
+            simpleXmlSpatial = em.find(SimpleXMLSpatial.class, new Long(1000));
+            
+            assertNotNull("JGeometry was not properly read in.", simpleXmlSpatial.getJGeometry());
+            em.getTransaction().rollback();
+        }
+    }
+    
+    /**
      * mdsys.sdo_geometry(5,
      *                   NULL, null,
      *                   mdsys.sdo_elem_info_array(1,1,3),
@@ -125,5 +174,4 @@ public class StructConverterTestSuite extends JUnitTestCase {
                            new double[] { 3.3, 4.4 } };
         return JGeometry.createMultiPoint(points, 2, 0);
     }
-    
 }

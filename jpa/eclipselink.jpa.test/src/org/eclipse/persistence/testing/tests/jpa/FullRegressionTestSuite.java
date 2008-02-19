@@ -67,7 +67,7 @@ public class FullRegressionTestSuite extends TestSuite{
         TestSuite fullSuite = new TestSuite();
         fullSuite.setName("FullRegressionTestSuite");
         
-        // Advanced model        
+        // Advanced model
         TestSuite suite = new TestSuite();
         suite.setName("advanced");
         suite.addTest(NamedNativeQueryJUnitTest.suite());

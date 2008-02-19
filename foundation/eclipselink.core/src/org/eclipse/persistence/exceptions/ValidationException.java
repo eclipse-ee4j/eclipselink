@@ -327,8 +327,7 @@ public class ValidationException extends EclipseLinkException {
     
     // Converters
     public static final int MULTIPLE_CONVERTERS_OF_SAME_NAME = 7279;
-    public static final int STRUCT_CONVERTER_OF_SAME_NAME_AS_CONVERTER = 7280;
-    public static final int MULTIPLE_STRUCT_CONVERTERS_OF_SAME_NAME = 7281;
+    // 7280-7281 available
     public static final int INVALID_MAPPING_FOR_STRUCT_CONVERTER = 7282;
     public static final int TWO_STRUCT_CONVERTERS_ADDED_FOR_SAME_CLASS = 7283;
     
@@ -2367,27 +2366,11 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
     
-    public static ValidationException multipleConvertersOfTheSameName(String name) {
-        Object[] args = {name};
+    public static ValidationException multipleConvertersOfTheSameName(String name, String location1, String location2) {
+        Object[] args = {name, location1, location2};
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_CONVERTERS_OF_SAME_NAME, args));
         validationException.setErrorCode(MULTIPLE_CONVERTERS_OF_SAME_NAME);
-        return validationException;
-    }
-    
-    public static ValidationException structConverterOfSameNameAsConverter(String name) {
-        Object[] args = {name};
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, STRUCT_CONVERTER_OF_SAME_NAME_AS_CONVERTER, args));
-        validationException.setErrorCode(STRUCT_CONVERTER_OF_SAME_NAME_AS_CONVERTER);
-        return validationException;
-    }
-    
-    public static ValidationException multipleStructConvertersOfTheSameName(String name) {
-        Object[] args = {name};
-
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_STRUCT_CONVERTERS_OF_SAME_NAME, args));
-        validationException.setErrorCode(MULTIPLE_STRUCT_CONVERTERS_OF_SAME_NAME);
         return validationException;
     }
     

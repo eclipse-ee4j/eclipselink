@@ -10,33 +10,15 @@
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-
 import java.net.URL;
 
-import org.w3c.dom.Document;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-
-
-import org.eclipse.persistence.platform.xml.XMLParser;
-import org.eclipse.persistence.platform.xml.XMLPlatform;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-
-import org.eclipse.persistence.sessions.Project;
 
 /**
  * ORM.xml reader.
@@ -45,121 +27,91 @@ import org.eclipse.persistence.sessions.Project;
  * @since EclipseLink 1.0
  */
 public class XMLEntityMappingsReader {
-	private static final String ORM_SCHEMA = "xsd/orm_1_0.xsd";
-    private static Project project;
-
+	public static final String ORM_XSD = "xsd/orm_1_0.xsd";
+	public static final String ORM_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
+	public static final String ECLIPSELINK_ORM_XSD = "xsd/eclipselink_orm_1_0.xsd";
+    public static final String ECLIPSELINK_ORM_NAMESPACE = "http://www.eclipse.org/xml/ns/persistence/orm";
+    
+    //private static XMLContext m_xmlContext;
+	private static XMLContext m_ormProject;
+    private static XMLContext m_eclipseLinkOrmProject;
+    
     /**
      * INTERNAL:
      */
-    protected static XMLEntityMappings read(Reader reader, ClassLoader classLoader) {
-        StringWriter writer;
-        Document document;
+    protected static XMLEntityMappings read(Reader reader1, Reader reader2, ClassLoader classLoader) {
+    	// -------------- Until bug 218047 is fixed. -----------------
+        if (m_ormProject == null) {
+    		m_ormProject = new XMLContext(new XMLEntityMappingsMappingProject(ORM_NAMESPACE, ORM_XSD));
+    		m_eclipseLinkOrmProject = new XMLContext(new XMLEntityMappingsMappingProject(ECLIPSELINK_ORM_NAMESPACE, ECLIPSELINK_ORM_XSD));
+        }
+        
+        // Unmarshall JPA format.
+        XMLEntityMappings xmlEntityMappings;
         
         try {
-            writer = new StringWriter(4096);
-            char[] c = new char[4096];
-            int r = 0;
-            
-            while ((r = reader.read(c)) != -1) {
-                writer.write(c, 0, r);
-            }
-            
-        	XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-            XMLParser parser = xmlPlatform.newXMLParser();
-            parser.setNamespaceAware(true);
-            parser.setWhitespacePreserving(false);
-            parser.setValidationMode(XMLParser.SCHEMA_VALIDATION);
-            XMLSchemaResolver xmlSchemaResolver = new XMLSchemaResolver();
-            URL eclipseLinkSchemaURL = xmlSchemaResolver.resolveURL(ORM_SCHEMA);
-            parser.setEntityResolver(xmlSchemaResolver);
-            parser.setXMLSchema(eclipseLinkSchemaURL);
-
-            try {
-                document = parser.parse(new StringReader(writer.toString()));
-            } catch (Exception parseException) {
-            	parseException.printStackTrace();
-            	throw parseException;
-            }
-        } catch (Exception exception) {
-            throw XMLMarshalException.unmarshalException(exception);
+        	XMLUnmarshaller unmarshaller = m_ormProject.createUnmarshaller();
+        	unmarshaller.setValidationMode(XMLUnmarshaller.SCHEMA_VALIDATION);
+        	xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader1);
+        } catch (Exception e) {
+        	try {
+            	XMLUnmarshaller unmarshaller = m_eclipseLinkOrmProject.createUnmarshaller();
+            	unmarshaller.setValidationMode(XMLUnmarshaller.SCHEMA_VALIDATION);
+            	xmlEntityMappings = (XMLEntityMappings) unmarshaller.unmarshal(reader2);
+        	} catch (Exception ee) {
+        		throw new RuntimeException(ee);
+        	}
         }
-
-        if (project == null) {
-            project = new XMLEntityMappingsMappingProject();
-        }
-
-        // Marshall JPA format.
-        XMLLogin xmlLogin = new XMLLogin();
-        xmlLogin.setDatasourcePlatform(new org.eclipse.persistence.oxm.platform.DOMPlatform());
-        project.setDatasourceLogin(xmlLogin);
-        XMLContext context = new XMLContext(project);
-        XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         
-        return (XMLEntityMappings) unmarshaller.unmarshal(document);
+        return xmlEntityMappings;
+        
+        // ---------- When bug 218047 is fixed. -----------------
+        /*
+        if (m_xmlContexts == null) {
+        	List<Project> projects = new ArrayList<Project>();
+        	projects.add(new XMLEntityMappingsMappingProject(ORM_NAMESPACE, ORM_XSD));
+        	projects.add(new XMLEntityMappingsMappingProject(ECLIPSELINK_ORM_NAMESPACE, ECLIPSELINK_ORM_XSD));
+        	
+        	m_xmlContext = new XMLContext(projects);
+        }
+        
+        // Unmarshall JPA format.
+    	XMLUnmarshaller unmarshaller = m_xmlContext.createUnmarshaller();
+    	unmarshaller.setValidationMode(XMLUnmarshaller.SCHEMA_VALIDATION);
+    	return (XMLEntityMappings) unmarshaller.unmarshal(reader);
+    	*/
     }
     
     /**
      * INTERNAL:
      */
-    public static XMLEntityMappings read(InputStream inputStream, ClassLoader classLoader) {
-        InputStreamReader reader = null;
+    public static XMLEntityMappings read(URL url, ClassLoader classLoader) throws IOException {
+    	InputStreamReader reader1 = null;
+        InputStreamReader reader2 = null;
+        
         try {
             try {
-                reader = new InputStreamReader(inputStream, "UTF-8");
+                reader1 = new InputStreamReader(url.openStream(), "UTF-8");
+                reader2 = new InputStreamReader(url.openStream(), "UTF-8");
             } catch (UnsupportedEncodingException exception) {
                 throw ValidationException.fatalErrorOccurred(exception);
             }
 
-            return read(reader, classLoader);
+            XMLEntityMappings entityMappings = read(reader1, reader2, classLoader);
+            entityMappings.setMappingFile(url);
+            return entityMappings;
         } finally {
             try {
-                if (reader != null) {
-                    reader.close();
+                if (reader1 != null) {
+                    reader1.close();
+                }
+                
+                if (reader2 != null) {
+                    reader2.close();
                 }
             } catch (IOException exception) {
                 throw ValidationException.fileError(exception);
             }
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    private static class XMLSchemaResolver implements EntityResolver {
-        private static final String SCHEMA_DIR = "xsd/";
-        private static final String ORM_SCHEMA = "orm_1_0.xsd";
-
-        /**
-         * INTERNAL:
-         */
-        public XMLSchemaResolver() {
-            super();
-        }
-
-        /**
-         * INTERNAL:
-         * Resolve the XSD.
-         */
-        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-            if (ORM_SCHEMA.equals(systemId)) {
-                URL url = resolveURL(SCHEMA_DIR + ORM_SCHEMA);
-                if (null == url) {
-                    return null;
-                }
-                
-                return new InputSource(url.openStream());
-            }
-            
-            return null;
-        }
-
-        /**
-         * INTERNAL:
-         * Return the URL for the resource.
-         */
-        public URL resolveURL(String resource) {
-            // The xsd is always in the toplink.jar, use our class loader.
-            return getClass().getClassLoader().getResource(resource);
         }
     }
 }

@@ -69,7 +69,7 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      * INTERNAL:
      */
     public boolean hasProcedureParameters() {
-        return m_procedureParameters != null && ! m_procedureParameters.isEmpty();
+        return ! m_procedureParameters.isEmpty();
     }
     
     /**
@@ -90,13 +90,11 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      * INTERNAL:
      */
     public void setProcedureParameters(StoredProcedureParameter[] procedureParameters) {
-    	if (procedureParameters.length > 0) {
-    		m_procedureParameters = new ArrayList<StoredProcedureParameterMetadata>();
+    	m_procedureParameters = new ArrayList<StoredProcedureParameterMetadata>();
     		
-    		for (StoredProcedureParameter storedProcedureParameter : procedureParameters) {
-    			m_procedureParameters.add(new StoredProcedureParameterMetadata(storedProcedureParameter));
-    		}
-    	}
+   		for (StoredProcedureParameter storedProcedureParameter : procedureParameters) {
+   			m_procedureParameters.add(new StoredProcedureParameterMetadata(storedProcedureParameter));
+   		}
     }
     
     /**

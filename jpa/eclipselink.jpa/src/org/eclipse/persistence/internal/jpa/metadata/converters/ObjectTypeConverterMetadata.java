@@ -9,6 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -22,6 +23,7 @@ import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.DirectAccessor;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -45,22 +47,63 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
     /**
      * INTERNAL:
      */
-    public ObjectTypeConverterMetadata() {}
-    
-    /**
-     * INTERNAL:
-     */
-    public ObjectTypeConverterMetadata(ObjectTypeConverter objectTypeConverter) {
-    	m_defaultObjectValue = objectTypeConverter.defaultObjectValue();
-    	
-        setName(objectTypeConverter.name());
-        setDataType(objectTypeConverter.dataType());
-        setObjectType(objectTypeConverter.objectType());
-        setConversionValues(objectTypeConverter.conversionValues());
+    public ObjectTypeConverterMetadata() {
+    	setLoadedFromXML();
     }
     
     /**
      * INTERNAL:
+     */
+    public ObjectTypeConverterMetadata(ObjectTypeConverter objectTypeConverter, AnnotatedElement annotatedElement) {
+    	setLoadedFromAnnotation();
+    	setLocation(annotatedElement);
+
+        setName(objectTypeConverter.name());
+        setDataType(objectTypeConverter.dataType());
+        setObjectType(objectTypeConverter.objectType());
+        setConversionValues(objectTypeConverter.conversionValues());
+        
+        m_defaultObjectValue = objectTypeConverter.defaultObjectValue();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean equals(Object objectToCompare) {
+    	if (objectToCompare instanceof ObjectTypeConverterMetadata) {
+    		ObjectTypeConverterMetadata objectTypeConverter = (ObjectTypeConverterMetadata) objectToCompare;
+    		
+    		if (! MetadataHelper.valuesMatch(getName(), objectTypeConverter.getName())) {
+    			return false;
+    		}
+    		
+    		if (! MetadataHelper.valuesMatch(getDataType(), objectTypeConverter.getDataType())) {
+    			return false;
+    		}
+    		
+    		if (! MetadataHelper.valuesMatch(getObjectType(), objectTypeConverter.getObjectType())) {
+    			return false;
+    		}
+    		
+    		if (m_conversionValues.size() != objectTypeConverter.getConversionValues().size()) {
+    			return false;
+        	} else {
+    			for (ConversionValueMetadata conversionValue : m_conversionValues) {
+        			if (! objectTypeConverter.hasConversionValue(conversionValue)) {
+        				return false;
+        			}
+    			}
+        	}
+    		
+    		return MetadataHelper.valuesMatch(m_defaultObjectValue, objectTypeConverter.getDefaultObjectValue());
+    	}
+    	
+    	return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
      */
     public List<ConversionValueMetadata> getConversionValues() {
         return m_conversionValues;
@@ -68,6 +111,7 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public String getDefaultObjectValue() {
         return m_defaultObjectValue;
@@ -76,8 +120,22 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
     /**
      * INTERNAL:
      */
+    protected boolean hasConversionValue(ConversionValueMetadata conversionValue) {
+    	for (ConversionValueMetadata myConversionValue : m_conversionValues) {
+    		if (MetadataHelper.valuesMatch(myConversionValue.getDataValue(), conversionValue.getDataValue()) && MetadataHelper.valuesMatch(myConversionValue.getObjectValue(), conversionValue.getObjectValue())) {
+    			// Once we find it return true, otherwise keep looking.
+    			return true;
+    		}
+    	}
+
+    	return false;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public boolean hasConversionValues() {
-        return m_conversionValues != null && ! m_conversionValues.isEmpty();
+        return ! m_conversionValues.isEmpty();
     }
     
     /**
@@ -178,6 +236,7 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
 
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public void setConversionValues(List<ConversionValueMetadata> conversionValues) {
         m_conversionValues = conversionValues;
@@ -188,17 +247,16 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
      * Called from annotation population.
      */
     protected void setConversionValues(ConversionValue[] conversionValues) {
-    	if (conversionValues.length > 0) {
-    		m_conversionValues = new ArrayList<ConversionValueMetadata>();
+    	m_conversionValues = new ArrayList<ConversionValueMetadata>();
     		
-    		for (ConversionValue conversionValue: conversionValues) {
-    			m_conversionValues.add(new ConversionValueMetadata(conversionValue));
-    		}
-    	}
+   		for (ConversionValue conversionValue: conversionValues) {
+   			m_conversionValues.add(new ConversionValueMetadata(conversionValue));
+   		}
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public void setDefaultObjectValue(String defaultObjectValue) {
         m_defaultObjectValue = defaultObjectValue;

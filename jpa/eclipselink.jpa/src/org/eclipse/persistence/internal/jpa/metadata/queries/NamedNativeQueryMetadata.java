@@ -49,6 +49,45 @@ public class NamedNativeQueryMetadata extends QueryMetadata {
     /**
      * INTERNAL:
      */
+    public boolean equals(Object objectToCompare) {
+    	if (objectToCompare instanceof NamedNativeQueryMetadata) {
+    		NamedNativeQueryMetadata namedNativeQuery = (NamedNativeQueryMetadata) objectToCompare;
+    		
+    		if (! MetadataHelper.valuesMatch(getName(), namedNativeQuery.getName())) {
+    			return false;
+    		}
+    		
+    		if (! MetadataHelper.valuesMatch(getQuery(), namedNativeQuery.getQuery())) {
+    			return false;
+    		}
+    		
+    		if (! MetadataHelper.valuesMatch(getResultClass(), namedNativeQuery.getResultClass())) {
+    			return false;
+    		}
+    		
+    		if (! MetadataHelper.valuesMatch(getResultSetMapping(), namedNativeQuery.getResultSetMapping())) {
+    			return false;
+    		}
+    		
+    		if (getHints().size() != namedNativeQuery.getHints().size()) {
+    			return false;
+        	} else {
+    			for (QueryHintMetadata hint : getHints()) {
+        			if (! namedNativeQuery.hasHint(hint)) {
+        				return false;
+        			}
+    			}
+        	}
+    		
+    		return true;
+    	}
+    	
+    	return false;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public Class getResultClass() {
         return m_resultClass;
     }
@@ -90,45 +129,5 @@ public class NamedNativeQueryMetadata extends QueryMetadata {
      */
     protected void setResultSetMapping(String resultSetMapping) {
         m_resultSetMapping = resultSetMapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean equals(Object objectToCompare) {
-    	if (objectToCompare instanceof NamedNativeQueryMetadata) {
-    		NamedNativeQueryMetadata namedNativeQuery = (NamedNativeQueryMetadata) objectToCompare;
-    		
-    		if (! MetadataHelper.valuesMatch(getName(), namedNativeQuery.getName())) {
-    			return false;
-    		}
-    		
-    		if (! MetadataHelper.valuesMatch(getQuery(), namedNativeQuery.getQuery())) {
-    			return false;
-    		}
-    		
-    		if (! MetadataHelper.valuesMatch(getResultClass(), namedNativeQuery.getResultClass())) {
-    			return false;
-    		}
-    		
-    		if (! MetadataHelper.valuesMatch(getResultSetMapping(), namedNativeQuery.getResultSetMapping())) {
-    			return false;
-    		}
-    		
-    		if (getHints().size() != namedNativeQuery.getHints().size()) {
-    			return false;
-        	} else {
-    			for (QueryHintMetadata hint : getHints()) {
-        			if (! namedNativeQuery.hasHint(hint)) {
-        				return false;
-        			}
-    			}
-        	}
-    		
-    		
-    		return true;
-    	}
-    	
-    	return false;
     }
 }

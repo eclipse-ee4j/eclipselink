@@ -1,0 +1,23 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="extended" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/advanced-extended-entity-mappings.xml</mapping-file>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+
+        <properties>
+            <!-- JDBC properties will be given by test.properties file in runtime -->
+            <property name="eclipselink.session-name" value="extended-session"/>
+            <property name="eclipselink.jdbc.read-connections.shared" value="true"/>
+            <property name="eclipselink.jdbc.write-connections.min" value="3"/>
+            <property name="eclipselink.jdbc.write-connections.max" value="8"/>
+            <property name="eclipselink.jdbc.read-connections.min" value="3"/>
+            <property name="eclipselink.jdbc.read-connections.max" value="3"/>
+            <property name="eclipselink.cache.size.default" value="500"/>
+            <property name="eclipselink.cache.size.Employee" value="550"/>
+            <property name="eclipselink.cache.type.default" value="Full"/>
+            <property name="eclipselink.cache.type.Employee" value="Weak"/>
+            <property name="eclipselink.logging.timestamp" value="false"/>
+            <property name="eclipselink.orm.throw.exceptions" value="false"/>
+        </properties>
+    </persistence-unit>
+</persistence>

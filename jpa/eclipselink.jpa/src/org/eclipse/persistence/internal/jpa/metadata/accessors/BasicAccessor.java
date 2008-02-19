@@ -13,16 +13,16 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 
+import org.eclipse.persistence.annotations.Mutable;
 import org.eclipse.persistence.annotations.ReturnInsert;
+
+import org.eclipse.persistence.internal.helper.DatabaseField;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
-
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
@@ -36,9 +36,8 @@ import org.eclipse.persistence.mappings.converters.Converter;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class BasicAccessor extends DirectAccessor {
-	protected DatabaseField m_field;
-	
-	// OX will populate null if not specified.
+	private Boolean m_mutable;
+	private DatabaseField m_field;
 	private ColumnMetadata m_column;
 	
     /**
@@ -78,8 +77,6 @@ public class BasicAccessor extends DirectAccessor {
     		Column column = getAnnotation(Column.class);
             return new ColumnMetadata(column, this);
     	} else {
-    		// Set other column metadata that was not populated through OX.
-    		m_column.setAttributeName(getAttributeName());
     		return m_column;
     	}
     }
@@ -93,11 +90,30 @@ public class BasicAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
-     * Return the default table name to be used with the database field of this 
-     * basic accessor.
      */
-    protected DatabaseTable getDefaultTable() {
-        return getDescriptor().getPrimaryTable();
+    protected DatabaseField getField() {
+    	return m_field;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getMutable() {
+    	return m_mutable;
+    }
+    
+    /**
+     * INTERNAL: (Override from MetadataAccessor)
+     */
+    public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
+    	super.init(accessibleObject, accessor);
+    	
+    	// Make sure the attribute name is set on the column if one is set in
+    	// XML.
+    	if (m_column != null) {
+    		m_column.setAttributeName(getAttributeName());
+    	}
     }
     
     /**
@@ -106,7 +122,7 @@ public class BasicAccessor extends DirectAccessor {
      */
     public void process() {
         // Process the @Column or column element if there is one.
-        m_field = getDatabaseField(MetadataLogger.COLUMN);
+        m_field = getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN);
 
         // Process a @ReturnInsert
         processReturnInsert(m_field);
@@ -143,12 +159,13 @@ public class BasicAccessor extends DirectAccessor {
         // Will check for PROPERTY access.
         setAccessorMethods(mapping);
 
-        // Process a converter for this mapping. We will look for a @Convert
-        // first. If none is found then we'll look for a JPA converter, that 
-        // is, @Enumerated, @Lob and @Temporal. With everything falling into 
+        // Process a converter for this mapping. We will look for a Convert
+        // value first. If none is found then we'll look for a JPA converter, 
+        // that is, Enumerated, Lob and Temporal. With everything falling into 
         // a serialized mapping if no converter whatsoever is found.
         processMappingConverter(mapping);
 
+        // Process a mutable setting.
         processMutable(mapping);
 
         // Add the mapping to the descriptor.
@@ -195,12 +212,17 @@ public class BasicAccessor extends DirectAccessor {
      * Process the Mutable annotation.
      */
     public void processMutable(DatabaseMapping mapping) {
-        Boolean mutable = getMutableValue();
-        if (mutable != null) {
-            ((DirectToFieldMapping)mapping).setIsMutable(mutable.booleanValue());
-        }
+    	if (m_mutable == null) {
+    		Mutable mutable = getAnnotation(Mutable.class);
+    		
+    		if (mutable != null) {
+    			((DirectToFieldMapping)mapping).setIsMutable(mutable.value());	
+    		}
+    	} else {
+    		((DirectToFieldMapping)mapping).setIsMutable(m_mutable.booleanValue());
+    	}
     }
-
+    
     /**
      * INTERNAL:
      * Process a ReturnInsert annotation.
@@ -263,5 +285,13 @@ public class BasicAccessor extends DirectAccessor {
      */
     public void setFieldClassification(DatabaseMapping mapping, Class classification) {
         ((DirectToFieldMapping)mapping).setFieldClassification(classification);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMutable(Boolean mutable) {
+    	m_mutable = mutable;
     }
 }

@@ -69,7 +69,7 @@ public class OptimisticLockingMetadata  {
      * INTERNAL:
      */
     public boolean hasSelectedColumns() {
-        return m_selectedColumns != null && ! m_selectedColumns.isEmpty();
+        return ! m_selectedColumns.isEmpty();
     }
     
     /**
@@ -91,13 +91,11 @@ public class OptimisticLockingMetadata  {
      * Called from annotation population.
      */
     protected void setSelectedColumns(Column[] selectedColumns) {
-    	if (selectedColumns.length > 0) {
-    		m_selectedColumns = new ArrayList<String>();
+    	m_selectedColumns = new ArrayList<String>();
     		
-    		for (Column selectedColumn : selectedColumns) {
-    			m_selectedColumns.add(selectedColumn.name());
-    		}
-    	}
+   		for (Column selectedColumn : selectedColumns) {
+   			m_selectedColumns.add(selectedColumn.name());
+   		}
     }
     
     /**

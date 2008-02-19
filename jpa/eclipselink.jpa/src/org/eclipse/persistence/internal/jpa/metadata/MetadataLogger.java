@@ -36,9 +36,11 @@ public class MetadataLogger  {
     public static final String IGNORE_ATTRIBUTE_OVERRIDE_ON_MAPPED_SUPERCLASS = "annotation_warning_ignore_attribute_override_on_mapped_superclass";
     
     public static final String IGNORE_ID_CLASS_ANNOTATION = "annotation_warning_ignore_id_class";
-    
     public static final String IGNORE_READ_ONLY_ANNOTATION = "annotation_warning_ignore_read_only";
     public static final String IGNORE_CUSTOMIZER_ANNOTATION = "annotation_warning_ignore_customizer";
+
+    public static final String IGNORE_CONVERTER_ANNOTATION = "annotation_warning_ignore_converter";
+    public static final String IGNORE_STRUCT_CONVERTER_ANNOTATION = "annotation_warning_ignore_struct_converter";
     
     public static final String IGNORE_NAMED_NATIVE_QUERY_ANNOTATION = "annotation_warning_ignore_named_native_query";
     public static final String IGNORE_NAMED_QUERY_ANNOTATION = "annotation_warning_ignore_named_query";
@@ -144,6 +146,9 @@ public class MetadataLogger  {
         ctxStrings.put(IGNORE_NAMED_NATIVE_QUERY_ANNOTATION, IGNORE_NAMED_NATIVE_QUERY_ANNOTATION);
         ctxStrings.put(IGNORE_NAMED_QUERY_ANNOTATION, IGNORE_NAMED_QUERY_ANNOTATION);
         ctxStrings.put(IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION, IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION);
+
+        ctxStrings.put(IGNORE_CONVERTER_ANNOTATION, IGNORE_CONVERTER_ANNOTATION);
+        ctxStrings.put(IGNORE_STRUCT_CONVERTER_ANNOTATION, IGNORE_STRUCT_CONVERTER_ANNOTATION);
         
         ctxStrings.put(IGNORE_ID_CLASS_ANNOTATION, IGNORE_ID_CLASS_ANNOTATION);
         ctxStrings.put(IGNORE_READ_ONLY_ANNOTATION, IGNORE_READ_ONLY_ANNOTATION);

@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.BasicAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.BasicCollectionAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.BasicMapAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedIdAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.IdAccessor;
@@ -35,6 +37,8 @@ public class XMLAttributes {
 	private EmbeddedIdAccessor m_embeddedId;
 	
 	private List<BasicAccessor> m_basics;
+	private List<BasicCollectionAccessor> m_basicCollections;
+	private List<BasicMapAccessor> m_basicMaps;
 	private List<EmbeddedAccessor> m_embeddeds;
 	private List<IdAccessor> m_ids;
 	private List<ManyToManyAccessor> m_manyToManys;
@@ -63,6 +67,8 @@ public class XMLAttributes {
 			
 			m_allAccessors.addAll(m_ids); 
 			m_allAccessors.addAll(m_basics);
+			m_allAccessors.addAll(m_basicCollections);
+			m_allAccessors.addAll(m_basicMaps);
 			m_allAccessors.addAll(m_versions);
 			m_allAccessors.addAll(m_embeddeds);
 			m_allAccessors.addAll(m_transients);
@@ -73,6 +79,22 @@ public class XMLAttributes {
 		}
 		
 		return m_allAccessors;
+	}
+	
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public List<BasicCollectionAccessor> getBasicCollections() {
+		return m_basicCollections;
+	}
+	
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public List<BasicMapAccessor> getBasicMaps() {
+		return m_basicMaps;
 	}
 	
 	/**
@@ -155,6 +177,22 @@ public class XMLAttributes {
 		return m_versions;
 	}
 
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public void setBasicCollections(List<BasicCollectionAccessor> basicCollections) {
+		m_basicCollections = basicCollections;
+	}
+	
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public void setBasicMaps(List<BasicMapAccessor> basicMaps) {
+		m_basicMaps = basicMaps;
+	}
+	
 	/**
      * INTERNAL:
      * Used for OX mapping.

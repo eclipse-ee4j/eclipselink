@@ -10,6 +10,8 @@
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.io.*;
+import java.net.URI;
+
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -26,23 +28,13 @@ public class XMLEntityMappingsWriter {
     /**
      * INTERNAL:
      */
-    public static void write(XMLEntityMappings entityMappings, FileOutputStream outputStream) {
+    public static void write(XMLEntityMappings entityMappings, URI uri) {
         Writer writer;
         try {
+        	FileOutputStream outputStream = new FileOutputStream(new File(uri));
 	    	writer = new OutputStreamWriter(outputStream, "UTF-8");
             write(entityMappings, writer);
             writer.close();
-        } catch (IOException exception) {
-            throw ValidationException.fileError(exception);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public static void write(XMLEntityMappings entityMappings, String fileName) {
-        try {
-        	write(entityMappings, new FileOutputStream(fileName));
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
@@ -52,10 +44,11 @@ public class XMLEntityMappingsWriter {
      * INTENAL:
      */
     public static void write(XMLEntityMappings entityMappings, Writer writer) {
-        XMLContext context = new XMLContext(new XMLEntityMappingsMappingProject());
+        XMLContext context = new XMLContext(new XMLEntityMappingsMappingProject(XMLEntityMappingsReader.ECLIPSELINK_ORM_NAMESPACE, XMLEntityMappingsReader.ECLIPSELINK_ORM_XSD));
         XMLMarshaller marshaller = context.createMarshaller();
+        marshaller.setSchemaLocation(XMLEntityMappingsReader.ECLIPSELINK_ORM_XSD);
         marshaller.marshal(entityMappings, writer);
-
+        
         try {
             writer.flush();
         } catch (IOException exception) {

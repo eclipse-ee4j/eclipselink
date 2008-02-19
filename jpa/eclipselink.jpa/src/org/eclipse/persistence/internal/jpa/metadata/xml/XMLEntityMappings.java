@@ -10,8 +10,6 @@
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +23,10 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddableAccesso
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MappedSuperclassAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 
@@ -46,13 +48,17 @@ public class XMLEntityMappings {
 	private ClassLoader m_loader;
 	
 	private List<ClassAccessor> m_entities;
+	private List<ConverterMetadata> m_converters;
 	private List<EmbeddableAccessor> m_embeddables;
 	private List<MappedSuperclassAccessor> m_mappedSuperclasses;
 	private List<NamedNativeQueryMetadata> m_namedNativeQueries;
 	private List<NamedQueryMetadata> m_namedQueries;
+	private List<ObjectTypeConverterMetadata> m_objectTypeConverters;
 	private List<SequenceGeneratorMetadata> m_sequenceGenerators;
 	private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings;
+	private List<StructConverterMetadata> m_structConverters;
 	private List<TableGeneratorMetadata> m_tableGenerators;
+	private List<TypeConverterMetadata> m_typeConverters;
 	
 	private MetadataProject m_project;
 	
@@ -89,9 +95,44 @@ public class XMLEntityMappings {
 	
 	/**
      * INTERNAL:
+     * This will initialize the given classname, and append the default
+     * package if necessary. If the className is null or blank, this method 
+     * will return void.class.
      */
 	public Class getClassForName(String className) {
-		return MetadataHelper.getClassForName(getFullyQualifiedClassName(className), m_loader);
+		if (className == null || className.equals("")) {
+			return void.class;
+		} else if (className.equalsIgnoreCase("Boolean")) {
+			return Boolean.class;
+		} else if (className.equalsIgnoreCase("Byte")) {
+			return Byte.class;
+		} else if (className.equalsIgnoreCase("Character")) {
+			return Character.class;
+		} else if (className.equalsIgnoreCase("Double")) {
+			return Double.class;
+		} else if (className.equalsIgnoreCase("Float")) {
+			return Float.class;
+		} else if (className.equalsIgnoreCase("Integer")) {
+			return Integer.class;
+		} else if (className.equalsIgnoreCase("Long")) {
+			return Long.class;
+		} else if (className.equalsIgnoreCase("Number")) {
+			return Number.class;
+		} else if (className.equalsIgnoreCase("Short")) {
+			return Short.class;
+		} else if (className.equalsIgnoreCase("String")) {
+			return String.class;
+		} else {
+			return MetadataHelper.getClassForName(getFullyQualifiedClassName(className), m_loader);
+		}
+	}
+	
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public List<ConverterMetadata> getConverters() {
+		return m_converters;
 	}
 	
 	/**
@@ -157,23 +198,25 @@ public class XMLEntityMappings {
      * This convenience method will attempt to fully qualify a class name if 
      * required. This assumes that the className value is non-null, and a 
      * "qualified" class name contains at least one '.'
+     * Future: What about Enum support? Employee.Enum currently would not
+     * qualify with the package since there is a dot.
      */
     public String getFullyQualifiedClassName(String className) {
         // If there is no global package defined or the class name is qualified, 
     	// return className
-        if (m_package == null || m_package.equals("")) {
+        if (m_package.equals("")) {
             return className;
-        } else if (className.indexOf(".") != -1) {
+        } else if (className.indexOf(".") > -1) {
         	return className;
         } else {
         	// Prepend the package to the class name
         	// Format of global package is "foo.bar."
         	if (m_package.endsWith(".")) {
-        		return (m_package + className);
+        		return m_package + className;
+        	} else {
+        		// Format of global package is "foo.bar"
+        		return m_package + "." + className;
         	}
-        
-        	// Format of global package is "foo.bar"
-        	return (m_package + "." + className);
         }
     }
     
@@ -213,6 +256,14 @@ public class XMLEntityMappings {
 	 */
 	public List<NamedQueryMetadata> getNamedQueries() {
 		return m_namedQueries;
+	}
+	
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public List<ObjectTypeConverterMetadata> getObjectTypeConverters() {
+		return m_objectTypeConverters;
 	}
 	
 	/**
@@ -259,8 +310,24 @@ public class XMLEntityMappings {
 	 * INTERNAL:
 	 * Used for OX mapping.
 	 */
+	public List<StructConverterMetadata> getStructConverters() {
+		return m_structConverters;
+	}
+	
+	/**
+	 * INTERNAL:
+	 * Used for OX mapping.
+	 */
 	public List<TableGeneratorMetadata> getTableGenerators() {
 		return m_tableGenerators;
+	}
+	
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public List<TypeConverterMetadata> getTypeConverters() {
+		return m_typeConverters;
 	}
 	
 	/**
@@ -279,7 +346,7 @@ public class XMLEntityMappings {
     	for (ClassAccessor entity : getEntities()) {
     		// Initialize the class with the package from entity mappings.
     		Class entityClass = getClassForName(entity.getClassName());
-    		entity.init(new MetadataClass(entityClass), new MetadataDescriptor(entityClass, entity), project);
+    		entity.init(new MetadataClass(entityClass), new MetadataDescriptor(entityClass, entity), project, this);
     		
     		// Add it to the project.
     		project.addClassAccessor(entity);
@@ -295,7 +362,7 @@ public class XMLEntityMappings {
 		for (EmbeddableAccessor embeddable : getEmbeddables()) {
 			// Initialize the class with the package from entity mappings.
 			Class embeddableClass = getClassForName(embeddable.getClassName());
-			embeddable.init(new MetadataClass(embeddableClass), new MetadataDescriptor(embeddableClass, embeddable), project);
+			embeddable.init(new MetadataClass(embeddableClass), new MetadataDescriptor(embeddableClass, embeddable), project, this);
 			
 			// Add it to the project.
 			project.addEmbeddableAccessor(embeddable);
@@ -333,6 +400,18 @@ public class XMLEntityMappings {
 	public void process(MetadataProject project) { 
 		m_project = project;
 		
+		// Process the XML converters
+		processConverters(m_converters);
+		
+		// Process the XML type converters
+		processTypeConverters(m_typeConverters);
+		
+		// Process the XML object type converters
+		processObjectTypeConverters(m_objectTypeConverters);
+		
+		// Process the XML struct converters
+		processStructConverters(m_structConverters);
+		
         // Process the XML table generators.
 		for (TableGeneratorMetadata tableGenerator : m_tableGenerators) {
 			processTableGenerator(tableGenerator, getDefaultCatalog(), getDefaultSchema(), getMappingFileName());
@@ -369,6 +448,24 @@ public class XMLEntityMappings {
         // when processing the entities.
 	}
     	
+	/**
+	 * INTERNAL:
+	 * Process the converters. MetadataAccessor will also call this method 
+	 * which will ensure we initialize our converters in a common way.
+	 */
+    public void processConverters(List<ConverterMetadata> converters) {
+    	for (ConverterMetadata converter : converters) {
+    		// Set the location of this converter.
+    		converter.setLocation(getMappingFileName());
+
+    		// Set the fully qualified class name on the converter. 
+    		converter.setClassName(getFullyQualifiedClassName(converter.getClassName()));
+    		
+    		// Ask the project to process what we found.
+    		m_project.processConverter(converter);
+    	}
+    }
+	
 	/**
 	 * INTERNAL:
 	 */
@@ -415,48 +512,57 @@ public class XMLEntityMappings {
 	
 	/**
 	 * INTERNAL:
-	 * Process the metadata named native queries. ClassAccessor will also 
-	 * call this method which will ensure we initialize our named native 
-	 * queries in a common way.
+	 * Process the named native queries. ClassAccessor will also call this 
+	 * method which will ensure we initialize our named native queries in a 
+	 * common way.
 	 */
     public void processNamedNativeQueries(List<NamedNativeQueryMetadata> namedNativeQueries, String location) {
-    	// Guy remove
-    	//if (namedNativeQueries != null) {
-    		for (NamedNativeQueryMetadata namedNativeQuery : namedNativeQueries) {
-    			// Set the location of this named query.
-    			namedNativeQuery.setLocation(location);
+    	for (NamedNativeQueryMetadata namedNativeQuery : namedNativeQueries) {
+   			// Set the location of this named query.
+   			namedNativeQuery.setLocation(location);
     			
-    			// Initialize the result class if specified, otherwise set
-    			// the default void.class.
-    			String resultClassName = namedNativeQuery.getResultClassName();
-    			if (resultClassName.equals("")) {
-    				namedNativeQuery.setResultClass(void.class);
-    			} else {
-    				namedNativeQuery.setResultClass(getClassForName(resultClassName));
-    			}
+   			// Initialize the result class if specified (defaults to void.class)
+   			namedNativeQuery.setResultClass(getClassForName(namedNativeQuery.getResultClassName()));
     		
-    			// Ask the common processor to process what we found.
-    			m_project.processNamedNativeQuery(namedNativeQuery);
-    		}
-    	//}
+   			// Ask the project to process what we found.
+   			m_project.processNamedNativeQuery(namedNativeQuery);
+   		}
     }
     
 	/**
 	 * INTERNAL:
-	 * Process the metadata named queries. ClassAccessor will also call this 
-	 * method which will ensure we initialize our named queries in a common way.
+	 * Process the named queries. ClassAccessor will also call this method which 
+	 * will ensure we initialize our named queries in a common way.
 	 */
     public void processNamedQueries(List<NamedQueryMetadata> namedQueries, String location) {
-    	// Guy remove
-    	//if (namedQueries != null) {
-    		for (NamedQueryMetadata namedQuery : namedQueries) {
-    			// Set the location of this named query.
-    			namedQuery.setLocation(location);
+    	for (NamedQueryMetadata namedQuery : namedQueries) {
+    		// Set the location of this named query.
+    		namedQuery.setLocation(location);
     		
-    			// Ask the common processor to process what we found.
-    			m_project.processNamedQuery(namedQuery);
-    		}
-    	//}
+    		// Ask the project to process what we found.
+    		m_project.processNamedQuery(namedQuery);
+    	}
+    }
+    
+	/**
+	 * INTERNAL:
+	 * Process the object type converters. MetadataAccessor will also 
+	 * call this method which will ensure we initialize our converters in a 
+	 * common way.
+	 */
+    public void processObjectTypeConverters(List<ObjectTypeConverterMetadata> objectTypeConverters) {
+    	for (TypeConverterMetadata objectTypeConverter : objectTypeConverters) {
+    		// Set the location of this object type converter.
+    		objectTypeConverter.setLocation(getMappingFileName());
+
+    		// Initialize the data and object types if specified (both default 
+    		// to void.class otherwise)
+    		objectTypeConverter.setDataType(getClassForName(objectTypeConverter.getDataTypeName()));
+    		objectTypeConverter.setObjectType(getClassForName(objectTypeConverter.getObjectTypeName()));
+    		
+    		// Ask the project to process what we found.
+    		m_project.processConverter(objectTypeConverter);
+    	}
     }
     
 	/**
@@ -478,33 +584,29 @@ public class XMLEntityMappings {
 			// Process the default entity-listeners. No conflict checking will 
 			// be done, that is, any and all default listeners specified across
 			// the persistence unit will be added to the project.
-			if (m_persistenceUnitMetadata.hasDefaultListeners()) {
-				for (EntityListenerMetadata defaultListener : m_persistenceUnitMetadata.getDefaultListeners()) {
-					project.addDefaultListener(defaultListener);
-				}
+			for (EntityListenerMetadata defaultListener : m_persistenceUnitMetadata.getDefaultListeners()) {
+				project.addDefaultListener(defaultListener);
 			}
 		}
 	}
     
     /**
      * INTERNAL: 
-	 * Process the metadata sequence generator. Called from 
-	 * NonRelationshipAccessor to ensure we have common initialization of
-	 * sequence generators.
+	 * Process the sequence generator. Called from NonRelationshipAccessor to 
+	 * ensure we have common initialization of sequence generators.
      */
     public void processSequenceGenerator(SequenceGeneratorMetadata sequenceGenerator, String location) {
     	// Set the location of this sequence generator.
         sequenceGenerator.setLocation(location);
         	
-        // Ask the common processor to process what we found.
+        // Ask the project to process what we found.
         m_project.processSequenceGenerator(sequenceGenerator);
     }
     
 	/**
 	 * INTERNAL:
-	 * Process the SqlResultSetMapping metadata. ClassAccessor will also
-	 * call this method since we need to initialize the entity class for
-	 * every entity result.
+	 * Process the SqlResultSetMapping. ClassAccessor will also call this method 
+	 * since we need to initialize the entity class for every entity result.
 	 */
     public void processSqlResultSetMappings(List<SQLResultSetMappingMetadata> sqlResultSetMappings) {
     	for (SQLResultSetMappingMetadata sqlResultSetMapping : sqlResultSetMappings) {
@@ -517,23 +619,57 @@ public class XMLEntityMappings {
     			
     		// Current processing is last one in win, may want to 
     		// enhance that like we do with named queries.
-    		// Ask the common processor to process what we found.
+    		// Ask the project to process what we found.
     		m_project.processSqlResultSetMapping(sqlResultSetMapping);
+    	}
+    }
+    
+	/**
+	 * INTERNAL:
+	 * Process the struct converters. MetadataAccessor will also call this 
+	 * method which will ensure we initialize our converters in a common way.
+	 */
+    public void processStructConverters(List<StructConverterMetadata> structConverters) {
+    	for (StructConverterMetadata structConverter : structConverters) {
+    		// Set the location of this struct converter.
+    		structConverter.setLocation(getMappingFileName());
+    		
+    		// Ask the project to process what we found.
+    		m_project.processStructConverter(structConverter);
     	}
     }
     
     /**
      * INTERNAL: 
-	 * Process the metadata table generators. Called from 
-	 * NonRelationshipAccessor to ensure we have common initialization of
-	 * table generators.
+	 * Process the table generators. Called from NonRelationshipAccessor to 
+	 * ensure we have common initialization of table generators.
 	 */
     public void processTableGenerator(TableGeneratorMetadata tableGenerator, String defaultCatalog, String defaultSchema, String location) {
     	// Set the location of this sequence generator.
 		tableGenerator.setLocation(location);
 		    	
-		// Ask the common processor to process what we found.
+		// Ask the project to process what we found.
 		m_project.processTableGenerator(tableGenerator, defaultCatalog, defaultSchema);
+    }
+    
+	/**
+	 * INTERNAL:
+	 * Process the type converters. MetadataAccessor will also call this method 
+	 * which will ensure we initialize our converters in a common way.
+	 */
+    public void processTypeConverters(List<TypeConverterMetadata> typeConverters) {
+    	for (TypeConverterMetadata typeConverter : typeConverters) {
+    		// Set the location of this type converter.
+    		typeConverter.setLocation(getMappingFileName());
+
+   			// Initialize the data and object types if specified (both default 
+    		// to void.class otherwise)
+    		typeConverter.setDataType(getClassForName(typeConverter.getDataTypeName()));
+    		typeConverter.setObjectType(getClassForName(typeConverter.getObjectTypeName()));
+    		
+    		// Ask the project to process what we found.
+    		m_project.processConverter(typeConverter);
+    	}
     }
     
     /**
@@ -552,8 +688,8 @@ public class XMLEntityMappings {
 
     		// Create a temp file, write it out, read it back in and delete.
     		File file = new File("tempToDelete.xml");
-    		XMLEntityMappingsWriter.write(entityMappingsOut, new FileOutputStream(file));
-    		XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(new FileInputStream(file), loader);
+    		XMLEntityMappingsWriter.write(entityMappingsOut, file.toURI());
+    		XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(file.toURL(), loader);
     		file.delete();
         	
     		// Initialize the newly loaded/built mapped superclass
@@ -561,12 +697,12 @@ public class XMLEntityMappings {
    			Class mappedSuperclassClass = getClassForName(mappedSuperclass.getClassName());   
     		mappedSuperclass.setMappingFile(getMappingFileName());
     		mappedSuperclass.setEntityMappings(this);
-    		mappedSuperclass.init(new MetadataClass(mappedSuperclassClass), descriptor, m_project);
+    		mappedSuperclass.init(new MetadataClass(mappedSuperclassClass), descriptor, m_project, this);
     		
     		return mappedSuperclass;
     	} catch (Exception e) {
     		throw new RuntimeException(e);
-    		// Future: Throw a EclipseLink exception.
+    		// Future: Throw an EclipseLink exception.
     	}
     }
     
@@ -586,6 +722,14 @@ public class XMLEntityMappings {
 		m_catalog = catalog;
 	}
 
+	/**
+     * INTERNAL:
+     * Used for OX mapping
+     */
+	public void setConverters(List<ConverterMetadata> converters) {
+		m_converters = converters;
+	}
+	
 	/**
 	 * INTERNAL:
 	 * Used for OX mapping.
@@ -649,8 +793,16 @@ public class XMLEntityMappings {
 	}
 	
 	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public void setObjectTypeConverters(List<ObjectTypeConverterMetadata> objectTypeConverters) {
+		m_objectTypeConverters = objectTypeConverters;
+	}
+	
+	/**
 	 * INTERNAL:
-	 * Used for OX mapping.
+	 * Used for OX mapping. Null value will set "".
 	 */
 	public void setPackage(String pkg) {
 		m_package = pkg;
@@ -687,13 +839,29 @@ public class XMLEntityMappings {
 	public void setSqlResultSetMappings(List<SQLResultSetMappingMetadata> sqlResultSetMappings) {
 		m_sqlResultSetMappings = sqlResultSetMappings;
 	}
-    
+
+	/**
+	 * INTERNAL:
+	 * Used for OX mapping.
+	 */
+	public void setStructConverters(List<StructConverterMetadata> structConverters) {
+		m_structConverters = structConverters;
+	}
+	
 	/**
 	 * INTERNAL:
 	 * Used for OX mapping.
 	 */
 	public void setTableGenerators(List<TableGeneratorMetadata> tableGenerators) {
 		m_tableGenerators = tableGenerators;
+	}
+	
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+	public void setTypeConverters(List<TypeConverterMetadata> typeConverters) {
+		m_typeConverters = typeConverters;
 	}
 	
 	/**

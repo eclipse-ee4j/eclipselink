@@ -9,6 +9,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
@@ -27,12 +28,8 @@ public class XMLPersistenceUnitMetadata {
 	
 	/**
 	 * INTERNAL:
-	 * Default constructor.
 	 */
-	public XMLPersistenceUnitMetadata() {
-		// We can't do this ... write out would create the tags ...
-		setPersistenceUnitDefaults(new XMLPersistenceUnitDefaults());
-	}
+	public XMLPersistenceUnitMetadata() {}
 
 	/**
      * INTERNAL:
@@ -50,9 +47,14 @@ public class XMLPersistenceUnitMetadata {
 
     		// Check the persistence unit defaults.
     		XMLPersistenceUnitDefaults persistenceUnitDefaults = persistenceUnitMetadata.getPersistenceUnitDefaults();
-
-    		if (! m_persistenceUnitDefaults.equals(persistenceUnitDefaults)) {
-    			m_conflict = m_persistenceUnitDefaults.getConflict();
+    		
+    		if (m_persistenceUnitDefaults != null && persistenceUnitDefaults != null) {
+        		if (! m_persistenceUnitDefaults.equals(persistenceUnitDefaults)) {
+        			m_conflict = m_persistenceUnitDefaults.getConflict();
+        			return false;
+        		}
+    		} else {
+    			m_conflict = "persistence-unit-defaults";
     			return false;
     		}
         
@@ -68,7 +70,7 @@ public class XMLPersistenceUnitMetadata {
 	 * INTERNAL:
 	 */
 	public String getCatalog() {
-		return m_persistenceUnitDefaults.getCatalog();
+		return (m_persistenceUnitDefaults == null) ? "" : m_persistenceUnitDefaults.getCatalog();
 	}
     
     /**
@@ -84,7 +86,7 @@ public class XMLPersistenceUnitMetadata {
 	 * INTERNAL:
 	 */
 	public List<EntityListenerMetadata> getDefaultListeners() {
-		return m_persistenceUnitDefaults.getEntityListeners();
+		return (m_persistenceUnitDefaults == null) ? new ArrayList<EntityListenerMetadata>(): m_persistenceUnitDefaults.getEntityListeners(); 
 	}
 	
 	/**
@@ -99,7 +101,7 @@ public class XMLPersistenceUnitMetadata {
 	 * INTERNAL:
 	 */
 	public String getSchema() {
-		return m_persistenceUnitDefaults.getSchema();
+		return (m_persistenceUnitDefaults == null) ? "" : m_persistenceUnitDefaults.getSchema();
 	}
 	
 	/**
@@ -108,13 +110,6 @@ public class XMLPersistenceUnitMetadata {
 	 */
 	public String getXMLMappingMetadataComplete() {
 		return null;
-	}
-	
-	/**
-	 * INTERNAL:
-	 */
-	public boolean hasDefaultListeners() {
-		return m_persistenceUnitDefaults.hasEntityListeners();
 	}
 
 	/**

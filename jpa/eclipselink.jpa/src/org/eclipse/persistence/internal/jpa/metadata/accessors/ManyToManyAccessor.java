@@ -53,14 +53,12 @@ public class ManyToManyAccessor extends CollectionAccessor {
     }
     
     /**
-     * INTERNAL: (OVERRIDE) 
+     * INTERNAL: (Override from RelationshipAccessor) 
 	 * A PrivateOwned setting on a ManyToMany is ignored. A log warning is
      * issued.
      */
 	protected boolean hasPrivateOwned() {
         if (super.hasPrivateOwned()) {
-            // Annotation specific message since no private owned in XML yet. 
-            // Will have to change when introduced in XML.
             getLogger().logWarningMessage(MetadataLogger.IGNORE_PRIVATE_OWNED_ANNOTATION, this);
         }
         

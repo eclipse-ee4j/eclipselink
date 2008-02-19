@@ -448,7 +448,6 @@ public class ClassAccessor extends NonRelationshipAccessor {
                 		mappedSuperclasses.add(new MappedSuperclassAccessor(parent, getDescriptor(), getProject()));
                 	}
                 } else {
-                	//mappedSuperclasses.add(accessor.getEntityMappings().reloadMappedSuperclass(parent, getDescriptor(), getJavaClass().getClassLoader()));
                 	mappedSuperclasses.add(accessor.getEntityMappings().reloadMappedSuperclass(accessor, getDescriptor(), getJavaClass().getClassLoader()));
                 }
         	}

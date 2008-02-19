@@ -70,7 +70,7 @@ public class IdAccessor extends BasicAccessor {
         getDescriptor().addIdAttributeName(attributeName);
 
         // Add the primary key field to the descriptor.            
-        getDescriptor().addPrimaryKeyField(m_field);
+        getDescriptor().addPrimaryKeyField(getField());
 
         // Process the generated value for this id.
         processGeneratedValue();
@@ -92,11 +92,11 @@ public class IdAccessor extends BasicAccessor {
             GeneratedValue generatedValue = getAnnotation(GeneratedValue.class);
 
             if (generatedValue != null) {
-                processGeneratedValue(new GeneratedValueMetadata(generatedValue), m_field);
+                processGeneratedValue(new GeneratedValueMetadata(generatedValue), getField());
             }
         } else {
             // Ask the common processor to process what we found.
-            processGeneratedValue(m_generatedValue, m_field);
+            processGeneratedValue(m_generatedValue, getField());
         }
     }
 

@@ -10,8 +10,8 @@
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import java.util.List;
-import javax.persistence.FetchType;
 
+import javax.persistence.FetchType;
 import javax.persistence.CascadeType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
@@ -21,6 +21,8 @@ import javax.persistence.PrimaryKeyJoinColumns;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
+import org.eclipse.persistence.annotations.JoinFetchType;
+import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 
@@ -29,7 +31,6 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnsMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -41,24 +42,15 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class RelationshipAccessor extends MetadataAccessor {
-    protected Class m_referenceClass;
-    private Class m_targetEntity;
-    
-    // OX will populate a string target entity name that will need 
-    // to be initialized (with the default package)
-    private String m_targetEntityName;
-    
-    // OX will populate null if not specified.
+    private boolean m_privateOwned;
     private CascadeTypes m_cascadeTypes;
-	
-    // OX will populate null if not specified.
-    private FetchType m_fetch; 
-    
-    // OX will populate "" if not specified
-	private String m_mappedBy; 
-	
-	// OX will populate null if none are specified.
-	private List<JoinColumnMetadata> m_joinColumns;
+	protected Class m_referenceClass;
+    private Class m_targetEntity;
+    private FetchType m_fetch;
+    private JoinFetchType m_joinFetch;
+    private List<JoinColumnMetadata> m_joinColumns;
+    private String m_mappedBy; 
+    private String m_targetEntityName;
 	
 	/**
 	 * INTERNAL:
@@ -103,6 +95,14 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public JoinFetchType getJoinFetch() {
+    	return m_joinFetch;
+    }
+    
+    /**
+     * INTERNAL:
      * Return the logging context for this accessor.
      */
     protected abstract String getLoggingContext();
@@ -133,6 +133,14 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
         return mapping;
     }
     
+	/**
+	 * INTERNAL:
+	 * Used for OX mapping.
+	 */
+	public String getPrivateOwned() {
+		return null;
+	}
+	
     /**
       * INTERNAL:
       * Return the reference metadata descriptor for this accessor.
@@ -198,17 +206,24 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
 			return isAnnotationPresent(PrimaryKeyJoinColumns.class) || isAnnotationPresent(PrimaryKeyJoinColumn.class);
 		}
     }
+	
+    /**
+     * INTERNAL: (Overridden in ManyToOneAccessor and ManyToManyAccessor)
+     * Method to check if this accessor is marked as private owned.
+     */
+    protected boolean hasPrivateOwned() {
+    	return m_privateOwned || isAnnotationPresent(PrivateOwned.class);
+    }
     
     /**
-     * INTERNAL:
+     * INTERNAL: (Override from MetadataAccessor)
      */
     public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
     	super.init(accessibleObject, accessor);
     	
     	// Initialize the target entity name we read from XML.
     	if (getTargetEntityName() != null) {
-    		XMLEntityMappings entityMappings = accessor.getEntityMappings();
-    		setTargetEntity(entityMappings.getClassForName(getTargetEntityName()));
+    		setTargetEntity(getEntityMappings().getClassForName(getTargetEntityName()));
     	} else {
     		setTargetEntity(void.class);
     	}
@@ -222,6 +237,14 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
         return isOneToOne() && hasPrimaryKeyJoinColumns();
     }
     
+	/**
+	 * INTERNAL:
+	 * Used for OX mapping.
+	 */
+	public boolean isPrivateOwned() {
+		return m_privateOwned;
+	}
+	
     /**
      * INTERNAL:
      */
@@ -247,7 +270,7 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
         if (getDescriptor().hasAssociationOverrideFor(getAttributeName())) {
             return processJoinColumns(new JoinColumnsMetadata(getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinColumns()), getReferenceDescriptor());
         } else {
-        	if (m_joinColumns == null) {
+        	if (m_joinColumns == null || m_joinColumns.isEmpty()) {
         		// Process the join columns from annotations.
         		JoinColumn joinColumn = getAnnotation(JoinColumn.class);
         		JoinColumns joinColumns = getAnnotation(JoinColumns.class);
@@ -302,9 +325,14 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
                 // Only true if there is one that came from Project.xml
                 getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPING, this);
             } else {
-                // If a @Column is specified then throw an exception.
+                // If a Column annotation is specified then throw an exception.
                 if (hasColumn()) {
                 	throw ValidationException.invalidColumnAnnotationOnRelationship(getJavaClass(), getAttributeName());
+                }
+                
+                // If a Convert annotation is specified then throw an exception.
+                if (hasConvert()) {
+                	throw ValidationException.invalidMappingForConverter(getJavaClass(), getAttributeName());
                 }
                 
                 // Process the relationship accessor only if the target entity
@@ -371,10 +399,26 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setJoinFetch(JoinFetchType joinFetch) {
+    	m_joinFetch = joinFetch;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setMappedBy(String mappedBy) {
     	m_mappedBy = mappedBy;
     }
     
+	/**
+	 * INTERNAL:
+	 * Used for OX mapping.
+	 */
+	public void setPrivateOwned(String ignore) {
+		m_privateOwned = true;
+	}
+	
     /**
      * INTERNAL:
      */

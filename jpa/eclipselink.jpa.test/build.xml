@@ -69,10 +69,12 @@
         <mkdir dir="${eclipselink.jpa.test}/${classes.dir}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-annotation-model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-xml-only-model}"/>
-        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-xml-only-model}"/>
+    	  <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-xml-extended-model}"/>
+    	  <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-xml-merge-model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-validation-failed-model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-advanced-field-access-model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-advanced-properties}"/>
+    	  
     </target>
 
     <!-- Compiles all tests. --> 
@@ -92,7 +94,7 @@
     </target>
 
     <!-- Packages JPA persistent unit test jars. -->
-    <target name="package" depends="package.annotation, package.ddl, package.xml-only, package.xml-merge, package.validation-failed, package.jpa-advanced-field-access, package.jpa-advanced-properties" description="build EclipseLink jar">
+    <target name="package" depends="package.annotation, package.ddl, package.xml-only, package.xml-merge, package.xml-extended, package.validation-failed, package.jpa-advanced-field-access, package.jpa-advanced-properties" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/framework/**/*.class,
@@ -149,6 +151,20 @@
             <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-xml-only-model}">
             </fileset>
         </jar>
+    </target>
+	
+    <target name="package.xml-extended" depends="">
+      <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-xml-extended-model}/META-INF">
+          <fileset dir="${eclipselink.jpa.test}/resource/eclipselinkorm/${eclipselink-xml-extended-model}" includes="*.xml"/>
+      </copy>
+      <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-xml-extended-model}">
+          <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                   includes="org/eclipse/persistence/testing/models/jpa/xml/advanced/**"/>
+      </copy>
+      <jar jarfile="${eclipselink.jpa.test}/${eclipselink-xml-extended-model}.jar">
+          <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-xml-extended-model}">
+          </fileset>
+      </jar>
     </target>
 
     <target name="package.xml-merge" depends="">
@@ -219,6 +235,7 @@
             <fileset file="${eclipselink.jpa.test}/${eclipselink-annotation-model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink-ddl-generation-model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink-xml-only-model}.jar"/>
+        	  <fileset file="${eclipselink.jpa.test}/${eclipselink-xml-extended-model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink-xml-merge-model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink-validation-failed-model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink-advanced-field-access-model}.jar"/>
@@ -235,6 +252,7 @@
         <pathelement path="${eclipselink.jpa.test}/${eclipselink-annotation-model}.jar"/>
         <pathelement path="${eclipselink.jpa.test}/${eclipselink-ddl-generation-model}.jar"/>
         <pathelement path="${eclipselink.jpa.test}/${eclipselink-xml-only-model}.jar"/>
+    	  <pathelement path="${eclipselink.jpa.test}/${eclipselink-xml-extended-model}.jar"/>
         <pathelement path="${eclipselink.jpa.test}/${eclipselink-xml-merge-model}.jar"/>
         <pathelement path="${eclipselink.jpa.test}/${eclipselink-validation-failed-model}.jar"/>
         <pathelement path="${eclipselink.jpa.test}/${eclipselink-advanced-field-access-model}.jar"/>
@@ -271,6 +289,7 @@
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-annotation-model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-ddl-generation-model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-xml-only-model}.jar"/>
+        	  <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-xml-extended-model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-xml-merge-model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-validation-failed-model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-advanced-field-access-model}.jar"/>
@@ -336,6 +355,13 @@
                     <path refid="compile.path"/>
                     <path refid="run.classpath"/>
                </classpath>
+        </weave>
+        <weave source= "${eclipselink.jpa.test}/${eclipselink-xml-extended-model}.jar"
+             target = "${eclipselink.jpa.test}/woven-${eclipselink-xml-extended-model}.jar">
+             <classpath>
+                  <path refid="compile.path"/>
+                  <path refid="run.classpath"/>
+             </classpath>
         </weave>
         <weave source= "${eclipselink.jpa.test}/${eclipselink-xml-merge-model}.jar"
                target = "${eclipselink.jpa.test}/woven-${eclipselink-xml-merge-model}.jar">

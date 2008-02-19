@@ -21,7 +21,8 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 /**
  * INTERNAL:
- * Object to hold onto a collection table metadata in a TopLink database table.
+ * Object to hold onto a collection table metadata in an EclipseLink 
+ * database table.
  * 
  * @author Guy Pelletier
  * @since TopLink 11g

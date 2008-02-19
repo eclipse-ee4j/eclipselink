@@ -28,10 +28,15 @@ import org.eclipse.persistence.mappings.converters.Converter;
  * @since TopLink 11g
  */
 public class BasicMapAccessor extends BasicCollectionAccessor {    
-    private String m_keyConverter;
+	private ColumnMetadata m_keyColumn;
+	private String m_keyConverter;
     private String m_valueConverter;
-    private ColumnMetadata m_keyColumn;
     private boolean m_keyContextProcessing;
+    
+    /**
+     * INTERNAL:
+     */
+    public BasicMapAccessor() {}
     
     /**
      * INTERNAL:
@@ -42,17 +47,48 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
         BasicMap basicMap = getAnnotation(BasicMap.class);
         m_keyColumn = new ColumnMetadata(basicMap.keyColumn(), this);
         m_keyConverter = basicMap.keyConverter().value();
-        m_valueColumn = new ColumnMetadata(basicMap.valueColumn(), this);
         m_valueConverter = basicMap.valueConverter().value();
         
+        setValueColumn(new ColumnMetadata(basicMap.valueColumn(), this));
         setFetch(basicMap.fetch());
     }
    
     /**
-     * INTERNAL: (Override from BasicAccessor)
+     * INTERNAL: (Override from BasicCollectionAccessor)
      */
     protected ColumnMetadata getColumn(String loggingCtx) {
-        return (loggingCtx.equals(MetadataLogger.VALUE_COLUMN)) ? m_valueColumn : m_keyColumn;
+    	if (loggingCtx.equals(MetadataLogger.VALUE_COLUMN)) {
+    		return super.getColumn(loggingCtx);
+    	} else {
+    		return (m_keyColumn == null) ? new ColumnMetadata(this) : m_keyColumn; 
+    	}
+    }
+    
+    /**
+     * INTERNAL: (Overridden from BasicCollectionAccessor)
+     */
+    protected String getDefaultCollectionTableName() {
+    	if (m_keyColumn != null && m_keyColumn.getTable() != null && ! m_keyColumn.getTable().equals("")) {
+    		return m_keyColumn.getTable();
+    	} else {
+    		return super.getDefaultCollectionTableName(); 
+    	}
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public ColumnMetadata getKeyColumn() {
+    	return m_keyColumn;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getKeyConverter() {
+    	return m_keyConverter;
     }
     
     /**
@@ -68,13 +104,34 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     }
     
     /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getValueConverter() {
+    	return m_valueConverter;
+    }
+ 
+    /**
      * INTERNAL: (Override from MetadataAccessor)
-	 * A BasicMap always has a @Convert specified. They are defaulted within
+	 * A BasicMap always has a Convert specified. They are defaulted within
      * the BasicMap annotation. This will be used to log warning messages when 
      * ignoring JPA converters for lob, temporal, enumerated and serialized.
      */
 	protected boolean hasConvert() {
 		return true;
+    }
+    
+	/**
+     * INTERNAL: (Override from BasicCollectionAccessor)
+     */
+    public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
+    	super.init(accessibleObject, accessor);
+    	
+    	// Make sure the attribute name is set on the key column if one is
+    	// set through XML.
+    	if (m_keyColumn != null) {
+    		m_keyColumn.setAttributeName(getAttributeName());
+    	}
     }
     
     /**
@@ -97,9 +154,9 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
             // Initialize our mapping.
             DirectMapMapping mapping = new DirectMapMapping();
             
-            // Process common direct collection metadata. This must be done before
-            // any field processing since field processing requires that the
-            // collection table be processed before hand.
+            // Process common direct collection metadata. This must be done 
+            // before any field processing since field processing requires that 
+            // the collection table be processed before hand.
             process(mapping);
             
             // Process the fetch type
@@ -112,14 +169,14 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
             
             // Process the key column (we must process this field before the call
             // to processConverter, since it may set a field classification)
-            mapping.setDirectKeyField(getDatabaseField(MetadataLogger.MAP_KEY_COLUMN));
+            mapping.setDirectKeyField(getDatabaseField(mapping.getReferenceTable(), MetadataLogger.MAP_KEY_COLUMN));
             
             // Process a converter for the key column of this mapping.
             processMappingConverter(mapping, m_keyConverter);
             
             // Process the value column (we must process this field before the call
             // to processConverter, since it may set a field classification)
-            mapping.setDirectField(getDatabaseField(MetadataLogger.VALUE_COLUMN));
+            mapping.setDirectField(getDatabaseField(mapping.getReferenceTable(), MetadataLogger.VALUE_COLUMN));
             
             // Process a converter for value column of this mapping.
             processMappingConverter(mapping, m_valueConverter);	
@@ -177,5 +234,29 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
         } else {
             ((DirectMapMapping) mapping).setDirectFieldClassification(classification);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setKeyColumn(ColumnMetadata keyColumn) {
+    	m_keyColumn = keyColumn;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setKeyConverter(String keyConverter) {
+    	m_keyConverter = keyConverter;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setValueConverter(String valueConverter) {
+    	m_valueConverter = valueConverter;
     }
 }

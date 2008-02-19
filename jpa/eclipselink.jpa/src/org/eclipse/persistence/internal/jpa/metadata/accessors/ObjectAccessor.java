@@ -95,7 +95,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     	OneToOneMapping mapping = new OneToOneMapping();
         mapping.setIsReadOnly(false);
         mapping.setIsPrivateOwned(hasPrivateOwned());
-        mapping.setJoinFetch(getMappingJoinFetchType());
+        mapping.setJoinFetch(getMappingJoinFetchType(getJoinFetch()));
         mapping.setIsOptional(isOptional());
         mapping.setAttributeName(getAttributeName());
         mapping.setReferenceClassName(getReferenceClassName());
