@@ -229,6 +229,21 @@ public abstract class JUnitTestCase extends TestCase {
             return getEntityManagerFactory(persistenceUnitName).createEntityManager();
         }
     }
+
+    /**
+     * Create a new entity manager for the persistence unit using the properties 
+     * and a default persistence unit name..
+     * The properties will only be used the first time this entity manager is accessed.
+     * If in JEE this will create or return the active managed entity manager.
+     */
+    public static EntityManager createEntityManager(Map properties) {
+        if (isOnServer()) {
+            return getServerPlatform().getEntityManager("default");
+        } else {
+        	// Set properties on both the em factory and the em
+            return getEntityManagerFactory("default", properties).createEntityManager(properties);
+        }      
+    }
     
     /**
      * Create a new entity manager for the persistence unit using the properties.

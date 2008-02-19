@@ -18,6 +18,7 @@ import java.io.ObjectOutputStream;
 import java.io.StringWriter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Collection;
@@ -79,7 +80,10 @@ import org.eclipse.persistence.testing.models.jpa.advanced.*;
  * Test the EntityManager API using the advanced model.
  */
 public class EntityManagerJUnitTestSuite extends JUnitTestCase {
-        
+
+	/** The field length for the firstname */
+	public static final int MAX_FIRST_NAME_FIELD_LENGTH = 255;
+	
     public EntityManagerJUnitTestSuite() {
         super();
     }
@@ -101,6 +105,51 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 clearCache();
             }
         };
+    }
+    
+    /**
+     * Bug# 219097
+     * This test would normally pass, but we purposely invoke an SQLException on the firstName field
+     * so that we can test that an UnsupportedOperationException is not thrown as part of the 
+     * roll-back exception handling code for an SQLException.
+     */
+    public void testForceSQLExceptionFor219097() {
+    	boolean exceptionThrown = false;
+    	// Set an immutable properties Map on the em to test addition of properties to this map in the roll-back exception handler
+        EntityManager em = createEntityManager(Collections.emptyMap());
+        em.getTransaction().begin();
+        
+        Employee emp = new Employee();
+        /*
+         * Provoke an SQL exception by setting a field with a value greater than field length.
+         * 1 - This test will not throw an exception without the Collections$emptyMap() set on the EntityhManager
+         *       or the exceeded field length set on firstName.
+         * 2 - This test will throw an UnsupportedOperationException if the map on AbstractSession is not cloned when immutable - bug fix
+         * 3 - This test will throw an SQLException when operating normally due to the field length exception
+         */
+        StringBuffer firstName = new StringBuffer("firstName_maxfieldLength_");
+        for(int i=0; i<MAX_FIRST_NAME_FIELD_LENGTH + 100; i++) {
+        	firstName.append("0");
+        }
+        emp.setFirstName(firstName.toString());        
+        em.persist(emp);
+
+        try {
+        	em.getTransaction().commit();
+        } catch (Exception e) {
+        	Throwable cause = e.getCause();
+        	if(cause instanceof UnsupportedOperationException) {
+        		exceptionThrown = true;
+        		fail(cause.getClass() + " Exception was thrown in error instead of expected SQLException.");
+        	} else {
+        		exceptionThrown = true;
+        	}
+        } finally {
+        	em.close();
+        }
+        if(!exceptionThrown) {
+        	fail("An expected SQLException was not thrown.");
+        }
     }
     
     // JUnit framework will automatically execute all methods starting with test...    
@@ -5333,4 +5382,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             fail("Transaction that assigned sequence number committed, assignedSequenceNumber = " + assignedSequenceNumber +", but nextSequenceNumber = "+ nextSequenceNumber +"("+Integer.toString(assignedSequenceNumber+1)+" was expected)");
         }
     }
+
+    
 }
