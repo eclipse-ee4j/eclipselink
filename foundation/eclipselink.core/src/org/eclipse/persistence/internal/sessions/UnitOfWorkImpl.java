@@ -37,7 +37,7 @@ import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
  * <b>Purpose</b>: To allow object level transactions.
  * <p>
  * <b>Description</b>: The unit of work is a session that implements all of the normal
- * protocol of a TopLink session. It can be spawned from any other session including another unit of work.
+ * protocol of an EclipseLink session. It can be spawned from any other session including another unit of work.
  * Objects can be brought into the unit of work through reading them or through registering them.
  * The unit of work will operate on its own object space, that is the objects within the unit of work
  * will be clones of the original objects.  When the unit of work is committed, all changes to any objects
@@ -1349,7 +1349,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * Commit pre-built changeSet to the database changset to the database.
+     * Commit pre-built changeSet to the database changeSet to the database.
      */
     protected void commitToDatabaseWithPreBuiltChangeSet(UnitOfWorkChangeSet uowChangeSet, boolean commitTransaction) throws DatabaseException, OptimisticLockException {
         try {
@@ -2063,7 +2063,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * INTERNAL:
      * Marked internal as this is not customer API but helper methods for
-     * accessing the server platform from within TopLink's other sessions types
+     * accessing the server platform from within EclipseLink's other sessions types
      * (i.e. not DatabaseSession)
      */
     public ServerPlatform getServerPlatform() {
@@ -3283,8 +3283,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
-     * ensures that objects from the parent cache are not refered in the unit of work cache.
+     * ensuring deleted objects are not referred after commit,
+     * ensures that objects from the parent cache are not referred in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
@@ -3298,8 +3298,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
-     * ensures that objects from the parent cache are not refered in the unit of work cache.
+     * ensuring deleted objects are not referred after commit,
+     * ensures that objects from the parent cache are not referred in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
@@ -3475,7 +3475,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * All newly created root domain objects must be registered to be inserted on commit.
      * Also any existing objects that will be edited and were not read from this unit of work
      * must also be registered.
-     * Once registered any changes to the objects will be commited to the database on commit.
+     * Once registered any changes to the objects will be committed to the database on commit.
      *
      * @return is the clones of the original objects, the return value must be used for editing.
      * Editing the original is not allowed in the unit of work.
@@ -3494,7 +3494,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * All newly created root domain objects must be registered to be inserted on commit.
      * Also any existing objects that will be edited and were not read from this unit of work
      * must also be registered.
-     * Once registered any changes to the objects will be commited to the database on commit.
+     * Once registered any changes to the objects will be committed to the database on commit.
      *
      * @return is the clones of the original objects, the return value must be used for editing.
      * Editing the original is not allowed in the unit of work.
@@ -3510,7 +3510,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * ADVANCED:
      * Register the existing object with the unit of work.
-     * This is a advanced API that can be used if the application can guarentee the object exists on the database.
+     * This is a advanced API that can be used if the application can guarantee the object exists on the database.
      * When registerObject is called the unit of work determines existence through the descriptor's doesExist setting.
      *
      * @return The clone of the original object, the return value must be used for editing.
@@ -3543,7 +3543,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * INTERNAL:
      * Register the existing object with the unit of work.
-     * This is a advanced API that can be used if the application can guarentee the object exists on the database.
+     * This is a advanced API that can be used if the application can guarantee the object exists on the database.
      * When registerObject is called the unit of work determines existence through the descriptor's doesExist setting.
      *
      * @return The clone of the original object, the return value must be used for editing.
@@ -3930,7 +3930,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * All newly created root domain objects must be registered to be inserted on commit.
      * Also any existing objects that will be edited and were not read from this unit of work
      * must also be registered.
-     * Once registered any changes to the objects will be commited to the database on commit.
+     * Once registered any changes to the objects will be committed to the database on commit.
      *
      * @return the clone of the original object, the return value must be used for editing,
      *
@@ -3968,7 +3968,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * All newly created root domain objects must be registered to be inserted on commit.
      * Also any existing objects that will be edited and were not read from this unit of work
      * must also be registered.
-     * Once registered any changes to the objects will be commited to the database on commit.
+     * Once registered any changes to the objects will be committed to the database on commit.
      *
      * calling this method will also sort the objects into different different groups
      * depending on if the object being registered is a bean or a regular Java
@@ -4226,7 +4226,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * This is internal to the uow, transactions should not be used explictly in a uow.
+     * This is internal to the uow, transactions should not be used explicitly in a uow.
      * The uow shares its parents transactions.
      */
     public void rollbackTransaction() throws DatabaseException {
@@ -4239,7 +4239,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * rollbackTransaction() with a twist for external transactions.
      * <p>
      * writeChanges() is called outside the JTA beforeCompletion(), so the
-     * accompanying exception won't propogate up and cause a rollback by itself.
+     * accompanying exception won't propagate up and cause a rollback by itself.
      * <p>
      * Instead must mark the transaction for rollback only here.
      * <p>
@@ -4321,8 +4321,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * The clone mapping contains clone of all registered objects,
      * this is required to store the original state of the objects when registered
 
-     * so that only what is changed will be commited to the database and the parent,
-     * (this is required to support parralel unit of work).
+     * so that only what is changed will be committed to the database and the parent,
+     * (this is required to support parallel unit of work).
      */
     protected void setCloneMapping(Map cloneMapping) {
         this.cloneMapping = cloneMapping;
@@ -4548,8 +4548,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
-     * ensures that objects from the parent cache are not refered in the unit of work cache.
+     * ensuring deleted objects are not referred after commit,
+     * ensures that objects from the parent cache are not referred in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
@@ -4649,7 +4649,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
+     * ensuring deleted objects are not referred after commit,
      * ensures that objects from the parent cache are not refered in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
@@ -4663,7 +4663,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * ADVANCED:
      * The unit of work performs validations such as,
      * ensuring multiple copies of the same object don't exist in the same unit of work,
-     * ensuring deleted objects are not refered after commit,
+     * ensuring deleted objects are not referred after commit,
      * ensures that objects from the parent cache are not refered in the unit of work cache.
      * The level of validation can be increased or decreased for debugging purposes or under
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
@@ -4873,7 +4873,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public void validateObjectSpace() {
         log(SessionLog.FINER, SessionLog.TRANSACTION, "validate_object_space");
-        // This define an inner class for process the itteration operation, don't be scared, its just an inner class.
+        // This define an inner class for process the iteration operation, don't be scared, its just an inner class.
         DescriptorIterator iterator = new DescriptorIterator() {
             public void iterate(Object object) {
                 try {
@@ -5122,7 +5122,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     
     /**
      * INTERNAL:
-     * Call this method if the uow will no longer used for comitting transactions:
+     * Call this method if the uow will no longer used for committing transactions:
      * all the changes sets will be dereferenced, and (optionally) the cache cleared.
      * If the uow is not released, but rather kept around for ValueHolders, then identity maps shouldn't be cleared:
      * the parameter value should be 'false'. The lifecycle set to Birth so that uow ValueHolder still could be used.
@@ -5143,7 +5143,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     
     /**
      * INTERNAL:
-     * Indicates whether clearForClose methor should be called by release method.
+     * Indicates whether clearForClose method should be called by release method.
      */
     public boolean shouldClearForCloseOnRelease() {
         return false;

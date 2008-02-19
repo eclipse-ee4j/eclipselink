@@ -2744,7 +2744,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         if (profiler != null) {
             profiler.setSession(this);
             setIsInProfile(getProfiler().getProfileWeight() != SessionProfiler.NONE);
-            // Clear cached flag that bybasses the profiler check.
+            // Clear cached flag that bypasses the profiler check.
             getIdentityMapAccessorInstance().getIdentityMapManager().clearCacheAccessPreCheck();
         } else {
             setIsInProfile(false);
@@ -2753,7 +2753,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
-     * Set the project, the project holds configuartion information including the descriptors.
+     * Set the project, the project holds configuration information including the descriptors.
      */
     public void setProject(org.eclipse.persistence.sessions.Project project) {
         this.project = project;
@@ -2761,16 +2761,29 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /**
      * INTERNAL:
-     * Set the user defined properties.
+     * Set the user defined properties by shallow copying the propertiesMap.
+     * @param propertiesMap
      */
-    public void setProperties(Map properties) {
-        this.properties = properties;
+    public void setProperties(Map propertiesMap) {
+        if (null == propertiesMap) {
+            // Keep current behavior and set properties map to null
+            properties = propertiesMap;
+        } else {
+            /*
+             * Bug# 219097 Clone as (HashMap) possible immutable maps to avoid
+             * an UnsupportedOperationException on a later put() We do not know
+             * the key:value type values at design time. putAll() is not
+             * synchronized. We clone all maps whether immutable or not.
+             */
+            properties = new HashMap();
+            // Shallow copy all internal key:value pairs - a null propertiesMap will throw a NPE
+            properties.putAll(propertiesMap);
+        }
     }
 
     /**
-     * PUBLIC:
-     * Allow for user defined properties.
-     */
+	 * PUBLIC: Allow for user defined properties.
+	 */
     public void setProperty(String propertyName, Object propertyValue) {
         getProperties().put(propertyName, propertyValue);
     }
