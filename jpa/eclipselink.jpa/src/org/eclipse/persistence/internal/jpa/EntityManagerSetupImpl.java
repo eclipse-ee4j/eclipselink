@@ -64,7 +64,7 @@ import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.
 
 /**
  * INTERNAL:
- * A TopLink specific implementer of the EntityManagerInitializer interface.
+ * An EclipseLink specific implementer of the EntityManagerInitializer interface.
  * This class handles deployment of a persistence unit.
  * In predeploy the meta-data is processed and weaver transformer is returned to allow weaving of the persistent classes.
  * In deploy the project and session are initialize and registered.
@@ -295,7 +295,7 @@ public class EntityManagerSetupImpl {
     }
 
     /**
-     * Add the StructConverters that were specified by annotation ot the DatabasePlatform
+     * Add the StructConverters that were specified by annotation on the DatabasePlatform
      * This method must be called after the DatabasePlatform has been detected
      * @param session
      * @param structConverters
@@ -326,7 +326,7 @@ public class EntityManagerSetupImpl {
     }
 
     /**
-     * Updates the TopLink ServerPlatform class for use with this platform.
+     * Updates the EclipseLink ServerPlatform class for use with this platform.
      * @return true if the ServerPlatform has changed.
      */  
     protected boolean updateServerPlatform(Map m, ClassLoader loader) {
@@ -692,7 +692,7 @@ public class EntityManagerSetupImpl {
                 // Do not register the session with the SessionManager at this point, create tempory session using a local SessionManager and private class loader.
                 // This allows for the project to be accessed without loading any of the class to allow weaving.
                 Session tempSession = new SessionManager().getSession(xmlLoader, sessionNameStr, privateClassLoader, false, false);
-                // Load path of essions-xml resource before throwing error so user knows which sessions-xml file was found (may be multiple).
+                // Load path of sessions-xml resource before throwing error so user knows which sessions-xml file was found (may be multiple).
                 session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "sessions_xml_path_where_session_load_from", xmlLoader.getSessionName(), xmlLoader.getResourcePath());
                 if (tempSession == null) {
                     throw new PersistenceException(ValidationException.noSessionFound(sessionNameStr, sessionsXMLStr));
@@ -1049,7 +1049,7 @@ public class EntityManagerSetupImpl {
     /**
      * Normally when a property is missing nothing should be applied to the session.
      * However there are several session attributes that defaulted in EJB3 to the values
-     * different from TopLink defaults.
+     * different from EclipseLink defaults.
      * This function applies defaults for such properties and registers the session.
      * All other session-related properties are applied in updateServerSession.
      * Note that updateServerSession may be called several times on the same session
@@ -1332,7 +1332,7 @@ public class EntityManagerSetupImpl {
     
     /**
      * Allow customized exception handler to be added into session.
-     * The method needs to be callled in deploy and pre-deploy stage.
+     * The method needs to be called in deploy and pre-deploy stage.
      */
     protected void setExceptionHandler(ClassLoader loader){
         //Set exception handler if it was specified.
@@ -1396,7 +1396,7 @@ public class EntityManagerSetupImpl {
     }
 
     /**
-     * Enable or disable statments cached, update statements cache size. 
+     * Enable or disable statements cached, update statements cache size. 
      * The method needs to be called in deploy stage. 
      */
     protected void updateCacheStatementSettings(){
@@ -1446,7 +1446,7 @@ public class EntityManagerSetupImpl {
     }
     
     /**
-     * Copy named queries defined in toplink descriptor into the session if it was indicated to do so.
+     * Copy named queries defined in EclipseLink descriptor into the session if it was indicated to do so.
      */
     protected void setDescriptorNamedQueries() {
         // Copy named queries to session if the flag has been specified.
