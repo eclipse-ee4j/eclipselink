@@ -117,7 +117,7 @@
 
     <!-- Default test target, runs test.class from test.properties (default is LRG). -->
     <target name="test">
-        <property name="test.class" value="{$test.class}"/>
+        <property name="test.class" value="${test.class}"/>
         <antcall target="run.test" inheritRefs="true"/>
     </target>
 
