@@ -20,8 +20,6 @@
  * <p/>
  * Use this class in place of the default HelperProvider.DefaultHelperContext implementation.
  * <br/>
- * Usage is HelperContext aHelperContext = SDOHelperContext.getInstance();
- * get/set these settings on the {@link Sequence sequence}.
  *
  * @since Oracle TopLink 11.1.1.0.0
  */
