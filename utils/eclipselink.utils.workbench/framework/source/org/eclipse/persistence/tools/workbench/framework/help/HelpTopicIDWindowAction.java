@@ -42,13 +42,8 @@ final class HelpTopicIDWindowAction extends AbstractFrameworkAction {
 	 * ignore the selected nodes
 	 */
 	protected void execute() {
-		HelpManager hm = this.helpManager();
-		if (hm instanceof DevelopmentHelpManager) {
-			((DevelopmentHelpManager) hm).openHelpTopicIDWindow();
-		} else {
-			// no need for localization - this should only occur in development
-			JOptionPane.showMessageDialog(this.currentWindow(), "Invalid Help Manager: " + hm);
-		}
+		// no need for localization - this should only occur in development
+		JOptionPane.showMessageDialog(this.currentWindow(), "Invalid Help Manager: ");
 	}
 
 }

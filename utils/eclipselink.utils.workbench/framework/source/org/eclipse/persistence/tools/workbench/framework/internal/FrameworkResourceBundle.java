@@ -201,8 +201,8 @@ public final class FrameworkResourceBundle extends ListResourceBundle {
 		{"HELP", "&Help Topics"},
 		{"HELP.TOOL_TIP", "Help Topics"},
 		
-		// TableOfContentsAction
-		{"TABLE_OF_CONTENTS", "Table of &Contents"},
+		// HomeAction
+		{"ECLIPSELINK_HOME", "EclipseLink &Home"},
 		
 		// IndexAction
 		{"HELP_INDEX", "&Index Search"},
@@ -216,11 +216,14 @@ public final class FrameworkResourceBundle extends ListResourceBundle {
 		// ReleaseNotesAction
 		{"RELEASE_NOTES", "Release &Notes"},
 		
-		// OTNAction
-		{"OTN", "&Oracle Technology Network"},
+		//UserGuideAction
+		{"USERGUIDE", "User &Guide"},
+		
+		//ExamplesAction
+		{"EXAMPLES", "&Examples"},
 		
 		// JavaDocAction
-		{"API", "&API Reference"},
+		{"API", "API &Reference"},
 		
 		// WelcomeAction
 		{"HELP_WELCOME", "&Welcome Page"},

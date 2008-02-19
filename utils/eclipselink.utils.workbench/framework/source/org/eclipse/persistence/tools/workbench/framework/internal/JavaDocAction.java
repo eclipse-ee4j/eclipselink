@@ -21,12 +21,11 @@ final class JavaDocAction extends AbstractFrameworkAction
 	}
 
 	protected void initialize() {
-		this.setIcon(EMPTY_ICON);
 		this.initializeTextAndMnemonic("API");
 	}
 
 	protected void execute() {
-		this.helpManager().showTopic("api");
+		this.helpManager().showTopic("eclipselink_api");
 	}
 	
 }

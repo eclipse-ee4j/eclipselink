@@ -20,6 +20,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -46,6 +47,12 @@ import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
 class DefaultHelpManager
 	implements InternalHelpManager
 {
+	/** browser for displaying help content*/
+	private ExternalBrowserHandler browser;
+	
+	/** help topic URL map */
+	private HashMap<String, String> topicIdtoUrlMap;
+	
 	/** listen for pop-up menu */
 	private LocalMouseListener mouseListener;
 
@@ -92,12 +99,14 @@ class DefaultHelpManager
 		// allow the entries to be garbage-collected when the
 		// components are no longer referenced anywhere else
 		this.topicIDs = new WeakHashMap();
+		
 	}
 
 	private void initialize(Preferences preferences) {
 		Icon icon = this.resourceRepository.getIcon("oracle.logo.large");
 		this.mouseListener = this.buildMouseListener(this.resourceRepository.getString("CSH_HELP"));
-		// Register protocol handler 
+		this.browser = new ExternalBrowserHandler(preferences);
+		this.topicIdtoUrlMap = initializeTopicMap();
 	}
 
 	/**
@@ -151,31 +160,18 @@ class DefaultHelpManager
 	 * @see HelpManager#showHelp()
 	 */
 	public void showHelp() {
-	}
-
-	/**
-	 * @see HelpManager#showSearch() 
-	 */
-	public void showTOC() {
+		this.showTopic("default");
 	}
 		
-	/**
-	 * @see HelpManager#showIndex()
-	 */
-	public void showIndex() {
-	}
-	
-	/**
-	 * @see HelpManager#showSearch() 
-	 */
-	public void showSearch() {
-	}
-
 	/**
 	 * @see HelpManager#showTopic(String)
 	 */
 	public void showTopic(String topicID) {
 		this.showTopicInternal(topicID);
+	}
+	
+	public void showUrl(String url) {
+		this.browser.handleValue(url);
 	}
 
 	/**
@@ -270,6 +266,11 @@ class DefaultHelpManager
 	 * problems, a TopicDisplayException will be thrown.
 	 */
 	protected void showTopicInternal(String topicID) {
+		String url = this.topicIdtoUrlMap.get(topicID);
+		if (url == null) {
+			throw new IllegalArgumentException(resourceRepository.getString("TOPLIC_ID_DOESNT_EXIST", topicID));
+		}
+		this.browser.handleValue(url);
 	}
 
 	private void listenTo(Component component) {
@@ -493,4 +494,13 @@ class DefaultHelpManager
 
 	}
 
+	private HashMap<String, String> initializeTopicMap() {
+		HashMap<String, String> topicMap = new HashMap<String, String>(1);
+		topicMap.put("default", "http://wiki.eclipse.org/EclipseLink/UserGuide");
+		topicMap.put("eclipselink_home", "http://www.eclipse.org/eclipselink/");
+		topicMap.put("eclipslink_userguide", "http://wiki.eclipse.org/EclipseLink/UserGuide");
+		topicMap.put("eclipselink_api",  "http://www.eclipse.org/eclipselink/api/1.0/index.html");
+		topicMap.put("eclipselink_examples", "http://wiki.eclipse.org/EclipseLink/Examples");
+		return topicMap;
+	}
 }

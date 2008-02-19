@@ -399,15 +399,12 @@ final class WorkbenchWindow
 		menu.setText(this.resourceRepository().getString("HELP_MENU"));
 		menu.setMnemonic(this.resourceRepository().getMnemonic("HELP_MENU"));
 
-		menu.add(new TableOfContentsAction(this.getContext()));
-		menu.add(new IndexAction(this.getContext()));
-		menu.add(new SearchAction(this.getContext()));
-		menu.add(new TutorialsAction(this.getContext()));
+		menu.add(new HomeAction(this.getContext()));
+		menu.add(new UsersGuideAction(this.getContext()));
+		menu.add(new ExamplesAction(this.getContext()));
 		menu.add(new JavaDocAction(this.getContext()));	
-		menu.addSeparator();
-		menu.add(new OTNAction(this.getContext()));
-		menu.add(new ReleaseNotesAction(this.getContext()));		
-		menu.add(new WelcomeAction(this.getContext()));		
+		//menu.addSeparator();
+		//menu.add(new ReleaseNotesAction(this.getContext()));		
 		menu.addSeparator();
 		menu.add(new AboutAction(this.getContext()));
 

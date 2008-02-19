@@ -12,21 +12,20 @@ package org.eclipse.persistence.tools.workbench.framework.internal;
 import org.eclipse.persistence.tools.workbench.framework.action.AbstractFrameworkAction;
 import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContext;
 
-
-final class TutorialsAction extends AbstractFrameworkAction
-{
-	
-	TutorialsAction(WorkbenchContext context) {
+/**
+ * Action for opening help to search tab
+ */
+final class UsersGuideAction extends AbstractFrameworkAction {
+	UsersGuideAction(WorkbenchContext context) {
 		super(context);
 	}
 
 	protected void initialize() {
-		this.setIcon(EMPTY_ICON);
-		this.initializeTextAndMnemonic("TUTORIALS");
+		initializeTextAndMnemonic("USERGUIDE");
+//		initializeIcon("search");
 	}
 
 	protected void execute() {
-		this.helpManager().showTopic("tutorials");
+		helpManager().showTopic("eclipslink_userguide");
 	}
-	
 }

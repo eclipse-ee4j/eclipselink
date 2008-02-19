@@ -73,27 +73,6 @@ final class NullHelpManager
 	}
 	
 	/**
-	 * @see HelpManager#showTOC()
-	 */
-	public void showTOC() {
-		//do nothing
-	}
-
-	/**
-	 * @see HelpManager#showIndex()
-	 */
-	public void showIndex() {
-		//do nothing
-	}
-
-	/**
-	 * @see HelpManager#showSearch()
-	 */
-	public void showSearch() {
-		//do nothing
-	}
-
-	/**
 	 * @see HelpManager#showTopic(String)
 	 */
 	public void showTopic(String topicID) {

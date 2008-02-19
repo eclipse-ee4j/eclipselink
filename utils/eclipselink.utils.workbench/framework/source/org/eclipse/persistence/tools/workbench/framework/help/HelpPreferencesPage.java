@@ -84,7 +84,7 @@ final class HelpPreferencesPage extends AbstractPanel {
 		constraints.fill		= GridBagConstraints.NONE;
 		constraints.anchor		= GridBagConstraints.LINE_START;
 		constraints.insets		= new Insets(0, 0, 0, 0);
-		container.add(welcomeScreenCheckBox, constraints);
+//		container.add(welcomeScreenCheckBox, constraints);
 
 		// external browser label
 		JLabel browserLabel = this.buildLabel("PREFERENCES.GENERAL.HELP.BROWSER_CHOOSER");
@@ -140,7 +140,7 @@ final class HelpPreferencesPage extends AbstractPanel {
 		constraints.anchor		= GridBagConstraints.LINE_START;
 		constraints.insets		= new Insets(5, 5, 0, 0);
 
-		container.add(localLabel, constraints);
+//		container.add(localLabel, constraints);
 
 		// local content file chooser
 		JPanel localFileChooser = new FileChooserPanel(
@@ -165,7 +165,7 @@ final class HelpPreferencesPage extends AbstractPanel {
 		constraints.anchor		= GridBagConstraints.PAGE_START;
 		constraints.insets		= new Insets(0, offset, 0, 5);
 		
-		container.add(localFileChooser, constraints);
+//		container.add(localFileChooser, constraints);
 		
         addHelpTopicId(this, helpTopicId());
 	}

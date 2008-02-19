@@ -13,20 +13,19 @@ import org.eclipse.persistence.tools.workbench.framework.action.AbstractFramewor
 import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContext;
 
 
-final class OTNAction extends AbstractFrameworkAction
+final class ExamplesAction extends AbstractFrameworkAction
 {
 	
-	OTNAction(WorkbenchContext context) {
+	ExamplesAction(WorkbenchContext context) {
 		super(context);
 	}
 
 	protected void initialize() {
-		this.setIcon(EMPTY_ICON);
-		this.initializeTextAndMnemonic("OTN");
+		this.initializeTextAndMnemonic("EXAMPLES");
 	}
 
 	protected void execute() {
-		this.helpManager().showTopic("otn");
+		this.helpManager().showTopic("eclipselink_examples");
 	}
 	
 }

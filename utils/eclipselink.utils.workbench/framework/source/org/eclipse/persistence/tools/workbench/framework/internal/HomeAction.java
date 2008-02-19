@@ -12,20 +12,21 @@ package org.eclipse.persistence.tools.workbench.framework.internal;
 import org.eclipse.persistence.tools.workbench.framework.action.AbstractFrameworkAction;
 import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContext;
 
-/**
- * Help menu item that opens help to the index search page.
- */
-final class IndexAction extends AbstractFrameworkAction {
-	IndexAction(WorkbenchContext context) {
+
+final class HomeAction extends AbstractFrameworkAction
+{
+	
+	HomeAction(WorkbenchContext context) {
 		super(context);
 	}
 
 	protected void initialize() {
-		initializeTextAndMnemonic("HELP_INDEX");
-//		initializeIcon("index2");
+		initializeTextAndMnemonic("ECLIPSELINK_HOME");
 	}
 
 	protected void execute() {
-		helpManager().showIndex();
+		helpManager().showTopic("eclipselink_home");
 	}
+	
 }
+

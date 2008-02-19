@@ -27,21 +27,6 @@ public interface HelpManager {
 	void showHelp();
 	
 	/**
-	 * Show the help table of contents tab.
-	 */
-	void showTOC();
-
-	/**
-	 * Show the help index tab.
-	 */
-	void showIndex();
-	
-	/**
-	 * Show the help search tab.
-	 */
-	void showSearch();
-	
-	/**
 	 * Display Help for the specified Topic ID.
 	 */
 	void showTopic(String topicID);

@@ -69,7 +69,8 @@ public final class HelpFacade {
 	 * Build and return the appropriate help manager.
 	 */
 	public static HelpManager buildHelpManager(HelpManagerConfig config) {
-		return new NullHelpManager(config.getResourceRepository());
+		Preferences helpPreferences = config.getPreferences().node(HELP_PREFERENCES_NODE);
+		return new DefaultHelpManager(config.getResourceRepository(), helpPreferences);
 	}
 
 	
