@@ -19,6 +19,7 @@
     <property name="eclipselink.core.test" value="."/>
     <property file="${eclipselink.core.test}/build.properties"/>
     <property file="${eclipselink.core.test}/${test.properties}"/>
+    <property file="${eclipselink.core.test}/test.properties"/>
 
     <!-- Classpath used for compiling tests, also used in running tests. -->
     <path id="compile.path">
@@ -62,14 +63,14 @@
         <filter token="loglevel" value="${logging.level}"/>
         <filter token="boolvalue" value="${logging.boolvalue}"/>
         <filter token="dbPlatform" value="${db.platform}"/>
-        <copy todir="${eclipselink.core.test}/${run.dir}" filtering="true">
+        <copy todir="${eclipselink.core.test}/${run.dir}" filtering="true" overwrite="true">
             <fileset dir="${eclipselink.core.test}/${resource.dir}"
                 excludes="**/Employee_utf16.xml, **/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
          </copy>
-         <copy todir="${eclipselink.core.test}/${run.dir}" filtering="true" encoding="UTF-16">
+         <copy todir="${eclipselink.core.test}/${run.dir}" filtering="true" overwrite="true" encoding="UTF-16">
             <fileset dir="${eclipselink.core.test}/${resource.dir}" includes="**/Employee_utf16.xml"/>
          </copy>
-          <copy todir="${eclipselink.core.test}/${run.dir}" filtering="true" encoding="Shift_JIS">
+          <copy todir="${eclipselink.core.test}/${run.dir}" filtering="true" overwrite="true" encoding="Shift_JIS">
             <fileset dir="${eclipselink.core.test}/${resource.dir}" includes="**/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
          </copy>
     </target>
@@ -117,20 +118,23 @@
 
     <!-- Default test target, runs test.class from test.properties (default is LRG). -->
     <target name="test">
-        <property name="test.class" value="${test.class}"/>
-        <antcall target="run.test" inheritRefs="true"/>
+        <antcall target="run.test" inheritRefs="true">
+            <param name="TEST_CLASS" value="{test.class}"/>
+        </antcall>
     </target>
 
     <!-- Runs SRG (SRGTestModel). -->
     <target name="test.srg">
-        <property name="test.class" value="org.eclipse.persistence.testing.tests.SRGTestModel"/>
-        <antcall target="run.test" inheritRefs="true"/>
+        <antcall target="run.test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.SRGTestModel"/>
+        </antcall>
     </target>
 
     <!-- Runs LRG (TestRunModel). -->
     <target name="test.lrg">
-        <property name="test.class" value="org.eclipse.persistence.testing.tests.TestRunModel"/>
-        <antcall target="run.test" inheritRefs="true"/>
+        <antcall target="run.test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.TestRunModel"/>
+        </antcall>
     </target>
 
     <!-- Generic target for running tests. -->
@@ -142,12 +146,12 @@
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Dtest.properties=${test.properties.run}"/>
             <jvmarg value="-Djava.security.manager"/>
-            <jvmarg value="-Djava.security.policy=${basedir}/${eclipselink.core.test}/${resource.dir}/java.policy.allpermissions"/>
+            <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
             <classpath>
                 <path refid="run.classpath"/>
             </classpath>
             <formatter type="xml"/>
-            <test name="${test.class}" haltonfailure="no" outfile="${eclipselink.core.test}/${report.dir}/test-results">
+            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${eclipselink.core.test}/${report.dir}/test-results">
             </test>
         </junit>
         <junitreport todir="${eclipselink.core.test}/${report.dir}">

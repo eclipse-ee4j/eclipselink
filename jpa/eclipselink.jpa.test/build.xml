@@ -25,6 +25,7 @@
     <property file="${eclipselink.jpa.test}/build.properties"/>
     <property file="${eclipselink.jpa.test}/local.build.properties"/>
     <property file="${eclipselink.jpa.test}/${test.properties}"/>
+    <property file="${eclipselink.jpa.test}/test.properties"/>
 
     <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
     <available file="${eclipselink.jpa.test}/${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
@@ -74,7 +75,7 @@
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-validation-failed-model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-advanced-field-access-model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-advanced-properties}"/>
-    	  
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${jpa-performance}"/>
     </target>
 
     <!-- Compiles all tests. --> 
@@ -227,6 +228,20 @@
         </jar>
     </target>
 
+    <target name="package.jpa-performance" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${jpa-performance}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${jpa-performance}/META-INF" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${jpa-performance}">
+            <fileset dir="${eclipselink.core.test.dir}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/performance/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${jpa-performance}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${jpa-performance}">
+            </fileset>
+        </jar>
+    </target>
+
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"/>
@@ -240,6 +255,7 @@
             <fileset file="${eclipselink.jpa.test}/${eclipselink-validation-failed-model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink-advanced-field-access-model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink-advanced-properties}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${jpa-performance}.jar"/>
         </delete>
     </target>
 
@@ -257,6 +273,7 @@
         <pathelement path="${eclipselink.jpa.test}/${eclipselink-validation-failed-model}.jar"/>
         <pathelement path="${eclipselink.jpa.test}/${eclipselink-advanced-field-access-model}.jar"/>
         <pathelement path="${eclipselink.jpa.test}/${eclipselink-advanced-properties}.jar"/>
+        <pathelement path="${eclipselink.jpa.test}/${jpa-performance}.jar"/>
         <pathelement path="${eclipselink.extension.oracle.test}/${eclipselink-struct-converter-model}.jar"/>
         <pathelement path="${eclipselink.extension.oracle.test}/${eclipselink-struct-converter-model}-tests.jar"/>
         <pathelement path="${oracle.extensions.depend.dir}/${oracle.spatial.lib}"/>
@@ -294,6 +311,7 @@
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-validation-failed-model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-advanced-field-access-model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-advanced-properties}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/woven-${jpa-performance}.jar"/>
         </path>
         <property name="test.agent" value="-Darg1=false"/>
         <property name="test.weaving" value="-Darg2=false"/>
@@ -386,6 +404,13 @@
         </weave>
         <weave source= "${eclipselink.jpa.test}/${eclipselink-advanced-properties}.jar"
                target = "${eclipselink.jpa.test}/woven-${eclipselink-advanced-properties}.jar">
+               <classpath>
+                    <path refid="compile.path"/>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+        <weave source= "${eclipselink.jpa.test}/${jpa-performance}.jar"
+               target = "${eclipselink.jpa.test}/woven-${jpa-performance}.jar">
                <classpath>
                     <path refid="compile.path"/>
                     <path refid="run.classpath"/>

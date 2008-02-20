@@ -636,7 +636,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
             // This is a case where the object is not in the session cache,
             // so a new cache-key is used as there is no original to use for locking.
-            return cloneAndRegisterObject(object, new CacheKey(primaryKey), descriptor);
+            // It read time must be set to avoid it being invalidated.
+            CacheKey cacheKey = new CacheKey(primaryKey);
+            cacheKey.setReadTime(System.currentTimeMillis());
+            return cloneAndRegisterObject(object, cacheKey, descriptor);
         } else {
             return null;
         }
@@ -741,7 +744,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * This is used to ensure that no invalid objects are registered.
      */
     public void checkInvalidObject(Object object, CacheKey cacheKey, ClassDescriptor descriptor) {
-        if (!isNestedUnitOfWork()) {
+        if (!isNestedUnitOfWork() && (cacheKey.getObject() != null)) {
             CacheInvalidationPolicy cachePolicy = descriptor.getCacheInvalidationPolicy();
             // BUG#6671556 refresh invalid objects when accessed in the unit of work.
             if (cachePolicy.shouldRefreshInvalidObjectsInUnitOfWork() && cachePolicy.isInvalidated(cacheKey)) {
@@ -3577,7 +3580,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 if (registeredObject == null) {
                     // This is a case where the object is not in the session cache,
                     // so a new cache-key is used as there is no original to use for locking.
-                    registeredObject = cloneAndRegisterObject(objectToRegister, new CacheKey(primaryKey), descriptor);
+                    // It read time must be set to avoid it being invalidated.
+                    CacheKey cacheKey = new CacheKey(primaryKey);
+                    cacheKey.setReadTime(System.currentTimeMillis());
+                    registeredObject = cloneAndRegisterObject(objectToRegister, cacheKey, descriptor);
                 }
             }
             //bug3659327

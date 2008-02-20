@@ -144,7 +144,7 @@ public class WriteLockManager {
      * This is used to ensure that no invalid objects are registered.
      */
     public boolean checkInvalidObject(Object object, CacheKey cacheKey, ClassDescriptor descriptor, UnitOfWorkImpl unitOfWork) {
-        if (!unitOfWork.isNestedUnitOfWork()) {
+        if (!unitOfWork.isNestedUnitOfWork() && (cacheKey.getObject() != null)) {
             CacheInvalidationPolicy cachePolicy = descriptor.getCacheInvalidationPolicy();
             // BUG#6671556 refresh invalid objects when accessed in the unit of work.
             return (cachePolicy.shouldRefreshInvalidObjectsInUnitOfWork() && cachePolicy.isInvalidated(cacheKey));
