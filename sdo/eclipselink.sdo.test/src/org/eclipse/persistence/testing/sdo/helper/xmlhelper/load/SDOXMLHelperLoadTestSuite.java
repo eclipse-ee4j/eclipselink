@@ -29,6 +29,7 @@ public class SDOXMLHelperLoadTestSuite {
         //suite.addTest(new TestSuite(LoadSimpleAttributeTestCases.class));
         //suite.addTest(new TestSuite(LoadSimpleElementTestCases.class));
         // suite.addTest(new TestSuite(LoadPurchaseOrderTestCases.class));
+        suite.addTest(new TestSuite(LoadWithDataHandlerGetStringTestCases.class));
         return suite;
     }
 }
