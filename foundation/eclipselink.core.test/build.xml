@@ -119,7 +119,7 @@
     <!-- Default test target, runs test.class from test.properties (default is LRG). -->
     <target name="test">
         <antcall target="run.test" inheritRefs="true">
-            <param name="TEST_CLASS" value="{test.class}"/>
+            <param name="TEST_CLASS" value="${test.class}"/>
         </antcall>
     </target>
 
