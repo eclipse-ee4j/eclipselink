@@ -45,6 +45,7 @@ public class ComplexDefineTestSuite {
         suite.addTestSuite(LoadFailsAfterDefineFailsTestCases.class);                               
         suite.addTestSuite(DefineWithNestedNamespacesTestCases.class);                               
         suite.addTestSuite(DefineWithImportsNoSchemaLocationTestCases.class);
+        suite.addTestSuite(ComplexImportsAndIncludesTestCases.class);
         return suite;
     }
 }
