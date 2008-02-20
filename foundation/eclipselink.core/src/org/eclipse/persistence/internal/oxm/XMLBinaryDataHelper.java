@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/   
 package org.eclipse.persistence.internal.oxm;
 
 import java.awt.Component;
@@ -283,13 +283,16 @@ public class XMLBinaryDataHelper {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             source.writeTo(output);
-            return XMLConversionManager.getDefaultXMLManager().buildBase64StringFromBytes(output.toByteArray());
+            return (String)XMLConversionManager.getDefaultXMLManager().convertObject(output.toByteArray(), String.class, schemaTypeQName);
         } catch (Exception ex) {
         }
 
         return null;
     }
 
+    public String stringFromDataHandler(Object source, QName schemaTypeQName) {
+        return stringFromDataHandler((DataHandler)source, schemaTypeQName);
+    }
     public String stringFromImage(Image image, QName schemaTypeQName) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
