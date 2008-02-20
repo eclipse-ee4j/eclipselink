@@ -44,5 +44,8 @@ public class UnitOfWorkEventTestSuite extends org.eclipse.persistence.testing.fr
         // commitUnitOfWorkMoreThanOnce
         addTest(new CommitUnitOfWorkAgainTest());
 
+        // Force an SQLException to test for absence of an UnsupportedOperationException
+        addTest(new CommitUnitOfWorkForcingSQLExceptionTest());
+
     }
 }
