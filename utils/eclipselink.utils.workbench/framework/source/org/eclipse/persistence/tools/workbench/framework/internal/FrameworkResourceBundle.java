@@ -45,6 +45,8 @@ public final class FrameworkResourceBundle extends ListResourceBundle {
 		{"LOCAL_FAILED", "The local help-set file failed to load. Help will continue, using the default help-set file.{0}Check your Help settings in \"Preferences\"."},
 		{"HELP_INITIALIZATION_ERROR", "Unable to initialize help. Check your Help Settings in \"Preferences\" and ensure your selected Help location is available.{0}Proceeding with the Help system disabled."},
 		{"LOCALIZED_FILE_NOT_FOUND", "A localized help JAR was not found for the system locale, defaulting to English"},
+		{"CONFIGURE_EXTERNAL_BROWSER", "To display help content an external HTML browser must first be configured in help preferences found under the Tools menu."},
+		{"CONFIGURE_EXTERNAL_BROWSER_TITLE", "No External Broswer Configured"},
 		
 		// FrameworkLogHandlerDialog
 		{"UNEXPECTED_ERROR", "Unexpected Error"},
@@ -312,7 +314,7 @@ public final class FrameworkResourceBundle extends ListResourceBundle {
 		{"recentProjectFileNotFound.message", "The file ''{0}'' cannot be found and will be removed from the recents list."},	
 		
 		//DefaultHelpManager
-		{"TOPLIC_ID_DOESNT_EXIST", "The help topic {0} doesn't not exist."},
+		{"TOPIC_ID_DOESNT_EXIST", "The help topic {0} doesn't not exist."},
 
 	};
 

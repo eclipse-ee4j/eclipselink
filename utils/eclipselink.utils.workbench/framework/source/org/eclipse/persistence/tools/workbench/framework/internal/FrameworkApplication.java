@@ -228,9 +228,6 @@ public final class FrameworkApplication
 		if (icon instanceof ImageIcon) {
 			frame.setIconImage(((ImageIcon) icon).getImage());
 		}
-		//They have decided not to have the copyright on the splash screen, 
-		//we'll leave this code commmented so that when they change their mind we can change it back
-		//easily ;-)
 //		return new SplashScreen(frame, getString("COPYRIGHT"), getIcon(SPLASH_SCREEN_FILE_NAME));
 		return new SplashScreen(frame, getIcon(SPLASH_SCREEN_FILE_NAME));
 

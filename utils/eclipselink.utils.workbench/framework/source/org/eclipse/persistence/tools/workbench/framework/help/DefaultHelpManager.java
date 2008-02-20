@@ -185,7 +185,7 @@ class DefaultHelpManager
 	public void showTopic(Component component) {
 		String topicID = this.getTopicID(component);
 		if (topicID != null) {
-			this.showTopic(topicID);
+			this.showTopicInternal(topicID, component);
 		}
 	}
 
@@ -271,9 +271,21 @@ class DefaultHelpManager
 	protected void showTopicInternal(String topicID) {
 		String url = this.topicIdtoUrlMap.get(topicID);
 		if (url == null) {
-			throw new IllegalArgumentException(resourceRepository.getString("TOPLIC_ID_DOESNT_EXIST", topicID));
+			url = this.topicIdtoUrlMap.get("default");
 		}
 		this.browser.handleValue(url);
+	}
+
+	/**
+	 * Display Help for the specified Topic ID. If there are
+	 * problems, a TopicDisplayException will be thrown.
+	 */
+	protected void showTopicInternal(String topicID, Component component) {
+		String url = this.topicIdtoUrlMap.get(topicID);
+		if (url == null) {
+			url = this.topicIdtoUrlMap.get("default");
+		}
+		this.browser.handleValue(url, component);
 	}
 
 	private void listenTo(Component component) {
@@ -481,18 +493,35 @@ class DefaultHelpManager
 		 * use that; otherwise use the platform-specific default browser.
 		 * @see oracle.help.CustomProtocolHandler#handleValue(String)
 		 */
+		public void handleValue(String value, Component component) {
+			String browser = this.preferences.get(BROWSER_PREFERENCE, BROWSER_PREFERENCE_DEFAULT);
+			try {
+				Runtime.getRuntime().exec(browser + " " + value);
+			} catch (IOException ex) {
+				showBrowserConfigMessages(component);
+			}
+	   }
+	
+		/**
+		 * If the user has specified a specific browser in the preferences,
+		 * use that; otherwise use the platform-specific default browser.
+		 * @see oracle.help.CustomProtocolHandler#handleValue(String)
+		 */
 		public void handleValue(String value) {
 			String browser = this.preferences.get(BROWSER_PREFERENCE, BROWSER_PREFERENCE_DEFAULT);
 			try {
 				Runtime.getRuntime().exec(browser + " " + value);
 			} catch (IOException ex) {
-				showBrowserConfigMessages();
+				throw new RuntimeException(DefaultHelpManager.this.resourceRepository.getString("CONFIGURE_EXTERNAL_BROWSER"));
 			}
 	   }
-		
-		private void showBrowserConfigMessages() {
-			
-			DefaultHelpManager.this.showTopic("help.linux.config.externalbrowser");
+
+		private void showBrowserConfigMessages(Component component) {
+			JOptionPane.showMessageDialog(component, 
+					DefaultHelpManager.this.resourceRepository.getString("CONFIGURE_EXTERNAL_BROWSER"), 
+					DefaultHelpManager.this.resourceRepository.getString("CONFIGURE_EXTERNAL_BROWSER_TITLE"),
+					JOptionPane.WARNING_MESSAGE);
+			//DefaultHelpManager.this.showTopic("help.linux.config.externalbrowser");
 		}
 
 	}
