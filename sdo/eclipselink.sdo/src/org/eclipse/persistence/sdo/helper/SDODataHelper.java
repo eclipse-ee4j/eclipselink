@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/   
 package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.Property;
@@ -31,6 +31,7 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
 
@@ -641,6 +642,19 @@ public class SDODataHelper implements DataHelper {
                 return toYearMonth((Date)value);
             } else if (sdoType.equals(SDOConstants.SDO_YEARMONTHDAY)) {
                 return toYearMonthDay((Date)value);
+            }
+        } else if(value.getClass().getName().equals("javax.activation.DataHandler")) {
+            //convert a DataHandler to a string, by getting the bytes and then calling into conversion manager
+            try {
+                Class binaryDataHelper = PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper");
+                java.lang.reflect.Method getHelperMethod = PrivilegedAccessHelper.getMethod(binaryDataHelper, "getXMLBinaryDataHelper", new Class[] {}, false);
+                java.lang.reflect.Method stringToDataHandlerMethod = PrivilegedAccessHelper.getMethod(binaryDataHelper, "stringFromDataHandler", new Class[]{Object.class, QName.class}, false);
+                
+                Object helper = PrivilegedAccessHelper.invokeMethod(getHelperMethod, binaryDataHelper, new Object[] {});
+                String result = (String)PrivilegedAccessHelper.invokeMethod(stringToDataHandlerMethod, helper, new Object[] {value, xsdType});
+                return result;
+            } catch(Exception ex) {
+                return (String)getXMLConversionManager().convertObject(value, ClassConstants.STRING, xsdType);
             }
         }
         return (String)getXMLConversionManager().convertObject(value, ClassConstants.STRING, xsdType);
