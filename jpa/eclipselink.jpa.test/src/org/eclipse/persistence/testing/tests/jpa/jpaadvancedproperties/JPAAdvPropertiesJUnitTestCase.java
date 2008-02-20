@@ -82,16 +82,16 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         org.eclipse.persistence.sessions.server.ServerSession session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
         try {
             //Create new customer
-            em.getTransaction().begin();
+            beginTransaction(em);
             Customer customer = ModelExamples.customerExample1();
             em.persist(customer);
             Integer customerId = customer.getCustomerId();            
-            em.getTransaction().commit();
+            commitTransaction(em);
             
             //Purge it
-            em.getTransaction().begin();
+            beginTransaction(em);
             em.remove(em.find(org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer.class, customerId));
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             Vector listeners = session.getEventManager().getListeners();
             boolean doseCustomizedSessionEventListenerExists=false;
@@ -124,12 +124,12 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
                 assertTrue("The session event listener specified by the property eclipselink.session-event-listener in persistence.xml not be processed properly.", true);
             }
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw e;
         }finally{
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -143,7 +143,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
                 assertTrue("The exception handler specified by the property eclipselink.exception-handler in persistence.xml not be processed.", true);
             }
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -153,7 +153,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         if(!session.getProject().getLogin().shouldUseNativeSQL()){
             assertTrue("The native sql flag specified as true by the property eclipselink.jdbc.native-sql in persistence.xml, it however read as false.", true);
         }
-        em.close();
+        closeEntityManager(em);
     }
     
     public void testBatchwritingProperty(){
@@ -165,7 +165,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
            !session.getPlatform().usesNativeBatchWriting())){
             assertTrue("The BatcheWriting setting set to BUFFERED by the property eclipselink.jdbc.batch-writing in persistence.xml, JDBC batch writing or natvie batch writing however may be wrong.", true);
         }
-        em.close();
+        closeEntityManager(em);
     }
     
     public void testCopyDescriptorNamedQueryToSessionProperty(){
@@ -175,7 +175,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         if(query == null){
             assertTrue("The copy descriptor named query is enable by the property eclipselink.session.include.descriptor.queries in persistence.xml, one descriptor named query has not been copied to the session", true);
         }
-        em.close();
+        closeEntityManager(em);
     }
     
     public void testCacheStatementsAndItsSizeProperty() {
@@ -190,7 +190,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         if(!(session.getProject().getLogin().getStatementCacheSize()==100)){
             assertTrue("Statiment cache size set to 100 by property eclipselink.jdbc.cache-statements in persistence.xml, it however read as wrong size.", true);
         }
-        em.close();
+        closeEntityManager(em);
     }
     
     public void testLoggingTyperProperty(){
@@ -199,7 +199,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         if(!(session.getSessionLog() instanceof org.eclipse.persistence.logging.JavaLog)){
             assertTrue("Logging type set to JavaLog, it however has been detected as different type logger.", true);
         }
-        em.close();
+        closeEntityManager(em);
     }
     
     public void testProfilerTyperProperty(){
@@ -208,21 +208,21 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         if(!(session.getSessionLog() instanceof org.eclipse.persistence.tools.profiler.PerformanceProfiler)){
             assertTrue("Profiler type set to PerformanceProfiler, it however has been detected as different type Profiler.", true);
         }
-        em.close();
+        closeEntityManager(em);
         
         em = createEntityManager("JPAADVProperties2");
         session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
         if(!(session.getProfiler() instanceof org.eclipse.persistence.tools.profiler.QueryMonitor)){
             assertTrue("Profiler type set to QueryMonitor, it however has been detected as different type profiler.", true);
         }
-        em.close();
+        closeEntityManager(em);
         
         em = createEntityManager("JPAADVProperties3");
         session = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).getServerSession();
         if((session.getSessionLog() !=null)){
             assertTrue("no profiler has been set,it however has been detected.", true);
         }
-        em.close();
+        closeEntityManager(em);
     }
     
     
@@ -231,7 +231,7 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         EntityManager em = createEntityManager(persistenceUnitName);
         
         //Create customer
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Customer customer = ModelExamples.customerExample1();       
             ArrayList orders = new ArrayList();
@@ -241,17 +241,17 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
             customer.setOrders(orders);
             em.persist(customer);
             customerId = customer.getCustomerId();
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         
         //Find customer
-        em.getTransaction().begin();
+        beginTransaction(em);
         Customer cm1 = em.find(org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer.class, customerId);
         if(cm1==null){
             assertTrue("Error finding customer ", true);    
@@ -269,10 +269,10 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
             query.setParameter("name", "George W.");
             cm2 = (Customer) query.getSingleResult();
         }catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error executing named query 'customerReadByName'", cm2 != null);
@@ -285,12 +285,12 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
             originalName=cm.getName();
             cm.setName(originalName+"-modified");
             em.merge(cm);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         clearCache();
@@ -298,15 +298,15 @@ public class JPAAdvPropertiesJUnitTestCase extends JUnitTestCase {
         assertTrue("Error updating Customer", cm3.getName().equals(originalName+"-modified"));
 
         //Delete customer
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             em.remove(em.find(org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer.class, customerId));
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting Customer", em.find(org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer.class, customerId) == null);

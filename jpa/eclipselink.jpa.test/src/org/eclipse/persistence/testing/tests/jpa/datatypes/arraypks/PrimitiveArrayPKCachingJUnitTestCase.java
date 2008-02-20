@@ -82,17 +82,17 @@ public class PrimitiveArrayPKCachingJUnitTestCase extends JUnitTestCase{
         java.util.UUID uuid = UUID.randomUUID();
         PrimByteArrayPKType originalEntity = new PrimByteArrayPKType(PrimByteArrayPKType.getBytes(uuid));
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             em.persist(originalEntity);
             em.flush();
             PrimByteArrayPKType objectReadIn = em.find(PrimByteArrayPKType.class, PrimByteArrayPKType.getBytes(uuid));
-            em.getTransaction().rollback();
+            rollbackTransaction(em);
             assertTrue("Different instances of the same PrimByteArrayPKType object was returned", originalEntity == objectReadIn);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }

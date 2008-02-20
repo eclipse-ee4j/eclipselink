@@ -11,7 +11,7 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
 
-package org.eclipse.persistence.testing.tests.ejb.ejbqltesting;
+package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 
 import java.util.Calendar;
@@ -129,13 +129,13 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
         // test query
         String update = "UPDATE Employee e SET e.firstName = 'CHANGED'";
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Query q = em.createQuery(update);
             int updated = q.executeUpdate();
             assertEquals("simpleUpdate: wrong number of updated instances", 
                          nrOfEmps, updated);
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             // check database changes
             int nr = executeJPQLReturningInt(
@@ -143,8 +143,8 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
             assertEquals("simpleUpdate: unexpected number of changed values in the database", 
                          nrOfEmps, nr);
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
     }
@@ -158,15 +158,15 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         // test query
         String update = "UPDATE Employee e SET e.firstName = 'CHANGED'" +  
                         " WHERE (SELECT COUNT(m) FROM e.managedEmployees m) > 0";
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Query q = em.createQuery(update);
             int updated = q.executeUpdate();
             assertEquals("updateWithSubquery: wrong number of updated instances", 
                          nrOfEmps, updated);
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
     }
@@ -180,13 +180,13 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
         // test query
         String update = "UPDATE Employee e SET e.period.startDate = NULL";
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Query q = em.createQuery(update);
             int updated = q.executeUpdate();
             assertEquals("updateEmbedded: wrong number of updated instances", 
                          nrOfEmps, updated);
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             // check database changes
             int nr = executeJPQLReturningInt(
@@ -194,8 +194,8 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
             assertEquals("updateEmbedded: unexpected number of changed values in the database", 
                          nrOfEmps, nr);
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
     }
@@ -213,13 +213,13 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         startCalendar.set(1905, 11, 31, 0, 0, 0);
         java.sql.Date startDate = new java.sql.Date(startCalendar.getTime().getTime());
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
 
             em.createQuery("UPDATE Employee e SET e.period.startDate= :startDate")
             .setParameter("startDate", startDate)
             .executeUpdate();
 
-            em.getTransaction().commit();
+            commitTransaction(em);
             // check database changes
            
             Query q = em.createQuery("SELECT COUNT(e) FROM Employee e WHERE e.period.startDate=:startDate")
@@ -228,8 +228,8 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
             int nr = ((Number)result).intValue();
             assertEquals("updateEmbedded: unexpected number of changed values in the database", nrOfEmps, nr);
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
         }
 
@@ -243,13 +243,13 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
         // test query
         String update = "UPDATE Employee SET firstName = 'CHANGED'";
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Query q = em.createQuery(update);
             int updated = q.executeUpdate();
             assertEquals("updateUnqualifiedAttributeInSet: wrong number of updated instances", 
                          nrOfEmps, updated);
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             // check database changes
             int nr = executeJPQLReturningInt(
@@ -257,20 +257,20 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
             assertEquals("updateUnqualifiedAttributeInSet: unexpected number of changed values in the database", 
                          nrOfEmps, nr);
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
 
         // test query
         update = "UPDATE Employee SET period.startDate = NULL";
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Query q = em.createQuery(update);
             int updated = q.executeUpdate();
             assertEquals("simpleUpdate: wrong number of updated instances", 
                          nrOfEmps, updated);
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             // check database changes
             int nr = executeJPQLReturningInt(
@@ -278,8 +278,8 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
             assertEquals("simpleUpdate: unexpected number of changed values in the database", 
                          nrOfEmps, nr);
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
     }
@@ -293,13 +293,13 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         // test query
         String update = 
             "UPDATE Employee SET firstName = 'CHANGED' WHERE firstName = 'Bob'";
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Query q = em.createQuery(update);
             int updated = q.executeUpdate();
             assertEquals("updateUnqualifiedAttributeInWhere: wrong number of updated instances", 
                          nrOfEmps, updated);
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             // check database changes
             int nr = executeJPQLReturningInt(
@@ -307,8 +307,8 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
             assertEquals("simpleUnqualifiedUpdate: unexpected number of changed values in the database", 
                          nrOfEmps, nr);
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
 
@@ -318,13 +318,13 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         // test query
         update = "UPDATE Employee SET firstName = 'MODIFIED' " + 
                  "WHERE (SELECT COUNT(m) FROM managedEmployees m) > 0";
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Query q = em.createQuery(update);
             int updated = q.executeUpdate();
             assertEquals("simpleUpdate: wrong number of updated instances", 
                          nrOfEmps, updated);
-            em.getTransaction().commit();
+            commitTransaction(em);
             
             // check database changes
             int nr = executeJPQLReturningInt(
@@ -332,8 +332,8 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
             assertEquals("simpleUpdate: unexpected number of changed values in the database", 
                          nrOfEmps, nr);
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
     }
@@ -348,11 +348,11 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         // test query setting java.sql.Date field
         try {
             jpql = "UPDATE DateTime SET date = CURRENT_DATE";
-            em.getTransaction().begin();
+            beginTransaction(em);
             updated = em.createQuery(jpql).executeUpdate();
             assertEquals("updateDateTimeFields set date: " + 
                          "wrong number of updated instances", exp, updated);
-            em.getTransaction().commit();
+            commitTransaction(em);
             
             // check database changes
             jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.date <= CURRENT_DATE";
@@ -360,19 +360,19 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
                          "unexpected number of changed values in the database", 
                          exp, executeJPQLReturningInt(em, jpql));
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
         
         // test query setting java.sql.Time field
         try {
             jpql = "UPDATE DateTime SET time = CURRENT_TIME";
-            em.getTransaction().begin();
+            beginTransaction(em);
             updated = em.createQuery(jpql).executeUpdate();
             assertEquals("updateDateTimeFields set time: " + 
                          "wrong number of updated instances", exp, updated);
-            em.getTransaction().commit();
+            commitTransaction(em);
             
             // check database changes
             jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.time <= CURRENT_TIME";
@@ -380,19 +380,19 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
                          "unexpected number of changed values in the database", 
                          exp, executeJPQLReturningInt(em, jpql));
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
         
         // test query setting java.sql.Timestamp field
         try {
             jpql = "UPDATE DateTime SET timestamp = CURRENT_TIMESTAMP";
-            em.getTransaction().begin();
+            beginTransaction(em);
             updated = em.createQuery(jpql).executeUpdate();
             assertEquals("updateDateTimeFields set timestamp: " + 
                          "wrong number of updated instances", exp, updated);
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             // check database changes
             jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.timestamp <= CURRENT_TIMESTAMP";
@@ -400,19 +400,19 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
                          "unexpected number of changed values in the database", 
                          exp, executeJPQLReturningInt(em, jpql));
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
 
         // test query setting java.util.Date field
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             jpql = "UPDATE DateTime SET utilDate = CURRENT_TIMESTAMP";
             updated = em.createQuery(jpql).executeUpdate();
             assertEquals("updateDateTimeFields set utilDate: " +
                          "wrong number of updated instances", exp, updated);
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             // check database changes
             jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.utilDate <= CURRENT_TIMESTAMP";
@@ -420,19 +420,19 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
                          "unexpected number of changed values in the database", 
                          exp, executeJPQLReturningInt(em, jpql));
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
 
         // test query setting java.util.Calendar field
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             jpql = "UPDATE DateTime SET calendar = CURRENT_TIMESTAMP";
             updated = em.createQuery(jpql).executeUpdate();
             assertEquals("updateDateTimeFields set calendar: " +
                          "wrong number of updated instances", exp, updated);
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             // check database changes
             jpql = "SELECT COUNT(d) FROM DateTime d WHERE d.calendar <= CURRENT_TIMESTAMP";
@@ -440,8 +440,8 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
                          "unexpected number of changed values in the database", 
                          exp, executeJPQLReturningInt(em, jpql));
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
     }
@@ -454,21 +454,21 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
 
         // test query
         String delete = "DELETE FROM PhoneNumber p WHERE p.areaCode = '613'";
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Query q = em.createQuery(delete);
             int deleted = q.executeUpdate();
             assertEquals("simpleDelete: wrong number of deleted instances", 
                          nrOfEmps, deleted);
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             // check database changes
             int nr = executeJPQLReturningInt(em, jpql);
             assertEquals("simpleDelete: unexpected number of instances in the database", 
                          0, nr);
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
     }

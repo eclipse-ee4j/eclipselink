@@ -58,7 +58,7 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
     // The order of persist operations is important for this test.
     public void testPersistPolymorphicRelationship() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         Person p = new Person();
         p.setName("Evil Knievel");
         
@@ -70,12 +70,12 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         try {
             em.persist(c);
             em.persist(p);
-            em.getTransaction().commit();
+            commitTransaction(em);
         
         } catch (Exception exception ) {
             fail("Error persisting polymorphic relationship: " + exception.getMessage());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -84,7 +84,7 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
     // Issue: GF#1153 && GF#1586 (desktop amendment)
     public void testAssociationWithEmbeddedIdSubclassEntityInJoinedStrategy() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
 
         try {
             Engineer engineer = new Engineer();
@@ -108,15 +108,15 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             engineer.getLaptops().add(laptop);
             engineer.getDesktops().add(desktop);
             
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch(RuntimeException ex) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             
             throw ex;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
 }

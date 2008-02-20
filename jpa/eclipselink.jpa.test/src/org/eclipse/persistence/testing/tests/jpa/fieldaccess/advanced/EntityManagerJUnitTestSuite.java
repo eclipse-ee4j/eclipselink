@@ -4029,11 +4029,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         try {
             closeEntityManager(em);
-            errorMsg = errorMsg + "; em.close() didn't throw exception";
+            errorMsg = errorMsg + "; closeEntityManager(em) didn't throw exception";
         } catch(IllegalStateException ise) {
             // expected
         } catch(RuntimeException ex) {
-            errorMsg = errorMsg + "; em.close() threw wrong exception: " + ex.getMessage();
+            errorMsg = errorMsg + "; closeEntityManager(em) threw wrong exception: " + ex.getMessage();
         }
         try {
             em.contains(null);

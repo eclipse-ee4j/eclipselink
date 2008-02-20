@@ -84,7 +84,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         int defaultListenerPostLoadCountIntermidiate;
         
         EntityManager em = createEntityManager();        
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             Bus bus = new Bus();
@@ -103,13 +103,13 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
             // This should not fire a postLoad event ...
             q.getResultList();
             
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException ex) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         
@@ -130,7 +130,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         int defaultListenerPostPersistCountBefore = DefaultListener.POST_PERSIST_COUNT;
         
         EntityManager em = createEntityManager();        
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             SportsCar sportsCar = new SportsCar();
@@ -139,13 +139,13 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
             sportsCar.setDescription("Porshe");
             sportsCar.setFuelType("Gas");
             em.persist(sportsCar);    
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException ex) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         
@@ -163,7 +163,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         int defaultListenerPrePersistCountBefore = DefaultListener.PRE_PERSIST_COUNT;
        
         EntityManager em = createEntityManager();        
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             Bus bus = new Bus();
@@ -173,17 +173,17 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
             bus.setFuelType("Diesel");
             em.persist(bus);
             m_busID = bus.getId();
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException ex) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         
-        em.close();
+        closeEntityManager(em);
         
         int busListenerPrePersistCountAfter = BusListener.PRE_PERSIST_COUNT;
         int listenerSuperclassPrePersistCountAfter = ListenerSuperclass.COMMON_PRE_PERSIST_COUNT;
@@ -202,7 +202,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         int defaultListenerPrePersistCountBefore = DefaultListener.PRE_PERSIST_COUNT;
         
         EntityManager em = createEntityManager();        
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             SportsCar sportsCar = new SportsCar();
@@ -211,17 +211,17 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
             sportsCar.setDescription("Corvette");
             sportsCar.setFuelType("Gas");
             em.persist(sportsCar);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException ex) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         
-        em.close();
+        closeEntityManager(em);
         
         int listenerSuperclassPrePersistCountAfter = ListenerSuperclass.COMMON_PRE_PERSIST_COUNT;
         int defaultListenerPrePersistCountAfter = DefaultListener.PRE_PERSIST_COUNT;
@@ -235,7 +235,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
         int sportsCarPrePersistCountBefore = SportsCar.PRE_PERSIST_COUNT;
         
         EntityManager em = createEntityManager();        
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             SportsCar sportsCar = new SportsCar();
@@ -244,17 +244,17 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
             sportsCar.setDescription("Viper");
             sportsCar.setFuelType("Gas");
             em.persist(sportsCar);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException ex) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         
-        em.close();
+        closeEntityManager(em);
         
         int carPrePersistCountAfter = Car.PRE_PERSIST_COUNT;
         int sportsCarPrePersistCountAfter = SportsCar.PRE_PERSIST_COUNT;

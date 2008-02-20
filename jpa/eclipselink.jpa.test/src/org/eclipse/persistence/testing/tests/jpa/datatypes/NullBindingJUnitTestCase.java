@@ -81,12 +81,6 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
             }
 
             protected void tearDown() {
-                removeWrapperTypes();
-                removeByteArrayType();
-                removePrimitiveByteArrayType();
-                removeCharacterArrayType();
-                removeCharArrayType();
-
                 clearCache();
             }
         };
@@ -99,13 +93,13 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         EntityManager em = createEntityManager();
         WrapperTypes wt;
 
-        em.getTransaction().begin();
+        beginTransaction(em);
         wt = new WrapperTypes(BigDecimal.ZERO, BigInteger.ZERO, Boolean.FALSE,
                 new Byte("0"), '\0', new Short("0"),
                 0, 0L, new Float(0.0), 0.0, "A String");
         em.persist(wt);
         wrapperId = wt.getId();
-        em.getTransaction().commit();
+        commitTransaction(em);
     }
 
     /**
@@ -116,18 +110,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         WrapperTypes wt, wt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             wt = em.find(WrapperTypes.class, wrapperId);
             wt.setBigDecimalData(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT wt FROM WrapperTypes wt WHERE wt.id = " + wrapperId);
             wt2 = (WrapperTypes) q.getSingleResult();
             assertTrue("Error setting BigDecimal field to null", wt2.getBigDecimalData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -140,18 +134,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         WrapperTypes wt, wt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             wt = em.find(WrapperTypes.class, wrapperId);
             wt.setBigIntegerData(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT wt FROM WrapperTypes wt WHERE wt.id = " + wrapperId);
             wt2 = (WrapperTypes) q.getSingleResult();
             assertTrue("Error setting BigInteger field to null", wt2.getBigIntegerData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -164,18 +158,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         WrapperTypes wt, wt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             wt = em.find(WrapperTypes.class, wrapperId);
             wt.setBooleanData(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT wt FROM WrapperTypes wt WHERE wt.id = " + wrapperId);
             wt2 = (WrapperTypes) q.getSingleResult();
             assertTrue("Error setting Boolean field to null", wt2.getBooleanData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -188,18 +182,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         WrapperTypes wt, wt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             wt = em.find(WrapperTypes.class, wrapperId);
             wt.setByteData(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT wt FROM WrapperTypes wt WHERE wt.id = " + wrapperId);
             wt2 = (WrapperTypes) q.getSingleResult();
             assertTrue("Error setting Byte field to null", wt2.getByteData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -212,18 +206,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         WrapperTypes wt, wt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             wt = em.find(WrapperTypes.class, wrapperId);
             wt.setCharacterData(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT wt FROM WrapperTypes wt WHERE wt.id = " + wrapperId);
             wt2 = (WrapperTypes) q.getSingleResult();
             assertTrue("Error setting Character field to null", wt2.getCharacterData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -236,18 +230,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         WrapperTypes wt, wt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             wt = em.find(WrapperTypes.class, wrapperId);
             wt.setShortData(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT wt FROM WrapperTypes wt WHERE wt.id = " + wrapperId);
             wt2 = (WrapperTypes) q.getSingleResult();
             assertTrue("Error setting Short field to null", wt2.getShortData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -260,18 +254,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         WrapperTypes wt, wt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             wt = em.find(WrapperTypes.class, wrapperId);
             wt.setIntegerData(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT wt FROM WrapperTypes wt WHERE wt.id = " + wrapperId);
             wt2 = (WrapperTypes) q.getSingleResult();
             assertTrue("Error setting Integer field to null", wt2.getIntegerData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -284,18 +278,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         WrapperTypes wt, wt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             wt = em.find(WrapperTypes.class, wrapperId);
             wt.setLongData(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT wt FROM WrapperTypes wt WHERE wt.id = " + wrapperId);
             wt2 = (WrapperTypes) q.getSingleResult();
             assertTrue("Error setting Long field to null", wt2.getLongData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -308,18 +302,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         WrapperTypes wt, wt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             wt = em.find(WrapperTypes.class, wrapperId);
             wt.setFloatData(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT wt FROM WrapperTypes wt WHERE wt.id = " + wrapperId);
             wt2 = (WrapperTypes) q.getSingleResult();
             assertTrue("Error setting Float field to null", wt2.getFloatData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -332,18 +326,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         WrapperTypes wt, wt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             wt = em.find(WrapperTypes.class, wrapperId);
             wt.setDoubleData(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT wt FROM WrapperTypes wt WHERE wt.id = " + wrapperId);
             wt2 = (WrapperTypes) q.getSingleResult();
             assertTrue("Error setting Double field to null", wt2.getDoubleData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -356,18 +350,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         WrapperTypes wt, wt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             wt = em.find(WrapperTypes.class, wrapperId);
             wt.setStringData(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT wt FROM WrapperTypes wt WHERE wt.id = " + wrapperId);
             wt2 = (WrapperTypes) q.getSingleResult();
             assertTrue("Error setting String field to null", wt2.getStringData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -382,19 +376,19 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         ByteArrayType bat, bat2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             bat = new ByteArrayType();
             em.persist(bat);
             byteArrayId = bat.getId();
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT bat FROM ByteArrayType bat WHERE bat.id = " + byteArrayId);
             bat2 = (ByteArrayType) q.getSingleResult();
             assertTrue("Error setting Byte[] field to null", bat2.getByteArrayData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -409,19 +403,19 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         PrimitiveByteArrayType pbat, pbat2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             pbat = new PrimitiveByteArrayType();
             em.persist(pbat);
             pByteArrayId = pbat.getId();
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT pbat FROM PrimitiveByteArrayType pbat WHERE pbat.id = " + pByteArrayId);
             pbat2 = (PrimitiveByteArrayType) q.getSingleResult();
             assertTrue("Error setting byte[] field to null", pbat2.getPrimitiveByteArrayData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -436,19 +430,19 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         CharacterArrayType cat, cat2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             cat = new CharacterArrayType();
             em.persist(cat);
             characterArrayId = cat.getId();
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT cat FROM CharacterArrayType cat WHERE cat.id = " + characterArrayId);
             cat2 = (CharacterArrayType) q.getSingleResult();
             assertTrue("Error setting Character[] field to null", cat2.getCharacterArrayData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -463,86 +457,20 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         CharArrayType pcat, pcat2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             pcat = new CharArrayType();
             em.persist(pcat);
             pCharArrayId = pcat.getId();
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT pcat FROM CharArrayType pcat WHERE pcat.id = " + pCharArrayId);
             pcat2 = (CharArrayType) q.getSingleResult();
             assertTrue("Error setting char[] field to null", pcat2.getPrimitiveCharArrayData() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
-
-    /**
-     * Removes the WrapperTypes instance used in the tests.
-     */
-    public static void removeWrapperTypes() {
-        EntityManager em = createEntityManager();
-        WrapperTypes wt;
-
-        em.getTransaction().begin();
-        wt = em.find(WrapperTypes.class, wrapperId);
-        em.remove(wt);
-        em.getTransaction().commit();
-    }
-
-    /**
-     * Removes the ByteArrayType instance used in the tests.
-     */
-    public static void removeByteArrayType() {
-        EntityManager em = createEntityManager();
-        ByteArrayType bat;
-
-        em.getTransaction().begin();
-        bat = em.find(ByteArrayType.class, byteArrayId);
-        em.remove(bat);
-        em.getTransaction().commit();
-    }
-
-    /**
-     * Removes the PrimitiveByteArrayType instance used in the tests.
-     */
-    public static void removePrimitiveByteArrayType() {
-        EntityManager em = createEntityManager();
-        PrimitiveByteArrayType pbat;
-
-        em.getTransaction().begin();
-        pbat = em.find(PrimitiveByteArrayType.class, pByteArrayId);
-        em.remove(pbat);
-        em.getTransaction().commit();
-    }
-
-    /**
-     * Removes the CharacterArrayType instance used in the tests.
-     */
-    public static void removeCharacterArrayType() {
-        EntityManager em = createEntityManager();
-        CharacterArrayType cat;
-
-        em.getTransaction().begin();
-        cat = em.find(CharacterArrayType.class, characterArrayId);
-        em.remove(cat);
-        em.getTransaction().commit();
-    }
-
-    /**
-     * Removes the CharArrayType instance used in the tests.
-     */
-    public static void removeCharArrayType() {
-        EntityManager em = createEntityManager();
-        CharArrayType pcat;
-
-        em.getTransaction().begin();
-        pcat = em.find(CharArrayType.class, pCharArrayId);
-        em.remove(pcat);
-        em.getTransaction().commit();
-    }
-
 }

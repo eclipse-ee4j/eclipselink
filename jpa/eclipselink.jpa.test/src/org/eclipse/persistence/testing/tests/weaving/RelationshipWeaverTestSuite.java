@@ -17,8 +17,6 @@ import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
 
-import javax.persistence.spi.PersistenceUnitInfo;
-
 // JUnit imports
 import junit.framework.*;
 
@@ -31,15 +29,11 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.models.weaving.Customer;
 import org.eclipse.persistence.testing.models.weaving.Item;
 import org.eclipse.persistence.testing.models.weaving.Order;
-import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
 import org.eclipse.persistence.internal.weaving.*;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
-import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;;
 
 public class RelationshipWeaverTestSuite extends TestCase {
     

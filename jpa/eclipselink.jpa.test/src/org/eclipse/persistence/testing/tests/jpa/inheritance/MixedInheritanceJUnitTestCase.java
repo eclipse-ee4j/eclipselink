@@ -71,7 +71,7 @@ public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
 
     public void testCreateNewMudTire() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         MudTireInfo mudTire = new MudTireInfo();
         mudTire.setName("Goodyear Mud Tracks");
@@ -89,7 +89,7 @@ public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
             int prePersistCountBefore = TireInfoListener.PRE_PERSIST_COUNT;
             em.persist(mudTire);
             mudTireId = mudTire.getId();
-            em.getTransaction().commit();
+            commitTransaction(em);
             int prePersistCountAfter = TireInfoListener.PRE_PERSIST_COUNT;
             
             int perPersistCountTotal = prePersistCountAfter - prePersistCountBefore;
@@ -97,13 +97,13 @@ public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
         } catch (Exception exception ) {
             fail("Error persisting mud tire: " + exception.getMessage());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     
     public void testCreateNewRockTire() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         RockTireInfo rockTire = new RockTireInfo();
         rockTire.setName("Goodyear Mud Tracks");
@@ -114,11 +114,11 @@ public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
         try {
             em.persist(rockTire);
             rockTireId = rockTire.getId();
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (Exception exception ) {
             fail("Error persisting rock tire: " + exception.getMessage());
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     

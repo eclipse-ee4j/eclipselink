@@ -48,19 +48,19 @@ import org.eclipse.persistence.testing.tests.jpa.relationships.VirtualAttributeT
 import org.eclipse.persistence.testing.tests.jpa.validation.ValidationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.validation.QueryParameterValidationTestSuite;
 
-import org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLUnitTestSuite;
-import org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLSimpleTestSuite;
-import org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLComplexTestSuite;
-import org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLValidationTestSuite;
-import org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLComplexAggregateTestSuite;
-import org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLDateTimeTestSuite;
-import org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLParameterTestSuite;
-import org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLExamplesTestSuite;
-import org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLModifyTestSuite;
-import org.eclipse.persistence.testing.tests.ejb.ejbqltesting.AdvancedQueryTestSuite;
-import org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLInheritanceTestSuite;
 
 import org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.JPAAdvPropertiesJUnitTestCase;
+import org.eclipse.persistence.testing.tests.jpa.jpql.AdvancedQueryTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexAggregateTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLDateTimeTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLExamplesTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLInheritanceTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLModifyTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLParameterTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLSimpleTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLValidationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
 

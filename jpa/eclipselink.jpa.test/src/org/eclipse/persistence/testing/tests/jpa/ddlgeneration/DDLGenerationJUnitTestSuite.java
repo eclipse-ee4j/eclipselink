@@ -59,19 +59,19 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
     // If there is a same name column for the entity and many-to-many table, wrong pk constraint generated.
     public void testDDLPkConstraintErrorIncludingRelationTableColumnName() {
         EntityManager em = createEntityManager(DDL_PU);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
 
             CKeyEntityC c = new CKeyEntityC(new CKeyEntityCPK("Manager"));
             em.persist(c);
 
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
             fail("DDL generation may generate wrong Primary Key constraint, thrown:" + e);
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -81,7 +81,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         CKeyEntityBPK bKey;
         
         EntityManager em = createEntityManager(DDL_PU);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             CKeyEntityA a = new CKeyEntityA("Wonseok", "Kim");
             long seq = System.currentTimeMillis(); // just to get unique value :-)
@@ -96,21 +96,21 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.persist(a);
             em.persist(b);
 
-            em.getTransaction().commit();
+            commitTransaction(em);
             
             aKey = a.getKey();
             bKey = b.getKey();
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
             throw e;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
         //clearCache(DDL_PU);
 
         em = createEntityManager(DDL_PU);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             CKeyEntityA a = em.find(CKeyEntityA.class, aKey);
             assertNotNull(a);
@@ -121,18 +121,18 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             assertEquals(b.getUnq1(), "u0001");
             assertEquals(b.getUnq2(), "u0002");
 
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
             throw e;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
         //clearCache(DDL_PU);
 
         em = createEntityManager(DDL_PU);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
 
             CKeyEntityB b = em.find(CKeyEntityB.class, bKey);
@@ -142,13 +142,13 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             assertNotNull(a);
             assertEquals(a.getKey(), aKey);
 
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
             throw e;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
 
     }
@@ -161,7 +161,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         UniqueConstraintsEntity1 ucEntity;
         
         EntityManager em = createEntityManager(DDL_PU);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             ucEntity = em.find(UniqueConstraintsEntity1.class, 1);
             if(ucEntity == null) {
@@ -169,15 +169,15 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
                 ucEntity.setColumns(1, 1, 1, 1);
                 em.persist(ucEntity);
             }
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            em.close();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
+            closeEntityManager(em);
             throw e;
         }
         
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             ucEntity = new UniqueConstraintsEntity1(2);
             ucEntity.setColumns(1, 2, 2, 2);
@@ -188,13 +188,13 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         } catch (PersistenceException e) {
             //expected
         } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            em.close();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
+            closeEntityManager(em);
         }
 
         em = createEntityManager(DDL_PU);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             ucEntity = new UniqueConstraintsEntity1(2);
             ucEntity.setColumns(2, 1, 2, 2);
@@ -205,13 +205,13 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         } catch (PersistenceException e) {
             //expected
         } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            em.close();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
+            closeEntityManager(em);
         }
         
         em = createEntityManager(DDL_PU);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             ucEntity = new UniqueConstraintsEntity1(2);
             ucEntity.setColumns(2, 2, 1, 1);
@@ -222,13 +222,13 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         } catch (PersistenceException e) {
             //expected
         } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            em.close();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
+            closeEntityManager(em);
         }
 
         em = createEntityManager(DDL_PU);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             ucEntity = new UniqueConstraintsEntity1(2);
             ucEntity.setColumns(2, 2, 1, 2);
@@ -237,9 +237,9 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         } catch (PersistenceException e) {
             fail("Unique constraint violation is not expected, thrown:" + e);
         } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            em.close();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
+            closeEntityManager(em);
         }
     }
     
@@ -251,7 +251,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         UniqueConstraintsEntity2 ucEntity;
         
         EntityManager em = createEntityManager(DDL_PU);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             ucEntity = em.find(UniqueConstraintsEntity2.class, 1);
             if(ucEntity == null) {
@@ -259,15 +259,15 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
                 ucEntity.setColumns(1, 1, 1, 1);
                 em.persist(ucEntity);
             }
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            em.close();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
+            closeEntityManager(em);
             throw e;
         }
         
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             ucEntity = new UniqueConstraintsEntity2(2);
             ucEntity.setColumns(1, 2, 2, 2);
@@ -278,13 +278,13 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         } catch (PersistenceException e) {
             //expected
         } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            em.close();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
+            closeEntityManager(em);
         }
 
         em = createEntityManager(DDL_PU);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             ucEntity = new UniqueConstraintsEntity2(2);
             ucEntity.setColumns(2, 1, 2, 2);
@@ -295,13 +295,13 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         } catch (PersistenceException e) {
             //expected
         } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            em.close();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
+            closeEntityManager(em);
         }
         
         em = createEntityManager(DDL_PU);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             ucEntity = new UniqueConstraintsEntity2(2);
             ucEntity.setColumns(2, 2, 1, 1);
@@ -312,13 +312,13 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         } catch (PersistenceException e) {
             //expected
         } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            em.close();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
+            closeEntityManager(em);
         }
 
         em = createEntityManager(DDL_PU);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             ucEntity = new UniqueConstraintsEntity2(2);
             ucEntity.setColumns(2, 2, 1, 2);
@@ -327,9 +327,9 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         } catch (PersistenceException e) {
             fail("Unique constraint violation is not expected, thrown:" + e);
         } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            em.close();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
+            closeEntityManager(em);
         }
     }
 
@@ -338,7 +338,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
     // Issue: GF#1391
     public void testDDLSubclassEmbeddedIdPkColumnsInJoinedStrategy() {
         EntityManager em = createEntityManager(DDL_PU);
-        em.getTransaction().begin();
+        beginTransaction(em);
         // let's see if a subclass entity is persisted and found well
         try {
             long seq = System.currentTimeMillis(); // just to get unique value :-)
@@ -355,14 +355,14 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
                             .getSingleResult();
             assertNotNull(result);
             
-            em.getTransaction().rollback();
+            rollbackTransaction(em);
             
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
             throw e;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
     

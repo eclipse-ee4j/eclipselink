@@ -71,7 +71,7 @@ public class OrderedListJunitTest extends JUnitTestCase {
     public void testInitialize() {
         
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             BeerConsumer beerConsumer = new BeerConsumer();
             beerConsumer.setName("Guy Pelletier");
@@ -123,13 +123,13 @@ public class OrderedListJunitTest extends JUnitTestCase {
             alpine5.setClassification(Alpine.Classification.SWEET);
             beerConsumer.addAlpineBeerToConsume(alpine5);
             
-            em.getTransaction().commit();
+            commitTransaction(em);
             
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             fail("An exception was caught during create operation: [" + e.getMessage() + "]");
         }
         
@@ -143,19 +143,19 @@ public class OrderedListJunitTest extends JUnitTestCase {
         try {
             beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
             
-            em.getTransaction().begin();
+            beginTransaction(em);
         
             beerConsumer = em.merge(beerConsumer);
 
             alpine1 = beerConsumer.removeAlpineBeerToConsume(1);
             alpine2 = beerConsumer.removeAlpineBeerToConsume(1);
             
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             fail("An exception was caught during test1 : [" + ex.getMessage() + "]");
         }
             
@@ -177,19 +177,19 @@ public class OrderedListJunitTest extends JUnitTestCase {
         try {
             beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
             
-            em.getTransaction().begin();
+            beginTransaction(em);
         
             beerConsumer = em.merge(beerConsumer);
 
             alpine1 = beerConsumer.moveAlpineBeerToConsume(2, 4);
             alpine2 = beerConsumer.moveAlpineBeerToConsume(1, 3);
             
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             fail("An exception was caught while adding the new alpine at a specific index: [" + ex.getMessage() + "]");
         }
             
@@ -211,7 +211,7 @@ public class OrderedListJunitTest extends JUnitTestCase {
         try {
             beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
             
-            em.getTransaction().begin();
+            beginTransaction(em);
         
             beerConsumer = em.merge(beerConsumer);
 
@@ -230,12 +230,12 @@ public class OrderedListJunitTest extends JUnitTestCase {
             alpine4.setClassification(Alpine.Classification.SWEET);
             beerConsumer.addAlpineBeerToConsume(alpine4, 3);
                 
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             fail("An exception was caught while adding the new alpine at a specific index: [" + ex.getMessage() + "]");
         }
             

@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.testing.tests.ejb.ejbqltesting;
+package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.math.BigDecimal;
 
@@ -678,7 +678,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     public void testDeleteExpression() {
         JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             String orderString = "DELETE FROM OrderBean o WHERE o.customer.name ='Karen McDonald' ";
             em.createQuery(orderString).executeUpdate();
             orderString = "DELETE FROM OrderBean o WHERE o.billedCustomer.name ='Karen McDonald' ";
@@ -694,7 +694,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             List customerFound = (List)em.getActiveSession().executeQuery(raq);
             Assert.assertEquals("Delete Expression test failed", 0, customerFound.size());
         } finally {
-            em.getTransaction().rollback();
+            rollbackTransaction(em);
         }
     }
 
@@ -708,7 +708,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     public void testComplexDeleteExpression() {
         JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             String orderString = "DELETE FROM OrderBean o WHERE o.customer.name ='Karen McDonald' ";
             em.createQuery(orderString).executeUpdate();
             orderString = "DELETE FROM OrderBean o WHERE o.billedCustomer.name ='Karen McDonald' ";
@@ -725,7 +725,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             List customerFound = (List)em.getActiveSession().executeQuery(raq);
             Assert.assertEquals("Complex Delete Expression test failed", 0, customerFound.size());
         } finally {
-            em.getTransaction().rollback();
+            rollbackTransaction(em);
         }
     }
 
@@ -743,9 +743,9 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         Expression whereClause2 = uaq.getExpressionBuilder().subQuery(innerQuery).greaterThan(0);
         uaq.setSelectionCriteria(whereClause1.and(whereClause2));
-        em.getTransaction().begin();
+        beginTransaction(em);
         List expectedResult = (List)em.getActiveSession().executeQuery(uaq);
-        em.getTransaction().commit();
+        commitTransaction(em);
 
         String ejbqlString = "UPDATE Customer c SET c.name = 'Test Case' WHERE c.name = 'Jane Smith' " + "AND 0 < (SELECT COUNT(o) FROM Customer cust JOIN cust.orders o)";
         result = em.createQuery(ejbqlString).executeUpdate();
@@ -770,11 +770,11 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         Employee manager = (Employee)em.createQuery(ejbqlString2).getSingleResult();
 
 
-        em.getTransaction().begin();
+        beginTransaction(em);
 
         em.createQuery("UPDATE Employee e SET e.manager = :manager " + "WHERE e.address = :addr ").setParameter("manager", manager).setParameter("addr", addr).executeUpdate();
 
-        em.getTransaction().commit();
+        commitTransaction(em);
 
         String ejbqlString3 = "SELECT DISTINCT e.manager FROM Employee e WHERE e.lastName = '" + empName + "'";
         String result = ((Employee)em.createQuery(ejbqlString3).getSingleResult()).getLastName();
@@ -790,9 +790,9 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         startCalendar.set(1905, 11, 31, 0, 0, 0);
         java.sql.Date startDate = new java.sql.Date(startCalendar.getTime().getTime());
         
-        em.getTransaction().begin();
+        beginTransaction(em);
         em.createQuery("UPDATE Employee e SET e.period.startDate= :startDate").setParameter("startDate", startDate).executeUpdate();
-        em.getTransaction().commit();        
+        commitTransaction(em);        
     }
 
 

@@ -66,8 +66,6 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
             }
 
             protected void tearDown() {
-                removeDateTime();
-
                 clearCache();
             }
         };
@@ -80,12 +78,12 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         EntityManager em = createEntityManager();
         DateTime dt;
 
-        em.getTransaction().begin();
+        beginTransaction(em);
         dt = new DateTime(new java.sql.Date(0), new java.sql.Time(0), new java.sql.Timestamp(0),
                 new java.util.Date(0), java.util.Calendar.getInstance());
         em.persist(dt);
         datetimeId = dt.getId();
-        em.getTransaction().commit();
+        commitTransaction(em);
     }
 
     /**
@@ -96,18 +94,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         DateTime dt, dt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             dt = em.find(DateTime.class, datetimeId);
             dt.setDate(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT dt FROM DateTime dt WHERE dt.id = " + datetimeId);
             dt2 = (DateTime) q.getSingleResult();
             assertTrue("Error setting java.sql.Date field to null", dt2.getDate() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -120,18 +118,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         DateTime dt, dt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             dt = em.find(DateTime.class, datetimeId);
             dt.setTime(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT dt FROM DateTime dt WHERE dt.id = " + datetimeId);
             dt2 = (DateTime) q.getSingleResult();
             assertTrue("Error setting java.sql.Time field to null", dt2.getTime() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -144,18 +142,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         DateTime dt, dt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             dt = em.find(DateTime.class, datetimeId);
             dt.setTimestamp(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT dt FROM DateTime dt WHERE dt.id = " + datetimeId);
             dt2 = (DateTime) q.getSingleResult();
             assertTrue("Error setting java.sql.Timestamp field to null", dt2.getTimestamp() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -168,18 +166,18 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         DateTime dt, dt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             dt = em.find(DateTime.class, datetimeId);
             dt.setUtilDate(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT dt FROM DateTime dt WHERE dt.id = " + datetimeId);
             dt2 = (DateTime) q.getSingleResult();
             assertTrue("Error setting java.util.Date field to null", dt2.getUtilDate() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -192,32 +190,19 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         DateTime dt, dt2;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             dt = em.find(DateTime.class, datetimeId);
             dt.setCalendar(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             q = em.createQuery("SELECT dt FROM DateTime dt WHERE dt.id = " + datetimeId);
             dt2 = (DateTime) q.getSingleResult();
             assertTrue("Error setting java.util.Calendar field to null", dt2.getCalendar() == null);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
-    }
-
-    /**
-     * Removes the DateTime instance used in the tests.
-     */
-    public static void removeDateTime() {
-        EntityManager em = createEntityManager();
-        DateTime dt;
-
-        em.getTransaction().begin();
-        dt = em.find(DateTime.class, datetimeId);
-        em.remove(dt);
-        em.getTransaction().commit();
     }
 }

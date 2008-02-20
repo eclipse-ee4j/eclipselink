@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.testing.tests.ejb.ejbqltesting;
+package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;

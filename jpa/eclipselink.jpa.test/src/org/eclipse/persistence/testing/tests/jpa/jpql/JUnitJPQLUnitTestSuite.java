@@ -13,7 +13,7 @@
 
 
  
-package org.eclipse.persistence.testing.tests.ejb.ejbqltesting;
+package org.eclipse.persistence.testing.tests.jpa.jpql;
 import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
@@ -172,7 +172,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     public void testOuterJoinOnOneToOne(){
         org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         clearCache();
-        em.getTransaction().begin();
+        beginTransaction(em);
         int initialSize = em.createQuery("SELECT e from Employee e JOIN e.address a").getResultList().size(); 
         Employee emp = new Employee();
         emp.setFirstName("Steve");
@@ -181,7 +181,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         em.flush();
         List result = em.createQuery("SELECT e from Employee e LEFT OUTER JOIN e.address a").getResultList();
         assertTrue("Outer join was not properly added to the query", initialSize + 1 == result.size());
-        em.getTransaction().rollback();
+        rollbackTransaction(em);
     }
 
     public void testOuterJoinPolymorphic(){
@@ -429,7 +429,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     public void testDistinctSelectForEmployeeWithNullAddress(){
         org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             Employee emp = new Employee();
             emp.setFirstName("Dummy");
             emp.setLastName("Person");
@@ -437,7 +437,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             em.flush();
             List resultList = em.createQuery("SELECT DISTINCT e.address FROM Employee e").getResultList();
         }finally{
-            em.getTransaction().rollback();
+            rollbackTransaction(em);
         }
     }
     

@@ -44,15 +44,15 @@ public class ReportQueryMultipleReturnInheritanceTestSuite extends JUnitTestCase
         tireInfo.setPressure(32);
         tireInfo.setSpeedRating(220);
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             em.persist(tireInfo);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
     }
@@ -60,16 +60,16 @@ public class ReportQueryMultipleReturnInheritanceTestSuite extends JUnitTestCase
     public void tearDown () {
         if (m_reset) {
             EntityManager em = createEntityManager();
-            em.getTransaction().begin();
+            beginTransaction(em);
             try{
                 TireInfo localTire = em.find(TireInfo.class, tireInfo.getId());
                 em.remove(localTire);
-                em.getTransaction().commit();
+                commitTransaction(em);
             }catch (RuntimeException ex){
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
-                em.close();
+                closeEntityManager(em);
                 throw ex;
             }
             m_reset = false;

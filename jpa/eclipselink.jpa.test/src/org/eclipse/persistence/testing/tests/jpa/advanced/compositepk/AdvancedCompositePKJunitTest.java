@@ -70,22 +70,22 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     
     public void testCreateDepartment() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             // make sure the department is not left from the previous test run
             em.createQuery("DELETE FROM Department d WHERE d.name = 'DEPT A' AND d.role = 'ROLE A' AND d.location = 'LOCATION A'").executeUpdate();
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
-                em.close();
+                closeEntityManager(em);
                 throw e;
         }
         clearCache();
-        em.close();
+        closeEntityManager(em);
         em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
         
             Department department = new Department();
@@ -94,20 +94,20 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             department.setLocation("LOCATION A");
             em.persist(department);
             
-            em.getTransaction().commit();
+            commitTransaction(em);
             m_departmentPK = department.getPK();
         } catch (RuntimeException e) {
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
-                em.close();
+                closeEntityManager(em);
                 throw e;
         }
     }
     
     public void testCreateScientists() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {    
             Department department = em.merge(em.find(Department.class, m_departmentPK));
@@ -152,16 +152,16 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             department.addScientist(jScientist);
             em.persist(jScientist);
             
-            em.getTransaction().commit();
+            commitTransaction(em);
             m_scientist1PK = scientist1.getPK();
             m_scientist2PK = scientist2.getPK();
             m_scientist3PK = scientist3.getPK();
             m_jScientistPK = jScientist.getPK();
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -216,7 +216,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         Query controlQuery4 = em.createQuery("SELECT s FROM Scientist s WHERE EXISTS (SELECT DISTINCT d FROM Department d JOIN d.scientists ds JOIN ds.cubicle c WHERE c.code = 'G' AND d = s.department)");
         List<Scientist> controlResults4 = controlQuery4.getResultList();
 
-        em.close();        
+        closeEntityManager(em);        
 
         // compare results - they should be the same
         compareResults(results1, controlResults1, "query1");

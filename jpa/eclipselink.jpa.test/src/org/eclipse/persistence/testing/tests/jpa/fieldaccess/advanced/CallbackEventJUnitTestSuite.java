@@ -63,18 +63,18 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         super.setUp();
         //populate
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             new_emp = new Employee();
             new_emp.setFirstName("New");
             new_emp.setLastName("Guy");
             em.persist(new_emp);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
             
@@ -93,21 +93,21 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         int m_beforePrePersistEvent = EmployeeListener.PRE_PERSIST_COUNT;
         
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();        
+        beginTransaction(em);        
         try{
             em.persist(new_emp);//ensure we only check the cache or this test will fail
             em.remove(new_emp);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         m_afterEvent = EmployeeListener.PRE_REMOVE_COUNT;
         int m_afterPrePersistEvent = EmployeeListener.PRE_PERSIST_COUNT;
-        em.close();
+        closeEntityManager(em);
         this.assertTrue("The prePersist callback method was not called.", m_beforePrePersistEvent != m_afterPrePersistEvent);
         this.assertTrue("The preRemove callback method was not called.", m_beforeEvent != m_afterEvent);
     }
@@ -117,23 +117,23 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         m_beforeEvent = EmployeeListener.PRE_REMOVE_COUNT;
         clearCache("fieldaccess");
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         //new_emp should exist only in db
         try{
             Employee newEmp = new Employee();
             newEmp.setFirstName("new");
             newEmp.setLastName("guy2");
             em.remove(newEmp);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         m_afterEvent = EmployeeListener.PRE_REMOVE_COUNT;
-        em.close();
+        closeEntityManager(em);
         
         this.assertTrue("The preRemove callback method was called, remove should have been ignored.", m_beforeEvent == m_afterEvent);
         //Employee emp = (Employee)em.find(Employee.class, new_emp.getId());
@@ -144,7 +144,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
     public void testPersistOnRegisteredObject() {
         clearCache("fieldaccess");
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         //create new employee and persist it
         try{
             Employee newEmp = new Employee();
@@ -154,12 +154,12 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
             m_beforeEvent = EmployeeListener.POST_PERSIST_COUNT;
             em.persist(newEmp);
             m_afterEvent = EmployeeListener.POST_PERSIST_COUNT;        
-            em.getTransaction().rollback();
+            rollbackTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
 
@@ -181,7 +181,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
         Employee emp = null;
         int originalVersion = 0;
         String firstNameExpectedAfterCommit = "";
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             emp = em.find(Employee.class, new_emp.getId());
             originalVersion = getVersion(emp);
@@ -195,12 +195,12 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
             // and either original first name or an updated one.
             String firstNameAssigned = EmployeeListener.PRE_UPDATE_NAME_PREFIX + firstNameExpectedAfterCommit;
             emp.setFirstName(firstNameAssigned);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
 
@@ -248,16 +248,16 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
     public void tearDown () {
         if (m_reset) {
             EntityManager em = createEntityManager("fieldaccess");
-            em.getTransaction().begin();
+            beginTransaction(em);
             try {
                 Employee emp = em.find(Employee.class, new_emp.getId());
                 em.remove(emp);
-                em.getTransaction().commit();
+                commitTransaction(em);
             } catch (RuntimeException ex){
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
-                em.close();
+                closeEntityManager(em);
                 throw ex;
             }
             m_reset = false;

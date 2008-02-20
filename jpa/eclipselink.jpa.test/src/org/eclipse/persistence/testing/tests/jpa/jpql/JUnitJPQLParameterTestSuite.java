@@ -11,7 +11,7 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
 
-package org.eclipse.persistence.testing.tests.ejb.ejbqltesting;
+package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 
 import java.util.List;
@@ -137,7 +137,7 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
 
         // test query
         String update = "UPDATE Employee e SET e.status = :status, e.payScale = :payScale WHERE e.period.endDate IS NULL";
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Query q = em.createQuery(update);
             q.setParameter("status", Employee.EmployeeStatus.FULL_TIME);
@@ -153,8 +153,8 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
             int nr = ((Number)q2.getSingleResult()).intValue();
             assertEquals("unexpected number of changed values in the database", nrOfEmps, nr);
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
     }

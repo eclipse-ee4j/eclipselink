@@ -13,7 +13,7 @@
 
 
  
-package org.eclipse.persistence.testing.tests.ejb.ejbqltesting;
+package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -531,7 +531,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         org.eclipse.persistence.jpa.JpaEntityManager em = 
             (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
         try{
-            em.getTransaction().begin();
+            beginTransaction(em);
                 Scientist s = new Scientist();
                 s.setFirstName("John");
                 s.setLastName("Doe");
@@ -557,7 +557,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         
             Assert.assertEquals("Complex COUNT on joined variable composite PK", expectedResult, result);
         }finally{
-            em.getTransaction().rollback();
+            rollbackTransaction(em);
         }
 }
 

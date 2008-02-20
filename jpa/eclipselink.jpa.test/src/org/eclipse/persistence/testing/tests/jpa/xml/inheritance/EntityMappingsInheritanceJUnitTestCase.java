@@ -94,7 +94,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         int postPersistDefaultListenerCountBefore = DefaultListener.POST_PERSIST_COUNT;
         
         EntityManager em = createEntityManager();        
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         Bus bus = new Bus();
         bus.setPassengerCapacity(new Integer(50));
@@ -105,13 +105,13 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         try {
             em.persist(bus);
             busId = bus.getId();
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException ex) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         
@@ -138,42 +138,42 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     
     public void testCreateFueledVehicle() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             SportsCar car = (SportsCar) InheritanceModelExamples.sportsCarExample1();
             car.setDescription("Ferrari");
             car.setMaxSpeed(300);
             em.persist(car);
             sportsCarId = car.getId();
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             fail("An exception was caught during create FueledVehicle [SportsCar] operation : " + e.getMessage());
         }finally{
-            em.close();
+            closeEntityManager(em);
         }
         
     }
 
     public void testCreateNonFueledVehicle() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             
             Company co = InheritanceModelExamples.companyExample2();
             Boat boat = InheritanceModelExamples.boatExample1(co);
             em.persist(boat);
             boatId = boat.getId();
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             fail("An exception was caught during create NonFueledVehicle [Boat] operation : " + e.getMessage());
         }finally{
-            em.close();
+            closeEntityManager(em);
         }
     }    
     
@@ -183,17 +183,17 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         int postRemoveBusCountBefore = Bus.POST_REMOVE_COUNT;
         
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             em.remove(em.find(Bus.class, busId));
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     
@@ -205,15 +205,15 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     
     public void testDeleteFueledVehicle() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             em.remove(em.find(SportsCar.class, sportsCarId));
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting FueledVehicle [SportsCar]", em.find(SportsCar.class, sportsCarId) == null);
@@ -221,15 +221,15 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
 
     public void testDeleteNonFueledVehicle() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             em.remove(em.find(Boat.class, boatId));
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting NonFueledVehicle [Boat]", em.find(Boat.class, boatId) == null);
@@ -262,7 +262,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         int postUpdateBusCountBefore = Bus.POST_UPDATE_COUNT;
         
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         Bus bus;
         
@@ -270,13 +270,13 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
             bus = em.find(Bus.class, busId);
             bus.setDescription("A crappy bus");
             em.merge(bus);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         
@@ -295,11 +295,11 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
             // Don't clear the cache and check that we get a post load (post refresh internally).
             em.refresh(bus);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
             
@@ -310,17 +310,17 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     
     public void testUpdateFueledVehicle() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             SportsCar car = em.find(SportsCar.class, sportsCarId);
             car.setDescription("Corvette");
             em.merge(car);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         clearCache();
@@ -330,18 +330,18 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
 
     public void testUpdateNonFueledVehicle() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Boat boat = em.find(Boat.class, boatId);
             Company co = boat.getOwner();
             co.setName("XYZ");
             em.merge(boat);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         clearCache();

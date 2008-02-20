@@ -89,7 +89,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
 
     public void testUnidirectionalOneToOneCreate() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee employee = ModelExamples.employeeExample1();		
             Project project = ModelExamples.projectExample1();
@@ -100,12 +100,12 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
             em.persist(project);
             otoEmployeeId = employee.getId();
             otoProjectId = project.getId();
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -119,7 +119,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         
     public void testUnidirectionalOneToOneDeleteNonowning() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee employee = em.find(Employee.class, otoEmployeeId);
             Project project = em.find(Project.class, otoProjectId);
@@ -127,12 +127,12 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
             assertTrue(project != null); 
             project.setTeamLeader(null);
             em.remove(employee);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting Employee", em.find(Employee.class, otoEmployeeId) == null);
@@ -140,17 +140,17 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
 
     public void testUnidirectionalOneToOneDeleteOwning() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Project project = em.find(Project.class, otoProjectId);
             assertTrue(project != null);
             em.remove(project);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting Project", em.find(Project.class, otoProjectId) == null);
@@ -158,7 +158,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
 
     public void testUnidirectionalOneToManyCreate() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee employee = ModelExamples.employeeExample1();		
             PhoneNumber phone1 = ModelExamples.phoneExample1();		
@@ -171,12 +171,12 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
             otmEmployeeId = employee.getId();
             otmPhone1Id = phone1.getId();
             otmPhone2Id = phone2.getId();
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -200,18 +200,18 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
     
     public void testUnidirectionalOneToManyDeleteNonowning() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee employee = em.find(Employee.class, otmEmployeeId);
             PhoneNumber phone = em.find(PhoneNumber.class, otmPhone1Id);
             employee.removePhoneNumber(phone);
             em.remove(phone);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting PhoneNumber", em.find(PhoneNumber.class, otmPhone1Id) == null);
@@ -219,19 +219,19 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         
     public void testUnidirectionalOneToManyDeleteOwning() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee employee = em.find(Employee.class, otmEmployeeId);
             
             //if cascade-all is set, comment this line out
             employee.setPhoneNumbers(null);
             em.remove(employee);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting Employee", em.find(Employee.class, otmEmployeeId) == null);
@@ -241,7 +241,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
 
     public void testUnidirectionalManyToOneCreate() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee employee1 = ModelExamples.employeeExample1();		
             Employee employee2 = ModelExamples.employeeExample2();		
@@ -255,12 +255,12 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
             mtoEmployee1Id = employee1.getId();
             mtoEmployee2Id = employee2.getId();
             mtoAddressId = address.getId();
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -274,7 +274,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
     
     public void testUnidirectionalManyToOneDeleteNonowning() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee employee1 = em.find(Employee.class, mtoEmployee1Id);
             Employee employee2 = em.find(Employee.class, mtoEmployee2Id);
@@ -282,12 +282,12 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
             employee1.setAddress(null);
             employee2.setAddress(null);
             em.remove(address);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting Address", em.find(Address.class, mtoAddressId) == null);
@@ -295,18 +295,18 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
         
     public void testUnidirectionalManyToOneDeleteOwning() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee employee1 = em.find(Employee.class, mtoEmployee1Id);
             Employee employee2 = em.find(Employee.class, mtoEmployee2Id);
             em.remove(employee1);
             em.remove(employee2);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting Employee", em.find(Employee.class, mtoEmployee1Id) == null);
@@ -315,7 +315,7 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
     
     public void testUnidirectionalManyToManyCreate() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee employee = ModelExamples.employeeExample1();		
             Project project1=ModelExamples.projectExample1();
@@ -328,12 +328,12 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
             mtmEmployeeId = employee.getId();
             mtmProject1Id = project1.getId();
             mtmProject2Id = project2.getId();
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -357,18 +357,18 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
 
     public void testUnidirectionalManyToManyDeleteNonowning() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee employee = em.find(Employee.class, mtmEmployeeId);
             Project project1 = em.find(Project.class, mtmProject1Id);
             employee.removeProject(project1);
             em.remove(project1);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting Project", em.find(Project.class, mtmProject1Id) == null);
@@ -376,17 +376,17 @@ public class EntityMappingsUnidirectionalRelationshipsJUnitTestCase extends JUni
 
     public void testUnidirectionalManyToManyDeleteOwning() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee employee = em.find(Employee.class, mtmEmployeeId);
             employee.setProjects(null);
             em.remove(employee);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting Employee", em.find(Employee.class, mtmEmployeeId) == null);

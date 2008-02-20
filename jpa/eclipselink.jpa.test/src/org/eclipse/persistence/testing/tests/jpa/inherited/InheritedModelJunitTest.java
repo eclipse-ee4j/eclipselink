@@ -63,7 +63,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
     
     public void testCreateBlue() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             Blue blue = new Blue();
@@ -71,17 +71,17 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             em.persist(blue);
             m_blueId = blue.getId();
             blue.setUniqueKey(m_blueId);
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             fail("An exception was caught during create operation: [" + e.getMessage() + "]");
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     public void testReadBlue() {
@@ -92,29 +92,29 @@ public class InheritedModelJunitTest extends JUnitTestCase {
     
     public void testCreateBeerConsumer() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {    
             BeerConsumer beerConsumer = new BeerConsumer();
             beerConsumer.setName("Blue Consumer");
             em.persist(beerConsumer);
             m_beerConsumerId = beerConsumer.getId();
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             fail("An exception was caught during create operation: [" + e.getMessage() + "]");
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     public void testUpdateBeerConsumer() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {    
             BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId);
@@ -130,17 +130,17 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             beerConsumerDetached.addBlueBeerToConsume(blue);
             
             em.merge(beerConsumerDetached);
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
             e.printStackTrace();
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             fail("An exception was caught during the merge of the detached beer consumer: [" + e.getMessage() + "]");
         }
         
-        em.close();
+        closeEntityManager(em);
     }
 }

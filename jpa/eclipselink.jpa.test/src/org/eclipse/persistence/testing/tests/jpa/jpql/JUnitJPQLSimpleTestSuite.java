@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.testing.tests.ejb.ejbqltesting;
+package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 
 import java.io.ByteArrayInputStream;
@@ -481,16 +481,16 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         Employee emp = (Employee)em.createQuery("SELECT e from Employee e").getResultList().get(0);
         String oldFirstName = emp.getFirstName();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             emp = em.find(Employee.class, emp.getId());
             emp.setFirstName(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException ex) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         try {
@@ -499,15 +499,15 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             assertTrue("Failed to return null value", result.contains(null));
         } finally {
             try {
-                em.getTransaction().begin();
+                beginTransaction(em);
                 emp = em.find(Employee.class, emp.getId());
                 emp.setFirstName(oldFirstName);
-                em.getTransaction().commit();
+                commitTransaction(em);
             } catch (RuntimeException ex) {
-                if (em.getTransaction().isActive()) {
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
                 }
-                em.close();
+                closeEntityManager(em);
                 throw ex;
             }
 
@@ -1955,7 +1955,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         if (errorMsg.length() > 0) {
             Assert.fail(errorMsg);
         }
-        em.close();
+        closeEntityManager(em);
     }
 
     public void selectNativeQueryWithPositionalParameterTest() {
@@ -2021,6 +2021,6 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         if (errorMsg.length() > 0) {
             Assert.fail(errorMsg);
         }
-        em.close();
+        closeEntityManager(em);
     }
 }

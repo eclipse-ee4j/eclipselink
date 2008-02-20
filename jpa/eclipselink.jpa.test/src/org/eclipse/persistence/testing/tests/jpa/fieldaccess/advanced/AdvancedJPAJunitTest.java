@@ -131,7 +131,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             assertFalse("Disable cache hits was true. Customizer should have made it false.", descriptor.shouldDisableCacheHits());
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
@@ -153,7 +153,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testUpdateEmployee() {
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findAllFieldAccessSQLEmployees");
@@ -166,19 +166,19 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 emp.addResponsibility(newResponsibility);
                 emp.setMondayToFridayWorkWeek();
                 empId = emp.getId();
-                em.getTransaction().commit();
+                commitTransaction(em);
             }
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
@@ -188,7 +188,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testVerifyUpdatedEmployee() {
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             Employee emp = em.find(Employee.class, empId);
@@ -206,16 +206,16 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             assertTrue("The new responsibility was not added.", found);
             assertTrue("The basic collection using enums was not persisted correctly.", emp.worksMondayToFriday());
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
@@ -227,7 +227,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testCreateNewBuyer() {
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {            
             GoldBuyer buyer = new GoldBuyer();
@@ -241,19 +241,19 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             buyer.addMastercard(mastercard);
             buyer.setSaturdayToSundayBuyingDays();
             em.persist(buyer);
-            em.getTransaction().commit();    
+            commitTransaction(em);    
             buyerId = buyer.getId();
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
@@ -265,7 +265,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testVerifyNewBuyer() {
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {            
             GoldBuyer buyer = em.find(GoldBuyer.class, buyerId);
@@ -279,16 +279,16 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             assertTrue("The serialized enum set was not persisted correctly.", buyer.buysSaturdayToSunday());
             
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
@@ -341,7 +341,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testGiveFredASexChange() {
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findAllFieldAccessEmployeesByFirstName");
@@ -357,7 +357,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 fred.setFirstName("Penelope");
                 penelopeId = fred.getId();
                 
-                em.getTransaction().commit();
+                commitTransaction(em);
                 
                 // Clear cache and clear the entity manager
                 clearCache("fieldaccess");    
@@ -367,16 +367,16 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 assertTrue("Fred's sex change to Penelope didn't occur.", penelope.isFemale());
             }
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
@@ -384,7 +384,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testUpdatePenelopesPhoneNumberStatus() {
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             Employee emp = em.find(Employee.class, penelopeId);
@@ -395,7 +395,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 phoneNumber.addStatus(PhoneNumber.PhoneStatus.ASSIGNED);
             }
             
-            em.getTransaction().commit();
+            commitTransaction(em);
                 
             // Clear cache and clear the entity manager
             clearCache("fieldaccess");    
@@ -408,16 +408,16 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 assertTrue("", phone.getStatus().contains(PhoneNumber.PhoneStatus.ASSIGNED));
             }
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
@@ -425,7 +425,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testRemoveJillWithPrivateOwnedPhoneNumbers() {
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findAllFieldAccessEmployeesByFirstName");
@@ -451,7 +451,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 int jillId = jill.getId();
                 
                 em.remove(jill);
-                em.getTransaction().commit();
+                commitTransaction(em);
                 
                 assertNull("Jill herself was not removed.", em.find(Employee.class, jillId));
                 
@@ -460,16 +460,16 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 }
             }
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
@@ -477,7 +477,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testCreateNewEquipment() {
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             // Persist some equipment.
@@ -493,18 +493,18 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             equip1.setDescription("Broom");
             em.persist(equip3);
             
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
@@ -512,7 +512,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testAddNewEquipmentToDepartment() {
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {    
             EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findAllSQLEquipment");
@@ -530,19 +530,19 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 
                 em.persist(department);
                 deptId = department.getId();
-                em.getTransaction().commit();
+                commitTransaction(em);
             }
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
@@ -550,7 +550,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testNamedStoredProcedureQuery() {
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             Address address1 = new Address();
@@ -562,23 +562,23 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             address1.setCountry("Canada");
 
             em.persist(address1);
-            em.getTransaction().commit();
+            commitTransaction(em);
             
             Address address2 = (Address) em.createNamedQuery("SProcAddress").setParameter("ADDRESS_ID", address1.getId()).getSingleResult();
             assertTrue("Address not found using stored procedure", address2.equals(address1));
             
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
@@ -586,7 +586,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testNamedStoredProcedureQueryInOut() {
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             Address address1 = new Address();
@@ -598,23 +598,23 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             address1.setCountry("Canada");
 
             em.persist(address1);
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             Address address2 = (Address)em.createNamedQuery("SProcInOut").setParameter("ADDRESS_ID", address1.getId()).getSingleResult();
         
             assertTrue("Address not found using stored procedure", (address1.getId() == address2.getId()) && (address1.getStreet().equals(address2.getStreet())));
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
@@ -622,7 +622,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testRemoveDepartmentWithPrivateOwnedEquipment() {
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {    
             Department department = em.find(Department.class, deptId);
@@ -636,7 +636,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                     fail("Department with id="+deptId+", did not have any equipment.");
                 } else {
                     em.remove(department);
-                    em.getTransaction().commit();
+                    commitTransaction(em);
                 
                     assertNull("Department itself was not removed.", em.find(Department.class, deptId));
                 
@@ -646,16 +646,16 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 }
             }
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
@@ -663,14 +663,14 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      */
     public void testUpdateReadOnlyEquipmentCode() {
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {    
             EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findSQLEquipmentCodeA");
             EquipmentCode equipmentCode = (EquipmentCode) query.getSingleResult();
             
             equipmentCode.setCode("Z");
-            em.getTransaction().commit();
+            commitTransaction(em);
             
             // Nothing should have been written to the database. Query for 
             // EquipmentCode A again. If an exception is caught, then it was 
@@ -681,15 +681,15 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 fail("The read only EquipmentA was modified");
             }
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             // Re-throw exception to ensure stacktrace appears in test result.
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
 }

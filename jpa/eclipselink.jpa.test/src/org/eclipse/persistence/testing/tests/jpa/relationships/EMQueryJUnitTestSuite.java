@@ -67,7 +67,7 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
     public void testcreateNativeQuery() throws Exception {
         EntityManager em = createEntityManager();
         try{
-            em.getTransaction().begin();
+            beginTransaction(em);
             Query query1 = em.createNativeQuery("Select * FROM CMP3_CUSTOMER");
             Query query2 = em.createNativeQuery("INSERT INTO CMP3_CUSTOMER (CUST_ID, NAME, CITY, CUST_VERSION) VALUES (1111, NULL, NULL, 1)");
             Query query3 = em.createNativeQuery("DELETE FROM CMP3_CUSTOMER WHERE (CUST_ID=1111)");
@@ -86,8 +86,8 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
             assertTrue("Native Select query gave unexpected result after Native Delete query ", c3.size()==c1.size() );
         }finally{
             try{
-                em.getTransaction().rollback();
-                em.close();
+                rollbackTransaction(em);
+                closeEntityManager(em);
             }catch(Exception ee){}
         }
     }
@@ -100,7 +100,7 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
     public void testcreateNativeQueryWithSelectSQL() throws Exception {
         EntityManager em = createEntityManager();
         try{
-            em.getTransaction().begin();
+            beginTransaction(em);
             Query query1 = em.createNativeQuery("Select * FROM CMP3_CUSTOMER");
             Query query2 = em.createNativeQuery("INSERT INTO CMP3_CUSTOMER (CUST_ID, NAME, CITY, CUST_VERSION) VALUES (1111, NULL, NULL, 1)");
             Query query3 = em.createNativeQuery("DELETE FROM CMP3_CUSTOMER WHERE (CUST_ID=1111)");
@@ -113,8 +113,8 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
             try {
                 result = query1.executeUpdate();
             } catch (RuntimeException ex) {
-                em.getTransaction().rollback();
-                em.getTransaction().begin();
+                rollbackTransaction(em);
+                beginTransaction(em);
             }
         
 
@@ -130,8 +130,8 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
             assertTrue("Native Select query gave unexpected result after Native Delete query ", c3.size()==c1.size() );
         }finally{
             try{
-                em.getTransaction().rollback();
-                em.close();
+                rollbackTransaction(em);
+                closeEntityManager(em);
             }catch(Exception ee){}
         }
     }
@@ -143,7 +143,7 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
     public void testNativeNamedQuery() throws Exception {
         EntityManager em = createEntityManager();
         try{
-            em.getTransaction().begin();
+            beginTransaction(em);
             Query query1 = em.createNamedQuery("findAllSQLCustomers");
             Query query2 = em.createNamedQuery("insertCustomer1111SQL");
             Query query3 = em.createNamedQuery("deleteCustomer1111SQL");
@@ -161,8 +161,8 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
             assertTrue("Named Native Select query gave unexpected result after Named Native Delete query ", c3.size()==c1.size() );
         }finally{
             try{
-                em.getTransaction().rollback();
-                em.close();
+                rollbackTransaction(em);
+                closeEntityManager(em);
             }catch(Exception ee){}
         }
     }
@@ -193,7 +193,7 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
     public void testExcludingUnneccesaryJoin() throws Exception {
         EntityManager em = createEntityManager();
         try{
-            em.getTransaction().begin();
+            beginTransaction(em);
                 
             Order o = new Order();
             Order o2 = new Order();
@@ -206,8 +206,8 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
             assertTrue("Incorrect results returned when testing equal does not produce an unnecessary join ", results.size()==2 );
         }finally{
             try{
-                em.getTransaction().rollback();
-                em.close();
+                rollbackTransaction(em);
+                closeEntityManager(em);
             }catch(Exception ee){}
         }
     }
@@ -217,7 +217,7 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
      */
     public void testRemoveUnneccesaryDistinctFromJoin() throws Exception {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Customer c = new Customer();
             Order o = new Order();
@@ -241,7 +241,7 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
                 .getResultList();
             assertTrue("Unexpected results returned from query without distinct clause", results1.size()==results2.size()+1);
         }finally{
-            em.getTransaction().rollback();
+            rollbackTransaction(em);
         }
     }
 

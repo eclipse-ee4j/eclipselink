@@ -57,16 +57,16 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         try{
             
-            em.getTransaction().begin();
+            beginTransaction(em);
             em.persist(c);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (Exception e){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw e;
         }
-        em.close();
+        closeEntityManager(em);
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("city").leftTrim("M").equal("anotick");
@@ -81,17 +81,17 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
 
         }catch(Exception e){
             em = createEntityManager();
-            em.getTransaction().begin();
+            beginTransaction(em);
             c = em.find(Customer.class, c.getCustomerId());
             em.remove(c);
             try{
-                em.getTransaction().commit();
+                commitTransaction(em);
             }catch (Throwable t){
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -107,16 +107,16 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         c.setCity(" anotick");
         EntityManager em = createEntityManager();
         try{
-            em.getTransaction().begin();
+            beginTransaction(em);
             em.persist(c);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (Exception e){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw e;
         }
-        em.close();
+        closeEntityManager(em);
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("city").leftTrim().equal("anotick");
@@ -131,17 +131,17 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
 
         }catch(Exception e){
             em = createEntityManager();
-            em.getTransaction().begin();
+            beginTransaction(em);
             c = em.find(Customer.class, c.getCustomerId());
             em.remove(c);
             try{
-                em.getTransaction().commit();
+                commitTransaction(em);
             }catch (Throwable t){
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -162,16 +162,16 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         c.setCity("ManotickM");
         EntityManager em = createEntityManager();
         try{
-            em.getTransaction().begin();
+            beginTransaction(em);
             em.persist(c);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (Exception e){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw e;
         }
-        em.close();
+        closeEntityManager(em);
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("city").rightTrim("M").equal("Manotick");
@@ -186,17 +186,17 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
 
         }catch(Exception e){
             em = createEntityManager();
-            em.getTransaction().begin();
+            beginTransaction(em);
             c = em.find(Customer.class, c.getCustomerId());
             em.remove(c);
             try{
-                em.getTransaction().commit();
+                commitTransaction(em);
             }catch (Throwable t){
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -213,16 +213,16 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         try{
             
-            em.getTransaction().begin();
+            beginTransaction(em);
             em.persist(c);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (Exception e){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw e;
         }
-        em.close();
+        closeEntityManager(em);
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("city").rightTrim().equal("Manotic");
@@ -237,17 +237,17 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
 
         }catch(Exception e){
             em = createEntityManager();
-            em.getTransaction().begin();
+            beginTransaction(em);
             c = em.find(Customer.class, c.getCustomerId());
             em.remove(c);
             try{
-                em.getTransaction().commit();
+                commitTransaction(em);
             }catch (Throwable t){
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -267,16 +267,16 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         i.setDescription("itemi description");
         EntityManager em = createEntityManager();
         try{
-            em.getTransaction().begin();
+            beginTransaction(em);
             em.persist(i);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (Exception e){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw e;
         }
-        em.close();
+        closeEntityManager(em);
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("name").trim("i").equal("tem");
@@ -292,16 +292,16 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         }catch(Exception e){
             em = createEntityManager();
             try{
-                em.getTransaction().begin();
+                beginTransaction(em);
                 i = em.find(Item.class, i.getItemId());
                 em.remove(i);
-                em.getTransaction().commit();
+                commitTransaction(em);
             }catch (Throwable t){
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -322,16 +322,16 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         i.setDescription("itemi description");
         EntityManager em = createEntityManager();
         try{
-            em.getTransaction().begin();
+            beginTransaction(em);
             em.persist(i);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (Exception e){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw e;
         }
-        em.close();
+        closeEntityManager(em);
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("name").trim().equal("tem");
@@ -346,16 +346,16 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         }catch(Exception e){
             em = createEntityManager();
             try{
-                em.getTransaction().begin();
+                beginTransaction(em);
                 i = em.find(Item.class, i.getItemId());
                 em.remove(i);
-                em.getTransaction().commit();
+                commitTransaction(em);
             }catch (Throwable t){
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -370,16 +370,16 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         i.setDescription("itemi description");
         EntityManager em = createEntityManager();
         try{
-            em.getTransaction().begin();
+            beginTransaction(em);
             em.persist(i);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (Exception e){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw e;
         }
-        em.close();
+        closeEntityManager(em);
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("name").locate("t").equal(new Integer(2));
@@ -395,16 +395,16 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         }catch(Exception e){
             em = createEntityManager();
             try{
-                em.getTransaction().begin();
+                beginTransaction(em);
                 i = em.find(Item.class, i.getItemId());
                 em.remove(i);
-                em.getTransaction().commit();
+                commitTransaction(em);
             }catch (Throwable t){
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -419,16 +419,16 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         i.setDescription("itemi description");
         EntityManager em = createEntityManager();
         try{
-            em.getTransaction().begin();
+            beginTransaction(em);
             em.persist(i);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (Exception e){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw e;
         }
-        em.close();
+        closeEntityManager(em);
         try{
             ExpressionBuilder builder = new ExpressionBuilder();
             Expression expression = builder.get("name").locate("i", 2).equal(new Integer(5));
@@ -444,16 +444,16 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         }catch(Exception e){
             em = createEntityManager();
             try{
-                em.getTransaction().begin();
+                beginTransaction(em);
                 i = em.find(Item.class, i.getItemId());
                 em.remove(i);
-                em.getTransaction().commit();
+                commitTransaction(em);
             }catch (Throwable t){
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }

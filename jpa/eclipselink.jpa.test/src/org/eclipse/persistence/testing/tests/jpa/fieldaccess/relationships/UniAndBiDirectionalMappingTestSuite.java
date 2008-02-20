@@ -59,7 +59,7 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
     public void selfReferencingManyToManyTest() throws Exception {
         EntityManager em = createEntityManager();
         
-        em.getTransaction().begin();
+        beginTransaction(em);
   
         Customer owen = new Customer();
         owen.setName("Owen Pelletier");
@@ -83,7 +83,7 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
         em.persist(guy);
         int guyId = guy.getCustomerId();
         
-        em.getTransaction().commit();
+        commitTransaction(em);
         
         clearCache();
         
@@ -95,7 +95,7 @@ public class UniAndBiDirectionalMappingTestSuite extends JUnitTestCase {
         assertFalse("Kirty did not have any controlled customers.", newKirty.getCCustomers().isEmpty());
         assertFalse("Guy did not have any controlled customers.", newGuy.getCCustomers().isEmpty());
 
-        em.close();
+        closeEntityManager(em);
     }    
     
     /**

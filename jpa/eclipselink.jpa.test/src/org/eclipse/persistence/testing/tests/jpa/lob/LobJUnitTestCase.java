@@ -65,33 +65,33 @@ public class LobJUnitTestCase extends JUnitTestCase {
 
     public void testCreate() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Image image = ImageSimulator.generateImage(1000, 800);
             originalImage = image;
             em.persist(image);
             imageId = image.getId();
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
 
     public void testDelete() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             em.remove(em.find(Image.class, imageId));
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting Image", em.find(Image.class, imageId) == null);
@@ -118,7 +118,7 @@ public class LobJUnitTestCase extends JUnitTestCase {
 
     public void testUpdate() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Image image = em.find(Image.class, imageId);
             image.setAudio(null);
@@ -126,12 +126,12 @@ public class LobJUnitTestCase extends JUnitTestCase {
             image.setPicture(null);
             image.setScript(null);
             em.merge(image);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         Image image = em.find(Image.class, imageId);

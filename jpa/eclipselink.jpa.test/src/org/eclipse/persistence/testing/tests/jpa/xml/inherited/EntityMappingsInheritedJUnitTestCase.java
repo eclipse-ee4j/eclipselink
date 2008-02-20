@@ -73,7 +73,7 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
         boolean exceptionCaught = false;
         EntityManager em = createEntityManager();
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
 
             BeerConsumer consumer = new BeerConsumer();
             consumer.setName("Joe Black");
@@ -124,10 +124,10 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
             em.persist(cert2);
 
             em.persist(consumer);
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw e;
         }
@@ -146,13 +146,13 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
 
     public void testDeleteBeerConsumer() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             em.remove(em.find(BeerConsumer.class, beerConsumerId));
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw ex;
         }
@@ -166,23 +166,23 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
 
     public void testUpdateBeerConsumer() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
         
             BeerConsumer beerConsumer = em.find(BeerConsumer.class, beerConsumerId);
             beerConsumer.setName("Joe White");
             
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw ex;
         }
         clearCache();
 
         BeerConsumer newBeerConsumer = em.find(BeerConsumer.class, beerConsumerId);
-        em.close();
+        closeEntityManager(em);
         assertTrue("Error updating BeerConsumer name", newBeerConsumer.getName().equals("Joe White"));
     }
 	
@@ -191,7 +191,7 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
 	public void testOneToManyRelationships() {
 		EntityManager em = createEntityManager();
 		try {
-			em.getTransaction().begin();
+			beginTransaction(em);
 			
 			BeerConsumer consumer = new BeerConsumer();
 			consumer.setName("Joe Black");
@@ -211,10 +211,10 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
 			em.persist(consumer);
 			beerConsumerId = consumer.getId();
 			
-			em.getTransaction().commit();    
+			commitTransaction(em);    
 		} catch (RuntimeException e) {
-			if (em.getTransaction().isActive()){
-                            em.getTransaction().rollback();
+			if (isTransactionActive(em)){
+                            rollbackTransaction(em);
                         }
 			throw e;
 		}
@@ -224,7 +224,7 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
     public void testVerifyOneToManyRelationships() {
         EntityManager em = createEntityManager();
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             
             BeerConsumer cm = em.find(BeerConsumer.class, beerConsumerId);
             java.util.Collection phones = cm.getTelephoneNumbers().values();
@@ -234,10 +234,10 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
                     assertTrue("Wrong owner of the telephone",phone.getBeerConsumer().getId() == beerConsumerId);
             }
             
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw e;
         }

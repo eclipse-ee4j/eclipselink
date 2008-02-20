@@ -69,7 +69,7 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             SerialNumber serialNumber = new SerialNumber();
             em.persist(serialNumber);
             alpine = new Alpine(serialNumber);
@@ -77,12 +77,12 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
             alpine.setAlcoholContent(5.0);
             
             em.persist(alpine);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException ex) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         
@@ -94,18 +94,18 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
         BeerConsumer beerConsumer = null;
         EntityManager em = createEntityManager();
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             beerConsumer = new BeerConsumer();
             beerConsumer.setName("A consumer to delete eventually");
             em.persist(beerConsumer);
             m_Id = beerConsumer.getId();
         
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         verifyCalled(0, beerConsumer.pre_persist_count, "PrePersist");
@@ -121,18 +121,18 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
     public void testPostLoadOnRefresh() {
         BeerConsumer beerConsumer = null;
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
 
         try {
             beerConsumer = em.find(BeerConsumer.class, m_Id);
             em.refresh(beerConsumer);
             
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         
@@ -143,19 +143,19 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
         BeerConsumer beerConsumer = null;
         int count1, count2 = 0;
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
 
         try {
             beerConsumer = em.find(BeerConsumer.class, m_Id);
             count1 = beerConsumer.pre_update_count;
             beerConsumer.setName("An updated name");
             count2 = beerConsumer.post_update_count;
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         
@@ -167,19 +167,19 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
         BeerConsumer beerConsumer = null;
         int count1, count2 = 0;
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
 
         try {
             beerConsumer = em.find(BeerConsumer.class, m_Id);
             count1 = beerConsumer.pre_remove_count;
             em.remove(beerConsumer);
             count2 = beerConsumer.post_remove_count;
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         

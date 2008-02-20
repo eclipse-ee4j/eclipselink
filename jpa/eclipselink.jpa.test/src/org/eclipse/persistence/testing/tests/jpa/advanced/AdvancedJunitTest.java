@@ -63,7 +63,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
 
     public void testGF1818() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             Vegetable vegetable = new Vegetable();
@@ -71,18 +71,18 @@ public class AdvancedJunitTest extends JUnitTestCase {
             vegetable.setCost(2.09);
         
             em.persist(vegetable);
-            em.getTransaction().commit();
+            commitTransaction(em);
             
         } catch (Exception e) {
             fail("An exception was caught: [" + e.getMessage() + "]");
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     public void testGF1894() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         Employee emp = new Employee();
         emp.setFirstName("Guy");
         emp.setLastName("Pelletier");
@@ -95,25 +95,25 @@ public class AdvancedJunitTest extends JUnitTestCase {
         try {   
             Employee empClone = em.merge(emp);
             assertNotNull("The id field for the merged new employee object was not generated.", empClone.getId());
-            em.getTransaction().commit();
+            commitTransaction(em);
             
             Employee empFromDB = em.find(Employee.class, empClone.getId());
             assertNotNull("The version locking field for the merged new employee object was not updated after commit.", empFromDB.getVersion());
             
-            em.getTransaction().begin();
+            beginTransaction(em);
             Employee empClone2 = em.merge(empFromDB);
             assertTrue("The id field on a existing merged employee object was modified on a subsequent merge.", empFromDB.getId().equals(empClone2.getId()));
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (javax.persistence.OptimisticLockException e) {
             fail("An optimistic locking exception was caught on the merge of a new object. An insert should of occurred instead.");
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     public void testGF894() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             for (int i = 0; ; i++) {
@@ -130,7 +130,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
                 
                     em.persist(worldRank);
                     em.persist(golfer);
-                    em.getTransaction().commit();
+                    commitTransaction(em);
                 
                     break;
                 } 
@@ -139,12 +139,12 @@ public class AdvancedJunitTest extends JUnitTestCase {
             fail("An exception was caught: [" + e.getMessage() + "]");
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     public void testManAndWoman() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
             PartnerLink pLink1 = new PartnerLink();
@@ -160,24 +160,24 @@ public class AdvancedJunitTest extends JUnitTestCase {
             pLink3.setWoman(new Woman());
             em.persist(pLink3);
             
-            em.getTransaction().commit();
+            commitTransaction(em);
             
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             fail("An exception was caught: [" + e.getMessage() + "]");
         }
         
-        em.close();
+        closeEntityManager(em);
     }
 
     // GF1673, 2674 Java SE 6 classloading error for String[] field
     public void testStringArrayField() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         VegetablePK pk = new VegetablePK("Tomato", "Red");
         String[] tags = {"California", "XE"};
@@ -188,19 +188,19 @@ public class AdvancedJunitTest extends JUnitTestCase {
             vegetable.setTags(tags);
         
             em.persist(vegetable);
-            em.getTransaction().commit();
+            commitTransaction(em);
             
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw e;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
         
         em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         Vegetable vegetable;
         try {
             vegetable = em.find(Vegetable.class, pk);
@@ -209,12 +209,12 @@ public class AdvancedJunitTest extends JUnitTestCase {
             assertTrue(Arrays.equals(tags, vegetable.getTags()));
             
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             throw e;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
 

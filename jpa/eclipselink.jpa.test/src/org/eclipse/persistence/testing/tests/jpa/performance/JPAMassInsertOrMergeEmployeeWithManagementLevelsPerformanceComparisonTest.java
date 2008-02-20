@@ -61,15 +61,15 @@ public class JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparis
         if(!shouldUseSequencing) {
             // obtain the last used sequence number
             Employee emp = new Employee();
-            EntityManager em = createEntityManager();
-            em.getTransaction().begin();
-            em.persist(emp);
-            em.getTransaction().commit();
+            EntityManager entityManager = createEntityManager();
+            entityManager.getTransaction().begin();
+            entityManager.persist(emp);
+            entityManager.getTransaction().commit();
             id = emp.getId();
-            em.getTransaction().begin();
-            em.remove(emp);
-            em.getTransaction().commit();
-            em.close();
+            entityManager.getTransaction().begin();
+            entityManager.remove(emp);
+            entityManager.getTransaction().commit();
+            entityManager.close();
         }
     }
 

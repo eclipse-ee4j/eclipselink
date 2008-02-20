@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-package org.eclipse.persistence.testing.tests.ejb.ejbqltesting;
+package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.List;
 
@@ -971,10 +971,10 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             Object result = em.createQuery(ejbqlString).executeUpdate();
             
             //rollback for clean-up if above call does not fail, otherwise this may affect other tests
-            if(!em.getTransaction().isActive()){
-                em.getTransaction().begin();
+            if(!isTransactionActive(em)){
+                beginTransaction(em);
             }
-            em.getTransaction().rollback();
+            rollbackTransaction(em);
         }
         catch (TransactionRequiredException e)
         {                   
@@ -982,7 +982,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
         finally
         {
-            em.close();
+            closeEntityManager(em);
         }
         Assert.assertTrue("TransactionRequiredException is expected", testPass);
     }
@@ -1068,30 +1068,30 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT OBJECT (emp) FROM Employee emp WHERE emp.firstName='Bob'";
         DirectToFieldMapping idMapping = null;
         String defaultFieldName = "";
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             Employee emp = (Employee) em.createQuery(ejbqlString).getSingleResult();        
             idMapping = (DirectToFieldMapping) (((EntityManagerImpl)em.getDelegate()).getServerSession()).getClassDescriptor(Employee.class).getMappingForAttributeName("id");
             defaultFieldName = idMapping.getFieldName();
             idMapping.setFieldName("fake_id");
             emp.setId(323);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (Exception e) {          
-            if(em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-                em.close();
+            if(isTransactionActive(em)){
+                rollbackTransaction(em);
+                closeEntityManager(em);
             }
             Assert.assertTrue(e instanceof RollbackException);
         } finally {
             em = createEntityManager();
-            em.getTransaction().begin();
+            beginTransaction(em);
             try{
                 idMapping.setFieldName(defaultFieldName);
-                em.getTransaction().commit();
+                commitTransaction(em);
             } catch (Exception e) {
-                if(em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
-                    em.close();
+                if(isTransactionActive(em)){
+                    rollbackTransaction(em);
+                    closeEntityManager(em);
                 }
             }
         }
@@ -1117,7 +1117,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     {
         EntityManager em = createEntityManager();       
            
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             String ejbqlString = "SELECT OBJECT (emp) FROM Employee emp WHERE emp.firstName ='Bob' ";
         
@@ -1125,11 +1125,11 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             emp.setLastName("Smith");
         
             em.flush();
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if(em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-                em.close();
+            if(isTransactionActive(em)){
+                rollbackTransaction(em);
+                closeEntityManager(em);
             }
         }
     }

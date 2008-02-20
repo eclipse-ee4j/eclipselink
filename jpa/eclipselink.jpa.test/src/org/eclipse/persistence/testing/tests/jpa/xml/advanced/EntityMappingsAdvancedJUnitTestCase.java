@@ -100,7 +100,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
     
     public void testCreateEmployee() {
         EntityManager em = createEntityManager(m_persistenceUnit);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee employee = ModelExamples.employeeExample1();
             ArrayList projects = new ArrayList();
@@ -109,12 +109,12 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             employee.setProjects(projects);
             em.persist(employee);
             employeeId = employee.getId();
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         
@@ -129,7 +129,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
      */
     public void testExtendedEmployee() {
         EntityManager em = createEntityManager(m_persistenceUnit);
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
         	Address address = new Address();
@@ -158,7 +158,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             
             em.persist(employee);
             extendedEmployeeId = employee.getId();
-            em.getTransaction().commit();
+            commitTransaction(em);
             
             clearCache(m_persistenceUnit);
             em.clear();
@@ -184,15 +184,15 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         	assertTrue("The new responsibility was not added.", found);
             
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     /**
@@ -200,13 +200,13 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
      */
     public void testGiveExtendedEmployeeASexChange() {
         EntityManager em = createEntityManager(m_persistenceUnit);
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         try {
         	Employee maleEmp = em.find(Employee.class, extendedEmployeeId);    
         	maleEmp.setFemale();
         	maleEmp.setFirstName("Girl");
-            em.getTransaction().commit();
+            commitTransaction(em);
                 
             // Clear cache and clear the entity manager
             clearCache(m_persistenceUnit);    
@@ -215,28 +215,28 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             Employee girlEmp = em.find(Employee.class, extendedEmployeeId);
             assertTrue("The extended employee's change didn't occur.", girlEmp.isFemale());
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     public void testDeleteEmployee() {
         EntityManager em = createEntityManager(m_persistenceUnit);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             em.remove(em.find(Employee.class, employeeId));
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting Employee", em.find(Employee.class, employeeId) == null);
@@ -244,18 +244,18 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
 
     public void testNamedNativeQueryOnAddress() {
         EntityManager em = createEntityManager(m_persistenceUnit);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Address address1 = ModelExamples.addressExample1();
             em.persist(address1);
             Address address2 = ModelExamples.addressExample2();
             em.persist(address2);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findAllXMLAddresses");
@@ -277,7 +277,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
 
     public void testUpdateEmployee() {
         EntityManager em = createEntityManager(m_persistenceUnit);
-        em.getTransaction().begin();
+        beginTransaction(em);
         int version = 0;
         
         try {
@@ -286,7 +286,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             employee.setSalary(50000);
             
             em.merge(employee);
-            em.getTransaction().commit();
+            commitTransaction(em);
             
             // Clear cache and clear the entity manager
             clearCache(m_persistenceUnit);    
@@ -296,20 +296,20 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             assertTrue("Error updating Employee", emp.getSalary() == 50000);
             assertTrue("Version field not updated", emp.getVersion() == version + 1);            
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         
-        em.close();
+        closeEntityManager(em);
     }
 
     public void testRefreshNotManagedEmployee() {
         EntityManager em = createEntityManager(m_persistenceUnit);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee emp = new Employee();
             emp.setFirstName("NotManaged");
@@ -320,10 +320,10 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         } catch (RuntimeException e ) {
             throw e;
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -339,20 +339,20 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             emp = new Employee();
             emp.setFirstName(firstName);
             // persist the Employee
-            em.getTransaction().begin();
+            beginTransaction(em);
             try {
                 em.persist(emp);
-                em.getTransaction().commit();
+                commitTransaction(em);
             } catch (RuntimeException e) {
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
-                em.close();
+                closeEntityManager(em);
                 throw e;
             }
         }
         
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             emp = em.find(Employee.class, emp.getId());
                 
@@ -365,10 +365,10 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         } catch (EntityNotFoundException entityNotFoundException) {
             // expected behavior
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -384,31 +384,31 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             emp = new Employee();
             emp.setFirstName(firstName);
             // persist the Employee
-            em.getTransaction().begin();
+            beginTransaction(em);
             try{
                 em.persist(emp);
-                em.getTransaction().commit();
+                commitTransaction(em);
             } catch (RuntimeException e) {
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
-                em.close();
+                closeEntityManager(em);
                 throw e;
             }
         }
         
         boolean containsRemoved = true;
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             emp = em.find(Employee.class, emp.getId());
             em.remove(emp);
             containsRemoved = em.contains(emp);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         
@@ -427,15 +427,15 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             emp = new Employee();
             emp.setFirstName(firstName);
             // persist the Employee
-            em.getTransaction().begin();
+            beginTransaction(em);
             try{
                 em.persist(emp);
-                em.getTransaction().commit();
+                commitTransaction(em);
             } catch (RuntimeException e) {
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
                 }
-                em.close();
+                closeEntityManager(em);
                 throw e;
             }
         }
@@ -449,15 +449,15 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             getResultList();
             
         // clean up
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             em.createQuery("DELETE FROM XMLEmployee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
 

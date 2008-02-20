@@ -59,7 +59,7 @@ public class ValidationTestSuite extends JUnitTestCase {
         
         EntityManager em = createEntityManager("isolated1053", properties);
         assertTrue("Item descriptor did not have an isolated cache setting from a TopLink properties setting.", ((EntityManagerImpl)em).getServerSession().getClassDescriptorForAlias("Item").isIsolated());
-        em.close();
+        closeEntityManager(em);
         
         // Ensure this is done to avoid consecutive tests picking up our
         // very specific isolated persistence unit.
@@ -75,7 +75,7 @@ public class ValidationTestSuite extends JUnitTestCase {
     public void testCacheIsolation_XMLDefault_Config() throws Exception {
         EntityManager em = createEntityManager("isolated1053");
         assertTrue("Item descriptor did not have an isolated cache setting from an XML setting.", ((EntityManagerImpl)em).getServerSession().getClassDescriptorForAlias("Item").isIsolated());
-        em.close();
+        closeEntityManager(em);
         
         // Ensure this is done to avoid consecutive tests picking up our
         // very specific isolated persistence unit.
@@ -103,7 +103,7 @@ public class ValidationTestSuite extends JUnitTestCase {
             }
         } finally {
             if (em != null) {
-                em.close();
+                closeEntityManager(em);
             }
             // Ensure this is done to avoid consecutive tests picking up our
             // very specific isolated persistence unit.
@@ -133,7 +133,7 @@ public class ValidationTestSuite extends JUnitTestCase {
             }
         } finally {
             if (em != null) {
-                em.close();
+                closeEntityManager(em);
             }
             // Ensure this is done to avoid consecutive tests picking up our
             // very specific isolated persistence unit.

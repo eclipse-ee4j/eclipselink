@@ -64,7 +64,7 @@ public class EntityMappingsIncompleteOwningJUnitTestCase extends JUnitTestCase {
     
     public void testCreateEmployee() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee employee = ModelExamples.employeeExample1();		
             ArrayList projects = new ArrayList();
@@ -74,12 +74,12 @@ public class EntityMappingsIncompleteOwningJUnitTestCase extends JUnitTestCase {
             employee.setAddress(ModelExamples.addressExample1());
             em.persist(employee);
             employeeId = employee.getId();
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         
@@ -87,15 +87,15 @@ public class EntityMappingsIncompleteOwningJUnitTestCase extends JUnitTestCase {
     
     public void testDeleteEmployee() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             em.remove(em.find(Employee.class, employeeId));
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting Employee", em.find(Employee.class, employeeId) == null);
@@ -108,17 +108,17 @@ public class EntityMappingsIncompleteOwningJUnitTestCase extends JUnitTestCase {
 
     public void testUpdateEmployee() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Employee employee = em.find(Employee.class, employeeId);
             employee.setSecurityBadge(new SecurityBadge(69));
             em.merge(employee);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         clearCache();

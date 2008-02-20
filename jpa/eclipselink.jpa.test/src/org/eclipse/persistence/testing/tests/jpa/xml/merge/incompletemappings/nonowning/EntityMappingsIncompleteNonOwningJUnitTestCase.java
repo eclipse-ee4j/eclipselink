@@ -78,7 +78,7 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
     
     public void testCreateCustomer() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Customer customer = new Customer();
             customer.setName("Joe Black");
@@ -87,20 +87,20 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
             billingAddress.setCustomer(customer);
             em.persist(customer);
             customerId = customer.getCustomerId();
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
-        em.close();        
+        closeEntityManager(em);        
     }
     
     public void testCreateItem() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
 
             PartsList pl = new PartsList();
@@ -119,20 +119,20 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
             item.setPartsLists(partsLists);
             em.persist(item);
             itemId = item.getItemId();
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
-        em.close();
+        closeEntityManager(em);
     }
 
     public void testCreateOrder() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Order order = new Order();
             order.setShippingAddress("50 O'Connor St.");
@@ -143,27 +143,27 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
             order.setItem(item);
             em.persist(order);
             orderId = order.getOrderId();
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
 
     public void testDeleteCustomer() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             em.remove(em.find(Customer.class, customerId));
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting Customer", em.find(Customer.class, customerId) == null);
@@ -171,15 +171,15 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
 
     public void testDeleteItem() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             em.remove(em.find(Item.class, itemId));
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting Item", em.find(Item.class, itemId) == null);
@@ -187,16 +187,16 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
 
     public void testDeleteOrder() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             em.remove(em.find(Order.class, orderId));
             em.refresh(em.find(Customer.class, customerId)); //refresh Customer
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting Order", em.find(Order.class, orderId) == null);
@@ -219,17 +219,17 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
 
     public void testUpdateCustomer() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Customer customer = em.find(Customer.class, customerId);
             customer.setCity("Dallas");
             em.merge(customer);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         clearCache();
@@ -240,7 +240,7 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
 
     public void testUpdateItem() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             PartsList pl = new PartsList();
             em.persist(pl);
@@ -252,12 +252,12 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
             item.setImage(new byte[1280]);
             item.setPartsLists(partsLists);
             em.merge(item);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         clearCache();
@@ -270,18 +270,18 @@ public class EntityMappingsIncompleteNonOwningJUnitTestCase extends JUnitTestCas
 
     public void testUpdateOrder() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Customer customer = em.find(Customer.class, customerId);
             Order order = customer.getOrders().iterator().next();
             order.setQuantity(100);
             em.merge(customer);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         clearCache();

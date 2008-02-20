@@ -58,7 +58,7 @@ public class VirtualAttributeTestSuite extends JUnitTestCase {
     
     public void testInsertVirtualAttribute(){
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             OneToOneVirtualAttributeHolder holder = new OneToOneVirtualAttributeHolder();
             VirtualAttribute attribute = new VirtualAttribute();
@@ -67,12 +67,12 @@ public class VirtualAttributeTestSuite extends JUnitTestCase {
             em.persist(holder);
             em.flush();
             id = holder.getId();
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
     }
@@ -86,23 +86,23 @@ public class VirtualAttributeTestSuite extends JUnitTestCase {
     public void testUpdateVirtualAttribute(){
         OneToOneVirtualAttributeHolder holder = null;
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             holder = em.find(OneToOneVirtualAttributeHolder.class, id);
             VirtualAttribute attribute = new VirtualAttribute();
             attribute.setDescription("virtualAttribute2");
             holder.setVirtualAttribute(attribute);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         clearCache();
         holder = em.find(OneToOneVirtualAttributeHolder.class, id);
-        em.close();
+        closeEntityManager(em);
         assertNotNull("Updated object with virtual attributes could not be read.", holder);
         assertNotNull("Updated object held as a virtual attribute was not read with it's owner", holder.getVirtualAttribute());
         assertTrue("Virtual Attribute Object was not updated.", holder.getVirtualAttribute().getDescription().equals("virtualAttribute2"));
@@ -113,7 +113,7 @@ public class VirtualAttributeTestSuite extends JUnitTestCase {
         VirtualAttribute attribute = null;
         int attributeId = 0;
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             holder = em.find(OneToOneVirtualAttributeHolder.class, id);
     
@@ -122,12 +122,12 @@ public class VirtualAttributeTestSuite extends JUnitTestCase {
             holder.setVirtualAttribute(null);
             em.remove(attribute);       
             em.remove(holder);
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
         holder = em.find(OneToOneVirtualAttributeHolder.class, id);

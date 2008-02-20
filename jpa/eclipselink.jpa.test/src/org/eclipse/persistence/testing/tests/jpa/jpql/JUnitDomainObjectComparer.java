@@ -26,7 +26,7 @@
  * </ul>
  */
  
-package org.eclipse.persistence.testing.tests.ejb.ejbqltesting;
+package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 // Java imports
 import java.util.*;

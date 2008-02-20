@@ -96,7 +96,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
     
     public void testCreateAlpine() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
         
             BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId2);
@@ -132,7 +132,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             em.persist(alpine3);
             m_alpineId2 = alpine3.getId();
             
-            em.getTransaction().commit();    
+            commitTransaction(em);    
 
             clearCache();
             Alpine alpineReadOut = createEntityManager().find(Alpine.class, m_alpineId);
@@ -144,19 +144,19 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             Alpine alpineReadOut2 = createEntityManager().find(Alpine.class, m_alpineId2);
             assertTrue("Alpine3 object is not same as readout", alpineReadOut2.equals(alpine3));
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             fail("An exception was caught during create operation: [" + e.getMessage() + "]");
         }
-        em.close();
+        closeEntityManager(em);
         
     }
     
     public void testCreateBeerConsumer() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             
             BeerConsumer beerConsumer1 = new BeerConsumer();
@@ -169,20 +169,20 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             em.persist(beerConsumer2);
             m_beerConsumerId2 = beerConsumer2.getId();
             
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             fail("An exception was caught during create operation: [" + e.getMessage() + "]");
         }
-        em.close();
+        closeEntityManager(em);
     }
     
     public void testCreateCanadian() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             
             BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId1);
@@ -204,21 +204,21 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             canadian2.setBeerConsumer(beerConsumer);
             em.persist(canadian2);
             
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             fail("An exception was caught during create operation: [" + e.getMessage() + "]");
         }
-        em.close();
+        closeEntityManager(em);
         
     }
     
     public void testCreateCertifications() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             
             Certification cert1 = new Certification();
@@ -241,21 +241,21 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             em.persist(cert4);
             m_certId4 = cert4.getId();
             
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             fail("An exception was caught during create operation: [" + e.getMessage() + "]");
         }
-        em.close();
+        closeEntityManager(em);
         
     }
     
     public void testCreateTelephoneNumbers() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             
             BeerConsumer beerConsumer1 = em.find(BeerConsumer.class, m_beerConsumerId1);
@@ -292,30 +292,30 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             telephoneNumber5.setNumber("8648363");
             beerConsumer2.addTelephoneNumber(telephoneNumber5);
             
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             fail("An exception was caught during create operation: [" + e.getMessage() + "]");
         }
-        em.close();
+        closeEntityManager(em);
         
     }
     
     public void testDeleteAlpine() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             
             em.remove(em.find(Alpine.class, m_alpineId));
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting an Alpine beer", em.find(Alpine.class, m_alpineId) == null);
@@ -323,15 +323,15 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
     
     public void testDeleteBeerConsumer() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             em.remove(em.find(BeerConsumer.class, m_beerConsumerId1));
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting a BeerConsumer", em.find(BeerConsumer.class, m_beerConsumerId1) == null);
@@ -339,15 +339,15 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
     
     public void testDeleteCanadian() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             em.remove(em.find(Canadian.class, m_canadianId));
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         assertTrue("Error deleting a Canadian beer", em.find(Canadian.class, m_canadianId) == null);
@@ -358,7 +358,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         // Part 1 ... add an alpine beer to the collection.
         BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId2);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             beerConsumer = em.merge(beerConsumer);
             SerialNumber serialNumber = new SerialNumber();
@@ -370,12 +370,12 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             alpine.setClassification(Alpine.Classification.BITTER);
             beerConsumer.addAlpineBeerToConsume(alpine, 0);
             
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
             
@@ -401,7 +401,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         // Part 1 ... add an alpine beer to the collection.
         BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId2);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
         
             beerConsumer = em.merge(beerConsumer);
@@ -423,12 +423,12 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             beerConsumer.removeAlpineBeerToConsume(4);
             beerConsumer.removeAlpineBeerToConsume(2);
             
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
             
@@ -457,7 +457,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
     
         try {
             /////// Part 1 - create new objects to persist and mirror detached objects.
-            em.getTransaction().begin();    
+            beginTransaction(em);    
             BeerConsumer beerConsumer = new BeerConsumer();
             beerConsumer.setName("Guy Pelletier");
             SerialNumber serialNumber = new SerialNumber();
@@ -473,10 +473,10 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             beerConsumer.addAlpineBeerToConsume(alpine);
             em.persist(beerConsumer); // persist is cascaded
             Integer bid = beerConsumer.getId();
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             /////// Part 2
-            em.getTransaction().begin();
+            beginTransaction(em);
             // Step 1 - removed managed alpines from managed beer consumer.
             BeerConsumer beerConsumerManaged = em.find(BeerConsumer.class, bid);
             for (int i = beerConsumerManaged.getAlpineBeersToConsume().size() - 1; i >= 0; i--) {
@@ -503,17 +503,17 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             alpineDetached.setVersion(null);
             // Step 4 - merge detached object.
             em.merge(beerConsumerDetached);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
             e.printStackTrace();
-            em.close();
+            closeEntityManager(em);
             fail("An exception was caught: [" + e.getMessage() + "]");
         }
         
-        em.close();
+        closeEntityManager(em);
     }
     
     public void testReadAlpine() {
@@ -536,7 +536,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
     public void testShuffleTelephoneNumbersOnBeerConsumers() {
         int beerConsumer1TelephoneCountStart = 0, beerConsumer2TelephoneCountStart = 0;
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
         
             BeerConsumer beerConsumer1 = em.find(BeerConsumer.class, m_beerConsumerId1);
@@ -548,12 +548,12 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             TelephoneNumber phone = beerConsumer1.getTelephoneNumbers().values().iterator().next();
             phone.setBeerConsumer(beerConsumer2);
             
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         clearCache();
@@ -570,18 +570,18 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
     
     public void testUpdateAlpine() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
         
             Alpine alpine = em.find(Alpine.class, m_alpineId);
             alpine.setBestBeforeDate(Helper.dateFromYearMonthDate(2005, 8, 19));
             em.merge(alpine);    
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         
@@ -594,7 +594,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
     public void testUpdateAlpineThroughBeerConsumer() {
         int id = 0;
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
         
             BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId2);
@@ -602,33 +602,33 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             alpine.setBestBeforeDate(Helper.dateFromYearMonthDate(2005, 9, 19));
             id = alpine.getId();
             
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         clearCache();
         em.clear();
         Alpine newAlpine = em.find(Alpine.class, id);
-        em.close();
+        closeEntityManager(em);
         assertTrue("Error updating an Alpine beer.", newAlpine.getBestBeforeDate().equals(Helper.dateFromYearMonthDate(2005, 9, 19)));
     }
     
     public void testUpdateBeerConsumer() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId1);
             beerConsumer.setName("Big beer gut");
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     
@@ -640,19 +640,19 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
         
     public void testUpdateCanadian() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             Canadian canadian = em.find(Canadian.class, m_canadianId);
             //canadian.setBornOnDate(Helper.dateFromYearMonthDate(2005, 8, 19));
             canadian.getBornOnDate().setTime((Helper.dateFromYearMonthDate(2005, 8, 19)).getTime());
             canadian.getProperties().put( m_canadianProperty2, new Date(System.currentTimeMillis()) );
             em.merge(canadian);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         
@@ -666,7 +666,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
     public void testUpdateCanadianThroughBeerConsumer() {
         int id =  0;
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
         
             BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId1);
@@ -674,12 +674,12 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             canadian.setBornOnDate(Helper.dateFromYearMonthDate(2005, 9, 19));
             id = canadian.getId();
             
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         clearCache();
@@ -691,7 +691,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
     public void testUpdateTelephoneNumberThroughBeerConsumer() {
         TelephoneNumber oldPhone = null, newPhone = null;
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
         
             BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_beerConsumerId1);
@@ -706,12 +706,12 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             newPhone.setType(oldPhone.getType());
             beerConsumer.addTelephoneNumber(newPhone);
             
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
         clearCache();
@@ -724,7 +724,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
     
     public void testUpdateCertifications() {
         EntityManager em = createEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
            
             BeerConsumer beerConsumer1 = em.find(BeerConsumer.class, m_beerConsumerId1);
@@ -743,12 +743,12 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
             Certification cert4 = em.find(Certification.class, m_certId4);
             cert4.setBeerConsumer(beerConsumer2);
             
-            em.getTransaction().commit();    
+            commitTransaction(em);    
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }

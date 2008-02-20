@@ -47,18 +47,18 @@ public class IsolatedCacheTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         
         // Step 1 - get an isolated item in the cache.
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         IsolatedItem item = new IsolatedItem();
         item.setDescription("A phoney item");
         item.setName("Phoney name");
         em.persist(item);
     
-        em.getTransaction().commit();
+        commitTransaction(em);
         
         // Step 2 - clear the entity manager and see if the item still exists
         // in the uow cache.
-        em.getTransaction().begin();
+        beginTransaction(em);
         
         em.clear();
         RepeatableWriteUnitOfWork uow = ((EntityManagerImpl) em.getDelegate()).getActivePersistenceContext(em.getTransaction());
@@ -66,7 +66,7 @@ public class IsolatedCacheTestSuite extends JUnitTestCase {
         assertFalse("The isolated item was not cleared from the shared cache", uow.getIdentityMapAccessor().containsObjectInIdentityMap(item));
         assertFalse("The isolated item was not cleared from the uow cache", uow.getParent().getIdentityMapAccessor().containsObjectInIdentityMap(item));
         
-        em.getTransaction().commit();
-        em.close();
+        commitTransaction(em);
+        closeEntityManager(em);
     }
 }

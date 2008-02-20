@@ -13,7 +13,7 @@
 
 
 
-package org.eclipse.persistence.testing.tests.ejb.ejbqltesting;
+package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -911,7 +911,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
 
         // simple constructor query
-    	String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLComplexTestSuite.EmployeeDetail(emp.firstName, emp.lastName) FROM Employee emp WHERE emp.id = :id";
+    	String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(emp.firstName, emp.lastName) FROM Employee emp WHERE emp.id = :id";
         Query query = em.createQuery(ejbqlString);
         query.setParameter("id", emp.getId());
         EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
@@ -927,7 +927,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
 
         // constructor query using a variable as argument
-    	String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLComplexTestSuite.EmployeeDetail(emp) FROM Employee emp WHERE emp.id = :id";
+    	String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(emp) FROM Employee emp WHERE emp.id = :id";
         Query query = em.createQuery(jpqlString);
         query.setParameter("id", emp.getId());
         EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
@@ -962,7 +962,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
 
         // constructor query including relationship field
-    	String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLComplexTestSuite.EmployeeDetail(emp.firstName, emp.lastName, emp.manager) FROM Employee emp WHERE emp.id = :id";
+    	String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(emp.firstName, emp.lastName, emp.manager) FROM Employee emp WHERE emp.id = :id";
         Query query = em.createQuery(ejbqlString);
 
         // execute query using employee with manager
@@ -1001,7 +1001,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
 
         // constructor query using aggregates
-        String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLComplexTestSuite.LongHolder(SUM(emp.salary), COUNT(emp)) FROM Employee emp WHERE emp.manager.id = :id";
+        String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.LongHolder(SUM(emp.salary), COUNT(emp)) FROM Employee emp WHERE emp.manager.id = :id";
         Query query = em.createQuery(ejbqlString);
         query.setParameter("id", emp.getId());
         LongHolder result = (LongHolder)query.getSingleResult();
@@ -1040,7 +1040,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         
         // constructor query using aggregates
-        String jpql = "SELECT NEW org.eclipse.persistence.testing.tests.ejb.ejbqltesting.JUnitJPQLComplexTestSuite.EmployeeDetail(emp.firstName, emp.lastName, COUNT(m)) FROM Employee emp JOIN emp.managedEmployees m GROUP BY emp.firstName, emp.lastName";
+        String jpql = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(emp.firstName, emp.lastName, COUNT(m)) FROM Employee emp JOIN emp.managedEmployees m GROUP BY emp.firstName, emp.lastName";
         Query query = em.createQuery(jpql);
         List<EmployeeDetail> result = query.getResultList();
 

@@ -20,8 +20,6 @@ import javax.persistence.TableGenerator;
 import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
 import javax.persistence.GenerationType;
-import javax.persistence.CascadeType;
-import javax.persistence.OneToMany;
 import java.util.Collection;
 import java.util.HashSet;
 

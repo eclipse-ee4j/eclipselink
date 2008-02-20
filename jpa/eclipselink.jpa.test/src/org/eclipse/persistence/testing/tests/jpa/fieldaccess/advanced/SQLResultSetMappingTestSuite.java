@@ -68,7 +68,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         query.setSQLResultSetMapping(resultSetMapping);
         query.setShouldRefreshIdentityMapResult(true);
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             List results = (List)((EntityManagerImpl)em).getServerSession().executeQuery(query);
             assertNotNull("No result returned", results);
@@ -79,8 +79,8 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
             assertNotNull("No result returned", results);
             assertFalse("Object was not refreshed", buyer.getDescription().equals("To A new changed description"));
         }finally{
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
         }
     }
@@ -130,7 +130,7 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         query.setSQLResultSetMapping(resultSetMapping);
         query.setShouldRefreshIdentityMapResult(true);
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             List results = (List)((EntityManagerImpl)em).getActiveSession().executeQuery(query);
             assertNotNull("No result returned", results);
@@ -214,24 +214,24 @@ public class SQLResultSetMappingTestSuite extends JUnitTestCase {
         ResultSetMappingQuery query = new ResultSetMappingQuery(call);
         query.setSQLResultSetMapping(resultSetMapping);
         query.setLockMode(query.LOCK);
-        em.getTransaction().begin();
+        beginTransaction(em);
         try{
             List results = (List)((EntityManagerImpl)em).getActiveSession().executeQuery(query);
             assertNotNull("No result returned", results);
             assertTrue("Empty list returned", (results.size()!=0));
             smallProject = (SmallProject)(results.get(0));
             smallProject.setDescription("A relatively new Description");
-            em.getTransaction().commit();
+            commitTransaction(em);
         }catch (RuntimeException ex){
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw ex;
         }
                 
         smallProject = em.find(SmallProject.class, smallProject.getId());
-        em.close();
+        closeEntityManager(em);
         assertTrue("Failed to update the new description", smallProject.getDescription().equals("A relatively new Description"));
        
     }

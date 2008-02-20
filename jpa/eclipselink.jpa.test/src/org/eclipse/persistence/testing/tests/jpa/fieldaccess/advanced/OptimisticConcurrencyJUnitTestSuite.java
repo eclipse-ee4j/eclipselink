@@ -75,12 +75,12 @@ import javax.persistence.PersistenceException;
         EntityManager em = createEntityManager("fieldaccess");
         Project project1, project2;
 
-        em.getTransaction().begin();
+        beginTransaction(em);
         project1 = ModelExamples.projectExample1();
         project2 = ModelExamples.projectExample2();
         em.persist(project1);
         em.persist(project2);
-        em.getTransaction().commit();
+        commitTransaction(em);
     }
 
     /**
@@ -95,7 +95,7 @@ import javax.persistence.PersistenceException;
         Employee employee;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             employee = ModelExamples.employeeExample1();
             em.persist(employee);
 
@@ -115,12 +115,12 @@ import javax.persistence.PersistenceException;
             // third flush: Employee is modified, but
             // no update to EMPLOYEE table; only join table entry is written
             // A NullPointerException in ObjectChangeSet#compareWriteLockValues
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException e) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw e;
         }
     }
@@ -134,19 +134,19 @@ import javax.persistence.PersistenceException;
         Employee employee;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             employee = ModelExamples.employeeExample1();
             em.persist(employee);
-            em.getTransaction().commit();
+            commitTransaction(em);
 
-            em.getTransaction().begin();
+            beginTransaction(em);
             employee.setVersion(1);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (RuntimeException re) {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
             throw re;
         }
     }
@@ -160,24 +160,24 @@ import javax.persistence.PersistenceException;
         Employee employee;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             employee = ModelExamples.employeeExample1();
             em.persist(employee);
-            em.getTransaction().commit();
+            commitTransaction(em);
 
-            em.getTransaction().begin();
+            beginTransaction(em);
             employee.setVersion(2);
-            em.getTransaction().commit();
+            commitTransaction(em);
             fail("updating object version with wrong value didn't throw exception");
         } catch (PersistenceException pe) {
             // expected behavior
         } catch (Exception e) {
             fail("updating object version with wrong value threw a wrong exception: " + e.getMessage());
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -190,24 +190,24 @@ import javax.persistence.PersistenceException;
         Employee employee;
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             employee = ModelExamples.employeeExample1();
             em.persist(employee);
-            em.getTransaction().commit();
+            commitTransaction(em);
 
-            em.getTransaction().begin();
+            beginTransaction(em);
             employee.setVersion(null);
-            em.getTransaction().commit();
+            commitTransaction(em);
             fail("employee.setVersion(null) didn't throw exception");
         } catch (PersistenceException pe) {
             // expected behavior
         } catch (Exception e) {
             fail("employee.setVersion(null) threw a wrong exception: " + e.getMessage());
         } finally {
-            if (em.getTransaction().isActive()){
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 }

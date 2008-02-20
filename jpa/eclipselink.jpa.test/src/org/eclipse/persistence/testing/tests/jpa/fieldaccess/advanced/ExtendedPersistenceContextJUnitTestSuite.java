@@ -64,15 +64,15 @@ public class ExtendedPersistenceContextJUnitTestSuite extends JUnitTestCase {
     // JUnit framework will automatically execute all methods starting with test...    
     public void testExtendedPersistenceContext() {
         EntityManager em = createEntityManager("fieldaccess");
-        em.getTransaction().begin();
+        beginTransaction(em);
         Query query = em.createQuery("select e from Employee e");
         List result = query.getResultList();
         if (result.isEmpty()){
             fail("Database not setup correctly");
         }
         Object obj = result.get(0);
-        em.getTransaction().commit();
+        commitTransaction(em);
         assertTrue("Extended PersistenceContext did not continue to maintain object after commit.", em.contains(obj));
-        em.close();
+        closeEntityManager(em);
     }
 }
