@@ -23,8 +23,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.swingui.TestRunner;
-import org.eclipse.persistence.internal.sessions.factories.model.clustering.RMIJNDIClusteringConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.csm.CacheSynchronizationManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.EISLoginConfig;
@@ -173,23 +171,7 @@ public class DatabaseSessionWriteTest extends TestCase {
 	protected void populateDatabaseSession( DatabaseSessionConfig dbSessionConfig, String name) {
 
 		dbSessionConfig.setName( name);
-
-		// Cache synchronization manager
-		CacheSynchronizationManagerConfig csmConfig = new CacheSynchronizationManagerConfig();
-
-		// Clustering service
-		RMIJNDIClusteringConfig clusteringConfig = new RMIJNDIClusteringConfig();
-		csmConfig.setClusteringServiceConfig(clusteringConfig);
-
-		csmConfig.setIsAsynchronous(true);
-		clusteringConfig.setJNDIPassword("password");
-		clusteringConfig.setJNDIUsername("username");
-		clusteringConfig.setNamingServiceInitialContextFactoryName("initialContextFactoryName");
-		clusteringConfig.setNamingServiceURL("localhost:1099");
-		csmConfig.setRemoveConnectionOnError(true);
     
-		dbSessionConfig.setCacheSynchronizationManagerConfig(csmConfig);
-
 		// Exception handler class
 		dbSessionConfig.setExceptionHandlerClass("handlerClass");
 

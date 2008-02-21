@@ -21,7 +21,6 @@ import org.eclipse.persistence.tools.workbench.test.scplugin.ui.pool.basic.Rdbms
 import org.eclipse.persistence.tools.workbench.test.scplugin.ui.project.ProjectPropertiesPageTest;
 import org.eclipse.persistence.tools.workbench.test.scplugin.ui.session.basic.SessionLoggingPropertiesPageTest;
 import org.eclipse.persistence.tools.workbench.test.scplugin.ui.session.basic.SessionOptionsPropertiesPageTest;
-import org.eclipse.persistence.tools.workbench.test.scplugin.ui.session.clustering.SessionClusteringPropertiesPageTest;
 import org.eclipse.persistence.tools.workbench.test.scplugin.ui.session.login.RdbmsConnectionPropertiesPageTest;
 import org.eclipse.persistence.tools.workbench.test.scplugin.ui.session.login.RdbmsOptionsPropertiesPageTest;
 import org.eclipse.persistence.tools.workbench.test.scplugin.ui.session.login.RdbmsSequencingPropertiesPageTest;
@@ -58,9 +57,6 @@ public final class AllSCUITests
 		// ui.session.basic
 		suite.addTestSuite(SessionLoggingPropertiesPageTest.class);
 		suite.addTestSuite(SessionOptionsPropertiesPageTest.class);
-
-		// ui.session.clustering
-		suite.addTestSuite(SessionClusteringPropertiesPageTest.class);
 
 		// ui.session.login
 		suite.addTestSuite(RdbmsConnectionPropertiesPageTest.class);
