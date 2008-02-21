@@ -65,7 +65,7 @@
     </target>
 
 	<target name="build.workbench">
-        <ant antfile="${eclipselink.workbench}/build.xml" target="all"/>
+        <ant antfile="build.xml" dir="${eclipselink.workbench}" target="all"/>
     </target>
 
     <!-- Compiles Oracle extensions and tests. -->
@@ -80,7 +80,7 @@
         <ant antfile="${eclipselink.jpa.test}/build.xml" target="all"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="compile.tests"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml" target="compile.sdo.tests"/>
-        <ant antfile="${eclipselink.workbench.test}/build.xml" target="all"/>
+        <ant antfile="build.xml" dir="${eclipselink.workbench.test}" target="all"/>
     </target>
 
     <!-- Packages the eclipselink.jar. -->
