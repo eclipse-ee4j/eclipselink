@@ -48,13 +48,13 @@
             includes="${eclipselink.core.depend}"/>
     </path>
     <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
-    <target name="all" depends="package.eclipselink.jar, build.test, package.src.jar, package.package-renamer.jar, package.installer.zip" description="build EclipseLink distribution files"/>
+    <target name="all" depends="package.eclipselink.jar, build.workbench, build.test, package.src.jar, package.package-renamer.jar, package.installer.zip" description="build EclipseLink distribution files"/>
 
     <!-- Compiles all components and tests including Oracle extensions. -->
-    <target name="build.all" depends="build.core, build.test, build.extension"/>
+    <target name="build.all" depends="build.core, build.workbench, build.test, build.extension"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
-    <target name="build.distribution" depends="package.eclipselink.jar, package.src.jar, package.package-renamer.jar, build.javadocs, package.javadoc.zip, package.installer.zip"/>
+    <target name="build.distribution" depends="package.eclipselink.jar, build.workbench, package.src.jar, package.package-renamer.jar, build.javadocs, package.javadoc.zip, package.installer.zip"/>
 
     <!-- Compiles all components (excluding tests, Oracle extensions). -->
     <target name="build.core">
@@ -62,6 +62,10 @@
         <ant antfile="${eclipselink.jpa}/build.xml" target="all"/>
         <ant antfile="${eclipselink.moxy}/build.xml" target="all"/>
         <ant antfile="${eclipselink.sdo}/build.xml" target="all"/>
+    </target>
+
+	<target name="build.workbench">
+        <ant antfile="${eclipselink.workbench}/build.xml" target="all"/>
     </target>
 
     <!-- Compiles Oracle extensions and tests. -->
@@ -76,6 +80,7 @@
         <ant antfile="${eclipselink.jpa.test}/build.xml" target="all"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="compile.tests"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml" target="compile.sdo.tests"/>
+        <ant antfile="${eclipselink.workbench.test}/build.xml" target="all"/>
     </target>
 
     <!-- Packages the eclipselink.jar. -->
