@@ -16,6 +16,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Vector;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -24,6 +25,9 @@ import junit.framework.*;
 import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -33,6 +37,7 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedTableCrea
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.ModelExamples;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.Project;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  
 /**
@@ -68,9 +73,11 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testDeleteEmployee", persistenceUnit));
         
         if (persistenceUnit.equals("extended")) {
-        	suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testJoinFetchSetting", persistenceUnit));
-        	suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testExtendedEmployee", persistenceUnit));
-        	suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testGiveExtendedEmployeeASexChange", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testJoinFetchSetting", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEmployeeOptimisticLockingSettings", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testProjectOptimisticLockingSettings", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testExtendedEmployee", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testGiveExtendedEmployeeASexChange", persistenceUnit));
         }
         
         return new TestSetup(suite) {
@@ -92,9 +99,53 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
     public void testJoinFetchSetting() {
         ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
         ClassDescriptor descriptor = session.getDescriptor(Employee.class);
-        
-        if (((ForeignReferenceMapping)descriptor.getMappingForAttributeName("address")).getJoinFetch() != ForeignReferenceMapping.OUTER_JOIN) {
+     
+        if (descriptor == null) {
+            fail("Employee descriptor was not found in the PU [" + m_persistenceUnit + "]");
+        } else if (((ForeignReferenceMapping)descriptor.getMappingForAttributeName("address")).getJoinFetch() != ForeignReferenceMapping.OUTER_JOIN) {
             fail("join-fetch setting from XML was not read correctly for Employee's address.");
+        }
+    }
+    
+    /**
+     * Verifies that the optimistic-locking settings were read correctly from XML.
+     */
+    public void testEmployeeOptimisticLockingSettings() {
+    	ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        ClassDescriptor descriptor = session.getDescriptor(Employee.class);
+            
+        if (descriptor == null) {
+            fail("Employee descriptor was not found in the PU [" + m_persistenceUnit + "]");
+        } else {            
+            assertTrue("Incorrect optimistic locking policy set on the Employee descriptor.", descriptor.usesVersionLocking());
+            assertTrue("Incorrect cascade option set on the optimistic locking poluicy.", descriptor.getOptimisticLockingPolicy().isCascaded());
+        }
+    }
+    
+    /**
+     * Verifies that the optimistic-locking settings were read correctly from XML.
+     */
+    public void testProjectOptimisticLockingSettings() {
+    	ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        ClassDescriptor descriptor = session.getDescriptor(Project.class);
+            
+        if (descriptor == null) {
+            fail("Project descriptor was not found in the PU [" + m_persistenceUnit + "]");
+        } else {
+        	OptimisticLockingPolicy policy = descriptor.getOptimisticLockingPolicy();
+        	
+        	if (policy instanceof SelectedFieldsLockingPolicy) {
+        		Vector<DatabaseField> lockFields = ((SelectedFieldsLockingPolicy) policy).getLockFields();
+        		
+        		if (lockFields.isEmpty() || lockFields.size() > 1) {
+        			fail("Invalid amount of lock fields were set on Project's selected fields locking policy.");
+        		} else {
+        			DatabaseField lockField = lockFields.firstElement();
+        			assertTrue("Incorrect lock field was set on Project's selected fields locking policy.", lockField.getName().equals("VERSION"));
+        		}
+        	} else {
+        		fail("A SelectedFieldsLockingPolicy was not set on the Project descriptor.");
+        	}
         }
     }
     

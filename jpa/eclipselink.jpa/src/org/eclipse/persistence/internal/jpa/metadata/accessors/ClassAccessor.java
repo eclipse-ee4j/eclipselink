@@ -61,7 +61,6 @@ import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
 import org.eclipse.persistence.annotations.OptimisticLocking;
-import org.eclipse.persistence.annotations.OptimisticLockingType;
 import org.eclipse.persistence.annotations.ReadOnly;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -119,6 +118,8 @@ public class ClassAccessor extends NonRelationshipAccessor {
     private boolean m_excludeSuperclassListeners;
     private Boolean m_metadataComplete; // EntityMappings init will process this value.
     
+    private DiscriminatorColumnMetadata m_discriminatorColumn;
+    
     private List<AssociationOverrideMetadata> m_associationOverrides;
     private List<AttributeOverrideMetadata> m_attributeOverrides;
     private List<NamedQueryMetadata> m_namedQueries;
@@ -127,7 +128,7 @@ public class ClassAccessor extends NonRelationshipAccessor {
     private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings;
     private List<EntityListenerMetadata> m_entityListeners;
     
-    private DiscriminatorColumnMetadata m_discriminatorColumn;
+    private OptimisticLockingMetadata m_optimisticLocking;
     
     private String m_access; // EntityMappings init will process this value.
     private String m_className;
@@ -527,6 +528,14 @@ public class ClassAccessor extends NonRelationshipAccessor {
     	return m_namedQueries;
     }
     
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public OptimisticLockingMetadata getOptimisticLocking() {
+        return m_optimisticLocking;
+    }
+	
     /**
 	 * INTERNAL:
 	 * Used for OX mapping.
@@ -1816,48 +1825,33 @@ public class ClassAccessor extends NonRelationshipAccessor {
     
     /**
      * INTERNAL:
-     * 
-     * Process an OptimisticLocking metadata.
+     * Process an OptimisticLockingMetadata.
      */
     protected void processOptimisticLocking() {
-        OptimisticLocking optimisticLocking = getAnnotation(OptimisticLocking.class);
-        
-        if (optimisticLocking != null) {
-            processOptimisticLocking(new OptimisticLockingMetadata(optimisticLocking));
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * 
-     * Process a MetadataOptimisticLocking.
-     */
-    protected void processOptimisticLocking(OptimisticLockingMetadata optimisticLocking) {
         if (getDescriptor().usesOptimisticLocking()) {
-            // Ignore the optimistic locking policy if one is already set. Ask
-            // the optimistic locking metadata for the context.
-            getLogger().logWarningMessage(optimisticLocking.getIgnoreLogMessageContext(), getDescriptor().getJavaClass(), getJavaClass());
+            if (m_optimisticLocking != null || isAnnotationPresent(OptimisticLocking.class)) {
+                // We must be processing a mapped superclass to an entity that
+                // defined its own optimistic locking meta data. Ignore it and
+                // log a warning.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING, getDescriptor().getJavaClass(), getJavaClass());
+            }
         } else {
-            // Process the type.
-            String type = optimisticLocking.getType();
+            if (m_optimisticLocking == null) {
+                OptimisticLocking optimisticLocking = getAnnotation(OptimisticLocking.class);
             
-            if (type.equals(OptimisticLockingType.ALL_COLUMNS.name())) {
-            	getDescriptor().useAllColumnsLockingPolicy();
-            } else if (type.equals(OptimisticLockingType.CHANGED_COLUMNS.name())) {
-            	getDescriptor().useChangedColumnsLockingPolicy();
-            } else if (type.equals(OptimisticLockingType.SELECTED_COLUMNS.name())) {
-            	if (optimisticLocking.hasSelectedColumns()) {
-            		getDescriptor().useSelectedColumnsLockingPolicy(optimisticLocking.getSelectedColumns());
-            	} else {
-            		throw ValidationException.optimisticLockingSelectedColumnNamesNotSpecified(getJavaClass());
-            	}
-            } else { 
-                // Must be VERSION_COLUMN. We must now find a @Version 
-                // annotation. After processing the accessors for this class, a 
-                // call to validateOptimisticLocking() should be made.
-                
-                // Process cascade
-            	getDescriptor().setUsesCascadedOptimisticLocking(optimisticLocking.isCascaded());
+                if (optimisticLocking != null) {
+                    // Process the meta data for this accessor's descriptor.
+                    new OptimisticLockingMetadata(optimisticLocking).process(getDescriptor());
+                }
+            } else {
+                // If there is an annotation log a warning that we are 
+                // ignoring it.
+                if (isAnnotationPresent(OptimisticLocking.class)) {
+                    getLogger().logWarningMessage(MetadataLogger.IGNORE_OPTIMISTIC_LOCKING_ANNOTATION, getJavaClass(), getMappingFile());
+                }
+    		
+                // Process the meta data for this accessor's descriptor.
+                m_optimisticLocking.process(getDescriptor());
             }
         }
     }
@@ -2223,6 +2217,14 @@ public class ClassAccessor extends NonRelationshipAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOptimisticLocking(OptimisticLockingMetadata optimisticLocking) {
+        m_optimisticLocking = optimisticLocking;
+    }
+	
+    /**
+     * INTERNAL:
      * Set the post load event method on the listener.
      */
     protected void setPostLoad(Method method, EntityListenerMetadata listener) {
@@ -2385,6 +2387,4 @@ public class ClassAccessor extends NonRelationshipAccessor {
             }
         }  
     }
-
-
 }

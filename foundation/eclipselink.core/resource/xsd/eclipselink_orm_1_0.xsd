@@ -206,6 +206,8 @@
       <xsd:element name="discriminator-column" 
                    type="orm:discriminator-column" 
                    minOccurs="0"/>
+      <xsd:element name="optimistic-locking" type="orm:optimistic-locking"
+                   minOccurs="0"/>
       <xsd:element name="converter" type="orm:converter" 
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="type-converter" type="orm:type-converter" 
@@ -1446,6 +1448,8 @@
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="id-class" type="orm:id-class" minOccurs="0"/>
+      <xsd:element name="optimistic-locking" type="orm:optimistic-locking"
+                   minOccurs="0"/>
       <xsd:element name="converter" type="orm:converter" 
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="type-converter" type="orm:type-converter" 
@@ -1895,6 +1899,106 @@
       <xsd:enumeration value="OUTER"/>
     </xsd:restriction>
   </xsd:simpleType>
+  
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="optimistic-locking">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * An optimistic-locking element is used to specify the type of 
+         * optimistic locking EclipseLink should use when updating or deleting 
+         * entities. An optimistic-locking specification is supported on
+         * an entity or mapped-superclass.
+         * 
+         * It is used in conjunction with the optimistic-locking-type.
+         */ 
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface OptimisticLocking {
+          /**
+           * (Optional) The type of optimistic locking policy to use.
+           */
+          OptimisticLockingType type() default VERSION_COLUMN;
+
+          /**
+           * (Optional) For an optimistic locking policy of type 
+           * SELECTED_COLUMNS, this annotation member becomes a (Required) 
+           * field.
+           */
+          Column[] selectedColumns() default {};
+
+          /**
+           * (Optional) Specify where the optimistic locking policy should 
+           * cascade lock. Currently only supported with VERSION_COLUMN locking.
+           */
+          boolean cascade() default false;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="selected-column" type="orm:column" minOccurs="0" maxOccurs="unbounded"/>    
+    </xsd:sequence>
+    <xsd:attribute name="type" type="orm:optimistic-locking-type"/>
+    <xsd:attribute name="cascade" type="xsd:boolean"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+  
+  <xsd:simpleType name="optimistic-locking-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * A simple type that is used within an optimistic-locking 
+         * specification to specify the type of optimistic-locking that
+         * EclipseLink should use when updating or deleting entities.
+         */
+        public enum OptimisticLockingType {
+          /**
+           * Using this type of locking policy compares every field in the table
+           * in the WHERE clause when doing an update or a delete. If any field
+           * has been changed, an optimistic locking exception will be thrown.
+           */
+          ALL_COLUMNS,
+
+          /**
+           * Using this type of locking policy compares only the changed fields
+           * in the WHERE clause when doing an update. If any field has been
+           * changed, an optimistic locking exception will be thrown. A delete
+           * will only compare the primary key.
+           */
+          CHANGED_COLUMNS,
+
+          /**
+           * Using this type of locking compares selected fields in the WHERE
+           * clause when doing an update or a delete. If any field has been
+           * changed, an optimistic locking exception will be thrown. Note that
+           * the fields specified must be mapped and not be primary keys.
+           */
+          SELECTED_COLUMNS,
+
+          /**
+           * Using this type of locking policy compares a single version number
+           * in the where clause when doing an update. The version field must be
+           * mapped and not be the primary key.
+           */
+          VERSION_COLUMN
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="ALL_COLUMNS"/>
+      <xsd:enumeration value="CHANGED_COLUMNS"/>
+      <xsd:enumeration value="SELECTED_COLUMNS"/>
+      <xsd:enumeration value="VERSION_COLUMN"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
 </xsd:schema>
 
 

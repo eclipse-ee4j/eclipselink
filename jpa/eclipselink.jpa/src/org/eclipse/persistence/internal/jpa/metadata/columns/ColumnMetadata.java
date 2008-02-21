@@ -14,7 +14,6 @@ package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import javax.persistence.Column;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
 /**
@@ -47,28 +46,23 @@ public class ColumnMetadata  {
     
     /**
      * INTERNAL:
-     * Called when defaulting a value column for a basic collection or
-     * basic map. Also called when defaulting a key column for a basic map.
      */
-    public ColumnMetadata(MetadataAccessor accessor) {
-        this(null, accessor.getAttributeName());
+    public ColumnMetadata(String attributeName) {
+        m_attributeName = attributeName;
     }
     
     /**
      * INTERNAL:
-     * Called for basic mappings.
      */
-    public ColumnMetadata(Column column, MetadataAccessor accessor) {
-        this(column, accessor.getAttributeName());
+    public ColumnMetadata(Column column) {
+        this(column, "");
     }
     
     /**
      * INTERNAL:
-     * If column is null, initialize the default values. Otherwise, use the
-     * values from the Column passed in.
      */
     public ColumnMetadata(Column column, String attributeName) {
-    	m_attributeName = attributeName;
+        this(attributeName);
         
         if (column != null) {
             // Apply the values from the column annotation.

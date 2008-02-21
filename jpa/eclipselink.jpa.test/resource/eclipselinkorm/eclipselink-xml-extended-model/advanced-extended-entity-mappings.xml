@@ -9,6 +9,7 @@
         <secondary-table name="CMP3_XML_SALARY">
             <primary-key-join-column name="E_ID" referenced-column-name="EMP_ID"/>
         </secondary-table>
+        <optimistic-locking type="VERSION_COLUMN" cascade="true"/>
         <object-type-converter name="sex" data-type="String" object-type="Employee$Gender">
           <conversion-value data-value="F" object-value="Female"/>
           <conversion-value data-value="M" object-value="Male"/>
@@ -182,6 +183,9 @@
         <inheritance strategy="JOINED"/>
         <discriminator-value>P</discriminator-value>
         <discriminator-column name="PROJ_TYPE"/>
+        <optimistic-locking type="SELECTED_COLUMNS">
+          <selected-column name="VERSION"/>
+        </optimistic-locking>
         <sequence-generator name="XML_PROJECT_SEQUENCE_GENERATOR" sequence-name="PROJECT_SEQ" allocation-size="10"/>
         <named-query name="findXMLProjectByName">
             <query>SELECT OBJECT(project) FROM XMLProject project WHERE project.name = :name</query>
@@ -206,9 +210,9 @@
             <basic name="description">
                 <column name="DESCRIP"/>
             </basic>
-            <version name="version">
-                <column name="VERSION"/>
-            </version>
+            <basic name="version">
+              <column name="VERSION"/>
+            </basic>
             <one-to-one name="teamLeader" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee">
                 <join-column name="LEADER_ID"/>
             </one-to-one>

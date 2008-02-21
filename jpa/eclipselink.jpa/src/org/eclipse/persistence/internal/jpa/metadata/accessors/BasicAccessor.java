@@ -78,7 +78,7 @@ public class BasicAccessor extends DirectAccessor {
     protected ColumnMetadata getColumn(String loggingCtx) {
     	if (m_column == null) {
     		Column column = getAnnotation(Column.class);
-            return new ColumnMetadata(column, this);
+            return new ColumnMetadata(column, getAttributeName());
     	} else {
     		return m_column;
     	}
@@ -155,9 +155,7 @@ public class BasicAccessor extends DirectAccessor {
         mapping.setIsReadOnly(field.isReadOnly());
         mapping.setAttributeName(getAttributeName());
         mapping.setIsOptional(isOptional());
-        if (usesIndirection()) {
-            mapping.setIsLazy(true);
-        }
+        mapping.setIsLazy(usesIndirection());
 
         // Will check for PROPERTY access.
         setAccessorMethods(mapping);

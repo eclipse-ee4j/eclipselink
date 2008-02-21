@@ -22,6 +22,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.TemporalType;
 
 import org.eclipse.persistence.annotations.JoinFetchType;
+import org.eclipse.persistence.annotations.OptimisticLockingType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.BasicAccessor;
@@ -52,6 +53,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConver
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.locking.OptimisticLockingMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.EntityResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.FieldResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
@@ -100,6 +102,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildUniqueConstraintDescriptor());
         addDescriptor(buildAttributesDescriptor());
         addDescriptor(buildEntityListenerDescriptor());
+        addDescriptor(buildOptimisticLockingDescriptor());
         
         addDescriptor(buildColumnDescriptor());
         addDescriptor(buildJoinColumnDescriptor());
@@ -666,6 +669,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         discriminatorColumnMapping.setXPath("orm:discriminator-column");
         descriptor.addMapping(discriminatorColumnMapping);
 
+        descriptor.addMapping(getOptimisticLockingMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
@@ -1067,6 +1071,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
 
         descriptor.addMapping(getDescriptionMapping());
         descriptor.addMapping(getIdClassMapping());
+        descriptor.addMapping(getOptimisticLockingMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
@@ -1082,6 +1087,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPostUpdateMapping());
         descriptor.addMapping(getPostLoadMapping());
         descriptor.addMapping(getAttributesMapping());
+        
         descriptor.addMapping(getClassAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
@@ -1209,6 +1215,40 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getFetchAttributeMapping());
         descriptor.addMapping(getOptionalAttributeMapping());
         descriptor.addMapping(getMappedByAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: optimistic-locking
+     */
+    protected ClassDescriptor buildOptimisticLockingDescriptor() {
+    	XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(OptimisticLockingMetadata.class);
+        
+        XMLCompositeCollectionMapping selectedColumnsMapping = new XMLCompositeCollectionMapping();
+        selectedColumnsMapping.setAttributeName("m_selectedColumns");
+        selectedColumnsMapping.setGetMethodName("getSelectedColumns");
+        selectedColumnsMapping.setSetMethodName("setSelectedColumns");
+        selectedColumnsMapping.setReferenceClass(ColumnMetadata.class);
+        selectedColumnsMapping.setXPath("orm:selected-column");
+        descriptor.addMapping(selectedColumnsMapping);
+        
+        XMLDirectMapping typeMapping = new XMLDirectMapping();
+        typeMapping.setAttributeName("m_type");
+        typeMapping.setGetMethodName("getType");
+        typeMapping.setSetMethodName("setType");
+        typeMapping.setConverter(new EnumTypeConverter(typeMapping, OptimisticLockingType.class, false));
+        typeMapping.setXPath("@type");
+        descriptor.addMapping(typeMapping);
+        
+        XMLDirectMapping cascadeMapping = new XMLDirectMapping();
+        cascadeMapping.setAttributeName("m_cascade");
+        cascadeMapping.setGetMethodName("getCascade");
+        cascadeMapping.setSetMethodName("setCascade");
+        cascadeMapping.setXPath("@cascade");
+        descriptor.addMapping(cascadeMapping);
         
         return descriptor;
     }
@@ -2010,6 +2050,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     	objectTypeConvertersMapping.setReferenceClass(ObjectTypeConverterMetadata.class);
     	objectTypeConvertersMapping.setXPath("orm:object-type-converter");
     	return objectTypeConvertersMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getOptimisticLockingMapping() {
+    	XMLCompositeObjectMapping optimisticLockingMapping = new XMLCompositeObjectMapping();
+    	optimisticLockingMapping.setAttributeName("m_optimisticLocking");
+    	optimisticLockingMapping.setGetMethodName("getOptimisticLocking");
+    	optimisticLockingMapping.setSetMethodName("setOptimisticLocking");
+    	optimisticLockingMapping.setReferenceClass(OptimisticLockingMetadata.class);
+    	optimisticLockingMapping.setXPath("orm:optimistic-locking");
+    	return optimisticLockingMapping;
     }
     
     /**

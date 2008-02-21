@@ -26,6 +26,9 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
  * The OptimisticLocking annotation is used to specify the type of optimistic 
  * locking TopLink should use when updating or deleting entities.
  * 
+ * An optimistic-locking specification is supported on an Entity or 
+ * MappedSuperclass annotation.
+ * 
  * @see org.eclipse.persistence.annotations.OptimisticLockingType.
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0 

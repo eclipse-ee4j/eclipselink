@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
+import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -42,23 +44,24 @@ public class VersionAccessor extends BasicAccessor {
      * Process a version accessor.
      */
     public void process() {
-    	// This will initialize the m_field variable.
-    	super.process();
+        // This will initialize the m_field variable.
+        super.process();
     	
         // Process an @Version or version element if there is one.
-    	if (getDescriptor().usesOptimisticLocking()) {
-    		// Ignore the version locking if it is already set.
+        if (getDescriptor().usesOptimisticLocking()) {
+            // Ignore the version locking if it is already set.
             getLogger().logWarningMessage(MetadataLogger.IGNORE_VERSION_LOCKING, this);
-    	} else {
-    		Class lockType = getRawClass();
-    		getField().setType(lockType);
+        } else {
+            Class lockType = getRawClass();
+            getField().setType(lockType);
 
-            if (MetadataHelper.isValidVersionLockingType(lockType)) {
-                getDescriptor().useVersionLockingPolicy(getField());
-            } else if (MetadataHelper.isValidTimstampVersionLockingType(lockType)) {
-                getDescriptor().useTimestampLockingPolicy(getField());
+            if (MetadataHelper.isValidVersionLockingType(lockType) || MetadataHelper.isValidTimestampVersionLockingType(lockType)) {
+                VersionLockingPolicy policy = MetadataHelper.isValidVersionLockingType(lockType) ? new VersionLockingPolicy(getField()) : new TimestampLockingPolicy(getField());  
+                policy.storeInObject();
+                policy.setIsCascaded(getDescriptor().usesCascadedOptimisticLocking());
+                getDescriptor().setOptimisticLockingPolicy(policy);
             } else {
-            	throw ValidationException.invalidTypeForVersionAttribute(getAttributeName(), lockType, getJavaClass());
+                throw ValidationException.invalidTypeForVersionAttribute(getAttributeName(), lockType, getJavaClass());
             }
         }
     }

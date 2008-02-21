@@ -48,11 +48,11 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
         super(accessibleObject, classAccessor);
         
         BasicMap basicMap = getAnnotation(BasicMap.class);
-        m_keyColumn = new ColumnMetadata(basicMap.keyColumn(), this);
+        m_keyColumn = new ColumnMetadata(basicMap.keyColumn(), getAttributeName());
         m_keyConverter = basicMap.keyConverter().value();
         m_valueConverter = basicMap.valueConverter().value();
         
-        setValueColumn(new ColumnMetadata(basicMap.valueColumn(), this));
+        setValueColumn(new ColumnMetadata(basicMap.valueColumn(), getAttributeName()));
         setFetch(basicMap.fetch());
     }
    
@@ -63,7 +63,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     	if (loggingCtx.equals(MetadataLogger.VALUE_COLUMN)) {
     		return super.getColumn(loggingCtx);
     	} else {
-    		return (m_keyColumn == null) ? new ColumnMetadata(this) : m_keyColumn; 
+    		return (m_keyColumn == null) ? new ColumnMetadata(getAttributeName()) : m_keyColumn; 
     	}
     }
     

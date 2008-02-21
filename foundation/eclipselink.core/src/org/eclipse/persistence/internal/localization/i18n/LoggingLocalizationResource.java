@@ -221,12 +221,12 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_default_many_to_many_reference_class", "The target entity (reference) class for the many to many mapping element [{0}] is being defaulted to: {1}." },
         
         { "metadata_warning_ignore_mapping", "A mapping for the element [{1}] is already defined on the descriptor for the entity [{0}]. Ignoring the mapping annotation." },
-        { "metadata_warning_ignore_version_locking", "An optimistic locking policy is already defined on the descriptor for the entity [{0}]. Ignoring version specification on element [{1}]." },
         { "metadata_warning_ignore_lob", "Ignoring lob specification on element [{1}] within entity class [{0}] since a @Convert is specified." },
         { "metadata_warning_ignore_temporal", "Ignoring temporal specification on element [{1}] within entity class [{0}] since a @Convert is specified." },
         { "metadata_warning_ignore_serialized", "Ignoring default serialization on element [{1}] within entity class [{0}] since a @Convert is specified." },
         { "metadata_warning_ignore_enumerated", "Ignoring enumerated specification on element [{1}] within entity class [{0}] since a @Convert is specified." },
-        { "metadata_warning_ignore_basic_fetch_lazy", "Ignoring LAZY fetch type on element [{1}] within entity class [{0}]. All basic mappings default to use EAGER fetching." },
+        { "metadata_warning_ignore_version_locking", "Optimistic locking metadata is already defined on the descriptor for the entity [{0}]. Ignoring version specification on element [{1}]." },
+        { "metadata_warning_ignore_mapped_superclass_optimistic_locking", "Optimistic locking metadata is already defined on the descriptor for the entity [{0}]. Ignoring the optimistic locking specification on the mapped superclass [{1}] for this entity." },
         
         { "annotation_warning_ignore_annotation", "The annotation [{0}] on the element [{1}] is being ignored because of an XML metadata-complete setting of true for this class." },
         { "annotation_warning_ignore_association_override", "Ignoring the @AssociationOverride named [{0}] defined on the class [{2}] for the entity [{1}] since an association override with the same name was defined in XML." },
@@ -247,7 +247,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "annotation_warning_ignore_return_insert", "Ignoring the @ReturnInsert on the element [{0}]. A @ReturnInsert is only supported with a basic mapping." },
         { "annotation_warning_ignore_return_update", "Ignoring the @ReturnUpdate on the element [{0}]. A @ReturnUpdate is only supported with a basic mapping." },
         { "annotation_warning_ignore_change_tracking", "A change tracking policy is already defined on the descriptor for the entity [{0}]. Ignoring @ChangeTracking on the mapped superclass [{1}] for this descriptor." },
-        { "annotation_warning_ignore_optimistic_locking", "An optimistic locking policy is already defined on the descriptor for the entity [{0}]. Ignoring the @OptimisticLocking on the class [{1}] for this descriptor." },
+        { "annotation_warning_ignore_optimistic_locking", "An optimistic-locking element has been defined for the entity [{0}] in the mapping file [{1}]. Ignoring the @OptimisticLocking defined on this entity." },
         { "annotation_warning_ignore_mapped_superclass_cache", "Ignoring the @Cache annotation on the mapped superclass [{1}] for the entity class [{0}] since it has its own @Cache annotation defined." },
         { "annotation_warning_ignore_inheritance_subclass_cache", "Ignoring the @Cache annotation on the inheritance subclass [{0}]. A @Cache annotation should only be specified on the root of the inheritance hierarchy." },
         

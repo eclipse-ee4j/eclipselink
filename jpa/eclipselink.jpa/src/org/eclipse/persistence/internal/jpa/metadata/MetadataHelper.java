@@ -957,7 +957,7 @@ public class MetadataHelper {
      * INTERNAL:
      * Returns true if the given class is a valid timestamp locking type.
      */
-    public static boolean isValidTimstampVersionLockingType(Class cls) {
+    public static boolean isValidTimestampVersionLockingType(Class cls) {
         return (cls.equals(java.sql.Timestamp.class));
     }
      

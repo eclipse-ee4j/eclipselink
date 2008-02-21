@@ -63,7 +63,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
         
         // Must check, BasicMapAccessor calls this constructor ...
         if (basicCollection != null) {
-            m_valueColumn = new ColumnMetadata(basicCollection.valueColumn(), this);
+            m_valueColumn = new ColumnMetadata(basicCollection.valueColumn(), getAttributeName());
             
             setFetch(basicCollection.fetch());
         }
@@ -84,7 +84,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
      * annotation however.
      */
     protected ColumnMetadata getColumn(String loggingCtx) {
-    	return (m_valueColumn == null) ? new ColumnMetadata(this) : m_valueColumn;  
+    	return (m_valueColumn == null) ? new ColumnMetadata(getAttributeName()) : m_valueColumn;  
     }
     
     /**

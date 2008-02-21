@@ -1,11 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
- * http://www.eclipse.org/org/documents/edl-v10.php.
+ * Copyright (c) 1998, 2007 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0, which accompanies this distribution
+ * and is available at http://www.eclipse.org/legal/epl-v10.html.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
@@ -25,14 +22,9 @@ import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.annotations.ChangeTrackingType;
 
-import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
-import org.eclipse.persistence.descriptors.ChangedFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
-import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
-import org.eclipse.persistence.descriptors.VersionLockingPolicy;
-import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
@@ -1120,7 +1112,7 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    protected void setOptimisticLockingPolicy(OptimisticLockingPolicy policy) {
+    public void setOptimisticLockingPolicy(OptimisticLockingPolicy policy) {
         m_descriptor.setOptimisticLockingPolicy(policy);
     }
     
@@ -1214,12 +1206,11 @@ public class MetadataDescriptor {
         m_descriptor.setCacheInvalidationPolicy(new TimeToLiveCacheInvalidationPolicy(expiry));
     }
  
-
     /**
      * INTERNAL:
      */
-    public void setUsesCascadedOptimisticLocking(boolean usesCascadedOptimisticLocking) {
-        m_usesCascadedOptimisticLocking = Boolean.valueOf(usesCascadedOptimisticLocking);
+    public void setUsesCascadedOptimisticLocking(Boolean usesCascadedOptimisticLocking) {
+        m_usesCascadedOptimisticLocking = usesCascadedOptimisticLocking;
     }
     
     /**
@@ -1256,33 +1247,8 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-    public void useAllColumnsLockingPolicy() {
-       setOptimisticLockingPolicy(new AllFieldsLockingPolicy()); 
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void useChangedColumnsLockingPolicy() {
-       setOptimisticLockingPolicy(new ChangedFieldsLockingPolicy());
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void useSelectedColumnsLockingPolicy(List<String> selectedColumns) {
-        SelectedFieldsLockingPolicy policy = new SelectedFieldsLockingPolicy();
-                        
-        // Process the selectedColumns
-        for (String selectedColumn : selectedColumns) {
-        	if (selectedColumn.equals("")) {  
-        		throw ValidationException.optimisticLockingSelectedColumnNamesNotSpecified(getJavaClass());
-            } else {
-            	policy.addLockFieldName(selectedColumn);
-            }
-        }
-                        
-        setOptimisticLockingPolicy(policy);
+    public boolean usesCascadedOptimisticLocking() {
+    	return m_usesCascadedOptimisticLocking != null && m_usesCascadedOptimisticLocking.booleanValue();
     }
     
     /**
@@ -1366,41 +1332,14 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Return true if this descriptors class processed a @OptimisticLocking
-     * of type VERSION_COLUMN.
+     * Return true if this descriptors class processed OptimisticLocking 
+     * meta data of type VERSION_COLUMN.
      */
     public boolean usesVersionColumnOptimisticLocking() {
-        // If @OptimisticLocking(type=VERSION_COLUMN) was not specified,
-        // then m_usesCascadedOptimisticLocking will be null, that is, we 
-        // won't have processed the cascade() value on @OptimisticLocking.
+        // If an optimistic locking metadata of type VERSION_COLUMN was not 
+    	// specified, then m_usesCascadedOptimisticLocking will be null, that 
+    	// is, we won't have processed the cascade value.
         return m_usesCascadedOptimisticLocking != null;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void useTimestampLockingPolicy(DatabaseField field) {
-        useVersionLockingPolicy(new TimestampLockingPolicy(field));
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void useVersionLockingPolicy(DatabaseField field) {
-        useVersionLockingPolicy(new VersionLockingPolicy(field));
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected void useVersionLockingPolicy(VersionLockingPolicy policy) {
-        policy.storeInObject();
-
-        if (usesVersionColumnOptimisticLocking()) {
-            policy.setIsCascaded(m_usesCascadedOptimisticLocking);
-        }
-        
-        setOptimisticLockingPolicy(policy);
     }
     
     /**

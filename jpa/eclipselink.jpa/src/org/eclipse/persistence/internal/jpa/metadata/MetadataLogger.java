@@ -72,7 +72,7 @@ public class MetadataLogger  {
     public static final String IGNORE_ENUMERATED = "metadata_warning_ignore_enumerated";
     public static final String IGNORE_SERIALIZED = "metadata_warning_ignore_serialized";
     public static final String IGNORE_VERSION_LOCKING = "metadata_warning_ignore_version_locking";
-    public static final String IGNORE_BASIC_FETCH_LAZY = "metadata_warning_ignore_basic_fetch_lazy";
+    public static final String IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING = "metadata_warning_ignore_mapped_superclass_optimistic_locking";
     
     /*************************************************************************/
     /*                       GENERIC DEFAULT MESSSAGES                       */ 
@@ -172,7 +172,7 @@ public class MetadataLogger  {
         ctxStrings.put(IGNORE_ENUMERATED, IGNORE_ENUMERATED);
         ctxStrings.put(IGNORE_SERIALIZED, IGNORE_SERIALIZED);
         ctxStrings.put(IGNORE_VERSION_LOCKING, IGNORE_VERSION_LOCKING);
-        ctxStrings.put(IGNORE_BASIC_FETCH_LAZY, IGNORE_BASIC_FETCH_LAZY);
+        ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING, IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING);
         
         // Common default messages for ORM and annotations.
         ctxStrings.put(ALIAS, ALIAS);
