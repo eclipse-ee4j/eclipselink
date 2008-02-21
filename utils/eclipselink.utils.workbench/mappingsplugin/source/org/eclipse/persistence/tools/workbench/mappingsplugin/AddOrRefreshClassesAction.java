@@ -49,8 +49,6 @@ import org.eclipse.persistence.tools.workbench.uitools.cell.CellRendererAdapter;
 import org.eclipse.persistence.tools.workbench.utility.Classpath;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
 
-import org.eclipse.persistence.exceptions.EJBJarXMLException;
-
 /**
  * import classes from the external class repository,
  * adding or refreshing as appropriate

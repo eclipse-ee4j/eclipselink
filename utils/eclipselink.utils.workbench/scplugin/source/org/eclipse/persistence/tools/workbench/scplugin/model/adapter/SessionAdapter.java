@@ -19,7 +19,6 @@ import org.eclipse.persistence.tools.workbench.scplugin.SCProblemsConstants;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.TriStateBoolean;
 
-import org.eclipse.persistence.internal.sessions.factories.model.csm.CacheSynchronizationManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.event.SessionEventManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.log.LogConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.ServerPlatformConfig;
@@ -48,8 +47,6 @@ public abstract class SessionAdapter extends SCAdapter implements Nominative {
 	public final static String LOG_PROFILER_DMS = "dms";
 	private volatile RemoteCommandManagerAdapter remoteCommandManager;
 	public final static String REMOTE_COMMAND_MANAGER_CONFIG_PROPERTY = "remoteCommandManager";
-	private volatile CacheSynchronizationManagerAdapter cacheSynchronizationManager;
-	public final static String CACHE_SYNCHRONIZATION_MANAGER_CONFIG_PROPERTY = "cacheSynchronizationManager";
 	private volatile SessionEventManagerAdapter sessionEventManager;
 	public final static String SESSION_EVENT_LISTENERS_CONFIGS_LIST = "sessionEventListeners";
 	
@@ -107,9 +104,6 @@ public abstract class SessionAdapter extends SCAdapter implements Nominative {
 		if( getLog() != null)
 			children.add( getLog());
 
-		if( getCacheSynchronizationManager() != null)
-			children.add( getCacheSynchronizationManager());
-
 		if( getRemoteCommandManager() != null)
 			children.add( getRemoteCommandManager());
 
@@ -154,8 +148,6 @@ public abstract class SessionAdapter extends SCAdapter implements Nominative {
 
 		this.remoteCommandManager = 
 			( RemoteCommandManagerAdapter)this.adapt( this.session().getRemoteCommandManagerConfig());
-		this.cacheSynchronizationManager = 
-		    ( CacheSynchronizationManagerAdapter)this.adapt( this.session().getCacheSynchronizationManagerConfig());
 		this.sessionEventManager = 
 			( SessionEventManagerAdapter)this.adapt( this.session().getSessionEventManagerConfig());
 		//TOREVIEW - Bug SessionEventManagerConfig is not initialized
@@ -169,10 +161,6 @@ public abstract class SessionAdapter extends SCAdapter implements Nominative {
 
 		if( this.remoteCommandManager != null) {
 			this.clusteringService = TriStateBoolean.TRUE;
-		}
-		else if ((this.cacheSynchronizationManager != null)) {
-			this.clusteringService = TriStateBoolean.FALSE;
-			this.cacheSynchronizationManagerAllowed = ( this.cacheSynchronizationManager != null);
 		}
 		else {
 			this.clusteringService = TriStateBoolean.UNDEFINED;
@@ -199,9 +187,6 @@ public abstract class SessionAdapter extends SCAdapter implements Nominative {
 		    if( this.serverPlatform.isCustom()) {
 				branchProblems.add( buildProblem( SCProblemsConstants.EXTERNAL_TRANSACTION_CONTROLLER_904_DEPRECATED, getParent().displayString()));
 			}
-		    if( this.cacheSynchronizationManager != null) {
-				branchProblems.add( buildProblem( SCProblemsConstants.CACHE_SYNCHRONIZATION_DEPRECATED, getParent().displayString()));		        
-		    }
 		}
 	}
 	/**
@@ -303,12 +288,6 @@ public abstract class SessionAdapter extends SCAdapter implements Nominative {
 	/**
 	 * Returns this remoteCommandManager adapter.
 	 */
-	public CacheSynchronizationManagerAdapter getCacheSynchronizationManager() {
-		return this.cacheSynchronizationManager;
-	}
-	/**
-	 * Returns this remoteCommandManager adapter.
-	 */
 	public RemoteCommandManagerAdapter getRemoteCommandManager() {
 		return this.remoteCommandManager;
 	}
@@ -320,27 +299,12 @@ public abstract class SessionAdapter extends SCAdapter implements Nominative {
 		if( hasRemoteCommandManager()) return this.remoteCommandManager;	
 
 		this.clusteringService = TriStateBoolean.TRUE;
-		this.setCacheSynchronizationManager( null);
 		this.setRemoteCommandManager( buildRemoteCommandManager());
 		
 		return this.remoteCommandManager;	
 	}
-	/**
-	 * Returns this remoteCommandManager adapter.
-	 */
-	public CacheSynchronizationManagerAdapter setClusteringToCacheSynchronizationManager() {
-		
-		if( hasCacheSynchronizationManager()) return this.cacheSynchronizationManager;	
-
-		this.clusteringService = TriStateBoolean.FALSE;
-		this.setRemoteCommandManager( null);
-		this.setCacheSynchronizationManager( buildCacheSynchronizationManager());
-
-		return this.cacheSynchronizationManager;	
-	}
 	public void setClusteringToNothing() {
 		this.clusteringService = TriStateBoolean.UNDEFINED;
-		this.setCacheSynchronizationManager( null);
 		this.setRemoteCommandManager( null);
 	}
 	/**
@@ -365,27 +329,6 @@ public abstract class SessionAdapter extends SCAdapter implements Nominative {
 		return new RemoteCommandManagerAdapter( this);
 	}
 		
-	/**
-	 * Sets this log adapter and the config model.
-	 */
-	private void setCacheSynchronizationManager( CacheSynchronizationManagerAdapter manager) {
-		
-		Object old = this.cacheSynchronizationManager;
-
-		this.cacheSynchronizationManager = manager;
-
-		if (manager == null)
-			this.session().setCacheSynchronizationManagerConfig(null);
-		else
-			this.session().setCacheSynchronizationManagerConfig(( CacheSynchronizationManagerConfig)manager.getModel());
-
-		this.firePropertyChanged( CACHE_SYNCHRONIZATION_MANAGER_CONFIG_PROPERTY, old, manager);
-	}
-	
-	private CacheSynchronizationManagerAdapter buildCacheSynchronizationManager() {
-
-		return new CacheSynchronizationManagerAdapter( this);
-	}
 	/**
 	 * Convinience method to access this transportManager adapter.
 	 */

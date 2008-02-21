@@ -21,7 +21,6 @@ import javax.swing.JCheckBox;
 import javax.swing.text.Document;
 
 import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContextHolder;
-import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.JMSClusteringAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.Oc4jJGroupsTransportManagerAdapter;
 import org.eclipse.persistence.tools.workbench.scplugin.model.adapter.RMITransportManagerAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyAspectAdapter;

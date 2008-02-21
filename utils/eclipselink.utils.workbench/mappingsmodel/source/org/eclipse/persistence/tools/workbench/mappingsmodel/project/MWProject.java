@@ -27,7 +27,6 @@ import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
-import org.eclipse.persistence.exceptions.EJBJarXMLException;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLDescriptor;

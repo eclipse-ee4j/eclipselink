@@ -41,8 +41,6 @@ import org.eclipse.persistence.tools.workbench.uitools.cell.CellRendererAdapter;
 import org.eclipse.persistence.tools.workbench.utility.HashBag;
 import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
 
-import org.eclipse.persistence.exceptions.EJBJarXMLException;
-
 public final class RefreshClassesAction extends AbstractFrameworkAction {
 
 	public static final String EJB_JAR_XML_EXCEPTION_ERROR = "EJB_JAR_XML_EXCEPTION_ERROR";

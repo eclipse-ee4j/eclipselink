@@ -26,7 +26,6 @@ import org.eclipse.persistence.tools.workbench.framework.ui.view.TabbedPropertie
 import org.eclipse.persistence.tools.workbench.scplugin.ui.session.basic.SessionLoggingPropertiesPage;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.session.basic.SessionOptionsPropertiesPage;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.session.basic.SessionServerPlatformPropertiesPage;
-import org.eclipse.persistence.tools.workbench.scplugin.ui.session.clustering.SessionClusteringPropertiesPage;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.tools.SessionDisplayableTranslatorAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.DisplayableAdapter;
 import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
@@ -42,11 +41,6 @@ final class SessionBrokerTabbedPropertiesPage extends TabbedPropertiesPage
 	SessionBrokerTabbedPropertiesPage(WorkbenchContext context)
 	{
 		super(context);
-	}
-
-	protected Component buildClusteringPropertiesPage()
-	{
-		return new SessionClusteringPropertiesPage(getNodeHolder(), getWorkbenchContextHolder());
 	}
 
 	protected String buildClusteringPropertiesPageTitle()
@@ -94,7 +88,6 @@ final class SessionBrokerTabbedPropertiesPage extends TabbedPropertiesPage
 		addTab(buildGeneralPropertiesPage(),    buildGeneralPropertiesPageTitle());
 		addTab(buildOptionsPropertiesPage(),    buildOptionsPropertiesPageTitle());
 		addTab(buildLoggingPropertiesPage(),    buildLoggingPropertiesPageTitle());
-		addTab(buildClusteringPropertiesPage(), buildClusteringPropertiesPageTitle());
 	}
 
 	private class GeneralTabbedPropertiesPage extends TabbedPropertiesPage
