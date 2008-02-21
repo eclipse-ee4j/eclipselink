@@ -46,36 +46,6 @@ import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
-/**
- * <p><b>Purpose</b>: A data object is a representation of some structured data.
- * It is the fundamental component in the SDO (Service Data Objects) package.
- * Data objects support reflection, path-based access, convenience creation and deletion methods,
- * and the ability to be part of a {@link DataGraph data graph}.
- * <p>
- * Each data object holds its data as a series of {@link Property Properties}.
- * Properties can be accessed by name, property index, or using the property meta object itself.
- * A data object can also contain references to other data objects, through reference-type Properties.
- * <p>
- * A data object has a series of convenience accessors for its Properties.
- * These methods either use a path (String),
- * a property index,
- * or the {@link Property property's meta object} itself, to identify the property.
- * Some examples of the path-based accessors are as follows:
- *<pre>
- * DataObject company = ...;
- * company.get("name");                   is the same as company.get(company.getType().getProperty("name"))
- * company.set("name", "acme");
- * company.get("department.0/name")       is the same as ((DataObject)((List)company.get("department")).get(0)).get("name")
- *                                        .n  indexes from 0 ... implies the name property of the first department
- * company.get("department[1]/name")      [] indexes from 1 ... implies the name property of the first department
- * company.get("department[number=123]")  returns the first department where number=123
- * company.get("..")                      returns the containing data object
- * company.get("/")                       returns the root containing data object
- *</pre>
- * <p> There are general accessors for Properties, i.e., {@link #get(Property) get} and {@link #set(Property, Object) set},
- * as well as specific accessors for the primitive types and commonly used data types like
- * String, Date, List, BigInteger, and BigDecimal.
- */
 public class SDODataObject implements DataObject, SequencedObject {
 
     /**
@@ -170,53 +140,22 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
-   /**
-     * Returns the value of a property of either this object or an object reachable from it, as identified by the
-     * specified path.
-     * @param path the path to a valid object and property.
-     * @return the value of the specified property.
-     * @see #get(Property)
-     */
     public Object get(String path) {// path like "a/b/c"
         return XPathEngine.getInstance().get(path, this);
     }
 
-    /**
-     * Sets a property of either this object or an object reachable from it, as identified by the specified path,
-     * to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void set(String path, Object value) throws ClassCastException, UnsupportedOperationException, IllegalArgumentException {
         XPathEngine.getInstance().set(path, value, this, false);
     }
 
-    /**
-     * Returns whether a property of either this object or an object reachable from it, as identified by the specified path,
-     * is considered to be set.
-     * @param path the path to a valid object and property.
-     * @see #isSet(Property)
-     */
     public boolean isSet(String path) {
         return XPathEngine.getInstance().isSet(path, this);
     }
 
-    /**
-     * Unsets a property of either this object or an object reachable from it, as identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @see #unset(Property)
-     */
     public void unset(String path) {
         XPathEngine.getInstance().unset(path, this);
     }
 
-    /**
-     * Returns the value of a <code>boolean</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>boolean</code> value of the specified property.
-     * @see #get(String)
-     */
     public boolean getBoolean(String path) throws ClassCastException {
         Boolean value = (Boolean)XPathEngine.getInstance().convertObjectToValueByPath(path, Boolean.class, this);
 
@@ -227,12 +166,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return value.booleanValue();
     }
 
-    /**
-     * Returns the value of a <code>byte</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>byte</code> value of the specified property.
-     * @see #get(String)
-     */
     public byte getByte(String path) {
         Byte value = (Byte)XPathEngine.getInstance().convertObjectToValueByPath(path, Byte.class, this);
         if (value == null) {
@@ -241,12 +174,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return value.byteValue();
     }
 
-    /**
-     * Returns the value of a <code>char</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>char</code> value of the specified property.
-     * @see #get(String)
-     */
     public char getChar(String path) {
         Character value = (Character)XPathEngine.getInstance().convertObjectToValueByPath(path, Character.class, this);
         if (value == null) {
@@ -255,12 +182,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return value.charValue();
     }
 
-    /**
-     * Returns the value of a <code>double</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>double</code> value of the specified property.
-     * @see #get(String)
-     */
     public double getDouble(String path) {
         Double value = (Double)XPathEngine.getInstance().convertObjectToValueByPath(path, Double.class, this);
         if (value == null) {
@@ -269,12 +190,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return value.doubleValue();
     }
 
-    /**
-     * Returns the value of a <code>float</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>float</code> value of the specified property.
-     * @see #get(String)
-     */
     public float getFloat(String path) {
         Float value = (Float)XPathEngine.getInstance().convertObjectToValueByPath(path, Float.class, this);
         if (value == null) {
@@ -283,12 +198,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return value.floatValue();
     }
 
-    /**
-     * Returns the value of a <code>int</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>int</code> value of the specified property.
-     * @see #get(String)
-     */
     public int getInt(String path) {
         Integer value = (Integer)XPathEngine.getInstance().convertObjectToValueByPath(path, Integer.class, this);
         if (value == null) {
@@ -297,12 +206,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return value.intValue();
     }
 
-    /**
-     * Returns the value of a <code>long</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>long</code> value of the specified property.
-     * @see #get(String)
-     */
     public long getLong(String path) {
         Long value = (Long)XPathEngine.getInstance().convertObjectToValueByPath(path, Long.class, this);
         if (value == null) {
@@ -311,12 +214,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return value.longValue();
     }
 
-    /**
-     * Returns the value of a <code>short</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>short</code> value of the specified property.
-     * @see #get(String)
-     */
     public short getShort(String path) {
         Short value = (Short)XPathEngine.getInstance().convertObjectToValueByPath(path, Short.class, this);
         if (value == null) {
@@ -325,251 +222,104 @@ public class SDODataObject implements DataObject, SequencedObject {
         return value.shortValue();
     }
 
-    /**
-     * Returns the value of a <code>byte[]</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>byte[]</code> value of the specified property.
-     * @see #get(String)
-     */
     public byte[] getBytes(String path) {
         byte[] value = (byte[])XPathEngine.getInstance().convertObjectToValueByPath(path, byte[].class, this);
         return value;
     }
 
-    /**
-     * Returns the value of a <code>BigDecimal</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>BigDecimal</code> value of the specified property.
-     * @see #get(String)
-     */
     public BigDecimal getBigDecimal(String path) {
         BigDecimal value = (BigDecimal)XPathEngine.getInstance().convertObjectToValueByPath(path, BigDecimal.class, this);
         return value;
     }
 
-    /**
-     * Returns the value of a <code>BigInteger</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>BigInteger</code> value of the specified property.
-     * @see #get(String)
-     */
     public BigInteger getBigInteger(String path) {
         BigInteger value = (BigInteger)XPathEngine.getInstance().convertObjectToValueByPath(path, BigInteger.class, this);
         return value;
     }
 
-    /**
-     * Returns the value of a <code>DataObject</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>DataObject</code> value of the specified property.
-     * @see #get(String)
-     */
     public DataObject getDataObject(String path) throws ClassCastException {
         return (DataObject)get(path);
     }
 
-    /**
-     * Returns the value of a <code>Date</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>Date</code> value of the specified property.
-     * @see #get(String)
-     */
     public Date getDate(String path) {
         Date value = (Date)XPathEngine.getInstance().convertObjectToValueByPath(path, Date.class, this);
         return value;
     }
 
-    /**
-     * Returns the value of a <code>String</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>String</code> value of the specified property.
-     * @see #get(String)
-     */
     public String getString(String path) {
         String value = (String)XPathEngine.getInstance().convertObjectToValueByPath(path, String.class, this);
         return value;
     }
 
-    /**
-     * Returns the value of a <code>List</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>List</code> value of the specified property.
-     * @see #get(String)
-     */
     public List getList(String path) {
         return (List)XPathEngine.getInstance().convertObjectToValueByPath(path, List.class, this);
     }
 
-    /**
-     * Sets the value of a <code>boolean</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     */
     public void setBoolean(String path, boolean value) {
         convertValueAndSet(path, new Boolean(value));
     }
 
-    /**
-     * Sets the value of a <code>byte</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     */
     public void setByte(String path, byte value) {
         convertValueAndSet(path, new Byte(value));
     }
 
-    /**
-     * Sets the value of a <code>char</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     */
     public void setChar(String path, char value) {
         convertValueAndSet(path, new Character(value));
     }
 
-    /**
-     * Sets the value of a <code>double</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     */
     public void setDouble(String path, double value) {
         convertValueAndSet(path, new Double(value));
     }
 
-    /**
-     * Sets the value of a <code>float</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     */
     public void setFloat(String path, float value) {
         convertValueAndSet(path, new Float(value));
     }
 
-    /**
-     * Sets the value of a <code>int</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     */
     public void setInt(String path, int value) {
         convertValueAndSet(path, new Integer(value));
     }
 
-    /**
-     * Sets the value of a <code>long</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     */
     public void setLong(String path, long value) {
         convertValueAndSet(path, new Long(value));
     }
 
-    /**
-     * Sets the value of a <code>short</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     */
     public void setShort(String path, short value) {
         convertValueAndSet(path, new Short(value));
     }
 
-    /**
-     * Sets the value of a <code>byte[]</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     */
     public void setBytes(String path, byte[] value) {
         convertValueAndSet(path, value);
     }
 
-    /**
-     * Sets the value of a <code>BigDecimal</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     */
     public void setBigDecimal(String path, BigDecimal value) {
         convertValueAndSet(path, value);
     }
 
-    /**
-     * Sets the value of a <code>BigInteger</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     */
     public void setBigInteger(String path, BigInteger value) {
         convertValueAndSet(path, value);
     }
 
-    /**
-     * Sets the value of a <code>DataObject</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     */
     public void setDataObject(String path, DataObject value) {
         set(path, value);
     }
 
-    /**
-     * Sets the value of a <code>Date</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     */
     public void setDate(String path, Date value) {
         convertValueAndSet(path, value);
     }
 
-    /**
-     * Sets the value of a <code>String</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     */
     public void setString(String path, String value) {
         convertValueAndSet(path, value);
     }
 
-    /**
-     * Sets the value of a <code>List</code> property identified by the specified path, to the specified value.
-     * @param path the path to a valid object and property.
-     * @param value the new value for the property.
-     * @see #set(String, Object)
-     * @see #setList(Property, List)
-     */
     public void setList(String path, List value) {
         convertValueAndSet(path, value);
     }
 
-    /**
-     * Returns the value of the property at the specified index in {@link Type#getProperties property list}
-     * of this object's {@link Type type}.
-     * @param propertyIndex the index of the property.
-     * @return the value of the specified property.
-     * @see #get(Property)
-     */
     public Object get(int propertyIndex) throws IllegalArgumentException {
         Property p = getInstanceProperty(propertyIndex);
         return get(p);
     }
 
-    /**
-     * Sets the property at the specified index in {@link Type#getProperties property list} of this object's
-     * {@link Type type}, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void set(int propertyIndex, Object value) {
         try {
             Property p = getInstanceProperty(propertyIndex);
@@ -579,199 +329,93 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
-    /**
-     * Returns whether the the property at the specified index in {@link Type#getProperties property list} of this object's
-     * {@link Type type}, is considered to be set.
-     * @param propertyIndex the index of the property.
-     * @return whether the specified property is set.
-     * @see #isSet(Property)
-     */
     public boolean isSet(int propertyIndex) {
         Property p = getInstanceProperty(propertyIndex);
         return isSet(p);
     }
 
-    /**
-     * Unsets the property at the specified index in {@link Type#getProperties property list} of this object's {@link Type type}.
-     * @param propertyIndex the index of the property.
-     * @see #unset(Property)
-     */
     public void unset(int propertyIndex) {
         Property p = getInstanceProperty(propertyIndex);
         unset(p);
     }
 
-    /**
-     * Returns the value of a <code>boolean</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>boolean</code> value of the specified property.
-     * @see #get(int)
-     */
     public boolean getBoolean(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getBoolean(property);
     }
 
-    /**
-     * Returns the value of a <code>byte</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>byte</code> value of the specified property.
-     * @see #get(int)
-     */
     public byte getByte(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getByte(property);
     }
 
-    /**
-     * Returns the value of a <code>char</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>char</code> value of the specified property.
-     * @see #get(int)
-     */
     public char getChar(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getChar(property);
     }
 
-    /**
-     * Returns the value of a <code>double</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>double</code> value of the specified property.
-     * @see #get(int)
-     */
     public double getDouble(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getDouble(property);
     }
 
-    /**
-     * Returns the value of a <code>float</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>float</code> value of the specified property.
-     * @see #get(int)
-     */
     public float getFloat(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getFloat(property);
     }
 
-    /**
-     * Returns the value of a <code>int</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>int</code> value of the specified property.
-     * @see #get(int)
-     */
     public int getInt(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getInt(property);
     }
 
-    /**
-     * Returns the value of a <code>long</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>long</code> value of the specified property.
-     * @see #get(int)
-     */
     public long getLong(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getLong(property);
     }
 
-    /**
-     * Returns the value of a <code>short</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>short</code> value of the specified property.
-     * @see #get(int)
-     */
     public short getShort(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getShort(property);
     }
 
-    /**
-     * Returns the value of a <code>byte[]</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>byte[]</code> value of the specified property.
-     * @see #get(int)
-     */
     public byte[] getBytes(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getBytes(property);
     }
 
-    /**
-     * Returns the value of a <code>BigDecimal</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>BigDecimal</code> value of the specified property.
-     * @see #get(int)
-     */
     public BigDecimal getBigDecimal(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getBigDecimal(property);
     }
 
-    /**
-     * Returns the value of a <code>BigInteger</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>BigInteger</code> value of the specified property.
-     * @see #get(int)
-     */
     public BigInteger getBigInteger(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getBigInteger(property);
     }
 
-    /**
-     * Returns the value of a <code>DataObject</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>DataObject</code> value of the specified property.
-     * @see #get(int)
-     */
     public DataObject getDataObject(int propertyIndex) {
         Property property = getInstanceProperty(propertyIndex);
         return getDataObject(property);
     }
 
-    /**
-     * Returns the value of a <code>Date</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>Date</code> value of the specified property.
-     * @see #get(int)
-     */
     public Date getDate(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getDate(property);
     }
 
-    /**
-     * Returns the value of a <code>String</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>String</code> value of the specified property.
-     * @see #get(int)
-     */
     public String getString(int propertyIndex) throws IllegalArgumentException, ClassCastException {
         Property property = getInstanceProperty(propertyIndex);
         return getString(property);
     }
 
-    /**
-     * Returns the value of a <code>List</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>List</code> value of the specified property.
-     * @see #get(int)
-     */
     public List getList(int propertyIndex) {
         Property property = getInstanceProperty(propertyIndex);
         return getList(property);
     }
 
     /**
-     * Returns the value of a <code>Sequence</code> property identified by the specified path.
-     * @param path the path to a valid object and property.
-     * @return the <code>Sequence</code> value of the specified property.
-     * @see #get(String)
-     * @deprecated in 2.1.0.
+     * @deprecated in SDO 2.1.0.
      */
     public Sequence getSequence(String path) {
         // get property from path
@@ -789,11 +433,7 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     /**
-     * Returns the value of a <code>Sequence</code> property identified by the specified property index.
-     * @param propertyIndex the index of the property.
-     * @return the <code>Sequence</code> value of the specified property.
-     * @see #get(int)
-     * @deprecated in 2.1.0.
+     * @deprecated in SDO 2.1.0.
      */
     public Sequence getSequence(int propertyIndex) {
         // get property
@@ -802,11 +442,7 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
     /**
-     * Returns the value of the specified <code>Sequence</code> property.
-     * @param property the property to get.
-     * @return the <code>Sequence</code> value of the specified property.
-     * @see #get(Property)
-     * @deprecated in 2.1.0.
+     * @deprecated in SDO 2.1.0.
      */
     public Sequence getSequence(Property property) {
         return getSequencePrivate(property);
@@ -827,186 +463,71 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
-    /**
-     * Returns the <code>Sequence</code> for this DataObject.
-     * When getType().isSequencedType() == true,
-     * the Sequence of a DataObject corresponds to the
-     * XML elements representing the values of its Properties.
-     * Updates through DataObject and the Lists or Sequences returned
-     * from DataObject operate on the same data.
-     * When getType().isSequencedType() == false, null is returned.
-     * @return the <code>Sequence</code> or null.
-     */
     public Sequence getSequence() {
         // sequence object should be null if !sequenced
         return sequence;
     }
 
-    /**
-     * Sets the value of a <code>boolean</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     */
     public void setBoolean(int propertyIndex, boolean value) {
         convertValueAndSet(propertyIndex, new Boolean(value));
     }
 
-    /**
-     * Sets the value of a <code>byte</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     */
     public void setByte(int propertyIndex, byte value) {
         convertValueAndSet(propertyIndex, new Byte(value));
     }
 
-    /**
-     * Sets the value of a <code>char</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     */
     public void setChar(int propertyIndex, char value) {
         convertValueAndSet(propertyIndex, new Character(value));
     }
 
-    /**
-     * Sets the value of a <code>double</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     */
     public void setDouble(int propertyIndex, double value) {
         convertValueAndSet(propertyIndex, new Double(value));
     }
 
-    /**
-     * Sets the value of a <code>float</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     */
     public void setFloat(int propertyIndex, float value) {
         convertValueAndSet(propertyIndex, new Float(value));
     }
 
-    /**
-     * Sets the value of a <code>int</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     */
     public void setInt(int propertyIndex, int value) {
         convertValueAndSet(propertyIndex, new Integer(value));
     }
 
-    /**
-     * Sets the value of a <code>long</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     */
     public void setLong(int propertyIndex, long value) {
         convertValueAndSet(propertyIndex, new Long(value));
     }
 
-    /**
-     * Sets the value of a <code>short</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     */
     public void setShort(int propertyIndex, short value) {
         convertValueAndSet(propertyIndex, new Short(value));
     }
 
-    /**
-     * Sets the value of a <code>byte[]</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     */
     public void setBytes(int propertyIndex, byte[] value) {
         convertValueAndSet(propertyIndex, value);
     }
 
-    /**
-     * Sets the value of a <code>BigDecimal</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     */
     public void setBigDecimal(int propertyIndex, BigDecimal value) {
         convertValueAndSet(propertyIndex, value);
     }
 
-    /**
-     * Sets the value of a <code>BigInteger</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     */
     public void setBigInteger(int propertyIndex, BigInteger value) {
         convertValueAndSet(propertyIndex, value);
     }
 
-    /**
-     * Sets the value of a <code>DataObject</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     */
     public void setDataObject(int propertyIndex, DataObject value) {
         set(propertyIndex, value);
     }
 
-    /**
-     * Sets the value of a <code>Date</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     */
     public void setDate(int propertyIndex, Date value) {
         convertValueAndSet(propertyIndex, value);
     }
 
-    /**
-     * Sets the value of a <code>String</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     */
     public void setString(int propertyIndex, String value) {
         convertValueAndSet(propertyIndex, value);
     }
 
-    /**
-     * Sets the value of a <code>List</code> property identified by the specified property index, to the specified value.
-     * @param propertyIndex the index of the property.
-     * @param value the new value for the property.
-     * @see #set(int, Object)
-     * @see #setList(Property, List)
-     */
     public void setList(int propertyIndex, List value) {
         convertValueAndSet(propertyIndex, value);
     }
 
-    /**
-     * Returns the value of the given property of this object.
-     * <p>
-     * If the property is {@link Property#isMany many-valued},
-     * the result will be a {@link java.util.List}
-     * and each object in the List will be {@link Type#isInstance an instance of}
-     * the property's {@link Property#getType type}.
-     * Otherwise the result will directly be an instance of the property's type.
-     * @param property the property of the value to fetch.
-     * @return the value of the given property of the object.
-     * @see #set(Property, Object)
-     * @see #unset(Property)
-     * @see #isSet(Property)
-     */
     public Object get(Property property) throws IllegalArgumentException {
         if (null == property) {// check null property before null type
             throw new IllegalArgumentException("Argument not Supported.");
@@ -1133,24 +654,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return aHelperContext.getTypeHelper().defineOpenContentProperty(null, propertyDO);
     }
 
-    /**
-     * Sets the value of the given property of the object to the new value.
-     * <p>
-     * If the property is {@link Property#isMany many-valued},
-     * the new value must be a {@link java.util.List}
-     * and each object in that list must be {@link Type#isInstance an instance of}
-     * the property's {@link Property#getType type};
-     * the existing contents are cleared and the contents of the new value are added.
-     * Otherwise the new value directly must be an instance of the property's type
-     * and it becomes the new value of the property of the object.
-     * @param property the property of the value to set.
-     * @param value the new value for the property.
-     * @see #unset(Property)
-     * @see #isSet(Property)
-     * @see #get(Property)
-     * @throws UnsupportedOperationException
-     * @throws IllegalArgumentException
-     */
     public void set(Property property, Object value) throws UnsupportedOperationException, IllegalArgumentException {
         set(property, value, true);
     }
@@ -1262,23 +765,6 @@ public class SDODataObject implements DataObject, SequencedObject {
     }
 
 
-    /**
-     * Returns whether the property of the object is considered to be set.
-     * <p>
-     * isSet() for many-valued Properties returns true if the List is not empty and
-     * false if the List is empty.  For single-valued Properties:
-     * <ul><li>If the Property has not been set() or has been unset() then isSet() returns false.</li>
-     * <li>If the current value is not the Property's default or null, isSet() returns true.</li>
-     * <li>For the remaining cases the implementation may decide between two policies: </li>
-     * <ol><li>any call to set() without a call to unset() will cause isSet() to return true, or </li>
-     *   <li>the current value is compared to the default value and isSet() returns true when they differ.</li>
-     * </ol></ul><p>
-     * @param property the property in question.
-     * @return whether the property of the object is set.
-     * @see #set(Property, Object)
-     * @see #unset(Property)
-     * @see #get(Property)
-     */
     public boolean isSet(Property property) {
         if (null == property) {
             throw SDOException.cannotPerformOperationOnNullArgument("isSet");
@@ -1293,21 +779,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
-    /**
-     * Unsets the property of the object.
-     * <p>
-     * If the property is {@link Property#isMany many-valued},
-     * the value must be an {@link java.util.List}
-     * and that list is cleared.
-     * Otherwise,
-     * the value of the property of the object
-     * is set to the property's {@link Property#getDefault default value}.
-     * The property will no longer be considered {@link #isSet set}.
-     * @param property the property in question.
-     * @see #isSet(Property)
-     * @see #set(Property, Object)
-     * @see #get(Property)
-     */
     public void unset(Property property) {
         if (null == property) {
             throw SDOException.cannotPerformOperationOnNullArgument("unset");
@@ -1376,12 +847,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
-    /**
-     * Returns the value of the specified <code>boolean</code> property.
-     * @param property the property to get.
-     * @return the <code>boolean</code> value of the specified property.
-     * @see #get(Property)
-     */
     public boolean getBoolean(Property property) throws IllegalArgumentException, ClassCastException {
         Boolean propertyBooleanValue = (Boolean)convertObjectToValue(property, Boolean.class);
         if (propertyBooleanValue == null) {
@@ -1390,12 +855,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyBooleanValue.booleanValue();
     }
 
-    /**
-     * Returns the value of the specified <code>byte</code> property.
-     * @param property the property to get.
-     * @return the <code>byte</code> value of the specified property.
-     * @see #get(Property)
-     */
     public byte getByte(Property property) throws IllegalArgumentException, ClassCastException {
         Byte propertyByteValue = (Byte)convertObjectToValue(property, Byte.class);
         if (propertyByteValue == null) {
@@ -1404,12 +863,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyByteValue.byteValue();
     }
 
-    /**
-     * Returns the value of the specified <code>char</code> property.
-     * @param property the property to get.
-     * @return the <code>char</code> value of the specified property.
-     * @see #get(Property)
-     */
     public char getChar(Property property) throws IllegalArgumentException {
         Character propertyCharValue = (Character)convertObjectToValue(property, Character.class);
         if (propertyCharValue == null) {
@@ -1418,12 +871,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyCharValue.charValue();
     }
 
-    /**
-     * Returns the value of the specified <code>double</code> property.
-     * @param property the property to get.
-     * @return the <code>double</code> value of the specified property.
-     * @see #get(Property)
-     */
     public double getDouble(Property property) throws IllegalArgumentException {
         Double propertyDoubleValue = (Double)convertObjectToValue(property, Double.class);
         if (propertyDoubleValue == null) {
@@ -1432,12 +879,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyDoubleValue.doubleValue();
     }
 
-    /**
-     * Returns the value of the specified <code>float</code> property.
-     * @param property the property to get.
-     * @return the <code>float</code> value of the specified property.
-     * @see #get(Property)
-     */
     public float getFloat(Property property) throws IllegalArgumentException {
         Float propertyFloatValue = (Float)convertObjectToValue(property, Float.class);
         if (propertyFloatValue == null) {
@@ -1446,12 +887,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyFloatValue.floatValue();
     }
 
-    /**
-     * Returns the value of the specified <code>int</code> property.
-     * @param property the property to get.
-     * @return the <code>int</code> value of the specified property.
-     * @see #get(Property)
-     */
     public int getInt(Property property) throws IllegalArgumentException {
         Integer propertyIntegerValue = (Integer)convertObjectToValue(property, Integer.class);
         if (propertyIntegerValue == null) {
@@ -1460,12 +895,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyIntegerValue.intValue();
     }
 
-    /**
-     * Returns the value of the specified <code>long</code> property.
-     * @param property the property to get.
-     * @return the <code>long</code> value of the specified property.
-     * @see #get(Property)
-     */
     public long getLong(Property property) throws IllegalArgumentException {
         Long propertyLongValue = (Long)convertObjectToValue(property, Long.class);
         if (propertyLongValue == null) {
@@ -1474,12 +903,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyLongValue.longValue();
     }
 
-    /**
-     * Returns the value of the specified <code>short</code> property.
-     * @param property the property to get.
-     * @return the <code>short</code> value of the specified property.
-     * @see #get(Property)
-     */
     public short getShort(Property property) throws IllegalArgumentException {
         Short propertyShortValue = (Short)convertObjectToValue(property, Short.class);
         if (propertyShortValue == null) {
@@ -1488,55 +911,25 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyShortValue.shortValue();
     }
 
-    /**
-     * Returns the value of the specified <code>byte[]</code> property.
-     * @param property the property to get.
-     * @return the <code>byte[]</code> value of the specified property.
-     * @see #get(Property)
-     */
     public byte[] getBytes(Property property) throws IllegalArgumentException {
         byte[] propertyByteValue = (byte[])convertObjectToValue(property, byte[].class);
         return propertyByteValue;
     }
 
-    /**
-     * Returns the value of the specified <code>BigDecimal</code> property.
-     * @param property the property to get.
-     * @return the <code>BigDecimal</code> value of the specified property.
-     * @see #get(Property)
-     */
     public BigDecimal getBigDecimal(Property property) throws IllegalArgumentException {
         BigDecimal propertyDecimalValue = (BigDecimal)convertObjectToValue(property, BigDecimal.class);
         return propertyDecimalValue;
     }
 
-    /**
-     * Returns the value of the specified <code>BigInteger</code> property.
-     * @param property the property to get.
-     * @return the <code>BigInteger</code> value of the specified property.
-     * @see #get(Property)
-     */
     public BigInteger getBigInteger(Property property) throws IllegalArgumentException {
         BigInteger propertyBigIntegerValue = (BigInteger)convertObjectToValue(property, BigInteger.class);
         return propertyBigIntegerValue;
     }
 
-    /**
-     * Returns the value of the specified <code>DataObject</code> property.
-     * @param property the property to get.
-     * @return the <code>DataObject</code> value of the specified property.
-     * @see #get(Property)
-     */
     public DataObject getDataObject(Property property) throws IllegalArgumentException, ClassCastException {
         return (DataObject)get(property);
     }
 
-    /**
-     * Returns the value of the specified <code>Date</code> property.
-     * @param property the property to get.
-     * @return the <code>Date</code> value of the specified property.
-     * @see #get(Property)
-     */
     public Date getDate(Property property) {
         if (null == property) {
             throw SDOException.cannotPerformOperationOnNullArgument("getDate");
@@ -1550,28 +943,11 @@ public class SDODataObject implements DataObject, SequencedObject {
         return propertyDateValue;
     }
 
-    /**
-     * Returns the value of the specified <code>String</code> property.
-     * @param property the property to get.
-     * @return the <code>String</code> value of the specified property.
-     * @see #get(Property)
-     */
     public String getString(Property property) {
         String propertyStringValue = (String)convertObjectToValue(property, String.class);
         return propertyStringValue;
     }
 
-    /**
-     * INTERNAL:
-     * Returns the value of the specified <code>List</code> property.
-     * The List returned contains the current values.
-     * Updates through the List interface operate on the current values of the DataObject.
-     * Each access returns the same List object.
-     * @param property the property to get.
-     * @return the <code>List</code> value of the specified property.
-     * @see #get(Property)     * 
-     * @return
-     */
     public List getList(Property property) {
         if (null == property) {
             throw SDOException.cannotPerformOperationOnNullArgument("getList");
@@ -1609,194 +985,76 @@ public class SDODataObject implements DataObject, SequencedObject {
         return theList;
     }
 
-    /**
-     * Sets the value of the specified <code>boolean</code> property, to the specified value.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setBoolean(Property property, boolean value) {
         convertValueAndSet(property, new Boolean(value));
     }
 
-    /**
-     * Sets the value of the specified <code>byte</code> property, to the specified value.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setByte(Property property, byte value) {
         convertValueAndSet(property, new Byte(value));
     }
 
-    /**
-     * Sets the value of the specified <code>char</code> property, to the specified value.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setChar(Property property, char value) {
         convertValueAndSet(property, new Character(value));
     }
 
-    /**
-     * Sets the value of the specified <code>double</code> property, to the specified value.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setDouble(Property property, double value) {
         convertValueAndSet(property, new Double(value));
     }
 
-    /**
-     * Sets the value of the specified <code>float</code> property, to the specified value.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setFloat(Property property, float value) {
         convertValueAndSet(property, new Float(value));
     }
 
-    /**
-     * Sets the value of the specified <code>int</code> property, to the specified value.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setInt(Property property, int value) {
         convertValueAndSet(property, new Integer(value));
     }
 
-    /**
-     * Sets the value of the specified <code>long</code> property, to the specified value.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setLong(Property property, long value) {
         convertValueAndSet(property, new Long(value));
     }
 
-    /**
-     * Sets the value of the specified <code>short</code> property, to the specified value.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setShort(Property property, short value) {
         convertValueAndSet(property, new Short(value));
     }
 
-    /**
-     * Sets the value of the specified <code>byte[]</code> property, to the specified value.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setBytes(Property property, byte[] value) {
         convertValueAndSet(property, value);
     }
 
-    /**
-     * Sets the value of the specified <code>BigDecimal</code> property, to the specified value.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setBigDecimal(Property property, BigDecimal value) {
         convertValueAndSet(property, value);
     }
 
-    /**
-     * Sets the value of the specified <code>BigInteger</code> property, to the specified value.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setBigInteger(Property property, BigInteger value) {
         convertValueAndSet(property, value);
     }
 
-    /**
-     * Sets the value of the specified <code>DataObject</code> property, to the specified value.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setDataObject(Property property, DataObject value) {
         set(property, value);
     }
 
-    /**
-     * Sets the value of the specified <code>Date</code> property, to the specified value.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setDate(Property property, Date value) {
         convertValueAndSet(property, value);
     }
 
-    /**
-     * Sets the value of the specified <code>String</code> property, to the specified value.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setString(Property property, String value) {
         convertValueAndSet(property, value);
     }
 
-    /**
-     * Sets the value of the specified <code>List</code> property, to the specified value.
-     * <p> The new value must be a {@link java.util.List}
-     * and each object in that list must be {@link Type#isInstance an instance of}
-     * the property's {@link Property#getType type};
-     * the existing contents are cleared and the contents of the new value are added.
-     * @param property the property to set.
-     * @param value the new value for the property.
-     * @see #set(Property, Object)
-     */
     public void setList(Property property, List value) {
         convertValueAndSet(property, value);
     }
 
-    /**
-     * Returns a new {@link DataObject data object} contained by this object using the specified property,
-     * which must be a {@link Property#isContainment containment property}.
-     * The type of the created object is the {@link Property#getType declared type} of the specified property.
-     * @param propertyName the name of the specified containment property.
-     * @return the created data object.
-     * @see #createDataObject(String, String, String)
-     */
     public DataObject createDataObject(String propertyName) {
         Property aProperty = getInstanceProperty(propertyName);
         return createDataObject(aProperty);
     }
 
-    /**
-     * Returns a new {@link DataObject data object} contained by this object using the specified property,
-     * which must be a {@link Property#isContainment containment property}.
-     * The type of the created object is the {@link Property#getType declared type} of the specified property.
-     * @param propertyIndex the index of the specified containment property.
-     * @return the created data object.
-     * @see #createDataObject(int, String, String)
-     */
     public DataObject createDataObject(int propertyIndex) {
         Property aProperty = getInstanceProperty(propertyIndex);
         return createDataObject(aProperty);
     }
 
-    /**
-     * Returns a new {@link DataObject data object} contained by this object using the specified property,
-     * which must be a {@link Property#isContainment containment property}.
-     * The type of the created object is the {@link Property#getType declared type} of the specified property.
-     * @param aProperty the specified containment property.
-     * @return the created data object.
-     * @see #createDataObject(Property, Type)
-     */
     public DataObject createDataObject(Property aProperty) {
         if (aProperty.isContainment()) {
             Type aType = aProperty.getType();
@@ -1809,52 +1067,18 @@ public class SDODataObject implements DataObject, SequencedObject {
         return null;
     }
 
-    /**
-     * Returns a new {@link DataObject data object} contained by this object using the specified property,
-     * which must be a {@link Property#isContainment containment property}.
-     * The type of the created object is specified by the packageURI and typeName arguments.
-     * The specified type must be a compatible target for the property identified by propertyName.
-     * @param propertyName the name of the specified containment property.
-     * @param namespaceURI the namespace URI of the package containing the type of object to be created.
-     * @param typeName the name of a type in the specified package.
-     * @return the created data object.
-     * @see #createDataObject(String)
-     * @see DataGraph#getType
-     */
     public DataObject createDataObject(String propertyName, String namespaceURI, String typeName) {
         Property aProperty = getInstanceProperty(propertyName);
         Type aType = aHelperContext.getTypeHelper().getType(namespaceURI, typeName);
         return createDataObject(aProperty, aType);
     }
 
-    /**
-     * Returns a new {@link DataObject data object} contained by this object using the specified property,
-     * which must be a {@link Property#isContainment containment property}.
-     * The type of the created object is specified by the packageURI and typeName arguments.
-     * The specified type must be a compatible target for the property identified by propertyIndex.
-     * @param propertyIndex the index of the specified containment property.
-     * @param namespaceURI the namespace URI of the package containing the type of object to be created.
-     * @param typeName the name of a type in the specified package.
-     * @return the created data object.
-     * @see #createDataObject(int)
-     * @see DataGraph#getType
-     */
     public DataObject createDataObject(int propertyIndex, String namespaceURI, String typeName) {
         Property aProperty = getInstanceProperty(propertyIndex);
         Type aType = aHelperContext.getTypeHelper().getType(namespaceURI, typeName);
         return createDataObject(aProperty, aType);
     }
 
-    /**
-     * Returns a new {@link DataObject data object} contained by this object using the specified property,
-     * which must be of {@link Property#isContainment containment type}.
-     * The type of the created object is specified by the type argument,
-     * which must be a compatible target for the specifed property.
-     * @param property a containment property of this object.
-     * @param type the type of object to be created.
-     * @return the created data object.
-     * @see #createDataObject(int)
-     */
     public DataObject createDataObject(Property property, Type aType) {
         DataObject created = aHelperContext.getDataFactory().create(aType);
 
@@ -2020,13 +1244,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
-    /**
-     * Removes this DataObject from its container, if any.
-     * Same as
-     *  getContainer().getList(getContainmentProperty()).remove(this) or
-     *  getContainer().unset(getContainmentProperty())
-     * depending on getContainmentProperty().isMany() respectively.
-     */
     public void detach() {
         detachWithSequenceUpdate();
     }
@@ -2083,31 +1300,16 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
-    /**
-     * Remove this object from its container and then unset all its non-{@link Property#isReadOnly readOnly} Properties.
-     * If this object is contained by a {@link Property#isReadOnly readOnly} {@link Property#isContainment containment property}, its non-{@link Property#isReadOnly readOnly} Properties will be unset but the object will not be removed from its container.
-     * All DataObjects recursively contained by {@link Property#isContainment containment Properties} will also be deleted.
-     */
     public void delete() {
         //TODO: unset all non read-only currentValueStore
         //TODO: many shouldn't clear list just remove item from list                
         deleteWithSequenceUpdate();
     }
 
-    /**
-     * Returns the containing {@link DataObject data object}
-     * or <code>null</code> if there is no container.
-     * @return the containing data object or <code>null</code>.
-     */
     public DataObject getContainer() {
         return container;
     }
 
-    /**
-     * Return the Property of the {@link DataObject data object} containing this data object
-     * or <code>null</code> if there is no container.
-     * @return the property containing this data object.
-     */
     public Property getContainmentProperty() {
         if ((container != null) && (containmentPropertyName != null)) {
             return container.getInstanceProperty(containmentPropertyName);
@@ -2116,10 +1318,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
-    /**
-     * Returns the {@link DataGraph data graph} for this object or <code>null</code> if there isn't one.
-     * @return the containing data graph or <code>null</code>.
-     */
     public DataGraph getDataGraph() {
         return dataGraph;
     }
@@ -2128,29 +1326,10 @@ public class SDODataObject implements DataObject, SequencedObject {
         this.dataGraph = dataGraph;
     }
 
-    /**
-     * Returns the data object's type.
-     * <p>
-     * The type defines the Properties available for reflective access.
-     * @return the type.
-     */
     public Type getType() {
         return type;
     }
 
-    /**
-     * Returns a read-only List of the Properties currently used in this DataObject.
-     * This list will contain all of the Properties in getType().getProperties()
-     * and any Properties where isSet(property) is true.
-     * For example, Properties resulting from the use of
-     * open or mixed XML content are present if allowed by the Type.
-     * the List does not contain duplicates.
-     * The order of the Properties in the List begins with getType().getProperties()
-     * and the order of the remaining Properties is determined by the implementation.
-     * The same list will be returned unless the DataObject is updated so that
-     * the contents of the List change.
-     * @return the List of Properties currently used in this DataObject.
-     */
     public List getInstanceProperties() {
         if (null == instanceProperties) {
             instanceProperties = new ArrayList();
@@ -2158,19 +1337,10 @@ public class SDODataObject implements DataObject, SequencedObject {
         return instanceProperties;
     }
 
-    /**
-    * @deprecated replaced by {@link #getInstanceProperty()} in 2.1.0
-    */
     public Property getProperty(String propertyName) {
         return getInstanceProperty(propertyName);
     }
 
-    /**
-     * Returns the named Property from the current instance currentValueStore,
-     * or null if not found.  The instance currentValueStore are getInstanceProperties().
-     * @param propertyName the name of the Property
-     * @return the named Property from the DataObject's current instance currentValueStore, or null.
-     */
     public Property getInstanceProperty(String propertyName) {
         if (getType() == null) {
             throw new UnsupportedOperationException("Type is null");
@@ -2213,10 +1383,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         }
     }
 
-    /**
-     * Returns the root {@link DataObject data object}.
-     * @return the root data object.
-     */
     public DataObject getRootObject() {
         if (getContainer() != null) {
             return getContainer().getRootObject();
@@ -2224,11 +1390,6 @@ public class SDODataObject implements DataObject, SequencedObject {
         return this;
     }
 
-    /**
-     * Returns the ChangeSummary with scope covering this dataObject, or null
-     * if there is no ChangeSummary.
-     * @return the ChangeSummary with scope covering this dataObject, or null.
-     */
     public ChangeSummary getChangeSummary() {
         return changeSummary;
     }

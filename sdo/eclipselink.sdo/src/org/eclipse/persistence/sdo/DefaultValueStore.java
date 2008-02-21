@@ -34,17 +34,6 @@ public class DefaultValueStore implements ValueStore {
     public DefaultValueStore() {
     }
 
-    /**
-      * Get declared property by index.<br>
-      * Returns the value of the given property of this object.<br>
-      * If the property is {@link Property#isMany many-valued},
-      * the result will be a {@link org.eclipse.persistence.sdo.helper.ListWrapper}
-      * and each object in the List will be {@link Type#isInstance an instance of}
-      * the property's {@link Property#getType type}.
-      * Otherwise the result will directly be an instance of the property's type.
-      * @param propertyIndex the property index of the value to fetch.
-      * @return the value of the given property of the object.
-      */
     public Object getDeclaredProperty(int propertyIndex) {
         if (typePropertyValues != null) {
             return typePropertyValues[propertyIndex];
@@ -52,111 +41,27 @@ public class DefaultValueStore implements ValueStore {
         return null;
     }
 
-    /**
-     * Get open-content property by name.<br>
-     * Returns the value of the given property of this object.<br>
-     * If the property is {@link Property#isMany many-valued},
-     * the result will be a {@link org.eclipse.persistence.sdo.helper.ListWrapper}
-     * and each object in the List will be {@link Type#isInstance an instance of}
-     * the property's {@link Property#getType type}.
-     * Otherwise the result will directly be an instance of the property's type.
-     * @param property the property to fetch the value of.
-     * @return the value of the given property of the object.
-     */
     public Object getOpenContentProperty(Property property) {
         return getOpenContentValues().get(property);
     }
 
-    /**
-      * Set declared property by index.<br>
-      * Sets the value of the given property of the object to the new value.
-      * <p>
-      * If the property is {@link Property#isMany many-valued},
-      * the new value must be a {@link java.util.List}
-      * and each object in that list must be {@link Type#isInstance an instance of}
-      * the property's {@link Property#getType type};
-      * the existing contents are cleared and the contents of the new value are added.
-      * Otherwise the new value directly must be an instance of the property's type
-      * and it becomes the new value of the property of the object.
-      * @param propertyIndex the property name of the value to set.
-      * @param value the new value for the property.s
-      */
     public void setDeclaredProperty(int propertyIndex, Object value) {
         getTypePropertyValues()[propertyIndex] = value;
         getTypePropertiesIsSetStatus()[propertyIndex] = true;
     }
 
-    /**
-      * Set open-content property by name.<br>
-      * Sets the value of the given property of the object to the new value.
-      * <p>
-      * If the property is {@link Property#isMany many-valued},
-      * the new value must be a {@link java.util.List}
-      * and each object in that list must be {@link Type#isInstance an instance of}
-      * the property's {@link Property#getType type};
-      * the existing contents are cleared and the contents of the new value are added.
-      * Otherwise the new value directly must be an instance of the property's type
-      * and it becomes the new value of the property of the object.
-     * @param property the property to be set.
-      * @param value the new value for the property.
-      */
     public void setOpenContentProperty(Property property, Object value) {    
         getOpenContentValues().put(property, value);
     }
 
-    /**
-     * Get isSet boolean status for declared property by index.<br>
-     * Returns whether the property of the object is considered to be set.
-     * <p>
-     * isSet() for many-valued Properties returns true if the List is not empty and
-     * false if the List is empty.  For single-valued Properties:
-     * <ul><li>If the Property has not been set() or has been unset() then isSet() returns false.</li>
-     * <li>If the current value is not the Property's default or null, isSet() returns true.</li>
-     * <li>For the remaining cases the implementation may decide between two policies: </li>
-     * <ol><li>any call to set() without a call to unset() will cause isSet() to return true, or </li>
-     *   <li>the current value is compared to the default value and isSet() returns true when they differ.</li>
-     * </ol></ul><p>
-     * @param propertyIndex the property index in question.
-     * @return whether the property of the object is set.
-     */
     public boolean isSetDeclaredProperty(int propertyIndex) {
         return getTypePropertiesIsSetStatus()[propertyIndex];
     }
 
-    /**
-      * Get isSet boolean status for open-content property by name.<br>
-      * Returns whether the property of the object is considered to be set.
-      * <p>
-      * isSet() for many-valued Properties returns true if the List is not empty and
-      * false if the List is empty.  For single-valued Properties:
-      * <ul><li>If the Property has not been set() or has been unset() then isSet() returns false.</li>
-      * <li>If the current value is not the Property's default or null, isSet() returns true.</li>
-      * <li>For the remaining cases the implementation may decide between two policies: </li>
-      * <ol><li>any call to set() without a call to unset() will cause isSet() to return true, or </li>
-      *   <li>the current value is compared to the default value and isSet() returns true when they differ.</li>
-      * </ol></ul><p>
-     * @param property the property in question.
-      * @return whether the property of the object is set.
-      */
     public boolean isSetOpenContentProperty(Property property) {
         return getOpenContentValues().containsKey(property);
     }
 
-    /**
-       * Unset declared property by index position
-       * <p>
-       * If the property is {@link Property#isMany many-valued},
-       * the value must be an {@link java.util.List}
-       * and that list is cleared.
-       * Otherwise, the value of the property of the object
-       * is set to the property's {@link Property#getDefault default value}.
-       * The property will no longer be considered {@link #isSet set}.
-       * @see #isSetDeclaredProperty(int)
-       * @see #setDeclaredProperty(int, Object)
-       * @see #getDeclaredProperty(int)
-       * @param propertyIndex
-       * @return void
-       */
     public void unsetDeclaredProperty(int propertyIndex) {
         Property prop = ((SDODataObject)dataObject).getInstanceProperty(propertyIndex);
         if (!prop.isMany()) {
@@ -165,21 +70,6 @@ public class DefaultValueStore implements ValueStore {
         getTypePropertiesIsSetStatus()[propertyIndex] = false;
     }
 
-    /**
-     * Unset open-content property by name
-     * <p>
-     * If the property is {@link Property#isMany many-valued},
-     * the value must be an {@link java.util.List}
-     * and that list is cleared.
-     * Otherwise, the value of the property of the object
-     * is set to the property's {@link Property#getDefault default value}.
-     * The property will no longer be considered {@link #isSet set}.
-     * @see #isSetDeclaredProperty(int)
-     * @see #setDeclaredProperty(int, Object)
-     * @see #getDeclaredProperty(int)
-     * @param property
-     * @return void
-     */
     public void unsetOpenContentProperty(Property property) {    
         getOpenContentValues().remove(property);
     }
