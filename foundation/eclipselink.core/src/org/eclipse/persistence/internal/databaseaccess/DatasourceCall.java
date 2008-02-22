@@ -54,6 +54,9 @@ public abstract class DatasourceCall implements Call {
     protected boolean isPrepared;
     //Bug5200836 Used to indicate whether or not the connection needs to be unwrapped.
     protected boolean shouldUnwrapConnection = false; 
+    
+    //Eclipselink Bug 217745 indicates whether or not the token(#,?) needs to be processed if they are in the quotes.
+    protected boolean shouldProcessTokenInQuotes; 
 
     // Type of call.
     protected int returnType;
@@ -64,6 +67,7 @@ public abstract class DatasourceCall implements Call {
 
     public DatasourceCall() {
         this.isPrepared = false;
+        this.shouldProcessTokenInQuotes=true;
         this.returnType = RETURN_MANY_ROWS;
     }
 
@@ -321,12 +325,22 @@ public abstract class DatasourceCall implements Call {
      * This is used by SQLCall and XQuery call, but can be reused by other query languages.
      */
     public void translateCustomQuery() {
-        if (getQueryString().indexOf("#") == -1) {
-            if (this.getQuery().shouldBindAllParameters() && getQueryString().indexOf("?") == -1){
+        if(this.shouldProcessTokenInQuotes){
+            if (getQueryString().indexOf("#") == -1) {
+                if (this.getQuery().shouldBindAllParameters() && getQueryString().indexOf("?") == -1){
+                    return;
+                }
+                translatePureSQLCustomQuery();
                 return;
             }
-            translatePureSQLCustomQuery();
-            return;
+        }else{
+            if (!hasArgumentMark(getQueryString(),'#')) {
+                if (this.getQuery().shouldBindAllParameters() && !hasArgumentMark(getQueryString(),'?')){
+                    return;
+                }
+                translatePureSQLCustomQuery();
+                return;
+            }
         }
 
         int lastIndex = 0;
@@ -341,7 +355,34 @@ public abstract class DatasourceCall implements Call {
                     token = queryString.substring(lastIndex, queryString.length());
                     lastIndex = -1;
                 } else {
-                    token = queryString.substring(lastIndex, poundIndex);
+                    if(this.shouldProcessTokenInQuotes){//Always process token no matter whether the quotes around it or not. 
+                        token = queryString.substring(lastIndex, poundIndex);
+                    }else{
+                        boolean hasPairedQuoteBeforePond = true;
+                        int quotePairIndex=poundIndex;
+
+                        do{
+                            quotePairIndex=queryString.lastIndexOf('\'',quotePairIndex-1);
+                            if(quotePairIndex!=-1 && quotePairIndex > lastIndex){
+                                hasPairedQuoteBeforePond = !hasPairedQuoteBeforePond;
+                            } else {
+                               break;
+                            }
+                        }while(true);
+                        
+                        int endQuoteIndex = -1;
+                        if(!hasPairedQuoteBeforePond){//There is begin quote, so search end quote.
+                            endQuoteIndex = queryString.indexOf('\'', poundIndex+1);
+                        }
+                        if(endQuoteIndex!=-1){//There is quote around pond.
+                            token = queryString.substring(lastIndex, endQuoteIndex+1);
+                            poundIndex=-1;
+                            lastIndex = endQuoteIndex + 1;
+                        }else{//No quote around pond, 
+                            token = queryString.substring(lastIndex, poundIndex);
+                            lastIndex = poundIndex + 1;
+                        }
+                    }
                 }
                 writer.write(token);
                 if (poundIndex != -1) {
@@ -402,8 +443,35 @@ public abstract class DatasourceCall implements Call {
                     token = queryString.substring(lastIndex, queryString.length()); //write rest of sql
                     lastIndex = -1;
                 } else {
-                    token = queryString.substring(lastIndex, markIndex);
-                    lastIndex = markIndex + 1;
+                    if(this.shouldProcessTokenInQuotes){
+                        token = queryString.substring(lastIndex, markIndex);
+                        lastIndex = markIndex + 1;
+                    }else{
+                        boolean hasPairedQuoteBeforeMark = true;
+                        int quotePairIndex=markIndex;
+                        do{
+                            quotePairIndex=queryString.lastIndexOf('\'',quotePairIndex-1);
+                            if(quotePairIndex!=-1 && quotePairIndex > lastIndex){
+                                hasPairedQuoteBeforeMark = !hasPairedQuoteBeforeMark;
+                            } else {
+                               break;
+                            }
+                        }while(true);
+                        
+                        int endQuoteIndex = -1;
+                        if(!hasPairedQuoteBeforeMark){//There is begin quote, so search end quote.
+                            endQuoteIndex = queryString.indexOf('\'', markIndex+1);
+                        }
+                        if(endQuoteIndex!=-1){//There is quote around mark.
+                            token = queryString.substring(lastIndex, endQuoteIndex+1);
+                            markIndex=-1;
+                            lastIndex = endQuoteIndex + 1;
+                        }else{
+                            //if no quote around the mark, write the rest of sql. 
+                            token = queryString.substring(lastIndex, markIndex);
+                            lastIndex = markIndex + 1;
+                        }
+                    }
                 }
                 writer.write(token);
                 if (markIndex != -1) {  // found the question mark now find the named token
@@ -721,4 +789,41 @@ public abstract class DatasourceCall implements Call {
         Object[] inOut = { inValue, outParameter };
         return inOut;
     }
+    
+    /**
+     * Return true if the specific mark is existing and not quota around.
+     */
+    private boolean hasArgumentMark(String string, char mark){
+        int quoteIndex = -1;
+        int lastEndQuoteIndex = -1;
+        
+        do{
+            int markIndex=string.indexOf(mark,lastEndQuoteIndex+1);
+            if(markIndex==-1){
+                return false; //no mark at all.
+            }
+            quoteIndex = string.lastIndexOf('\'',markIndex);
+            if(quoteIndex==-1){//no quote before the mark
+                return true;
+            }else{//has quote before the mark
+                boolean hasPairedQuoteBeforeMark = false;
+                while(quoteIndex!=-1 && quoteIndex >= lastEndQuoteIndex){
+                    if((quoteIndex=string.lastIndexOf('\'',quoteIndex-1))!=-1){
+                        hasPairedQuoteBeforeMark = !hasPairedQuoteBeforeMark;
+                    }
+                }
+                if(hasPairedQuoteBeforeMark){//if there is paired quotes before the mark.
+                    return true; 
+                }else{//might have quotes around the mark, need further check.
+                    lastEndQuoteIndex = string.indexOf('\'',markIndex+1);
+                    if(lastEndQuoteIndex==-1){
+                        return true;//no end quote around the mark.
+                    }
+                }
+            }
+            //Upon to here, the current mark is positioning between quotes
+            //we need search for the next mark.
+        }while(true);
+    }
+
 }

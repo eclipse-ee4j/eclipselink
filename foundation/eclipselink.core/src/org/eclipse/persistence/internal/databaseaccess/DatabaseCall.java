@@ -101,6 +101,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     protected String sqlString;
 
     public DatabaseCall() {
+        super.shouldProcessTokenInQuotes=false;
         this.usesBinding = null;
         this.shouldCacheStatement = null;
         this.isFieldMatchingRequired = false;

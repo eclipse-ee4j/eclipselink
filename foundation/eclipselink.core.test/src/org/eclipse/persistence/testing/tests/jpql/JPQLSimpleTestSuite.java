@@ -134,6 +134,10 @@ public class JPQLSimpleTestSuite extends TestSuite {
         addTest(new ChangeJPQLStringAfterExecutionTest());
         
         addTest(buildMaxRowsTest());
+
+        //217745
+        addTest(new CustomQueryStringTranlateValidationTest());
+    
     }
     
     /**
