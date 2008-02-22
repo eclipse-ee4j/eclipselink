@@ -42,10 +42,10 @@ public class ComplexDefineTestSuite {
         suite.addTestSuite(AttributeGroupTestCases.class);  
         suite.addTestSuite(CyclicElementRefTestCases.class);                               
         suite.addTestSuite(CyclicElementRefErrorTestCases.class);                               
-        suite.addTestSuite(LoadFailsAfterDefineFailsTestCases.class);                               
         suite.addTestSuite(DefineWithNestedNamespacesTestCases.class);                               
         suite.addTestSuite(DefineWithImportsNoSchemaLocationTestCases.class);
         suite.addTestSuite(ComplexImportsAndIncludesTestCases.class);
+        suite.addTestSuite(DefineFailsDontRegisterTypesTestCases.class);
         return suite;
     }
 }

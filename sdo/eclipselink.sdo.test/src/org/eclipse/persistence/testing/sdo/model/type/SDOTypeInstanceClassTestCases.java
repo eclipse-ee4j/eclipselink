@@ -77,7 +77,7 @@ public class SDOTypeInstanceClassTestCases extends SDOTestCase {
         prop2.setContainingType(type);
         type.addDeclaredProperty(prop2);
 
-        ((SDOTypeHelper)typeHelper).getOrCreateType(type);
+        ((SDOTypeHelper)typeHelper).addType(type);
 
         DataObject address = (DataObject)dataFactory.create(type);
         boolean isInstance = type.isInstance(address);

@@ -96,7 +96,7 @@ public class SDODataFactoryCreateSimpleTestCases extends SDOXMLHelperTestCases {
         prop2.setContainingType(type);
         type.addDeclaredProperty(prop2);
 
-        ((SDOTypeHelper)typeHelper).getOrCreateType(type);
+        ((SDOTypeHelper)typeHelper).addType(type);        
         return type;
     }
     

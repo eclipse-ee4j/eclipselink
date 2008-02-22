@@ -82,7 +82,7 @@ public class ContainmentTestCases extends SDOTestCase {
         prop4.setContainingType(type);
         type.addDeclaredProperty(prop4);
 
-        ((SDOTypeHelper)typeHelper).getOrCreateType(type);
+        ((SDOTypeHelper)typeHelper).addType(type);
         return type;
     }
 
@@ -104,7 +104,7 @@ public class ContainmentTestCases extends SDOTestCase {
         prop2.setContainingType(type);
         type.addDeclaredProperty(prop2);
 
-        ((SDOTypeHelper)typeHelper).getOrCreateType(type);
+        ((SDOTypeHelper)typeHelper).addType(type);
         return type;
     }
 
@@ -127,7 +127,7 @@ public class ContainmentTestCases extends SDOTestCase {
         prop2.setContainingType(type);
         type.addDeclaredProperty(prop2);
 
-        ((SDOTypeHelper)typeHelper).getOrCreateType(type);
+        ((SDOTypeHelper)typeHelper).addType(type);
         return type;
     }
     
