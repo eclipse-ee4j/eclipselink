@@ -44,24 +44,14 @@ public interface SDOTypeHelper extends TypeHelper {
      * @return
      */
     public Type getTypeForSimpleJavaType(Class implClass);
-
+    
     /**
      * INTERNAL:
      *
-     * @param uri
-     * @param typeName
-     * @param xsdLocalName
+     * @param newType
      * @return
      */
-    public Type getOrCreateType(String uri, String typeName, String xsdLocalName);
-
-    /**
-     * INTERNAL:
-     *
-     * @param next
-     * @return
-     */
-    public Type getOrCreateType(Type next);
+    public void addType(Type newType);
 
     /**
      * INTERNAL:

@@ -84,6 +84,8 @@ public abstract class SchemaParser {
     protected abstract void processImport(Import theImport);
 
     protected abstract void processInclude(Include theInclude);
+    
+    protected abstract void processSubstitutionGroups(Collection elements, String targetNamespace, String defaultNamespace);
 
     public abstract void initialize();
 
@@ -183,36 +185,9 @@ public abstract class SchemaParser {
         while (elementsIter.hasNext()) {
             Element nextElement = (Element)elementsIter.next();
             processGlobalElement(schema.getTargetNamespace(), schema.getDefaultNamespace(), nextElement);
-        }
+        }        
         //process substitution groups after properties have been created for all elements
-        elementsIter = elements.iterator();
-        while (elementsIter.hasNext()) {
-            Element nextElement = (Element)elementsIter.next();
-            if(nextElement.getSubstitutionGroup() != null) {
-                String substitutionGroup = nextElement.getSubstitutionGroup();
-                String localName = null;
-                String uri = null;
-
-                int index = substitutionGroup.indexOf(':');
-                if (index != -1) {
-                    String prefix = substitutionGroup.substring(0, index);
-                    localName = substitutionGroup.substring(index + 1, substitutionGroup.length());
-                    uri = getURIForPrefix(schema.getDefaultNamespace(), prefix);
-                } else {
-                    localName = substitutionGroup;
-                    uri = schema.getDefaultNamespace();
-                }
-                SDOProperty rootProp = (SDOProperty)aHelperContext.getXSDHelper().getGlobalProperty(uri, localName, true);
-                SDOProperty thisProperty = (SDOProperty)aHelperContext.getXSDHelper().getGlobalProperty(schema.getTargetNamespace(), nextElement.getName(), true);
-                if(rootProp != null && thisProperty != null) {
-                    if(rootProp.getSubstitutableElements() == null) {
-                        rootProp.setSubstitutableElements(new java.util.ArrayList<SDOProperty>());
-                        rootProp.setSubstitutable(true);
-                    }
-                    rootProp.getSubstitutableElements().add(thisProperty);
-                }
-            }
-        }
+        processSubstitutionGroups(elements,schema.getTargetNamespace(),schema.getDefaultNamespace());
     }
 
     private boolean addNextNamespaceResolver(Map attributesMap) {

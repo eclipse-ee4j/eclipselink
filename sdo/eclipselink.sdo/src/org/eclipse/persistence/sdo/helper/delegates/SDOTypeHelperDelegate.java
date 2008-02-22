@@ -314,25 +314,13 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         }
     }
 
-    public Type getOrCreateType(String uri, String typeName, String xsdLocalName) {
-        String lookupName = typeName;
-        int index = lookupName.indexOf(':');
-        if (index != -1) {
-            lookupName = lookupName.substring(index + 1, lookupName.length());
-        }
-        Type getType = getType(uri, lookupName);
-        if (getType == null) {
-            SDOType newType = new SDOType(uri, lookupName, aHelperContext);
-            newType.setXsd(true);
-            //newType.setInstanceClass();
-            newType.setXsdLocalName(xsdLocalName);
-            addType(uri, lookupName, newType);
-            return newType;
-        }
-        return getType;
+    public void addType(Type newType) {
+        String uri = newType.getURI();
+        String name = newType.getName();
+        addType(uri, name, newType);        
     }
 
-    private void addType(String uri, String name, Type newType) {
+    private void addType(String uri, String name, Type newType) {          
         if ((uri != null) && uri.equals(SDOConstants.SDO_URL)) {
             commonjHashMap.put(name, newType);
         } else if ((uri != null) && uri.equals(SDOConstants.SDOJAVA_URL)) {
@@ -374,16 +362,6 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         return (Type)getSDOTypeForSimpleJavaTypeMap().get(implClass);
     }
 
-    public Type getOrCreateType(Type next) {
-        Type exists = getType(next.getURI(), next.getName());
-        if (exists == null) {
-            addType(next.getURI(), next.getName(), next);
-            return next;
-        } else {
-            return exists;
-        }
-    }
-    
     public Type define(DataObject dataObject) {
         List types = new ArrayList();
         Type rootType = define(dataObject, types);
@@ -549,7 +527,6 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             }
         }
 
-        //newProperty.setContainingType(containingType);
         newProperty.setReadOnly(dataObject.getBoolean("readOnly"));
         newProperty.setMany(dataObject.getBoolean("many"));
         newProperty.setNullable(dataObject.getBoolean("nullable"));
