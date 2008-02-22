@@ -362,7 +362,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         return (Type)getSDOTypeForSimpleJavaTypeMap().get(implClass);
     }
 
-    public Type define(DataObject dataObject) {
+    public synchronized Type define(DataObject dataObject) {
         List types = new ArrayList();
         Type rootType = define(dataObject, types);
         initializeTypes(types);             
@@ -407,7 +407,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @return the defined Type.
      * @throws IllegalArgumentException if the Type could not be defined.
      */
-    public Type define(DataObject dataObject, List types) {
+    public synchronized Type define(DataObject dataObject, List types) {
         SDOTypeHelper typeHelper = (SDOTypeHelper)aHelperContext.getTypeHelper();
         if ((dataObject == null) || (dataObject.getType() == null) || (!dataObject.getType().getURI().equals(SDOConstants.SDO_URL)) || (!dataObject.getType().getName().equals(SDOConstants.TYPE))) {
             throw new IllegalArgumentException(SDOException.errorDefiningType());
@@ -586,7 +586,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * @return the defined Types.
      * @throws IllegalArgumentException if the Types could not be defined.
      */
-    public List define(List types) {
+    public synchronized List define(List types) {
         List definedTypes = new ArrayList();
         for (int i = 0; i < types.size(); i++) {
             Type definedType = define((DataObject)types.get(i));

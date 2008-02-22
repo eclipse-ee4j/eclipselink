@@ -244,7 +244,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return the defined Types.
      * @throws IllegalArgumentException if the Types could not be defined.
      */
-    public List define(String xsd) {
+    public synchronized List define(String xsd) {
         StringReader reader = new StringReader(xsd);
         SchemaResolver schemaResolver = new DefaultSchemaResolver();
         return define(reader, schemaResolver);
@@ -259,7 +259,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return the defined Types.
      * @throws IllegalArgumentException if the Types could not be defined.
      */
-    public List define(Reader xsdReader, String schemaLocation) {
+    public synchronized List define(Reader xsdReader, String schemaLocation) {
         DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
         schemaResolver.setBaseSchemaLocation(schemaLocation);
 
@@ -275,11 +275,11 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return the defined Types.
      * @throws IllegalArgumentException if the Types could not be defined.
      */
-    public List define(Reader xsdReader, SchemaResolver schemaResolver) {
+    public synchronized List define(Reader xsdReader, SchemaResolver schemaResolver) {
         return define(new StreamSource(xsdReader), schemaResolver);
     }
 
-    public List define(Source xsdSource, SchemaResolver schemaResolver) {
+    public synchronized List define(Source xsdSource, SchemaResolver schemaResolver) {
         return new SDOTypesGenerator(aHelperContext).define(xsdSource, schemaResolver);
     }
 
@@ -292,7 +292,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * @return the defined Types.
      * @throws IllegalArgumentException if the Types could not be defined.
      */
-    public List define(InputStream xsdInputStream, String schemaLocation) {
+    public synchronized List define(InputStream xsdInputStream, String schemaLocation) {
         InputStreamReader xsdReader = new InputStreamReader(xsdInputStream);
         return define(xsdReader, schemaLocation);
     }
