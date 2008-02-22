@@ -16,131 +16,80 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
+
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
+
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.internal.oxm.schema.model.Annotation;
-import org.eclipse.persistence.internal.oxm.schema.model.Any;
-import org.eclipse.persistence.internal.oxm.schema.model.Attribute;
-import org.eclipse.persistence.internal.oxm.schema.model.Choice;
-import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
-import org.eclipse.persistence.internal.oxm.schema.model.Element;
-import org.eclipse.persistence.internal.oxm.schema.model.Import;
-import org.eclipse.persistence.internal.oxm.schema.model.Include;
-import org.eclipse.persistence.internal.oxm.schema.model.Schema;
-import org.eclipse.persistence.internal.oxm.schema.model.Sequence;
-import org.eclipse.persistence.internal.oxm.schema.model.SimpleComponent;
-import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
-import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
-import org.eclipse.persistence.internal.oxm.schema.model.Union;
+import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
+import org.eclipse.persistence.internal.oxm.schema.model.*;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.sessions.Project;
 
 /**
  * <p><b>Purpose</b>: Called from XSDHelper define methods to generate SDO Types from a Schema
  *
  * @see commonj.sdo.XSDHelper
  */
-public class SDOTypesGenerator extends SchemaParser {
+public class SDOTypesGenerator {
+    private Project schemaProject;  
+    private Schema rootSchema;
+    private HashMap processedComplexTypes;
+    private HashMap processedSimpleTypes;
+    private HashMap processedElements;
+    private HashMap processedAttributes;
+    private Map itemNameToSDOName;
+    private boolean processImports;
+    private boolean returnAllTypes;
+    private java.util.List namespaceResolvers;
+    private boolean inRestriction;
+    // hold the context containing all helpers so that we can preserve inter-helper relationships
+    private HelperContext aHelperContext;
+
     private java.util.Map<QName, Type> generatedTypes;    
     private java.util.Map<QName, Property> generatedGlobalElements;
     private java.util.Map<QName, Property> generatedGlobalAttributes;
     private String packageName;
-    private List<NonContainmentReference> nonContainmentReferences;
-    private Map<Type, List<GlobalRef>> globalRefs;
+    private java.util.List<NonContainmentReference> nonContainmentReferences;
+    private Map<Type, java.util.List<GlobalRef>> globalRefs;
     private boolean isImportProcessor;
     
     public SDOTypesGenerator(HelperContext aContext) {
-        super(aContext);
+        processedComplexTypes = new HashMap();
+        processedSimpleTypes = new HashMap();
+        processedElements = new HashMap();
+        processedAttributes = new HashMap();
+        itemNameToSDOName = new HashMap();
+        namespaceResolvers = new ArrayList();
+        this.aHelperContext = aContext;
     }
-
-    protected void processImport(Import theImport) {
-        try {
-        	processImportIncludeInternal(theImport);
-        } catch (Exception e) {
-            throw SDOException.errorProcessingImport(theImport.getSchemaLocation(), theImport.getNamespace(), e);
-        }
-    }
-
-    protected void processInclude(Include theInclude) {
-        try {
-        	processImportIncludeInternal(theInclude);
-        } catch (Exception e) {
-            throw SDOException.errorProcessingInclude(theInclude.getSchemaLocation(), e);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * This function is referenced by processImport or processInclude possibly recursively
-     * @param Include theImportOrInclude
-     * @throws Exception
-     */
-    private void processImportIncludeInternal(Include theImportOrInclude) throws Exception {
-        if (theImportOrInclude.getSchema() != null) {
-            SDOTypesGenerator generator = new SDOTypesGenerator(aHelperContext);
-            generator.setGeneratedTypes(getGeneratedTypes());
-            // Both imports and includes are treated the same when checking for a mid-schema tree walk state
-            generator.setIsImportProcessor(true);
-            // May throw an IAE if a global type: local part cannot be null when creating a QName			
-            java.util.List<Type> importedTypes = generator.define(theImportOrInclude.getSchema(), isReturnAllTypes(), isProcessImports());
-            processedComplexTypes.putAll(generator.processedComplexTypes);
-            processedSimpleTypes.putAll(generator.processedSimpleTypes);
-            processedElements.putAll(generator.processedElements);
-            processedAttributes.putAll(generator.processedAttributes);
-            if (null != importedTypes) {
-                for (int i = 0, size = importedTypes.size(); i < size; i++) {
-                    Type nextType = importedTypes.get(i);
-                    String name = nextType.getName();
-                    QName qname = new QName(nextType.getURI(), name);
-                    getGeneratedTypes().put(qname, nextType);
-                }
-            }
-
-            //copy over any global properties            
-            Iterator<QName> globalPropsIter = generator.getGeneratedGlobalElements().keySet().iterator();
-            while (globalPropsIter.hasNext()) {
-                QName nextKey = globalPropsIter.next();
-                getGeneratedGlobalElements().put(nextKey, generator.getGeneratedGlobalElements().get(nextKey));
-            }
-            
-            globalPropsIter = generator.getGeneratedGlobalAttributes().keySet().iterator();
-            while (globalPropsIter.hasNext()) {
-                QName nextKey = globalPropsIter.next();
-                getGeneratedGlobalAttributes().put(nextKey, generator.getGeneratedGlobalAttributes().get(nextKey));
-            }
-
-            //copy over any unfinished globalRefs
-            Iterator<Type> globalRefsIter = generator.getGlobalRefs().keySet().iterator();
-            while (globalRefsIter.hasNext()) {
-                Type nextKey = globalRefsIter.next();
-                getGlobalRefs().put(nextKey, generator.getGlobalRefs().get(nextKey));
-            }
-        }
-    }
-
-    public List<Type> define(Source xsdSource, SchemaResolver schemaResolver) {
+        
+    public java.util.List<Type> define(Source xsdSource, SchemaResolver schemaResolver) {
         return define(xsdSource, schemaResolver, false, true);
     }
 
-    public List<Type> define(Source xsdSource, SchemaResolver schemaResolver, boolean includeAllTypes, boolean processImports) {
+    public java.util.List<Type> define(Source xsdSource, SchemaResolver schemaResolver, boolean includeAllTypes, boolean processImports) {
         Schema schema = getSchema(xsdSource, schemaResolver);
         return define(schema, includeAllTypes, processImports);
     }
 
-    public List<Type> define(Schema schema, boolean includeAllTypes, boolean processImports) {
-    	// Initialize the List of Types before we process the schema
-    	List<Type> returnList = new ArrayList<Type>();
+    public java.util.List<Type> define(Schema schema, boolean includeAllTypes, boolean processImports) {
+        // Initialize the List of Types before we process the schema
+        java.util.List<Type> returnList = new ArrayList<Type>();
     	
     	setReturnAllTypes(includeAllTypes);
         setProcessImports(processImports);
@@ -149,7 +98,7 @@ public class SDOTypesGenerator extends SchemaParser {
         returnList.addAll(getGeneratedTypes().values());
         
         if(!this.isImportProcessor()){      
-            List descriptorsToAdd = new ArrayList(getGeneratedTypes().values());
+            java.util.List descriptorsToAdd = new ArrayList(getGeneratedTypes().values());
             Iterator<Type> iter = getGeneratedTypes().values().iterator();            
             while (iter.hasNext()) {
                 SDOType nextSDOType = (SDOType)iter.next();
@@ -218,9 +167,9 @@ public class SDOTypesGenerator extends SchemaParser {
               ((SDOXSDHelper)aHelperContext.getXSDHelper()).addGlobalProperty(nextQName, nextSDOProperty, false);
             }
          
-            Iterator<List<GlobalRef>> globalRefsIter = getGlobalRefs().values().iterator();
+            Iterator<java.util.List<GlobalRef>> globalRefsIter = getGlobalRefs().values().iterator();
             while (globalRefsIter.hasNext()) {
-                List<GlobalRef> nextList = (List)globalRefsIter.next();
+                java.util.List<GlobalRef> nextList = (java.util.List)globalRefsIter.next();
                 if (nextList.size() > 0) {
                     GlobalRef ref = nextList.get(0);
                     throw SDOException.referencedPropertyNotFound(((SDOProperty)ref.getProperty()).getUri(), ref.getProperty().getName());
@@ -230,9 +179,114 @@ public class SDOTypesGenerator extends SchemaParser {
 
         return returnList;
     }
+    
+    private void processSchema(Schema parsedSchema) {
+        rootSchema = parsedSchema;
+        initialize();
+        namespaceResolvers.add(rootSchema.getNamespaceResolver());
+        processIncludes(rootSchema.getIncludes());
+        processImports(rootSchema.getImports());
+        processGlobalAttributes(rootSchema);
+        processGlobalElements(rootSchema);
+        processGlobalSimpleTypes(rootSchema);
+        processGlobalComplexTypes(rootSchema);
 
-    public boolean typesExists(String targetNamespace, String sdoTypeName) {
-        boolean alreadyProcessed = super.typesExists(targetNamespace, sdoTypeName);
+        postProcessing();
+    }
+    
+    private void processImports(java.util.List imports) {
+        if ((imports == null) || (imports.size() == 0) || !isProcessImports()) {
+            return;
+        }
+        Iterator iter = imports.iterator();
+        while (iter.hasNext()) {
+            Import nextImport = (Import)iter.next();
+            try {
+              processImportIncludeInternal(nextImport);
+            } catch (Exception e) {
+              throw SDOException.errorProcessingImport(nextImport.getSchemaLocation(), nextImport.getNamespace(), e);
+          }
+        }
+    }
+
+    private void processIncludes(java.util.List includes) {
+        if ((includes == null) || (includes.size() == 0) || !isProcessImports()) {
+            return;
+        }
+        Iterator iter = includes.iterator();
+        while (iter.hasNext()) {
+            Include nextInclude = (Include)iter.next();            
+            try {
+               processImportIncludeInternal(nextInclude);
+            } catch (Exception e) {
+               throw SDOException.errorProcessingInclude(nextInclude.getSchemaLocation(), e);
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * This function is referenced by processImport or processInclude possibly recursively
+     * @param Include theImportOrInclude
+     * @throws Exception
+     */
+    private void processImportIncludeInternal(Include theImportOrInclude) throws Exception {
+        if (theImportOrInclude.getSchema() != null) {
+            SDOTypesGenerator generator = new SDOTypesGenerator(aHelperContext);
+            generator.setGeneratedTypes(getGeneratedTypes());
+            // Both imports and includes are treated the same when checking for a mid-schema tree walk state
+            generator.setIsImportProcessor(true);
+            // May throw an IAE if a global type: local part cannot be null when creating a QName			
+            java.util.List<Type> importedTypes = generator.define(theImportOrInclude.getSchema(), isReturnAllTypes(), isProcessImports());
+            processedComplexTypes.putAll(generator.processedComplexTypes);
+            processedSimpleTypes.putAll(generator.processedSimpleTypes);
+            processedElements.putAll(generator.processedElements);
+            processedAttributes.putAll(generator.processedAttributes);
+            if (null != importedTypes) {
+                for (int i = 0, size = importedTypes.size(); i < size; i++) {
+                    Type nextType = importedTypes.get(i);
+                    String name = nextType.getName();
+                    QName qname = new QName(nextType.getURI(), name);
+                    getGeneratedTypes().put(qname, nextType);
+                }
+            }
+
+            //copy over any global properties            
+            Iterator<QName> globalPropsIter = generator.getGeneratedGlobalElements().keySet().iterator();
+            while (globalPropsIter.hasNext()) {
+                QName nextKey = globalPropsIter.next();
+                getGeneratedGlobalElements().put(nextKey, generator.getGeneratedGlobalElements().get(nextKey));
+            }
+            
+            globalPropsIter = generator.getGeneratedGlobalAttributes().keySet().iterator();
+            while (globalPropsIter.hasNext()) {
+                QName nextKey = globalPropsIter.next();
+                getGeneratedGlobalAttributes().put(nextKey, generator.getGeneratedGlobalAttributes().get(nextKey));
+            }
+
+            //copy over any unfinished globalRefs
+            Iterator<Type> globalRefsIter = generator.getGlobalRefs().keySet().iterator();
+            while (globalRefsIter.hasNext()) {
+                Type nextKey = globalRefsIter.next();
+                getGlobalRefs().put(nextKey, generator.getGlobalRefs().get(nextKey));
+            }
+        }
+    }
+
+
+    private boolean typesExists(String targetNamespace, String sdoTypeName) {        
+        boolean alreadyProcessed = false;
+        
+        if ((targetNamespace != null) && (targetNamespace.equals(SDOConstants.SDOJAVA_URL) || targetNamespace.equals(SDOConstants.SDO_URL) || targetNamespace.equals(SDOConstants.SDOXML_URL))) {
+            alreadyProcessed = true;
+        } else {
+          QName qname = new QName(targetNamespace, sdoTypeName);
+          Object processed = processedComplexTypes.get(qname);
+          if (processed != null) {
+              alreadyProcessed = true;
+          }
+        }
+                
         if (!alreadyProcessed) {
             SDOType lookup = (SDOType)aHelperContext.getTypeHelper().getType(targetNamespace, sdoTypeName);
             if ((lookup != null) && lookup.isFinalized()) {
@@ -246,8 +300,82 @@ public class SDOTypesGenerator extends SchemaParser {
 
         return alreadyProcessed;
     }
+    
+    private void processGlobalComplexTypes(Schema schema) {
+        Collection complexTypes = schema.getTopLevelComplexTypes().values();
+        if (complexTypes == null) {
+            return;
+        }
 
-    public void startNewComplexType(String targetNamespace, String sdoTypeName, String xsdLocalName, ComplexType complexType) {
+        Iterator complexTypesIter = complexTypes.iterator();
+        while (complexTypesIter.hasNext()) {
+            ComplexType complexType = (ComplexType)complexTypesIter.next();
+            processGlobalComplexType(schema.getTargetNamespace(), schema.getDefaultNamespace(), complexType);
+        }
+    }
+
+    private void processGlobalComplexType(String targetNamespace, String defaultNamespace, ComplexType complexType) {
+        QName qname = new QName(targetNamespace, complexType.getName());
+        Object processed = processedComplexTypes.get(qname);
+
+        if (processed == null) {
+            processComplexType(targetNamespace, defaultNamespace, complexType.getName(), complexType);
+            processedComplexTypes.put(qname, complexType);
+        }
+    }
+    
+    private void processComplexType(String targetNamespace, String defaultNamespace, String name, ComplexType complexType) {
+        if (complexType == null) {
+            return;
+        }        
+        boolean addedNR = addNextNamespaceResolver(complexType.getAttributesMap());
+        boolean newType = startComplexType(targetNamespace, defaultNamespace, name, complexType);
+        if (newType) {
+            if (complexType.getComplexContent() != null) {
+                processComplexContent(targetNamespace, defaultNamespace, complexType.getComplexContent());
+                finishComplexType(targetNamespace, defaultNamespace, name);
+            } else if (complexType.getSimpleContent() != null) {
+                processSimpleContent(targetNamespace, defaultNamespace, complexType.getSimpleContent());
+                finishComplexType(targetNamespace, defaultNamespace, name);
+            } else {                
+                if (complexType.getChoice() != null) {
+                    processChoice(targetNamespace, defaultNamespace, name, complexType.getChoice(), false);
+                } else if (complexType.getSequence() != null) {
+                    processSequence(targetNamespace, defaultNamespace, name, complexType.getSequence(), false);
+                } else if (complexType.getAll() != null) {
+                    processAll(targetNamespace, defaultNamespace, name, complexType.getAll(), false);
+                }
+
+                processOrderedAttributes(targetNamespace, defaultNamespace, name, complexType.getOrderedAttributes());
+                finishComplexType(targetNamespace, defaultNamespace, name);
+            }
+        }
+        if (addedNR) {
+            namespaceResolvers.remove(namespaceResolvers.size() - 1);
+        }
+    }
+    
+    //return true if a new type was created
+    private boolean startComplexType(String targetNamespace, String defaultNamespace, String name, ComplexType complexType) {
+        String nameValue = (String)complexType.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
+        String originalName = name;
+        if (nameValue != null) {
+            itemNameToSDOName.put(name, nameValue);
+            originalName = name;
+            name = nameValue;
+        }
+
+        //check if already processed, if yes return false because a new type was not started else start new type and return true
+        boolean alreadyExists = typesExists(targetNamespace, name);
+        if (!alreadyExists) {
+            startNewComplexType(targetNamespace, name,originalName, complexType);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void startNewComplexType(String targetNamespace, String sdoTypeName, String xsdLocalName, ComplexType complexType) {
         SDOType currentType = createSDOTypeForName(targetNamespace, sdoTypeName, xsdLocalName);
 
         if (complexType.isMixed()) {
@@ -263,7 +391,7 @@ public class SDOTypesGenerator extends SchemaParser {
 
         String value = (String)complexType.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
         if (value != null) {
-            List names = (List)XMLConversionManager.getDefaultXMLManager().convertObject(value, List.class);
+            java.util.List names = (java.util.List)XMLConversionManager.getDefaultXMLManager().convertObject(value, java.util.List.class);
             currentType.setAliasNames(names);
         }
 
@@ -274,7 +402,7 @@ public class SDOTypesGenerator extends SchemaParser {
         }
         Annotation annotation = complexType.getAnnotation();
         if (annotation != null) {
-            List documentation = annotation.getDocumentation();
+            java.util.List documentation = annotation.getDocumentation();
             if ((documentation != null) && (documentation.size() > 0)) {
                 currentType.setInstanceProperty(SDOConstants.DOCUMENTATION_PROPERTY, documentation);
             }
@@ -285,15 +413,164 @@ public class SDOTypesGenerator extends SchemaParser {
         }
     }
 
-    public void finishComplexType(String targetNamespace, String defaultNamespace, String name) {
+    private void finishComplexType(String targetNamespace, String defaultNamespace, String name) {
         SDOType currentType = getSDOTypeForName(targetNamespace, defaultNamespace, false, name);
         currentType.postInitialize();
     }
-
-    public void finishNestedComplexType(String targetNamespace, String defaultNamespace, TypeDefParticle typeDefParticle, String name) {
+    
+    private void processOrderedAttributes(String targetNamespace, String defaultNamespace, String name, java.util.List orderedAttributes) {
+        for (int i = 0; i < orderedAttributes.size(); i++) {
+            Object next = orderedAttributes.get(i);
+            if (next instanceof Attribute) {
+                processAttribute(targetNamespace, defaultNamespace, name, (Attribute)next, false);
+            } else if (next instanceof AttributeGroup) {
+                processAttributeGroup(targetNamespace, defaultNamespace, name, (AttributeGroup)next);
+            }
+        }
+    }
+    
+    private void processGlobalAttributes(Schema schema) {
+        Collection attributes = schema.getTopLevelAttributes().values();
+        if (attributes == null) {
+            return;
+        }
+        Iterator attributesIter = attributes.iterator();
+        while (attributesIter.hasNext()) {
+            Attribute nextAttribute = (Attribute)attributesIter.next();
+            processGlobalAttribute(schema.getTargetNamespace(), schema.getDefaultNamespace(), nextAttribute);
+        }
     }
 
-    public void startNewSimpleType(String targetNamespace, String sdoTypeName, String xsdLocalName,SimpleType simpleType) {
+    private void processGlobalAttribute(String targetNamespace, String defaultNamespace, Attribute attribute) {
+        if (attribute.getName() != null) {
+            QName qname = new QName(targetNamespace, attribute.getName());
+            Object processed = processedAttributes.get(qname);
+
+            if (processed == null) {
+                processAttribute(targetNamespace, defaultNamespace, null, attribute, true);
+                processedAttributes.put(qname, attribute);
+            }
+        } else {
+            processAttribute(targetNamespace, defaultNamespace, null, attribute, true);
+        }
+    }
+    
+     private void processGroup(String targetNamespace, String defaultNamespace, String ownerName, TypeDefParticle typeDefParticle, Group group, boolean isMany) {
+        if (!isMany && maxOccursGreaterThanOne(group.getMaxOccurs())) {
+            isMany = true;
+        }
+
+        String groupName = group.getRef();
+        if (groupName != null) {
+            int idx = groupName.indexOf(":");
+            String prefix = null;
+            String localName = null;
+            String uri = null;
+            if (idx > -1) {
+                localName = groupName.substring(idx + 1, groupName.length());
+                prefix = groupName.substring(0, idx);                
+                uri = getURIForPrefix(prefix);
+            } else {
+                localName = groupName;
+                uri = targetNamespace;
+            }
+            Group globalGroup = rootSchema.getGroup(uri, localName);
+            if (globalGroup != null) {
+                if (globalGroup.getChoice() != null) {
+                    globalGroup.getChoice().setMaxOccurs(group.getMaxOccurs());                    
+                    processChoice(targetNamespace, defaultNamespace, ownerName, globalGroup.getChoice(), isMany);
+                } else if (globalGroup.getSequence() != null) {
+                    globalGroup.getSequence().setMaxOccurs(group.getMaxOccurs());
+                    processSequence(targetNamespace, defaultNamespace, ownerName, globalGroup.getSequence(), isMany);
+                } else if (globalGroup.getAll() != null) {
+                    globalGroup.getAll().setMaxOccurs(group.getMaxOccurs());
+                    processAll(targetNamespace, defaultNamespace, ownerName, globalGroup.getAll(), isMany);
+                }
+            }
+        }
+    }
+
+    private void processAttribute(String targetNamespace, String defaultNamespace, String ownerName, Attribute attribute, boolean isGlobal) {
+        SimpleType simpleType = attribute.getSimpleType();
+        if (simpleType != null) {
+            processSimpleType(targetNamespace, defaultNamespace, attribute.getName(), simpleType);
+            processSimpleAttribute(targetNamespace, defaultNamespace, ownerName, attribute, isGlobal, rootSchema.isAttributeFormDefault());
+        } else {
+            processSimpleAttribute(targetNamespace, defaultNamespace, ownerName, attribute, isGlobal, rootSchema.isAttributeFormDefault());
+        }
+    }
+
+    private void processAttributeGroup(String targetNamespace, String defaultNamespace, String ownerName, AttributeGroup attributeGroup) {
+        String attributeGroupName = attributeGroup.getRef();
+        if (attributeGroupName != null) {
+            int idx = attributeGroupName.indexOf(":");
+            String prefix = null;
+            String localName = null;
+            String uri = null;
+            if (idx > -1) {
+                localName = attributeGroupName.substring(idx + 1, attributeGroupName.length());
+                prefix = attributeGroupName.substring(0, idx);                
+                uri = getURIForPrefix(prefix);
+            } else {
+                localName = attributeGroupName;
+                uri = targetNamespace;
+            }
+            AttributeGroup globalAttributeGroup = rootSchema.getAttributeGroup(uri, localName);
+            if (globalAttributeGroup != null) {
+                int size = globalAttributeGroup.getAttributes().size();
+                if (globalAttributeGroup.getAnyAttribute() != null) {
+                    processAnyAttribute(targetNamespace, defaultNamespace, ownerName);
+                }
+                for (int j = 0; j < size; j++) {
+                    processAttribute(targetNamespace, defaultNamespace, ownerName, (Attribute)globalAttributeGroup.getAttributes().get(j), false);
+                }
+            }
+        }
+    }
+
+    private void processAttributes(String targetNamespace, String defaultNamespace, String ownerName, java.util.List attributes) {
+        if (attributes == null) {
+            return;
+        }
+        for (int i = 0; i < attributes.size(); i++) {
+            Attribute nextAttribute = (Attribute)attributes.get(i);
+            processAttribute(targetNamespace, defaultNamespace, ownerName, nextAttribute, false);
+        }
+    }
+
+    private void processGlobalSimpleTypes(Schema schema) {
+        Collection simpleTypes = schema.getTopLevelSimpleTypes().values();
+        if (simpleTypes == null) {
+            return;
+        }
+
+        Iterator simpleTypesIter = simpleTypes.iterator();
+        while (simpleTypesIter.hasNext()) {
+            SimpleType simpleType = (SimpleType)simpleTypesIter.next();
+            processGlobalSimpleType(schema.getTargetNamespace(), schema.getDefaultNamespace(), simpleType);
+        }
+    }
+
+    private void processGlobalSimpleType(String targetNamespace, String defaultNamespace, SimpleType simpleType) {
+        QName qname = new QName(targetNamespace, simpleType.getName());
+        Object processed = processedSimpleTypes.get(qname);
+
+        if (processed == null) {
+            processSimpleType(targetNamespace, defaultNamespace, simpleType.getName(), simpleType);
+            processedSimpleTypes.put(qname, simpleType);
+        }
+    }
+    
+    private boolean startSimpleType(String targetNamespace, String defaultNamespace, String name, String xsdLocalName,  SimpleType simpleType) {
+        boolean alreadyExists = typesExists(targetNamespace, name);
+        if (!alreadyExists) {
+            startNewSimpleType(targetNamespace, name, xsdLocalName, simpleType);
+            return true;
+        }
+        return false;
+    }
+
+    private void startNewSimpleType(String targetNamespace, String sdoTypeName, String xsdLocalName,SimpleType simpleType) {
         SDOType currentType = createSDOTypeForName(targetNamespace, sdoTypeName,xsdLocalName);
         currentType.setDataType(true);
 
@@ -301,12 +578,49 @@ public class SDOTypesGenerator extends SchemaParser {
             currentType.setAppInfoElements(simpleType.getAnnotation().getAppInfo());
         }
     }
+    
+    private void processSimpleType(String targetNamespace, String defaultNamespace, String sdoTypeName, SimpleType simpleType) {
+        if (simpleType == null) {
+            return;
+        }
+        boolean addedNR = addNextNamespaceResolver(simpleType.getAttributesMap());
+        String name = sdoTypeName;
+        String originalName = name;
+        String nameValue = (String)simpleType.getAttributesMap().get(SDOConstants.SDOXML_NAME_QNAME);
+        if (nameValue != null) {
+            itemNameToSDOName.put(sdoTypeName, nameValue);
+            name = nameValue;
+        }
 
-    public void finishSimpleType(String targetNamespace, String defaultNamespace, String sdoTypeName, SimpleType simpleType) {
+        boolean newType = startSimpleType(targetNamespace, defaultNamespace, name, originalName, simpleType);
+        if (newType) {
+            Restriction restriction = simpleType.getRestriction();
+
+            if (restriction != null) {
+                processRestriction(targetNamespace, defaultNamespace, sdoTypeName, restriction);
+            }
+            List list = simpleType.getList();
+            if (list != null) {
+                processList(targetNamespace, defaultNamespace, sdoTypeName, list);
+            }
+
+            Union union = simpleType.getUnion();
+            if (union != null) {
+                processUnion(targetNamespace, defaultNamespace, sdoTypeName, union);
+            }
+
+            finishSimpleType(targetNamespace, defaultNamespace, sdoTypeName, simpleType);
+        }
+        if (addedNR) {
+            namespaceResolvers.remove(namespaceResolvers.size() - 1);
+        }
+    }
+
+    private void finishSimpleType(String targetNamespace, String defaultNamespace, String sdoTypeName, SimpleType simpleType) {
         SDOType currentType = getSDOTypeForName(targetNamespace, defaultNamespace, false, sdoTypeName);
         String value = (String)simpleType.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
         if (value != null) {
-            List names = (List)XMLConversionManager.getDefaultXMLManager().convertObject(value, List.class);
+            java.util.List names = (java.util.List)XMLConversionManager.getDefaultXMLManager().convertObject(value, java.util.List.class);
             currentType.setAliasNames(names);
         }
 
@@ -325,8 +639,143 @@ public class SDOTypesGenerator extends SchemaParser {
         }
         currentType.postInitialize();
     }
+    
+     private void processChoice(String targetNamespace, String defaultNamespace, String ownerName, Choice choice, boolean isMany) {
+        if (choice != null) {
+            processTypeDef(targetNamespace, defaultNamespace, ownerName, choice);
 
-    protected void processUnion(String targetNamespace, String defaultNamespace, String sdoTypeName, Union union) {
+            java.util.List orderedItems = choice.getOrderedElements();
+            for (int i = 0; i < orderedItems.size(); i++) {
+                Object next = orderedItems.get(i);
+                if (!isMany && maxOccursGreaterThanOne(choice.getMaxOccurs())) {
+                    isMany = true;
+                }
+
+                if (next instanceof Choice) {
+                    processChoice(targetNamespace, defaultNamespace, ownerName, (Choice)next, isMany);
+                } else if (next instanceof Sequence) {
+                    processSequence(targetNamespace, defaultNamespace, ownerName, (Sequence)next, isMany);
+                } else if (next instanceof Any) {
+                    processAny(targetNamespace, defaultNamespace, (Any)next, ownerName, choice);//isMany??
+                } else if (next instanceof Element) {
+                    processElement(targetNamespace, defaultNamespace, ownerName, choice, (Element)next, false, isMany);
+                } else if (next instanceof Group) {
+                    processGroup(targetNamespace, defaultNamespace, ownerName, choice, (Group)next, isMany);
+                }
+            }
+        }
+    }
+
+    private void processSequence(String targetNamespace, String defaultNamespace, String ownerName, Sequence sequence, boolean isMany) {
+        if (sequence != null) {
+            processTypeDef(targetNamespace, defaultNamespace, ownerName, sequence);
+
+            java.util.List orderedItems = sequence.getOrderedElements();
+            for (int i = 0; i < orderedItems.size(); i++) {
+                Object next = orderedItems.get(i);
+                if (!isMany && maxOccursGreaterThanOne(sequence.getMaxOccurs())) {
+                    isMany = true;
+                }
+                if (next instanceof Choice) {
+                    processChoice(targetNamespace, defaultNamespace, ownerName, (Choice)next, isMany);
+                } else if (next instanceof Sequence) {
+                    processSequence(targetNamespace, defaultNamespace, ownerName, (Sequence)next, isMany);
+                } else if (next instanceof Any) {
+                    processAny(targetNamespace, defaultNamespace, (Any)next, ownerName, sequence);//isMany?
+                } else if (next instanceof Element) {
+                    processElement(targetNamespace, defaultNamespace, ownerName, sequence, (Element)next, false, isMany);
+                } else if (next instanceof Group) {
+                    processGroup(targetNamespace, defaultNamespace, ownerName, sequence, (Group)next, isMany);
+                }
+            }
+        }
+    }
+
+    private void processAll(String targetNamespace, String defaultNamespace, String ownerName, All all, boolean isMany) {
+        if (all != null) {
+            processTypeDef(targetNamespace, defaultNamespace, ownerName, all);
+            if (!isMany && maxOccursGreaterThanOne(all.getMaxOccurs())) {
+                isMany = true;
+            }
+            java.util.List elements = all.getElements();
+            for (int i = 0; i < elements.size(); i++) {
+                Object next = elements.get(i);
+                if (next instanceof Element) {
+                    processElement(targetNamespace, defaultNamespace, ownerName, all, (Element)next, false, isMany);
+                }
+            }
+        }
+    }
+
+    private void processComplexContent(String targetNamespace, String defaultNamespace, ComplexContent complexContent) {
+        if (complexContent != null) {
+            if (complexContent.getExtension() != null) {
+                processExtension(targetNamespace, defaultNamespace, complexContent.getOwnerName(), complexContent.getExtension(), false);
+            } else {
+                if (complexContent.getRestriction() != null) {
+                    processRestriction(targetNamespace, defaultNamespace, complexContent.getOwnerName(), complexContent.getRestriction());
+                }
+            }
+        }
+    }
+
+    private void processSimpleContent(String targetNamespace, String defaultNamespace, SimpleContent simpleContent) {
+        if (simpleContent != null) {
+            if (simpleContent.getExtension() != null) {
+                processExtension(targetNamespace, defaultNamespace, simpleContent.getOwnerName(), simpleContent.getExtension(), true);
+            } else {
+                if (simpleContent.getRestriction() != null) {
+                    processRestriction(targetNamespace, defaultNamespace, simpleContent.getOwnerName(), simpleContent.getRestriction());
+                }
+            }
+        }
+    }
+    
+     private void processExtension(String targetNamespace, String defaultNamespace, String ownerName, Extension extension, boolean simpleContent) {
+        if (extension != null) {
+            String qualifiedType = extension.getBaseType();
+            processBaseType(targetNamespace, defaultNamespace, extension.getOwnerName(), qualifiedType, simpleContent);
+
+            //TODO: typedefparticle all seq choice 
+            //TODO: attrDecls						
+            if (extension.getChoice() != null) {
+                processChoice(targetNamespace, defaultNamespace, ownerName, extension.getChoice(), false);
+            } else if (extension.getSequence() != null) {
+                processSequence(targetNamespace, defaultNamespace, ownerName, extension.getSequence(), false);
+            } else if (extension.getAll() != null) {
+            }
+
+            processOrderedAttributes(targetNamespace, defaultNamespace, ownerName, extension.getOrderedAttributes());
+        }
+    }
+
+    private void processRestriction(String targetNamespace, String defaultNamespace, String ownerName, Restriction restriction) {
+        if (restriction != null) {
+            String qualifiedType = restriction.getBaseType();
+            processBaseType(targetNamespace, defaultNamespace, ownerName, qualifiedType, false);
+            boolean alreadyIn = inRestriction;
+            if (!alreadyIn) {
+                inRestriction = true;
+            }
+
+            //TODO: typedefparticle all seq choice 
+            //TODO: attrDecls						
+            if (restriction.getChoice() != null) {
+                processChoice(targetNamespace, defaultNamespace, ownerName, restriction.getChoice(), false);
+            } else if (restriction.getSequence() != null) {
+                processSequence(targetNamespace, defaultNamespace, ownerName, restriction.getSequence(), false);
+            } else if (restriction.getAll() != null) {
+            }
+
+            processAttributes(targetNamespace, defaultNamespace, ownerName, restriction.getAttributes());
+            if (!alreadyIn) {
+                inRestriction = false;
+            }
+        }
+    }
+
+
+    private void processUnion(String targetNamespace, String defaultNamespace, String sdoTypeName, Union union) {
         if (union != null) {
             java.util.List allMemberTypes = union.getAllMemberTypes();
             SDOType type = getSDOTypeForName(targetNamespace, defaultNamespace, sdoTypeName);
@@ -357,7 +806,29 @@ public class SDOTypesGenerator extends SchemaParser {
         }
     }
 
-    protected void processList(String targetNamespace, String defaultNamespace, String sdoTypeName, org.eclipse.persistence.internal.oxm.schema.model.List list) {
+    private boolean addNextNamespaceResolver(Map attributesMap) {
+        NamespaceResolver nr = new NamespaceResolver();
+        Iterator iter = attributesMap.keySet().iterator();
+        while (iter.hasNext()) {
+            QName key = (QName)iter.next();
+            if (key.getNamespaceURI().equals(XMLConstants.XMLNS_URL)) {
+                String value = (String)attributesMap.get(key);
+                String prefix = key.getLocalPart();
+                int index = prefix.indexOf(':');
+                if (index > -1) {
+                    prefix = prefix.substring(index + 1, prefix.length());
+                }
+                nr.put(prefix, value);
+            }
+        }
+        if (nr.getPrefixes().hasMoreElements()) {
+            namespaceResolvers.add(nr);
+            return true;
+        }
+        return false;
+    }
+
+    private void processList(String targetNamespace, String defaultNamespace, String sdoTypeName, List list) {
         if (list != null) {
             //String itemType = list.getItemType();
             //SimpleType simpleType = list.getSimpleType();
@@ -368,7 +839,7 @@ public class SDOTypesGenerator extends SchemaParser {
         }
     }
 
-    public void processBaseType(String targetNamespace, String defaultNamespace, String ownerName, String qualifiedName, boolean simpleContentExtension) {
+    private void processBaseType(String targetNamespace, String defaultNamespace, String ownerName, String qualifiedName, boolean simpleContentExtension) {
         if (qualifiedName == null) {
             return;
         }
@@ -390,7 +861,7 @@ public class SDOTypesGenerator extends SchemaParser {
             return;
         }
 
-        List<Type> baseTypes = new ArrayList<Type>();
+        java.util.List<Type> baseTypes = new ArrayList<Type>();
         baseTypes.add(baseType);
 
         if (ownerName != null) {
@@ -416,7 +887,7 @@ public class SDOTypesGenerator extends SchemaParser {
         //TODO: need owner currentType.setOpen(true);
     }
 
-    public void processTypeDef(String targetNamespace, String defaultNamespace, String owner, TypeDefParticle typeDefParticle) {
+    private void processTypeDef(String targetNamespace, String defaultNamespace, String owner, TypeDefParticle typeDefParticle) {
         SDOType currentType = getTypeForName(targetNamespace, defaultNamespace, owner);
 
         if (maxOccursGreaterThanOne(typeDefParticle.getMaxOccurs())) {
@@ -427,12 +898,12 @@ public class SDOTypesGenerator extends SchemaParser {
     }
 
     private boolean shouldBeSequenced(TypeDefParticle typeDefParticle) {
-        List elements = typeDefParticle.getElements();
+        java.util.List elements = typeDefParticle.getElements();
         if ((elements != null) && (elements.size() > 1)) {
             return true;
         }
         if (typeDefParticle instanceof Sequence) {
-            List allItems = ((Sequence)typeDefParticle).getOrderedElements();
+            java.util.List allItems = ((Sequence)typeDefParticle).getOrderedElements();
             for (int i = 0; i < allItems.size(); i++) {
                 Object nextItem = allItems.get(i);
                 if (nextItem instanceof TypeDefParticle) {
@@ -443,7 +914,7 @@ public class SDOTypesGenerator extends SchemaParser {
                 }
             }
         } else if (typeDefParticle instanceof Choice) {
-            List allItems = ((Choice)typeDefParticle).getOrderedElements();
+            java.util.List allItems = ((Choice)typeDefParticle).getOrderedElements();
             for (int i = 0; i < allItems.size(); i++) {
                 Object nextItem = allItems.get(i);
                 if (nextItem instanceof TypeDefParticle) {
@@ -457,7 +928,7 @@ public class SDOTypesGenerator extends SchemaParser {
         return false;
     }
 
-    public void processAny(String targetNamespace, String defaultNamespace, Any any, String owner, TypeDefParticle typeDefParticle) {
+    private void processAny(String targetNamespace, String defaultNamespace, Any any, String owner, TypeDefParticle typeDefParticle) {
         if (any == null) {
             return;
         }
@@ -475,8 +946,66 @@ public class SDOTypesGenerator extends SchemaParser {
 
         //TODO: need owner currentType.setOpen(true);??
     }
+    
+    private void processGlobalElements(Schema schema) {
+        Collection elements = schema.getTopLevelElements().values();
+        if (elements == null) {
+            return;
+        }
+        Iterator elementsIter = elements.iterator();
+        while (elementsIter.hasNext()) {
+            Element nextElement = (Element)elementsIter.next();
+            processGlobalElement(schema.getTargetNamespace(), schema.getDefaultNamespace(), nextElement);
+        }        
+        //process substitution groups after properties have been created for all elements
+        processSubstitutionGroups(elements,schema.getTargetNamespace(),schema.getDefaultNamespace());
+    }
+    
+    private void processGlobalElement(String targetNamespace, String defaultNamespace, Element element) {          
+        if (element.getName() != null) {
+            QName qname = new QName(targetNamespace, element.getName());
+            Object processed = processedElements.get(qname);
 
-    public void processSimpleElement(//
+            if (processed == null) {                
+                processElement(targetNamespace, defaultNamespace, null, null, element, true, false);
+                processedElements.put(qname, element);
+            }
+        } else {            
+            processElement(targetNamespace, defaultNamespace, null, null, element, true, false);
+        }       
+    }
+
+    private void processElement(String targetNamespace, String defaultNamespace, String ownerName, TypeDefParticle typeDefParticle, Element element, boolean isGlobal, boolean isMany) {
+    
+        boolean addedNR = addNextNamespaceResolver(element.getAttributesMap());
+    
+        ComplexType complexType = element.getComplexType();        
+        boolean qualified = true;
+        if (!isGlobal) {
+            qualified = rootSchema.isElementFormDefault();
+        }
+        if (!isMany && maxOccursGreaterThanOne(element.getMaxOccurs())) {
+            isMany = true;
+        }
+
+        if (complexType != null) {
+            //TODO: if this is nested we need to add new type to owner            
+            processComplexType(targetNamespace, defaultNamespace, element.getName(), complexType);
+
+            processSimpleElement(targetNamespace, defaultNamespace, ownerName, typeDefParticle, element, qualified, isGlobal, isMany);
+            
+        } else if (element.getSimpleType() != null) {
+            processSimpleType(targetNamespace, defaultNamespace, element.getName(), element.getSimpleType());
+            processSimpleElement(targetNamespace, defaultNamespace, ownerName, typeDefParticle, element, qualified, isGlobal, isMany);
+        } else {
+            processSimpleElement(targetNamespace, defaultNamespace, ownerName, typeDefParticle, element, qualified, isGlobal, isMany);
+        }
+        if (addedNR) {
+            namespaceResolvers.remove(namespaceResolvers.size() - 1);
+        }
+    }
+
+    private void processSimpleElement( //
     String targetNamespace,//
     String defaultNamespace,//
     String ownerName,//
@@ -537,7 +1066,7 @@ public class SDOTypesGenerator extends SchemaParser {
                 theProp.setMany(isMany);
                 theProp.setInstanceProperty(SDOConstants.XMLELEMENT_PROPERTY, Boolean.TRUE);
                 if (element.getAnnotation() != null) {
-                    List doc =element.getAnnotation().getDocumentation();
+                    java.util.List doc = element.getAnnotation().getDocumentation();
                     if (doc != null) {
                         theProp.setInstanceProperty(SDOConstants.DOCUMENTATION_PROPERTY, doc);
                     }
@@ -748,7 +1277,7 @@ public class SDOTypesGenerator extends SchemaParser {
         }
 
         if (annotation != null) {
-            List documentation = annotation.getDocumentation();
+            java.util.List documentation = annotation.getDocumentation();
             if ((documentation != null) && (documentation.size() > 0)) {
                 p.setInstanceProperty(SDOConstants.DOCUMENTATION_PROPERTY, documentation);
             }
@@ -834,7 +1363,7 @@ public class SDOTypesGenerator extends SchemaParser {
         return stringValue;
     }
 
-    public void processSimpleAttribute(String targetNamespace, String defaultNamespace, String ownerName, Attribute attribute, boolean isGlobal, boolean isQualified) {
+    private void processSimpleAttribute(String targetNamespace, String defaultNamespace, String ownerName, Attribute attribute, boolean isGlobal, boolean isQualified) {
         if (attribute == null) {
             return;
         }
@@ -878,7 +1407,7 @@ public class SDOTypesGenerator extends SchemaParser {
                 theProp.setXsd(true);
                 theProp.setMany(false);
                 if (attribute.getAnnotation() != null) {
-                    List doc = attribute.getAnnotation().getDocumentation();
+                    java.util.List doc = attribute.getAnnotation().getDocumentation();
                     if (doc != null) {
                         theProp.setInstanceProperty(SDOConstants.DOCUMENTATION_PROPERTY, doc);
                     }
@@ -961,7 +1490,7 @@ public class SDOTypesGenerator extends SchemaParser {
         //aliasName annotation
         String aliasNamesValue = (String)simpleComponent.getAttributesMap().get(SDOConstants.SDOXML_ALIASNAME_QNAME);
         if (aliasNamesValue != null) {
-            List names = (List)XMLConversionManager.getDefaultXMLManager().convertObject(aliasNamesValue, List.class);
+            java.util.List names = (java.util.List)XMLConversionManager.getDefaultXMLManager().convertObject(aliasNamesValue, java.util.List.class);
             p.setAliasNames(names);
         }
 
@@ -1034,7 +1563,7 @@ public class SDOTypesGenerator extends SchemaParser {
         return sdoPropertyType;
     }
 
-    protected void postProcessing() {
+    private void postProcessing() {
         int size = getNonContainmentReferences().size();
         for (int i = 0; i < size; i++) {
             NonContainmentReference nonContainmentReference = (NonContainmentReference)getNonContainmentReferences().get(i);
@@ -1071,8 +1600,8 @@ public class SDOTypesGenerator extends SchemaParser {
         Iterator<Type> iter = getGlobalRefs().keySet().iterator();
         while (iter.hasNext()) {
             Object nextKey = iter.next();
-            List<GlobalRef> value = getGlobalRefs().get(nextKey);
-            List refsToRemove = new ArrayList();
+            java.util.List<GlobalRef> value = getGlobalRefs().get(nextKey);
+            java.util.List refsToRemove = new ArrayList();
             if (value != null) {
                 for (int i = 0; i < value.size(); i++) {
                     GlobalRef nextGlobalRef = value.get(i);
@@ -1089,7 +1618,7 @@ public class SDOTypesGenerator extends SchemaParser {
     }
 
     private void addGlobalRef(GlobalRef ref) {
-        List<GlobalRef> refs = getGlobalRefs().get(ref.getOwningType());
+        java.util.List<GlobalRef> refs = getGlobalRefs().get(ref.getOwningType());
         if (null == refs) {
             refs = new ArrayList<GlobalRef>();
             refs.add(ref);
@@ -1103,7 +1632,7 @@ public class SDOTypesGenerator extends SchemaParser {
      * INTERNAL:
      * Initialize this SchemaParser by configuring the package name based on the targetNamespace.
      */
-    public void initialize() {
+    private void initialize() {
         if (null == packageName) {
             String packageValue = (String)rootSchema.getAttributesMap().get(SDOConstants.SDOJAVA_PACKAGE_QNAME);
             if (null != packageValue) {
@@ -1280,7 +1809,7 @@ public class SDOTypesGenerator extends SchemaParser {
         return generatedGlobalAttributes;
     }
 
-    protected void processSubstitutionGroups(Collection elements, String targetNamespace, String defaultNamespace){
+    private void processSubstitutionGroups(Collection elements, String targetNamespace, String defaultNamespace){
         Iterator elementsIter = elements.iterator();
         while (elementsIter.hasNext()) {
             Element nextElement = (Element)elementsIter.next();
@@ -1292,8 +1821,8 @@ public class SDOTypesGenerator extends SchemaParser {
                 int index = substitutionGroup.indexOf(':');
                 if (index != -1) {
                     String prefix = substitutionGroup.substring(0, index);
-                    localName = substitutionGroup.substring(index + 1, substitutionGroup.length());
-                    uri = getURIForPrefix(defaultNamespace, prefix);
+                    localName = substitutionGroup.substring(index + 1, substitutionGroup.length());                    
+                    uri = getURIForPrefix(prefix);
                 } else {
                     localName = substitutionGroup;
                     uri = defaultNamespace;
@@ -1312,12 +1841,12 @@ public class SDOTypesGenerator extends SchemaParser {
         }
     }
 
-    protected void processAnyAttribute(String targetNamespace, String defaultNamespace, String ownerName) {
+    private void processAnyAttribute(String targetNamespace, String defaultNamespace, String ownerName) {
         SDOType owningType = getTypeForName(targetNamespace, defaultNamespace, ownerName);
         owningType.setOpen(true);
     }
 
-    public SDOType getTypeForName(String targetNamespace, String defaultNamespace, String typeName) {
+    private SDOType getTypeForName(String targetNamespace, String defaultNamespace, String typeName) {
         Object value = getGeneratedTypes().get(typeName);
         if (value != null) {
             return (SDOType)value;
@@ -1347,8 +1876,156 @@ public class SDOTypesGenerator extends SchemaParser {
             return qname;
         }
     }
+    
+    private void processGlobalItem(String targetNamespace, String defaultNamespace, String qualifiedName) {
+        if (rootSchema == null) {
+            return;
+        }
+        String localName = null;
+        int index = qualifiedName.indexOf(':');
+        if (index != -1) {
+            localName = qualifiedName.substring(index + 1, qualifiedName.length());
+        } else {
+            localName = qualifiedName;
+        }
 
-    protected String getURIForPrefix(String prefix) {
+        SimpleType simpleType = (SimpleType)rootSchema.getTopLevelSimpleTypes().get(localName);
+        if (simpleType == null) {
+            ComplexType complexType = (ComplexType)rootSchema.getTopLevelComplexTypes().get(localName);
+            if (complexType == null) {
+                Element element = (Element)rootSchema.getTopLevelElements().get(localName);
+                if (element == null) {
+                    Attribute attribute = (Attribute)rootSchema.getTopLevelAttributes().get(localName);
+                    if (attribute != null) {
+                        processGlobalAttribute(targetNamespace, defaultNamespace, attribute);
+                    }
+                } else {
+                    processGlobalElement(targetNamespace, defaultNamespace, element);
+                }
+            } else {
+                processGlobalComplexType(targetNamespace, defaultNamespace, complexType);
+            }
+        } else {
+            processGlobalSimpleType(targetNamespace, defaultNamespace, simpleType);
+        }
+    }
+    
+    /**
+     * Return a Schema for the given Source object.
+     * 
+     * A SchemaResolverWrapper is created to wrap the given SchemaResolver.  The wrapper
+     * will prevent schemas from being processed multiple times (such as in the case of 
+     * circular includes/imports)
+     * 
+     * This method should not be called recursively if a given schema could potentially
+     * and undesirably be processed multiple times (again, such as in the case of 
+     * circular includes/imports) 
+     * 
+     * @param xsdSource
+     * @param schemaResolver the schema resolver to be used to resolve imports/includes
+     * @return
+     */
+    public Schema getSchema(Source xsdSource, SchemaResolver schemaResolver) {
+    	// Create a resolver wrapper that will prevent schemas from being processed
+    	// multiple times (such as in the case of circular includes/imports)
+    	return getSchema(xsdSource, new SchemaResolverWrapper(schemaResolver));
+    }
+    /**
+     * Return a Schema for the given Source object.
+     * 
+     * Since this method is called recursively, and the SchemaResolverWrapper is stateful,
+     * the resolver wrapper must be created outside of this method.
+     *  
+     * @param xsdSource
+     * @param schemaResolverWrapper wraps the schema resolver to be used to resolve imports/includes
+     * @return
+     */
+    public Schema getSchema(Source xsdSource, SchemaResolverWrapper schemaResolverWrapper) {
+        try {
+            XMLContext context = new XMLContext(getSchemaProject());
+            XMLUnmarshaller unmarshaller = context.createUnmarshaller();
+
+            Schema schema = (Schema)unmarshaller.unmarshal(xsdSource);
+            //populate Imports            
+            java.util.List imports = schema.getImports();            
+            Iterator iter = imports.iterator();
+            while (iter.hasNext()) {                
+                Import nextImport = (Import)iter.next();
+
+                Source referencedSchema = getReferencedSchema(xsdSource, nextImport.getNamespace(), nextImport.getSchemaLocation(), schemaResolverWrapper);
+                if (referencedSchema != null) {
+                    Schema importedSchema = getSchema(referencedSchema, schemaResolverWrapper);
+                    nextImport.setSchema(importedSchema);
+                }
+            }
+            
+            //populate includes            
+            java.util.List includes = schema.getIncludes();
+            Iterator includesIter = includes.iterator();
+            while (includesIter.hasNext()) {
+                Include nextInclude = (Include)includesIter.next();
+
+                Source referencedSchema = getReferencedSchema(xsdSource, schema.getTargetNamespace(), nextInclude.getSchemaLocation(), schemaResolverWrapper);
+                if (referencedSchema != null) {
+                    Schema includedSchema = getSchema(referencedSchema, schemaResolverWrapper);
+                    nextInclude.setSchema(includedSchema);
+                }
+            }
+            return schema;
+        } catch (Exception e) {
+            //Error processing Import/Include
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Source getReferencedSchema(Source xsdSource, String namespace, String schemaLocation, SchemaResolverWrapper schemaResolverWrapper) {
+        if (namespace.equals(SDOConstants.SDOJAVA_URL) || namespace.equals(SDOConstants.SDO_URL) || namespace.equals(SDOConstants.SDOXML_URL)) {
+            return null;
+        }
+        return schemaResolverWrapper.resolveSchema(xsdSource, namespace, schemaLocation);
+    }
+   
+    public Project getSchemaProject() {
+        if (schemaProject == null) {
+            schemaProject = new SchemaModelProject();
+
+        }
+        return schemaProject;
+    }
+    
+     public Schema getRootSchema() {
+        return rootSchema;
+    }
+
+    public void setProcessImports(boolean processImports) {
+        this.processImports = processImports;
+    }
+
+    public boolean isProcessImports() {
+        return processImports;
+    }
+
+    public void setReturnAllTypes(boolean returnAllTypes) {
+        this.returnAllTypes = returnAllTypes;
+    }
+
+    public boolean isReturnAllTypes() {
+        return returnAllTypes;
+    }
+    
+    private boolean maxOccursGreaterThanOne(String maxOccurs) {
+        if (maxOccurs == null) {
+            return false;
+        }
+        if (maxOccurs.equalsIgnoreCase(Occurs.UNBOUNDED)) {
+            return true;
+        }        
+        return !maxOccurs.equals(Occurs.ONE);        
+    }
+    
+    
+    private String getURIForPrefix(String prefix) {
         String uri = null;
 
         for (int i = namespaceResolvers.size() - 1; i >= 0; i--) {
@@ -1461,16 +2138,16 @@ public class SDOTypesGenerator extends SchemaParser {
         }
     }
 
-    private List<NonContainmentReference> getNonContainmentReferences() {
+    private java.util.List<NonContainmentReference> getNonContainmentReferences() {
         if (null == nonContainmentReferences) {
             nonContainmentReferences = new ArrayList<NonContainmentReference>();
         }
         return nonContainmentReferences;
     }
 
-    private Map<Type, List<GlobalRef>> getGlobalRefs() {
+    private Map<Type, java.util.List<GlobalRef>> getGlobalRefs() {
         if (null == globalRefs) {
-            globalRefs = new HashMap<Type, List<GlobalRef>>();
+            globalRefs = new HashMap<Type, java.util.List<GlobalRef>>();
         }
         return globalRefs;
     }
