@@ -10,6 +10,9 @@
             <primary-key-join-column name="E_ID" referenced-column-name="EMP_ID"/>
         </secondary-table>
         <optimistic-locking type="VERSION_COLUMN" cascade="true"/>
+        <cache type="SOFT_WEAK" size="730" isolated="false" always-refresh="false" coordination-type="INVALIDATE_CHANGED_OBJECTS">
+          <expiry>1000</expiry>
+        </cache>
         <object-type-converter name="sex" data-type="String" object-type="Employee$Gender">
           <conversion-value data-value="F" object-value="Female"/>
           <conversion-value data-value="M" object-value="Male"/>

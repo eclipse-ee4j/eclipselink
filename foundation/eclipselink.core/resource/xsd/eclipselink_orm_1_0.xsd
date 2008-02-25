@@ -208,6 +208,7 @@
                    minOccurs="0"/>
       <xsd:element name="optimistic-locking" type="orm:optimistic-locking"
                    minOccurs="0"/>
+      <xsd:element name="cache" type="orm:cache" minOccurs="0"/>
       <xsd:element name="converter" type="orm:converter" 
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="type-converter" type="orm:type-converter" 
@@ -1450,6 +1451,7 @@
       <xsd:element name="id-class" type="orm:id-class" minOccurs="0"/>
       <xsd:element name="optimistic-locking" type="orm:optimistic-locking"
                    minOccurs="0"/>
+      <xsd:element name="cache" type="orm:cache" minOccurs="0"/>
       <xsd:element name="converter" type="orm:converter" 
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="type-converter" type="orm:type-converter" 
@@ -1998,6 +2000,276 @@
       <xsd:enumeration value="VERSION_COLUMN"/>
     </xsd:restriction>
   </xsd:simpleType>
+
+  <!-- **************************************************** -->
+    
+  <xsd:complexType name="cache">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * The Cache annotation is used to set an 
+         * org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy 
+         * which sets objects in EclipseLink's identity maps to be invalid 
+         * following given rules. By default in EclipseLink, objects do not 
+         * expire in the cache. Several different policies are available to 
+         * allow objects to expire.
+         * 
+         * @see org.eclipse.persistence.annotations.CacheType
+         * 
+         * A Cache anotation may be defined on an Entity or MappedSuperclass. 
+         * In the case of inheritance, a Cache annotation should only be defined 
+         * on the root of the inheritance hierarchy.
+         */
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface Cache {
+          /**
+           * (Optional) The type of cache to use.
+           */ 
+          CacheType type() default SOFT_WEAK;
+
+          /**
+           * (Optional) The size of cache to use.
+           */ 
+          int size() default 100;
+
+	        /**
+	         * (Optional) Cached instances in the shared cache or a client 
+	         * isolated cache.
+	         */ 
+	        boolean isolated() default false;
+	
+	        /**
+	         * (Optional) Expire cached instance after a fix period of time (ms). 
+	         * Queries executed against the cache after this will be forced back 
+	         * to the database for a refreshed copy
+	         */ 
+	        int expiry() default -1; // minus one is no expiry.
+	
+	        /**
+	         * (Optional) Expire cached instance a specific time of day. Queries 
+	         * executed against the cache after this will be forced back to the 
+	         * database for a refreshed copy
+	         */ 
+	        TimeOfDay expiryTimeOfDay() default @TimeOfDay(specified=false);
+	
+	        /**
+	         * (Optional) Force all queries that go to the database to always 
+	         * refresh the cache.
+	         */ 
+	        boolean alwaysRefresh() default false;
+	
+	        /**
+	         * (Optional) For all queries that go to the database, refresh the
+	         * cache only if the data received from the database by a query is 
+	         * newer than the data in the cache (as determined by the optimistic 
+	         * locking field)
+	         */ 
+	        boolean refreshOnlyIfNewer() default false;
+	
+	        /**
+	         * (Optional) Setting to true will force all queries to bypass the 
+	         * cache for hits but still resolve against the cache for identity. 
+	         * This forces all queries to hit the database.
+	         */ 
+	        boolean disableHits() default false;
+	
+	        /**
+	         * (Optional) The cache coordination mode.
+	         */ 
+	        CacheCoordinationType coordinationType() default SEND_OBJECT_CHANGES;
+	      }
+	
+	    </xsd:documentation>
+	  </xsd:annotation>
+	  <xsd:choice>
+	    <xsd:element name="expiry" type="xsd:integer" minOccurs="0"/>
+	    <xsd:element name="expiry-time-of-day" type="orm:time-of-day" minOccurs="0"/>
+	  </xsd:choice>
+	  <xsd:attribute name="size" type="xsd:integer"/>
+	  <xsd:attribute name="isolated" type="xsd:boolean"/>
+	  <xsd:attribute name="type" type="orm:cache-type"/>
+	  <xsd:attribute name="always-refresh" type="xsd:boolean"/>
+	  <xsd:attribute name="refresh-only-if-newer" type="xsd:boolean"/>
+	  <xsd:attribute name="disable-hits" type="xsd:boolean"/>
+	  <xsd:attribute name="coordination-type" type="orm:cache-coordination-type"/>
+	</xsd:complexType>
+
+  <!-- **************************************************** --> 
+
+	<xsd:simpleType name="cache-type">
+	  <xsd:annotation>
+	    <xsd:documentation>
+	
+	      /** 
+         * The CacheType enum is used with the Cache annotation for a 
+         * persistent class. It defines the type of IdentityMap/Cache used for 
+         * the class. By default the SOFT_WEAK cache type is used.
+         * 
+         * @see org.eclipse.persistence.annotations.Cache 
+         */
+	      public enum CacheType {
+	        /**
+	         * Provides full caching and guaranteed identity. Caches all objects
+	         * and does not remove them. 
+	         * WARNING: This method may be memory intensive when many objects are 
+	         * read.
+	         */
+	        FULL,
+	
+	        /**
+	         * Similar to the FULL identity map except that the map holds the
+	         * objects using weak references. This method allows full garbage
+	         * collection and provides full caching and guaranteed identity.
+	         */
+	        WEAK,
+	
+	        /**
+	         * Similar to the FULL identity map except that the map holds the
+	         * objects using soft references. This method allows full garbage
+	         * collection when memory is low and provides full caching and
+	         * guaranteed identity.
+	         */
+	        SOFT,
+	
+	        /**
+	         * Similar to the WEAK identity map except that it maintains a
+	         * most-frequently-used sub-cache. The size of the sub-cache is
+	         * proportional to the size of the identity map as specified by
+	         * descriptor's setIdentityMapSize() method. The sub-cache
+	         * uses soft references to ensure that these objects are
+	         * garbage-collected only if the system is low on memory.
+	         */
+	        SOFT_WEAK,
+	
+	        /**
+	         * Identical to the soft cache weak (SOFT_WEAK) identity map except 
+	         * that it uses hard references in the sub-cache. Use this identity 
+	         * map if soft references do not behave properly on your platform.
+	         */
+	        HARD_WEAK,
+	
+	        /**
+	         * A cache identity map maintains a fixed number of objects
+	         * specified by the application. Objects are removed from the cache
+	         * on a least-recently-used basis. This method allows object
+	         * identity for the most commonly used objects.
+	         * WARNING: Furnishes caching and identity, but does not guarantee 
+	         * identity.
+	         */
+	        CACHE,
+	
+	        /**
+	         * WARNING: Does not preserve object identity and does not cache 
+	         * objects.
+	         */
+	        NONE
+	      }
+	
+	    </xsd:documentation>
+	  </xsd:annotation>
+	  <xsd:restriction base="xsd:token">
+	    <xsd:enumeration value="FULL"/>
+	    <xsd:enumeration value="WEAK"/>
+	    <xsd:enumeration value="SOFT"/>
+	    <xsd:enumeration value="SOFT_WEAK"/>
+	    <xsd:enumeration value="HARD_WEAK"/>
+	    <xsd:enumeration value="CACHE"/>
+	    <xsd:enumeration value="NONE"/>
+	  </xsd:restriction>
+	</xsd:simpleType>
+
+
+  <!-- **************************************************** -->  
+
+	<xsd:simpleType name="cache-coordination-type">
+	  <xsd:annotation>
+	    <xsd:documentation>
+	
+	      /** 
+         * An enum that is used within the Cache annotation.
+         * 
+         * @see org.eclipse.persistence.annotations.Cache 
+         */ 
+	      public enum CacheCoordinationType {
+	        /**
+	         * Sends a list of changed objects including data about the changes.
+	         * This data is merged into the receiving cache.
+	         */
+	        SEND_OBJECT_CHANGES,
+	
+	         /**
+	          * Sends a list of the identities of the objects that have changed. 
+	          * The receiving cache invalidates the objects (rather than changing 
+	          * any of the data)
+	          */
+	         INVALIDATE_CHANGED_OBJECTS,
+	
+	         /**
+	          * Same as SEND_OBJECT_CHANGES except it also includes any newly
+	          * created objects from the transaction.
+	          */
+	         SEND_NEW_OBJECTS_WITH_CHANGES,
+	
+	         /**
+	          * Does no cache coordination.
+	          */
+	         NONE
+        }
+	
+	    </xsd:documentation>
+	  </xsd:annotation>
+	  <xsd:restriction base="xsd:token">
+	    <xsd:enumeration value="SEND_OBJECT_CHANGES"/>
+	    <xsd:enumeration value="INVALIDATE_CHANGED_OBJECTS"/>
+	    <xsd:enumeration value="SEND_NEW_OBJECTS_WITH_CHANGES"/>
+	    <xsd:enumeration value="NONE"/>
+	  </xsd:restriction>
+	</xsd:simpleType>
+
+  <!-- **************************************************** -->  
+
+	<xsd:complexType name="time-of-day">
+	  <xsd:annotation>
+	    <xsd:documentation>
+	
+	      @Target({})
+	      @Retention(RUNTIME)
+	      public @interface TimeOfDay {
+	        /**
+	         * (Optional) Hour of the day.
+	         */ 
+	        int hour() default 0;
+	
+	        /**
+	         * (Optional) Minute of the day.
+	         */ 
+	        int minute() default 0;
+	
+	        /**
+	         * (Optional) Second of the day.
+	         */ 
+	        int second() default 0;
+	
+	        /**
+	         * (Optional) Millisecond of the day.
+	         */ 
+	        int millisecond() default 0;
+	
+	        /**
+	         * Internal use. Do not modify.
+	         */ 
+	        boolean specified() default true;
+	      }
+	
+	    </xsd:documentation>
+	  </xsd:annotation>
+	  <xsd:attribute name="hour" type="xsd:integer"/>
+	  <xsd:attribute name="minute" type="xsd:integer"/>
+	  <xsd:attribute name="second" type="xsd:integer"/>
+	  <xsd:attribute name="millisecond" type="xsd:integer"/>
+	</xsd:complexType>
   
 </xsd:schema>
 

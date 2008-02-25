@@ -22,28 +22,20 @@ import org.eclipse.persistence.annotations.TimeOfDay;
  * @since TopLink 11g
  */
 public class TimeOfDayMetadata  {
-	protected int m_hour;
-	protected int m_millisecond;
-	protected int m_minute;
-	protected int m_second;
+	private Integer m_hour;
+	private Integer m_millisecond;
+	private Integer m_minute;
+	private Integer m_second;
     
     /**
      * INTERNAL:
-     * Default constructor.
      */
-    public TimeOfDayMetadata() {
-    	setHour(0);
-        setMillisecond(0);
-        setMinute(0);
-        setSecond(0);	
-    }
+    public TimeOfDayMetadata() {}
     
     /**
      * INTERNAL:
      */
     public TimeOfDayMetadata(TimeOfDay timeOfDay) {
-    	this();
-    	
         setHour(timeOfDay.hour());
         setMillisecond(timeOfDay.millisecond());
         setMinute(timeOfDay.minute());
@@ -52,58 +44,93 @@ public class TimeOfDayMetadata  {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public int getHour() {
+    public Integer getHour() {
        return m_hour; 
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public int getMillisecond() {
+    public Integer getMillisecond() {
        return m_millisecond; 
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public int getMinute() {
+    public Integer getMinute() {
        return m_minute; 
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public int getSecond() {
+    public Integer getSecond() {
        return m_second; 
     }
     
     /**
      * INTERNAL:
      */
-    public void setHour(int hour) {
-    	m_hour = hour;
-        
+    public Integer processHour() {
+        return (m_hour == null) ? 0 : m_hour;
     }
     
     /**
      * INTERNAL:
      */
-    public void setMillisecond(int millisecond) {
+    public Integer processMillisecond() {
+        return (m_millisecond == null) ? 0 : m_millisecond;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Integer processMinute() {
+        return (m_minute == null) ? 0 : m_minute;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public Integer processSecond() {
+        return (m_second == null) ? 0 : m_second;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setHour(Integer hour) {
+    	m_hour = hour;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMillisecond(Integer millisecond) {
     	m_millisecond = millisecond;
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public void setMinute(int minute) {
+    public void setMinute(Integer minute) {
     	m_minute = minute;
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public void setSecond(int second) {
+    public void setSecond(Integer second) {
     	m_second = second; 
     }
 }

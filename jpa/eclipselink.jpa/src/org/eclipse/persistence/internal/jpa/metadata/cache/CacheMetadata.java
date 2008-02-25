@@ -16,7 +16,12 @@ import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
+import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
+import org.eclipse.persistence.exceptions.ValidationException;
+
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 
 /**
  * Object to hold onto cache metadata. This class should eventually be 
@@ -26,86 +31,78 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * @since TopLink 11g
  */
 public class CacheMetadata  {
-	protected boolean m_alwaysRefresh;
-	protected boolean m_disableHits;
-	protected boolean m_isIsolated;
-	protected boolean m_refreshOnlyIfNewer;
+	protected Boolean m_alwaysRefresh;
+	protected Boolean m_disableHits;
+	protected Boolean m_isolated;
+	protected Boolean m_refreshOnlyIfNewer;
 	
-	protected int m_expiry;
-	protected int m_size;
+	protected CacheCoordinationType m_coordinationType;
+    protected CacheType m_type;
+    
+	protected Integer m_expiry;
+	protected Integer m_size;
 	
 	protected TimeOfDayMetadata m_expiryTimeOfDay;
-	
-	protected String m_coordinationType;
-	protected String m_type;
 
     /**
      * INTERNAL:
-     * Default constructor.
      */
-    public CacheMetadata() {
-    	setAlwaysRefresh(false);
-    	setDisableHits(false);
-    	setCoordinationType(CacheCoordinationType.SEND_OBJECT_CHANGES.name());
-    	setExpiry(-1);
-        setExpiryTimeOfDay(null);
-        setIsIsolated(false);
-        setSize(100);
-    	setType(CacheType.SOFT_WEAK.name());
-    	setRefreshOnlyIfNewer(false);
-    }
+    public CacheMetadata() {}
     
     /**
      * INTERNAL:
      */
     public CacheMetadata(Cache cache) {
-    	this();
-    	
     	setAlwaysRefresh(cache.alwaysRefresh());
     	setDisableHits(cache.disableHits());
-    	setCoordinationType(cache.coordinationType().name());
+    	setCoordinationType(cache.coordinationType());
     	setExpiry(cache.expiry());
     	
         if (cache.expiryTimeOfDay().specified()) {
         	setExpiryTimeOfDay(new TimeOfDayMetadata(cache.expiryTimeOfDay()));
         }
         
-        setIsIsolated(cache.isolated());
+        setIsolated(cache.isolated());
         setSize(cache.size());
-    	setType(cache.type().name());
+    	setType(cache.type());
     	setRefreshOnlyIfNewer(cache.refreshOnlyIfNewer());
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public boolean alwaysRefresh() {
+    public Boolean getAlwaysRefresh() {
     	return m_alwaysRefresh; 
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public boolean disableHits() {
-    	return m_disableHits; 
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public String getCoordinationType() {
+    public CacheCoordinationType getCoordinationType() {
     	return m_coordinationType; 
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public int getExpiry() {
+    public Boolean getDisableHits() {
+        return m_disableHits; 
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Integer getExpiry() {
     	return m_expiry; 
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public TimeOfDayMetadata getExpiryTimeOfDay() { 
         return m_expiryTimeOfDay;
@@ -113,69 +110,141 @@ public class CacheMetadata  {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public String getIgnoreInheritanceSubclassCacheContext() {
-    	return MetadataLogger.IGNORE_INHERITANCE_SUBCLASS_CACHE_ANNOTATION; 
+    public Boolean getIsolated() {
+       return m_isolated; 
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public String getIgnoreMappedSuperclassCacheContext() {
-    	return MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE_ANNOTATION; 
+    public Boolean getRefreshOnlyIfNewer() {
+       return m_refreshOnlyIfNewer; 
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public int getSize() {
+    public Integer getSize() {
     	return m_size;
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public String getType() {
+    public CacheType getType() {
        return m_type;
     }
     
     /**
      * INTERNAL:
      */
-    public boolean isIsolated() {
-       return m_isIsolated; 
+    public void process(MetadataDescriptor descriptor, Class javaClass) {
+        // Set the cache flag on the Metadata Descriptor.
+        descriptor.setCacheIsSet();
+        
+        // Process the cache metadata.
+        ClassDescriptor classDescriptor = descriptor.getClassDescriptor();
+        
+        // Process type
+        if (m_type == null ||m_type.equals(CacheType.SOFT_WEAK)) {
+            classDescriptor.useSoftCacheWeakIdentityMap();
+        } else if (m_type.equals(CacheType.FULL)) {
+            classDescriptor.useFullIdentityMap();
+        } else if (m_type.equals(CacheType.WEAK)) {
+            classDescriptor.useWeakIdentityMap();
+        }  else if (m_type.equals(CacheType.SOFT)) {
+            classDescriptor.useSoftIdentityMap();
+        } else if (m_type.equals(CacheType.HARD_WEAK)) {
+            classDescriptor.useHardCacheWeakIdentityMap();
+        } else if (m_type.equals(CacheType.CACHE)) {
+            classDescriptor.useCacheIdentityMap();
+        } else if (m_type.equals(CacheType.NONE)) {
+            classDescriptor.useNoIdentityMap();
+        }
+        
+        // Process size.
+        classDescriptor.setIdentityMapSize((m_size == null) ? 100 : m_size);
+        
+        // Process isolated.
+        classDescriptor.setIsIsolated(m_isolated == null ? false : m_isolated);
+        
+        // Process expiry or expiry time of day.
+        if (m_expiryTimeOfDay == null) {
+            // Expiry time of day is not specified, look for an expiry.
+            if (m_expiry != null && m_expiry != -1) {
+                classDescriptor.setCacheInvalidationPolicy(new TimeToLiveCacheInvalidationPolicy(m_expiry));
+            }
+        } else {
+            // Expiry time of day is specified, if expiry is also specified, 
+            // throw an exception.
+            if (m_expiry == null || m_expiry == -1) {
+                classDescriptor.setCacheInvalidationPolicy(new DailyCacheInvalidationPolicy(m_expiryTimeOfDay.processHour(), m_expiryTimeOfDay.processMinute(), m_expiryTimeOfDay.processSecond(), m_expiryTimeOfDay.processMillisecond()));
+            } else {
+                throw ValidationException.cacheExpiryAndExpiryTimeOfDayBothSpecified(javaClass);
+            }
+        }
+        
+        // Process always refresh.
+        classDescriptor.setShouldAlwaysRefreshCache(m_alwaysRefresh == null ? false : m_alwaysRefresh);
+        
+        // Process refresh only if newer.
+        classDescriptor.setShouldOnlyRefreshCacheIfNewerVersion(m_refreshOnlyIfNewer == null ? false : m_refreshOnlyIfNewer);
+        
+        // Process disable hits.
+        classDescriptor.setShouldDisableCacheHits(m_disableHits == null ? false : m_disableHits);
+        
+        // Process coordination type.
+        if (m_coordinationType == null || m_coordinationType.equals(CacheCoordinationType.SEND_OBJECT_CHANGES)) {
+            classDescriptor.setCacheSynchronizationType(ClassDescriptor.SEND_OBJECT_CHANGES);
+        } else if (m_coordinationType.equals(CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS)) {
+            classDescriptor.setCacheSynchronizationType(ClassDescriptor.INVALIDATE_CHANGED_OBJECTS);
+        } else if (m_coordinationType.equals(CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES)) {
+            classDescriptor.setCacheSynchronizationType(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES);
+        } else if (m_coordinationType.equals(CacheCoordinationType.NONE)) {
+            classDescriptor.setCacheSynchronizationType(ClassDescriptor.DO_NOT_SEND_CHANGES);
+        }
     }
     
     /**
-     * INTERNAL: 
+     * INTERNAL:
+     * Used for OX mapping 
      */
-    public void setAlwaysRefresh(boolean alwaysRefresh) {
+    public void setAlwaysRefresh(Boolean alwaysRefresh) {
     	m_alwaysRefresh = alwaysRefresh;
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public void setDisableHits(boolean disableHits) {
+    public void setCoordinationType(CacheCoordinationType coordinationType) {
+        m_coordinationType = coordinationType; 
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setDisableHits(Boolean disableHits) {
     	m_disableHits = disableHits; 
     }
-    
+
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public void setCoordinationType(String coordinationType) {
-    	m_coordinationType = coordinationType; 
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setExpiry(int expiry) {
+    public void setExpiry(Integer expiry) {
        m_expiry = expiry; 
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public void setExpiryTimeOfDay(TimeOfDayMetadata expiryTimeOfDay) { 
         m_expiryTimeOfDay = expiryTimeOfDay;
@@ -183,36 +252,33 @@ public class CacheMetadata  {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public void setIsIsolated(boolean isIsolated) {
-       m_isIsolated = isIsolated; 
+    public void setIsolated(Boolean isolated) {
+       m_isolated = isolated; 
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public void setSize(int size) {
+    public void setSize(Integer size) {
     	m_size = size;
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public void setType(String type) {
+    public void setType(CacheType type) {
        m_type = type;
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public boolean refreshOnlyIfNewer() {
-       return m_refreshOnlyIfNewer; 
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setRefreshOnlyIfNewer(boolean refreshOnlyIfNewer) {
+    public void setRefreshOnlyIfNewer(Boolean refreshOnlyIfNewer) {
     	m_refreshOnlyIfNewer = refreshOnlyIfNewer;
     }
 }

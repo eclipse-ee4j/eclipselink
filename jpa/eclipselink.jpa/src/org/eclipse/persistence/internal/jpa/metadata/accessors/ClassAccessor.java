@@ -77,7 +77,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataF
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.cache.TimeOfDayMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
@@ -118,6 +117,7 @@ public class ClassAccessor extends NonRelationshipAccessor {
     private boolean m_excludeSuperclassListeners;
     private Boolean m_metadataComplete; // EntityMappings init will process this value.
     
+    private CacheMetadata m_cache;
     private DiscriminatorColumnMetadata m_discriminatorColumn;
     
     private List<AssociationOverrideMetadata> m_associationOverrides;
@@ -295,6 +295,14 @@ public class ClassAccessor extends NonRelationshipAccessor {
      */
     public XMLAttributes getAttributes() {
     	return m_attributes;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public CacheMetadata getCache() {
+        return m_cache;
     }
     
     /**
@@ -1041,72 +1049,30 @@ public class ClassAccessor extends NonRelationshipAccessor {
     
     /**
      * INTERNAL:
-     * Process a Cache annotation. 
-     */
-    protected void processCache() {
-        Cache cache = getAnnotation(Cache.class);
-        
-        if (cache != null) {
-            processCache(new CacheMetadata(cache));
-        }
-    }
-    
-    /**
-     * INTERNAL:
      * Process a cache metadata. 
      */
-    protected void processCache(CacheMetadata cache) {
-        if (getDescriptor().isEmbeddable()) {
-        	throw ValidationException.cacheNotSupportedWithEmbeddable(getJavaClass());
-        } else if (getDescriptor().isInheritanceSubclass()) {
-            // Ignore cache if specfied on an inheritance subclass.
-            getLogger().logWarningMessage(cache.getIgnoreInheritanceSubclassCacheContext(), getJavaClass());
-        } else if (getDescriptor().isCacheSet()) {
-            // Ignore cache on mapped superclass if cache defined on the entity.
-            getLogger().logWarningMessage(cache.getIgnoreMappedSuperclassCacheContext(), getDescriptor().getJavaClass(), getJavaClass());
-        } else {
-            // Process the cache settings ...
-            
-            // Process type.
-        	getDescriptor().setCacheType(cache.getType());
-            
-            // Process size.
-        	getDescriptor().setCacheSize(cache.getSize());
-            
-            // Process isolated.
-        	getDescriptor().setIsIsolated(cache.isIsolated());
-            
-            // Process expiry or expiry time of day.
-        	TimeOfDayMetadata timeOfDay = cache.getExpiryTimeOfDay();
-            if (timeOfDay == null) {
-                // Expiry time of day is not specified, look for an expiry.
-                if (cache.getExpiry() != -1) {
-                	getDescriptor().setTimeToLiveCacheInvalidationPolicy(cache.getExpiry());
-                }
+    protected void processCache() {
+        if (m_cache != null || isAnnotationPresent(Cache.class)) {
+            if (getDescriptor().isEmbeddable()) {
+                throw ValidationException.cacheNotSupportedWithEmbeddable(getJavaClass());
+            } else if (getDescriptor().isInheritanceSubclass()) {
+                // Ignore cache if specified on an inheritance subclass.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_INHERITANCE_SUBCLASS_CACHE, getJavaClass());
+            } else if (getDescriptor().isCacheSet()) {
+                // Ignore cache on mapped superclass if cache defined on the entity.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE, getDescriptor().getJavaClass(), getJavaClass());
             } else {
-                // Expiry time of day is specified, if expiry is also specified, 
-                // throw an exception.
-                if (cache.getExpiry() == -1) {
-                	getDescriptor().setDailyCacheInvalidationPolicy(timeOfDay.getHour(), timeOfDay.getMinute(), timeOfDay.getSecond(), timeOfDay.getMillisecond());
+                if (m_cache == null) {
+                    // Process the annotation.
+                    Cache cache = getAnnotation(Cache.class);
+                    new CacheMetadata(cache).process(getDescriptor(), getJavaClass());
                 } else {
-                	throw ValidationException.cacheExpiryAndExpiryTimeOfDayBothSpecified(getJavaClass());
+                    // Process the XML setting.
+                    m_cache.process(getDescriptor(), getJavaClass());
                 }
             }
-                
-            // Process always refresh.
-            getDescriptor().setShouldAlwaysRefreshCache(cache.alwaysRefresh());
-                
-            // Process refresh only if newer.
-            getDescriptor().setShoulOnlyRefreshCacheIfNewerVersion(cache.refreshOnlyIfNewer());
-                
-            // Process disable hits.
-            getDescriptor().setShouldDisableCacheHits(cache.disableHits());
-            
-            // Process coordination type.
-            getDescriptor().setCacheCoordinationType(cache.getCoordinationType());
-        }
+        }        
     }
-    
     
     /**
      * INTERNAL:
@@ -2085,6 +2051,14 @@ public class ClassAccessor extends NonRelationshipAccessor {
      */
     public void setAttributes(XMLAttributes attributes) {
     	m_attributes = attributes;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCache(CacheMetadata cache) {
+        m_cache = cache;
     }
     
     /**

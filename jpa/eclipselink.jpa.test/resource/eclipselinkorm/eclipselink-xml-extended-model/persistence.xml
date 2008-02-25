@@ -12,10 +12,6 @@
             <property name="eclipselink.jdbc.write-connections.max" value="8"/>
             <property name="eclipselink.jdbc.read-connections.min" value="3"/>
             <property name="eclipselink.jdbc.read-connections.max" value="3"/>
-            <property name="eclipselink.cache.size.default" value="500"/>
-            <property name="eclipselink.cache.size.Employee" value="550"/>
-            <property name="eclipselink.cache.type.default" value="Full"/>
-            <property name="eclipselink.cache.type.Employee" value="Weak"/>
             <property name="eclipselink.logging.timestamp" value="false"/>
             <property name="eclipselink.orm.throw.exceptions" value="false"/>
         </properties>

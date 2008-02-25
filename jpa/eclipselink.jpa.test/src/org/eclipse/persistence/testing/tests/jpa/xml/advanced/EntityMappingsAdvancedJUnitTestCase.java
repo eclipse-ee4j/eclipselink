@@ -26,7 +26,10 @@ import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
-import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy; 
+import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy; 
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;  
+import org.eclipse.persistence.internal.helper.ClassConstants; 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -75,6 +78,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         if (persistenceUnit.equals("extended")) {
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testJoinFetchSetting", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEmployeeOptimisticLockingSettings", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEmployeeCacheSettings", persistenceUnit));            
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testProjectOptimisticLockingSettings", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testExtendedEmployee", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testGiveExtendedEmployeeASexChange", persistenceUnit));
@@ -122,6 +126,28 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         }
     }
     
+    /** 
+     * Verifies that settings from the Employee cache annotation have been set. 
+     */ 
+    public void testEmployeeCacheSettings() { 
+        ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit); 
+        ClassDescriptor descriptor = session.getDescriptor(Employee.class); 
+             
+        if (descriptor == null) { 
+            fail("A descriptor for the Employee alias was not found in the PU [" + m_persistenceUnit + "]"); 
+        } else {             
+            assertTrue("Incorrect cache type() setting.", descriptor.getIdentityMapClass().equals(ClassConstants.SoftCacheWeakIdentityMap_Class)); 
+            assertTrue("Incorrect cache size() setting.", descriptor.getIdentityMapSize() == 730); 
+            assertFalse("Incorrect cache isolated() setting.", descriptor.isIsolated()); 
+            assertFalse("Incorrect cache alwaysRefresh() setting.", descriptor.shouldAlwaysRefreshCache()); 
+            assertFalse("Incorrect disable hits setting.", descriptor.shouldDisableCacheHits()); 
+            CacheInvalidationPolicy policy = descriptor.getCacheInvalidationPolicy(); 
+            assertTrue("Incorrect cache expiry() policy setting.", policy instanceof TimeToLiveCacheInvalidationPolicy); 
+            assertTrue("Incorrect cache expiry() setting.", ((TimeToLiveCacheInvalidationPolicy) policy).getTimeToLive() == 1000); 
+            assertTrue("Incorrect cache coordinationType() settting.", descriptor.getCacheSynchronizationType() == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS); 
+        } 
+    } 
+
     /**
      * Verifies that the optimistic-locking settings were read correctly from XML.
      */

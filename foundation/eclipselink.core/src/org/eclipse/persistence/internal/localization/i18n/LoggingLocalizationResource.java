@@ -227,6 +227,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_ignore_enumerated", "Ignoring enumerated specification on element [{1}] within entity class [{0}] since a @Convert is specified." },
         { "metadata_warning_ignore_version_locking", "Optimistic locking metadata is already defined on the descriptor for the entity [{0}]. Ignoring version specification on element [{1}]." },
         { "metadata_warning_ignore_mapped_superclass_optimistic_locking", "Optimistic locking metadata is already defined on the descriptor for the entity [{0}]. Ignoring the optimistic locking specification on the mapped superclass [{1}] for this entity." },
+        { "metadata_warning_ignore_mapped_superclass_cache", "Ignoring the cache metadata on the mapped superclass [{1}] for the entity class [{0}] since it has its own cache metadata defined." },
+        { "metadata_warning_ignore_inheritance_subclass_cache", "Ignoring the cache metadata on the inheritance subclass [{0}]. Cache metadata should only be specified on the root of the inheritance hierarchy." },
         
         { "annotation_warning_ignore_annotation", "The annotation [{0}] on the element [{1}] is being ignored because of an XML metadata-complete setting of true for this class." },
         { "annotation_warning_ignore_association_override", "Ignoring the @AssociationOverride named [{0}] defined on the class [{2}] for the entity [{1}] since an association override with the same name was defined in XML." },
@@ -248,8 +250,6 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "annotation_warning_ignore_return_update", "Ignoring the @ReturnUpdate on the element [{0}]. A @ReturnUpdate is only supported with a basic mapping." },
         { "annotation_warning_ignore_change_tracking", "A change tracking policy is already defined on the descriptor for the entity [{0}]. Ignoring @ChangeTracking on the mapped superclass [{1}] for this descriptor." },
         { "annotation_warning_ignore_optimistic_locking", "An optimistic-locking element has been defined for the entity [{0}] in the mapping file [{1}]. Ignoring the @OptimisticLocking defined on this entity." },
-        { "annotation_warning_ignore_mapped_superclass_cache", "Ignoring the @Cache annotation on the mapped superclass [{1}] for the entity class [{0}] since it has its own @Cache annotation defined." },
-        { "annotation_warning_ignore_inheritance_subclass_cache", "Ignoring the @Cache annotation on the inheritance subclass [{0}]. A @Cache annotation should only be specified on the root of the inheritance hierarchy." },
         
         { "weaver_null_project", "Weaver session'''s project cannot be null"},
         { "weaver_disable_by_system_property", "Weaving disabled by system property {0}"},		

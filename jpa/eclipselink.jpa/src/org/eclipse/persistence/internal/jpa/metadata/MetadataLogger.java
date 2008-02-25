@@ -59,10 +59,7 @@ public class MetadataLogger  {
     
     public static final String IGNORE_CHANGE_TRACKING_ANNOTATION = "annotation_warning_ignore_change_tracking";
     public static final String IGNORE_OPTIMISTIC_LOCKING_ANNOTATION = "annotation_warning_ignore_optimistic_locking";
-    
-    public static final String IGNORE_MAPPED_SUPERCLASS_CACHE_ANNOTATION = "annotation_warning_ignore_mapped_superclass_cache";
-    public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE_ANNOTATION = "annotation_warning_ignore_inheritance_subclass_cache";
-    
+        
     /*************************************************************************/
     /*                       GENERIC IGNORE MESSSAGES                        */ 
     /*************************************************************************/
@@ -73,6 +70,8 @@ public class MetadataLogger  {
     public static final String IGNORE_SERIALIZED = "metadata_warning_ignore_serialized";
     public static final String IGNORE_VERSION_LOCKING = "metadata_warning_ignore_version_locking";
     public static final String IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING = "metadata_warning_ignore_mapped_superclass_optimistic_locking";
+    public static final String IGNORE_MAPPED_SUPERCLASS_CACHE = "metadata_warning_ignore_mapped_superclass_cache";
+    public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE = "metadata_warning_ignore_inheritance_subclass_cache";
     
     /*************************************************************************/
     /*                       GENERIC DEFAULT MESSSAGES                       */ 
@@ -126,98 +125,98 @@ public class MetadataLogger  {
     public static final String MANY_TO_MANY_MAPPING_REFERENCE_CLASS = "metadata_default_many_to_many_reference_class";
     /*************************************************************************/
     
-    protected AbstractSession session; 
-    protected HashMap ctxStrings;
+    protected AbstractSession m_session; 
+    protected HashMap m_ctxStrings;
 
     /**
      * INTERNAL:
      */
     public MetadataLogger(AbstractSession session) {
-        this.session = session;
+        m_session = session;
         
         // Initialize the context strings.
-        ctxStrings = new HashMap();
+        m_ctxStrings = new HashMap();
         
         // Annotation specific
-        ctxStrings.put(IGNORE_ANNOTATION, IGNORE_ANNOTATION);
+        m_ctxStrings.put(IGNORE_ANNOTATION, IGNORE_ANNOTATION);
         
-        ctxStrings.put(IGNORE_ASSOCIATION_OVERRIDE, IGNORE_ASSOCIATION_OVERRIDE);
-        ctxStrings.put(IGNORE_ASSOCIATION_OVERRIDE_ON_MAPPED_SUPERCLASS, IGNORE_ASSOCIATION_OVERRIDE_ON_MAPPED_SUPERCLASS);
-        ctxStrings.put(IGNORE_ATTRIBUTE_OVERRIDE, IGNORE_ATTRIBUTE_OVERRIDE);
-        ctxStrings.put(IGNORE_ATTRIBUTE_OVERRIDE_ON_MAPPED_SUPERCLASS, IGNORE_ATTRIBUTE_OVERRIDE_ON_MAPPED_SUPERCLASS);
+        m_ctxStrings.put(IGNORE_ASSOCIATION_OVERRIDE, IGNORE_ASSOCIATION_OVERRIDE);
+        m_ctxStrings.put(IGNORE_ASSOCIATION_OVERRIDE_ON_MAPPED_SUPERCLASS, IGNORE_ASSOCIATION_OVERRIDE_ON_MAPPED_SUPERCLASS);
+        m_ctxStrings.put(IGNORE_ATTRIBUTE_OVERRIDE, IGNORE_ATTRIBUTE_OVERRIDE);
+        m_ctxStrings.put(IGNORE_ATTRIBUTE_OVERRIDE_ON_MAPPED_SUPERCLASS, IGNORE_ATTRIBUTE_OVERRIDE_ON_MAPPED_SUPERCLASS);
 
-        ctxStrings.put(IGNORE_NAMED_NATIVE_QUERY_ANNOTATION, IGNORE_NAMED_NATIVE_QUERY_ANNOTATION);
-        ctxStrings.put(IGNORE_NAMED_QUERY_ANNOTATION, IGNORE_NAMED_QUERY_ANNOTATION);
-        ctxStrings.put(IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION, IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION);
+        m_ctxStrings.put(IGNORE_NAMED_NATIVE_QUERY_ANNOTATION, IGNORE_NAMED_NATIVE_QUERY_ANNOTATION);
+        m_ctxStrings.put(IGNORE_NAMED_QUERY_ANNOTATION, IGNORE_NAMED_QUERY_ANNOTATION);
+        m_ctxStrings.put(IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION, IGNORE_NAMED_STORED_PROCEDURE_QUERY_ANNOTATION);
 
-        ctxStrings.put(IGNORE_CONVERTER_ANNOTATION, IGNORE_CONVERTER_ANNOTATION);
-        ctxStrings.put(IGNORE_STRUCT_CONVERTER_ANNOTATION, IGNORE_STRUCT_CONVERTER_ANNOTATION);
+        m_ctxStrings.put(IGNORE_CONVERTER_ANNOTATION, IGNORE_CONVERTER_ANNOTATION);
+        m_ctxStrings.put(IGNORE_STRUCT_CONVERTER_ANNOTATION, IGNORE_STRUCT_CONVERTER_ANNOTATION);
         
-        ctxStrings.put(IGNORE_ID_CLASS_ANNOTATION, IGNORE_ID_CLASS_ANNOTATION);
-        ctxStrings.put(IGNORE_READ_ONLY_ANNOTATION, IGNORE_READ_ONLY_ANNOTATION);
-        ctxStrings.put(IGNORE_TABLE_ANNOTATION, IGNORE_TABLE_ANNOTATION);
-        ctxStrings.put(IGNORE_SECONDARY_TABLE_ANNOTATION, IGNORE_SECONDARY_TABLE_ANNOTATION);
-        ctxStrings.put(IGNORE_PRIVATE_OWNED_ANNOTATION, IGNORE_PRIVATE_OWNED_ANNOTATION);
-        ctxStrings.put(IGNORE_RETURN_INSERT_ANNOTATION, IGNORE_RETURN_INSERT_ANNOTATION);
-        ctxStrings.put(IGNORE_RETURN_UPDATE_ANNOTATION, IGNORE_RETURN_UPDATE_ANNOTATION);
-        ctxStrings.put(IGNORE_CHANGE_TRACKING_ANNOTATION, IGNORE_CHANGE_TRACKING_ANNOTATION);
-        ctxStrings.put(IGNORE_OPTIMISTIC_LOCKING_ANNOTATION, IGNORE_OPTIMISTIC_LOCKING_ANNOTATION);
-        ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CACHE_ANNOTATION, IGNORE_MAPPED_SUPERCLASS_CACHE_ANNOTATION);
-        ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_CACHE_ANNOTATION, IGNORE_INHERITANCE_SUBCLASS_CACHE_ANNOTATION);
+        m_ctxStrings.put(IGNORE_ID_CLASS_ANNOTATION, IGNORE_ID_CLASS_ANNOTATION);
+        m_ctxStrings.put(IGNORE_READ_ONLY_ANNOTATION, IGNORE_READ_ONLY_ANNOTATION);
+        m_ctxStrings.put(IGNORE_TABLE_ANNOTATION, IGNORE_TABLE_ANNOTATION);
+        m_ctxStrings.put(IGNORE_SECONDARY_TABLE_ANNOTATION, IGNORE_SECONDARY_TABLE_ANNOTATION);
+        m_ctxStrings.put(IGNORE_PRIVATE_OWNED_ANNOTATION, IGNORE_PRIVATE_OWNED_ANNOTATION);
+        m_ctxStrings.put(IGNORE_RETURN_INSERT_ANNOTATION, IGNORE_RETURN_INSERT_ANNOTATION);
+        m_ctxStrings.put(IGNORE_RETURN_UPDATE_ANNOTATION, IGNORE_RETURN_UPDATE_ANNOTATION);
+        m_ctxStrings.put(IGNORE_CHANGE_TRACKING_ANNOTATION, IGNORE_CHANGE_TRACKING_ANNOTATION);
+        m_ctxStrings.put(IGNORE_OPTIMISTIC_LOCKING_ANNOTATION, IGNORE_OPTIMISTIC_LOCKING_ANNOTATION);
         
         // Common ignore messages for ORM and annotations.
-        ctxStrings.put(IGNORE_MAPPING, IGNORE_MAPPING);
-        ctxStrings.put(IGNORE_LOB, IGNORE_LOB);
-        ctxStrings.put(IGNORE_TEMPORAL, IGNORE_TEMPORAL);
-        ctxStrings.put(IGNORE_ENUMERATED, IGNORE_ENUMERATED);
-        ctxStrings.put(IGNORE_SERIALIZED, IGNORE_SERIALIZED);
-        ctxStrings.put(IGNORE_VERSION_LOCKING, IGNORE_VERSION_LOCKING);
-        ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING, IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING);
+        m_ctxStrings.put(IGNORE_MAPPING, IGNORE_MAPPING);
+        m_ctxStrings.put(IGNORE_LOB, IGNORE_LOB);
+        m_ctxStrings.put(IGNORE_TEMPORAL, IGNORE_TEMPORAL);
+        m_ctxStrings.put(IGNORE_ENUMERATED, IGNORE_ENUMERATED);
+        m_ctxStrings.put(IGNORE_SERIALIZED, IGNORE_SERIALIZED);
+        m_ctxStrings.put(IGNORE_VERSION_LOCKING, IGNORE_VERSION_LOCKING);
+        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING, IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING);
+        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CACHE, IGNORE_MAPPED_SUPERCLASS_CACHE);
+        m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_CACHE, IGNORE_INHERITANCE_SUBCLASS_CACHE);
         
         // Common default messages for ORM and annotations.
-        ctxStrings.put(ALIAS, ALIAS);
-        ctxStrings.put(MAP_KEY_ATTRIBUTE_NAME, MAP_KEY_ATTRIBUTE_NAME);
+        m_ctxStrings.put(ALIAS, ALIAS);
+        m_ctxStrings.put(MAP_KEY_ATTRIBUTE_NAME, MAP_KEY_ATTRIBUTE_NAME);
         
-        ctxStrings.put(TABLE_NAME, TABLE_NAME);
-        ctxStrings.put(TABLE_SCHEMA, TABLE_SCHEMA);
-        ctxStrings.put(TABLE_CATALOG, TABLE_CATALOG);
+        m_ctxStrings.put(TABLE_NAME, TABLE_NAME);
+        m_ctxStrings.put(TABLE_SCHEMA, TABLE_SCHEMA);
+        m_ctxStrings.put(TABLE_CATALOG, TABLE_CATALOG);
         
-        ctxStrings.put(JOIN_TABLE_NAME, JOIN_TABLE_NAME);
-        ctxStrings.put(JOIN_TABLE_SCHEMA, JOIN_TABLE_SCHEMA);
-        ctxStrings.put(JOIN_TABLE_CATALOG, JOIN_TABLE_CATALOG);
+        m_ctxStrings.put(JOIN_TABLE_NAME, JOIN_TABLE_NAME);
+        m_ctxStrings.put(JOIN_TABLE_SCHEMA, JOIN_TABLE_SCHEMA);
+        m_ctxStrings.put(JOIN_TABLE_CATALOG, JOIN_TABLE_CATALOG);
         
-        ctxStrings.put(SECONDARY_TABLE_NAME, SECONDARY_TABLE_NAME);
-        ctxStrings.put(SECONDARY_TABLE_SCHEMA, SECONDARY_TABLE_SCHEMA);
-        ctxStrings.put(SECONDARY_TABLE_CATALOG, SECONDARY_TABLE_CATALOG);
+        m_ctxStrings.put(SECONDARY_TABLE_NAME, SECONDARY_TABLE_NAME);
+        m_ctxStrings.put(SECONDARY_TABLE_SCHEMA, SECONDARY_TABLE_SCHEMA);
+        m_ctxStrings.put(SECONDARY_TABLE_CATALOG, SECONDARY_TABLE_CATALOG);
         
-        ctxStrings.put(COLLECTION_TABLE_NAME, COLLECTION_TABLE_NAME);
-        ctxStrings.put(COLLECTION_TABLE_SCHEMA, COLLECTION_TABLE_SCHEMA);
-        ctxStrings.put(COLLECTION_TABLE_CATALOG, COLLECTION_TABLE_CATALOG);
+        m_ctxStrings.put(COLLECTION_TABLE_NAME, COLLECTION_TABLE_NAME);
+        m_ctxStrings.put(COLLECTION_TABLE_SCHEMA, COLLECTION_TABLE_SCHEMA);
+        m_ctxStrings.put(COLLECTION_TABLE_CATALOG, COLLECTION_TABLE_CATALOG);
     
-        ctxStrings.put(CONVERTER_DATA_TYPE, CONVERTER_DATA_TYPE);
-        ctxStrings.put(CONVERTER_OBJECT_TYPE, CONVERTER_OBJECT_TYPE);
+        m_ctxStrings.put(CONVERTER_DATA_TYPE, CONVERTER_DATA_TYPE);
+        m_ctxStrings.put(CONVERTER_OBJECT_TYPE, CONVERTER_OBJECT_TYPE);
         
-        ctxStrings.put(COLUMN, COLUMN);
-        ctxStrings.put(PK_COLUMN, PK_COLUMN);
-        ctxStrings.put(FK_COLUMN, FK_COLUMN);
-        ctxStrings.put(VALUE_COLUMN, VALUE_COLUMN);
-        ctxStrings.put(MAP_KEY_COLUMN, MAP_KEY_COLUMN);
-        ctxStrings.put(SOURCE_PK_COLUMN, SOURCE_PK_COLUMN);
-        ctxStrings.put(SOURCE_FK_COLUMN, SOURCE_FK_COLUMN);
-        ctxStrings.put(TARGET_PK_COLUMN, TARGET_PK_COLUMN);
-        ctxStrings.put(TARGET_FK_COLUMN, TARGET_FK_COLUMN);
-        ctxStrings.put(DISCRIMINATOR_COLUMN, DISCRIMINATOR_COLUMN);
-        ctxStrings.put(INHERITANCE_PK_COLUMN, INHERITANCE_PK_COLUMN);
-        ctxStrings.put(INHERITANCE_FK_COLUMN, INHERITANCE_FK_COLUMN);
-        ctxStrings.put(SECONDARY_TABLE_PK_COLUMN, SECONDARY_TABLE_PK_COLUMN);
-        ctxStrings.put(SECONDARY_TABLE_FK_COLUMN, SECONDARY_TABLE_FK_COLUMN);
+        m_ctxStrings.put(COLUMN, COLUMN);
+        m_ctxStrings.put(PK_COLUMN, PK_COLUMN);
+        m_ctxStrings.put(FK_COLUMN, FK_COLUMN);
+        m_ctxStrings.put(VALUE_COLUMN, VALUE_COLUMN);
+        m_ctxStrings.put(MAP_KEY_COLUMN, MAP_KEY_COLUMN);
+        m_ctxStrings.put(SOURCE_PK_COLUMN, SOURCE_PK_COLUMN);
+        m_ctxStrings.put(SOURCE_FK_COLUMN, SOURCE_FK_COLUMN);
+        m_ctxStrings.put(TARGET_PK_COLUMN, TARGET_PK_COLUMN);
+        m_ctxStrings.put(TARGET_FK_COLUMN, TARGET_FK_COLUMN);
+        m_ctxStrings.put(DISCRIMINATOR_COLUMN, DISCRIMINATOR_COLUMN);
+        m_ctxStrings.put(INHERITANCE_PK_COLUMN, INHERITANCE_PK_COLUMN);
+        m_ctxStrings.put(INHERITANCE_FK_COLUMN, INHERITANCE_FK_COLUMN);
+        m_ctxStrings.put(SECONDARY_TABLE_PK_COLUMN, SECONDARY_TABLE_PK_COLUMN);
+        m_ctxStrings.put(SECONDARY_TABLE_FK_COLUMN, SECONDARY_TABLE_FK_COLUMN);
         
-        ctxStrings.put(ONE_TO_ONE_MAPPING, ONE_TO_ONE_MAPPING);
-        ctxStrings.put(ONE_TO_MANY_MAPPING, ONE_TO_MANY_MAPPING);
-        ctxStrings.put(ONE_TO_ONE_MAPPING_REFERENCE_CLASS, ONE_TO_ONE_MAPPING_REFERENCE_CLASS);
-        ctxStrings.put(ONE_TO_MANY_MAPPING_REFERENCE_CLASS, ONE_TO_MANY_MAPPING_REFERENCE_CLASS);
-        ctxStrings.put(MANY_TO_ONE_MAPPING_REFERENCE_CLASS, MANY_TO_ONE_MAPPING_REFERENCE_CLASS);
-        ctxStrings.put(MANY_TO_MANY_MAPPING_REFERENCE_CLASS, MANY_TO_MANY_MAPPING_REFERENCE_CLASS);
+        m_ctxStrings.put(ONE_TO_ONE_MAPPING, ONE_TO_ONE_MAPPING);
+        m_ctxStrings.put(ONE_TO_MANY_MAPPING, ONE_TO_MANY_MAPPING);
+        m_ctxStrings.put(ONE_TO_ONE_MAPPING_REFERENCE_CLASS, ONE_TO_ONE_MAPPING_REFERENCE_CLASS);
+        m_ctxStrings.put(ONE_TO_MANY_MAPPING_REFERENCE_CLASS, ONE_TO_MANY_MAPPING_REFERENCE_CLASS);
+        m_ctxStrings.put(MANY_TO_ONE_MAPPING_REFERENCE_CLASS, MANY_TO_ONE_MAPPING_REFERENCE_CLASS);
+        m_ctxStrings.put(MANY_TO_MANY_MAPPING_REFERENCE_CLASS, MANY_TO_MANY_MAPPING_REFERENCE_CLASS);
     }
     
     /**
@@ -225,7 +224,7 @@ public class MetadataLogger  {
 	 * Return the logging context string for the given context.
      */
 	protected String getLoggingContextString(String context) {
-        return (String) ctxStrings.get(context);
+        return (String) m_ctxStrings.get(context);
 	}  
     
     /**
@@ -233,7 +232,7 @@ public class MetadataLogger  {
      * Logging utility method.
      */
     public void log(int level, String ctx, Object[] params) {
-        session.log(level, SessionLog.EJB_OR_METADATA, getLoggingContextString(ctx), params);
+        m_session.log(level, SessionLog.EJB_OR_METADATA, getLoggingContextString(ctx), params);
     }
     
     /**
@@ -313,6 +312,6 @@ public class MetadataLogger  {
      * Set the session to log to.
      */
     public void setSession(AbstractSession session) {
-        this.session = session;
+        m_session = session;
     }
 }

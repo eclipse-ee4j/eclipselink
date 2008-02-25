@@ -18,8 +18,6 @@ import java.util.Map;
 
 import javax.persistence.InheritanceType;
 
-import org.eclipse.persistence.annotations.CacheType;
-import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.annotations.ChangeTrackingType;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -31,8 +29,6 @@ import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy;
 
-import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
-import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
@@ -926,9 +922,9 @@ public class MetadataDescriptor {
         } else if (changeTracking.equals(ChangeTrackingType.DEFERRED.name())) {
             policy = new DeferredChangeDetectionPolicy();
         } else { // Must be MetataConstants.AUTO
-            // By setting the policy to null will unset any global settings.
-            // TopLink will then determine the change tracking policy at 
-            // runtime.
+            // By setting the policy to null, this will unset any global 
+            // settings. EclipseLink will then determine the change tracking 
+            // policy at runtime.
             policy = null;
         }
         
@@ -939,54 +935,6 @@ public class MetadataDescriptor {
         // we cannot overwrite the policy if one has been processed and set
         // from a subclass entity of the mapped superclass.
         m_hasChangeTracking = true;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setCacheType(String cacheType) {
-        if (cacheType.equals(CacheType.FULL.name())) {
-            m_descriptor.useFullIdentityMap();
-        } else if (cacheType.equals(CacheType.WEAK.name())) {
-            m_descriptor.useWeakIdentityMap();
-        }  else if (cacheType.equals(CacheType.SOFT.name())) {
-            m_descriptor.useSoftIdentityMap();
-        } else if (cacheType.equals(CacheType.SOFT_WEAK.name())) {
-            m_descriptor.useSoftCacheWeakIdentityMap();
-        } else if (cacheType.equals(CacheType.HARD_WEAK.name())) {
-            m_descriptor.useHardCacheWeakIdentityMap();
-        } else if (cacheType.equals(CacheType.CACHE.name())) {
-            m_descriptor.useCacheIdentityMap();
-        } else if (cacheType.equals(CacheType.NONE.name())) {
-            m_descriptor.useNoIdentityMap();
-        }
-        
-        m_isCacheSet = true;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setCacheSize(int cacheSize) {
-        m_descriptor.setIdentityMapSize(cacheSize);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setCacheCoordinationType(String coordinationType) {
-        int type;
-        if (coordinationType.equals(CacheCoordinationType.SEND_OBJECT_CHANGES.name())) {
-            type = ClassDescriptor.SEND_OBJECT_CHANGES;
-        } else if (coordinationType.equals(CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS.name())) {
-            type = ClassDescriptor.INVALIDATE_CHANGED_OBJECTS;
-        } else if (coordinationType.equals(CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES.name())) {
-            type =  ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES;
-        } else { // if (coordinationType.equals(MetadataConstants.NONE)) {
-            type = ClassDescriptor.DO_NOT_SEND_CHANGES;
-        }
-        
-        m_descriptor.setCacheSynchronizationType(type);
     }
             
     /**
@@ -1002,13 +950,6 @@ public class MetadataDescriptor {
      */
     public void setClassIndicatorField(DatabaseField field) {
         m_descriptor.getInheritancePolicy().setClassIndicatorField(field);    
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setDailyCacheInvalidationPolicy(int hour, int minute, int second, int millisecond) {
-        m_descriptor.setCacheInvalidationPolicy(new DailyCacheInvalidationPolicy(hour, minute, second, millisecond));
     }
     
     /**
@@ -1079,6 +1020,14 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Indicates that we have processed a cache annotation or cache xml element.
+     */
+    public void setCacheIsSet() {
+        m_isCacheSet = true;
+    }
+    
+    /**
+     * INTERNAL:
      * Indicates that cascade-persist should be added to the set of cascade 
      * values for all relationship mappings.
      */
@@ -1091,13 +1040,6 @@ public class MetadataDescriptor {
      */
     public void setIsEmbeddable() {
         m_descriptor.descriptorIsAggregate();
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public void setIsIsolated(boolean isIsolated) {
-        m_descriptor.setIsIsolated(isIsolated);
     }
     
     /**
@@ -1171,39 +1113,11 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     */
-    public void setShouldAlwaysRefreshCache(boolean shouldAlwaysRefreshCache) {
-        m_descriptor.setShouldAlwaysRefreshCache(shouldAlwaysRefreshCache);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setShouldDisableCacheHits(boolean shouldDisableCacheHits) {
-        m_descriptor.setShouldDisableCacheHits(shouldDisableCacheHits);
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setShoulOnlyRefreshCacheIfNewerVersion(boolean shouldOnlyRefreshCacheIfNewerVersion) {
-        m_descriptor.setShouldOnlyRefreshCacheIfNewerVersion(shouldOnlyRefreshCacheIfNewerVersion);
-    }
-    
-    /**
-     * INTERNAL:
      * Sets the strategy on the descriptor's inheritance policy to SINGLE_TABLE.  
      * The default is JOINED.
      */
     public void setSingleTableInheritanceStrategy() {
         m_descriptor.getInheritancePolicy().setSingleTableStrategy();
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public void setTimeToLiveCacheInvalidationPolicy(int expiry) {
-        m_descriptor.setCacheInvalidationPolicy(new TimeToLiveCacheInvalidationPolicy(expiry));
     }
  
     /**

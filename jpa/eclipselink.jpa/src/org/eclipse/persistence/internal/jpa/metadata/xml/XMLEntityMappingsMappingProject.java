@@ -21,6 +21,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.InheritanceType;
 import javax.persistence.TemporalType;
 
+import org.eclipse.persistence.annotations.CacheCoordinationType;
+import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.OptimisticLockingType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -41,6 +43,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.OneToManyAccessor
 import org.eclipse.persistence.internal.jpa.metadata.accessors.OneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.TransientAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.VersionAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.cache.TimeOfDayMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
@@ -103,6 +107,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildAttributesDescriptor());
         addDescriptor(buildEntityListenerDescriptor());
         addDescriptor(buildOptimisticLockingDescriptor());
+        addDescriptor(buildCacheDescriptor());
+        addDescriptor(buildTimeOfDayDescriptor());
         
         addDescriptor(buildColumnDescriptor());
         addDescriptor(buildJoinColumnDescriptor());
@@ -394,6 +400,83 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: cache
+     */
+    protected ClassDescriptor buildCacheDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(CacheMetadata.class);
+        
+        XMLDirectMapping expiryMapping = new XMLDirectMapping();
+        expiryMapping.setAttributeName("m_expiry");
+        expiryMapping.setGetMethodName("getExpiry");
+        expiryMapping.setSetMethodName("setExpiry");
+        expiryMapping.setXPath("orm:expiry/text()");
+        descriptor.addMapping(expiryMapping);
+        
+        XMLCompositeObjectMapping expiryTimeOfDayMapping = new XMLCompositeObjectMapping();
+        expiryTimeOfDayMapping.setAttributeName("m_expiryTimeOfDay");
+        expiryTimeOfDayMapping.setGetMethodName("getExpiryTimeOfDay");
+        expiryTimeOfDayMapping.setSetMethodName("setExpiryTimeOfDay");
+        expiryTimeOfDayMapping.setReferenceClass(TimeOfDayMetadata.class);
+        expiryTimeOfDayMapping.setXPath("orm:time-of-day");
+        descriptor.addMapping(expiryTimeOfDayMapping);
+        
+        XMLDirectMapping sizeMapping = new XMLDirectMapping();
+        sizeMapping.setAttributeName("m_size");
+        sizeMapping.setGetMethodName("getSize");
+        sizeMapping.setSetMethodName("setSize");
+        sizeMapping.setXPath("@size");
+        descriptor.addMapping(sizeMapping);
+        
+        XMLDirectMapping isolatedMapping = new XMLDirectMapping();
+        isolatedMapping.setAttributeName("m_isolated");
+        isolatedMapping.setGetMethodName("getIsolated");
+        isolatedMapping.setSetMethodName("setIsolated");
+        isolatedMapping.setXPath("@isolated");
+        descriptor.addMapping(isolatedMapping);
+        
+        XMLDirectMapping cacheTypeMapping = new XMLDirectMapping();
+        cacheTypeMapping.setAttributeName("m_type");
+        cacheTypeMapping.setGetMethodName("getType");
+        cacheTypeMapping.setSetMethodName("setType");
+        cacheTypeMapping.setConverter(new EnumTypeConverter(cacheTypeMapping, CacheType.class, false));
+        cacheTypeMapping.setXPath("@type");
+        descriptor.addMapping(cacheTypeMapping);
+        
+        XMLDirectMapping alwaysRefreshMapping = new XMLDirectMapping();
+        alwaysRefreshMapping.setAttributeName("m_alwaysRefresh");
+        alwaysRefreshMapping.setGetMethodName("getAlwaysRefresh");
+        alwaysRefreshMapping.setSetMethodName("setAlwaysRefresh");
+        alwaysRefreshMapping.setXPath("@always-refresh");
+        descriptor.addMapping(alwaysRefreshMapping);
+        
+        XMLDirectMapping refreshOnlyIfNewerMapping = new XMLDirectMapping();
+        refreshOnlyIfNewerMapping.setAttributeName("m_refreshOnlyIfNewer");
+        refreshOnlyIfNewerMapping.setGetMethodName("getRefreshOnlyIfNewer");
+        refreshOnlyIfNewerMapping.setSetMethodName("setRefreshOnlyIfNewer");
+        refreshOnlyIfNewerMapping.setXPath("@refresh-only-if-newer");
+        descriptor.addMapping(refreshOnlyIfNewerMapping);
+        
+        XMLDirectMapping disableHitsMapping = new XMLDirectMapping();
+        disableHitsMapping.setAttributeName("m_disableHits");
+        disableHitsMapping.setGetMethodName("getDisableHits");
+        disableHitsMapping.setSetMethodName("setDisableHits");
+        disableHitsMapping.setXPath("@disable-hits");
+        descriptor.addMapping(disableHitsMapping);
+        
+        XMLDirectMapping coordinationTypeMapping = new XMLDirectMapping();
+        coordinationTypeMapping.setAttributeName("m_coordinationType");
+        coordinationTypeMapping.setGetMethodName("getCoordinationType");
+        coordinationTypeMapping.setSetMethodName("setCoordinationType");
+        coordinationTypeMapping.setConverter(new EnumTypeConverter(coordinationTypeMapping, CacheCoordinationType.class, false));
+        coordinationTypeMapping.setXPath("@coordination-type");
+        descriptor.addMapping(coordinationTypeMapping);
+      
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: cascade-type
      */
     protected ClassDescriptor buildCascadeTypeDescriptor() {
@@ -670,6 +753,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(discriminatorColumnMapping);
 
         descriptor.addMapping(getOptimisticLockingMapping());
+        descriptor.addMapping(getCacheMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
@@ -1072,6 +1156,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getDescriptionMapping());
         descriptor.addMapping(getIdClassMapping());
         descriptor.addMapping(getOptimisticLockingMapping());
+        descriptor.addMapping(getCacheMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
@@ -1535,6 +1620,45 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: time-of-day
+     */
+    protected ClassDescriptor buildTimeOfDayDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(TimeOfDayMetadata.class);
+        
+        XMLDirectMapping hourMapping = new XMLDirectMapping();
+        hourMapping.setAttributeName("m_hour");
+        hourMapping.setGetMethodName("getHour");
+        hourMapping.setSetMethodName("setHour");
+        hourMapping.setXPath("@hour");
+        descriptor.addMapping(hourMapping);
+        
+        XMLDirectMapping minuteMapping = new XMLDirectMapping();
+        minuteMapping.setAttributeName("m_minute");
+        minuteMapping.setGetMethodName("getMinute");
+        minuteMapping.setSetMethodName("setMinute");
+        minuteMapping.setXPath("@minute");
+        descriptor.addMapping(minuteMapping);
+        
+        XMLDirectMapping secondMapping = new XMLDirectMapping();
+        secondMapping.setAttributeName("m_second");
+        secondMapping.setGetMethodName("getSecond");
+        secondMapping.setSetMethodName("setSecond");
+        secondMapping.setXPath("@second");
+        descriptor.addMapping(secondMapping);
+        
+        XMLDirectMapping millisecondMapping = new XMLDirectMapping();
+        millisecondMapping.setAttributeName("m_millisecond");
+        millisecondMapping.setGetMethodName("getMillisecond");
+        millisecondMapping.setSetMethodName("setMillisecond");
+        millisecondMapping.setXPath("@millisecond");
+        descriptor.addMapping(millisecondMapping);
+      
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: transient
      */
     protected ClassDescriptor buildTransientDescriptor() {
@@ -1635,19 +1759,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLCompositeObjectMapping getAttributesMapping() {
-    	XMLCompositeObjectMapping attributesMapping = new XMLCompositeObjectMapping();
-    	attributesMapping.setAttributeName("m_attributes");
-    	attributesMapping.setGetMethodName("getAttributes");
-    	attributesMapping.setSetMethodName("setAttributes");
-    	attributesMapping.setReferenceClass(XMLAttributes.class);
-    	attributesMapping.setXPath("orm:attributes");
-    	return attributesMapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
     protected XMLCompositeCollectionMapping getAttributeOverrideMapping() {
     	XMLCompositeCollectionMapping attributeOverridesMapping = new XMLCompositeCollectionMapping();
     	attributeOverridesMapping.setAttributeName("m_attributeOverrides");
@@ -1661,45 +1772,27 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLCompositeCollectionMapping getEntityListenersMapping() {
-    	XMLCompositeCollectionMapping entityListenersMapping = new XMLCompositeCollectionMapping();
-    	entityListenersMapping.setAttributeName("m_entityListeners");
-    	entityListenersMapping.setGetMethodName("getEntityListeners");
-    	entityListenersMapping.setSetMethodName("setEntityListeners");
-    	entityListenersMapping.setReferenceClass(EntityListenerMetadata.class);
-    	entityListenersMapping.setXPath("orm:entity-listeners/orm:entity-listener");
-    	return entityListenersMapping;
+    protected XMLCompositeObjectMapping getAttributesMapping() {
+        XMLCompositeObjectMapping attributesMapping = new XMLCompositeObjectMapping();
+        attributesMapping.setAttributeName("m_attributes");
+        attributesMapping.setGetMethodName("getAttributes");
+        attributesMapping.setSetMethodName("setAttributes");
+        attributesMapping.setReferenceClass(XMLAttributes.class);
+        attributesMapping.setXPath("orm:attributes");
+        return attributesMapping;
     }
     
     /**
      * INTERNAL:
      */
-    protected XMLDirectMapping getExcludeDefaultListenersMapping() {
-    	XMLDirectMapping excludeDefaultListenersMapping = new XMLDirectMapping();
-    	excludeDefaultListenersMapping.setAttributeName("m_excludeDefaultListeners");
-    	excludeDefaultListenersMapping.setGetMethodName("getExcludeDefaultListeners");
-    	excludeDefaultListenersMapping.setSetMethodName("setExcludeDefaultListeners");
-    	IsSetNullPolicy excludeDefaultListenersPolicy = new IsSetNullPolicy("excludeDefaultListeners");
-    	excludeDefaultListenersPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
-        excludeDefaultListenersMapping.setNullPolicy(excludeDefaultListenersPolicy);
-    	excludeDefaultListenersMapping.setNullPolicy(new IsSetNullPolicy("excludeDefaultListeners"));
-    	excludeDefaultListenersMapping.setXPath("orm:exclude-default-listeners");
-    	return excludeDefaultListenersMapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected XMLDirectMapping getExcludeSuperclassListenersMapping() {
-    	XMLDirectMapping excludeSuperclassListenersMapping = new XMLDirectMapping();
-    	excludeSuperclassListenersMapping.setAttributeName("m_excludeSuperclassListeners");
-    	excludeSuperclassListenersMapping.setGetMethodName("getExcludeSuperclassListeners");
-    	excludeSuperclassListenersMapping.setSetMethodName("setExcludeSuperclassListeners");
-    	IsSetNullPolicy excludeSuperclassListenersPolicy = new IsSetNullPolicy("excludeSuperclassListeners");
-    	excludeSuperclassListenersPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
-    	excludeSuperclassListenersMapping.setNullPolicy(excludeSuperclassListenersPolicy);
-    	excludeSuperclassListenersMapping.setXPath("orm:exclude-superclass-listeners/text()");
-    	return excludeSuperclassListenersMapping;
+    protected XMLCompositeObjectMapping getCacheMapping() {
+        XMLCompositeObjectMapping cacheMapping = new XMLCompositeObjectMapping();
+        cacheMapping.setAttributeName("m_cache");
+        cacheMapping.setGetMethodName("getCache");
+        cacheMapping.setSetMethodName("setCache");
+        cacheMapping.setReferenceClass(CacheMetadata.class);
+        cacheMapping.setXPath("orm:cache");
+        return cacheMapping;
     }
     
     /**
@@ -1739,6 +1832,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     	catalogMapping.setNullValue("");
     	catalogMapping.setXPath("orm:catalog/text()");
     	return catalogMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getClassAttributeMapping() {
+        XMLDirectMapping classMapping = new XMLDirectMapping();
+        classMapping.setAttributeName("m_className");
+        classMapping.setGetMethodName("getClassName");
+        classMapping.setSetMethodName("setClassName");
+        classMapping.setXPath("@class");
+        return classMapping;
     }
     
     /**
@@ -1808,24 +1913,12 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
      * INTERNAL:
      */
     protected XMLDirectMapping getConvertMapping() {
-    	XMLDirectMapping convertMapping = new XMLDirectMapping();
-    	convertMapping.setAttributeName("m_convert");
-    	convertMapping.setGetMethodName("getConvert");
-    	convertMapping.setSetMethodName("setConvert");
-    	convertMapping.setXPath("orm:convert/text()");
-    	return convertMapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected XMLDirectMapping getClassAttributeMapping() {
-    	XMLDirectMapping classMapping = new XMLDirectMapping();
-    	classMapping.setAttributeName("m_className");
-    	classMapping.setGetMethodName("getClassName");
-    	classMapping.setSetMethodName("setClassName");
-    	classMapping.setXPath("@class");
-    	return classMapping;
+        XMLDirectMapping convertMapping = new XMLDirectMapping();
+        convertMapping.setAttributeName("m_convert");
+        convertMapping.setGetMethodName("getConvert");
+        convertMapping.setSetMethodName("setConvert");
+        convertMapping.setXPath("orm:convert/text()");
+        return convertMapping;
     }
     
     /**
@@ -1850,6 +1943,50 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     	descriptionMapping.setSetMethodName("setDescription");
     	descriptionMapping.setXPath("orm:description/text()");
     	return descriptionMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getEntityListenersMapping() {
+        XMLCompositeCollectionMapping entityListenersMapping = new XMLCompositeCollectionMapping();
+        entityListenersMapping.setAttributeName("m_entityListeners");
+        entityListenersMapping.setGetMethodName("getEntityListeners");
+        entityListenersMapping.setSetMethodName("setEntityListeners");
+        entityListenersMapping.setReferenceClass(EntityListenerMetadata.class);
+        entityListenersMapping.setXPath("orm:entity-listeners/orm:entity-listener");
+        return entityListenersMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getExcludeDefaultListenersMapping() {
+        XMLDirectMapping excludeDefaultListenersMapping = new XMLDirectMapping();
+        excludeDefaultListenersMapping.setAttributeName("m_excludeDefaultListeners");
+        excludeDefaultListenersMapping.setGetMethodName("getExcludeDefaultListeners");
+        excludeDefaultListenersMapping.setSetMethodName("setExcludeDefaultListeners");
+        IsSetNullPolicy excludeDefaultListenersPolicy = new IsSetNullPolicy("excludeDefaultListeners");
+        excludeDefaultListenersPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        excludeDefaultListenersMapping.setNullPolicy(excludeDefaultListenersPolicy);
+        excludeDefaultListenersMapping.setNullPolicy(new IsSetNullPolicy("excludeDefaultListeners"));
+        excludeDefaultListenersMapping.setXPath("orm:exclude-default-listeners");
+        return excludeDefaultListenersMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getExcludeSuperclassListenersMapping() {
+        XMLDirectMapping excludeSuperclassListenersMapping = new XMLDirectMapping();
+        excludeSuperclassListenersMapping.setAttributeName("m_excludeSuperclassListeners");
+        excludeSuperclassListenersMapping.setGetMethodName("getExcludeSuperclassListeners");
+        excludeSuperclassListenersMapping.setSetMethodName("setExcludeSuperclassListeners");
+        IsSetNullPolicy excludeSuperclassListenersPolicy = new IsSetNullPolicy("excludeSuperclassListeners");
+        excludeSuperclassListenersPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        excludeSuperclassListenersMapping.setNullPolicy(excludeSuperclassListenersPolicy);
+        excludeSuperclassListenersMapping.setXPath("orm:exclude-superclass-listeners/text()");
+        return excludeSuperclassListenersMapping;
     }
     
     /**
@@ -1981,6 +2118,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLDirectMapping getMapKeyMapping() {
+        XMLDirectMapping mapKeyMapping = new XMLDirectMapping();
+        mapKeyMapping.setAttributeName("m_mapKey");
+        mapKeyMapping.setGetMethodName("getMapKey");
+        mapKeyMapping.setSetMethodName("setMapKey");
+        mapKeyMapping.setXPath("orm:map-key/orm:name/text()");
+        return mapKeyMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLDirectMapping getMappedByAttributeMapping() {
         XMLDirectMapping mappedByMapping = new XMLDirectMapping();
         mappedByMapping.setAttributeName("m_mappedBy");
@@ -2001,6 +2150,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     	metadataCompleteMapping.setSetMethodName("setMetadataComplete");
     	metadataCompleteMapping.setXPath("@metadata-complete");
     	return metadataCompleteMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getMutableAttributeMapping() {
+        XMLDirectMapping mutableMapping = new XMLDirectMapping();
+        mutableMapping.setAttributeName("m_mutable");
+        mutableMapping.setGetMethodName("getMutable");
+        mutableMapping.setSetMethodName("setMutable");
+        mutableMapping.setXPath("@mutable");
+        return mutableMapping;  
     }
     
     /**
@@ -2087,30 +2248,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     	orderByMapping.setSetMethodName("setOrderBy");
     	orderByMapping.setXPath("orm:order-by/text()");
     	return orderByMapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected XMLDirectMapping getMapKeyMapping() {
-    	XMLDirectMapping mapKeyMapping = new XMLDirectMapping();
-    	mapKeyMapping.setAttributeName("m_mapKey");
-    	mapKeyMapping.setGetMethodName("getMapKey");
-    	mapKeyMapping.setSetMethodName("setMapKey");
-    	mapKeyMapping.setXPath("orm:map-key/orm:name/text()");
-    	return mapKeyMapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected XMLDirectMapping getMutableAttributeMapping() {
-    	XMLDirectMapping mutableMapping = new XMLDirectMapping();
-    	mutableMapping.setAttributeName("m_mutable");
-    	mutableMapping.setGetMethodName("getMutable");
-    	mutableMapping.setSetMethodName("setMutable");
-    	mutableMapping.setXPath("@mutable");
-    	return mutableMapping;	
     }
     
     /**
