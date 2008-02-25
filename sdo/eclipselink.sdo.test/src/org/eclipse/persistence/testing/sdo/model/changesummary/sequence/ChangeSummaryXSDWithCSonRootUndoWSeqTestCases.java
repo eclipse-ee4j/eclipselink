@@ -40,9 +40,6 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         TestRunner.main(arguments);
     }
     
-    public void setUp() {
-        super.setUp();// watch setup redundancy
-    }
 /*
     public void prepareSetItemsAfterDetachUnsetOrDeleteAndUndo_MultiOperation_SetComplexSingleWithManyChildBelowRootAndUndo(
             DataObject itemsDO, //
@@ -646,7 +643,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertValueStoresReturnedToStartStateAfterUndoChanges(rootObject, aCurrentValueStoreAfterLoggingFirstOn);
         assertSequencesReturnedToStartStateAfterUndoChanges(rootObject, aCurrentSequenceAfterLoggingFirstOn);        
     }
-    
+    */
     
     private SDOProperty createOpenContentElementProperty(String name, Type type) {
         DataObject newProperty = dataFactory.create(SDOConstants.SDO_PROPERTY);
@@ -658,9 +655,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertFalse(xsdHelper.isAttribute(openProp));
         return openProp;
     }
-    */
-    // PurchaseOrder needs to be isOpen=true
-/*    
+      
     public void testAddOpenContentPropertyViaDataObject() {
         SDOSequence aSequence = (SDOSequence)rootObject.getSequence();
         int sequenceSizeBefore = aSequence.size();
@@ -739,14 +734,14 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertNotNull(openSequenceContent);
         assertEquals(openSequenceContent, openDOContent);
     }
-
+/*
     public void testModifyOpenContentPropertyViaSequence() {
     	
     }
 
     public void testModifyOpenContentPropertyViaDataObject() {
     }
-    
+    */
     public void testRemoveOpenContentPropertyByIndexViaSequence() {
         SDOSequence aSequence = (SDOSequence)rootObject.getSequence();
         int sequenceSizeBefore = aSequence.size();
@@ -788,7 +783,7 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         // perform open content op
         aSequence.add(openPropString, "openContentValue");        
         // sequence should be modified
-        assertEquals(aSequence.size(), sequenceSizeBefore + 1);
+        assertEquals(sequenceSizeBefore + 1, aSequence.size());
         
         // get dataObject side
         Object openDOContent = rootObject.get("openContentString");
@@ -808,6 +803,6 @@ public class ChangeSummaryXSDWithCSonRootUndoWSeqTestCases extends ChangeSummary
         assertNull(openDOContent2);        
         // get sequence side - look for old property
     }
-*/    
+
 }
 

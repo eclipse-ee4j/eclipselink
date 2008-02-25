@@ -15,6 +15,8 @@ package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import commonj.sdo.helper.XMLDocument;
+import java.io.FileInputStream;
+import java.io.StringWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +84,17 @@ public class LoadAndSavePurchaseOrderWithAnnotations extends LoadAndSaveTestCase
         return packages;
     }
     
+    public void testNoSchemaLoadFromInputStreamSaveDataObjectToString() throws Exception {
+        registerTypes();
+        FileInputStream inputStream = new FileInputStream(getNoSchemaControlFileName());
+        XMLDocument document = xmlHelper.load(inputStream, null, getOptions());
+        verifyAfterLoadNoSchema(document);
+        StringWriter writer = new StringWriter();
+        xmlHelper.save(document, writer, null);
+        // Nodes will not be the same but XML output is
+        compareXML(getNoSchemaControlWriteFileName(), writer.toString());//, false);
+    }
+
     protected void verifyAfterLoad(XMLDocument doc) {
         super.verifyAfterLoad(doc);
         DataObject rootObject = doc.getRootObject();
@@ -90,6 +103,16 @@ public class LoadAndSavePurchaseOrderWithAnnotations extends LoadAndSaveTestCase
         assertNotNull(value);
         assertTrue(value instanceof Timestamp);
     }
+    
+     protected void verifyAfterLoadNoSchema(XMLDocument doc) {
+        super.verifyAfterLoad(doc);
+        DataObject rootObject = doc.getRootObject();
+        Object value = rootObject.get("orderDate");
+
+        assertNotNull(value);
+        assertTrue(value instanceof String);
+    }
+
 
     protected List defineTypes() {
         List types = super.defineTypes();

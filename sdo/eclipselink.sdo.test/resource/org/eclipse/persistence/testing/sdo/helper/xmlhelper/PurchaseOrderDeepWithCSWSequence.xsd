@@ -73,6 +73,7 @@
             <xsd:element name="billTo" type="AddressType"/>
             <xsd:element name="comment" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="items" type="Items"/>
+            <xsd:any/>
         </xsd:sequence>
         <xsd:attribute name="orderDate" type="xsd:date"/>
     </xsd:complexType>
