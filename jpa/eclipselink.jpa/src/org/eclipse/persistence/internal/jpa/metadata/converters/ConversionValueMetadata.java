@@ -33,9 +33,9 @@ public class ConversionValueMetadata {
 	/**
 	 * INTERNAL:
 	 */
-	public ConversionValueMetadata(ConversionValue conversionValue) {
-		m_dataValue = conversionValue.dataValue();
-		m_objectValue = conversionValue.objectValue();
+	public ConversionValueMetadata(Object conversionValue) {
+		m_dataValue = (String)MetadataHelper.invokeMethod("dataValue", conversionValue, (Object[])null); 
+		m_objectValue = (String)MetadataHelper.invokeMethod("objectValue", conversionValue, (Object[])null);  
 	}
 	
 	/**

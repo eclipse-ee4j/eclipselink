@@ -241,18 +241,18 @@ public class EmbeddedAccessor extends MetadataAccessor {
      * since TopLink can handle it, it is implemented and assumes the user has
      * properly configured its use since it will fail silently.
 	 */
-	protected void processAssociationOverride(AssociationOverride associationOverride, AggregateObjectMapping aggregateMapping) {
+	protected void processAssociationOverride(Object associationOverride, AggregateObjectMapping aggregateMapping) {
         MetadataDescriptor aggregateDescriptor = getReferenceDescriptor();
         
         // AssociationOverride.name(), the name of the attribute we want to
         // override.
-        String name = associationOverride.name();
+        String name = (String)invokeMethod("name", associationOverride, (Object[])null); 
         DatabaseMapping mapping = aggregateDescriptor.getMappingForAttributeName(name);
         
         if (mapping != null && mapping.isOneToOneMapping()) {
             int index = 0;
             
-            for (JoinColumn joinColumn : associationOverride.joinColumns()) {
+            for (Object joinColumn : (Object[])invokeMethod("joinColumns", associationOverride, (Object[])null)) { 
                 // We can't change the mapping from the aggregate descriptor
                 // so we have to add field name translations. This needs to be
                 // tested since I am not entirely sure if this will acutally
@@ -263,7 +263,7 @@ public class EmbeddedAccessor extends MetadataAccessor {
                 // therefore in the same order the foreign keys were added to
                 // the mapping.
                 DatabaseField fkField = ((OneToOneMapping) mapping).getForeignKeyFields().elementAt(index++);
-                aggregateMapping.addFieldNameTranslation(joinColumn.name(), fkField.getName());
+                aggregateMapping.addFieldNameTranslation((String)invokeMethod("name", joinColumn, (Object[])null),fkField.getName());
             }   
         } else {
             // For now fail silently.
@@ -279,15 +279,15 @@ public class EmbeddedAccessor extends MetadataAccessor {
      */
     protected void processAssociationOverrides(AggregateObjectMapping mapping) {
         // Look for an @AssociationOverrides.
-        AssociationOverrides associationOverrides = getAnnotation(AssociationOverrides.class);
+        Object associationOverrides = getAnnotation(AssociationOverrides.class);
         if (associationOverrides != null) {
-            for (AssociationOverride associationOverride : associationOverrides.value()) {
+            for (Object associationOverride : (Object[])invokeMethod("value", associationOverrides, (Object[])null)) {
                 processAssociationOverride(associationOverride, mapping);
             }
         }
         
         // Look for an @AssociationOverride.
-        AssociationOverride associationOverride = getAnnotation(AssociationOverride.class);	
+        Object associationOverride = getAnnotation(AssociationOverride.class);	
         if (associationOverride != null) {
             processAssociationOverride(associationOverride, mapping);
         }
@@ -344,18 +344,22 @@ public class EmbeddedAccessor extends MetadataAccessor {
     		// that they are to be defaulted.
     	     
 	        // Look for an @AttributeOverrides.
-	        AttributeOverrides attributeOverrides = getAnnotation(AttributeOverrides.class);
+	        Object attributeOverrides = getAnnotation(AttributeOverrides.class);
 	        
 	        if (attributeOverrides != null) {
-	            for (AttributeOverride attributeOverride : attributeOverrides.value()) {
-	                processAttributeOverride(mapping, new ColumnMetadata(attributeOverride.column(), attributeOverride.name()));
+	            for (Object attributeOverride : (Object[])invokeMethod("value", attributeOverrides, (Object[])null)) {
+	                processAttributeOverride(mapping, new ColumnMetadata(
+	                        invokeMethod("column", attributeOverride, (Object[])null),
+	                        (String)invokeMethod("name", attributeOverride, (Object[])null)));
 	            }
 	        }
 	        
 	        // Look for an @AttributeOverride.
-	        AttributeOverride attributeOverride = getAnnotation(AttributeOverride.class);	
+	        Object attributeOverride = getAnnotation(AttributeOverride.class);	
 	        if (attributeOverride != null) {
-	            processAttributeOverride(mapping, new ColumnMetadata(attributeOverride.column(), attributeOverride.name()));
+	            processAttributeOverride(mapping, new ColumnMetadata(
+	                    invokeMethod("column", attributeOverride, (Object[])null),
+	                    (String)invokeMethod("name", attributeOverride, (Object[])null)));
 	        }
     	}
     }

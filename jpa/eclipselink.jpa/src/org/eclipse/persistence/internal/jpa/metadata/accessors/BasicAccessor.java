@@ -54,11 +54,11 @@ public class BasicAccessor extends DirectAccessor {
     public BasicAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
         
-        Basic basic = getAnnotation(Basic.class);
+        Object basic = getAnnotation(Basic.class);
         
         if (basic != null) {
-        	setFetch(basic.fetch());
-        	setOptional(basic.optional());
+            setFetch((Enum)invokeMethod("fetch", basic, (Object[])null));
+            setOptional((Boolean)invokeMethod("optional", basic, (Object[])null));
         }
     }
     
@@ -77,7 +77,7 @@ public class BasicAccessor extends DirectAccessor {
      */
     protected ColumnMetadata getColumn(String loggingCtx) {
     	if (m_column == null) {
-    		Column column = getAnnotation(Column.class);
+    	    Object column = getAnnotation(Column.class);
             return new ColumnMetadata(column, getAttributeName());
     	} else {
     		return m_column;
@@ -214,10 +214,10 @@ public class BasicAccessor extends DirectAccessor {
      */
     public void processMutable(DatabaseMapping mapping) {
     	if (m_mutable == null) {
-    		Mutable mutable = getAnnotation(Mutable.class);
+    		Object mutable = getAnnotation(Mutable.class);
     		
     		if (mutable != null) {
-    			((DirectToFieldMapping)mapping).setIsMutable(mutable.value());	
+    			((DirectToFieldMapping)mapping).setIsMutable((Boolean)invokeMethod("value", mutable, (Object[])null));
     		}
     	} else {
     		((DirectToFieldMapping)mapping).setIsMutable(m_mutable.booleanValue());
@@ -229,11 +229,11 @@ public class BasicAccessor extends DirectAccessor {
      * Process a ReturnInsert annotation.
      */
     protected void processReturnInsert(DatabaseField field) {
-        ReturnInsert returnInsert = getAnnotation(ReturnInsert.class);
+        Object returnInsert = getAnnotation(ReturnInsert.class);
 
         if (returnInsert != null) {
             // Process return only.
-            processReturnInsert(field, returnInsert.returnOnly());
+            processReturnInsert(field, (Boolean)invokeMethod("returnOnly", returnInsert, (Object[])null)); 
         }
     }
 

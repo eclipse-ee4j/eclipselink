@@ -39,10 +39,12 @@ public class EntityResultMetadata {
     /**
      * INTERNAL:
      */
-    public EntityResultMetadata(EntityResult entityResult) {
-    	m_entityClass = entityResult.entityClass();
-    	m_discriminatorColumn = entityResult.discriminatorColumn();
-        setFieldResults(entityResult.fields());
+    public EntityResultMetadata(Object entityResult) {
+        
+        m_entityClass = (Class)MetadataHelper.invokeMethod("entityClass", entityResult, (Object[])null); 
+        m_discriminatorColumn = (String)MetadataHelper.invokeMethod("discriminatorColumn", entityResult, (Object[])null);
+        
+        setFieldResults((Object[])MetadataHelper.invokeMethod("fields", entityResult, (Object[])null));
     }
     
     /**
@@ -110,10 +112,10 @@ public class EntityResultMetadata {
      * INTERNAL:
      * Used for population from annotations.
      */
-    protected void setFieldResults(FieldResult[] fieldResults) {
+    protected void setFieldResults(Object[] fieldResults) {
     	m_fieldResults = new ArrayList<FieldResultMetadata>();
     	
-    	for (FieldResult fieldResult : fieldResults) {
+    	for (Object fieldResult : fieldResults) {
     		m_fieldResults.add(new FieldResultMetadata(fieldResult));
     	}
     }

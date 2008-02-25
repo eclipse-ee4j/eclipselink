@@ -104,12 +104,14 @@ public abstract class QueryMetadata  {
     /**
      * INTERNAL:
      */
-    protected void setHints(QueryHint[] hints) {
+    protected void setHints(Object[] hints) {
     	m_hints = new ArrayList<QueryHintMetadata>();
 
-   		for (QueryHint hint : hints) {
-   			m_hints.add(new QueryHintMetadata(hint.name(), hint.value()));
-   		}
+        for (Object hint : hints) {
+            m_hints.add(new QueryHintMetadata(
+                  (String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("name", hint, (Object[])null),
+                  (String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("value", hint, (Object[])null)));
+        }
     }
     
     /**

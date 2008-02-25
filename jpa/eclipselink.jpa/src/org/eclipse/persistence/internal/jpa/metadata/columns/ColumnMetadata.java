@@ -54,30 +54,30 @@ public class ColumnMetadata  {
     /**
      * INTERNAL:
      */
-    public ColumnMetadata(Column column) {
+    public ColumnMetadata(Object column) {
         this(column, "");
     }
     
     /**
      * INTERNAL:
      */
-    public ColumnMetadata(Column column, String attributeName) {
+    public ColumnMetadata(Object column, String attributeName) {
         this(attributeName);
         
         if (column != null) {
             // Apply the values from the column annotation.
-            setUnique(column.unique());
-            setNullable(column.nullable());
-            setUpdatable(column.updatable());
-            setInsertable(column.insertable());
+            setUnique((Boolean)MetadataHelper.invokeMethod("unique", column, (Object[])null));
+            setNullable((Boolean)MetadataHelper.invokeMethod("nullable", column, (Object[])null));
+            setUpdatable((Boolean)MetadataHelper.invokeMethod("updatable", column, (Object[])null));
+            setInsertable((Boolean)MetadataHelper.invokeMethod("insertable", column, (Object[])null));
         
-            setScale(column.scale());
-            setLength(column.length());
-            setPrecision(column.precision());
+            setScale((Integer)MetadataHelper.invokeMethod("scale", column, (Object[])null));
+            setLength((Integer)MetadataHelper.invokeMethod("length", column, (Object[])null));
+            setPrecision((Integer)MetadataHelper.invokeMethod("precision", column, (Object[])null));
         
-            setName(column.name());
-            setTable(column.table());
-            setColumnDefinition(column.columnDefinition());
+            setName((String)MetadataHelper.invokeMethod("name", column, (Object[])null));
+            setTable((String)MetadataHelper.invokeMethod("table", column, (Object[])null));
+            setColumnDefinition((String)MetadataHelper.invokeMethod("columnDefinition", column, (Object[])null));
         }
     }
     

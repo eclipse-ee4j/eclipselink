@@ -310,12 +310,13 @@ public class ClassAccessor extends NonRelationshipAccessor {
      * Return the change tracking metadata for this accessor.
      */
     protected String getChangeTracking() {
-        ChangeTracking changeTracking = getAnnotation(ChangeTracking.class);
+        Object changeTracking = getAnnotation(ChangeTracking.class);
         
         if (changeTracking == null) {
             return null;
         } else {
-            return changeTracking.value().name();
+            Object value=invokeMethod("value", changeTracking, (Object[])null);
+            return (String)invokeMethod("name", value, (Object[])null); 
         }
     }
     
@@ -939,15 +940,15 @@ public class ClassAccessor extends NonRelationshipAccessor {
         
         // Process the association override annotations second.
     	// Look for an @AssociationOverrides.
-        AssociationOverrides associationOverrides = getAnnotation(AssociationOverrides.class);
+        Object associationOverrides = getAnnotation(AssociationOverrides.class);
         if (associationOverrides != null) {
-            for (AssociationOverride associationOverride : associationOverrides.value()) {
+            for (Object associationOverride : (Object[])invokeMethod("value", associationOverrides, (Object[])null)) {
                 processAssociationOverride(new AssociationOverrideMetadata(associationOverride, getJavaClassName()));
             }
         }
         
         // Look for an @AssociationOverride.
-        AssociationOverride associationOverride = getAnnotation(AssociationOverride.class);
+        Object associationOverride = getAnnotation(AssociationOverride.class);
         if (associationOverride != null) {
         	processAssociationOverride(new AssociationOverrideMetadata(associationOverride, getJavaClassName()));
         }
@@ -1020,15 +1021,15 @@ public class ClassAccessor extends NonRelationshipAccessor {
         
         // Process the attribute override annotations second.
     	// Look for an @AttributeOverrides.
-        AttributeOverrides attributeOverrides = getAnnotation(AttributeOverrides.class);	
+        Object attributeOverrides = getAnnotation(AttributeOverrides.class);	
         if (attributeOverrides != null) {
-            for (AttributeOverride attributeOverride : attributeOverrides.value()) {
+            for (Object attributeOverride : (Object[])invokeMethod("value", attributeOverrides, (Object[])null)){ 
                 processAttributeOverride(new AttributeOverrideMetadata(attributeOverride, getJavaClassName()));
             }
         }
         
         // Look for an @AttributeOverride.
-        AttributeOverride attributeOverride = getAnnotation(AttributeOverride.class);
+        Object attributeOverride = getAnnotation(AttributeOverride.class);
         if (attributeOverride != null) {
             processAttributeOverride(new AttributeOverrideMetadata(attributeOverride, getJavaClassName()));
         }
@@ -1251,10 +1252,11 @@ public class ClassAccessor extends NonRelationshipAccessor {
     	if (m_customizerClassName == null) {
     		if (m_customizer == null) {
         		// Look for an annotation
-        		Customizer customizer = getAnnotation(Customizer.class);
+        		Object customizer = getAnnotation(Customizer.class);
                 
                 if (customizer != null) {
-                	m_customizerClassName = customizer.value().getName();
+                    Class customizerValue = (Class)invokeMethod("value", customizer, (Object[])null);
+                	m_customizerClassName = customizerValue.getName();
                 	getProject().addAccessorWithCustomizer(this);
                 }
         	} else {
@@ -1321,7 +1323,7 @@ public class ClassAccessor extends NonRelationshipAccessor {
      */
     protected void processDiscriminatorColumn() {
         if (m_discriminatorColumn == null) {
-        	DiscriminatorColumn discriminatorColumn = getAnnotation(DiscriminatorColumn.class);
+        	Object discriminatorColumn = getAnnotation(DiscriminatorColumn.class);
             processDiscriminatorColumn(new DiscriminatorColumnMetadata(discriminatorColumn));
         } else {
             processDiscriminatorColumn(m_discriminatorColumn);
@@ -1368,12 +1370,12 @@ public class ClassAccessor extends NonRelationshipAccessor {
             // Add the indicator to the inheritance root class' descriptor. The
             // default is the short class name.
             if (m_discriminatorValue == null) {
-            	DiscriminatorValue discriminatorValue = getAnnotation(DiscriminatorValue.class);
+            	Object discriminatorValue = getAnnotation(DiscriminatorValue.class);
                 
                 if (discriminatorValue == null) {
                 	getDescriptor().addClassIndicator(getJavaClass(), Helper.getShortClassName(getJavaClassName()));
                 } else {
-                	getDescriptor().addClassIndicator(getJavaClass(), discriminatorValue.value());
+                	getDescriptor().addClassIndicator(getJavaClass(),(String)invokeMethod("value", discriminatorValue, (Object[])null)); 
                 }
             } else {
             	getDescriptor().addClassIndicator(getJavaClass(), m_discriminatorValue);
@@ -1390,8 +1392,8 @@ public class ClassAccessor extends NonRelationshipAccessor {
         if (getDescriptor().getAlias().equals("")) {
             String alias;
             if (m_entityName == null) {
-            	Entity entity = getAnnotation(Entity.class);
-                alias = (entity == null) ? "" : entity.name();
+            	Object entity = getAnnotation(Entity.class);
+                alias = (entity == null) ? "" : (String)invokeMethod("name", entity, (Object[])null);
             } else {
                 alias = m_entityName;
             }
@@ -1440,10 +1442,10 @@ public class ClassAccessor extends NonRelationshipAccessor {
     public void processEntityListeners(Class entityClass) {
         if (m_entityListeners == null || m_entityListeners.isEmpty()) {
         	// Look for an annotation.
-        	EntityListeners entityListeners = getAnnotation(EntityListeners.class);
+        	Object entityListeners = getAnnotation(EntityListeners.class);
             
             if (entityListeners != null) {
-            	for (Class entityListener : entityListeners.value()) {
+            	for (Class entityListener : (Class[])invokeMethod("value", entityListeners, (Object[])null)) {
             		EntityListenerMetadata listener = new EntityListenerMetadata(entityListener, entityClass);
                        
                     // Process the candidate callback methods for this listener.
@@ -1522,12 +1524,12 @@ public class ClassAccessor extends NonRelationshipAccessor {
     	
     	if (m_idClassName == null) {
             // Check for an IdClass annotation.
-    		IdClass idClass = getAnnotation(IdClass.class);
+    		Object idClass = getAnnotation(IdClass.class);
             
             if (idClass == null) {
             	return;
             } else {
-            	pkClass = idClass.value();
+            	pkClass = (Class)invokeMethod("value", idClass, (Object[])null); 
             }
         } else {
         	if (isAnnotationPresent(IdClass.class)) {
@@ -1564,12 +1566,12 @@ public class ClassAccessor extends NonRelationshipAccessor {
      */
     protected void processInheritance() {
     	// Get the inheritance strategy and store it on the descriptor.
-        InheritanceType inheritanceStrategy = null;
+        Enum inheritanceStrategy = null;
         if (m_inheritance == null) {
-        	Inheritance inheritance = getAnnotation(Inheritance.class);
+        	Object inheritance = getAnnotation(Inheritance.class);
                
             if (inheritance != null) {
-            	inheritanceStrategy = inheritance.strategy();   
+            	inheritanceStrategy = (Enum)invokeMethod("strategy", inheritance, (Object[])null); 
             }
         } else {
         	inheritanceStrategy = m_inheritance.getStrategy();
@@ -1608,8 +1610,8 @@ public class ClassAccessor extends NonRelationshipAccessor {
             	
             if (getPrimaryKeyJoinColumns() == null) {
             	// Look for annotations.
-            	PrimaryKeyJoinColumn primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
-                PrimaryKeyJoinColumns primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
+            	Object primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
+                Object primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
                     
                 pkJoinColumns = new PrimaryKeyJoinColumnsMetadata(primaryKeyJoinColumns, primaryKeyJoinColumn);
             } else {
@@ -1724,15 +1726,15 @@ public class ClassAccessor extends NonRelationshipAccessor {
         
         // Process the named native query annotations second.
     	// Look for a @NamedNativeQueries.
-        NamedNativeQueries namedNativeQueries = getAnnotation(NamedNativeQueries.class);
+        Object namedNativeQueries = getAnnotation(NamedNativeQueries.class);
         if (namedNativeQueries != null) {
-            for (NamedNativeQuery namedNativeQuery : namedNativeQueries.value()) {
+            for (Object namedNativeQuery : (Object[])invokeMethod("value", namedNativeQueries, (Object[])null)) { 
             	getProject().processNamedNativeQuery(new NamedNativeQueryMetadata(namedNativeQuery, getJavaClassName()));
             }
         }
         
         // Look for a @NamedNativeQuery.
-        NamedNativeQuery namedNativeQuery = getAnnotation(NamedNativeQuery.class);
+        Object namedNativeQuery = getAnnotation(NamedNativeQuery.class);
         if (namedNativeQuery != null) {
         	getProject().processNamedNativeQuery(new NamedNativeQueryMetadata(namedNativeQuery, getJavaClassName()));
         }
@@ -1750,16 +1752,16 @@ public class ClassAccessor extends NonRelationshipAccessor {
     	
         // Process the named query annotations second.
     	// Look for a @NamedQueries.
-        NamedQueries namedQueries = getAnnotation(NamedQueries.class);
+        Object namedQueries = getAnnotation(NamedQueries.class);
         
         if (namedQueries != null) {
-            for (NamedQuery namedQuery : namedQueries.value()) {
+            for (Object namedQuery : (Object[])invokeMethod("value", namedQueries, (Object[])null)) { 
             	getProject().processNamedQuery(new NamedQueryMetadata(namedQuery, getJavaClassName()));
             }
         }
         
         // Look for a @NamedQuery.
-        NamedQuery namedQuery = getAnnotation(NamedQuery.class);
+        Object namedQuery = getAnnotation(NamedQuery.class);
         
         if (namedQuery != null) {
         	getProject().processNamedQuery(new NamedQueryMetadata(namedQuery, getJavaClassName()));
@@ -1775,15 +1777,15 @@ public class ClassAccessor extends NonRelationshipAccessor {
      */
     protected void processNamedStoredProcedureQueries() {
         // Look for a @NamedStoredProcedureQueries.
-        NamedStoredProcedureQueries namedStoredProcedureQueries = getAnnotation(NamedStoredProcedureQueries.class);
+        Object namedStoredProcedureQueries = getAnnotation(NamedStoredProcedureQueries.class);
         if (namedStoredProcedureQueries != null) {
-            for (NamedStoredProcedureQuery namedStoredProcedureQuery : namedStoredProcedureQueries.value()) {
+            for (Object namedStoredProcedureQuery : (Object[])invokeMethod("value", namedStoredProcedureQueries, (Object[])null)) { 
                 getProject().processNamedStoredProcedureQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, getJavaClass()));
             }
         }
         
         // Look for a @NamedStoredProcedureQuery.
-        NamedStoredProcedureQuery namedStoredProcedureQuery = getAnnotation(NamedStoredProcedureQuery.class);
+        Object namedStoredProcedureQuery = getAnnotation(NamedStoredProcedureQuery.class);
         if (namedStoredProcedureQuery != null) {
             getProject().processNamedStoredProcedureQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, getJavaClass()));
         }
@@ -1803,7 +1805,7 @@ public class ClassAccessor extends NonRelationshipAccessor {
             }
         } else {
             if (m_optimisticLocking == null) {
-                OptimisticLocking optimisticLocking = getAnnotation(OptimisticLocking.class);
+                Object optimisticLocking = getAnnotation(OptimisticLocking.class);
             
                 if (optimisticLocking != null) {
                     // Process the meta data for this accessor's descriptor.
@@ -1867,14 +1869,14 @@ public class ClassAccessor extends NonRelationshipAccessor {
     protected void processSecondaryTables() {
     	if (m_secondaryTables == null || m_secondaryTables.isEmpty()) {
     		// Look for a SecondaryTables annotation.
-            SecondaryTables secondaryTables = getAnnotation(SecondaryTables.class);
+            Object secondaryTables = getAnnotation(SecondaryTables.class);
             if (secondaryTables != null) {
-            	for (SecondaryTable secondaryTable : secondaryTables.value()) {
+            	for (Object secondaryTable : (Object[])invokeMethod("value", secondaryTables, (Object[])null)) { 
             		processSecondaryTable(new SecondaryTableMetadata(secondaryTable, getJavaClassName()));
                 }
             } else {
                 // Look for a SecondaryTable annotation
-                SecondaryTable secondaryTable = getAnnotation(SecondaryTable.class);
+                Object secondaryTable = getAnnotation(SecondaryTable.class);
                 if (secondaryTable != null) {    
                 	processSecondaryTable(new SecondaryTableMetadata(secondaryTable, getJavaClassName()));
                 }
@@ -1906,15 +1908,15 @@ public class ClassAccessor extends NonRelationshipAccessor {
         
         // Process the sql result set mapping query annotations second.
         // Look for a @SqlResultSetMappings.
-        SqlResultSetMappings sqlResultSetMappings = getAnnotation(SqlResultSetMappings.class);
+        Object sqlResultSetMappings = getAnnotation(SqlResultSetMappings.class);
 
         if (sqlResultSetMappings != null) {
-            for (SqlResultSetMapping sqlResultSetMapping : sqlResultSetMappings.value()) {
+            for (Object sqlResultSetMapping : (Object[])invokeMethod("value", sqlResultSetMappings, (Object[])null)) {
                 getProject().processSqlResultSetMapping(new SQLResultSetMappingMetadata(sqlResultSetMapping));
             }
         } else {
             // Look for a @SqlResultSetMapping.
-            SqlResultSetMapping sqlResultSetMapping = getAnnotation(SqlResultSetMapping.class);
+            Object sqlResultSetMapping = getAnnotation(SqlResultSetMapping.class);
             
             if (sqlResultSetMapping != null) {
                 getProject().processSqlResultSetMapping(new SQLResultSetMappingMetadata(sqlResultSetMapping));
@@ -1930,7 +1932,7 @@ public class ClassAccessor extends NonRelationshipAccessor {
     	if (m_table == null) {
     		// Check for a table annotation. If no annotation is defined, the 
             // table will default.
-            Table table = getAnnotation(Table.class);
+            Object table = getAnnotation(Table.class);
             processTable(new TableMetadata(table, getJavaClassName()));
     	} else {
     		if (isAnnotationPresent(Table.class)) {

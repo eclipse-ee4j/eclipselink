@@ -36,13 +36,13 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
 	/**
 	 * INTERNAL:
 	 */
-	public AssociationOverrideMetadata(AssociationOverride associationOverride, String className) {
+	public AssociationOverrideMetadata(Object associationOverride, String className) {
 		super(className);
 
-		setName(associationOverride.name());
+		setName((String)MetadataHelper.invokeMethod("name", associationOverride, (Object[])null));
 		
 		m_joinColumns = new ArrayList<JoinColumnMetadata>();
-		for (JoinColumn joinColumn : associationOverride.joinColumns()) {
+		for (Object joinColumn : (Object[])MetadataHelper.invokeMethod("joinColumns", associationOverride, (Object[])null)) {
 			m_joinColumns.add(new JoinColumnMetadata(joinColumn));
 		}
 	}

@@ -41,19 +41,19 @@ public class JoinColumnMetadata {
     /**
      * INTERNAL:
      */
-    public JoinColumnMetadata(JoinColumn joinColumn) {
+    public JoinColumnMetadata(Object joinColumn) {
         if (joinColumn != null) {
             // Process the primary key field metadata.
-            setReferencedColumnName(joinColumn.referencedColumnName());
+            setReferencedColumnName((String)MetadataHelper.invokeMethod("referencedColumnName", joinColumn, (Object[])null));
         
             // Process the foreign key field metadata.
-            setName(joinColumn.name());
-            setTable(joinColumn.table());
-            setUnique(joinColumn.unique());
-            setNullable(joinColumn.nullable());
-            setUpdatable(joinColumn.updatable());
-            setInsertable(joinColumn.insertable());
-            setColumnDefinition(joinColumn.columnDefinition());
+            setName((String)MetadataHelper.invokeMethod("name", joinColumn, (Object[])null));
+            setTable((String)MetadataHelper.invokeMethod("table", joinColumn, (Object[])null));
+            setUnique((Boolean)MetadataHelper.invokeMethod("unique", joinColumn, (Object[])null));
+            setNullable((Boolean)MetadataHelper.invokeMethod("nullable", joinColumn, (Object[])null));
+            setUpdatable((Boolean)MetadataHelper.invokeMethod("updatable", joinColumn, (Object[])null));
+            setInsertable((Boolean)MetadataHelper.invokeMethod("insertable", joinColumn, (Object[])null));
+            setColumnDefinition((String)MetadataHelper.invokeMethod("columnDefinition", joinColumn, (Object[])null));
         }
     }
     

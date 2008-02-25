@@ -117,8 +117,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
      * INTERNAL:
      * Return the default fetch type for a collection mapping.
      */
-    public FetchType getDefaultFetchType() {
-    	return FetchType.LAZY;
+    public Enum getDefaultFetchType() {
+    	return FetchType.valueOf("LAZY");
     }
     
     /**
@@ -233,7 +233,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
        	
     	if (m_joinTable == null) {
     		// Look for a JoinTable annotation.
-       		JoinTable jTable = getAnnotation(JoinTable.class);
+       		Object jTable = getAnnotation(JoinTable.class);
             joinTable = new JoinTableMetadata(jTable, getAnnotatedElementName());
     	} else {
     		// Use the join table specified in XML.
@@ -279,8 +279,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
             if (m_mapKey == null) {
             	// Look for an annotation.
             	if (isAnnotationPresent(MapKey.class)) {
-                    MapKey mapKey = getAnnotation(MapKey.class);
-                    mapKeyValue = mapKey.name();
+                    Object mapKey = getAnnotation(MapKey.class);
+                    mapKeyValue = (String)invokeMethod("name", mapKey, (Object[])null);
                 }
             } else {
             	// Use the value specified in XML.
@@ -340,8 +340,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         
     	if (m_orderBy == null) {
     		// Look for an OrderBy annotation.
-        	OrderBy orderBy = getAnnotation(OrderBy.class);
-            orderByValue = (orderBy == null) ? null : orderBy.value();
+        	Object orderBy = getAnnotation(OrderBy.class);
+            orderByValue = (orderBy == null) ? null : (String)invokeMethod("value", orderBy, (Object[])null); 
         } else {
         	// Used the value specified in XML.
             orderByValue = m_orderBy;

@@ -39,10 +39,10 @@ public class SQLResultSetMappingMetadata {
     /**
      * INTERNAL:
      */
-    public SQLResultSetMappingMetadata(SqlResultSetMapping sqlResultSetMapping) {
-    	setName(sqlResultSetMapping.name());
-    	setEntityResults(sqlResultSetMapping.entities());
-    	setColumnResults(sqlResultSetMapping.columns());
+    public SQLResultSetMappingMetadata(Object sqlResultSetMapping) {
+        setName((String)MetadataHelper.invokeMethod("name", sqlResultSetMapping, (Object[])null));
+        setEntityResults((Object[])MetadataHelper.invokeMethod("entities", sqlResultSetMapping, (Object[])null));
+        setColumnResults((Object[])MetadataHelper.invokeMethod("columns", sqlResultSetMapping, (Object[])null));
     }
     
     /**
@@ -87,12 +87,12 @@ public class SQLResultSetMappingMetadata {
      * INTERNAL:
      * Called from annotation population.
      */
-    protected void setColumnResults(ColumnResult[] columnResults) {
-    	m_columnResults = new ArrayList<String>();
-    		
-   		for (ColumnResult columnResult : columnResults) {
-   			m_columnResults.add(columnResult.name());
-   		}
+    protected void setColumnResults(Object[] columnResults) {
+        m_columnResults = new ArrayList<String>();
+        
+        for (Object columnResult : columnResults) {
+            m_columnResults.add((String)MetadataHelper.invokeMethod("name", columnResult, (Object[])null));
+        }
     }
     
     /**
@@ -107,12 +107,12 @@ public class SQLResultSetMappingMetadata {
      * INTERNAL:
      * Called from annotation population.
      */
-    public void setEntityResults(EntityResult[] entityResults) {
-    	m_entityResults = new ArrayList<EntityResultMetadata>();
-    		
-   		for (EntityResult entityResult : entityResults) {
-   			m_entityResults.add(new EntityResultMetadata(entityResult));
-   		}
+    public void setEntityResults(Object[] entityResults) {
+        m_entityResults = new ArrayList<EntityResultMetadata>();
+        
+        for (Object entityResult : entityResults) {
+            m_entityResults.add(new EntityResultMetadata(entityResult));
+        }
     }
     
     /**

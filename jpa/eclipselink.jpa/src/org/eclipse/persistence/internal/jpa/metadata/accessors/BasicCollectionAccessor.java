@@ -46,7 +46,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
 	private boolean m_privateOwned;
 	private ColumnMetadata m_valueColumn;
     private CollectionTableMetadata m_collectionTable;
-    private JoinFetchType m_joinFetch;
+    private Enum m_joinFetch;
     
     /**
      * INTERNAL:
@@ -58,14 +58,13 @@ public class BasicCollectionAccessor extends DirectAccessor {
      */
     public BasicCollectionAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
-        
-        BasicCollection basicCollection = getAnnotation(BasicCollection.class);
-        
+
+        Object basicCollection = getAnnotation(BasicCollection.class);
+
         // Must check, BasicMapAccessor calls this constructor ...
         if (basicCollection != null) {
-            m_valueColumn = new ColumnMetadata(basicCollection.valueColumn(), getAttributeName());
-            
-            setFetch(basicCollection.fetch());
+            m_valueColumn = new ColumnMetadata(invokeMethod("valueColumn", basicCollection, (Object[])null), getAttributeName());
+            setFetch((Enum)invokeMethod("fetch", basicCollection, (Object[])null));
         }
     }
     
@@ -109,7 +108,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public JoinFetchType getJoinFetch() {
+    public Enum getJoinFetch() {
     	return m_joinFetch;
     }
     
@@ -243,7 +242,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
     	CollectionTableMetadata collectionTable;
     	
     	if (m_collectionTable == null) {
-    		CollectionTable table = getAnnotation(CollectionTable.class);
+    		Object table = getAnnotation(CollectionTable.class);
     		collectionTable = new CollectionTableMetadata(table, getAnnotatedElementName());
     	} else {
     		collectionTable = m_collectionTable;
@@ -307,7 +306,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public void setJoinFetch(JoinFetchType joinFetch) {
+    public void setJoinFetch(Enum joinFetch) {
     	m_joinFetch = joinFetch;
     }
     

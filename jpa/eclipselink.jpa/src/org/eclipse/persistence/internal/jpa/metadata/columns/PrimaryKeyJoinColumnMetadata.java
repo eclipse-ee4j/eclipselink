@@ -35,14 +35,14 @@ public class PrimaryKeyJoinColumnMetadata {
     /**
      * INTERNAL:
      */
-    public PrimaryKeyJoinColumnMetadata(PrimaryKeyJoinColumn primaryKeyJoinColumn) {
+    public PrimaryKeyJoinColumnMetadata(Object primaryKeyJoinColumn) {
         if (primaryKeyJoinColumn != null) {
             // Process the primary key field metadata.
-            setReferencedColumnName(primaryKeyJoinColumn.referencedColumnName());
+            setReferencedColumnName((String)MetadataHelper.invokeMethod("referencedColumnName", primaryKeyJoinColumn, (Object[])null));
         
             // Process the foreign key field metadata.
-            setName(primaryKeyJoinColumn.name());
-            setColumnDefinition(primaryKeyJoinColumn.columnDefinition());
+            setName((String)MetadataHelper.invokeMethod("name", primaryKeyJoinColumn, (Object[])null));
+            setColumnDefinition((String)MetadataHelper.invokeMethod("columnDefinition", primaryKeyJoinColumn, (Object[])null));
         }
     }
 

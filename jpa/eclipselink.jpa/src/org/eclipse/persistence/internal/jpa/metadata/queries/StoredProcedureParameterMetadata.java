@@ -32,13 +32,14 @@ public class StoredProcedureParameterMetadata {
     /**
      * INTERNAL:
      */
-    public StoredProcedureParameterMetadata(StoredProcedureParameter storedProcedureParameter) {
-    	m_direction = storedProcedureParameter.procedureParameterDirection().name();
-    	m_name = storedProcedureParameter.name();
-    	m_queryParameter = storedProcedureParameter.queryParameter();
-    	m_type = storedProcedureParameter.type();
-    	m_jdbcType = storedProcedureParameter.jdbcType();
-    	m_jdbcTypeName = storedProcedureParameter.jdbcTypeName();   
+    public StoredProcedureParameterMetadata(Object storedProcedureParameter) {
+        Object direction = MetadataHelper.invokeMethod("procedureParameterDirection", storedProcedureParameter, (Object[])null);
+        m_direction = (String)MetadataHelper.invokeMethod("name", direction, (Object[])null);
+        m_name = (String)MetadataHelper.invokeMethod("name", storedProcedureParameter, (Object[])null);
+        m_queryParameter = (String)MetadataHelper.invokeMethod("queryParameter", storedProcedureParameter, (Object[])null); 
+        m_type = (Class)MetadataHelper.invokeMethod("type", storedProcedureParameter, (Object[])null);
+        m_jdbcType = (Integer)MetadataHelper.invokeMethod("jdbcType", storedProcedureParameter, (Object[])null);
+        m_jdbcTypeName = (String)MetadataHelper.invokeMethod("jdbcTypeName", storedProcedureParameter, (Object[])null);
     }
     
     /**

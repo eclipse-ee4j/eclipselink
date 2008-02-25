@@ -81,7 +81,7 @@ public abstract class NonRelationshipAccessor extends MetadataAccessor {
     	}
         
         // Process the annotation defined sequence generator second.        
-        SequenceGenerator sequenceGenerator = getAnnotation(SequenceGenerator.class);
+        Object sequenceGenerator = getAnnotation(SequenceGenerator.class);
         
         if (sequenceGenerator != null) {
             // Ask the common processor to process what we found.
@@ -102,7 +102,7 @@ public abstract class NonRelationshipAccessor extends MetadataAccessor {
     	}
         
         // Process the annotation defined table generator second.
-        TableGenerator tableGenerator = getAnnotation(TableGenerator.class);
+        Object tableGenerator = getAnnotation(TableGenerator.class);
         
         if (tableGenerator != null) {
             // Ask the common processor to process what we found.

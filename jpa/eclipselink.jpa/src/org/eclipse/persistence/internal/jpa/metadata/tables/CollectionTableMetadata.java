@@ -41,15 +41,15 @@ public class CollectionTableMetadata extends TableMetadata {
     /**
      * INTERNAL:
      */
-    public CollectionTableMetadata(CollectionTable collectionTable, String annotatedElementName) {
+    public CollectionTableMetadata(Object collectionTable, String annotatedElementName) {
     	super(annotatedElementName);
     	
         if (collectionTable != null) {
-            setName(collectionTable.name());
-            setSchema(collectionTable.schema());
-            setCatalog(collectionTable.catalog());
-            setUniqueConstraints(collectionTable.uniqueConstraints());
-            setPrimaryKeyJoinColumns(collectionTable.primaryKeyJoinColumns());
+            setName((String)MetadataHelper.invokeMethod("name", collectionTable, (Object[])null));
+            setSchema((String)MetadataHelper.invokeMethod("schema", collectionTable, (Object[])null));
+            setCatalog((String)MetadataHelper.invokeMethod("catalog", collectionTable, (Object[])null));
+            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", collectionTable, (Object[])null));
+            setPrimaryKeyJoinColumns((Object[])MetadataHelper.invokeMethod("primaryKeyJoinColumns", collectionTable, (Object[])null));
         }
     }
     
@@ -91,10 +91,10 @@ public class CollectionTableMetadata extends TableMetadata {
     /**
      * INTERNAL:
      */
-    protected void setPrimaryKeyJoinColumns(PrimaryKeyJoinColumn[] primaryKeyJoinColumns) {
+    protected void setPrimaryKeyJoinColumns(Object[] primaryKeyJoinColumns) {
     	m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     	
-    	for (PrimaryKeyJoinColumn primaryKeyJoinColumn : primaryKeyJoinColumns) {
+    	for (Object primaryKeyJoinColumn : primaryKeyJoinColumns) {
     		m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn));
     	}
     }

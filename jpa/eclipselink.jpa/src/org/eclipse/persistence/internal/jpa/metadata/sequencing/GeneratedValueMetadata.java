@@ -22,7 +22,7 @@ import javax.persistence.GeneratedValue;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class GeneratedValueMetadata {
-	private GenerationType m_strategy;
+	private Enum m_strategy;
 	private String m_generator;
     
     /**
@@ -33,9 +33,9 @@ public class GeneratedValueMetadata {
     /**
      * INTERNAL:
      */
-    public GeneratedValueMetadata(GeneratedValue generatedValue) {
-    	m_generator = generatedValue.generator();
-    	m_strategy = generatedValue.strategy();
+    public GeneratedValueMetadata(Object generatedValue) {
+        m_generator = (String)MetadataHelper.invokeMethod("generator", generatedValue, (Object[])null);
+    	m_strategy = (Enum)MetadataHelper.invokeMethod("strategy", generatedValue, (Object[])null); 
     }
     
     /**
@@ -75,7 +75,7 @@ public class GeneratedValueMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public GenerationType getStrategy() {
+    public Enum getStrategy() {
         return m_strategy;
     }
     
@@ -91,7 +91,7 @@ public class GeneratedValueMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setStrategy(GenerationType strategy) {
+    public void setStrategy(Enum strategy) {
     	m_strategy = strategy;
     }
 }

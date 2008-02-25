@@ -49,18 +49,18 @@ public class OneToManyAccessor extends CollectionAccessor {
     public OneToManyAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
         
-        OneToMany oneToMany = getAnnotation(OneToMany.class);
+        Object oneToMany = getAnnotation(OneToMany.class);
         
         // We must check because OneToMany's can default.
         if (oneToMany != null) {
-        	setTargetEntity(oneToMany.targetEntity());
-        	setCascadeTypes(oneToMany.cascade());
-        	setFetch(oneToMany.fetch());
-        	setMappedBy(oneToMany.mappedBy());
+        	setTargetEntity((Class)invokeMethod("targetEntity", oneToMany, (Object[])null));
+        	setCascadeTypes((Enum[])invokeMethod("cascade", oneToMany, (Object[])null));
+        	setFetch((Enum)invokeMethod("fetch", oneToMany, (Object[])null));
+        	setMappedBy((String)invokeMethod("mappedBy", oneToMany, (Object[])null));
         } else {
         	// Set the annotation defaults.
         	setTargetEntity(void.class);
-        	setCascadeTypes(new CascadeType[]{});
+        	setCascadeTypes(new Enum[]{});
         	setFetch(getDefaultFetchType());
         	setMappedBy("");
         }

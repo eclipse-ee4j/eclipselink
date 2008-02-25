@@ -22,7 +22,7 @@ import javax.persistence.DiscriminatorType;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class DiscriminatorColumnMetadata {
-	private DiscriminatorType m_discriminatorType;
+	private Enum m_discriminatorType;
 	private Integer m_length;
 	private String m_columnDefinition;
 	private String m_name;
@@ -35,12 +35,12 @@ public class DiscriminatorColumnMetadata {
     /**
      * INTERNAL:
      */
-    public DiscriminatorColumnMetadata(DiscriminatorColumn discriminatorColumn) {    	
+    public DiscriminatorColumnMetadata(Object discriminatorColumn) {    	
     	if (discriminatorColumn != null) {
-    		m_columnDefinition = discriminatorColumn.columnDefinition();
-    		m_discriminatorType = discriminatorColumn.discriminatorType();
-    		m_length = discriminatorColumn.length();
-    		m_name = discriminatorColumn.name();
+    		m_columnDefinition =  (String)MetadataHelper.invokeMethod("columnDefinition", discriminatorColumn, (Object[])null);
+    		m_discriminatorType = (Enum)MetadataHelper.invokeMethod("discriminatorType", discriminatorColumn, (Object[])null); 
+    		m_length = (Integer)MetadataHelper.invokeMethod("length", discriminatorColumn, (Object[])null);
+    		m_name = (String)MetadataHelper.invokeMethod("name", discriminatorColumn, (Object[])null); 
     	}
     }
 
@@ -54,7 +54,7 @@ public class DiscriminatorColumnMetadata {
     /**
      * INTERNAL:
      */
-    public DiscriminatorType getDiscriminatorType() {
+    public Enum getDiscriminatorType() {
     	return m_discriminatorType;
     }
     
@@ -82,7 +82,7 @@ public class DiscriminatorColumnMetadata {
     /**
      * INTERNAL:
      */
-    public void setDiscriminatorType(DiscriminatorType descriminatorType) {
+    public void setDiscriminatorType(Enum descriminatorType) {
     	m_discriminatorType = descriminatorType;
     }
     

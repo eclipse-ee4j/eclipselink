@@ -57,16 +57,17 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
     /**
      * INTERNAL:
      */
-    public ObjectTypeConverterMetadata(ObjectTypeConverter objectTypeConverter, AnnotatedElement annotatedElement) {
+    public ObjectTypeConverterMetadata(Object objectTypeConverter, AnnotatedElement annotatedElement) {
     	setLoadedFromAnnotation();
     	setLocation(annotatedElement);
 
-        setName(objectTypeConverter.name());
-        setDataType(objectTypeConverter.dataType());
-        setObjectType(objectTypeConverter.objectType());
-        setConversionValues(objectTypeConverter.conversionValues());
+        setName((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("name", objectTypeConverter, (Object[])null));
+        setDataType((Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("dataType", objectTypeConverter, (Object[])null));
+        setObjectType((Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("objectType", objectTypeConverter, (Object[])null));
+        setConversionValues((Object[])org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("conversionValues", objectTypeConverter, (Object[])null));
+    	
         
-        m_defaultObjectValue = objectTypeConverter.defaultObjectValue();
+        m_defaultObjectValue = (String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("defaultObjectValue", objectTypeConverter, (Object[])null); 
     }
     
     /**
@@ -249,10 +250,10 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
      * INTERNAL:
      * Called from annotation population.
      */
-    protected void setConversionValues(ConversionValue[] conversionValues) {
+    protected void setConversionValues(Object[] conversionValues) {
     	m_conversionValues = new ArrayList<ConversionValueMetadata>();
     		
-   		for (ConversionValue conversionValue: conversionValues) {
+    		for (Object conversionValue: conversionValues) {
    			m_conversionValues.add(new ConversionValueMetadata(conversionValue));
    		}
     }

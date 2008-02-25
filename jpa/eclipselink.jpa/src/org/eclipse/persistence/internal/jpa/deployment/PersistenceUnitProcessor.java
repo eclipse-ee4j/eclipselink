@@ -45,6 +45,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 
 /**
  * INTERNAL:
@@ -215,14 +216,14 @@ public class PersistenceUnitProcessor  {
      * Return if a given class is annotated with @Embeddable.
      */
     public static boolean isEmbeddable(Class candidateClass){
-        return candidateClass.isAnnotationPresent(javax.persistence.Embeddable.class);
+        return MetadataHelper.isAnnotationPresent(javax.persistence.Embeddable.class, candidateClass);
     }
     
     /**
      * Return if a given class is annotated with @Entity.
      */
     public static boolean isEntity(Class candidateClass){
-        return candidateClass.isAnnotationPresent(javax.persistence.Entity.class);
+        return MetadataHelper.isAnnotationPresent(javax.persistence.Entity.class, candidateClass);
     }
     
     /**

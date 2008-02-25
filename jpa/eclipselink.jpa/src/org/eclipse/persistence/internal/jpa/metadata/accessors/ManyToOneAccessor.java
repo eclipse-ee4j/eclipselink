@@ -39,12 +39,13 @@ public class ManyToOneAccessor extends ObjectAccessor {
     public ManyToOneAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
         
-        ManyToOne manyToOne = getAnnotation(ManyToOne.class);
+        Object manyToOne = getAnnotation(ManyToOne.class);
         
-        setTargetEntity(manyToOne.targetEntity());
-        setCascadeTypes(manyToOne.cascade());
-        setFetch(manyToOne.fetch());
-        setOptional(manyToOne.optional());
+        setTargetEntity((Class)invokeMethod("targetEntity", manyToOne, (Object[])null));
+        
+        setCascadeTypes((Enum[])invokeMethod("cascade", manyToOne, (Object[])null));
+        setFetch((Enum)invokeMethod("fetch", manyToOne, (Object[])null));
+        setOptional((Boolean)invokeMethod("optional", manyToOne, (Object[])null));
     }
 
     /**

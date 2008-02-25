@@ -32,11 +32,12 @@ public class AttributeOverrideMetadata extends OverrideMetadata {
 	/**
 	 * INTERNAL:
 	 */
-	public AttributeOverrideMetadata(AttributeOverride attributeOverride, String className) {
+	public AttributeOverrideMetadata(Object attributeOverride, String className) {
 		super(className);
 	
-		setName(attributeOverride.name());
-		m_column = new ColumnMetadata(attributeOverride.column(), attributeOverride.name());
+		setName((String)MetadataHelper.invokeMethod("name", attributeOverride, (Object[])null));
+		m_column = new ColumnMetadata(MetadataHelper.invokeMethod("column", attributeOverride, (Object[])null),
+		                        (String)MetadataHelper.invokeMethod("name", attributeOverride, (Object[])null));
 	}
 	
 	/**

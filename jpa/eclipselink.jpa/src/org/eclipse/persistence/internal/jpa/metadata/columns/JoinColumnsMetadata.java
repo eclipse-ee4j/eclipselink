@@ -44,12 +44,12 @@ public class JoinColumnsMetadata {
     /**
      * INTERNAL:
      */
-    public JoinColumnsMetadata(JoinColumns joinColumns, JoinColumn joinColumn) {
+    public JoinColumnsMetadata(Object joinColumns, Object joinColumn) {
     	m_joinColumns = new ArrayList<JoinColumnMetadata>();
         
         // Process all the join columns first.
         if (joinColumns != null) {
-            for (JoinColumn jColumn : joinColumns.value()) {
+            for (Object jColumn : (Object[])MetadataHelper.invokeMethod("value", joinColumns, (Object[])null)) {
                 m_joinColumns.add(new JoinColumnMetadata(jColumn));
             }
         }

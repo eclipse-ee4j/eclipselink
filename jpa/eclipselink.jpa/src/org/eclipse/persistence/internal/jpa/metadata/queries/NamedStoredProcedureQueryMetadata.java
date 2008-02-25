@@ -41,17 +41,18 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     /**
      * INTERNAL:
      */
-    public NamedStoredProcedureQueryMetadata(NamedStoredProcedureQuery namedStoredProcedureQuery, Class javaClass) {
-    	m_procedureName = namedStoredProcedureQuery.procedureName();
+    public NamedStoredProcedureQueryMetadata(Object namedStoredProcedureQuery, Class javaClass) {
+        
+    	m_procedureName = (String)MetadataHelper.invokeMethod("procedureName", namedStoredProcedureQuery, (Object[])null);
     	
     	setLoadedFromAnnotation();
     	setLocation(javaClass.getName());
-        setName(namedStoredProcedureQuery.name());
-        setHints(namedStoredProcedureQuery.hints());
-        setResultClass(namedStoredProcedureQuery.resultClass());
-        setResultSetMapping(namedStoredProcedureQuery.resultSetMapping());
-        setReturnsResultSet(namedStoredProcedureQuery.returnsResultSet());        
-        setProcedureParameters(namedStoredProcedureQuery.procedureParameters());
+        setName((String)MetadataHelper.invokeMethod("name", namedStoredProcedureQuery, (Object[])null));
+        setHints((Object[])MetadataHelper.invokeMethod("hints", namedStoredProcedureQuery, (Object[])null));
+        setResultClass((Class)MetadataHelper.invokeMethod("resultClass", namedStoredProcedureQuery, (Object[])null));
+        setResultSetMapping((String)MetadataHelper.invokeMethod("resultSetMapping", namedStoredProcedureQuery, (Object[])null));
+        setReturnsResultSet((Boolean)MetadataHelper.invokeMethod("returnsResultSet", namedStoredProcedureQuery, (Object[])null));
+        setProcedureParameters((Object[])MetadataHelper.invokeMethod("procedureParameters", namedStoredProcedureQuery, (Object[])null));
     }
    
     /**
@@ -92,12 +93,11 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     /**
      * INTERNAL:
      */
-    public void setProcedureParameters(StoredProcedureParameter[] procedureParameters) {
-    	m_procedureParameters = new ArrayList<StoredProcedureParameterMetadata>();
-    		
-   		for (StoredProcedureParameter storedProcedureParameter : procedureParameters) {
-   			m_procedureParameters.add(new StoredProcedureParameterMetadata(storedProcedureParameter));
-   		}
+    public void setProcedureParameters(Object[] procedureParameters) {
+        m_procedureParameters = new ArrayList<StoredProcedureParameterMetadata>();
+        for (Object storedProcedureParameter : procedureParameters) {
+           m_procedureParameters.add(new StoredProcedureParameterMetadata(storedProcedureParameter));
+        }
     }
     
     /**

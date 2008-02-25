@@ -38,15 +38,15 @@ public class NamedNativeQueryMetadata extends QueryMetadata {
     /**
      * INTERNAL:
      */
-    public NamedNativeQueryMetadata(NamedNativeQuery namedNativeQuery, String javaClassName) {
-    	m_resultClass = namedNativeQuery.resultClass();
-        m_resultSetMapping = namedNativeQuery.resultSetMapping();
+    public NamedNativeQueryMetadata(Object namedNativeQuery, String javaClassName) {
+    	m_resultClass = (Class)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("resultClass", namedNativeQuery, (Object[])null); 
+        m_resultSetMapping = (String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("resultSetMapping", namedNativeQuery, (Object[])null);  
         
     	setLoadedFromAnnotation();
         setLocation(javaClassName);
-        setName(namedNativeQuery.name());
-        setQuery(namedNativeQuery.query());
-        setHints(namedNativeQuery.hints());
+        setName((String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("name", namedNativeQuery, (Object[])null));
+        setQuery((String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("query", namedNativeQuery, (Object[])null));
+        setHints((Object[])org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("hints", namedNativeQuery, (Object[])null));
     }
     
     /**

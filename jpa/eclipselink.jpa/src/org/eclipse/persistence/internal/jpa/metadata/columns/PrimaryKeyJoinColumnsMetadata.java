@@ -46,11 +46,11 @@ public class PrimaryKeyJoinColumnsMetadata {
     /**
      * INTERNAL:
      */
-    public PrimaryKeyJoinColumnsMetadata(PrimaryKeyJoinColumn[] primaryKeyJoinColumns) {
+    public PrimaryKeyJoinColumnsMetadata(Object[] primaryKeyJoinColumns) {
     	m_pkJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
         
         // Process the primary key join column array.
-        for (PrimaryKeyJoinColumn pkJoinColumn : primaryKeyJoinColumns) {
+        for (Object pkJoinColumn : primaryKeyJoinColumns) {
             m_pkJoinColumns.add(new PrimaryKeyJoinColumnMetadata(pkJoinColumn));
         }
     }
@@ -58,12 +58,12 @@ public class PrimaryKeyJoinColumnsMetadata {
     /**
      * INTERNAL:
      */
-    public PrimaryKeyJoinColumnsMetadata(PrimaryKeyJoinColumns primaryKeyJoinColumns, PrimaryKeyJoinColumn primaryKeyJoinColumn) {
+    public PrimaryKeyJoinColumnsMetadata(Object primaryKeyJoinColumns, Object primaryKeyJoinColumn) {
     	m_pkJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
         
         // Process all the primary key join columns first.
         if (primaryKeyJoinColumns != null) {
-            for (PrimaryKeyJoinColumn pkJoinColumn : primaryKeyJoinColumns.value()) {
+            for (Object pkJoinColumn : (Object[])MetadataHelper.invokeMethod("value", primaryKeyJoinColumns, (Object[])null)) { 
                 m_pkJoinColumns.add(new PrimaryKeyJoinColumnMetadata(pkJoinColumn));
             }
         }

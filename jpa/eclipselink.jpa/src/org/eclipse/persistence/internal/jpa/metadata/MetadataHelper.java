@@ -323,7 +323,7 @@ public class MetadataHelper {
      * INTERNAL:
      * Return the discriminator type class for the given discriminator type.
      */
-    public static Class getDiscriminatorType(DiscriminatorType discriminatorType) {
+    public static Class getDiscriminatorType(Enum discriminatorType) {
     	if (discriminatorType == null || discriminatorType.equals(DiscriminatorType.STRING)) {
     		return String.class;
     	} else if (discriminatorType.equals(DiscriminatorType.CHAR)) {
@@ -338,13 +338,17 @@ public class MetadataHelper {
      * INTERNAL:
      * Return the field classification for the given temporal type.
      */
-    public static Class getFieldClassification(TemporalType type) {
-    	switch (type) {
-    		case DATE: return java.sql.Date.class;
-    		case TIME: return java.sql.Time.class;
-    		case TIMESTAMP: return java.sql.Timestamp.class;
-    		default : return null;
-    	}
+    public static Class getFieldClassification(Enum type) {
+        if(type.equals(TemporalType.DATE)){
+            return java.sql.Date.class;
+        }
+        if(type.equals(TemporalType.TIME)){
+            return java.sql.Time.class;
+        }
+        if(type.equals(TemporalType.TIMESTAMP)){
+            return java.sql.Timestamp.class;
+        }
+        return null;        
     }
     
     /**
@@ -619,7 +623,12 @@ public class MetadataHelper {
      * methods that take a descriptor. 
      */
     public static boolean isAnnotationPresent(Class annotation, AnnotatedElement annotatedElement) {
-        return annotatedElement.isAnnotationPresent(annotation);
+        for( Object declaredAnnotation : annotatedElement.getDeclaredAnnotations()){
+            if((declaredAnnotation.toString().substring(1, declaredAnnotation.toString().indexOf("("))).equalsIgnoreCase(annotation.getName())){
+                return true;
+            }
+        }
+        return false;
     }
     
     /** 

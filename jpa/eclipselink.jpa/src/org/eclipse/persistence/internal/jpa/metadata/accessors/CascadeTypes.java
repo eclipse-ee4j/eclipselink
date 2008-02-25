@@ -30,7 +30,7 @@ public class CascadeTypes {
 	private boolean m_cascadeRemove;
 	private boolean m_cascadeRefresh;
 	
-	private List<CascadeType> m_types;
+	private List<Enum> m_types;
     
 	/**
 	 * INTERNAL:
@@ -40,10 +40,10 @@ public class CascadeTypes {
 	/**
 	 * INTERNAL:
 	 */
-	public CascadeTypes(CascadeType[] cascadeTypes) {
-		m_types = new ArrayList<CascadeType>();
+	public CascadeTypes(Enum[] cascadeTypes) {
+		m_types = new ArrayList<Enum>();
     	
-    	for (CascadeType cascadeType : cascadeTypes) {
+    	for (Enum cascadeType : cascadeTypes) {
     		m_types.add(cascadeType);
     	}
 	}
@@ -91,9 +91,9 @@ public class CascadeTypes {
 	/**
 	 * INTERNAL:
 	 */
-	public List<CascadeType> getTypes() {
+	public List<Enum> getTypes() {
 		if (m_types == null) {
-			m_types = new ArrayList<CascadeType>();
+			m_types = new ArrayList<Enum>();
 		
 			if (isCascadeAll()) {
 				m_types.add(CascadeType.ALL);

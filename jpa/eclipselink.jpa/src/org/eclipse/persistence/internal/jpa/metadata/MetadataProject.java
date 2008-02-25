@@ -926,7 +926,7 @@ public class MetadataProject {
                 }
                 
                 if (sequence == null) {
-                	GenerationType strategy = generatedValue.getStrategy();
+                	Enum strategy = generatedValue.getStrategy();
                 	
                 	// A null strategy will default to AUTO.
                 	if (strategy == null || strategy.equals(GenerationType.AUTO)) {

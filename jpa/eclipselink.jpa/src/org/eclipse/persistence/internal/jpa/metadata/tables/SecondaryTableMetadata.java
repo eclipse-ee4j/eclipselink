@@ -39,15 +39,15 @@ public class SecondaryTableMetadata extends TableMetadata  {
     /**
      * INTERNAL:
      */
-    public SecondaryTableMetadata(SecondaryTable secondaryTable, String entityClassName) {
+    public SecondaryTableMetadata(Object secondaryTable, String entityClassName) {
     	super(entityClassName);
 	   
         if (secondaryTable != null) {
-            setName(secondaryTable.name());
-            setSchema(secondaryTable.schema());
-            setCatalog(secondaryTable.catalog());
-            setUniqueConstraints(secondaryTable.uniqueConstraints());
-            setPrimaryKeyJoinColumns(secondaryTable.pkJoinColumns());
+            setName((String)MetadataHelper.invokeMethod("name", secondaryTable, (Object[])null));
+            setSchema((String)MetadataHelper.invokeMethod("schema", secondaryTable, (Object[])null));
+            setCatalog((String)MetadataHelper.invokeMethod("catalog", secondaryTable, (Object[])null));
+            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", secondaryTable, (Object[])null));
+            setPrimaryKeyJoinColumns((Object[])MetadataHelper.invokeMethod("pkJoinColumns", secondaryTable, (Object[])null));
         }
     }
     
@@ -92,10 +92,10 @@ public class SecondaryTableMetadata extends TableMetadata  {
      * INTERNAL:
      * Called from annotation population.
      */
-    protected void setPrimaryKeyJoinColumns(PrimaryKeyJoinColumn[] primaryKeyJoinColumns) {
+    protected void setPrimaryKeyJoinColumns(Object[] primaryKeyJoinColumns) {
     	m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     	
-    	for (PrimaryKeyJoinColumn primaryKeyJoinColumn : primaryKeyJoinColumns) {
+    	for (Object primaryKeyJoinColumn : primaryKeyJoinColumns) {
     		m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn));
     	}
     }

@@ -34,9 +34,9 @@ public class FieldResultMetadata {
     /**
      * INTERNAL:
      */
-    public FieldResultMetadata(FieldResult fieldResult) {
-    	m_name = fieldResult.name();
-    	m_column = fieldResult.column();
+    public FieldResultMetadata(Object fieldResult) {
+    	m_name = (String)MetadataHelper.invokeMethod("name", fieldResult, (Object[])null);
+    	m_column = (String)MetadataHelper.invokeMethod("column", fieldResult, (Object[])null);
     }
     
     /**

@@ -40,16 +40,16 @@ public class JoinTableMetadata extends TableMetadata {
     /**
      * INTERNAL:
      */
-    public JoinTableMetadata(JoinTable joinTable, String annotatedElementName) {
+    public JoinTableMetadata(Object joinTable, String annotatedElementName) {
     	super(annotatedElementName);
     	
         if (joinTable != null) {
-            setName(joinTable.name());
-            setSchema(joinTable.schema());
-            setCatalog(joinTable.catalog());
-            setUniqueConstraints(joinTable.uniqueConstraints());
-            setJoinColumns(joinTable.joinColumns());
-    		setInverseJoinColumns(joinTable.inverseJoinColumns());
+            setName((String)MetadataHelper.invokeMethod("name", joinTable, (Object[])null));
+            setSchema((String)MetadataHelper.invokeMethod("schema", joinTable, (Object[])null));
+            setCatalog((String)MetadataHelper.invokeMethod("catalog", joinTable, (Object[])null));
+            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", joinTable, (Object[])null));
+            setJoinColumns((Object[])MetadataHelper.invokeMethod("joinColumns", joinTable, (Object[])null));
+    	    setInverseJoinColumns((Object[])MetadataHelper.invokeMethod("inverseJoinColumns", joinTable, (Object[])null));
         }
     }
     
@@ -102,10 +102,10 @@ public class JoinTableMetadata extends TableMetadata {
      * INTERNAL:
      * Called from annotation population.
      */
-    protected void setInverseJoinColumns(JoinColumn[] inverseJoinColumns) {
+    protected void setInverseJoinColumns(Object[] inverseJoinColumns) {
     	m_inverseJoinColumns = new ArrayList<JoinColumnMetadata>();
     	
-    	for (JoinColumn inverseJoinColumn : inverseJoinColumns) {
+    	for (Object inverseJoinColumn : inverseJoinColumns) {
     		m_inverseJoinColumns.add(new JoinColumnMetadata(inverseJoinColumn));
     	}   
     }
@@ -122,10 +122,10 @@ public class JoinTableMetadata extends TableMetadata {
      * INTERNAL:
      * Called from annotation population.
      */
-    protected void setJoinColumns(JoinColumn[] joinColumns) {
+    protected void setJoinColumns(Object[] joinColumns) {
     	m_joinColumns = new ArrayList<JoinColumnMetadata>();
     	
-    	for (JoinColumn joinColumn : joinColumns) {
+    	for (Object joinColumn : joinColumns) {
     		m_joinColumns.add(new JoinColumnMetadata(joinColumn));
     	}   
     }

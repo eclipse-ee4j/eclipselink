@@ -32,10 +32,10 @@ public class UniqueConstraintMetadata {
 	/**
      * INTERNAL:
      */
-	public UniqueConstraintMetadata(UniqueConstraint uniqueConstraint) {
+	public UniqueConstraintMetadata(Object uniqueConstraint) {
 		m_columnNames = new ArrayList<String>();
 		
-		for (String columnName : uniqueConstraint.columnNames()) {
+		for (String columnName : (String[])MetadataHelper.invokeMethod("columnNames", uniqueConstraint, (Object[])null)) { 
 			m_columnNames.add(columnName);
 		}
 	}

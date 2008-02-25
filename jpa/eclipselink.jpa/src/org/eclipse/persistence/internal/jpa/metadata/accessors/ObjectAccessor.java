@@ -58,8 +58,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * INTERNAL:
      * Return the default fetch type for an object mapping.
      */
-    public FetchType getDefaultFetchType() {
-    	return FetchType.EAGER;
+    public Enum getDefaultFetchType() {
+    	return FetchType.valueOf("EAGER");
     }
     
     /**
@@ -195,8 +195,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     	
     	if (getPrimaryKeyJoinColumns() == null) {
     		// Look for annotations.
-    		PrimaryKeyJoinColumn primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
-            PrimaryKeyJoinColumns primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
+    		Object primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
+            Object primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
             
             pkJoinColumns = processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(primaryKeyJoinColumns, primaryKeyJoinColumn));
     	} else {

@@ -1008,7 +1008,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      * Stored on the root class of an inheritance hierarchy.
      */
-    public void setInheritanceStrategy(InheritanceType inheritanceStrategy) {
+    public void setInheritanceStrategy(Enum inheritanceStrategy) {
         if (inheritanceStrategy.equals(InheritanceType.TABLE_PER_CLASS)) {
         	throw ValidationException.tablePerClassInheritanceNotSupported(getJavaClass());
         } else if (inheritanceStrategy.equals(InheritanceType.SINGLE_TABLE)) {

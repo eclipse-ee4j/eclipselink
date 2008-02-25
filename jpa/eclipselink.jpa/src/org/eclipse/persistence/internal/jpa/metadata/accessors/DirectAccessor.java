@@ -54,12 +54,12 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 public abstract class DirectAccessor extends NonRelationshipAccessor {
 	protected final static String DEFAULT_MAP_KEY_COLUMN_SUFFIX = "_KEY";
 	
-	private FetchType m_fetch;
+	private Enum m_fetch;
 	private Boolean m_optional;
 	private Boolean m_lob;
-	private EnumType m_enumerated;
+	private Enum m_enumerated;
 	private String m_convert;
-	private TemporalType m_temporal;
+	private Enum m_temporal;
 	
     /**
      * INTERNAL:
@@ -142,7 +142,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public EnumType getEnumerated() {
+    public Enum getEnumerated() {
     	return m_enumerated;
     }
      
@@ -150,7 +150,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public FetchType getFetch() {
+    public Enum getFetch() {
     	return m_fetch;
     }
     
@@ -174,7 +174,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public TemporalType getTemporal() {
+    public Enum getTemporal() {
     	return m_temporal;
     }
     
@@ -302,8 +302,8 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * called on accessors that have a convert value specified.
      */
     public void processConvert() {
-    	Convert convert = getAnnotation(Convert.class);
-    	String convertValue  = (m_convert == null) ? convert.value() : m_convert;
+    	Object convert = getAnnotation(Convert.class);
+    	String convertValue  = (m_convert == null) ? (String)invokeMethod("value", convert, (Object[])null) : m_convert;
     	processConvert(getDescriptor().getMappingForAttributeName(getAttributeName()), convertValue);
     }
     
@@ -354,14 +354,14 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
             }
         }
 
-        EnumType enumType;
+        Enum enumType;
         if (m_enumerated == null) {
-    		Enumerated enumerated = getAnnotation(Enumerated.class);
+    		Object enumerated = getAnnotation(Enumerated.class);
             
             if (enumerated == null) {
             	enumType = EnumType.ORDINAL;
             } else {
-            	enumType = enumerated.value();
+            	enumType = (Enum)invokeMethod("value", enumerated, (Object[])null); 
             }
     	} else {
     		enumType = m_enumerated;
@@ -423,12 +423,12 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      */
     protected void processMappingConverter(DatabaseMapping mapping) {
     	if (m_convert == null) {
-            Convert convert = getAnnotation(Convert.class);
+            Object convert = getAnnotation(Convert.class);
             
             if (convert == null) {
             	processJPAConverters(mapping);
             } else {
-            	processMappingConverter(mapping, convert.value());
+            	processMappingConverter(mapping, (String)invokeMethod("value", convert, (Object[])null)); 
             }
     	} else {
     		processMappingConverter(mapping, m_convert);
@@ -488,13 +488,13 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * Process a temporal type accessor.
      */
     protected void processTemporal(DatabaseMapping mapping) {
-    	TemporalType temporalType = null;
+    	Enum temporalType = null;
     	
     	if (m_temporal == null) {
-        	Temporal temporal = getAnnotation(Temporal.class);
+        	Object temporal = getAnnotation(Temporal.class);
         	
         	if (temporal != null) {
-        		temporalType = temporal.value();
+        	    temporalType=(Enum)invokeMethod("value", temporal, (Object[])null);
         	}
         } else {
         	temporalType = m_temporal;
@@ -537,7 +537,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setEnumerated(EnumType enumerated) {
+    public void setEnumerated(Enum enumerated) {
     	m_enumerated = enumerated;
     }
     
@@ -545,7 +545,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setFetch(FetchType fetch) {
+    public void setFetch(Enum fetch) {
     	m_fetch = fetch;
     }
     
@@ -574,7 +574,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setTemporal(TemporalType temporalType) {
+    public void setTemporal(Enum temporalType) {
     	m_temporal = temporalType;
     }
         
@@ -582,7 +582,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * INTERNAL:
      */
     public boolean usesIndirection() {
-    	FetchType fetchType = getFetch();
+    	Enum fetchType = getFetch();
     	
     	if (fetchType == null) {
     		fetchType = getDefaultFetchType();

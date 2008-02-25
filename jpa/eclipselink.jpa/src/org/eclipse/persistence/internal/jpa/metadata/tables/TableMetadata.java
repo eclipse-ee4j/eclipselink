@@ -54,14 +54,14 @@ public class TableMetadata {
     /**
      * INTERNAL:
      */
-    public TableMetadata(Table table, String entityClassName) {
+    public TableMetadata(Object table, String entityClassName) {
     	this(entityClassName);
     	
         if (table != null) {
-        	m_name = table.name();
-            m_schema = table.schema();
-            m_catalog = table.catalog();
-            setUniqueConstraints(table.uniqueConstraints());
+            m_name = (String)MetadataHelper.invokeMethod("name", table, (Object[])null); 
+            m_schema = (String)MetadataHelper.invokeMethod("schema", table, (Object[])null); 
+            m_catalog = (String)MetadataHelper.invokeMethod("catalog", table, (Object[])null); 
+            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", table, (Object[])null));
         }
     }
     
@@ -196,10 +196,10 @@ public class TableMetadata {
      * INTERNAL:
      * Called from annotation population.
      */
-    protected void setUniqueConstraints(UniqueConstraint[] uniqueConstraints) {
+    protected void setUniqueConstraints(Object[] uniqueConstraints) {
     	m_uniqueConstraints = new ArrayList<UniqueConstraintMetadata>();
     	
-    	for (UniqueConstraint uniqueConstraint : uniqueConstraints) {
+    	for (Object uniqueConstraint : uniqueConstraints) {
     		m_uniqueConstraints.add(new UniqueConstraintMetadata(uniqueConstraint));
     	}
     }

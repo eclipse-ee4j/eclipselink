@@ -37,6 +37,9 @@ public class EntityManagerSetupException extends EclipseLinkException {
     public static final int SESSION_LOADED_FROM_SESSIONSXML_MUST_BE_SERVER_SESSION = 28020;
     public static final int ATTEMPTED_LOAD_SESSION_WITHOUT_NAME_PROVIDED = 28021;
     public static final int WRONG_WEAVING_PROPERTY_VALUE = 28022;
+    public static final int METHOD_INVOCATION_FAILED = 28023;
+    public static final int CANNOT_ACCESS_METHOD_ON_OBJECT=28024;
+    
 
 
     /**
@@ -239,5 +242,22 @@ public class EntityManagerSetupException extends EclipseLinkException {
         setupException.setErrorCode(WRONG_WEAVING_PROPERTY_VALUE);
         return setupException;
     }
+    
+    public static EntityManagerSetupException methodInvocationFailed(java.lang.reflect.Method aMethod, Object anObject, Exception ex) {
+        Object[] args = {aMethod, anObject, anObject.getClass() };
+
+        EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(EntityManagerSetupException.class, METHOD_INVOCATION_FAILED, args),ex);
+        setupException.setErrorCode(METHOD_INVOCATION_FAILED);
+        return setupException;
+    }
+    
+    public static EntityManagerSetupException cannotAccessMethodOnObject(java.lang.reflect.Method aMethod, Object anObject) {
+        Object[] args = {aMethod, anObject, anObject.getClass() };
+
+        EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(EntityManagerSetupException.class, CANNOT_ACCESS_METHOD_ON_OBJECT, args));
+        setupException.setErrorCode(CANNOT_ACCESS_METHOD_ON_OBJECT);
+        return setupException;
+    }
+
     
 }

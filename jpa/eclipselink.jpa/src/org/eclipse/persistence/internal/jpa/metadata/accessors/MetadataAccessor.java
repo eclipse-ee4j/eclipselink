@@ -16,12 +16,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.ArrayList;
 
 import java.lang.annotation.Annotation;
 import java.lang.Boolean;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -37,7 +43,10 @@ import org.eclipse.persistence.annotations.ReturnUpdate;
 import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.annotations.StructConverter;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -143,7 +152,14 @@ public abstract class MetadataAccessor  {
      * Return the annotated element for this accessor.
      */
     protected <T extends Annotation> T getAnnotation(Class annotation) {
-        return (T) getAnnotation(annotation, getAnnotatedElement());
+        Object loadedAnnotation = m_accessibleObject.getAnnotations().get(annotation.getName());
+        
+        if (loadedAnnotation != null && m_descriptor.ignoreAnnotations()) {
+            m_descriptor.getLogger().logWarningMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, m_accessibleObject.getAnnotatedElement());
+            return null;
+        } else {
+            return (T) loadedAnnotation;
+        }
     }
     
     /**
@@ -173,8 +189,8 @@ public abstract class MetadataAccessor  {
     /**
      * INTERNAL:
      */
-    public FetchType getDefaultFetchType() {
-    	return FetchType.EAGER; 
+    public Enum getDefaultFetchType() {
+    	return FetchType.valueOf("EAGER"); 
     }
     
     /**
@@ -229,20 +245,20 @@ public abstract class MetadataAccessor  {
      * INTERNAL:
      * Return the mapping join fetch type.
      */
-    protected int getMappingJoinFetchType(JoinFetchType joinFetchType) {
-    	if (joinFetchType == null) {
-    		// Will check against metadata complete.
-    		JoinFetch joinFetch = getAnnotation(JoinFetch.class);            
-    		if (joinFetch == null) {
-    			return ForeignReferenceMapping.NONE;	
-    		} else if (joinFetch.value().equals(JoinFetchType.INNER)) {
-    			return ForeignReferenceMapping.INNER_JOIN;
-    		}
-    	} else if (joinFetchType.equals(JoinFetchType.INNER)) {
-			return ForeignReferenceMapping.INNER_JOIN;
-    	}
-    	
-    	return ForeignReferenceMapping.OUTER_JOIN;
+    protected int getMappingJoinFetchType(Enum joinFetchType) {
+        if (joinFetchType == null) {
+            // Will check against metadata complete.
+            Object joinFetch = getAnnotation(JoinFetch.class);            
+            if (joinFetch == null) {
+               return ForeignReferenceMapping.NONE;	
+            } else if (((Enum)invokeMethod("value", joinFetch, (Object[])null)).equals(JoinFetchType.INNER)) {
+               return ForeignReferenceMapping.INNER_JOIN;
+            }
+        } else if (joinFetchType.equals(JoinFetchType.INNER)) {
+            return ForeignReferenceMapping.INNER_JOIN;
+        }
+        
+        return ForeignReferenceMapping.OUTER_JOIN;
     }
     
     /**
@@ -518,6 +534,21 @@ public abstract class MetadataAccessor  {
      * element for this accessor. Method checks against the metadata complete
      * flag.
      */
+    protected boolean isAnnotationPresent(String annotationClassName) {
+        if(m_accessibleObject.getAnnotations().get(annotationClassName)!=null){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    
+    /** 
+     * INTERNAL:
+     * Indicates whether the specified annotation is present on the annotated
+     * element for this accessor. Method checks against the metadata complete
+     * flag.
+     */
     protected boolean isAnnotationPresent(Class<? extends Annotation> annotation, AnnotatedElement annotatedElement) {
         return MetadataHelper.isAnnotationPresent(annotation, annotatedElement, m_descriptor);
     }
@@ -661,7 +692,7 @@ public abstract class MetadataAccessor  {
     	}
     	
         // Check for a Converter annotation.
-        Converter converter = getAnnotation(Converter.class);
+        Object converter = getAnnotation(Converter.class);
         if (converter != null) {
             m_project.processConverter(new ConverterMetadata(converter, getAnnotatedElement()));
         }
@@ -679,7 +710,7 @@ public abstract class MetadataAccessor  {
     	}
     	
         // Check for an ObjectTypeConverter annotation.
-        ObjectTypeConverter converter = getAnnotation(ObjectTypeConverter.class);
+        Object converter = getAnnotation(ObjectTypeConverter.class);
         if (converter != null) {
         	m_project.processConverter(new ObjectTypeConverterMetadata(converter, getAnnotatedElement()));
         }
@@ -756,7 +787,7 @@ public abstract class MetadataAccessor  {
     	}
     	
         // Check for a StructConverter annotation.
-        StructConverter converter = getAnnotation(StructConverter.class);
+        Object converter = getAnnotation(StructConverter.class);
         if (converter != null) {
             m_project.processStructConverter(new StructConverterMetadata(converter, getAnnotatedElement()));
         }
@@ -783,7 +814,7 @@ public abstract class MetadataAccessor  {
     	}
     	
         // Check for an TypeConverter annotation.
-        TypeConverter converter = getAnnotation(TypeConverter.class);
+        Object converter = getAnnotation(TypeConverter.class);
         if (converter != null) {
         	m_project.processConverter(new TypeConverterMetadata(converter, getAnnotatedElement()));
         }
@@ -920,4 +951,50 @@ public abstract class MetadataAccessor  {
 	public void setTypeConverters(List<TypeConverterMetadata> typeConverters) {
 		m_typeConverters = typeConverters;
 	}
+	
+    /** 
+     * INTERNAL:
+     * Invoke the specified named method on the object,
+     * handling the necessary exceptions.
+     */
+    Object invokeMethod(String methodName, Object target ,Object[] params) {
+        ArrayList<Class<?>> parmClasses = new ArrayList<Class<?>>();
+        if(params!=null){
+            for(Object parm : params) {
+                parmClasses.add(parm.getClass());
+            }
+        }
+        Method method=null;
+        try {
+            method = Helper.getDeclaredMethod(target.getClass(), methodName,
+                    parmClasses.size() == 0 ? (Class<?>[])null : (Class<?>[]) parmClasses.toArray());            
+        } catch (NoSuchMethodException e) {
+            EntityManagerSetupException.methodInvocationFailed(method, target,e);
+        }
+        if(method!=null){
+             try {
+                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                     try {
+                         return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, target, params));
+                     } catch (PrivilegedActionException exception) {
+                         Exception throwableException = exception.getException();
+                         if (throwableException instanceof IllegalAccessException) {
+                             throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
+                         } else {
+                             throw EntityManagerSetupException.methodInvocationFailed(method, target, throwableException);
+                         }
+                     }
+                 } else {
+                     return PrivilegedAccessHelper.invokeMethod(method, target, params);
+                 }
+             } catch (IllegalAccessException ex1) {
+                 throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
+             } catch (InvocationTargetException ex2) {
+                 throw EntityManagerSetupException.methodInvocationFailed(method, target, ex2);
+             }
+        }else{
+            return null;
+        }
+    }
+
 }

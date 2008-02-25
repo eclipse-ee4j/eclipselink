@@ -35,11 +35,11 @@ public class TimeOfDayMetadata  {
     /**
      * INTERNAL:
      */
-    public TimeOfDayMetadata(TimeOfDay timeOfDay) {
-        setHour(timeOfDay.hour());
-        setMillisecond(timeOfDay.millisecond());
-        setMinute(timeOfDay.minute());
-        setSecond(timeOfDay.second());
+    public TimeOfDayMetadata(Object timeOfDay) {
+    	setHour((Integer)MetadataHelper.invokeMethod("hour", timeOfDay, (Object[])null));
+        setMillisecond((Integer)MetadataHelper.invokeMethod("millisecond", timeOfDay, (Object[])null));
+        setMinute((Integer)MetadataHelper.invokeMethod("minute", timeOfDay, (Object[])null));
+        setSecond((Integer)MetadataHelper.invokeMethod("second", timeOfDay, (Object[])null));
     }
     
     /**

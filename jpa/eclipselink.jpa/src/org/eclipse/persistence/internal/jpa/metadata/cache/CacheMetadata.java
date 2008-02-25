@@ -36,8 +36,8 @@ public class CacheMetadata  {
 	protected Boolean m_isolated;
 	protected Boolean m_refreshOnlyIfNewer;
 	
-	protected CacheCoordinationType m_coordinationType;
-    protected CacheType m_type;
+	protected Enum m_coordinationType;
+    protected Enum m_type;
     
 	protected Integer m_expiry;
 	protected Integer m_size;
@@ -52,20 +52,22 @@ public class CacheMetadata  {
     /**
      * INTERNAL:
      */
-    public CacheMetadata(Cache cache) {
-    	setAlwaysRefresh(cache.alwaysRefresh());
-    	setDisableHits(cache.disableHits());
-    	setCoordinationType(cache.coordinationType());
-    	setExpiry(cache.expiry());
-    	
-        if (cache.expiryTimeOfDay().specified()) {
-        	setExpiryTimeOfDay(new TimeOfDayMetadata(cache.expiryTimeOfDay()));
+    public CacheMetadata(Object cache) {
+        setAlwaysRefresh((Boolean)MetadataHelper.invokeMethod("alwaysRefresh", cache, (Object[])null));
+        setDisableHits((Boolean)MetadataHelper.invokeMethod("disableHits", cache, (Object[])null));
+        setCoordinationType((Enum)MetadataHelper.invokeMethod("coordinationType", cache, (Object[])null));
+        setExpiry((Integer)MetadataHelper.invokeMethod("expiry", cache, (Object[])null));
+
+        Object expiryTimeOfDay = MetadataHelper.invokeMethod("expiryTimeOfDay", cache, (Object[])null);
+        
+        if ((Boolean)MetadataHelper.invokeMethod("specified", expiryTimeOfDay, (Object[])null)) {
+            setExpiryTimeOfDay(new TimeOfDayMetadata(expiryTimeOfDay));
         }
         
-        setIsolated(cache.isolated());
-        setSize(cache.size());
-    	setType(cache.type());
-    	setRefreshOnlyIfNewer(cache.refreshOnlyIfNewer());
+        setIsolated((Boolean)MetadataHelper.invokeMethod("isolated", cache, (Object[])null));
+        setSize((Integer)MetadataHelper.invokeMethod("size", cache, (Object[])null));
+        setType((Enum)MetadataHelper.invokeMethod("type", cache, (Object[])null));
+        setRefreshOnlyIfNewer((Boolean)MetadataHelper.invokeMethod("refreshOnlyIfNewer", cache, (Object[])null));
     }
     
     /**
@@ -80,7 +82,7 @@ public class CacheMetadata  {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public CacheCoordinationType getCoordinationType() {
+    public Enum getCoordinationType() {
     	return m_coordinationType; 
     }
     
@@ -136,7 +138,7 @@ public class CacheMetadata  {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public CacheType getType() {
+    public Enum getType() {
        return m_type;
     }
     
@@ -222,7 +224,7 @@ public class CacheMetadata  {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setCoordinationType(CacheCoordinationType coordinationType) {
+    public void setCoordinationType(Enum coordinationType) {
         m_coordinationType = coordinationType; 
     }
     
@@ -270,7 +272,7 @@ public class CacheMetadata  {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setType(CacheType type) {
+    public void setType(Enum type) {
        m_type = type;
     }
     

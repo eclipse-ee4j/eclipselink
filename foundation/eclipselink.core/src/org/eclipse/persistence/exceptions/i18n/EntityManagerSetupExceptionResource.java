@@ -43,8 +43,9 @@ public class EntityManagerSetupExceptionResource extends ListResourceBundle {
                                            { "28019", "Deployment of PersistenceUnit [{0}] failed." },
                                            { "28020", "The session with name [{0}] loaded from [{1}] is [{2}], it however must be ServerSession." },
                                            { "28021", "PersistenceUnit [{0}] attempts to load a session from [{1}] without providing a session name.  A session name should be provided by defining the eclipselink.session-name property." },
-                                           { "28022", "Value [true] for the property [eclipselink.weaving] is incorrect when global instrumentation is null, value should either be null or false." }
-                                                                           
+                                           { "28022", "Value [true] for the property [eclipselink.weaving] is incorrect when global instrumentation is null, value should either be null or false." },
+                                           { "28023", "The method invocation of the method [{0}] on the object [{1}], of class [{2}], triggered an exception." },
+                                           { "28024", "Cannot reflectively access the method [{0}] for object [{1}], of class [{2}]." },
    };
 
     /**

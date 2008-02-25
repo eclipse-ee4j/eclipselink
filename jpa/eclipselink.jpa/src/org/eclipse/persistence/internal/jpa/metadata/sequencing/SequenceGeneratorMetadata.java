@@ -41,14 +41,14 @@ public class SequenceGeneratorMetadata {
     /**
      * INTERNAL:
      */
-    public SequenceGeneratorMetadata(SequenceGenerator sequenceGenerator, String entityClassName) {
+    public SequenceGeneratorMetadata(Object sequenceGenerator, String entityClassName) {
         m_loadedFromXML = false;
         m_location = entityClassName;
         
-        m_allocationSize = sequenceGenerator.allocationSize();
-        m_initialValue = sequenceGenerator.initialValue();
-        m_name = sequenceGenerator.name();
-        m_sequenceName = sequenceGenerator.sequenceName();            
+        m_allocationSize = (Integer)MetadataHelper.invokeMethod("allocationSize", sequenceGenerator, (Object[])null);
+        m_initialValue = (Integer)MetadataHelper.invokeMethod("initialValue", sequenceGenerator, (Object[])null); 
+        m_name = (String)MetadataHelper.invokeMethod("name", sequenceGenerator, (Object[])null); 
+        m_sequenceName = (String)MetadataHelper.invokeMethod("sequenceName", sequenceGenerator, (Object[])null); 
     }
     
     /**

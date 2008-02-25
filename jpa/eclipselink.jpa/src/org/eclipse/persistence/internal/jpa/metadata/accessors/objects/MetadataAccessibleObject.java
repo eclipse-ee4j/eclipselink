@@ -12,8 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
+import java.util.HashMap;
 import java.lang.reflect.Type;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.annotation.Annotation;
+
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 
@@ -30,12 +33,21 @@ public abstract class MetadataAccessibleObject  {
     private Type m_relationType;
     private String m_attributeName;
     private AnnotatedElement m_annotatedElement;
+    private HashMap m_annotations;
     
     /**
      * INTERNAL:
      */
     public MetadataAccessibleObject(AnnotatedElement annotatedElement) {
-        m_annotatedElement = annotatedElement;   
+        this.setAnnotatedElement(annotatedElement);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the annotations of this accessible object.
+     */
+    public HashMap getAnnotations(){
+        return m_annotations;
     }
     
     /**
@@ -134,6 +146,14 @@ public abstract class MetadataAccessibleObject  {
      */
     public void setAnnotatedElement(AnnotatedElement annotatedElement) {
         m_annotatedElement = annotatedElement;
+
+        //For bug210258, the getAnnotation and isAnnotationPresent method will use the hashmap to determine declared annotation.
+        m_annotations = new HashMap();
+        for(Annotation annotation : annotatedElement.getDeclaredAnnotations()){
+            String annotationName=annotation.toString().substring(1, annotation.toString().indexOf("("));
+            m_annotations.put(annotationName,annotation);
+        }
+        
     }
     
     /**

@@ -92,7 +92,7 @@ public class IdAccessor extends BasicAccessor {
     protected void processGeneratedValue() {
         if (m_generatedValue == null) {
         	// Look for an annotation.
-            GeneratedValue generatedValue = getAnnotation(GeneratedValue.class);
+            Object generatedValue = getAnnotation(GeneratedValue.class);
 
             if (generatedValue != null) {
                 processGeneratedValue(new GeneratedValueMetadata(generatedValue), getField());
