@@ -352,28 +352,18 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
         if (rootElementProperty != null) {
             rootObjectType = rootElementProperty.getType();
         } else {
-            String typeName = null;
-            String typeUri = null;
-            if (namespaceURI == "") {
-                typeName = qName;
-                typeUri = null;
-            } else {
-                typeName = localName;
-                typeUri = namespaceURI;
-            }
-
             QName typeQName = getTypeAttributeQName(atts);
             if (typeQName != null) {
-                typeName = typeQName.getLocalPart();
+                String typeName = typeQName.getLocalPart();
+                String typeUri = null;
                 String prefix = typeQName.getPrefix();
                 if ((prefix == null) || prefix.equals("")) {
                     typeUri = null;
                 } else {
                     typeUri = (String)getNamespaceMap().get(prefix);
                 }
-            }
-
             rootObjectType = typeHelper.getType(typeUri, typeName);
+            }            
         }
 
         DataObject rootObject = null;
