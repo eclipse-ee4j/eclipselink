@@ -14,8 +14,6 @@ package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import java.lang.reflect.AnnotatedElement;
 
-import org.eclipse.persistence.annotations.Converter;
-
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.DirectAccessor;
 

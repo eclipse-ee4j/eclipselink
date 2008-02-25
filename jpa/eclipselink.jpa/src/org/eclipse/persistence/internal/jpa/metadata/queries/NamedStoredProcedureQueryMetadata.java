@@ -15,9 +15,6 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
-import org.eclipse.persistence.annotations.StoredProcedureParameter;
-
 /**
  * INTERNAL:
  * Object to hold onto a named stored procedure query.

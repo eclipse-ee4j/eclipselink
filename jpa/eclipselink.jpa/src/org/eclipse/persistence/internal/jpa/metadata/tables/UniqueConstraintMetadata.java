@@ -15,8 +15,6 @@ package org.eclipse.persistence.internal.jpa.metadata.tables;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.UniqueConstraint;
-
 /**
  * INTERNAL:
  * Object to hold onto a unique constraint metadata.

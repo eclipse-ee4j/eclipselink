@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import javax.persistence.FieldResult;
-
 /**
  * INTERNAL:
  * Object to hold onto an field result metadata.

@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import javax.persistence.NamedQuery;
-
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 
 /**

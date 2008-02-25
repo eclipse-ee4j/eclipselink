@@ -14,7 +14,6 @@ package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import java.lang.reflect.AnnotatedElement;
 
-import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;

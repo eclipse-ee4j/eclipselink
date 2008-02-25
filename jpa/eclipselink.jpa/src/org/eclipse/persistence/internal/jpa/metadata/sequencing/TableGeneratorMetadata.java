@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
-import javax.persistence.TableGenerator;
-
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 

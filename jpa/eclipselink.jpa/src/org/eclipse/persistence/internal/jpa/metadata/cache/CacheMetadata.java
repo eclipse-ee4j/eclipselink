@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
-import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 

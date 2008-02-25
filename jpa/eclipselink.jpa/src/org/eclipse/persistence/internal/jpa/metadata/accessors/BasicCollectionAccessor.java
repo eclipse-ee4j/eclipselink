@@ -16,7 +16,6 @@ import javax.persistence.FetchType;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.CollectionTable;
-import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
 

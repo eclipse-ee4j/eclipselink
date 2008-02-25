@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
-import javax.persistence.SequenceGenerator;
-
 /**
  * A wrapper class to the MetadataSequenceGenerator that holds onto a 
  * @SequenceGenerator for its metadata values.

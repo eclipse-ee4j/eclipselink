@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.eclipse.persistence.annotations.ConversionValue;
-import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;

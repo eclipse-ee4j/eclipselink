@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
-import javax.persistence.Column;
-
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
 /**

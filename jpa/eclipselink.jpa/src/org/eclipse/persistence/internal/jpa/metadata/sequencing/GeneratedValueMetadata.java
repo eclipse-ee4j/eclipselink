@@ -12,9 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
-import javax.persistence.GenerationType;
-import javax.persistence.GeneratedValue;
-
 /**
  * Metadata object to hold generated value information.
  * 

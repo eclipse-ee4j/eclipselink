@@ -15,9 +15,6 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 import java.util.List;
 import java.util.ArrayList;
 
-import javax.persistence.FieldResult;
-import javax.persistence.EntityResult;
-
 /**
  * INTERNAL:
  * Object to hold onto an entity result metadata.

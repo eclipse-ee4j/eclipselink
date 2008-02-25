@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import org.eclipse.persistence.annotations.StoredProcedureParameter;
-
 /**
  * INTERNAL:
  * Object to hold onto a stored procedure parameter metadata.

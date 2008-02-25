@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
-import org.eclipse.persistence.annotations.ConversionValue;
-
 /**
  * INTERNAL:
  * Object to hold onto conversion values.

@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
-import javax.persistence.AttributeOverride;
-
 /**
  * Object to hold onto an attribute override meta data.
  * 

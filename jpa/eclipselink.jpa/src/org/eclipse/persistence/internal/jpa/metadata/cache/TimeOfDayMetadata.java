@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
-import org.eclipse.persistence.annotations.TimeOfDay;
-
 /**
  * Object to hold onto time of day metadata. This class should eventually be 
  * extended by an XMLTimeOfDay.

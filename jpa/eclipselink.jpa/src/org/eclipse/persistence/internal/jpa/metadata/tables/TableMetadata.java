@@ -15,9 +15,6 @@ package org.eclipse.persistence.internal.jpa.metadata.tables;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 

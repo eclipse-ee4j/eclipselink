@@ -15,10 +15,6 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.ColumnResult;
-import javax.persistence.EntityResult;
-import javax.persistence.SqlResultSetMapping;
-
 /**
  * INTERNAL:
  * Object to hold onto an sql result mapping metadata.

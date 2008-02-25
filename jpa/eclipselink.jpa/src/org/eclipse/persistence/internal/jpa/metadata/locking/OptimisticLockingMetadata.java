@@ -15,14 +15,11 @@ package org.eclipse.persistence.internal.jpa.metadata.locking;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-
-import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.annotations.OptimisticLockingType;
 import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.ChangedFieldsLockingPolicy;
@@ -32,11 +29,8 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
-
-
 
 /**
  * Object to hold onto optimistic locking metadata.

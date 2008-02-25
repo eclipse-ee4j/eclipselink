@@ -15,9 +15,6 @@ package org.eclipse.persistence.internal.jpa.metadata.tables;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 

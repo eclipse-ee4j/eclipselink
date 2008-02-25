@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
-import javax.persistence.CascadeType;
 import javax.persistence.OneToOne;
 
 import org.eclipse.persistence.exceptions.ValidationException;

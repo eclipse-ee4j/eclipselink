@@ -19,7 +19,6 @@ import javax.persistence.EnumType;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.exceptions.ValidationException;

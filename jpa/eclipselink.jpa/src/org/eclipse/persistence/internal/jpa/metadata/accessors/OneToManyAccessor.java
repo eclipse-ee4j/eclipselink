@@ -14,7 +14,6 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import java.util.Map;
 
-import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 
 import org.eclipse.persistence.exceptions.ValidationException;

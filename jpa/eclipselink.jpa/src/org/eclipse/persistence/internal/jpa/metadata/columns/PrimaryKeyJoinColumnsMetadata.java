@@ -15,9 +15,6 @@ package org.eclipse.persistence.internal.jpa.metadata.columns;
 import java.util.List;
 import java.util.ArrayList;
 
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.PrimaryKeyJoinColumns;
-
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 
 /**

@@ -24,7 +24,6 @@ import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;

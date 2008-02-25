@@ -14,9 +14,6 @@ package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.JoinColumn;
-
-import javax.persistence.AssociationOverride;
 
 /**
  * Object to hold onto an association override meta data.

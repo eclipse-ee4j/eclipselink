@@ -24,7 +24,6 @@ import javax.persistence.PrimaryKeyJoinColumns;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
-import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;

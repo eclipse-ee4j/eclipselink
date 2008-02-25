@@ -41,7 +41,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 
@@ -116,22 +115,6 @@ public class MetadataHelper {
         } else {
             return (T) loadedAnnotation;
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Wrapper to the getAnnotation() call using an Accessor.
-     */
-    public static <T extends Annotation> T getAnnotation(Class annotation, MetadataAccessor accessor) {
-        return (T) getAnnotation(annotation, accessor.getAnnotatedElement(), accessor.getDescriptor());
-    }
-    
-    /**
-     * INTERNAL:
-     * Wrapper to the getAnnotation() call using an MetadataDescriptor.
-     */
-    public static <T extends Annotation> T getAnnotation(Class annotation, MetadataDescriptor descriptor) {
-        return (T) getAnnotation(annotation, descriptor.getJavaClass(), descriptor);
     }
     
     /**
