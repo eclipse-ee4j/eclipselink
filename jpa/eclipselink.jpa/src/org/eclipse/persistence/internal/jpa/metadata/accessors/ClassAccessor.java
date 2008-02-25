@@ -1065,7 +1065,7 @@ public class ClassAccessor extends NonRelationshipAccessor {
             } else {
                 if (m_cache == null) {
                     // Process the annotation.
-                    Cache cache = getAnnotation(Cache.class);
+                    Object cache = getAnnotation(Cache.class);
                     new CacheMetadata(cache).process(getDescriptor(), getJavaClass());
                 } else {
                     // Process the XML setting.
