@@ -36,9 +36,9 @@ public class SQLResultSetMappingMetadata {
      * INTERNAL:
      */
     public SQLResultSetMappingMetadata(Object sqlResultSetMapping) {
-        setName((String)MetadataHelper.invokeMethod("name", sqlResultSetMapping, (Object[])null));
-        setEntityResults((Object[])MetadataHelper.invokeMethod("entities", sqlResultSetMapping, (Object[])null));
-        setColumnResults((Object[])MetadataHelper.invokeMethod("columns", sqlResultSetMapping, (Object[])null));
+        setName((String)MetadataHelper.invokeMethod("name", sqlResultSetMapping));
+        setEntityResults((Object[])MetadataHelper.invokeMethod("entities", sqlResultSetMapping));
+        setColumnResults((Object[])MetadataHelper.invokeMethod("columns", sqlResultSetMapping));
     }
     
     /**
@@ -87,7 +87,7 @@ public class SQLResultSetMappingMetadata {
         m_columnResults = new ArrayList<String>();
         
         for (Object columnResult : columnResults) {
-            m_columnResults.add((String)MetadataHelper.invokeMethod("name", columnResult, (Object[])null));
+            m_columnResults.add((String)MetadataHelper.invokeMethod("name", columnResult));
         }
     }
     

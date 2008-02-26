@@ -64,18 +64,18 @@ public class ColumnMetadata  {
         
         if (column != null) {
             // Apply the values from the column annotation.
-            setUnique((Boolean)MetadataHelper.invokeMethod("unique", column, (Object[])null));
-            setNullable((Boolean)MetadataHelper.invokeMethod("nullable", column, (Object[])null));
-            setUpdatable((Boolean)MetadataHelper.invokeMethod("updatable", column, (Object[])null));
-            setInsertable((Boolean)MetadataHelper.invokeMethod("insertable", column, (Object[])null));
+            setUnique((Boolean)MetadataHelper.invokeMethod("unique", column));
+            setNullable((Boolean)MetadataHelper.invokeMethod("nullable", column));
+            setUpdatable((Boolean)MetadataHelper.invokeMethod("updatable", column));
+            setInsertable((Boolean)MetadataHelper.invokeMethod("insertable", column));
         
-            setScale((Integer)MetadataHelper.invokeMethod("scale", column, (Object[])null));
-            setLength((Integer)MetadataHelper.invokeMethod("length", column, (Object[])null));
-            setPrecision((Integer)MetadataHelper.invokeMethod("precision", column, (Object[])null));
+            setScale((Integer)MetadataHelper.invokeMethod("scale", column));
+            setLength((Integer)MetadataHelper.invokeMethod("length", column));
+            setPrecision((Integer)MetadataHelper.invokeMethod("precision", column));
         
-            setName((String)MetadataHelper.invokeMethod("name", column, (Object[])null));
-            setTable((String)MetadataHelper.invokeMethod("table", column, (Object[])null));
-            setColumnDefinition((String)MetadataHelper.invokeMethod("columnDefinition", column, (Object[])null));
+            setName((String)MetadataHelper.invokeMethod("name", column));
+            setTable((String)MetadataHelper.invokeMethod("table", column));
+            setColumnDefinition((String)MetadataHelper.invokeMethod("columnDefinition", column));
         }
     }
     

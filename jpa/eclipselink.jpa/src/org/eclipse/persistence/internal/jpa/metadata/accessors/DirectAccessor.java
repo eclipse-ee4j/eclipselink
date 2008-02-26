@@ -302,7 +302,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      */
     public void processConvert() {
     	Object convert = getAnnotation(Convert.class);
-    	String convertValue  = (m_convert == null) ? (String)invokeMethod("value", convert, (Object[])null) : m_convert;
+    	String convertValue  = (m_convert == null) ? (String)invokeMethod("value", convert) : m_convert;
     	processConvert(getDescriptor().getMappingForAttributeName(getAttributeName()), convertValue);
     }
     
@@ -360,7 +360,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
             if (enumerated == null) {
             	enumType = EnumType.ORDINAL;
             } else {
-            	enumType = (Enum)invokeMethod("value", enumerated, (Object[])null); 
+            	enumType = (Enum)invokeMethod("value", enumerated); 
             }
     	} else {
     		enumType = m_enumerated;
@@ -427,7 +427,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
             if (convert == null) {
             	processJPAConverters(mapping);
             } else {
-            	processMappingConverter(mapping, (String)invokeMethod("value", convert, (Object[])null)); 
+            	processMappingConverter(mapping, (String)invokeMethod("value", convert)); 
             }
     	} else {
     		processMappingConverter(mapping, m_convert);
@@ -493,7 +493,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
         	Object temporal = getAnnotation(Temporal.class);
         	
         	if (temporal != null) {
-        	    temporalType=(Enum)invokeMethod("value", temporal, (Object[])null);
+        	    temporalType=(Enum)invokeMethod("value", temporal);
         	}
         } else {
         	temporalType = m_temporal;

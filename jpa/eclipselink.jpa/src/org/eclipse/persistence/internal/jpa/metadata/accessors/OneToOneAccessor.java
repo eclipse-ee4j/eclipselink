@@ -45,11 +45,11 @@ public class OneToOneAccessor extends ObjectAccessor {
         
         // We must check because OneToMany's can default.
         if (oneToOne != null) {
-        	setTargetEntity((Class)invokeMethod("targetEntity", oneToOne, (Object[])null));
-        	setCascadeTypes((Enum[])invokeMethod("cascade", oneToOne, (Object[])null));
-        	setFetch((Enum)invokeMethod("fetch", oneToOne, (Object[])null));
-        	setOptional((Boolean)invokeMethod("optional", oneToOne, (Object[])null));
-        	setMappedBy((String)invokeMethod("mappedBy", oneToOne, (Object[])null));
+        	setTargetEntity((Class)invokeMethod("targetEntity", oneToOne));
+        	setCascadeTypes((Enum[])invokeMethod("cascade", oneToOne));
+        	setFetch((Enum)invokeMethod("fetch", oneToOne));
+        	setOptional((Boolean)invokeMethod("optional", oneToOne));
+        	setMappedBy((String)invokeMethod("mappedBy", oneToOne));
         } else {
         	// Set the annotation defaults.
         	setTargetEntity(void.class);

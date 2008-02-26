@@ -107,8 +107,8 @@ public abstract class QueryMetadata  {
 
         for (Object hint : hints) {
             m_hints.add(new QueryHintMetadata(
-                  (String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("name", hint, (Object[])null),
-                  (String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("value", hint, (Object[])null)));
+                  (String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("name", hint),
+                  (String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("value", hint)));
         }
     }
     

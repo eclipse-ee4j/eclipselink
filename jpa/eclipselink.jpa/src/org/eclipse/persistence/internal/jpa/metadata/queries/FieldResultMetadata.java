@@ -33,8 +33,8 @@ public class FieldResultMetadata {
      * INTERNAL:
      */
     public FieldResultMetadata(Object fieldResult) {
-    	m_name = (String)MetadataHelper.invokeMethod("name", fieldResult, (Object[])null);
-    	m_column = (String)MetadataHelper.invokeMethod("column", fieldResult, (Object[])null);
+    	m_name = (String)MetadataHelper.invokeMethod("name", fieldResult);
+    	m_column = (String)MetadataHelper.invokeMethod("column", fieldResult);
     }
     
     /**

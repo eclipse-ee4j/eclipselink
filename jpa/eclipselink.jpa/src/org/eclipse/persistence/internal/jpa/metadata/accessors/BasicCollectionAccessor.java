@@ -62,8 +62,8 @@ public class BasicCollectionAccessor extends DirectAccessor {
 
         // Must check, BasicMapAccessor calls this constructor ...
         if (basicCollection != null) {
-            m_valueColumn = new ColumnMetadata(invokeMethod("valueColumn", basicCollection, (Object[])null), getAttributeName());
-            setFetch((Enum)invokeMethod("fetch", basicCollection, (Object[])null));
+            m_valueColumn = new ColumnMetadata(invokeMethod("valueColumn", basicCollection), getAttributeName());
+            setFetch((Enum)invokeMethod("fetch", basicCollection));
         }
     }
     

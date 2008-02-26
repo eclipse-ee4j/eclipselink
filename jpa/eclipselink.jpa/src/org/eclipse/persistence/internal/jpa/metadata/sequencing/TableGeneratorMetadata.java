@@ -49,17 +49,17 @@ public class TableGeneratorMetadata extends TableMetadata {
     	
     	m_loadedFromXML = false;
         
-        m_allocationSize = (Integer)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("allocationSize", tableGenerator, (Object[])null);
-        m_initialValue = (Integer)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("initialValue", tableGenerator, (Object[])null);
-        m_generatorName = (String)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("name", tableGenerator, (Object[])null); 
-        m_pkColumnName = (String)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("pkColumnName", tableGenerator, (Object[])null); 
-        m_pkColumnValue = (String)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("pkColumnValue", tableGenerator, (Object[])null);
-        m_valueColumnName = (String)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("valueColumnName", tableGenerator, (Object[])null);
+        m_allocationSize = (Integer)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("allocationSize", tableGenerator);
+        m_initialValue = (Integer)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("initialValue", tableGenerator);
+        m_generatorName = (String)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("name", tableGenerator); 
+        m_pkColumnName = (String)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("pkColumnName", tableGenerator); 
+        m_pkColumnValue = (String)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("pkColumnValue", tableGenerator);
+        m_valueColumnName = (String)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("valueColumnName", tableGenerator);
         
-        setCatalog((String)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("catalog", tableGenerator, (Object[])null));
-        setSchema((String)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("schema", tableGenerator, (Object[])null));
-        setName((String)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("table", tableGenerator, (Object[])null));
-        setUniqueConstraints((Object[])org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("uniqueConstraints", tableGenerator, (Object[])null));
+        setCatalog((String)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("catalog", tableGenerator));
+        setSchema((String)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("schema", tableGenerator));
+        setName((String)org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("table", tableGenerator));
+        setUniqueConstraints((Object[])org.eclipse.persistence.internal.jpa.metadata.sequencing.MetadataHelper.invokeMethod("uniqueConstraints", tableGenerator));
     }
     
     /**

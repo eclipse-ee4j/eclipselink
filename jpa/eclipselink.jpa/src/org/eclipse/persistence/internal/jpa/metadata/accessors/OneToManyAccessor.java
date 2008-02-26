@@ -52,10 +52,10 @@ public class OneToManyAccessor extends CollectionAccessor {
         
         // We must check because OneToMany's can default.
         if (oneToMany != null) {
-        	setTargetEntity((Class)invokeMethod("targetEntity", oneToMany, (Object[])null));
-        	setCascadeTypes((Enum[])invokeMethod("cascade", oneToMany, (Object[])null));
-        	setFetch((Enum)invokeMethod("fetch", oneToMany, (Object[])null));
-        	setMappedBy((String)invokeMethod("mappedBy", oneToMany, (Object[])null));
+        	setTargetEntity((Class)invokeMethod("targetEntity", oneToMany));
+        	setCascadeTypes((Enum[])invokeMethod("cascade", oneToMany));
+        	setFetch((Enum)invokeMethod("fetch", oneToMany));
+        	setMappedBy((String)invokeMethod("mappedBy", oneToMany));
         } else {
         	// Set the annotation defaults.
         	setTargetEntity(void.class);

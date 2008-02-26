@@ -251,7 +251,7 @@ public abstract class MetadataAccessor  {
             Object joinFetch = getAnnotation(JoinFetch.class);            
             if (joinFetch == null) {
                return ForeignReferenceMapping.NONE;	
-            } else if (((Enum)invokeMethod("value", joinFetch, (Object[])null)).equals(JoinFetchType.INNER)) {
+            } else if (((Enum)invokeMethod("value", joinFetch)).equals(JoinFetchType.INNER)) {
                return ForeignReferenceMapping.INNER_JOIN;
             }
         } else if (joinFetchType.equals(JoinFetchType.INNER)) {
@@ -520,6 +520,64 @@ public abstract class MetadataAccessor  {
     
     /** 
      * INTERNAL:
+     * Invoke the specified named method on the object, handling the necessary 
+     * exceptions.
+     */
+    Object invokeMethod(String methodName, Object target) {
+        return invokeMethod(methodName, target, (Object[]) null);
+    }
+    
+    /** 
+     * INTERNAL:
+     * Invoke the specified named method on the object, handling the necessary 
+     * exceptions.
+     */
+    Object invokeMethod(String methodName, Object target, Object[] params) {
+        ArrayList<Class<?>> parmClasses = new ArrayList<Class<?>>();
+        
+        if (params != null){
+            for (Object parm : params) {
+                parmClasses.add(parm.getClass());
+            }
+        }
+        
+        Method method=null;
+        
+        try {
+            method = Helper.getDeclaredMethod(target.getClass(), methodName,
+                    parmClasses.size() == 0 ? (Class<?>[])null : (Class<?>[]) parmClasses.toArray());            
+        } catch (NoSuchMethodException e) {
+            EntityManagerSetupException.methodInvocationFailed(method, target,e);
+        }
+        
+        if (method != null) {
+             try {
+                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                     try {
+                         return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, target, params));
+                     } catch (PrivilegedActionException exception) {
+                         Exception throwableException = exception.getException();
+                         if (throwableException instanceof IllegalAccessException) {
+                             throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
+                         } else {
+                             throw EntityManagerSetupException.methodInvocationFailed(method, target, throwableException);
+                         }
+                     }
+                 } else {
+                     return PrivilegedAccessHelper.invokeMethod(method, target, params);
+                 }
+             } catch (IllegalAccessException ex1) {
+                 throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
+             } catch (InvocationTargetException ex2) {
+                 throw EntityManagerSetupException.methodInvocationFailed(method, target, ex2);
+             }
+        } else {
+            return null;
+        }
+    }
+    
+    /** 
+     * INTERNAL:
      * Indicates whether the specified annotation is present on the annotated
      * element for this accessor. Method checks against the metadata complete
      * flag.
@@ -535,13 +593,8 @@ public abstract class MetadataAccessor  {
      * flag.
      */
     protected boolean isAnnotationPresent(String annotationClassName) {
-        if(m_accessibleObject.getAnnotations().get(annotationClassName)!=null){
-            return true;
-        }else{
-            return false;
-        }
+        return m_accessibleObject.getAnnotations().get(annotationClassName) != null;
     }
-    
     
     /** 
      * INTERNAL:
@@ -952,49 +1005,5 @@ public abstract class MetadataAccessor  {
 		m_typeConverters = typeConverters;
 	}
 	
-    /** 
-     * INTERNAL:
-     * Invoke the specified named method on the object,
-     * handling the necessary exceptions.
-     */
-    Object invokeMethod(String methodName, Object target ,Object[] params) {
-        ArrayList<Class<?>> parmClasses = new ArrayList<Class<?>>();
-        if(params!=null){
-            for(Object parm : params) {
-                parmClasses.add(parm.getClass());
-            }
-        }
-        Method method=null;
-        try {
-            method = Helper.getDeclaredMethod(target.getClass(), methodName,
-                    parmClasses.size() == 0 ? (Class<?>[])null : (Class<?>[]) parmClasses.toArray());            
-        } catch (NoSuchMethodException e) {
-            EntityManagerSetupException.methodInvocationFailed(method, target,e);
-        }
-        if(method!=null){
-             try {
-                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                     try {
-                         return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, target, params));
-                     } catch (PrivilegedActionException exception) {
-                         Exception throwableException = exception.getException();
-                         if (throwableException instanceof IllegalAccessException) {
-                             throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
-                         } else {
-                             throw EntityManagerSetupException.methodInvocationFailed(method, target, throwableException);
-                         }
-                     }
-                 } else {
-                     return PrivilegedAccessHelper.invokeMethod(method, target, params);
-                 }
-             } catch (IllegalAccessException ex1) {
-                 throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
-             } catch (InvocationTargetException ex2) {
-                 throw EntityManagerSetupException.methodInvocationFailed(method, target, ex2);
-             }
-        }else{
-            return null;
-        }
-    }
 
 }

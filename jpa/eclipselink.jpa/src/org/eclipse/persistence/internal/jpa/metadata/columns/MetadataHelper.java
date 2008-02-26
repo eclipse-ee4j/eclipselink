@@ -31,28 +31,40 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
  * @since TopLink 11g
  */
 final class MetadataHelper {
-    MetadataHelper(){
-    }
+    MetadataHelper() {}
+    
     /** 
      * INTERNAL:
-     * Invoke the specified named method on the object,
-     * handling the necessary exceptions.
+     * Invoke the specified named method on the object, handling the necessary 
+     * exceptions.
      */
-    static Object invokeMethod(String methodName, Object target ,Object[] params) {
+    static Object invokeMethod(String methodName, Object target) {
+        return invokeMethod(methodName, target, (Object[]) null);
+    }
+    
+    /** 
+     * INTERNAL:
+     * Invoke the specified named method on the object, handling the necessary 
+     * exceptions.
+     */
+    static Object invokeMethod(String methodName, Object target, Object[] params) {
         ArrayList<Class<?>> parmClasses = new ArrayList<Class<?>>();
-        if(params!=null){
-            for(Object parm : params) {
+        if (params != null) {
+            for (Object parm : params) {
                 parmClasses.add(parm.getClass());
             }
         }
-        Method method=null;
+        
+        Method method = null;
+        
         try {
             method = Helper.getDeclaredMethod(target.getClass(), methodName,
                     parmClasses.size() == 0 ? (Class<?>[])null : (Class<?>[]) parmClasses.toArray());            
         } catch (NoSuchMethodException e) {
             EntityManagerSetupException.methodInvocationFailed(method, target,e);
         }
-        if(method!=null){
+        
+        if (method != null) {
              try {
                  if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                      try {
@@ -73,7 +85,7 @@ final class MetadataHelper {
              } catch (InvocationTargetException ex2) {
                  throw EntityManagerSetupException.methodInvocationFailed(method, target, ex2);
              }
-        }else{
+        } else {
             return null;
         }
     }

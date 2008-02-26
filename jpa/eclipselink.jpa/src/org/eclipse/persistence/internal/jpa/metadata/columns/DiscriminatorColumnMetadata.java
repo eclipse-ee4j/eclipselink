@@ -34,10 +34,10 @@ public class DiscriminatorColumnMetadata {
      */
     public DiscriminatorColumnMetadata(Object discriminatorColumn) {    	
     	if (discriminatorColumn != null) {
-    		m_columnDefinition =  (String)MetadataHelper.invokeMethod("columnDefinition", discriminatorColumn, (Object[])null);
-    		m_discriminatorType = (Enum)MetadataHelper.invokeMethod("discriminatorType", discriminatorColumn, (Object[])null); 
-    		m_length = (Integer)MetadataHelper.invokeMethod("length", discriminatorColumn, (Object[])null);
-    		m_name = (String)MetadataHelper.invokeMethod("name", discriminatorColumn, (Object[])null); 
+    		m_columnDefinition =  (String)MetadataHelper.invokeMethod("columnDefinition", discriminatorColumn);
+    		m_discriminatorType = (Enum)MetadataHelper.invokeMethod("discriminatorType", discriminatorColumn); 
+    		m_length = (Integer)MetadataHelper.invokeMethod("length", discriminatorColumn);
+    		m_name = (String)MetadataHelper.invokeMethod("name", discriminatorColumn); 
     	}
     }
 

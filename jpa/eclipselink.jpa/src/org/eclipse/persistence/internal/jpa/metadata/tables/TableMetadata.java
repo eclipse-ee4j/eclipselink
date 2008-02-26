@@ -55,10 +55,10 @@ public class TableMetadata {
     	this(entityClassName);
     	
         if (table != null) {
-            m_name = (String)MetadataHelper.invokeMethod("name", table, (Object[])null); 
-            m_schema = (String)MetadataHelper.invokeMethod("schema", table, (Object[])null); 
-            m_catalog = (String)MetadataHelper.invokeMethod("catalog", table, (Object[])null); 
-            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", table, (Object[])null));
+            m_name = (String)MetadataHelper.invokeMethod("name", table); 
+            m_schema = (String)MetadataHelper.invokeMethod("schema", table); 
+            m_catalog = (String)MetadataHelper.invokeMethod("catalog", table); 
+            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", table));
         }
     }
     

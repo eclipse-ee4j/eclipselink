@@ -33,7 +33,7 @@ public class UniqueConstraintMetadata {
 	public UniqueConstraintMetadata(Object uniqueConstraint) {
 		m_columnNames = new ArrayList<String>();
 		
-		for (String columnName : (String[])MetadataHelper.invokeMethod("columnNames", uniqueConstraint, (Object[])null)) { 
+		for (String columnName : (String[])MetadataHelper.invokeMethod("columnNames", uniqueConstraint)) { 
 			m_columnNames.add(columnName);
 		}
 	}

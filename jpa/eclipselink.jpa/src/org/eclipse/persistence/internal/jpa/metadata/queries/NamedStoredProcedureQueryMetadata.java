@@ -40,16 +40,16 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      */
     public NamedStoredProcedureQueryMetadata(Object namedStoredProcedureQuery, Class javaClass) {
         
-    	m_procedureName = (String)MetadataHelper.invokeMethod("procedureName", namedStoredProcedureQuery, (Object[])null);
+    	m_procedureName = (String)MetadataHelper.invokeMethod("procedureName", namedStoredProcedureQuery);
     	
     	setLoadedFromAnnotation();
     	setLocation(javaClass.getName());
-        setName((String)MetadataHelper.invokeMethod("name", namedStoredProcedureQuery, (Object[])null));
-        setHints((Object[])MetadataHelper.invokeMethod("hints", namedStoredProcedureQuery, (Object[])null));
-        setResultClass((Class)MetadataHelper.invokeMethod("resultClass", namedStoredProcedureQuery, (Object[])null));
-        setResultSetMapping((String)MetadataHelper.invokeMethod("resultSetMapping", namedStoredProcedureQuery, (Object[])null));
-        setReturnsResultSet((Boolean)MetadataHelper.invokeMethod("returnsResultSet", namedStoredProcedureQuery, (Object[])null));
-        setProcedureParameters((Object[])MetadataHelper.invokeMethod("procedureParameters", namedStoredProcedureQuery, (Object[])null));
+        setName((String)MetadataHelper.invokeMethod("name", namedStoredProcedureQuery));
+        setHints((Object[])MetadataHelper.invokeMethod("hints", namedStoredProcedureQuery));
+        setResultClass((Class)MetadataHelper.invokeMethod("resultClass", namedStoredProcedureQuery));
+        setResultSetMapping((String)MetadataHelper.invokeMethod("resultSetMapping", namedStoredProcedureQuery));
+        setReturnsResultSet((Boolean)MetadataHelper.invokeMethod("returnsResultSet", namedStoredProcedureQuery));
+        setProcedureParameters((Object[])MetadataHelper.invokeMethod("procedureParameters", namedStoredProcedureQuery));
     }
    
     /**

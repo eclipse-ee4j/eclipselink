@@ -42,10 +42,10 @@ public class ManyToManyAccessor extends CollectionAccessor {
         
         Object manyToMany = getAnnotation(ManyToMany.class);
         
-        setTargetEntity((Class)invokeMethod("targetEntity", manyToMany, (Object[])null));
-        setCascadeTypes((Enum[])invokeMethod("cascade", manyToMany, (Object[])null));
-        setFetch((Enum)invokeMethod("fetch", manyToMany, (Object[])null));
-        setMappedBy((String)invokeMethod("mappedBy", manyToMany, (Object[])null));
+        setTargetEntity((Class)invokeMethod("targetEntity", manyToMany));
+        setCascadeTypes((Enum[])invokeMethod("cascade", manyToMany));
+        setFetch((Enum)invokeMethod("fetch", manyToMany));
+        setMappedBy((String)invokeMethod("mappedBy", manyToMany));
     }
     
     /**

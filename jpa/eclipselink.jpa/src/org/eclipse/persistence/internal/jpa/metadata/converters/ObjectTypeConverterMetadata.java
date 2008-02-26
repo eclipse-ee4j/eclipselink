@@ -59,13 +59,13 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
     	setLoadedFromAnnotation();
     	setLocation(annotatedElement);
 
-        setName((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("name", objectTypeConverter, (Object[])null));
-        setDataType((Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("dataType", objectTypeConverter, (Object[])null));
-        setObjectType((Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("objectType", objectTypeConverter, (Object[])null));
-        setConversionValues((Object[])org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("conversionValues", objectTypeConverter, (Object[])null));
+        setName((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("name", objectTypeConverter));
+        setDataType((Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("dataType", objectTypeConverter));
+        setObjectType((Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("objectType", objectTypeConverter));
+        setConversionValues((Object[])org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("conversionValues", objectTypeConverter));
     	
         
-        m_defaultObjectValue = (String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("defaultObjectValue", objectTypeConverter, (Object[])null); 
+        m_defaultObjectValue = (String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("defaultObjectValue", objectTypeConverter); 
     }
     
     /**

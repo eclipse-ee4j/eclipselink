@@ -46,7 +46,7 @@ public class JoinColumnsMetadata {
         
         // Process all the join columns first.
         if (joinColumns != null) {
-            for (Object jColumn : (Object[])MetadataHelper.invokeMethod("value", joinColumns, (Object[])null)) {
+            for (Object jColumn : (Object[])MetadataHelper.invokeMethod("value", joinColumns)) {
                 m_joinColumns.add(new JoinColumnMetadata(jColumn));
             }
         }

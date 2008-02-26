@@ -280,7 +280,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
             	// Look for an annotation.
             	if (isAnnotationPresent(MapKey.class)) {
                     Object mapKey = getAnnotation(MapKey.class);
-                    mapKeyValue = (String)invokeMethod("name", mapKey, (Object[])null);
+                    mapKeyValue = (String)invokeMethod("name", mapKey);
                 }
             } else {
             	// Use the value specified in XML.
@@ -341,7 +341,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     	if (m_orderBy == null) {
     		// Look for an OrderBy annotation.
         	Object orderBy = getAnnotation(OrderBy.class);
-            orderByValue = (orderBy == null) ? null : (String)invokeMethod("value", orderBy, (Object[])null); 
+            orderByValue = (orderBy == null) ? null : (String)invokeMethod("value", orderBy); 
         } else {
         	// Used the value specified in XML.
             orderByValue = m_orderBy;

@@ -41,11 +41,10 @@ public class ManyToOneAccessor extends ObjectAccessor {
         
         Object manyToOne = getAnnotation(ManyToOne.class);
         
-        setTargetEntity((Class)invokeMethod("targetEntity", manyToOne, (Object[])null));
-        
-        setCascadeTypes((Enum[])invokeMethod("cascade", manyToOne, (Object[])null));
-        setFetch((Enum)invokeMethod("fetch", manyToOne, (Object[])null));
-        setOptional((Boolean)invokeMethod("optional", manyToOne, (Object[])null));
+        setTargetEntity((Class)invokeMethod("targetEntity", manyToOne));
+        setCascadeTypes((Enum[])invokeMethod("cascade", manyToOne));
+        setFetch((Enum)invokeMethod("fetch", manyToOne));
+        setOptional((Boolean)invokeMethod("optional", manyToOne));
     }
 
     /**

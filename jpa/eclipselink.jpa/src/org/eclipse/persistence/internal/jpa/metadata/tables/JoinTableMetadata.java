@@ -41,12 +41,12 @@ public class JoinTableMetadata extends TableMetadata {
     	super(annotatedElementName);
     	
         if (joinTable != null) {
-            setName((String)MetadataHelper.invokeMethod("name", joinTable, (Object[])null));
-            setSchema((String)MetadataHelper.invokeMethod("schema", joinTable, (Object[])null));
-            setCatalog((String)MetadataHelper.invokeMethod("catalog", joinTable, (Object[])null));
-            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", joinTable, (Object[])null));
-            setJoinColumns((Object[])MetadataHelper.invokeMethod("joinColumns", joinTable, (Object[])null));
-    	    setInverseJoinColumns((Object[])MetadataHelper.invokeMethod("inverseJoinColumns", joinTable, (Object[])null));
+            setName((String)MetadataHelper.invokeMethod("name", joinTable));
+            setSchema((String)MetadataHelper.invokeMethod("schema", joinTable));
+            setCatalog((String)MetadataHelper.invokeMethod("catalog", joinTable));
+            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", joinTable));
+            setJoinColumns((Object[])MetadataHelper.invokeMethod("joinColumns", joinTable));
+    	    setInverseJoinColumns((Object[])MetadataHelper.invokeMethod("inverseJoinColumns", joinTable));
         }
     }
     

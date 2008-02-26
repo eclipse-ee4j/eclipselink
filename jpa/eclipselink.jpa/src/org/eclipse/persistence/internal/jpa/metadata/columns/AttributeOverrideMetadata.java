@@ -33,9 +33,8 @@ public class AttributeOverrideMetadata extends OverrideMetadata {
 	public AttributeOverrideMetadata(Object attributeOverride, String className) {
 		super(className);
 	
-		setName((String)MetadataHelper.invokeMethod("name", attributeOverride, (Object[])null));
-		m_column = new ColumnMetadata(MetadataHelper.invokeMethod("column", attributeOverride, (Object[])null),
-		                        (String)MetadataHelper.invokeMethod("name", attributeOverride, (Object[])null));
+		setName((String)MetadataHelper.invokeMethod("name", attributeOverride));
+		m_column = new ColumnMetadata(MetadataHelper.invokeMethod("column", attributeOverride), (String)MetadataHelper.invokeMethod("name", attributeOverride));
 	}
 	
 	/**

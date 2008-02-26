@@ -38,10 +38,10 @@ public class EntityResultMetadata {
      */
     public EntityResultMetadata(Object entityResult) {
         
-        m_entityClass = (Class)MetadataHelper.invokeMethod("entityClass", entityResult, (Object[])null); 
-        m_discriminatorColumn = (String)MetadataHelper.invokeMethod("discriminatorColumn", entityResult, (Object[])null);
+        m_entityClass = (Class)MetadataHelper.invokeMethod("entityClass", entityResult); 
+        m_discriminatorColumn = (String)MetadataHelper.invokeMethod("discriminatorColumn", entityResult);
         
-        setFieldResults((Object[])MetadataHelper.invokeMethod("fields", entityResult, (Object[])null));
+        setFieldResults((Object[])MetadataHelper.invokeMethod("fields", entityResult));
     }
     
     /**

@@ -52,21 +52,21 @@ public class CacheMetadata  {
      * INTERNAL:
      */
     public CacheMetadata(Object cache) {
-        setAlwaysRefresh((Boolean)MetadataHelper.invokeMethod("alwaysRefresh", cache, (Object[])null));
-        setDisableHits((Boolean)MetadataHelper.invokeMethod("disableHits", cache, (Object[])null));
-        setCoordinationType((Enum)MetadataHelper.invokeMethod("coordinationType", cache, (Object[])null));
-        setExpiry((Integer)MetadataHelper.invokeMethod("expiry", cache, (Object[])null));
+        setAlwaysRefresh((Boolean)MetadataHelper.invokeMethod("alwaysRefresh", cache));
+        setDisableHits((Boolean)MetadataHelper.invokeMethod("disableHits", cache));
+        setCoordinationType((Enum)MetadataHelper.invokeMethod("coordinationType", cache));
+        setExpiry((Integer)MetadataHelper.invokeMethod("expiry", cache));
 
-        Object expiryTimeOfDay = MetadataHelper.invokeMethod("expiryTimeOfDay", cache, (Object[])null);
+        Object expiryTimeOfDay = MetadataHelper.invokeMethod("expiryTimeOfDay", cache);
         
-        if ((Boolean)MetadataHelper.invokeMethod("specified", expiryTimeOfDay, (Object[])null)) {
+        if ((Boolean)MetadataHelper.invokeMethod("specified", expiryTimeOfDay)) {
             setExpiryTimeOfDay(new TimeOfDayMetadata(expiryTimeOfDay));
         }
         
-        setIsolated((Boolean)MetadataHelper.invokeMethod("isolated", cache, (Object[])null));
-        setSize((Integer)MetadataHelper.invokeMethod("size", cache, (Object[])null));
-        setType((Enum)MetadataHelper.invokeMethod("type", cache, (Object[])null));
-        setRefreshOnlyIfNewer((Boolean)MetadataHelper.invokeMethod("refreshOnlyIfNewer", cache, (Object[])null));
+        setIsolated((Boolean)MetadataHelper.invokeMethod("isolated", cache));
+        setSize((Integer)MetadataHelper.invokeMethod("size", cache));
+        setType((Enum)MetadataHelper.invokeMethod("type", cache));
+        setRefreshOnlyIfNewer((Boolean)MetadataHelper.invokeMethod("refreshOnlyIfNewer", cache));
     }
     
     /**

@@ -36,10 +36,10 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
 	public AssociationOverrideMetadata(Object associationOverride, String className) {
 		super(className);
 
-		setName((String)MetadataHelper.invokeMethod("name", associationOverride, (Object[])null));
+		setName((String)MetadataHelper.invokeMethod("name", associationOverride));
 		
 		m_joinColumns = new ArrayList<JoinColumnMetadata>();
-		for (Object joinColumn : (Object[])MetadataHelper.invokeMethod("joinColumns", associationOverride, (Object[])null)) {
+		for (Object joinColumn : (Object[])MetadataHelper.invokeMethod("joinColumns", associationOverride)) {
 			m_joinColumns.add(new JoinColumnMetadata(joinColumn));
 		}
 	}

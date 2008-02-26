@@ -43,9 +43,9 @@ public class ConverterMetadata extends AbstractConverterMetadata {
     	setLoadedFromAnnotation();
     	setLocation(annotatedElement);
     	
-    	setName((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("name", converter, (Object[])null));
+    	setName((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("name", converter));
     	
-    	Class converterClass = (Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("converterClass", converter, (Object[])null);
+    	Class converterClass = (Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("converterClass", converter);
     	m_className = converterClass.getName();        
     }
     

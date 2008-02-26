@@ -40,11 +40,11 @@ public class SecondaryTableMetadata extends TableMetadata  {
     	super(entityClassName);
 	   
         if (secondaryTable != null) {
-            setName((String)MetadataHelper.invokeMethod("name", secondaryTable, (Object[])null));
-            setSchema((String)MetadataHelper.invokeMethod("schema", secondaryTable, (Object[])null));
-            setCatalog((String)MetadataHelper.invokeMethod("catalog", secondaryTable, (Object[])null));
-            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", secondaryTable, (Object[])null));
-            setPrimaryKeyJoinColumns((Object[])MetadataHelper.invokeMethod("pkJoinColumns", secondaryTable, (Object[])null));
+            setName((String)MetadataHelper.invokeMethod("name", secondaryTable));
+            setSchema((String)MetadataHelper.invokeMethod("schema", secondaryTable));
+            setCatalog((String)MetadataHelper.invokeMethod("catalog", secondaryTable));
+            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", secondaryTable));
+            setPrimaryKeyJoinColumns((Object[])MetadataHelper.invokeMethod("pkJoinColumns", secondaryTable));
         }
     }
     

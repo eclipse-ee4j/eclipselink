@@ -57,8 +57,8 @@ public class BasicAccessor extends DirectAccessor {
         Object basic = getAnnotation(Basic.class);
         
         if (basic != null) {
-            setFetch((Enum)invokeMethod("fetch", basic, (Object[])null));
-            setOptional((Boolean)invokeMethod("optional", basic, (Object[])null));
+            setFetch((Enum)invokeMethod("fetch", basic));
+            setOptional((Boolean)invokeMethod("optional", basic));
         }
     }
     
@@ -217,7 +217,7 @@ public class BasicAccessor extends DirectAccessor {
     		Object mutable = getAnnotation(Mutable.class);
     		
     		if (mutable != null) {
-    			((DirectToFieldMapping)mapping).setIsMutable((Boolean)invokeMethod("value", mutable, (Object[])null));
+    			((DirectToFieldMapping)mapping).setIsMutable((Boolean)invokeMethod("value", mutable));
     		}
     	} else {
     		((DirectToFieldMapping)mapping).setIsMutable(m_mutable.booleanValue());
@@ -233,7 +233,7 @@ public class BasicAccessor extends DirectAccessor {
 
         if (returnInsert != null) {
             // Process return only.
-            processReturnInsert(field, (Boolean)invokeMethod("returnOnly", returnInsert, (Object[])null)); 
+            processReturnInsert(field, (Boolean)invokeMethod("returnOnly", returnInsert)); 
         }
     }
 

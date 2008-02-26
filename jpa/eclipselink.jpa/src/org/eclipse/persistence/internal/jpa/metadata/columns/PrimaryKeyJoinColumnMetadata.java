@@ -36,11 +36,11 @@ public class PrimaryKeyJoinColumnMetadata {
     public PrimaryKeyJoinColumnMetadata(Object primaryKeyJoinColumn) {
         if (primaryKeyJoinColumn != null) {
             // Process the primary key field metadata.
-            setReferencedColumnName((String)MetadataHelper.invokeMethod("referencedColumnName", primaryKeyJoinColumn, (Object[])null));
+            setReferencedColumnName((String)MetadataHelper.invokeMethod("referencedColumnName", primaryKeyJoinColumn));
         
             // Process the foreign key field metadata.
-            setName((String)MetadataHelper.invokeMethod("name", primaryKeyJoinColumn, (Object[])null));
-            setColumnDefinition((String)MetadataHelper.invokeMethod("columnDefinition", primaryKeyJoinColumn, (Object[])null));
+            setName((String)MetadataHelper.invokeMethod("name", primaryKeyJoinColumn));
+            setColumnDefinition((String)MetadataHelper.invokeMethod("columnDefinition", primaryKeyJoinColumn));
         }
     }
 

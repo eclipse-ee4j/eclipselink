@@ -50,10 +50,10 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
     	setLoadedFromAnnotation();
     	setLocation(annotatedElement.toString());
     	
-    	setName((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("name", typeConverter, (Object[])null));
+    	setName((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("name", typeConverter));
     	
-    	m_dataType = (Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("dataType", typeConverter, (Object[])null); 
-    	m_objectType = (Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("objectType", typeConverter, (Object[])null); 
+    	m_dataType = (Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("dataType", typeConverter); 
+    	m_objectType = (Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("objectType", typeConverter); 
     }
     
     /**

@@ -49,16 +49,16 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
         
         Object basicMap = getAnnotation(BasicMap.class);
 
-        m_keyColumn = new ColumnMetadata(invokeMethod("keyColumn", basicMap, (Object[])null), getAttributeName());
+        m_keyColumn = new ColumnMetadata(invokeMethod("keyColumn", basicMap), getAttributeName());
 
-        Object keyConvert = invokeMethod("keyConverter", basicMap, (Object[])null);
-        m_keyConverter = (String)invokeMethod("value", keyConvert, (Object[])null);
+        Object keyConvert = invokeMethod("keyConverter", basicMap);
+        m_keyConverter = (String)invokeMethod("value", keyConvert);
 
-        Object valueConvert = invokeMethod("valueConverter", basicMap, (Object[])null);
-        m_valueConverter = (String)invokeMethod("value", valueConvert, (Object[])null);
+        Object valueConvert = invokeMethod("valueConverter", basicMap);
+        m_valueConverter = (String)invokeMethod("value", valueConvert);
         
-        setValueColumn(new ColumnMetadata(invokeMethod("valueColumn", basicMap, (Object[])null),getAttributeName()));
-        setFetch((Enum)invokeMethod("fetch", basicMap, (Object[])null));
+        setValueColumn(new ColumnMetadata(invokeMethod("valueColumn", basicMap),getAttributeName()));
+        setFetch((Enum)invokeMethod("fetch", basicMap));
     }
    
     /**

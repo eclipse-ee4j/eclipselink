@@ -31,8 +31,8 @@ public class GeneratedValueMetadata {
      * INTERNAL:
      */
     public GeneratedValueMetadata(Object generatedValue) {
-        m_generator = (String)MetadataHelper.invokeMethod("generator", generatedValue, (Object[])null);
-    	m_strategy = (Enum)MetadataHelper.invokeMethod("strategy", generatedValue, (Object[])null); 
+        m_generator = (String)MetadataHelper.invokeMethod("generator", generatedValue);
+    	m_strategy = (Enum)MetadataHelper.invokeMethod("strategy", generatedValue); 
     }
     
     /**

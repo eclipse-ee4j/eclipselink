@@ -41,11 +41,11 @@ public class CollectionTableMetadata extends TableMetadata {
     	super(annotatedElementName);
     	
         if (collectionTable != null) {
-            setName((String)MetadataHelper.invokeMethod("name", collectionTable, (Object[])null));
-            setSchema((String)MetadataHelper.invokeMethod("schema", collectionTable, (Object[])null));
-            setCatalog((String)MetadataHelper.invokeMethod("catalog", collectionTable, (Object[])null));
-            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", collectionTable, (Object[])null));
-            setPrimaryKeyJoinColumns((Object[])MetadataHelper.invokeMethod("primaryKeyJoinColumns", collectionTable, (Object[])null));
+            setName((String)MetadataHelper.invokeMethod("name", collectionTable));
+            setSchema((String)MetadataHelper.invokeMethod("schema", collectionTable));
+            setCatalog((String)MetadataHelper.invokeMethod("catalog", collectionTable));
+            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", collectionTable));
+            setPrimaryKeyJoinColumns((Object[])MetadataHelper.invokeMethod("primaryKeyJoinColumns", collectionTable));
         }
     }
     

@@ -60,7 +60,7 @@ public class PrimaryKeyJoinColumnsMetadata {
         
         // Process all the primary key join columns first.
         if (primaryKeyJoinColumns != null) {
-            for (Object pkJoinColumn : (Object[])MetadataHelper.invokeMethod("value", primaryKeyJoinColumns, (Object[])null)) { 
+            for (Object pkJoinColumn : (Object[])MetadataHelper.invokeMethod("value", primaryKeyJoinColumns)) { 
                 m_pkJoinColumns.add(new PrimaryKeyJoinColumnMetadata(pkJoinColumn));
             }
         }

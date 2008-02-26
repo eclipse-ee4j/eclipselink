@@ -49,8 +49,8 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
     	setLoadedFromAnnotation();
     	setLocation(annotatedElement);
     	
-        setName((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("name", converter, (Object[])null));
-        setConverter((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("converter", converter, (Object[])null));
+        setName((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("name", converter));
+        setConverter((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("converter", converter));
     }
     
     /**

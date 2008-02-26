@@ -35,9 +35,9 @@ public class NamedQueryMetadata extends QueryMetadata {
     public NamedQueryMetadata(Object namedQuery, String javaClassName) {
     	setLoadedFromAnnotation();
         setLocation(javaClassName);
-        setName((String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("name", namedQuery, (Object[])null));
-        setQuery((String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("query", namedQuery, (Object[])null));
-        setHints((Object[])org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("hints", namedQuery, (Object[])null));     
+        setName((String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("name", namedQuery));
+        setQuery((String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("query", namedQuery));
+        setHints((Object[])org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("hints", namedQuery));     
     }
     
     /**
