@@ -93,32 +93,6 @@ public class MetadataHelper {
     
     /**
      * INTERNAL:
-     * Method to read an annotation. I think there is a bug in the JDK when
-     * reading annotations from classes. It returns the wrong type. Anyhow,
-     * this method fixes that.
-     */
-    private static <T extends Annotation> T getAnnotation(Class annotation, AnnotatedElement annotatedElement) {
-        return (T) annotatedElement.getAnnotation(annotation);
-    }
-    
-    /**
-     * INTERNAL:
-     * Wrapper to the getAnnotation() call to check if we should ignore
-     * annotations.
-     */
-    public static <T extends Annotation> T getAnnotation(Class annotation, AnnotatedElement annotatedElement, MetadataDescriptor descriptor) {
-        Annotation loadedAnnotation = getAnnotation(annotation, annotatedElement);
-        
-        if (loadedAnnotation != null && descriptor.ignoreAnnotations()) {
-            descriptor.getLogger().logWarningMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, annotatedElement);
-            return null;
-        } else {
-            return (T) loadedAnnotation;
-        }
-    }
-    
-    /**
-     * INTERNAL:
      * Method to convert a getXyz or isXyz method name to an xyz attribute name.
      * NOTE: The method name passed it may not actually be a method name, so
      * by default return the name passed in.
@@ -606,11 +580,12 @@ public class MetadataHelper {
      * methods that take a descriptor. 
      */
     public static boolean isAnnotationPresent(Class annotation, AnnotatedElement annotatedElement) {
-        for( Object declaredAnnotation : annotatedElement.getDeclaredAnnotations()){
-            if((declaredAnnotation.toString().substring(1, declaredAnnotation.toString().indexOf("("))).equalsIgnoreCase(annotation.getName())){
+        for (Object declaredAnnotation : annotatedElement.getDeclaredAnnotations()) {
+            if ((declaredAnnotation.toString().substring(1, declaredAnnotation.toString().indexOf("("))).equalsIgnoreCase(annotation.getName())){
                 return true;
             }
         }
+        
         return false;
     }
     

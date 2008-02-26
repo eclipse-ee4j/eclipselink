@@ -144,14 +144,6 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     
     /**
      * INTERNAL:
-     * Return true if this accessor represents a basic map mapping.
-     */
-    public boolean isBasicMap() {
-        return true;
-    }
-    
-    /**
-     * INTERNAL:
      * The processing of JPA converters for a basic map has been disabled, since 
      * we will not know which part of the map (key or value) to apply the JPA 
      * converter. See isLob, isTemporal and isEnumerated calls for log warning 

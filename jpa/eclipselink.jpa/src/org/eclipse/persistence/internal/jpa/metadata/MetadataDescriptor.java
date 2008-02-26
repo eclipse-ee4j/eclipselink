@@ -35,8 +35,6 @@ import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.BasicCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -60,40 +58,44 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class MetadataDescriptor {
-    protected Class m_javaClass;
-    protected ClassAccessor m_accessor;
-    protected ClassDescriptor m_descriptor;
-    protected DatabaseTable m_primaryTable;
+    // Access types
+    private static final String FIELD = "FIELD";
+    private static final String PROPERTY = "PROPERTY";
+    
+    private Class m_javaClass;
+    private ClassAccessor m_accessor;
+    private ClassDescriptor m_descriptor;
+    private DatabaseTable m_primaryTable;
     
     // This is the parent class that defines the inheritance strategy, and
     // not necessarily the immediate parent class.
-    protected MetadataDescriptor m_inheritanceParentDescriptor;
+    private MetadataDescriptor m_inheritanceParentDescriptor;
     
-    protected boolean m_isCacheSet;
-    protected boolean m_isCascadePersist;
-    protected boolean m_ignoreAnnotations; // XML metadata complete
-    protected boolean m_hasChangeTracking;
-    protected Boolean m_usesPropertyAccess;
-    protected Boolean m_usesCascadedOptimisticLocking;
+    private boolean m_isCacheSet;
+    private boolean m_isCascadePersist;
+    private boolean m_ignoreAnnotations; // XML metadata complete
+    private boolean m_hasChangeTracking;
+    private Boolean m_usesPropertyAccess;
+    private Boolean m_usesCascadedOptimisticLocking;
     
-    protected String m_xmlAccess;
-    protected String m_xmlSchema;
-    protected String m_xmlCatalog;
-    protected String m_embeddedIdAttributeName;
+    private String m_xmlAccess;
+    private String m_xmlSchema;
+    private String m_xmlCatalog;
+    private String m_embeddedIdAttributeName;
     
-    protected List<String> m_idAttributeNames;
-    protected List<String> m_orderByAttributeNames;
-    protected List<String> m_idOrderByAttributeNames;
-    protected List<MetadataDescriptor> m_aggregateDescriptors;
-    protected List<RelationshipAccessor> m_relationshipAccessors;
-    protected List<BasicCollectionAccessor> m_basicCollectionAccessors;
+    private List<String> m_idAttributeNames;
+    private List<String> m_orderByAttributeNames;
+    private List<String> m_idOrderByAttributeNames;
+    private List<MetadataDescriptor> m_aggregateDescriptors;
+    private List<RelationshipAccessor> m_relationshipAccessors;
+    private List<BasicCollectionAccessor> m_basicCollectionAccessors;
     
-    protected Map<String, Type> m_pkClassIDs;
-    protected Map<String, MetadataAccessor> m_accessors;
-    protected Map<String, String> m_pkJoinColumnAssociations;
-    protected Map<String, AttributeOverrideMetadata> m_attributeOverrides;
-    protected Map<String, AssociationOverrideMetadata> m_associationOverrides;
-    protected Map<String, Map<String, MetadataAccessor>> m_biDirectionalManyToManyAccessors;
+    private Map<String, Type> m_pkClassIDs;
+    private Map<String, MetadataAccessor> m_accessors;
+    private Map<String, String> m_pkJoinColumnAssociations;
+    private Map<String, AttributeOverrideMetadata> m_attributeOverrides;
+    private Map<String, AssociationOverrideMetadata> m_associationOverrides;
+    private Map<String, Map<String, MetadataAccessor>> m_biDirectionalManyToManyAccessors;
     
     /**
      * INTERNAL: 
@@ -876,7 +878,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      */
     protected boolean isXmlFieldAccess(String access) {
-    	return access != null && access.equals(MetadataConstants.FIELD);
+    	return access != null && access.equals(FIELD);
     }
     
     /**
@@ -892,7 +894,7 @@ public class MetadataDescriptor {
      * INTERNAL:
      */
     protected boolean isXmlPropertyAccess(String access) {
-    	return access != null && access.equals(MetadataConstants.PROPERTY);
+    	return access != null && access.equals(PROPERTY);
     }
     
     /**

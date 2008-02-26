@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnsMetadata;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -47,6 +46,10 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class CollectionAccessor extends RelationshipAccessor {
+    // Order by constants
+    private static final String ASCENDING = "ASC";
+    private static final String DESCENDING = "DESC";
+    
 	private String m_mapKey;
 	private String m_orderBy;
 	private JoinTableMetadata m_joinTable;
@@ -378,14 +381,14 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
                     }
 
                     String attributeName = referenceAccessor.getAttributeName();                    
-                    String ordering = (spaceTokenizer.hasMoreTokens()) ? spaceTokenizer.nextToken() : MetadataConstants.ASCENDING;
+                    String ordering = (spaceTokenizer.hasMoreTokens()) ? spaceTokenizer.nextToken() : ASCENDING;
 
                     if (referenceAccessor.isEmbedded()) {
                         for (String orderByAttributeName : referenceDescriptor.getOrderByAttributeNames()) {
-                            mapping.addAggregateOrderBy(attributeName, orderByAttributeName, ordering.equals(MetadataConstants.DESCENDING));        
+                            mapping.addAggregateOrderBy(attributeName, orderByAttributeName, ordering.equals(DESCENDING));        
                         }
                     } else {
-                        mapping.addOrderBy(attributeName, ordering.equals(MetadataConstants.DESCENDING));    
+                        mapping.addOrderBy(attributeName, ordering.equals(DESCENDING));    
                     }
                 }
             }

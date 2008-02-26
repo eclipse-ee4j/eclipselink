@@ -639,13 +639,6 @@ public class ClassAccessor extends NonRelationshipAccessor {
     
     /**
      * INTERNAL:
-     */
-     public boolean isClass() {
-     	return true;
-     }
-    
-    /**
-     * INTERNAL:
      * This method will do a couple things. Most importantly will return 
      * true if this class is an inheritance subclass, but will also set the
      * inheritance parent descriptor (the first parent entity that defines the 

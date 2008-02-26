@@ -23,7 +23,6 @@ import javax.persistence.Temporal;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
@@ -51,7 +50,11 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
  * @since TopLink 11g
  */
 public abstract class DirectAccessor extends NonRelationshipAccessor {
-	protected final static String DEFAULT_MAP_KEY_COLUMN_SUFFIX = "_KEY";
+    // Reserved converter names
+    private static final String CONVERT_NONE = "none";
+    private static final String CONVERT_SERIALIZED = "serialized";
+    
+	private final static String DEFAULT_MAP_KEY_COLUMN_SUFFIX = "_KEY";
 	
 	private Enum m_fetch;
 	private Boolean m_optional;
@@ -317,8 +320,8 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      */
     protected void processConvert(DatabaseMapping mapping, String converterName) {
         // There is no work to do if the converter's name is "none".
-        if (! converterName.equals(MetadataConstants.CONVERT_NONE)) {
-            if (converterName.equals(MetadataConstants.CONVERT_SERIALIZED)) {
+        if (! converterName.equals(CONVERT_NONE)) {
+            if (converterName.equals(CONVERT_SERIALIZED)) {
                 processSerialized(mapping);
             } else {
             	AbstractConverterMetadata converter = getProject().getConverter(converterName);
@@ -449,7 +452,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * because of a Convert override.     
      */
     protected void processMappingConverter(DatabaseMapping mapping, String convertValue) {
-        if (convertValue != null && ! convertValue.equals(MetadataConstants.CONVERT_NONE)) {
+        if (convertValue != null && ! convertValue.equals(CONVERT_NONE)) {
             // EclipseLink converter specified, defer this accessors converter
             // processing to stage 2 project processing.
             getProject().addConvertAccessor(this);

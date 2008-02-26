@@ -164,14 +164,6 @@ public abstract class MetadataAccessor  {
     
     /**
      * INTERNAL:
-     * Return the annotated element for this accessor.
-     */
-    protected <T extends Annotation> T getAnnotation(Class annotation, AnnotatedElement annotatedElement) {
-        return (T) MetadataHelper.getAnnotation(annotation, annotatedElement, m_descriptor);
-    }
-    
-    /**
-     * INTERNAL:
      * Return the attribute name for this accessor.
      */
     public String getAttributeName() {
@@ -456,7 +448,7 @@ public abstract class MetadataAccessor  {
     
     /**
      * INTERNAL:
-     * Method to check if an annotated element has a @Column.
+     * Method to check if an annotated element has a Column annotation.
      */
     protected boolean hasColumn() {
         return isAnnotationPresent(Column.class);
@@ -541,7 +533,7 @@ public abstract class MetadataAccessor  {
             }
         }
         
-        Method method=null;
+        Method method = null;
         
         try {
             method = Helper.getDeclaredMethod(target.getClass(), methodName,
@@ -592,16 +584,6 @@ public abstract class MetadataAccessor  {
      * element for this accessor. Method checks against the metadata complete
      * flag.
      */
-    protected boolean isAnnotationPresent(String annotationClassName) {
-        return m_accessibleObject.getAnnotations().get(annotationClassName) != null;
-    }
-    
-    /** 
-     * INTERNAL:
-     * Indicates whether the specified annotation is present on the annotated
-     * element for this accessor. Method checks against the metadata complete
-     * flag.
-     */
     protected boolean isAnnotationPresent(Class<? extends Annotation> annotation, AnnotatedElement annotatedElement) {
         return MetadataHelper.isAnnotationPresent(annotation, annotatedElement, m_descriptor);
     }
@@ -611,22 +593,6 @@ public abstract class MetadataAccessor  {
      * Return true if this accessor represents a basic collection mapping.
      */
     public boolean isBasicCollection() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a basic map mapping.
-     */
-    public boolean isBasicMap() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents a class.
-     */
-    public boolean isClass() {
         return false;
     }
     
@@ -676,16 +642,6 @@ public abstract class MetadataAccessor  {
      */
     public boolean isOneToOne() {
         return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Subclasses that support processing an optional setting should override 
-     * this  method, otherwise a runtime development exception is thrown for 
-     * those accessors who call this method and don't implement it themselves.
-     */
-    public boolean isOptional() {
-        throw new RuntimeException("Development exception. The accessor: [" + this + "] should not call the isOptional method unless it overrides it.");
     }
     
     /**

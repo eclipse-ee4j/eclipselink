@@ -40,7 +40,6 @@ import org.eclipse.persistence.exceptions.XMLParseException;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLException;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLExceptionHandler;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -54,6 +53,12 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
  * persistence.xml and searching for Entities in a Persistence archive
  */
 public class PersistenceUnitProcessor  {
+    // JPA schema specs.
+    private static final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+    private static final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+    private static final String PERSISTENCE_SCHEMA_NAME = "xsd/persistence_1_0.xsd";
+    private static final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
+    
     /**
      * Entries in a zip file are directory entries using slashes to separate 
      * them. Build a class name using '.' instead of slash and removing the 
@@ -297,7 +302,7 @@ public class PersistenceUnitProcessor  {
         // create a SAX parser
         try {
             sp = spf.newSAXParser();
-	        sp.setProperty(MetadataConstants.SCHEMA_LANGUAGE, MetadataConstants.XML_SCHEMA);
+	        sp.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
 	    } catch (javax.xml.parsers.ParserConfigurationException exc){
 	    	throw XMLParseException.exceptionCreatingSAXParser(baseURL, exc);
 	    } catch (org.xml.sax.SAXException exc){
@@ -313,10 +318,10 @@ public class PersistenceUnitProcessor  {
         }
        
         // attempt to load the schema from the classpath
-        URL schemaURL = loader.getResource(MetadataConstants.PERSISTENCE_SCHEMA_NAME);
+        URL schemaURL = loader.getResource(PERSISTENCE_SCHEMA_NAME);
         if (schemaURL != null) {
             try {
-            	sp.setProperty(MetadataConstants.JAXP_SCHEMA_SOURCE, schemaURL.toString());
+            	sp.setProperty(JAXP_SCHEMA_SOURCE, schemaURL.toString());
             } catch (org.xml.sax.SAXException exc){
             	throw XMLParseException.exceptionSettingSchemaSource(baseURL, schemaURL, exc);
             }

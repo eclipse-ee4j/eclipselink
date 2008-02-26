@@ -83,65 +83,71 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class MetadataProject {
+    // Sequencing constants.
+    private static final String DEFAULT_AUTO_GENERATOR = "SEQ_GEN";
+    private static final String DEFAULT_TABLE_GENERATOR = "SEQ_GEN_TABLE";
+    private static final String DEFAULT_SEQUENCE_GENERATOR = "SEQ_GEN_SEQUENCE";
+    private static final String DEFAULT_IDENTITY_GENERATOR = "SEQ_GEN_IDENTITY";
+    
     // Persistence unit info that is represented by this project.
-    protected PersistenceUnitInfo m_persistenceUnitInfo;
+    private PersistenceUnitInfo m_persistenceUnitInfo;
     
     // A list of all the entity mappinds (XML file representation)
-    protected List<XMLEntityMappings> m_entityMappings;
+    private List<XMLEntityMappings> m_entityMappings;
 
     // The session we are currently processing for.
-    protected AbstractSession m_session;
+    private AbstractSession m_session;
 
     // The logger for the project.
-    protected MetadataLogger m_logger;
+    private MetadataLogger m_logger;
 
     // Boolean to specify if we should weave for value holders.
-    protected boolean m_enableLazyForOneToOne;
+    private boolean m_enableLazyForOneToOne;
 
     // Persistence unit metadata for this project.
-    protected XMLPersistenceUnitMetadata m_persistenceUnitMetadata;
+    private XMLPersistenceUnitMetadata m_persistenceUnitMetadata;
 
     // List of mapped-superclasses found in XML for this project/persistence unit.
-    protected HashMap<String, MappedSuperclassAccessor> m_mappedSuperclasses;
+    private HashMap<String, MappedSuperclassAccessor> m_mappedSuperclasses;
 
     // All the class accessors for this project (Entities and Embeddables).
-    protected HashMap<String, ClassAccessor> m_allAccessors;
+    private HashMap<String, ClassAccessor> m_allAccessors;
     
     // The class accessors for this project
-    protected HashMap<String, ClassAccessor> m_classAccessors;
+    private HashMap<String, ClassAccessor> m_classAccessors;
     
     // The embeddable accessors for this project
-    protected HashMap<String, EmbeddableAccessor> m_embeddableAccessors;
+    private HashMap<String, EmbeddableAccessor> m_embeddableAccessors;
 
     // Class accessors that have relationships.
-    protected HashSet<ClassAccessor> m_accessorsWithRelationships;
+    private HashSet<ClassAccessor> m_accessorsWithRelationships;
     
     // Class accessors that have a customizer.
-    protected HashSet<ClassAccessor> m_accessorsWithCustomizer;
+    private HashSet<ClassAccessor> m_accessorsWithCustomizer;
 
     // Query metadata
-    protected HashMap<String, NamedQueryMetadata> m_namedQueries;
-    protected HashMap<String, NamedNativeQueryMetadata> m_namedNativeQueries;
-    protected HashMap<String, NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries;
+    private HashMap<String, NamedQueryMetadata> m_namedQueries;
+    private HashMap<String, NamedNativeQueryMetadata> m_namedNativeQueries;
+    private HashMap<String, NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries;
 
     // Sequencing metadata.
-    protected HashMap<Class, GeneratedValueMetadata> m_generatedValues;
-    protected HashMap<String, TableGeneratorMetadata> m_tableGenerators;
-    protected HashMap<String, SequenceGeneratorMetadata> m_sequenceGenerators;
+    private HashMap<Class, GeneratedValueMetadata> m_generatedValues;
+    private HashMap<String, TableGeneratorMetadata> m_tableGenerators;
+    private HashMap<String, SequenceGeneratorMetadata> m_sequenceGenerators;
 
     // Default listeners that need to be applied to each entity in the
     // persistence unit (unless they exclude them).
-    protected HashMap<String, EntityListenerMetadata> m_defaultListeners;
+    private HashMap<String, EntityListenerMetadata> m_defaultListeners;
     
     // Metadata converters, that is, EclipseLink converters.
-    protected HashMap<String, AbstractConverterMetadata> m_converters;
+    private HashMap<String, AbstractConverterMetadata> m_converters;
     
     // Accessors that use an EclipseLink converter.
-    protected HashSet<DirectAccessor> m_convertAccessors;
+    private HashSet<DirectAccessor> m_convertAccessors;
 
     // MetadataStructConverters, these are StructConverters that get added to 
     // the session.
-    protected HashMap<String, StructConverterMetadata> m_structConverters;
+    private HashMap<String, StructConverterMetadata> m_structConverters;
     
     /**
      * INTERNAL:
@@ -770,10 +776,10 @@ public class MetadataProject {
         // Check if the sequence generator name uses a reserved name.
         String name = sequenceGenerator.getName();
         
-         if (name.equals(MetadataConstants.DEFAULT_TABLE_GENERATOR)) {
-        	 throw ValidationException.sequenceGeneratorUsingAReservedName(MetadataConstants.DEFAULT_TABLE_GENERATOR, sequenceGenerator.getLocation());
-        } else if (name.equals(MetadataConstants.DEFAULT_IDENTITY_GENERATOR)) {
-        	throw ValidationException.sequenceGeneratorUsingAReservedName(MetadataConstants.DEFAULT_IDENTITY_GENERATOR, sequenceGenerator.getLocation());
+         if (name.equals(DEFAULT_TABLE_GENERATOR)) {
+        	 throw ValidationException.sequenceGeneratorUsingAReservedName(DEFAULT_TABLE_GENERATOR, sequenceGenerator.getLocation());
+        } else if (name.equals(DEFAULT_IDENTITY_GENERATOR)) {
+        	throw ValidationException.sequenceGeneratorUsingAReservedName(DEFAULT_IDENTITY_GENERATOR, sequenceGenerator.getLocation());
         }
             
         // Conflicting means that they do not have all the same values.
@@ -813,9 +819,9 @@ public class MetadataProject {
             DatasourceLogin login = m_session.getProject().getLogin();
     
             Sequence defaultAutoSequence = null;
-            TableSequence defaultTableSequence = new TableSequence(MetadataConstants.DEFAULT_TABLE_GENERATOR);
-            NativeSequence defaultObjectNativeSequence = new NativeSequence(MetadataConstants.DEFAULT_SEQUENCE_GENERATOR, false);
-            NativeSequence defaultIdentityNativeSequence = new NativeSequence(MetadataConstants.DEFAULT_IDENTITY_GENERATOR, 1, true);
+            TableSequence defaultTableSequence = new TableSequence(DEFAULT_TABLE_GENERATOR);
+            NativeSequence defaultObjectNativeSequence = new NativeSequence(DEFAULT_SEQUENCE_GENERATOR, false);
+            NativeSequence defaultIdentityNativeSequence = new NativeSequence(DEFAULT_IDENTITY_GENERATOR, 1, true);
             
             // Sequences keyed on generator names.
             Hashtable<String, Sequence> sequences = new Hashtable<String, Sequence>();
@@ -841,11 +847,11 @@ public class MetadataProject {
                 NativeSequence sequence = new NativeSequence(seqName, allocationSize, false);
                 sequences.put(sequenceGeneratorName, sequence);
                 
-                if (sequenceGeneratorName.equals(MetadataConstants.DEFAULT_AUTO_GENERATOR)) {
+                if (sequenceGeneratorName.equals(DEFAULT_AUTO_GENERATOR)) {
                     // SequenceGenerator defined with DEFAULT_AUTO_GENERATOR.
                     // The sequence it defines will be used as a defaultSequence.
                     defaultAutoSequence = sequence;
-                } else if (sequenceGeneratorName.equals(MetadataConstants.DEFAULT_SEQUENCE_GENERATOR)) {
+                } else if (sequenceGeneratorName.equals(DEFAULT_SEQUENCE_GENERATOR)) {
                     // SequenceGenerator defined with DEFAULT_SEQUENCE_GENERATOR.
                     // All sequences of GeneratorType SEQUENCE referencing 
                 	// non-defined generators will use a clone of the sequence 
@@ -893,11 +899,11 @@ public class MetadataProject {
                     sequence.setCounterFieldName(tableGenerator.getValueColumnName());
                 }
 
-                if (tableGeneratorName.equals(MetadataConstants.DEFAULT_AUTO_GENERATOR)) {
+                if (tableGeneratorName.equals(DEFAULT_AUTO_GENERATOR)) {
                     // TableGenerator defined with DEFAULT_AUTO_GENERATOR.
                     // The sequence it defines will be used as a defaultSequence.
                     defaultAutoSequence = sequence;
-                } else if (tableGeneratorName.equals(MetadataConstants.DEFAULT_TABLE_GENERATOR)) {
+                } else if (tableGeneratorName.equals(DEFAULT_TABLE_GENERATOR)) {
                     // SequenceGenerator defined with DEFAULT_TABLE_GENERATOR. 
                     // All sequences of GenerationType TABLE referencing non-
                     // defined generators will use a clone of the sequence 
@@ -965,7 +971,7 @@ public class MetadataProject {
                         if (defaultAutoSequence != null) {
                             seqName = defaultAutoSequence.getName();
                         } else {
-                            seqName = MetadataConstants.DEFAULT_AUTO_GENERATOR; 
+                            seqName = DEFAULT_AUTO_GENERATOR; 
                         }
                     } else {
                         seqName = generatorName;
@@ -1146,10 +1152,10 @@ public class MetadataProject {
         // Check if the table generator name uses a reserved name.
         String generatorName = tableGenerator.getGeneratorName();
         
-        if (generatorName.equals(MetadataConstants.DEFAULT_SEQUENCE_GENERATOR)) {
-        	throw ValidationException.tableGeneratorUsingAReservedName(MetadataConstants.DEFAULT_SEQUENCE_GENERATOR, tableGenerator.getLocation());
-        } else if (generatorName.equals(MetadataConstants.DEFAULT_IDENTITY_GENERATOR)) {
-        	throw ValidationException.tableGeneratorUsingAReservedName(MetadataConstants.DEFAULT_IDENTITY_GENERATOR, tableGenerator.getLocation());
+        if (generatorName.equals(DEFAULT_SEQUENCE_GENERATOR)) {
+        	throw ValidationException.tableGeneratorUsingAReservedName(DEFAULT_SEQUENCE_GENERATOR, tableGenerator.getLocation());
+        } else if (generatorName.equals(DEFAULT_IDENTITY_GENERATOR)) {
+        	throw ValidationException.tableGeneratorUsingAReservedName(DEFAULT_IDENTITY_GENERATOR, tableGenerator.getLocation());
         }
 
         TableGeneratorMetadata otherTableGenerator = getTableGenerator(generatorName);

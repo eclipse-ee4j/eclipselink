@@ -44,18 +44,18 @@ public abstract class MetadataAccessibleObject  {
     
     /**
      * INTERNAL:
-     * Return the annotations of this accessible object.
-     */
-    public HashMap getAnnotations(){
-        return m_annotations;
-    }
-    
-    /**
-     * INTERNAL:
      * Return the actual field or method.
      */
     public AnnotatedElement getAnnotatedElement() {
         return m_annotatedElement;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the annotations of this accessible object.
+     */
+    public HashMap getAnnotations(){
+        return m_annotations;
     }
     
     /**
@@ -147,10 +147,11 @@ public abstract class MetadataAccessibleObject  {
     public void setAnnotatedElement(AnnotatedElement annotatedElement) {
         m_annotatedElement = annotatedElement;
 
-        //For bug210258, the getAnnotation and isAnnotationPresent method will use the hashmap to determine declared annotation.
+        // For bug210258, the getAnnotation and isAnnotationPresent method will 
+        // use the hashmap to determine declared annotation.
         m_annotations = new HashMap();
         for(Annotation annotation : annotatedElement.getDeclaredAnnotations()){
-            String annotationName=annotation.toString().substring(1, annotation.toString().indexOf("("));
+            String annotationName = annotation.toString().substring(1, annotation.toString().indexOf("("));
             m_annotations.put(annotationName,annotation);
         }
         
