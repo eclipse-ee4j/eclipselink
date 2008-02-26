@@ -44,17 +44,24 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         return new XMLContext(project);
     }
 
+    public void setUp() throws Exception {
+    	super.setUp();
+    	
+    	jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
+        jaxbMarshaller = jaxbContext.createMarshaller();
+        jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+    }
+    
+    public void tearDown() {
+    	super.tearDown();
+    	jaxbContext = null;
+    	jaxbMarshaller = null;
+    	jaxbUnmarshaller = null;
+    }
+
     protected void setProject(Project project) {
-        xmlContext = getXMLContext(project);
-        xmlMarshaller = xmlContext.createMarshaller();
-        xmlMarshaller.setFormattedOutput(false);
-		xmlUnmarshaller = xmlContext.createUnmarshaller();
-        try {
-            jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
-            jaxbMarshaller = jaxbContext.createMarshaller();
-            jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            
-        }catch (Exception ex) {}
+    	this.project = project;
     }
 
     public void setClasses(Class[] newClasses) throws Exception {

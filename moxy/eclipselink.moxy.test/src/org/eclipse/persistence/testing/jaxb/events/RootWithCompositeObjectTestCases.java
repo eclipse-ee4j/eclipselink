@@ -61,7 +61,8 @@ public class RootWithCompositeObjectTestCases extends JAXBTestCases {
 
     }
     
-    public void setUp() {
+    public void setUp() throws Exception {
+    	super.setUp();
         listener = new JAXBMarshalListenerImpl();
         unmarshalListener = new JAXBUnmarshalListenerImpl();
         

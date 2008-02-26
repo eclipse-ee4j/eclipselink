@@ -41,12 +41,51 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     protected XMLContext xmlContext;
     public String resourceName;
     protected DocumentBuilder parser;
+    protected Project project;
+    protected String controlDocumentLocation;
+    protected String writeControlDocumentLocation;
 
     public XMLMappingTestCases(String name) throws Exception {
         super(name);
         setupParser();
     }
 
+    public void setUp() throws Exception {
+        setupParser();
+        
+        if(this.controlDocumentLocation != null) {
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(controlDocumentLocation);
+            resourceName = controlDocumentLocation;
+            controlDocument = parser.parse(inputStream);
+            removeEmptyTextNodes(controlDocument);
+            inputStream.close();
+        }
+        
+        if(this.writeControlDocumentLocation != null) {
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(writeControlDocumentLocation);
+            resourceName = writeControlDocumentLocation;
+            writeControlDocument = parser.parse(inputStream);
+            removeEmptyTextNodes(writeControlDocument);
+            inputStream.close();
+        }
+        xmlContext = getXMLContext(project);
+        xmlMarshaller = xmlContext.createMarshaller();
+        xmlMarshaller.setFormattedOutput(false);
+        xmlUnmarshaller = xmlContext.createUnmarshaller();
+        
+    }
+    
+    public void tearDown() {
+        parser = null;
+        xmlContext = null;
+        xmlMarshaller = null;
+        xmlUnmarshaller = null;
+        controlDocument = null;
+        controlDocumentLocation = null;
+    }
+    
+    
+    
     protected void setupParser() {
         try {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -67,10 +106,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     }
 
     protected void setProject(Project project) {
-        xmlContext = getXMLContext(project);
-        xmlMarshaller = xmlContext.createMarshaller();
-        xmlMarshaller.setFormattedOutput(false);
-        xmlUnmarshaller = xmlContext.createUnmarshaller();
+        this.project = project;
     }
 
     protected Document getControlDocument() {
@@ -87,11 +123,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     }
 
     protected void setControlDocument(String xmlResource) throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(xmlResource);
-        resourceName = xmlResource;
-        controlDocument = parser.parse(inputStream);
-        removeEmptyTextNodes(controlDocument);
-        inputStream.close();
+        this.controlDocumentLocation = xmlResource;
     }
 
     /**
@@ -101,11 +133,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
      * @throws Exception
      */
     protected void setWriteControlDocument(String xmlResource) throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(xmlResource);
-        resourceName = xmlResource;
-        writeControlDocument = parser.parse(inputStream);
-        removeEmptyTextNodes(writeControlDocument);
-        inputStream.close();
+        writeControlDocumentLocation = xmlResource;
     }
 
     abstract protected Object getControlObject();
@@ -126,8 +154,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         return getControlObject();
     }
 
-    public void setUp() {
-    }
+
 
     public void testXMLToObjectFromInputStream() throws Exception {
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);

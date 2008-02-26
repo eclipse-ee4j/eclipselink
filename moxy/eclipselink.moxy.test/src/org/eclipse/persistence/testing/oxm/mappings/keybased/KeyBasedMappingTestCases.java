@@ -66,10 +66,7 @@ public abstract class KeyBasedMappingTestCases extends XMLMappingTestCases {
     }
 
     protected void setProject(Project project) {
-        xmlContext = getXMLContext(project);
-        xmlMarshaller = xmlContext.createMarshaller();
-        xmlMarshaller.setFormattedOutput(false);
-        xmlUnmarshaller = xmlContext.createUnmarshaller();
+        this.project = project;
     }
 
     public void testObjectToContentHandler() throws Exception {

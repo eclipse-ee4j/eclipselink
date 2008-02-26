@@ -49,7 +49,7 @@ public class TypeSafeEnumConverterTestCases extends XMLMappingTestCases {
         p.getDescriptor(Employee.class).setAmendmentMethodName("amendDescriptorNoEnumClass");
         p.getDescriptor(Employee.class).applyAmendmentMethod();
         try {
-            setProject(p);
+            super.getXMLContext(p);
         } catch (Exception e) {            
             if (e instanceof IntegrityException) {
                 Exception internalException = (Exception)((IntegrityException)e).getIntegrityChecker().getCaughtExceptions().get(0);
@@ -70,7 +70,7 @@ public class TypeSafeEnumConverterTestCases extends XMLMappingTestCases {
         p.getDescriptor(Employee.class).setAmendmentMethodName("amendDescriptorNoSuchMethod");
         p.getDescriptor(Employee.class).applyAmendmentMethod();
         try {
-            setProject(p);
+            super.getXMLContext(p);
         } catch (Exception e) {            
             if (e instanceof IntegrityException) {
                 Exception internalException = (Exception)((IntegrityException)e).getIntegrityChecker().getCaughtExceptions().get(0);
@@ -92,7 +92,7 @@ public class TypeSafeEnumConverterTestCases extends XMLMappingTestCases {
         p.getDescriptor(Employee.class).setAmendmentMethodName("amendDescriptorInvalidEnumClass");
         p.getDescriptor(Employee.class).applyAmendmentMethod();
         try {
-            setProject(p);
+            super.getXMLContext(p);
         } catch (Exception e) {            
             if (e instanceof IntegrityException) {
                 Exception internalException = (Exception)((IntegrityException)e).getIntegrityChecker().getCaughtExceptions().get(0);

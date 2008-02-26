@@ -35,6 +35,7 @@ public class DirectToXMLAttributeIdentifiedByNameNullTestCases extends XMLMappin
 
     public void setUp() {
         try {
+            super.setUp();
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_COMPARISON_RESOURCE);
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             builderFactory.setIgnoringElementContentWhitespace(true);

@@ -45,7 +45,8 @@ public class RootWithAnyObjectTestCases extends XMLMappingTestCases {
         expectedUnmarshalEvents.add(UnmarshalListenerImpl.EMPLOYEE_AFTER_UNMARSHAL);
     }
     
-    public void setUp() {
+    public void setUp() throws Exception {
+        super.setUp();
         listener = new MarshalListenerImpl();
         unmarshalListener = new UnmarshalListenerImpl();
         

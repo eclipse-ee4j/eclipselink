@@ -68,7 +68,8 @@ public class RootWithCompositeCollectionTestCases extends JAXBTestCases {
         
     }
     
-    public void setUp() {
+    public void setUp() throws Exception {
+    	super.setUp();
         listener = new JAXBMarshalListenerImpl();
         unmarshalListener = new JAXBUnmarshalListenerImpl();
         
@@ -77,13 +78,13 @@ public class RootWithCompositeCollectionTestCases extends JAXBTestCases {
     }
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
-        assertTrue("Class based callbacks not corrent", ((Employee)testObject).triggeredEvents.equals(expectedClassBasedUnmarshalEvents));
+        assertTrue("Class based callbacks not correct", ((Employee)testObject).triggeredEvents.equals(expectedClassBasedUnmarshalEvents));
         assertTrue("Expected sequence of Unmarshal events not found", expectedUnmarshalEvents.equals(unmarshalListener.events));
     }
     
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
-        assertTrue("Class based callbacks not corrent", ((Employee)getWriteControlObject()).triggeredEvents.equals(expectedClassBasedMarshalEvents));
+        assertTrue("Class based callbacks not correct", ((Employee)getWriteControlObject()).triggeredEvents.equals(expectedClassBasedMarshalEvents));
         assertTrue("Expected sequence of Marshal events not found", expectedMarshalEvents.equals(listener.events));
     }
 

@@ -51,17 +51,10 @@ public class BinaryDataCollectionWithGroupingElementIdentifiedByNameNullNSRTestC
         return Employee.example1();
     }
 
-    protected void setSession(String sessionName) {
-        super.setSession(sessionName);
-        // setup attachment Marshaller/Unmarshaller	  
+    public void setUp() throws Exception {
+        super.setUp();
         xmlMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
         xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
     }
-
-    protected void setProject(Project project) {
-        super.setProject(project);
-        // setup attachment Marshaller/Unmarshaller
-        xmlMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
-        xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
-    }
+    
 }

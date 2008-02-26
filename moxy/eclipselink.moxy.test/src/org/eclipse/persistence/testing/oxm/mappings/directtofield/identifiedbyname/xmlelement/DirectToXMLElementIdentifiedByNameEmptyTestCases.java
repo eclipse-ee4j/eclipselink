@@ -44,6 +44,7 @@ public class DirectToXMLElementIdentifiedByNameEmptyTestCases extends XMLMapping
 
     public void setUp() {
         try {
+            super.setUp();
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE_WRITE);
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             builderFactory.setIgnoringElementContentWhitespace(true);
