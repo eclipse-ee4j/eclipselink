@@ -40,7 +40,7 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
     /**
      * INTERNAL:
      * This method will be used to check for a transaction and throws exception if none exists.
-     * If this methiod returns without exception then a transaction exists.
+     * If this method returns without exception then a transaction exists.
      * This method must be called before accessing the localUOW.
      */
     public Object checkForTransaction(boolean validateExistence){
@@ -55,7 +55,7 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
 
     /**
      * INTERNAL:
-     * THis method is used to get the active UnitOfWork.  It is special in that it will
+     * This method is used to get the active UnitOfWork.  It is special in that it will
      * return the required RepeatableWriteUnitOfWork required by the EntityManager.  Once 
      * RepeatableWrite is merged into existing UnitOfWork this code can go away.
      */
