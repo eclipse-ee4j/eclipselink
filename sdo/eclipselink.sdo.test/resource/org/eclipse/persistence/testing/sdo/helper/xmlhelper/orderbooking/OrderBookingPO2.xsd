@@ -1,0 +1,67 @@
+<!--  Copy of OrderBookingPO.xsd with PurchaseOrder type removed, while Contact type was removed from the original -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+	targetNamespace="http://www.globalcompany.com/ns/order" 
+	xmlns:po="http://www.globalcompany.com/ns/order" 
+	elementFormDefault="qualified">
+  <annotation>
+    <documentation xml:lang="en">Order Booking schema for GlobalCompany.com. Copyright 2005 GlobalCompany.com. All rights reserved.</documentation>
+  </annotation>
+  <element name="OrderItems" type="po:OrderItemsType"/>
+  <element name="SupplierInfo" type="po:SupplierInfoType"/>
+  <complexType name="SupplierInfoType">
+    <sequence>
+      <element name="SupplierPrice" type="decimal" minOccurs="0"/>
+      <element name="SupplierName" type="string" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="OrderInfoType">
+    <sequence>
+      <element name="OrderDate" type="date" minOccurs="0"/>
+      <element name="OrderPrice" type="decimal" minOccurs="0"/>
+      <element name="OrderStatus" type="string" minOccurs="0"/>
+      <element name="OrderComments" type="string" minOccurs="0"/>
+      <element name="ApprovalRequired" type="boolean" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ContactType">
+    <sequence>
+      <element name="PhoneNumber" type="string" minOccurs="0"/>
+      <element name="EmailAddress" type="string" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="USAddress">
+    <sequence>
+      <element name="Name" type="po:Name" minOccurs="0"/>
+      <element name="Address" type="po:Address" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="Address">
+    <sequence>
+      <element name="Street" type="string" minOccurs="0"/>
+      <element name="City" type="string" minOccurs="0"/>
+      <element name="State" type="string" minOccurs="0"/>
+      <element name="Zip" type="string" minOccurs="0"/>
+      <element name="Country" type="string" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="Name">
+    <sequence>
+      <element name="First" type="string" minOccurs="0"/>
+      <element name="Last" type="string" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="ItemType">
+    <sequence>
+      <element name="ProductName" type="string" minOccurs="0"/>
+      <element name="itemType" type="string" minOccurs="0"/>
+      <element name="partnum" type="string" minOccurs="0"/>
+      <element name="price" type="decimal" minOccurs="0"/>
+      <element name="Quantity" type="decimal" minOccurs="0"/>
+    </sequence>
+  </complexType>
+  <complexType name="OrderItemsType">
+    <sequence>
+      <element name="Item" type="po:ItemType" minOccurs="0" maxOccurs="unbounded"></element>
+    </sequence>
+  </complexType>
+</schema>

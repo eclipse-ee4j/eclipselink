@@ -3,6 +3,7 @@
         xmlns:po="http://www.globalcompany.com/ns/order"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema">
  <xsd:import namespace="http://www.globalcompany.com/ns/order" schemaLocation="OrderBookingPO.xsd"/>
+ <xsd:import namespace="http://www.globalcompany.com/ns/order" schemaLocation="OrderBookingPO2.xsd"/>
  <xsd:import namespace="http://www.globalcompany.com/ns/OrderBooking/rules" schemaLocation="OrderBookingRules.xsd"/>
  <xsd:element name="SOAOrderBookingProcessRequest">
   <xsd:complexType>

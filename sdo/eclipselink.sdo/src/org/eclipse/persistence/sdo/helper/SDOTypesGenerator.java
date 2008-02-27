@@ -295,6 +295,12 @@ public class SDOTypesGenerator {
                     getGeneratedTypes().put(qname, lookup);
                 }
                 return true;
+            } else if (lookup == null) {
+                QName qname = new QName(targetNamespace, sdoTypeName);
+                SDOType processed = (SDOType) getGeneratedTypes().get(qname);
+                if (processed != null && processed.isFinalized()) {
+                    alreadyProcessed = true;
+                }
             }
         }
 
