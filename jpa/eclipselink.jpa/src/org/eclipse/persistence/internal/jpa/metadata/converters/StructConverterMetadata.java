@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.sql.Types;
 
@@ -45,12 +46,12 @@ public class StructConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public StructConverterMetadata(Object converter, AnnotatedElement annotatedElement) {
+    public StructConverterMetadata(Annotation converter, AnnotatedElement annotatedElement) {
     	setLoadedFromAnnotation();
     	setLocation(annotatedElement);
     	
-        setName((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("name", converter));
-        setConverter((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("converter", converter));
+        setName((String) invokeMethod("name", converter));
+        setConverter((String) invokeMethod("converter", converter));
     }
     
     /**

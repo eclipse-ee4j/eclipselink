@@ -23,6 +23,10 @@ public class PrivilegedMethodInvoker implements PrivilegedExceptionAction {
     private Object target;
     private Object[] args;
     
+    public PrivilegedMethodInvoker(Method method, Object target) {
+        this(method, target, (Object[]) null);
+    }
+    
     public PrivilegedMethodInvoker(Method method, Object target, Object[] args){
         this.method = method;
         this.target = target;

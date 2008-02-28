@@ -12,6 +12,7 @@
  ******************************************************************************/    
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,15 +38,15 @@ public class CollectionTableMetadata extends TableMetadata {
     /**
      * INTERNAL:
      */
-    public CollectionTableMetadata(Object collectionTable, String annotatedElementName) {
+    public CollectionTableMetadata(Annotation collectionTable, String annotatedElementName) {
     	super(annotatedElementName);
     	
         if (collectionTable != null) {
-            setName((String)MetadataHelper.invokeMethod("name", collectionTable));
-            setSchema((String)MetadataHelper.invokeMethod("schema", collectionTable));
-            setCatalog((String)MetadataHelper.invokeMethod("catalog", collectionTable));
-            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", collectionTable));
-            setPrimaryKeyJoinColumns((Object[])MetadataHelper.invokeMethod("primaryKeyJoinColumns", collectionTable));
+            setName((String) invokeMethod("name", collectionTable));
+            setSchema((String) invokeMethod("schema", collectionTable));
+            setCatalog((String) invokeMethod("catalog", collectionTable));
+            setUniqueConstraints((Annotation[]) invokeMethod("uniqueConstraints", collectionTable));
+            setPrimaryKeyJoinColumns((Annotation[]) invokeMethod("primaryKeyJoinColumns", collectionTable));
         }
     }
     
@@ -87,10 +88,10 @@ public class CollectionTableMetadata extends TableMetadata {
     /**
      * INTERNAL:
      */
-    protected void setPrimaryKeyJoinColumns(Object[] primaryKeyJoinColumns) {
+    protected void setPrimaryKeyJoinColumns(Annotation[] primaryKeyJoinColumns) {
     	m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     	
-    	for (Object primaryKeyJoinColumn : primaryKeyJoinColumns) {
+    	for (Annotation primaryKeyJoinColumn : primaryKeyJoinColumns) {
     		m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(primaryKeyJoinColumn));
     	}
     }

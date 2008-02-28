@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
+import java.lang.annotation.Annotation;
+
 /**
  * Object to hold onto an attribute override meta data.
  * 
@@ -23,18 +25,17 @@ public class AttributeOverrideMetadata extends OverrideMetadata {
 	
 	/**
 	 * INTERNAL:
-	 * Assumed to be used solely for OX loading.
 	 */
 	public AttributeOverrideMetadata() {}
 	
 	/**
 	 * INTERNAL:
 	 */
-	public AttributeOverrideMetadata(Object attributeOverride, String className) {
+	public AttributeOverrideMetadata(Annotation attributeOverride, String className) {
 		super(className);
-	
-		setName((String)MetadataHelper.invokeMethod("name", attributeOverride));
-		m_column = new ColumnMetadata(MetadataHelper.invokeMethod("column", attributeOverride), (String)MetadataHelper.invokeMethod("name", attributeOverride));
+
+		setName((String) invokeMethod("name", attributeOverride));
+		m_column = new ColumnMetadata((Annotation) invokeMethod("column", attributeOverride), getName());
 	}
 	
 	/**

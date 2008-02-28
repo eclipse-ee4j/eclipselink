@@ -5,12 +5,15 @@
     <converter name="ProvinceConverter" class="ProvinceConverter"/>
     <type-converter name="Long2String" data-type="String" object-type="Long"/>
     <entity name="XMLEmployee" class="Employee" access="PROPERTY">
+        <customizer class="EmployeeCustomizer"/>
+        <change-tracking type="AUTO"/>
         <table name="CMP3_XML_EMPLOYEE"/>
         <secondary-table name="CMP3_XML_SALARY">
             <primary-key-join-column name="E_ID" referenced-column-name="EMP_ID"/>
         </secondary-table>
         <optimistic-locking type="VERSION_COLUMN" cascade="true"/>
-        <cache type="SOFT_WEAK" size="730" isolated="false" always-refresh="false" coordination-type="INVALIDATE_CHANGED_OBJECTS">
+        <cache type="SOFT_WEAK" size="730" isolated="false" disable-hits="true" always-refresh="false" coordination-type="INVALIDATE_CHANGED_OBJECTS">
+          <!-- disable-hits is set to true. Do not change it, the employee customizer will set it to false and there is a test to verify that. -->
           <expiry>1000</expiry>
         </cache>
         <object-type-converter name="sex" data-type="String" object-type="Employee$Gender">
@@ -117,7 +120,8 @@
         </attributes>
     </entity>
     <entity name="XMLAddress" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Address" access="PROPERTY">
-      <table name="CMP3_XML_ADDRESS"/>
+        <change-tracking type="DEFERRED"/>
+        <table name="CMP3_XML_ADDRESS"/>
         <sequence-generator name="XML_ADDRESS_SEQUENCE_GENERATOR" sequence-name="ADDRESS_SEQ" allocation-size="25"/>
         <named-query name="findAllXMLAddressesByPostalCode">
             <query>SELECT OBJECT(address) FROM XMLAddress address WHERE address.postalCode = :postalcode</query>
@@ -144,6 +148,7 @@
         </attributes>
     </entity>
     <entity name="XMLPhoneNumber" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.PhoneNumber" access="PROPERTY">
+        <change-tracking type="ATTRIBUTE"/>
         <table name="CMP3_XML_PHONENUMBER"/>
         <id-class class="org.eclipse.persistence.testing.models.jpa.xml.advanced.PhoneNumberPK"/>
         <exclude-default-listeners/>
@@ -182,6 +187,7 @@
         <exclude-superclass-listeners/>
     </entity>
     <entity name="XMLProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Project" access="PROPERTY">
+        <change-tracking type="OBJECT"/>
         <table name="CMP3_XML_PROJECT"/>
         <inheritance strategy="JOINED"/>
         <discriminator-value>P</discriminator-value>
@@ -220,6 +226,12 @@
                 <join-column name="LEADER_ID"/>
             </one-to-one>
             <many-to-many name="teamMembers" target-entity="org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee" mapped-by="projects"/>
+        </attributes>
+    </entity>
+    <entity name="XMLReadOnlyClass" class="ReadOnlyClass" access="PROPERTY" read-only="true">
+        <table name="CMP3_XML_READONLY"/>
+        <attributes>
+            <id name="id"/>
         </attributes>
     </entity>
     <embeddable class="org.eclipse.persistence.testing.models.jpa.xml.advanced.EmploymentPeriod" access="PROPERTY">

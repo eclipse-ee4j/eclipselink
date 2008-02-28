@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -44,6 +45,13 @@ public abstract class AbstractConverterMetadata  {
      */
     public String getName() {
     	return m_name;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected Object invokeMethod(String methodName, Annotation annotation) {
+        return MetadataHelper.invokeMethod(methodName, annotation);
     }
     
     /**

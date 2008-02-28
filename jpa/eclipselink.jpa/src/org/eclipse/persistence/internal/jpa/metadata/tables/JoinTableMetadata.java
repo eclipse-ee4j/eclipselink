@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,16 +38,16 @@ public class JoinTableMetadata extends TableMetadata {
     /**
      * INTERNAL:
      */
-    public JoinTableMetadata(Object joinTable, String annotatedElementName) {
+    public JoinTableMetadata(Annotation joinTable, String annotatedElementName) {
     	super(annotatedElementName);
     	
         if (joinTable != null) {
-            setName((String)MetadataHelper.invokeMethod("name", joinTable));
-            setSchema((String)MetadataHelper.invokeMethod("schema", joinTable));
-            setCatalog((String)MetadataHelper.invokeMethod("catalog", joinTable));
-            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", joinTable));
-            setJoinColumns((Object[])MetadataHelper.invokeMethod("joinColumns", joinTable));
-    	    setInverseJoinColumns((Object[])MetadataHelper.invokeMethod("inverseJoinColumns", joinTable));
+            setName((String) invokeMethod("name", joinTable));
+            setSchema((String) invokeMethod("schema", joinTable));
+            setCatalog((String) invokeMethod("catalog", joinTable));
+            setUniqueConstraints((Annotation[]) invokeMethod("uniqueConstraints", joinTable));
+            setJoinColumns((Annotation[]) invokeMethod("joinColumns", joinTable));
+    	    setInverseJoinColumns((Annotation[]) invokeMethod("inverseJoinColumns", joinTable));
         }
     }
     
@@ -99,10 +100,10 @@ public class JoinTableMetadata extends TableMetadata {
      * INTERNAL:
      * Called from annotation population.
      */
-    protected void setInverseJoinColumns(Object[] inverseJoinColumns) {
+    protected void setInverseJoinColumns(Annotation[] inverseJoinColumns) {
     	m_inverseJoinColumns = new ArrayList<JoinColumnMetadata>();
     	
-    	for (Object inverseJoinColumn : inverseJoinColumns) {
+    	for (Annotation inverseJoinColumn : inverseJoinColumns) {
     		m_inverseJoinColumns.add(new JoinColumnMetadata(inverseJoinColumn));
     	}   
     }
@@ -119,10 +120,10 @@ public class JoinTableMetadata extends TableMetadata {
      * INTERNAL:
      * Called from annotation population.
      */
-    protected void setJoinColumns(Object[] joinColumns) {
+    protected void setJoinColumns(Annotation[] joinColumns) {
     	m_joinColumns = new ArrayList<JoinColumnMetadata>();
     	
-    	for (Object joinColumn : joinColumns) {
+    	for (Annotation joinColumn : joinColumns) {
     		m_joinColumns.add(new JoinColumnMetadata(joinColumn));
     	}   
     }

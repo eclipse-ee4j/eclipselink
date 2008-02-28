@@ -17,6 +17,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedAc
 import static org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedAccessor.AccessType.FIELD;
 import static org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedAccessor.AccessType.UNDEFINED;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 
 import javax.persistence.AssociationOverride;
@@ -343,18 +344,18 @@ public class EmbeddedAccessor extends MetadataAccessor {
     		// that they are to be defaulted.
     	     
 	        // Look for an @AttributeOverrides.
-	        Object attributeOverrides = getAnnotation(AttributeOverrides.class);
+	        Annotation attributeOverrides = getAnnotation(AttributeOverrides.class);
 	        
 	        if (attributeOverrides != null) {
-	            for (Object attributeOverride : (Object[])invokeMethod("value", attributeOverrides)) {
-	                processAttributeOverride(mapping, new ColumnMetadata(invokeMethod("column", attributeOverride), (String)invokeMethod("name", attributeOverride)));
+	            for (Annotation attributeOverride : (Annotation[])invokeMethod("value", attributeOverrides)) {
+	                processAttributeOverride(mapping, new ColumnMetadata((Annotation) invokeMethod("column", attributeOverride), (String) invokeMethod("name", attributeOverride)));
 	            }
 	        }
 	        
 	        // Look for an @AttributeOverride.
-	        Object attributeOverride = getAnnotation(AttributeOverride.class);	
+	        Annotation attributeOverride = getAnnotation(AttributeOverride.class);	
 	        if (attributeOverride != null) {
-	            processAttributeOverride(mapping, new ColumnMetadata(invokeMethod("column", attributeOverride), (String)invokeMethod("name", attributeOverride)));
+	            processAttributeOverride(mapping, new ColumnMetadata((Annotation) invokeMethod("column", attributeOverride), (String) invokeMethod("name", attributeOverride)));
 	        }
     	}
     }

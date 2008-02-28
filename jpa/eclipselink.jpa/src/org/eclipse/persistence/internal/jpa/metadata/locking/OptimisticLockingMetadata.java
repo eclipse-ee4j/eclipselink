@@ -12,13 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.locking;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.annotations.OptimisticLockingType;
 import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
@@ -27,10 +23,6 @@ import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
-import org.eclipse.persistence.exceptions.EntityManagerSetupException;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
  * Object to hold onto optimistic locking metadata.
@@ -52,9 +44,9 @@ public class OptimisticLockingMetadata  {
      * INTERNAL:
      */
     public OptimisticLockingMetadata(Object optimisticLocking) {
-        setType((Enum)invokeMethod("type", optimisticLocking, (Object[])null));
-        setCascade((Boolean)invokeMethod("cascade", optimisticLocking, (Object[])null));
-        setSelectedColumns((Object[])invokeMethod("selectedColumns", optimisticLocking, (Object[])null));   
+        setType((Enum) MetadataHelper.invokeMethod("type", optimisticLocking));
+        setCascade((Boolean) MetadataHelper.invokeMethod("cascade", optimisticLocking));
+        setSelectedColumns((Annotation[]) MetadataHelper.invokeMethod("selectedColumns", optimisticLocking));   
     }
     
     /**
@@ -132,10 +124,10 @@ public class OptimisticLockingMetadata  {
      * INTERNAL:
      * Called from annotation population.
      */
-    protected void setSelectedColumns(Object[] selectedColumns) {
+    protected void setSelectedColumns(Annotation[] selectedColumns) {
         m_selectedColumns = new ArrayList<ColumnMetadata>();
     		
-        for (Object selectedColumn : selectedColumns) {
+        for (Annotation selectedColumn : selectedColumns) {
             m_selectedColumns.add(new ColumnMetadata(selectedColumn));
         }
     }
@@ -155,50 +147,4 @@ public class OptimisticLockingMetadata  {
     public void setType(Enum type) {
         m_type = type;
     }
-    
-    /** 
-     * INTERNAL:
-     * Invoke the specified named method on the object,
-     * handling the necessary exceptions.
-     */
-    private Object invokeMethod(String methodName, Object target ,Object[] params) {
-        ArrayList<Class<?>> parmClasses = new ArrayList<Class<?>>();
-        if(params!=null){
-            for(Object parm : params) {
-                parmClasses.add(parm.getClass());
-            }
-        }
-        Method method=null;
-        try {
-            method = Helper.getDeclaredMethod(target.getClass(), methodName,
-                    parmClasses.size() == 0 ? (Class<?>[])null : (Class<?>[]) parmClasses.toArray());            
-        } catch (NoSuchMethodException e) {
-            EntityManagerSetupException.methodInvocationFailed(method, target,e);
-        }
-        if(method!=null){
-             try {
-                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                     try {
-                         return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, target, params));
-                     } catch (PrivilegedActionException exception) {
-                         Exception throwableException = exception.getException();
-                         if (throwableException instanceof IllegalAccessException) {
-                             throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
-                         } else {
-                             throw EntityManagerSetupException.methodInvocationFailed(method, target, throwableException);
-                         }
-                     }
-                 } else {
-                     return PrivilegedAccessHelper.invokeMethod(method, target, params);
-                 }
-             } catch (IllegalAccessException ex1) {
-                 throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
-             } catch (InvocationTargetException ex2) {
-                 throw EntityManagerSetupException.methodInvocationFailed(method, target, ex2);
-             }
-        }else{
-            return null;
-        }
-    }
-
 }

@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -46,14 +47,14 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public TypeConverterMetadata(Object typeConverter, AnnotatedElement annotatedElement) {
+    public TypeConverterMetadata(Annotation typeConverter, AnnotatedElement annotatedElement) {
     	setLoadedFromAnnotation();
     	setLocation(annotatedElement.toString());
     	
-    	setName((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("name", typeConverter));
+    	setName((String) invokeMethod("name", typeConverter));
     	
-    	m_dataType = (Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("dataType", typeConverter); 
-    	m_objectType = (Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("objectType", typeConverter); 
+    	m_dataType = (Class) invokeMethod("dataType", typeConverter); 
+    	m_objectType = (Class) invokeMethod("objectType", typeConverter); 
     }
     
     /**

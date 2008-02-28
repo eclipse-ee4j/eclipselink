@@ -16,18 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.InheritanceType;
-
-import org.eclipse.persistence.annotations.ChangeTrackingType;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
-
-import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
-import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
-import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
-import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -71,10 +62,12 @@ public class MetadataDescriptor {
     // not necessarily the immediate parent class.
     private MetadataDescriptor m_inheritanceParentDescriptor;
     
-    private boolean m_isCacheSet;
     private boolean m_isCascadePersist;
     private boolean m_ignoreAnnotations; // XML metadata complete
+    private boolean m_hasCache;
     private boolean m_hasChangeTracking;
+    private boolean m_hasCustomizer;
+    private boolean m_hasReadOnly;
     private Boolean m_usesPropertyAccess;
     private Boolean m_usesCascadedOptimisticLocking;
     
@@ -107,10 +100,12 @@ public class MetadataDescriptor {
         
         m_inheritanceParentDescriptor = null;
         
-        m_isCacheSet = false;
+        m_hasCache = false;
+        m_hasChangeTracking = false;
+        m_hasCustomizer = false;
+        m_hasReadOnly = false;
         m_isCascadePersist = false;
         m_ignoreAnnotations = false;
-        m_hasChangeTracking = false;
         
         m_idAttributeNames = new ArrayList<String>();
         m_orderByAttributeNames = new ArrayList<String>();
@@ -797,11 +792,40 @@ public class MetadataDescriptor {
 
     /**
      * INTERNAL:
+     * Indicates that a Cache annotation or cache element has already been 
+     * processed for this descriptor.
+     */
+    public boolean hasCache() {
+        return m_hasCache;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates that a Change tracking annotation or change tracking element 
+     * has already been processed for this descriptor.
      */
     public boolean hasChangeTracking() {
         return m_hasChangeTracking;
     }
 
+    /**
+     * INTERNAL:
+     * Indicates that a customizer annotation or customizer element has already 
+     * been processed for this descriptor.
+     */
+    public boolean hasCustomizer() {
+        return m_hasCustomizer;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates that a read only annotation or read only element has already 
+     * been processed for this descriptor.
+     */
+    public boolean hasReadOnly() {
+        return m_hasReadOnly;
+    }
+    
     /**
      * INTERNAL:
      */
@@ -833,15 +857,6 @@ public class MetadataDescriptor {
      */
     public boolean isCascadePersist() {
     	return m_isCascadePersist;
-    }
-    
-    /**
-     * INTERNAL:
-     * Indicates that a @Cache or cache elment has already been processed for 
-     * this descriptor.
-     */
-    public boolean isCacheSet() {
-    	return m_isCacheSet;
     }
     
     /**
@@ -910,34 +925,6 @@ public class MetadataDescriptor {
     public void setAlias(String alias) {
         m_descriptor.setAlias(alias);
     }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setChangeTracking(String changeTracking) {
-        ObjectChangePolicy policy;
-            
-        if (changeTracking.equals(ChangeTrackingType.ATTRIBUTE.name())) {
-            policy = new AttributeChangeTrackingPolicy();
-        } else if (changeTracking.equals(ChangeTrackingType.OBJECT.name())) {
-            policy = new ObjectChangeTrackingPolicy();
-        } else if (changeTracking.equals(ChangeTrackingType.DEFERRED.name())) {
-            policy = new DeferredChangeDetectionPolicy();
-        } else { // Must be MetataConstants.AUTO
-            // By setting the policy to null, this will unset any global 
-            // settings. EclipseLink will then determine the change tracking 
-            // policy at runtime.
-            policy = null;
-        }
-        
-        m_descriptor.setObjectChangePolicy(policy);
-        
-        // Even if the change tracking is of type AUTO, this flag must be set
-        // when this method is called. When processing a mapped superclass
-        // we cannot overwrite the policy if one has been processed and set
-        // from a subclass entity of the mapped superclass.
-        m_hasChangeTracking = true;
-    }
             
     /**
      * INTERNAL:
@@ -991,6 +978,23 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Indicates that we have processed a cache annotation or cache xml element.
+     */
+    public void setHasCache() {
+        m_hasCache = true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates that we have processed a change tracking annotation or change
+     * tracking xml element.
+     */
+    public void setHasChangeTracking() {
+        m_hasChangeTracking = true;
+    }
+    
+    /**
+     * INTERNAL:
      * Indicates that all annotations should be ignored, and only default values 
      * set by the annotations processor.
      */
@@ -1004,28 +1008,6 @@ public class MetadataDescriptor {
      */
     public void setInheritanceParentDescriptor(MetadataDescriptor inheritanceParentDescriptor) {
     	m_inheritanceParentDescriptor = inheritanceParentDescriptor;
-    }
-    
-    /**
-     * INTERNAL:
-     * Stored on the root class of an inheritance hierarchy.
-     */
-    public void setInheritanceStrategy(Enum inheritanceStrategy) {
-        if (inheritanceStrategy.equals(InheritanceType.TABLE_PER_CLASS)) {
-        	throw ValidationException.tablePerClassInheritanceNotSupported(getJavaClass());
-        } else if (inheritanceStrategy.equals(InheritanceType.SINGLE_TABLE)) {
-            m_descriptor.getInheritancePolicy().setSingleTableStrategy();
-        } else {
-            m_descriptor.getInheritancePolicy().setJoinedStrategy();
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Indicates that we have processed a cache annotation or cache xml element.
-     */
-    public void setCacheIsSet() {
-        m_isCacheSet = true;
     }
     
     /**
@@ -1095,8 +1077,12 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
-	public void setReadOnly() {
-        m_descriptor.setReadOnly();
+	public void setReadOnly(boolean readOnly) {
+	    if (readOnly) {
+	        m_descriptor.setReadOnly();
+	    }
+	    
+	    m_hasReadOnly = true;
 	}
     
     /**

@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -32,7 +33,6 @@ import javax.persistence.ExcludeDefaultListeners;
 import javax.persistence.ExcludeSuperclassListeners;
 import javax.persistence.IdClass;
 import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.NamedNativeQueries;
@@ -77,6 +77,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataF
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.changetracking.ChangeTrackingMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
@@ -85,6 +86,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnsMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.inheritance.InheritanceMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityClassListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 
@@ -104,7 +106,6 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetada
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLAttributes;
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLInheritance;
 
 /**
  * A class accessor.
@@ -116,9 +117,13 @@ public class ClassAccessor extends NonRelationshipAccessor {
 	private boolean m_excludeDefaultListeners;
     private boolean m_excludeSuperclassListeners;
     private Boolean m_metadataComplete; // EntityMappings init will process this value.
+    private Boolean m_readOnly;
     
     private CacheMetadata m_cache;
+    private ChangeTrackingMetadata m_changeTracking;
+    private Class m_customizerClass;
     private DiscriminatorColumnMetadata m_discriminatorColumn;
+    private InheritanceMetadata m_inheritance;
     
     private List<AssociationOverrideMetadata> m_associationOverrides;
     private List<AttributeOverrideMetadata> m_attributeOverrides;
@@ -132,7 +137,6 @@ public class ClassAccessor extends NonRelationshipAccessor {
     
     private String m_access; // EntityMappings init will process this value.
     private String m_className;
-    private String m_customizer;
     private String m_customizerClassName;
     private String m_description;
     private String m_discriminatorValue;
@@ -149,7 +153,6 @@ public class ClassAccessor extends NonRelationshipAccessor {
 	
 	private TableMetadata m_table;
 	private XMLAttributes m_attributes;
-	private XMLInheritance m_inheritance;
 	
     /**
      * INTERNAL:
@@ -307,17 +310,10 @@ public class ClassAccessor extends NonRelationshipAccessor {
     
     /**
      * INTERNAL: 
-     * Return the change tracking metadata for this accessor.
+     * Used for OX mapping.
      */
-    protected String getChangeTracking() {
-        Object changeTracking = getAnnotation(ChangeTracking.class);
-        
-        if (changeTracking == null) {
-            return null;
-        } else {
-            Object value = invokeMethod("value", changeTracking);
-            return (String)invokeMethod("name", value); 
-        }
+    public ChangeTrackingMetadata getChangeTracking() {
+        return m_changeTracking;
     }
     
     /**
@@ -330,14 +326,14 @@ public class ClassAccessor extends NonRelationshipAccessor {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
      */
-    public String getCustomizer() {
-        return m_customizer;
+    public Class getCustomizerClass() {
+        return m_customizerClass;
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public String getCustomizerClassName() {
         return m_customizerClassName;
@@ -411,7 +407,7 @@ public class ClassAccessor extends NonRelationshipAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public XMLInheritance getInheritance() {
+    public InheritanceMetadata getInheritance() {
         return m_inheritance;
     }
     
@@ -600,6 +596,14 @@ public class ClassAccessor extends NonRelationshipAccessor {
 	public String getPreUpdate() {
 		return m_preUpdate;
 	}
+	
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getReadOnly() {
+        return m_readOnly;
+    }
 	
     /**
      * INTERNAL:
@@ -936,14 +940,14 @@ public class ClassAccessor extends NonRelationshipAccessor {
         Object associationOverrides = getAnnotation(AssociationOverrides.class);
         if (associationOverrides != null) {
             for (Object associationOverride : (Object[])invokeMethod("value", associationOverrides)) {
-                processAssociationOverride(new AssociationOverrideMetadata(associationOverride, getJavaClassName()));
+                processAssociationOverride(new AssociationOverrideMetadata((Annotation) associationOverride, getJavaClassName()));
             }
         }
         
         // Look for an @AssociationOverride.
         Object associationOverride = getAnnotation(AssociationOverride.class);
         if (associationOverride != null) {
-        	processAssociationOverride(new AssociationOverrideMetadata(associationOverride, getJavaClassName()));
+        	processAssociationOverride(new AssociationOverrideMetadata((Annotation) associationOverride, getJavaClassName()));
         }
     }
     
@@ -1014,15 +1018,15 @@ public class ClassAccessor extends NonRelationshipAccessor {
         
         // Process the attribute override annotations second.
     	// Look for an @AttributeOverrides.
-        Object attributeOverrides = getAnnotation(AttributeOverrides.class);	
+        Annotation attributeOverrides = getAnnotation(AttributeOverrides.class);	
         if (attributeOverrides != null) {
-            for (Object attributeOverride : (Object[])invokeMethod("value", attributeOverrides)){ 
+            for (Annotation attributeOverride : (Annotation[])invokeMethod("value", attributeOverrides)){ 
                 processAttributeOverride(new AttributeOverrideMetadata(attributeOverride, getJavaClassName()));
             }
         }
         
         // Look for an @AttributeOverride.
-        Object attributeOverride = getAnnotation(AttributeOverride.class);
+        Annotation attributeOverride = getAnnotation(AttributeOverride.class);
         if (attributeOverride != null) {
             processAttributeOverride(new AttributeOverrideMetadata(attributeOverride, getJavaClassName()));
         }
@@ -1052,16 +1056,14 @@ public class ClassAccessor extends NonRelationshipAccessor {
             } else if (getDescriptor().isInheritanceSubclass()) {
                 // Ignore cache if specified on an inheritance subclass.
                 getLogger().logWarningMessage(MetadataLogger.IGNORE_INHERITANCE_SUBCLASS_CACHE, getJavaClass());
-            } else if (getDescriptor().isCacheSet()) {
-                // Ignore cache on mapped superclass if cache defined on the entity.
+            } else if (getDescriptor().hasCache()) {
+                // Ignore cache on mapped superclass if cache is already 
+                // defined on the entity.
                 getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CACHE, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_cache == null) {
-                    // Process the annotation.
-                    Object cache = getAnnotation(Cache.class);
-                    new CacheMetadata(cache).process(getDescriptor(), getJavaClass());
+                    new CacheMetadata(getAnnotation(Cache.class)).process(getDescriptor(), getJavaClass());
                 } else {
-                    // Process the XML setting.
                     m_cache.process(getDescriptor(), getJavaClass());
                 }
             }
@@ -1162,27 +1164,31 @@ public class ClassAccessor extends NonRelationshipAccessor {
     
     /**
      * INTERNAL:
-     * 
      * Process the change tracking setting for this accessor.
      */
     protected void processChangeTracking() {
-        String changeTracking = getChangeTracking();
-            
-        if (changeTracking != null) {
+        if (m_changeTracking != null || isAnnotationPresent(ChangeTracking.class)) {
             if (getDescriptor().hasChangeTracking()) {    
                 // We must be processing a mapped superclass setting for an
-                // entity that has its own change tracking setting. Ignore 
-                // it and log a warning.
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_CHANGE_TRACKING_ANNOTATION, getDescriptor().getJavaClass(), getJavaClass());
+                // entity that has its own change tracking setting. Ignore it 
+                // and log a warning.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING, getDescriptor().getJavaClass(), getJavaClass());
             } else {
-            	getDescriptor().setChangeTracking(getChangeTracking());
+                if (m_changeTracking == null) {
+                    new ChangeTrackingMetadata(getAnnotation(ChangeTracking.class)).process(getDescriptor());
+                } else {
+                    if (isAnnotationPresent(ChangeTracking.class)) {
+                        getLogger().logWarningMessage(MetadataLogger.IGNORE_CHANGE_TRACKING_ANNOTATION, getDescriptor().getJavaClass(), getJavaClass());
+                    }
+                    
+                    m_changeTracking.process(getDescriptor());
+                }
             }
-        }
+        }   
     }
     
     /**
      * INTERNAL:
-     * 
      * Process the items of interest on an entity or mapped superclass class. 
      */
     protected void processClassMetadata() {
@@ -1242,33 +1248,32 @@ public class ClassAccessor extends NonRelationshipAccessor {
      * INTERNAL:
      */
     protected void processCustomizer() {
-    	if (m_customizerClassName == null) {
-    		if (m_customizer == null) {
-        		// Look for an annotation
-        		Object customizer = getAnnotation(Customizer.class);
-                
-                if (customizer != null) {
-                    Class customizerValue = (Class)invokeMethod("value", customizer);
-                	m_customizerClassName = customizerValue.getName();
-                	getProject().addAccessorWithCustomizer(this);
+        if (m_customizerClassName != null || isAnnotationPresent(Customizer.class)) {
+            if (getDescriptor().hasCustomizer()) {
+                // We must be processing a mapped superclass and its subclass
+                // override the customizer class, that is, defined its own. Log 
+                // a warning that we are ignoring the Customizer metadata on the 
+                // mapped superclass for the descriptor's java class.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER, getDescriptor().getJavaClass(), getJavaClass());
+            } else {
+                if (m_customizerClassName == null) { 
+                    // Look for an annotation
+                    Annotation customizer = getAnnotation(Customizer.class);
+                    
+                    if (customizer != null) {
+                        m_customizerClass = (Class) invokeMethod("value", customizer);
+                        getProject().addAccessorWithCustomizer(this);
+                    }
+                } else {
+                    if (isAnnotationPresent(Customizer.class)) {
+                        getLogger().logWarningMessage(MetadataLogger.IGNORE_CUSTOMIZER_ANNOTATION, getDescriptor().getJavaClass(), getJavaClass());
+                    }
+                    
+                    m_customizerClass = getEntityMappings().getClassForName(m_customizerClassName);
+                    getProject().addAccessorWithCustomizer(this);
                 }
-        	} else {
-        		// Use what we found in XML.
-        		// NOTE: This is currently not available through XML. When it
-        		// becomes available, m_customizer will need to initialized
-        		// with the entity mappings package. (see init method)
-        		m_customizerClassName = m_customizer;
-        		getProject().addAccessorWithCustomizer(this);
-        	}
-    	} else {
-    		if (m_customizer != null || isAnnotationPresent(Customizer.class)) {
-    			// We must be processing a mapped superclass and its subclass
-    			// override the customizer class, that is, defined its own. Log 
-    			// a warning that we are ignoring the @Customizer on the mapped 
-    			// superclass for the descriptor's java class.
-    			getLogger().logWarningMessage(MetadataLogger.IGNORE_CUSTOMIZER_ANNOTATION, getDescriptor().getJavaClass(), getJavaClass());
-    		}
-    	}
+            }
+        }
     }
     
     /**
@@ -1305,50 +1310,6 @@ public class ClassAccessor extends NonRelationshipAccessor {
             getDescriptor().addDefaultEventListener(listener);
 		}
     }
-    
-    /**
-     * INTERNAL:
-     * Process an XML discriminator-column metadata. If we don't find a node
-     * here, check for an annotation by calling the parent. It will default if 
-     * no annotation is found.
-     * Process a DiscriminatorColumn annotation (if there is one, otherwise 
-     * default) to set this classes indication field name for inheritance.
-     */
-    protected void processDiscriminatorColumn() {
-        if (m_discriminatorColumn == null) {
-        	Object discriminatorColumn = getAnnotation(DiscriminatorColumn.class);
-            processDiscriminatorColumn(new DiscriminatorColumnMetadata(discriminatorColumn));
-        } else {
-            processDiscriminatorColumn(m_discriminatorColumn);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-	 * Process a discriminator column to set this class indicatior field name 
-     * for inheritance.
-	 */
-	protected void processDiscriminatorColumn(DiscriminatorColumnMetadata discriminatorColumn) {
-        DatabaseField field = new DatabaseField();
-
-        // Process the name
-        field.setName(getName(discriminatorColumn.getName(), "DTYPE", MetadataLogger.DISCRIMINATOR_COLUMN));
-        
-        // Process the length.
-        field.setLength(getValue(discriminatorColumn.getLength(), 31));
-        
-        // Process the column definition.
-    	field.setColumnDefinition(getValue(discriminatorColumn.getColumnDefinition(), ""));
-    	
-        // Process the type.
-    	field.setType(MetadataHelper.getDiscriminatorType(discriminatorColumn.getDiscriminatorType()));
-        
-        // Set the table.
-        field.setTable(getDescriptor().getPrimaryTable());
-        
-        // Set the class indicator field on the inheritance policy.
-        getDescriptor().setClassIndicatorField(field);
-    }
 	
     /**
      * INTERNAL:
@@ -1363,12 +1324,12 @@ public class ClassAccessor extends NonRelationshipAccessor {
             // Add the indicator to the inheritance root class' descriptor. The
             // default is the short class name.
             if (m_discriminatorValue == null) {
-            	Object discriminatorValue = getAnnotation(DiscriminatorValue.class);
+            	Annotation discriminatorValue = getAnnotation(DiscriminatorValue.class);
                 
                 if (discriminatorValue == null) {
                 	getDescriptor().addClassIndicator(getJavaClass(), Helper.getShortClassName(getJavaClassName()));
                 } else {
-                	getDescriptor().addClassIndicator(getJavaClass(),(String)invokeMethod("value", discriminatorValue)); 
+                	getDescriptor().addClassIndicator(getJavaClass(),(String) invokeMethod("value", discriminatorValue)); 
                 }
             } else {
             	getDescriptor().addClassIndicator(getJavaClass(), m_discriminatorValue);
@@ -1385,7 +1346,7 @@ public class ClassAccessor extends NonRelationshipAccessor {
         if (getDescriptor().getAlias().equals("")) {
             String alias;
             if (m_entityName == null) {
-            	Object entity = getAnnotation(Entity.class);
+            	Annotation entity = getAnnotation(Entity.class);
                 alias = (entity == null) ? "" : (String)invokeMethod("name", entity);
             } else {
                 alias = m_entityName;
@@ -1435,7 +1396,7 @@ public class ClassAccessor extends NonRelationshipAccessor {
     public void processEntityListeners(Class entityClass) {
         if (m_entityListeners == null || m_entityListeners.isEmpty()) {
         	// Look for an annotation.
-        	Object entityListeners = getAnnotation(EntityListeners.class);
+            Annotation entityListeners = getAnnotation(EntityListeners.class);
             
             if (entityListeners != null) {
             	for (Class entityListener : (Class[])invokeMethod("value", entityListeners)) {
@@ -1517,7 +1478,7 @@ public class ClassAccessor extends NonRelationshipAccessor {
     	
     	if (m_idClassName == null) {
             // Check for an IdClass annotation.
-    		Object idClass = getAnnotation(IdClass.class);
+    	    Annotation idClass = getAnnotation(IdClass.class);
             
             if (idClass == null) {
             	return;
@@ -1558,29 +1519,21 @@ public class ClassAccessor extends NonRelationshipAccessor {
      * hierarchy.
      */
     protected void processInheritance() {
-    	// Get the inheritance strategy and store it on the descriptor.
-        Enum inheritanceStrategy = null;
+        // Process the inheritance metadata.
         if (m_inheritance == null) {
-        	Object inheritance = getAnnotation(Inheritance.class);
-               
-            if (inheritance != null) {
-            	inheritanceStrategy = (Enum)invokeMethod("strategy", inheritance); 
-            }
+            new InheritanceMetadata(getAnnotation(Inheritance.class)).process(getDescriptor(), getJavaClass());
         } else {
-        	inheritanceStrategy = m_inheritance.getStrategy();
-        } 
-        
-        // The strategy is not specified, use the default.
-        if (inheritanceStrategy == null) {
-        	// Future: Log a message to the user.
-        	inheritanceStrategy = InheritanceType.SINGLE_TABLE;
+            m_inheritance.process(getDescriptor(), getJavaClass());
         }
-
-        getDescriptor().setInheritanceStrategy(inheritanceStrategy);
-                
+                    
         // Process the discriminator column metadata.
-        processDiscriminatorColumn();
-                
+        if (m_discriminatorColumn == null) {
+            new DiscriminatorColumnMetadata(getAnnotation(DiscriminatorColumn.class)).process(getDescriptor(), getAnnotatedElementName());
+        } else {
+            // Future log a warning if we are ignoring an annotation.
+            m_discriminatorColumn.process(getDescriptor(), getAnnotatedElementName());
+        }
+                    
         // Process the discriminator value metadata.
         processDiscriminatorValue();
     }
@@ -1603,8 +1556,8 @@ public class ClassAccessor extends NonRelationshipAccessor {
             	
             if (getPrimaryKeyJoinColumns() == null) {
             	// Look for annotations.
-            	Object primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
-                Object primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
+                Annotation primaryKeyJoinColumn = getAnnotation(PrimaryKeyJoinColumn.class);
+                Annotation primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
                     
                 pkJoinColumns = new PrimaryKeyJoinColumnsMetadata(primaryKeyJoinColumns, primaryKeyJoinColumn);
             } else {
@@ -1719,15 +1672,15 @@ public class ClassAccessor extends NonRelationshipAccessor {
         
         // Process the named native query annotations second.
     	// Look for a @NamedNativeQueries.
-        Object namedNativeQueries = getAnnotation(NamedNativeQueries.class);
+    	Annotation namedNativeQueries = getAnnotation(NamedNativeQueries.class);
         if (namedNativeQueries != null) {
-            for (Object namedNativeQuery : (Object[])invokeMethod("value", namedNativeQueries)) { 
+            for (Annotation namedNativeQuery : (Annotation[])invokeMethod("value", namedNativeQueries)) { 
             	getProject().processNamedNativeQuery(new NamedNativeQueryMetadata(namedNativeQuery, getJavaClassName()));
             }
         }
         
         // Look for a @NamedNativeQuery.
-        Object namedNativeQuery = getAnnotation(NamedNativeQuery.class);
+        Annotation namedNativeQuery = getAnnotation(NamedNativeQuery.class);
         if (namedNativeQuery != null) {
         	getProject().processNamedNativeQuery(new NamedNativeQueryMetadata(namedNativeQuery, getJavaClassName()));
         }
@@ -1745,16 +1698,16 @@ public class ClassAccessor extends NonRelationshipAccessor {
     	
         // Process the named query annotations second.
     	// Look for a @NamedQueries.
-        Object namedQueries = getAnnotation(NamedQueries.class);
+    	Annotation namedQueries = getAnnotation(NamedQueries.class);
         
         if (namedQueries != null) {
-            for (Object namedQuery : (Object[])invokeMethod("value", namedQueries)) { 
+            for (Annotation namedQuery : (Annotation[])invokeMethod("value", namedQueries)) { 
             	getProject().processNamedQuery(new NamedQueryMetadata(namedQuery, getJavaClassName()));
             }
         }
         
         // Look for a @NamedQuery.
-        Object namedQuery = getAnnotation(NamedQuery.class);
+        Annotation namedQuery = getAnnotation(NamedQuery.class);
         
         if (namedQuery != null) {
         	getProject().processNamedQuery(new NamedQueryMetadata(namedQuery, getJavaClassName()));
@@ -1770,15 +1723,15 @@ public class ClassAccessor extends NonRelationshipAccessor {
      */
     protected void processNamedStoredProcedureQueries() {
         // Look for a @NamedStoredProcedureQueries.
-        Object namedStoredProcedureQueries = getAnnotation(NamedStoredProcedureQueries.class);
+        Annotation namedStoredProcedureQueries = getAnnotation(NamedStoredProcedureQueries.class);
         if (namedStoredProcedureQueries != null) {
-            for (Object namedStoredProcedureQuery : (Object[])invokeMethod("value", namedStoredProcedureQueries)) { 
+            for (Annotation namedStoredProcedureQuery : (Annotation[])invokeMethod("value", namedStoredProcedureQueries)) { 
                 getProject().processNamedStoredProcedureQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, getJavaClass()));
             }
         }
         
         // Look for a @NamedStoredProcedureQuery.
-        Object namedStoredProcedureQuery = getAnnotation(NamedStoredProcedureQuery.class);
+        Annotation namedStoredProcedureQuery = getAnnotation(NamedStoredProcedureQuery.class);
         if (namedStoredProcedureQuery != null) {
             getProject().processNamedStoredProcedureQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, getJavaClass()));
         }
@@ -1798,7 +1751,7 @@ public class ClassAccessor extends NonRelationshipAccessor {
             }
         } else {
             if (m_optimisticLocking == null) {
-                Object optimisticLocking = getAnnotation(OptimisticLocking.class);
+                Annotation optimisticLocking = getAnnotation(OptimisticLocking.class);
             
                 if (optimisticLocking != null) {
                     // Process the meta data for this accessor's descriptor.
@@ -1819,23 +1772,28 @@ public class ClassAccessor extends NonRelationshipAccessor {
     
     /**
      * INTERNAL:
-     * Process a ReadOnly annotation.
-     */
-    protected void processReadOnly() {
-        if (isAnnotationPresent(ReadOnly.class)) {
-            processReadOnly(MetadataLogger.IGNORE_READ_ONLY_ANNOTATION);
-        }
-    }
-    
-    /**
-     * INTERNAL: 
      * Process a read only setting.
      */
-    protected void processReadOnly(String ignoreCtx) {
-        if (getDescriptor().isInheritanceSubclass()) {
-            getLogger().logWarningMessage(ignoreCtx, getJavaClass());
-        } else {
-        	getDescriptor().setReadOnly();
+    protected void processReadOnly() {
+        if (m_readOnly != null || isAnnotationPresent(ReadOnly.class)) {
+            if (getDescriptor().isInheritanceSubclass()) {
+                // Ignore read only if specified on an inheritance subclass.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_INHERITANCE_SUBCLASS_READ_ONLY, getJavaClass());
+            } else if (getDescriptor().hasReadOnly()) {
+                // Ignore read only on mapped superclass if read only is already 
+                // defined on the entity.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_READ_ONLY, getJavaClass());
+            } else {
+                if (m_readOnly == null) {
+                    getDescriptor().setReadOnly(true);
+                } else {
+                    if (isAnnotationPresent(ReadOnly.class)) {
+                        getLogger().logWarningMessage(MetadataLogger.IGNORE_READ_ONLY_ANNOTATION, getJavaClass());
+                    }
+                    
+                    getDescriptor().setReadOnly(m_readOnly);
+                }
+            }
         }
     }
     
@@ -1862,14 +1820,14 @@ public class ClassAccessor extends NonRelationshipAccessor {
     protected void processSecondaryTables() {
     	if (m_secondaryTables == null || m_secondaryTables.isEmpty()) {
     		// Look for a SecondaryTables annotation.
-            Object secondaryTables = getAnnotation(SecondaryTables.class);
+    	    Annotation secondaryTables = getAnnotation(SecondaryTables.class);
             if (secondaryTables != null) {
-            	for (Object secondaryTable : (Object[])invokeMethod("value", secondaryTables)) { 
+            	for (Annotation secondaryTable : (Annotation[])invokeMethod("value", secondaryTables)) { 
             		processSecondaryTable(new SecondaryTableMetadata(secondaryTable, getJavaClassName()));
                 }
             } else {
                 // Look for a SecondaryTable annotation
-                Object secondaryTable = getAnnotation(SecondaryTable.class);
+                Annotation secondaryTable = getAnnotation(SecondaryTable.class);
                 if (secondaryTable != null) {    
                 	processSecondaryTable(new SecondaryTableMetadata(secondaryTable, getJavaClassName()));
                 }
@@ -1901,15 +1859,15 @@ public class ClassAccessor extends NonRelationshipAccessor {
         
         // Process the sql result set mapping query annotations second.
         // Look for a @SqlResultSetMappings.
-        Object sqlResultSetMappings = getAnnotation(SqlResultSetMappings.class);
+    	Annotation sqlResultSetMappings = getAnnotation(SqlResultSetMappings.class);
 
         if (sqlResultSetMappings != null) {
-            for (Object sqlResultSetMapping : (Object[])invokeMethod("value", sqlResultSetMappings)) {
+            for (Annotation sqlResultSetMapping : (Annotation[])invokeMethod("value", sqlResultSetMappings)) {
                 getProject().processSqlResultSetMapping(new SQLResultSetMappingMetadata(sqlResultSetMapping));
             }
         } else {
             // Look for a @SqlResultSetMapping.
-            Object sqlResultSetMapping = getAnnotation(SqlResultSetMapping.class);
+            Annotation sqlResultSetMapping = getAnnotation(SqlResultSetMapping.class);
             
             if (sqlResultSetMapping != null) {
                 getProject().processSqlResultSetMapping(new SQLResultSetMappingMetadata(sqlResultSetMapping));
@@ -1925,7 +1883,7 @@ public class ClassAccessor extends NonRelationshipAccessor {
     	if (m_table == null) {
     		// Check for a table annotation. If no annotation is defined, the 
             // table will default.
-            Object table = getAnnotation(Table.class);
+    	    Annotation table = getAnnotation(Table.class);
             processTable(new TableMetadata(table, getJavaClassName()));
     	} else {
     		if (isAnnotationPresent(Table.class)) {
@@ -2057,6 +2015,14 @@ public class ClassAccessor extends NonRelationshipAccessor {
     }
     
     /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setChangeTracking(ChangeTrackingMetadata changeTracking) {
+        m_changeTracking = changeTracking;
+    }
+    
+    /**
      * INTERNAL:
      * Used for OX mapping.
      */
@@ -2068,8 +2034,8 @@ public class ClassAccessor extends NonRelationshipAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setCustomizer(String customizer) {
-        m_customizer = customizer;
+    public void setCustomizerClassName(String customizerClassName) {
+        m_customizerClassName = customizerClassName;
     }
     
     /**
@@ -2140,7 +2106,7 @@ public class ClassAccessor extends NonRelationshipAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setInheritance(XMLInheritance inheritance) {
+    public void setInheritance(InheritanceMetadata inheritance) {
     	m_inheritance = inheritance;
     }
     
@@ -2299,6 +2265,14 @@ public class ClassAccessor extends NonRelationshipAccessor {
 	public void setPreUpdate(String preUpdate) {
 		m_preUpdate = preUpdate;
 	}
+    
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setReadOnly(Boolean readOnly) {
+        m_readOnly = readOnly;
+    }
     
     /**
      * INTERNAL:

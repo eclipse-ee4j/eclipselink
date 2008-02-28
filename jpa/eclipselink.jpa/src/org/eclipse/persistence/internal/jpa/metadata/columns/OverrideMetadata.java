@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
+import java.lang.annotation.Annotation;
+
 /**
  * Object to hold onto common attribute/association override metadata.
  * 
@@ -67,6 +69,13 @@ public class OverrideMetadata {
 		return m_name;
 	}
 	
+	/**
+     * INTERNAL:
+     */
+    protected Object invokeMethod(String methodName, Annotation annotation) {
+        return MetadataHelper.invokeMethod(methodName, annotation);
+    }
+    
 	/**
 	 * INTERNAL:
 	 */

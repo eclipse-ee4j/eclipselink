@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import java.lang.annotation.Annotation;
+
 import javax.persistence.ManyToMany;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -40,12 +42,12 @@ public class ManyToManyAccessor extends CollectionAccessor {
     public ManyToManyAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
         
-        Object manyToMany = getAnnotation(ManyToMany.class);
+        Annotation manyToMany = getAnnotation(ManyToMany.class);
         
-        setTargetEntity((Class)invokeMethod("targetEntity", manyToMany));
-        setCascadeTypes((Enum[])invokeMethod("cascade", manyToMany));
-        setFetch((Enum)invokeMethod("fetch", manyToMany));
-        setMappedBy((String)invokeMethod("mappedBy", manyToMany));
+        setTargetEntity((Class) invokeMethod("targetEntity", manyToMany));
+        setCascadeTypes((Enum[]) invokeMethod("cascade", manyToMany));
+        setFetch((Enum) invokeMethod("fetch", manyToMany));
+        setMappedBy((String) invokeMethod("mappedBy", manyToMany));
     }
     
     /**

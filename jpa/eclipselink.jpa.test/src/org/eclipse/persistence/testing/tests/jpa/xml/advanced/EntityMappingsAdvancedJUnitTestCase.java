@@ -40,7 +40,9 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedTableCrea
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.ModelExamples;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.ReadOnlyClass;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  
 /**
@@ -76,6 +78,11 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testDeleteEmployee", persistenceUnit));
         
         if (persistenceUnit.equals("extended")) {
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testReadOnlyClassSetting", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEmployeeChangeTrackingPolicy", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAddressChangeTrackingPolicy", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testPhoneNumberChangeTrackingPolicy", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testProjectChangeTrackingPolicy", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testJoinFetchSetting", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEmployeeOptimisticLockingSettings", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEmployeeCacheSettings", persistenceUnit));            
@@ -95,6 +102,63 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
                 clearCache(persistenceUnit);
             }
         };
+    }
+    
+    /**
+     * Verifies that the read-only metadata is correctly processed.
+     */
+    public void testReadOnlyClassSetting() {
+        ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        ClassDescriptor descriptor = session.getDescriptor(ReadOnlyClass.class);
+     
+        assertFalse("ReadOnlyClass descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor == null);
+        assertTrue("ReadOnlyClass descriptor is not set to read only.", descriptor.shouldBeReadOnly());
+    }
+    
+    /**
+     * Verifies that the change tracking metadata is correctly processed.
+     * Employee has an AUTO setting which means internally an
+     * AttributeChangePolicy should be set since the class has been weaved.
+     */
+    public void testEmployeeChangeTrackingPolicy() {
+        ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        ClassDescriptor descriptor = session.getDescriptor(Employee.class);
+     
+        assertFalse("Employee descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor == null);
+        assertTrue("Employee descriptor has incorrect object change policy", descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
+    }
+    
+    /**
+     * Verifies that the change tracking metadata is correctly processed.
+     */
+    public void testAddressChangeTrackingPolicy() {
+        ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        ClassDescriptor descriptor = session.getDescriptor(Address.class);
+     
+        assertFalse("Address descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor == null);
+        assertTrue("Address descriptor has incorrect object change policy", descriptor.getObjectChangePolicyInternal().isDeferredChangeDetectionPolicy());
+    }
+    
+    /**
+     * Verifies that the change tracking metadata is correctly processed.
+     */
+    public void testPhoneNumberChangeTrackingPolicy() {
+        ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        ClassDescriptor descriptor = session.getDescriptor(PhoneNumber.class);
+     
+        assertFalse("PhoneNumber descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor == null);
+        assertTrue("PhoneNumber descriptor has incorrect object change policy", descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
+    }
+    
+    /**
+     * Verifies that the change tracking metadata is correctly processed.
+     */
+    public void testProjectChangeTrackingPolicy() {
+        ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        ClassDescriptor descriptor = session.getDescriptor(Project.class);
+     
+        assertFalse("Project descriptor was not found in the PU [" + m_persistenceUnit + "]", descriptor == null);
+        assertTrue("Project descriptor has incorrect object change policy", descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy());
     }
     
     /**
@@ -127,7 +191,9 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
     }
     
     /** 
-     * Verifies that settings from the Employee cache annotation have been set. 
+     * Verifies that settings from the Employee cache annotation have been set.
+     * Also verifies that that employee customizer sets the disable cache hits 
+     * back to false. It is true in XML.  
      */ 
     public void testEmployeeCacheSettings() { 
         ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit); 

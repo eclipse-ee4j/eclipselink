@@ -236,8 +236,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
        	
     	if (m_joinTable == null) {
     		// Look for a JoinTable annotation.
-       		Object jTable = getAnnotation(JoinTable.class);
-            joinTable = new JoinTableMetadata(jTable, getAnnotatedElementName());
+            joinTable = new JoinTableMetadata(getAnnotation(JoinTable.class), getAnnotatedElementName());
     	} else {
     		// Use the join table specified in XML.
     		m_joinTable.setLocation(getAnnotatedElementName());

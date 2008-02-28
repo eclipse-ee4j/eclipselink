@@ -849,12 +849,23 @@ public class Helper implements Serializable {
 
     /**
      * INTERNAL:
-     * Returns a Method for the specified Class, method name,
-     * and formal parameter types.
-     * Uses Class.getDeclaredMethod(String Class[]) to find the method.
-     * If the method is not found on the specified class
-     * the superclass is checked, and so on, recursively.
-     * Set accessible to true, so we can access private/package/protected methods.
+     * Returns a Method for the specified Class, method name, and that has no 
+     * parameters. Uses Class.getDeclaredMethod(String Class[]) to find the 
+     * method. If the method is not found on the specified class the superclass 
+     * is checked, and so on, recursively. Set accessible to true, so we can 
+     * access private/package/protected methods.
+     */
+    public static Method getDeclaredMethod(Class javaClass, String methodName) throws NoSuchMethodException {
+        return getDeclaredMethod(javaClass, methodName, (Class[]) null);
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns a Method for the specified Class, method name, and formal 
+     * parameter types. Uses Class.getDeclaredMethod(String Class[]) to find 
+     * the method. If the method is not found on the specified class the 
+     * superclass is checked, and so on, recursively. Set accessible to true, 
+     * so we can access private/package/protected methods.
      */
     public static Method getDeclaredMethod(Class javaClass, String methodName, Class[] methodParameterTypes) throws NoSuchMethodException {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){

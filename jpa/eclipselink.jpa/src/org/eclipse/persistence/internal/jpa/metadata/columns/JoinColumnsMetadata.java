@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,12 +42,12 @@ public class JoinColumnsMetadata {
     /**
      * INTERNAL:
      */
-    public JoinColumnsMetadata(Object joinColumns, Object joinColumn) {
+    public JoinColumnsMetadata(Annotation joinColumns, Annotation joinColumn) {
     	m_joinColumns = new ArrayList<JoinColumnMetadata>();
         
         // Process all the join columns first.
         if (joinColumns != null) {
-            for (Object jColumn : (Object[])MetadataHelper.invokeMethod("value", joinColumns)) {
+            for (Annotation jColumn : (Annotation[])MetadataHelper.invokeMethod("value", joinColumns)) {
                 m_joinColumns.add(new JoinColumnMetadata(jColumn));
             }
         }

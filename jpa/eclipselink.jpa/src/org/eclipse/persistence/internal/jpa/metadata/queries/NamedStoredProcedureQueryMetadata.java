@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,18 +39,17 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     /**
      * INTERNAL:
      */
-    public NamedStoredProcedureQueryMetadata(Object namedStoredProcedureQuery, Class javaClass) {
-        
-    	m_procedureName = (String)MetadataHelper.invokeMethod("procedureName", namedStoredProcedureQuery);
+    public NamedStoredProcedureQueryMetadata(Annotation namedStoredProcedureQuery, Class javaClass) {
+    	m_procedureName = (String) invokeMethod("procedureName", namedStoredProcedureQuery);
     	
     	setLoadedFromAnnotation();
     	setLocation(javaClass.getName());
-        setName((String)MetadataHelper.invokeMethod("name", namedStoredProcedureQuery));
-        setHints((Object[])MetadataHelper.invokeMethod("hints", namedStoredProcedureQuery));
-        setResultClass((Class)MetadataHelper.invokeMethod("resultClass", namedStoredProcedureQuery));
-        setResultSetMapping((String)MetadataHelper.invokeMethod("resultSetMapping", namedStoredProcedureQuery));
-        setReturnsResultSet((Boolean)MetadataHelper.invokeMethod("returnsResultSet", namedStoredProcedureQuery));
-        setProcedureParameters((Object[])MetadataHelper.invokeMethod("procedureParameters", namedStoredProcedureQuery));
+        setName((String) invokeMethod("name", namedStoredProcedureQuery));
+        setHints((Annotation[]) invokeMethod("hints", namedStoredProcedureQuery));
+        setResultClass((Class) invokeMethod("resultClass", namedStoredProcedureQuery));
+        setResultSetMapping((String) invokeMethod("resultSetMapping", namedStoredProcedureQuery));
+        setReturnsResultSet((Boolean) invokeMethod("returnsResultSet", namedStoredProcedureQuery));
+        setProcedureParameters((Annotation[]) invokeMethod("procedureParameters", namedStoredProcedureQuery));
     }
    
     /**

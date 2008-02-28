@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
+import java.lang.annotation.Annotation;
+
 /**
  * Metadata object to hold generated value information.
  * 
@@ -30,9 +32,9 @@ public class GeneratedValueMetadata {
     /**
      * INTERNAL:
      */
-    public GeneratedValueMetadata(Object generatedValue) {
-        m_generator = (String)MetadataHelper.invokeMethod("generator", generatedValue);
-    	m_strategy = (Enum)MetadataHelper.invokeMethod("strategy", generatedValue); 
+    public GeneratedValueMetadata(Annotation generatedValue) {
+        m_generator = (String) MetadataHelper.invokeMethod("generator", generatedValue);
+    	m_strategy = (Enum) MetadataHelper.invokeMethod("strategy", generatedValue); 
     }
     
     /**

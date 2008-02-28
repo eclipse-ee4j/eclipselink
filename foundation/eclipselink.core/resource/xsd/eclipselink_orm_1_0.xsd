@@ -192,8 +192,10 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
-      <xsd:element name="table" type="orm:table" 
+      <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
+      <xsd:element name="change-tracking" type="orm:change-tracking" 
                    minOccurs="0"/>
+      <xsd:element name="table" type="orm:table" minOccurs="0"/>
       <xsd:element name="secondary-table" type="orm:secondary-table" 
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="primary-key-join-column" 
@@ -244,8 +246,7 @@
       <xsd:element name="post-load" type="orm:post-load" minOccurs="0"/>
       <xsd:element name="attribute-override" type="orm:attribute-override" 
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="association-override" 
-                   type="orm:association-override"
+      <xsd:element name="association-override" type="orm:association-override"
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="attributes" type="orm:attributes" minOccurs="0"/>
     </xsd:sequence>
@@ -253,6 +254,7 @@
     <xsd:attribute name="class" type="xsd:string" use="required"/>
     <xsd:attribute name="access" type="orm:access-type"/>
     <xsd:attribute name="metadata-complete" type="xsd:boolean"/>
+    <xsd:attribute name="read-only" type="xsd:boolean"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -1383,10 +1385,13 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
-      <xsd:element name="converter" type="orm:converter" 
-                   minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="type-converter" type="orm:type-converter" 
-                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
+      <xsd:element name="change-tracking" type="orm:change-tracking" 
+                   minOccurs="0"/>
+      <xsd:element name="converter" type="orm:converter" minOccurs="0" 
+                   maxOccurs="unbounded"/>
+      <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" 
+                   maxOccurs="unbounded"/>
       <xsd:element name="object-type-converter" type="orm:object-type-converter" 
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="struct-converter" type="orm:struct-converter" 
@@ -1448,6 +1453,9 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="customizer" type="orm:customizer" minOccurs="0"/>
+      <xsd:element name="change-tracking" type="orm:change-tracking" 
+                   minOccurs="0"/>
       <xsd:element name="id-class" type="orm:id-class" minOccurs="0"/>
       <xsd:element name="optimistic-locking" type="orm:optimistic-locking"
                    minOccurs="0"/>
@@ -1479,6 +1487,7 @@
     <xsd:attribute name="class" type="xsd:string" use="required"/>
     <xsd:attribute name="access" type="orm:access-type"/>
     <xsd:attribute name="metadata-complete" type="xsd:boolean"/>
+    <xsd:attribute name="read-only" type="xsd:boolean"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -2270,6 +2279,117 @@
 	  <xsd:attribute name="second" type="xsd:integer"/>
 	  <xsd:attribute name="millisecond" type="xsd:integer"/>
 	</xsd:complexType>
+  
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="change-tracking">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * The ChangeTracking annotation is used to specify the 
+         * org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy 
+         * which computes changes sets for EclipseLink's UnitOfWork commit 
+         * process. An ObjectChangePolicy is stored on an Entity's descriptor.
+         *
+         * A ChangeTracking annotation may be specified on an Entity or 
+         * MappedSuperclass.
+         */ 
+        @Target({TYPE})
+        @Retention(RUNTIME)
+        public @interface ChangeTracking {
+          /**
+           * (Optional) The type of change tracking to use.
+           */ 
+          ChangeTrackingType value() default AUTO;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="type" type="orm:change-tracking-type" use="required"/>
+  </xsd:complexType>
+ 
+  <!-- **************************************************** -->
+ 
+  <xsd:simpleType name="change-tracking-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * An enum that is used within the ChangeTracking annotation. 
+         */ 
+        public enum ChangeTrackingType {
+          /**
+           * An ATTRIBUTE change tracking type allows change tracking at the
+           * attribute level of an object. Objects with changed attributes will
+           * be processed in the commit process to include any changes in the 
+           * results of the commit. Unchanged objects will be ignored.
+           */
+          ATTRIBUTE,
+
+          /**
+           * An OBJECT change tracking policy allows an object to calculate for 
+           * itself whether it has changed. Changed objects will be processed in 
+           * the commit process to include any changes in the results of the 
+           * commit. Unchanged objects will be ignored.
+           */
+          OBJECT,
+
+          /**
+           * A DEFERRED change tracking policy defers all change detection to
+           * the UnitOfWork's change detection process. Essentially, the 
+           * calculateChanges() method will run for all objects in a UnitOfWork. 
+           * This is the default ObjectChangePolicy
+           */
+          DEFERRED,
+
+          /**
+           * Will not set any change tracking policy.
+           */
+          AUTO
+        }
+
+      </xsd:documentation>
+	  </xsd:annotation>
+	  <xsd:restriction base="xsd:token">
+	    <xsd:enumeration value="ATTRIBUTE"/>
+	    <xsd:enumeration value="OBJECT"/>
+	    <xsd:enumeration value="DEFERRED"/>
+	    <xsd:enumeration value="AUTO"/>
+	  </xsd:restriction>
+	</xsd:simpleType>
+  
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="customizer">
+	  <xsd:annotation>
+	    <xsd:documentation>
+	
+      /** 
+       * The Customizer annotation is used to specify a class that implements 
+       * the org.eclipse.persistence.internal.sessions.factories.DescriptorCustomizer 
+       * interface and is to run against an enetity's class descriptor after all 
+       * metadata processing has been completed.
+       *
+       * The Customizer annotation may be defined on an Entity, MappedSuperclass 
+       * or Embeddable class. In the case of inheritance, a Customizer is not 
+       * inherited from its parent classes. 
+       */ 
+	    @Target({TYPE})
+	    @Retention(RUNTIME)
+	    public @interface Customizer {
+	      /**
+	       * (Required) Defines the name of the descriptor customizer class that 
+	       * should be applied for the related entity or embeddable class.
+	       */
+	      Class value(); 
+	    }
+	
+	    </xsd:documentation>
+	  </xsd:annotation>
+	  <xsd:attribute name="class" type="xsd:string" use="required"/>
+	</xsd:complexType>
+  
   
 </xsd:schema>
 

@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 
 import javax.persistence.FetchType;
@@ -274,8 +275,8 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
         } else {
         	if (m_joinColumns == null || m_joinColumns.isEmpty()) {
         		// Process the join columns from annotations.
-        		Object joinColumn = getAnnotation(JoinColumn.class);
-        		Object joinColumns = getAnnotation(JoinColumns.class);
+        	    Annotation joinColumn = getAnnotation(JoinColumn.class);
+        	    Annotation joinColumns = getAnnotation(JoinColumns.class);
             
         		return processJoinColumns(new JoinColumnsMetadata(joinColumns, joinColumn), getReferenceDescriptor());
         	} else {

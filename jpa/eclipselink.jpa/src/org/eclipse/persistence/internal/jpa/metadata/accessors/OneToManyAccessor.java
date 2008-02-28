@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import javax.persistence.OneToMany;
@@ -48,14 +49,14 @@ public class OneToManyAccessor extends CollectionAccessor {
     public OneToManyAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
         
-        Object oneToMany = getAnnotation(OneToMany.class);
+        Annotation oneToMany = getAnnotation(OneToMany.class);
         
         // We must check because OneToMany's can default.
         if (oneToMany != null) {
-        	setTargetEntity((Class)invokeMethod("targetEntity", oneToMany));
-        	setCascadeTypes((Enum[])invokeMethod("cascade", oneToMany));
-        	setFetch((Enum)invokeMethod("fetch", oneToMany));
-        	setMappedBy((String)invokeMethod("mappedBy", oneToMany));
+        	setTargetEntity((Class) invokeMethod("targetEntity", oneToMany));
+        	setCascadeTypes((Enum[]) invokeMethod("cascade", oneToMany));
+        	setFetch((Enum) invokeMethod("fetch", oneToMany));
+        	setMappedBy((String) invokeMethod("mappedBy", oneToMany));
         } else {
         	// Set the annotation defaults.
         	setTargetEntity(void.class);

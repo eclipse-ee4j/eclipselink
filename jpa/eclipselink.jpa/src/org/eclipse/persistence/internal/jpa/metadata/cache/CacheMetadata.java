@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
+import java.lang.annotation.Annotation;
+
 import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 
@@ -51,22 +53,22 @@ public class CacheMetadata  {
     /**
      * INTERNAL:
      */
-    public CacheMetadata(Object cache) {
-        setAlwaysRefresh((Boolean)MetadataHelper.invokeMethod("alwaysRefresh", cache));
-        setDisableHits((Boolean)MetadataHelper.invokeMethod("disableHits", cache));
-        setCoordinationType((Enum)MetadataHelper.invokeMethod("coordinationType", cache));
-        setExpiry((Integer)MetadataHelper.invokeMethod("expiry", cache));
+    public CacheMetadata(Annotation cache) {
+        setAlwaysRefresh((Boolean) MetadataHelper.invokeMethod("alwaysRefresh", cache));
+        setDisableHits((Boolean) MetadataHelper.invokeMethod("disableHits", cache));
+        setCoordinationType((Enum) MetadataHelper.invokeMethod("coordinationType", cache));
+        setExpiry((Integer) MetadataHelper.invokeMethod("expiry", cache));
 
-        Object expiryTimeOfDay = MetadataHelper.invokeMethod("expiryTimeOfDay", cache);
+        Annotation expiryTimeOfDay = (Annotation) MetadataHelper.invokeMethod("expiryTimeOfDay", cache);
         
-        if ((Boolean)MetadataHelper.invokeMethod("specified", expiryTimeOfDay)) {
+        if ((Boolean) MetadataHelper.invokeMethod("specified", expiryTimeOfDay)) {
             setExpiryTimeOfDay(new TimeOfDayMetadata(expiryTimeOfDay));
         }
         
-        setIsolated((Boolean)MetadataHelper.invokeMethod("isolated", cache));
-        setSize((Integer)MetadataHelper.invokeMethod("size", cache));
-        setType((Enum)MetadataHelper.invokeMethod("type", cache));
-        setRefreshOnlyIfNewer((Boolean)MetadataHelper.invokeMethod("refreshOnlyIfNewer", cache));
+        setIsolated((Boolean) MetadataHelper.invokeMethod("isolated", cache));
+        setSize((Integer) MetadataHelper.invokeMethod("size", cache));
+        setType((Enum) MetadataHelper.invokeMethod("type", cache));
+        setRefreshOnlyIfNewer((Boolean) MetadataHelper.invokeMethod("refreshOnlyIfNewer", cache));
     }
     
     /**
@@ -145,8 +147,8 @@ public class CacheMetadata  {
      * INTERNAL:
      */
     public void process(MetadataDescriptor descriptor, Class javaClass) {
-        // Set the cache flag on the Metadata Descriptor.
-        descriptor.setCacheIsSet();
+        // Set the cache flag on the metadata Descriptor.
+        descriptor.setHasCache();
         
         // Process the cache metadata.
         ClassDescriptor classDescriptor = descriptor.getClassDescriptor();

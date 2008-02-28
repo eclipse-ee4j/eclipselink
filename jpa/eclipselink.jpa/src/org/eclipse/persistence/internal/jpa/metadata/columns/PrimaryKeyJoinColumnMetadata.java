@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
+import java.lang.annotation.Annotation;
+
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
 /**
@@ -33,7 +35,7 @@ public class PrimaryKeyJoinColumnMetadata {
     /**
      * INTERNAL:
      */
-    public PrimaryKeyJoinColumnMetadata(Object primaryKeyJoinColumn) {
+    public PrimaryKeyJoinColumnMetadata(Annotation primaryKeyJoinColumn) {
         if (primaryKeyJoinColumn != null) {
             // Process the primary key field metadata.
             setReferencedColumnName((String)MetadataHelper.invokeMethod("referencedColumnName", primaryKeyJoinColumn));

@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
+import java.lang.annotation.Annotation;
+
 /**
  * INTERNAL:
  * Object to hold onto an field result metadata.
@@ -32,9 +34,9 @@ public class FieldResultMetadata {
     /**
      * INTERNAL:
      */
-    public FieldResultMetadata(Object fieldResult) {
-    	m_name = (String)MetadataHelper.invokeMethod("name", fieldResult);
-    	m_column = (String)MetadataHelper.invokeMethod("column", fieldResult);
+    public FieldResultMetadata(Annotation fieldResult) {
+    	m_name = (String) MetadataHelper.invokeMethod("name", fieldResult);
+    	m_column = (String) MetadataHelper.invokeMethod("column", fieldResult);
     }
     
     /**

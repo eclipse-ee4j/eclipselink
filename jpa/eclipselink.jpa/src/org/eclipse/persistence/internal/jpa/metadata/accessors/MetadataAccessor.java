@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.ArrayList;
 
 import java.lang.annotation.Annotation;
 import java.lang.Boolean;
@@ -419,33 +418,21 @@ public abstract class MetadataAccessor  {
     /**
      * INTERNAL:
      * Helper method to return a string value if specified, otherwise returns
-     * the default value.
+     * the default value. 
      */
-    protected String getValue(String value, String defaultValue) {
-        // Check if a candidate was specified otherwise use the default.
-        if (value != null && ! value.equals("")) {
-            return value;
-        } else {
-        	// Future: log a defaulting message
-            return defaultValue;
-        }
+    protected Integer getValue(Integer value, Integer defaultValue) {
+        return MetadataHelper.getValue(value, defaultValue);
     }
     
     /**
      * INTERNAL:
      * Helper method to return a string value if specified, otherwise returns
-     * the default value. 
+     * the default value.
      */
-    protected Integer getValue(Integer value, Integer defaultValue) {
-        // Check if a candidate was specified otherwise use the default.
-        if (value == null) {
-        	return defaultValue;
-        } else {
-        	// Future: log a defaulting message
-            return value;
-        } 
+    protected String getValue(String value, String defaultValue) {
+        return MetadataHelper.getValue(value, defaultValue);
     }
-    
+
     /**
      * INTERNAL:
      * Method to check if an annotated element has a Column annotation.
@@ -516,28 +503,10 @@ public abstract class MetadataAccessor  {
      * exceptions.
      */
     Object invokeMethod(String methodName, Object target) {
-        return invokeMethod(methodName, target, (Object[]) null);
-    }
-    
-    /** 
-     * INTERNAL:
-     * Invoke the specified named method on the object, handling the necessary 
-     * exceptions.
-     */
-    Object invokeMethod(String methodName, Object target, Object[] params) {
-        ArrayList<Class<?>> parmClasses = new ArrayList<Class<?>>();
-        
-        if (params != null){
-            for (Object parm : params) {
-                parmClasses.add(parm.getClass());
-            }
-        }
-        
         Method method = null;
         
         try {
-            method = Helper.getDeclaredMethod(target.getClass(), methodName,
-                    parmClasses.size() == 0 ? (Class<?>[])null : (Class<?>[]) parmClasses.toArray());            
+            method = Helper.getDeclaredMethod(target.getClass(), methodName);            
         } catch (NoSuchMethodException e) {
             EntityManagerSetupException.methodInvocationFailed(method, target,e);
         }
@@ -546,7 +515,7 @@ public abstract class MetadataAccessor  {
              try {
                  if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                      try {
-                         return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, target, params));
+                         return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, target));
                      } catch (PrivilegedActionException exception) {
                          Exception throwableException = exception.getException();
                          if (throwableException instanceof IllegalAccessException) {
@@ -556,7 +525,7 @@ public abstract class MetadataAccessor  {
                          }
                      }
                  } else {
-                     return PrivilegedAccessHelper.invokeMethod(method, target, params);
+                     return PrivilegedAccessHelper.invokeMethod(method, target);
                  }
              } catch (IllegalAccessException ex1) {
                  throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
@@ -701,7 +670,7 @@ public abstract class MetadataAccessor  {
     	}
     	
         // Check for a Converter annotation.
-        Object converter = getAnnotation(Converter.class);
+    	Annotation converter = getAnnotation(Converter.class);
         if (converter != null) {
             m_project.processConverter(new ConverterMetadata(converter, getAnnotatedElement()));
         }
@@ -719,7 +688,7 @@ public abstract class MetadataAccessor  {
     	}
     	
         // Check for an ObjectTypeConverter annotation.
-        Object converter = getAnnotation(ObjectTypeConverter.class);
+    	Annotation converter = getAnnotation(ObjectTypeConverter.class);
         if (converter != null) {
         	m_project.processConverter(new ObjectTypeConverterMetadata(converter, getAnnotatedElement()));
         }
@@ -796,7 +765,7 @@ public abstract class MetadataAccessor  {
     	}
     	
         // Check for a StructConverter annotation.
-        Object converter = getAnnotation(StructConverter.class);
+    	Annotation converter = getAnnotation(StructConverter.class);
         if (converter != null) {
             m_project.processStructConverter(new StructConverterMetadata(converter, getAnnotatedElement()));
         }
@@ -823,7 +792,7 @@ public abstract class MetadataAccessor  {
     	}
     	
         // Check for an TypeConverter annotation.
-        Object converter = getAnnotation(TypeConverter.class);
+    	Annotation converter = getAnnotation(TypeConverter.class);
         if (converter != null) {
         	m_project.processConverter(new TypeConverterMetadata(converter, getAnnotatedElement()));
         }

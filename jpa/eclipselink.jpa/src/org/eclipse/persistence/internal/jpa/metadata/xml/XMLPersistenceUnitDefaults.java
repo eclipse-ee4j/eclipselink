@@ -125,13 +125,6 @@ public class XMLPersistenceUnitDefaults {
 	
 	/**
 	 * INTERNAL:
-	 */
-	public boolean hasEntityListeners() {
-		return m_entityListeners != null && ! m_entityListeners.isEmpty();
-	}
-	
-	/**
-	 * INTERNAL:
 	 * Used for OX mapping.
 	 */
 	public boolean isCascadePersist() {

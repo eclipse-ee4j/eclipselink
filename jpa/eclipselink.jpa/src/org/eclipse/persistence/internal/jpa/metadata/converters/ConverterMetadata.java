@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
@@ -39,14 +40,11 @@ public class ConverterMetadata extends AbstractConverterMetadata {
     /**
      * INTERNAL:
      */
-    public ConverterMetadata(Object converter, AnnotatedElement annotatedElement) {
+    public ConverterMetadata(Annotation converter, AnnotatedElement annotatedElement) {
     	setLoadedFromAnnotation();
     	setLocation(annotatedElement);
-    	
-    	setName((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("name", converter));
-    	
-    	Class converterClass = (Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("converterClass", converter);
-    	m_className = converterClass.getName();        
+    	setName((String) invokeMethod("name", converter));
+    	m_className = ((Class) invokeMethod("converterClass", converter)).getName();        
     }
     
     /**

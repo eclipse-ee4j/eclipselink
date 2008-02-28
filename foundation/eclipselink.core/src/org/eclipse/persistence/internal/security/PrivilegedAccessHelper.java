@@ -306,6 +306,14 @@ public class PrivilegedAccessHelper {
     }
 
     /**
+     * Invoke the givenMethod on a givenObject. Assumes method does not take
+     * parameters. Wrap in a doPrivileged block if necessary.
+     */
+    public static Object invokeMethod(final Method method, final Object object) throws IllegalAccessException, InvocationTargetException {
+        return invokeMethod(method, object, (Object[]) null);
+    }
+    
+    /**
      * Invoke the givenMethod on a givenObject using the array of parameters given.  Wrap in a doPrivileged block
      * if necessary.
      */

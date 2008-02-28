@@ -29,6 +29,26 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         addTableDefinition(buildSALARYTable());
         addTableDefinition(buildRESPONSTable());
         addTableDefinition(buildCREDITCARDSTable());
+        addTableDefinition(buildREADONLYCLASSTable());
+    }
+    
+    
+    public static TableDefinition buildREADONLYCLASSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_XML_READONLY");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        return table;
     }
     
     public static TableDefinition buildADDRESSTable() {

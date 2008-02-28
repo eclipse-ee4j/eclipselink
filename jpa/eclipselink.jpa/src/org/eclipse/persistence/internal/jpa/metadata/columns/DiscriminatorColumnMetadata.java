@@ -12,6 +12,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
+import java.lang.annotation.Annotation;
+
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+
 /**
  * Object to hold onto discriminator column metadata.
  * 
@@ -32,17 +39,18 @@ public class DiscriminatorColumnMetadata {
     /**
      * INTERNAL:
      */
-    public DiscriminatorColumnMetadata(Object discriminatorColumn) {    	
+    public DiscriminatorColumnMetadata(Annotation discriminatorColumn) {    	
     	if (discriminatorColumn != null) {
-    		m_columnDefinition =  (String)MetadataHelper.invokeMethod("columnDefinition", discriminatorColumn);
-    		m_discriminatorType = (Enum)MetadataHelper.invokeMethod("discriminatorType", discriminatorColumn); 
-    		m_length = (Integer)MetadataHelper.invokeMethod("length", discriminatorColumn);
-    		m_name = (String)MetadataHelper.invokeMethod("name", discriminatorColumn); 
+    		m_columnDefinition =  (String) invokeMethod("columnDefinition", discriminatorColumn);
+    		m_discriminatorType = (Enum) invokeMethod("discriminatorType", discriminatorColumn); 
+    		m_length = (Integer) invokeMethod("length", discriminatorColumn);
+    		m_name = (String) invokeMethod("name", discriminatorColumn); 
     	}
     }
 
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public String getColumnDefinition() {
     	return m_columnDefinition;
@@ -50,6 +58,7 @@ public class DiscriminatorColumnMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public Enum getDiscriminatorType() {
     	return m_discriminatorType;
@@ -57,6 +66,7 @@ public class DiscriminatorColumnMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public Integer getLength() {
     	return m_length;
@@ -64,6 +74,7 @@ public class DiscriminatorColumnMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public String getName() {
     	return m_name;
@@ -72,12 +83,46 @@ public class DiscriminatorColumnMetadata {
     /**
      * INTERNAL:
      */
+    protected Object invokeMethod(String methodName, Annotation annotation) {
+        return org.eclipse.persistence.internal.jpa.metadata.columns.MetadataHelper.invokeMethod(methodName, annotation);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void process(MetadataDescriptor descriptor, String annotatedElementName) {     
+        DatabaseField field = new DatabaseField();
+
+        // Process the name
+        field.setName(MetadataHelper.getName(m_name, "DTYPE", MetadataLogger.DISCRIMINATOR_COLUMN, descriptor.getLogger(), annotatedElementName));
+        
+        // Process the length.
+        field.setLength(MetadataHelper.getValue(m_length, 31));
+        
+        // Process the column definition.
+        field.setColumnDefinition(MetadataHelper.getValue(m_columnDefinition, ""));
+        
+        // Process the type.
+        field.setType(MetadataHelper.getDiscriminatorType(m_discriminatorType));
+        
+        // Set the table.
+        field.setTable(descriptor.getPrimaryTable());
+        
+        // Set the class indicator field on the inheritance policy.
+        descriptor.setClassIndicatorField(field);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setColumnDefinition(String columnDefinition) {
     	m_columnDefinition = columnDefinition;
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public void setDiscriminatorType(Enum descriminatorType) {
     	m_discriminatorType = descriminatorType;
@@ -85,6 +130,7 @@ public class DiscriminatorColumnMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public void setLength(Integer length) {
     	m_length = length;
@@ -92,6 +138,7 @@ public class DiscriminatorColumnMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public void setName(String name) {
     	m_name = name;

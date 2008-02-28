@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import java.lang.annotation.Annotation;
+
 import org.eclipse.persistence.annotations.BasicMap;
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -47,9 +49,9 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     public BasicMapAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
         
-        Object basicMap = getAnnotation(BasicMap.class);
+        Annotation basicMap = getAnnotation(BasicMap.class);
 
-        m_keyColumn = new ColumnMetadata(invokeMethod("keyColumn", basicMap), getAttributeName());
+        m_keyColumn = new ColumnMetadata((Annotation) invokeMethod("keyColumn", basicMap), getAttributeName());
 
         Object keyConvert = invokeMethod("keyConverter", basicMap);
         m_keyConverter = (String)invokeMethod("value", keyConvert);
@@ -57,7 +59,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
         Object valueConvert = invokeMethod("valueConverter", basicMap);
         m_valueConverter = (String)invokeMethod("value", valueConvert);
         
-        setValueColumn(new ColumnMetadata(invokeMethod("valueColumn", basicMap),getAttributeName()));
+        setValueColumn(new ColumnMetadata((Annotation) invokeMethod("valueColumn", basicMap), getAttributeName()));
         setFetch((Enum)invokeMethod("fetch", basicMap));
     }
    

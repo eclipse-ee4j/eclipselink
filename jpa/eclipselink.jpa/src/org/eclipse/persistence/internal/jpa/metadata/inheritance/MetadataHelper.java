@@ -7,10 +7,11 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * @author Kyle Chen
- * @since Eclipselink 1.0
+ * Contributors:
+ *     Guy Pelletier (Oracle), February 28, 2007 
+ *        - New file introduced for bug 217880.  
  ******************************************************************************/
-package org.eclipse.persistence.internal.jpa.metadata.cache;
+package org.eclipse.persistence.internal.jpa.metadata.inheritance;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,6 +26,9 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 /**
  * This class only contains the common helper methods that can be accessed at
  * package-private level.
+ * 
+ * @author Guy Pelletier
+ * @since EclipseLink 1.0
  */
 final class MetadataHelper {
     /** 

@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import java.lang.annotation.Annotation;
+
 import javax.persistence.FetchType;
 
 import org.eclipse.persistence.annotations.BasicCollection;
@@ -58,11 +60,11 @@ public class BasicCollectionAccessor extends DirectAccessor {
     public BasicCollectionAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
 
-        Object basicCollection = getAnnotation(BasicCollection.class);
+        Annotation basicCollection = getAnnotation(BasicCollection.class);
 
         // Must check, BasicMapAccessor calls this constructor ...
         if (basicCollection != null) {
-            m_valueColumn = new ColumnMetadata(invokeMethod("valueColumn", basicCollection), getAttributeName());
+            m_valueColumn = new ColumnMetadata((Annotation) invokeMethod("valueColumn", basicCollection), getAttributeName());
             setFetch((Enum)invokeMethod("fetch", basicCollection));
         }
     }
@@ -241,8 +243,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
     	CollectionTableMetadata collectionTable;
     	
     	if (m_collectionTable == null) {
-    		Object table = getAnnotation(CollectionTable.class);
-    		collectionTable = new CollectionTableMetadata(table, getAnnotatedElementName());
+    		collectionTable = new CollectionTableMetadata(getAnnotation(CollectionTable.class), getAnnotatedElementName());
     	} else {
     		collectionTable = m_collectionTable;
     	}

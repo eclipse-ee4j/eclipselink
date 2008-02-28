@@ -22,9 +22,12 @@ import static org.eclipse.persistence.annotations.ChangeTrackingType.AUTO;
 
 /** 
  * The ChangeTracking annotation is used to specify the 
- * org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy which computes 
- * changes sets for TopLink's UnitOfWork commit process. An ObjectChangePolicy 
- * is stored on an Entity's descriptor.
+ * org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy 
+ * which computes changes sets for EclipseLink's UnitOfWork commit process. 
+ * An ObjectChangePolicy is stored on an Entity's descriptor.
+ * 
+ * A ChangeTracking annotation may be specified on an Entity or 
+ * MappedSuperclass.
  * 
  * @see org.eclipse.persistence.annotations.ChangeTrackingType
  * @author Guy Pelletier

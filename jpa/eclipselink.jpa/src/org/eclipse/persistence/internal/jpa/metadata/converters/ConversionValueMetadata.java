@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import java.lang.annotation.Annotation;
+
 /**
  * INTERNAL:
  * Object to hold onto conversion values.
@@ -31,9 +33,9 @@ public class ConversionValueMetadata {
 	/**
 	 * INTERNAL:
 	 */
-	public ConversionValueMetadata(Object conversionValue) {
-		m_dataValue = (String)MetadataHelper.invokeMethod("dataValue", conversionValue); 
-		m_objectValue = (String)MetadataHelper.invokeMethod("objectValue", conversionValue);  
+	public ConversionValueMetadata(Annotation conversionValue) {
+		m_dataValue = (String) MetadataHelper.invokeMethod("dataValue", conversionValue); 
+		m_objectValue = (String) MetadataHelper.invokeMethod("objectValue", conversionValue);  
 	}
 	
 	/**

@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,15 +34,11 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
 	/**
 	 * INTERNAL:
 	 */
-	public AssociationOverrideMetadata(Object associationOverride, String className) {
+	public AssociationOverrideMetadata(Annotation associationOverride, String className) {
 		super(className);
 
-		setName((String)MetadataHelper.invokeMethod("name", associationOverride));
-		
-		m_joinColumns = new ArrayList<JoinColumnMetadata>();
-		for (Object joinColumn : (Object[])MetadataHelper.invokeMethod("joinColumns", associationOverride)) {
-			m_joinColumns.add(new JoinColumnMetadata(joinColumn));
-		}
+		setName((String) invokeMethod("name", associationOverride));
+		setJoinColumns((Annotation[]) invokeMethod("joinColumns", associationOverride));
 	}
 	
 	/**
@@ -52,6 +49,17 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
 		return m_joinColumns;
 	}
 	
+	/**
+     * INTERNAL:
+     */
+    public void setJoinColumns(Annotation[] joinColumns) {
+        m_joinColumns = new ArrayList<JoinColumnMetadata>();
+        
+        for (Annotation joinColumn : joinColumns) {
+            m_joinColumns.add(new JoinColumnMetadata(joinColumn));
+        }
+    }
+    
 	/**
 	 * INTERNAL:
 	 * Used for OX mapping.

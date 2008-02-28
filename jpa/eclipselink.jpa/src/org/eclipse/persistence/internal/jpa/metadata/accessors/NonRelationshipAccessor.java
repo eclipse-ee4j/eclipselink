@@ -81,11 +81,9 @@ public abstract class NonRelationshipAccessor extends MetadataAccessor {
     	}
         
         // Process the annotation defined sequence generator second.        
-        Object sequenceGenerator = getAnnotation(SequenceGenerator.class);
-        
-        if (sequenceGenerator != null) {
+        if (isAnnotationPresent(SequenceGenerator.class)) {
             // Ask the common processor to process what we found.
-        	getProject().processSequenceGenerator(new SequenceGeneratorMetadata(sequenceGenerator, getJavaClassName()));
+        	getProject().processSequenceGenerator(new SequenceGeneratorMetadata(getAnnotation(SequenceGenerator.class), getJavaClassName()));
         }
     }
     
@@ -102,11 +100,9 @@ public abstract class NonRelationshipAccessor extends MetadataAccessor {
     	}
         
         // Process the annotation defined table generator second.
-        Object tableGenerator = getAnnotation(TableGenerator.class);
-        
-        if (tableGenerator != null) {
+        if (isAnnotationPresent(TableGenerator.class)) {
             // Ask the common processor to process what we found.
-            getProject().processTableGenerator(new TableGeneratorMetadata(tableGenerator, getJavaClassName()), getDescriptor().getXMLCatalog(), getDescriptor().getXMLSchema());
+            getProject().processTableGenerator(new TableGeneratorMetadata(getAnnotation(TableGenerator.class), getJavaClassName()), getDescriptor().getXMLCatalog(), getDescriptor().getXMLSchema());
         }
     } 
     

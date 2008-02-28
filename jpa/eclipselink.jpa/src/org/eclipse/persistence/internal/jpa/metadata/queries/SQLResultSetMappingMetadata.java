@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +36,10 @@ public class SQLResultSetMappingMetadata {
     /**
      * INTERNAL:
      */
-    public SQLResultSetMappingMetadata(Object sqlResultSetMapping) {
-        setName((String)MetadataHelper.invokeMethod("name", sqlResultSetMapping));
-        setEntityResults((Object[])MetadataHelper.invokeMethod("entities", sqlResultSetMapping));
-        setColumnResults((Object[])MetadataHelper.invokeMethod("columns", sqlResultSetMapping));
+    public SQLResultSetMappingMetadata(Annotation sqlResultSetMapping) {
+        setName((String) MetadataHelper.invokeMethod("name", sqlResultSetMapping));
+        setEntityResults((Annotation[]) MetadataHelper.invokeMethod("entities", sqlResultSetMapping));
+        setColumnResults((Annotation[]) MetadataHelper.invokeMethod("columns", sqlResultSetMapping));
     }
     
     /**
@@ -103,10 +104,10 @@ public class SQLResultSetMappingMetadata {
      * INTERNAL:
      * Called from annotation population.
      */
-    public void setEntityResults(Object[] entityResults) {
+    public void setEntityResults(Annotation[] entityResults) {
         m_entityResults = new ArrayList<EntityResultMetadata>();
         
-        for (Object entityResult : entityResults) {
+        for (Annotation entityResult : entityResults) {
             m_entityResults.add(new EntityResultMetadata(entityResult));
         }
     }

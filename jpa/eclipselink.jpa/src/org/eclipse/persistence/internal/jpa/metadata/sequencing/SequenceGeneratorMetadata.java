@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
+import java.lang.annotation.Annotation;
+
 /**
  * A wrapper class to the MetadataSequenceGenerator that holds onto a 
  * @SequenceGenerator for its metadata values.
@@ -39,14 +41,14 @@ public class SequenceGeneratorMetadata {
     /**
      * INTERNAL:
      */
-    public SequenceGeneratorMetadata(Object sequenceGenerator, String entityClassName) {
+    public SequenceGeneratorMetadata(Annotation sequenceGenerator, String entityClassName) {
         m_loadedFromXML = false;
         m_location = entityClassName;
         
-        m_allocationSize = (Integer)MetadataHelper.invokeMethod("allocationSize", sequenceGenerator);
-        m_initialValue = (Integer)MetadataHelper.invokeMethod("initialValue", sequenceGenerator); 
-        m_name = (String)MetadataHelper.invokeMethod("name", sequenceGenerator); 
-        m_sequenceName = (String)MetadataHelper.invokeMethod("sequenceName", sequenceGenerator); 
+        m_allocationSize = (Integer) MetadataHelper.invokeMethod("allocationSize", sequenceGenerator);
+        m_initialValue = (Integer) MetadataHelper.invokeMethod("initialValue", sequenceGenerator); 
+        m_name = (String) MetadataHelper.invokeMethod("name", sequenceGenerator); 
+        m_sequenceName = (String) MetadataHelper.invokeMethod("sequenceName", sequenceGenerator); 
     }
     
     /**

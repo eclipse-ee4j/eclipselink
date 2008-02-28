@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
+import java.lang.annotation.Annotation;
+
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 
 /**
@@ -32,12 +34,12 @@ public class NamedQueryMetadata extends QueryMetadata {
     /**
      * INTERNAL:
      */
-    public NamedQueryMetadata(Object namedQuery, String javaClassName) {
+    public NamedQueryMetadata(Annotation namedQuery, String javaClassName) {
     	setLoadedFromAnnotation();
         setLocation(javaClassName);
-        setName((String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("name", namedQuery));
-        setQuery((String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("query", namedQuery));
-        setHints((Object[])org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("hints", namedQuery));     
+        setName((String) invokeMethod("name", namedQuery));
+        setQuery((String) invokeMethod("query", namedQuery));
+        setHints((Annotation[]) invokeMethod("hints", namedQuery));     
     }
     
     /**

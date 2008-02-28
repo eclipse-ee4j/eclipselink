@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,10 +31,10 @@ public class UniqueConstraintMetadata {
 	/**
      * INTERNAL:
      */
-	public UniqueConstraintMetadata(Object uniqueConstraint) {
+	public UniqueConstraintMetadata(Annotation uniqueConstraint) {
 		m_columnNames = new ArrayList<String>();
 		
-		for (String columnName : (String[])MetadataHelper.invokeMethod("columnNames", uniqueConstraint)) { 
+		for (String columnName : (String[]) MetadataHelper.invokeMethod("columnNames", uniqueConstraint)) { 
 			m_columnNames.add(columnName);
 		}
 	}

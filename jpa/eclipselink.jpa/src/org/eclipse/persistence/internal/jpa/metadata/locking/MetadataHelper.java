@@ -10,10 +10,11 @@
  * @author Kyle Chen
  * @since Eclipselink 1.0
  ******************************************************************************/
-package org.eclipse.persistence.internal.jpa.metadata.cache;
+package org.eclipse.persistence.internal.jpa.metadata.locking;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
@@ -25,6 +26,9 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 /**
  * This class only contains the common helper methods that can be accessed at
  * package-private level.
+ * 
+ * @author Kyle Chen
+ * @since TopLink 11g
  */
 final class MetadataHelper {
     /** 

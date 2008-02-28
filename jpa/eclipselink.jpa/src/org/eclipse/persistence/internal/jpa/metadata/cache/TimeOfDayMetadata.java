@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
+import java.lang.annotation.Annotation;
+
 /**
  * Object to hold onto time of day metadata. This class should eventually be 
  * extended by an XMLTimeOfDay.
@@ -33,11 +35,11 @@ public class TimeOfDayMetadata  {
     /**
      * INTERNAL:
      */
-    public TimeOfDayMetadata(Object timeOfDay) {
-    	setHour((Integer)MetadataHelper.invokeMethod("hour", timeOfDay));
-        setMillisecond((Integer)MetadataHelper.invokeMethod("millisecond", timeOfDay));
-        setMinute((Integer)MetadataHelper.invokeMethod("minute", timeOfDay));
-        setSecond((Integer)MetadataHelper.invokeMethod("second", timeOfDay));
+    public TimeOfDayMetadata(Annotation timeOfDay) {
+    	setHour((Integer) MetadataHelper.invokeMethod("hour", timeOfDay));
+        setMillisecond((Integer) MetadataHelper.invokeMethod("millisecond", timeOfDay));
+        setMinute((Integer) MetadataHelper.invokeMethod("minute", timeOfDay));
+        setSecond((Integer) MetadataHelper.invokeMethod("second", timeOfDay));
     }
     
     /**

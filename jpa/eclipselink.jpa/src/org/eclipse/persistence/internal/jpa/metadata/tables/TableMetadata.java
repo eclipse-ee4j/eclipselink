@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,14 +52,14 @@ public class TableMetadata {
     /**
      * INTERNAL:
      */
-    public TableMetadata(Object table, String entityClassName) {
+    public TableMetadata(Annotation table, String entityClassName) {
     	this(entityClassName);
     	
         if (table != null) {
-            m_name = (String)MetadataHelper.invokeMethod("name", table); 
-            m_schema = (String)MetadataHelper.invokeMethod("schema", table); 
-            m_catalog = (String)MetadataHelper.invokeMethod("catalog", table); 
-            setUniqueConstraints((Object[])MetadataHelper.invokeMethod("uniqueConstraints", table));
+            m_name = (String) invokeMethod("name", table); 
+            m_schema = (String) invokeMethod("schema", table); 
+            m_catalog = (String) invokeMethod("catalog", table); 
+            setUniqueConstraints((Annotation[]) invokeMethod("uniqueConstraints", table));
         }
     }
     
@@ -131,6 +132,13 @@ public class TableMetadata {
     public List<UniqueConstraintMetadata> getUniqueConstraints() {
     	return m_uniqueConstraints;
     }
+
+    /**
+     * INTERNAL:
+     */
+    protected Object invokeMethod(String methodName, Annotation annotation) {
+        return MetadataHelper.invokeMethod(methodName, annotation);
+    }
     
     /**
      * INTERNAL:
@@ -193,10 +201,10 @@ public class TableMetadata {
      * INTERNAL:
      * Called from annotation population.
      */
-    protected void setUniqueConstraints(Object[] uniqueConstraints) {
+    protected void setUniqueConstraints(Annotation[] uniqueConstraints) {
     	m_uniqueConstraints = new ArrayList<UniqueConstraintMetadata>();
     	
-    	for (Object uniqueConstraint : uniqueConstraints) {
+    	for (Annotation uniqueConstraint : uniqueConstraints) {
     		m_uniqueConstraints.add(new UniqueConstraintMetadata(uniqueConstraint));
     	}
     }

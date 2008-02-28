@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import java.lang.annotation.Annotation;
+
 import javax.persistence.OneToOne;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -41,15 +43,15 @@ public class OneToOneAccessor extends ObjectAccessor {
     public OneToOneAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
         
-        Object oneToOne = getAnnotation(OneToOne.class);
+        Annotation oneToOne = getAnnotation(OneToOne.class);
         
         // We must check because OneToMany's can default.
         if (oneToOne != null) {
-        	setTargetEntity((Class)invokeMethod("targetEntity", oneToOne));
-        	setCascadeTypes((Enum[])invokeMethod("cascade", oneToOne));
-        	setFetch((Enum)invokeMethod("fetch", oneToOne));
-        	setOptional((Boolean)invokeMethod("optional", oneToOne));
-        	setMappedBy((String)invokeMethod("mappedBy", oneToOne));
+        	setTargetEntity((Class) invokeMethod("targetEntity", oneToOne));
+        	setCascadeTypes((Enum[]) invokeMethod("cascade", oneToOne));
+        	setFetch((Enum) invokeMethod("fetch", oneToOne));
+        	setOptional((Boolean) invokeMethod("optional", oneToOne));
+        	setMappedBy((String) invokeMethod("mappedBy", oneToOne));
         } else {
         	// Set the annotation defaults.
         	setTargetEntity(void.class);

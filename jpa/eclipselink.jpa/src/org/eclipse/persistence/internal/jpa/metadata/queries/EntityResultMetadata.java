@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -36,12 +37,11 @@ public class EntityResultMetadata {
     /**
      * INTERNAL:
      */
-    public EntityResultMetadata(Object entityResult) {
+    public EntityResultMetadata(Annotation entityResult) {
+        m_entityClass = (Class) MetadataHelper.invokeMethod("entityClass", entityResult); 
+        m_discriminatorColumn = (String) MetadataHelper.invokeMethod("discriminatorColumn", entityResult);
         
-        m_entityClass = (Class)MetadataHelper.invokeMethod("entityClass", entityResult); 
-        m_discriminatorColumn = (String)MetadataHelper.invokeMethod("discriminatorColumn", entityResult);
-        
-        setFieldResults((Object[])MetadataHelper.invokeMethod("fields", entityResult));
+        setFieldResults((Annotation[]) MetadataHelper.invokeMethod("fields", entityResult));
     }
     
     /**
@@ -109,10 +109,10 @@ public class EntityResultMetadata {
      * INTERNAL:
      * Used for population from annotations.
      */
-    protected void setFieldResults(Object[] fieldResults) {
+    protected void setFieldResults(Annotation[] fieldResults) {
     	m_fieldResults = new ArrayList<FieldResultMetadata>();
     	
-    	for (Object fieldResult : fieldResults) {
+    	for (Annotation fieldResult : fieldResults) {
     		m_fieldResults.add(new FieldResultMetadata(fieldResult));
     	}
     }

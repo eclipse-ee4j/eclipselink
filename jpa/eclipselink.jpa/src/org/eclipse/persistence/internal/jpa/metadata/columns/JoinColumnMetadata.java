@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
+import java.lang.annotation.Annotation;
+
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
 /**
@@ -39,19 +41,19 @@ public class JoinColumnMetadata {
     /**
      * INTERNAL:
      */
-    public JoinColumnMetadata(Object joinColumn) {
+    public JoinColumnMetadata(Annotation joinColumn) {
         if (joinColumn != null) {
             // Process the primary key field metadata.
-            setReferencedColumnName((String)MetadataHelper.invokeMethod("referencedColumnName", joinColumn));
+            setReferencedColumnName((String) MetadataHelper.invokeMethod("referencedColumnName", joinColumn));
         
             // Process the foreign key field metadata.
-            setName((String)MetadataHelper.invokeMethod("name", joinColumn));
-            setTable((String)MetadataHelper.invokeMethod("table", joinColumn));
-            setUnique((Boolean)MetadataHelper.invokeMethod("unique", joinColumn));
-            setNullable((Boolean)MetadataHelper.invokeMethod("nullable", joinColumn));
-            setUpdatable((Boolean)MetadataHelper.invokeMethod("updatable", joinColumn));
-            setInsertable((Boolean)MetadataHelper.invokeMethod("insertable", joinColumn));
-            setColumnDefinition((String)MetadataHelper.invokeMethod("columnDefinition", joinColumn));
+            setName((String) MetadataHelper.invokeMethod("name", joinColumn));
+            setTable((String) MetadataHelper.invokeMethod("table", joinColumn));
+            setUnique((Boolean) MetadataHelper.invokeMethod("unique", joinColumn));
+            setNullable((Boolean) MetadataHelper.invokeMethod("nullable", joinColumn));
+            setUpdatable((Boolean) MetadataHelper.invokeMethod("updatable", joinColumn));
+            setInsertable((Boolean) MetadataHelper.invokeMethod("insertable", joinColumn));
+            setColumnDefinition((String) MetadataHelper.invokeMethod("columnDefinition", joinColumn));
         }
     }
     

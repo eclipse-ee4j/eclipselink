@@ -56,7 +56,7 @@ public class MetadataLogger  {
 
     public static final String IGNORE_RETURN_INSERT_ANNOTATION = "annotation_warning_ignore_return_insert";
     public static final String IGNORE_RETURN_UPDATE_ANNOTATION = "annotation_warning_ignore_return_update";
-    
+        
     public static final String IGNORE_CHANGE_TRACKING_ANNOTATION = "annotation_warning_ignore_change_tracking";
     public static final String IGNORE_OPTIMISTIC_LOCKING_ANNOTATION = "annotation_warning_ignore_optimistic_locking";
         
@@ -72,6 +72,10 @@ public class MetadataLogger  {
     public static final String IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING = "metadata_warning_ignore_mapped_superclass_optimistic_locking";
     public static final String IGNORE_MAPPED_SUPERCLASS_CACHE = "metadata_warning_ignore_mapped_superclass_cache";
     public static final String IGNORE_INHERITANCE_SUBCLASS_CACHE = "metadata_warning_ignore_inheritance_subclass_cache";
+    public static final String IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING = "metadata_warning_ignore_mapped_superclass_change_tracking";
+    public static final String IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER = "metadata_warning_ignore_mapped_superclass_customizer";
+    public static final String IGNORE_MAPPED_SUPERCLASS_READ_ONLY = "metadata_warning_ignore_mapped_superclass_read_only";
+    public static final String IGNORE_INHERITANCE_SUBCLASS_READ_ONLY = "metadata_warning_ignore_inheritance_read_only";
     
     /*************************************************************************/
     /*                       GENERIC DEFAULT MESSSAGES                       */ 
@@ -172,6 +176,10 @@ public class MetadataLogger  {
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING, IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CACHE, IGNORE_MAPPED_SUPERCLASS_CACHE);
         m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_CACHE, IGNORE_INHERITANCE_SUBCLASS_CACHE);
+        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING, IGNORE_MAPPED_SUPERCLASS_CHANGE_TRACKING);
+        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER, IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER);
+        m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_READ_ONLY, IGNORE_MAPPED_SUPERCLASS_READ_ONLY);
+        m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_READ_ONLY, IGNORE_INHERITANCE_SUBCLASS_READ_ONLY);
         
         // Common default messages for ORM and annotations.
         m_ctxStrings.put(ALIAS, ALIAS);

@@ -14,9 +14,9 @@ package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.ArrayList;
 
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -31,35 +31,16 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
  * @since TopLink 11g
  */
 final class MetadataHelper {
-    MetadataHelper() {}
-    
     /** 
      * INTERNAL:
      * Invoke the specified named method on the object, handling the necessary 
      * exceptions.
      */
     static Object invokeMethod(String methodName, Object target) {
-        return invokeMethod(methodName, target, (Object[]) null);
-    }
-    
-    /** 
-     * INTERNAL:
-     * Invoke the specified named method on the object, handling the necessary 
-     * exceptions.
-     */
-    static Object invokeMethod(String methodName, Object target, Object[] params) {
-        ArrayList<Class<?>> parmClasses = new ArrayList<Class<?>>();
-        if (params != null) {
-            for (Object parm : params) {
-                parmClasses.add(parm.getClass());
-            }
-        }
-        
         Method method = null;
         
         try {
-            method = Helper.getDeclaredMethod(target.getClass(), methodName,
-                    parmClasses.size() == 0 ? (Class<?>[])null : (Class<?>[]) parmClasses.toArray());            
+            method = Helper.getDeclaredMethod(target.getClass(), methodName);            
         } catch (NoSuchMethodException e) {
             EntityManagerSetupException.methodInvocationFailed(method, target,e);
         }
@@ -68,7 +49,7 @@ final class MetadataHelper {
              try {
                  if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                      try {
-                         return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, target, params));
+                         return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, target));
                      } catch (PrivilegedActionException exception) {
                          Exception throwableException = exception.getException();
                          if (throwableException instanceof IllegalAccessException) {
@@ -78,7 +59,7 @@ final class MetadataHelper {
                          }
                      }
                  } else {
-                     return PrivilegedAccessHelper.invokeMethod(method, target, params);
+                     return PrivilegedAccessHelper.invokeMethod(method, target);
                  }
              } catch (IllegalAccessException ex1) {
                  throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);

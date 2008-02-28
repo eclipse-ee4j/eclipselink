@@ -257,7 +257,7 @@ public class MetadataProcessor {
      */
     public void processCustomizers() {
         for (ClassAccessor classAccessor: m_project.getAccessorsWithCustomizer()) {
-            DescriptorCustomizer customizer = (DescriptorCustomizer) MetadataHelper.getClassInstance(classAccessor.getCustomizerClassName(), m_loader);
+            DescriptorCustomizer customizer = (DescriptorCustomizer) MetadataHelper.getClassInstance(classAccessor.getCustomizerClass().getName(), m_loader);
             
             try {
                 customizer.customize(classAccessor.getDescriptor().getClassDescriptor());

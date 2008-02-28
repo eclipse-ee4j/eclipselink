@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import java.lang.annotation.Annotation;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -40,8 +42,8 @@ import org.eclipse.persistence.mappings.converters.Converter;
  */
 public class BasicAccessor extends DirectAccessor {
 	private Boolean m_mutable;
-	private DatabaseField m_field;
 	private ColumnMetadata m_column;
+	private DatabaseField m_field;
 	
     /**
      * INTERNAL:
@@ -54,11 +56,11 @@ public class BasicAccessor extends DirectAccessor {
     public BasicAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
         
-        Object basic = getAnnotation(Basic.class);
+        Annotation basic = getAnnotation(Basic.class);
         
         if (basic != null) {
-            setFetch((Enum)invokeMethod("fetch", basic));
-            setOptional((Boolean)invokeMethod("optional", basic));
+            setFetch((Enum) invokeMethod("fetch", basic));
+            setOptional((Boolean) invokeMethod("optional", basic));
         }
     }
     
@@ -77,8 +79,7 @@ public class BasicAccessor extends DirectAccessor {
      */
     protected ColumnMetadata getColumn(String loggingCtx) {
     	if (m_column == null) {
-    	    Object column = getAnnotation(Column.class);
-            return new ColumnMetadata(column, getAttributeName());
+            return new ColumnMetadata(getAnnotation(Column.class), getAttributeName());
     	} else {
     		return m_column;
     	}

@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,6 +77,13 @@ public abstract class QueryMetadata  {
     	}
 
     	return false;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected Object invokeMethod(String methodName, Annotation annotation) {
+        return org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod(methodName, annotation);
     }
     
     /**

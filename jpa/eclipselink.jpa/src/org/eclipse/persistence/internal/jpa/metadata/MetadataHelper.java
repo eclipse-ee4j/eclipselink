@@ -545,6 +545,36 @@ public class MetadataHelper {
         
         return setMethod;
 	}
+    
+    /**
+     * INTERNAL:
+     * Helper method to return a string value if specified, otherwise returns
+     * the default value. 
+     */
+    public static Integer getValue(Integer value, Integer defaultValue) {
+        // Check if a candidate was specified otherwise use the default.
+        if (value == null) {
+            return defaultValue;
+        } else {
+            // Future: log a defaulting message
+            return value;
+        } 
+    }
+    
+    /**
+     * INTERNAL:
+     * Helper method to return a string value if specified, otherwise returns
+     * the default value.
+     */
+    public static String getValue(String value, String defaultValue) {
+        // Check if a candidate was specified otherwise use the default.
+        if (value != null && ! value.equals("")) {
+            return value;
+        } else {
+            // Future: log a defaulting message
+            return defaultValue;
+        }
+    }
 
     /**
      * INTERNAL:

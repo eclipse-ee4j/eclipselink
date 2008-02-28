@@ -159,6 +159,13 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
     /**
      * Used to track instances of the change policies without doing an instance of check
      */
+    public boolean isDeferredChangeDetectionPolicy(){
+        return false;
+    }
+    
+    /**
+     * Used to track instances of the change policies without doing an instance of check
+     */
     public boolean isObjectChangeTrackingPolicy() {
         return true;
     }

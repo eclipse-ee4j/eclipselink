@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
@@ -55,17 +56,16 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
     /**
      * INTERNAL:
      */
-    public ObjectTypeConverterMetadata(Object objectTypeConverter, AnnotatedElement annotatedElement) {
+    public ObjectTypeConverterMetadata(Annotation objectTypeConverter, AnnotatedElement annotatedElement) {
     	setLoadedFromAnnotation();
     	setLocation(annotatedElement);
 
-        setName((String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("name", objectTypeConverter));
-        setDataType((Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("dataType", objectTypeConverter));
-        setObjectType((Class)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("objectType", objectTypeConverter));
-        setConversionValues((Object[])org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("conversionValues", objectTypeConverter));
-    	
+        setName((String) invokeMethod("name", objectTypeConverter));
+        setDataType((Class) invokeMethod("dataType", objectTypeConverter));
+        setObjectType((Class) invokeMethod("objectType", objectTypeConverter));
+        setConversionValues((Annotation[]) invokeMethod("conversionValues", objectTypeConverter));
         
-        m_defaultObjectValue = (String)org.eclipse.persistence.internal.jpa.metadata.converters.MetadataHelper.invokeMethod("defaultObjectValue", objectTypeConverter); 
+        m_defaultObjectValue = (String) invokeMethod("defaultObjectValue", objectTypeConverter); 
     }
     
     /**
@@ -248,11 +248,11 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
      * INTERNAL:
      * Called from annotation population.
      */
-    protected void setConversionValues(Object[] conversionValues) {
+    protected void setConversionValues(Annotation[] conversionValues) {
     	m_conversionValues = new ArrayList<ConversionValueMetadata>();
     		
-    		for (Object conversionValue: conversionValues) {
-   			m_conversionValues.add(new ConversionValueMetadata(conversionValue));
+    	for (Annotation conversionValue: conversionValues) {
+    	    m_conversionValues.add(new ConversionValueMetadata(conversionValue));
    		}
     }
     

@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import java.lang.annotation.Annotation;
+
 import javax.persistence.ManyToOne;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -39,12 +41,12 @@ public class ManyToOneAccessor extends ObjectAccessor {
     public ManyToOneAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
         
-        Object manyToOne = getAnnotation(ManyToOne.class);
+        Annotation manyToOne = getAnnotation(ManyToOne.class);
         
-        setTargetEntity((Class)invokeMethod("targetEntity", manyToOne));
-        setCascadeTypes((Enum[])invokeMethod("cascade", manyToOne));
-        setFetch((Enum)invokeMethod("fetch", manyToOne));
-        setOptional((Boolean)invokeMethod("optional", manyToOne));
+        setTargetEntity((Class) invokeMethod("targetEntity", manyToOne));
+        setCascadeTypes((Enum[]) invokeMethod("cascade", manyToOne));
+        setFetch((Enum) invokeMethod("fetch", manyToOne));
+        setOptional((Boolean) invokeMethod("optional", manyToOne));
     }
 
     /**

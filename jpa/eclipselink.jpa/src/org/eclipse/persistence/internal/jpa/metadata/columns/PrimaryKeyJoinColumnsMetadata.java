@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -43,11 +44,11 @@ public class PrimaryKeyJoinColumnsMetadata {
     /**
      * INTERNAL:
      */
-    public PrimaryKeyJoinColumnsMetadata(Object[] primaryKeyJoinColumns) {
+    public PrimaryKeyJoinColumnsMetadata(Annotation[] primaryKeyJoinColumns) {
     	m_pkJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
         
         // Process the primary key join column array.
-        for (Object pkJoinColumn : primaryKeyJoinColumns) {
+        for (Annotation pkJoinColumn : primaryKeyJoinColumns) {
             m_pkJoinColumns.add(new PrimaryKeyJoinColumnMetadata(pkJoinColumn));
         }
     }
@@ -55,12 +56,12 @@ public class PrimaryKeyJoinColumnsMetadata {
     /**
      * INTERNAL:
      */
-    public PrimaryKeyJoinColumnsMetadata(Object primaryKeyJoinColumns, Object primaryKeyJoinColumn) {
+    public PrimaryKeyJoinColumnsMetadata(Annotation primaryKeyJoinColumns, Annotation primaryKeyJoinColumn) {
     	m_pkJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
         
         // Process all the primary key join columns first.
         if (primaryKeyJoinColumns != null) {
-            for (Object pkJoinColumn : (Object[])MetadataHelper.invokeMethod("value", primaryKeyJoinColumns)) { 
+            for (Annotation pkJoinColumn : (Annotation[])MetadataHelper.invokeMethod("value", primaryKeyJoinColumns)) { 
                 m_pkJoinColumns.add(new PrimaryKeyJoinColumnMetadata(pkJoinColumn));
             }
         }
