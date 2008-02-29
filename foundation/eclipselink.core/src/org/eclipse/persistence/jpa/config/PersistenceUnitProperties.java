@@ -314,7 +314,7 @@ public class PersistenceUnitProperties {
     public static final String DDL_DATABASE_GENERATION = "database";
     public static final String DDL_BOTH_GENERATION = "both";
     // This is the default for now to ensure we still play nicely with Glassfish.
-    public static final String DEFAULT_DDL_GENERATION_MODE = DDL_SQL_SCRIPT_GENERATION;
+    public static final String DEFAULT_DDL_GENERATION_MODE = DDL_DATABASE_GENERATION;
     
     
     /** INTERNAL: Return the overridden log string. */

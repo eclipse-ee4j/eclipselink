@@ -236,7 +236,7 @@ public class EntityManagerSetupImpl {
                             if (!isSessionLoadedFromSessionsXML) {
                                 addStructConverters(session, structConverters);
                             }
-                            generateDDLFiles(session, deployProperties, !isInContainerMode);
+                            generateDDL(session, deployProperties);
                         }
                     }
                 }

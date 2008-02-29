@@ -75,18 +75,14 @@ public class EntityManagerFactoryProvider {
     	}
     }
 
-    protected static void generateDDLFiles(ServerSession session, Map props, boolean inSEmode) {
+    protected static void generateDDL(ServerSession session, Map props) {
         boolean createTables = false, shouldDropFirst = false;
-        String appLocation; 
-        String createDDLJdbc;
-        String dropDDLJdbc;
-        String ddlGeneration = PersistenceUnitProperties.NONE;
-        
+       
         if(null == props){
             return;
         }
 
-        ddlGeneration = getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION, props, PersistenceUnitProperties.NONE);
+        String ddlGeneration = getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION, props, PersistenceUnitProperties.NONE);
         ddlGeneration = ddlGeneration.toLowerCase();
         if(ddlGeneration.equals(PersistenceUnitProperties.NONE)) {
             return;
@@ -106,26 +102,18 @@ public class EntityManagerFactoryProvider {
             if (ddlGenerationMode.equals(PersistenceUnitProperties.NONE)) {                
                 return;
             }
-            
-            appLocation = getConfigPropertyAsString(PersistenceUnitProperties.APP_LOCATION, props, PersistenceUnitProperties.DEFAULT_APP_LOCATION);
-            createDDLJdbc = getConfigPropertyAsString(PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, props, PersistenceUnitProperties.DEFAULT_CREATE_JDBC_FILE_NAME);
-            dropDDLJdbc = getConfigPropertyAsString(PersistenceUnitProperties.DROP_JDBC_DDL_FILE, props,  PersistenceUnitProperties.DEFAULT_DROP_JDBC_FILE_NAME);
-            
+
             SchemaManager mgr = new SchemaManager(session);
             
-            // The inSEmode checks here are only temporary to ensure we still 
-            // play nicely with Glassfish.
-            if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_DATABASE_GENERATION) || inSEmode) {
-                runInSEMode(mgr, shouldDropFirst);                
-                
-                if (inSEmode) {
-                    writeDDLsToFiles(mgr, appLocation,  createDDLJdbc,  dropDDLJdbc);      
-                }
-            } else if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION)) {
+            if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_DATABASE_GENERATION) || ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION)) {
+                writeDDLToDatabase(mgr, shouldDropFirst);                
+            }
+
+            if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION)|| ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION)) {
+                String appLocation = getConfigPropertyAsString(PersistenceUnitProperties.APP_LOCATION, props, PersistenceUnitProperties.DEFAULT_APP_LOCATION);
+                String createDDLJdbc = getConfigPropertyAsString(PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, props, PersistenceUnitProperties.DEFAULT_CREATE_JDBC_FILE_NAME);
+                String dropDDLJdbc = getConfigPropertyAsString(PersistenceUnitProperties.DROP_JDBC_DDL_FILE, props,  PersistenceUnitProperties.DEFAULT_DROP_JDBC_FILE_NAME);
                 writeDDLsToFiles(mgr, appLocation,  createDDLJdbc,  dropDDLJdbc);                
-            } else if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION)) {
-                runInSEMode(mgr, shouldDropFirst);
-                writeDDLsToFiles(mgr, appLocation,  createDDLJdbc,  dropDDLJdbc);
             }
         }
     }
@@ -249,15 +237,6 @@ public class EntityManagerFactoryProvider {
         return map;
     }
     
-    protected static void runInSEMode(SchemaManager mgr, boolean shouldDropFirst) {
-        String str = getConfigPropertyAsString(PersistenceUnitProperties.JAVASE_DB_INTERACTION, null ,"true");
-        boolean interactWithDB = Boolean.valueOf(str.toLowerCase()).booleanValue();
-        if (!interactWithDB){
-            return;
-        }
-        createOrReplaceDefaultTables(mgr, shouldDropFirst);
-    }
-    
     /**
      * This is a TEMPORARY method that will be removed.
      * DON'T USE THIS METHOD - for internal use only.
@@ -284,7 +263,16 @@ public class EntityManagerFactoryProvider {
             }
         }
     }
-
+    
+    protected static void writeDDLToDatabase(SchemaManager mgr, boolean shouldDropFirst) {
+        String str = getConfigPropertyAsString(PersistenceUnitProperties.JAVASE_DB_INTERACTION, null ,"true");
+        boolean interactWithDB = Boolean.valueOf(str.toLowerCase()).booleanValue();
+        if (!interactWithDB){
+            return;
+        }
+        createOrReplaceDefaultTables(mgr, shouldDropFirst);
+    }
+    
     protected static void writeDDLsToFiles(SchemaManager mgr,  String appLocation, String createDDLJdbc, String dropDDLJdbc) {
     	// Ensure that the appLocation string ends with  File.separator 
         appLocation = addFileSeperator(appLocation);
