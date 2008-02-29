@@ -36,9 +36,8 @@ public class SplashScreenUITest {
 
 	public void exec(String[] args) throws Exception {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		String copyright = "© 1997, 2004 Oracle Corporation. All rights reserved.";
 		Icon image = new ImageIcon(this.getClass().getResource("/test.splash.screen.gif"));
-		SplashScreen ss = new SplashScreen(new Frame(), copyright, image, 5000);
+		SplashScreen ss = new SplashScreen(new Frame(), image);
 		ss.start();
 		JOptionPane.showMessageDialog(ss, "Press OK to close the splash screen.");
 		ss.stop();

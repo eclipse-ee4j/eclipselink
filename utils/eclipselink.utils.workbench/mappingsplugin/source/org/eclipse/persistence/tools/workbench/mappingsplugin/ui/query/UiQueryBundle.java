@@ -41,7 +41,7 @@ public final class UiQueryBundle extends java.util.ListResourceBundle
 			//RelationalQueriesPropertiesPage.			
 			{"QUERIES_PANEL_NAME",                    "Queries"},
 			{"DESCRIPTOR_ALIAS_LABEL",                "Descr&iptor Alias:"},
-			{"CANNOT_RENAME_QUERY_DIALOG.message",    "Cannot rename TopLink reserved finders."},
+			{"CANNOT_RENAME_QUERY_DIALOG.message",    "Cannot rename EclipseLink reserved finders."},
 			{"RENAME_QUERY_DIALOG.title",             "Rename Query"},
 			{"RENAME_QUERY_DIALOG.message",           "Enter a new name for the query:"},
 			{"NAMED_QUERIES_LIST",                    "Named Queries"},
@@ -50,8 +50,8 @@ public final class UiQueryBundle extends java.util.ListResourceBundle
 			{"QUERY_VARIETY_NONE_SELECTED",           "No query is selected"},
 			{"QUERY_VARIETY_EJB_SELECT",              "EJB Select"},
 			{"QUERY_VARIETY_EJB_FINDER",              "EJB Finder"},
-			{"QUERY_VARIETY_TOPLINK_NAMED_QUERY",     "TopLink Named Query"},
-			{"QUERY_VARIETY_TOPLINK_RESERVED_FINDER", "TopLink Reserved Finder"},
+			{"QUERY_VARIETY_TOPLINK_NAMED_QUERY",     "EclipseLink Named Query"},
+			{"QUERY_VARIETY_TOPLINK_RESERVED_FINDER", "EclipseLink Reserved Finder"},
 
 			//RelationalCustomSqlPropertiesPage	
 			{"CUSTOM_SQL_INSERT_TAB", "Insert"},
@@ -78,8 +78,8 @@ public final class UiQueryBundle extends java.util.ListResourceBundle
 			{"EJB_SELECT_TYPE_LABEL_ON_ADD_QUERY_DIALOG", " EJB Select"},
 			{"EJB_FINDER_RADIOBUTTON_ON_ADD_QUERY_DIALOG", " EJB Finder"},
 			{"NAME_TEXT_FIELD_LABEL_ON_ADD_QUERY_DIALOG", "Name:"},
-			{"TOPLINK_NAMED_QUERY_RADIOBUTTON_ON_ADD_QUERY_DIALOG", " TopLink Named Query"},
-			{"TOPLINK_RESERVED_FINDER_RADIOBUTTON_ON_ADD_QUERY_DIALOG", " TopLink Reserved Finder"},
+			{"TOPLINK_NAMED_QUERY_RADIOBUTTON_ON_ADD_QUERY_DIALOG", " EclipseLink Named Query"},
+			{"TOPLINK_RESERVED_FINDER_RADIOBUTTON_ON_ADD_QUERY_DIALOG", " EclipseLink Reserved Finder"},
 			{"TYPE_BORDER_LABEL_ON_ADD_QUERY_DIALOG", "Type:"},
 			{"VARIETY_BORDER_LABEL_ON_ADD_QUERY_DIALOG", "Variety:"},
 			{"EITHER_TEXTFIELD_COMBOBOX_SET_VISIBLE_EXCEPTION", "Developer: either the text field or combo box must be set visible here."},
@@ -242,7 +242,7 @@ public final class UiQueryBundle extends java.util.ListResourceBundle
 
  			// QuerySelectionCriteriaPanel
  			{"QUERY_QUERY_FORMAT_TITLE",   "Change Query Format"},
- 			{"QUERY_QUERY_FORMAT_MESSAGE", "If you change the query format, TopLink will automatically update the query, as needed. Do you want to continue?"},
+ 			{"QUERY_QUERY_FORMAT_MESSAGE", "If you change the query format, EclipseLink will automatically update the query, as needed. Do you want to continue?"},
 		
 		{"READ_ALL_QUERY", "Read All"},
  		{"READ_OBJECT_QUERY", "Read Object"},

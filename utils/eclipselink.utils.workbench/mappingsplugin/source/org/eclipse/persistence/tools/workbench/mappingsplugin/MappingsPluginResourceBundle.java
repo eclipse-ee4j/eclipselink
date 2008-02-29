@@ -62,7 +62,7 @@ public class MappingsPluginResourceBundle extends ListResourceBundle {
 			
 		//UsingJAXBAction
 		{"USING_JAXB_ACTION", "Project From &XML Schema (JAXB)..."},
-		{"USING_JAXB_ACTION.toolTipText", "Create a TopLink Workbench Project using a XML schema input."},
+		{"USING_JAXB_ACTION.toolTipText", "Create a EclipseLink Workbench Project using a XML schema input."},
 		{"USING_JAXB_ACTION.accelerator", "control X"},
 		{"JAXB_GENERATION_EXCEPTION.MESSAGE", "The following error was encountered while generating a project using JAXB:"},
 		{"SCHEMA_LOAD_ERROR.MESSAGE", "Error Importing Schema During JAXB Project Generation, The following error was encountered while loading the schema: "},
@@ -80,21 +80,21 @@ public class MappingsPluginResourceBundle extends ListResourceBundle {
 	
 		//MigrateFromOC4JAction
 		{"MIGRATE_FROM_OC4J_ACTION", "From &OC4J 9.0.x..."},
-		{"MIGRATE_FROM_OC4J_ACTION.toolTipText", "Creates one or more TopLink Workbench Projects migrated from OC4J."},
+		{"MIGRATE_FROM_OC4J_ACTION.toolTipText", "Creates one or more EclipseLink Workbench Projects migrated from OC4J."},
 		{"MIGRATE_FROM_OC4J_ACTION.accelerator", "control J"},
 		{"MIGRATION_EXCEPTION", "Exception Occured During Migration"},
 		{"MIGRATION_FAILURE", "The migration completed unsuccessfully.  Please double check your selected input resources."},
 		{"MALFORMED_URL", "One of the files selected for the classpath could not be resolved."},
-		{"OPEN_EXCEPTION", "Unable to open generated TopLink Workbench project file."},
-		{"UNSUPPORTED_FILE_EXCEPTION", "Generated TopLink Workbench project file is of an unsupported type."},
+		{"OPEN_EXCEPTION", "Unable to open generated EclipseLink Workbench project file."},
+		{"UNSUPPORTED_FILE_EXCEPTION", "Generated EclipseLink Workbench project file is of an unsupported type."},
 		{"CANCEL_EXCEPTION", "Operation Cancelled."},
 		{"INCOMPLETE_CLASSPATH", "Class not found.  Please assure all necessary files are on the classpath."},
 		{"MISSING_CLASSPATH_ENTRY", "A selected classpath entry is missing."},
-		{"FILE_NOT_FOUND", "Generated TopLink Workbench project missing EJB JAR file."},
-		{"EJB_JAR_FILE_NOT_SPECIFIED", "Generated TopLink Workbench project EJB JAR file un-specified."},
+		{"FILE_NOT_FOUND", "Generated EclipseLink Workbench project missing EJB JAR file."},
+		{"EJB_JAR_FILE_NOT_SPECIFIED", "Generated EclipseLink Workbench project EJB JAR file un-specified."},
 		
 		// *** JaxbProjectCreationDialog ***
-		{"JAXB_PROJECT_DIALOG_TITLE", "Create TopLink Workbench Project using JAXB"},
+		{"JAXB_PROJECT_DIALOG_TITLE", "Create EclipseLink Workbench Project using JAXB"},
 		{"INPUT_SCHEMA_FILE_LABEL", "&Schema File:  "},
 		{"INPUT_CUSTOMIZATION_FILE_LABEL", "&JAXB Customization File (Optional):"},
 		{"OUTPUT_MASTER_DIRECTORY_LABEL", "O&utput Directory:"},
@@ -120,7 +120,7 @@ public class MappingsPluginResourceBundle extends ListResourceBundle {
 		{"INTERFACES", "Generate Interfaces"},
 		
 		//ProjectOC4JMigrationDialog
-		{"PROJECT_OC4J_MIGRATION_DIALOG_TITLE", "Create TopLink Workbench Projects from OC4J Migration"},
+		{"PROJECT_OC4J_MIGRATION_DIALOG_TITLE", "Create EclipseLink Workbench Projects from OC4J Migration"},
 		{"FROM", "From:  "},
 		{"TO", "To:  "},
 		{"OUTPUT_DIRECTORY", "&Output Directory:  "},
@@ -133,11 +133,11 @@ public class MappingsPluginResourceBundle extends ListResourceBundle {
 		{"ARCHIVE_FILE_NAME", "Na&me:  "},
 		{"LOG_MESSAGES", "&Show Migration Log"},
 		{"INPUT_DIRECTORY_INVALID", "The selected input directory either does not exist, is not a directory, or does not contain the necessary deployment descriptor files. {0}Please select a valid input directory"},
-		{"OUTPUT_DIRECTORY_INVALID", "The selected output directory either does not exist, is not a directory, or already contains an existing TopLink Workbench project. {0}Please select a valid output directory"},
+		{"OUTPUT_DIRECTORY_INVALID", "The selected output directory either does not exist, is not a directory, or already contains an existing EclipseLink Workbench project. {0}Please select a valid output directory"},
 		{"ARCHIVE_FILE_DOES_NOT_EXIST", "The selected archive file does not exist.  Please select a valid archive file."},
 		{"ARCHIVE_FILE_ALREADY_TOPLINK_CMP", "The selected archive file already contains \"{0}\" indicating that it is already a TopLink CMP deployment.{1}Please select an archive file that does not already contain a TopLink deployment descriptor."},
 		{"WARNING", "Invalid Selection"},
-		{"OUTPUT_DIR_CONTAINS_MW_PROJ", "Choosing the selected output directory will cause the TopLink Workbench project to be output to: {0} {1}This directory already contains a TopLink Workbench project.  Please remove the existing project files or choose another directory."},
+		{"OUTPUT_DIR_CONTAINS_MW_PROJ", "Choosing the selected output directory will cause the EclipseLink Workbench project to be output to: {0} {1}This directory already contains a EclipseLink Workbench project.  Please remove the existing project files or choose another directory."},
 		{"INPUT_DIR_DOESNT_CONTAIN_INPUT_DD", "The selected input directory does not contain the necessary deployment descriptor files. {0}Please select a directory that contains the necessary input files."},
 		{"JAR_EAR_FILE_FILTER", "Jar and Ear file filter"},
 		{"INPUT_FILE_INCORRECT_TYPE", "Selected input file is not of the correct type.  Please select an archive file of type JAR or EAR"},
@@ -146,11 +146,11 @@ public class MappingsPluginResourceBundle extends ListResourceBundle {
 		
 		//MigrateFromWLSAction
 		{"MIGRATE_FROM_WLS_ACTION", "From &Weblogic Server..."},
-		{"MIGRATE_FROM_WLS_ACTION.toolTipText", "Creates one or more TopLink Workbench Project migrated from Weblogic server"},
+		{"MIGRATE_FROM_WLS_ACTION.toolTipText", "Creates one or more EclipseLink Workbench Project migrated from Weblogic server"},
 		{"MIGRATE_FROM_WLS_ACTION.accelerator", "control W"},
 
 		//ProjectWLSMigrationDialog
-		{"PROJECT_WLS_MIGRATION_DIALOG_TITLE", "Create TopLink Workbench Projects from WLS Migration"},
+		{"PROJECT_WLS_MIGRATION_DIALOG_TITLE", "Create EclipseLink Workbench Projects from WLS Migration"},
 		{"OPTIONAL", "*optional*"},
 		{"WLS_JAR_XML_LOCATION", "Input weblogic-ejb-jar.xml (file, JAR, EAR):  "},
 		
@@ -262,7 +262,7 @@ public class MappingsPluginResourceBundle extends ListResourceBundle {
 		{"PROJECT_WRITE_PROJECT_TO_EJB_JAR_XML_ACTION",              "&Write Project to ejb-jar.xml"},
 		{"PROJECT_WRITE_PROJECT_TO_EJB_JAR_XML_ACTION_TOOLTIP",      "Write the Project Information to ejb-jar.xml"},
 
-		{".mwp", "TopLink Workbench Project Files (*{0})"},
+		{".mwp", "EclipseLink Workbench Project Files (*{0})"},
 		
 		{"saveAs.title", "Save {0} As"},
 		
@@ -273,7 +273,7 @@ public class MappingsPluginResourceBundle extends ListResourceBundle {
 		
 		//ProjectCreationDialog
 
-		{"PROJECT_CREATION_DIALOG_TITLE",             "Create New TopLink Workbench Project"},
+		{"PROJECT_CREATION_DIALOG_TITLE",             "Create New EclipseLink Workbench Project"},
 		{"PROJECT_CREATION_DIALOG_INVALID_FILE_NAME", "The project name is invalid."},
 		{"PROJECT_CREATION_DIALOG_NO_FILE_NAME",      "The project name cannot be empty."},
 		{"DATASOURCE_LABEL", "Data Source:"},
@@ -288,7 +288,7 @@ public class MappingsPluginResourceBundle extends ListResourceBundle {
 		
 		//ProjectLegacyMigrationDialog
 		
-		{"PROJECT_LEGACY_MIGRATION_DIALOG_TITLE", 		"Create New TopLink Workbench Project From Previous Version"},
+		{"PROJECT_LEGACY_MIGRATION_DIALOG_TITLE", 		"Create New EclipseLink Workbench Project From Previous Version"},
 		{"PROJECT_LEGACY_MIGRATION_DIALOG_SAVE_NOW", 	"Save Now"},
 		{"PROJECT_LEGACY_MIGRATION_DIALOG_SAVE_LATER",	"Save Later"},
 		{"PROJECT_LEGACY_MIGRATION_DIALOG_WARNING", 	"You have selected a project file that was created by a previous version of the TopLink Workbench.  A new project will be created based on the older project. This will not affect the previous project.  If you choose to save now, you will be prompted to select a save location for the new project."},

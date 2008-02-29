@@ -271,7 +271,7 @@ public class StatusDialog extends AbstractDialog
 		JPanel container = new JPanel(new GridBagLayout());
 
 		// Message label
-		LabelArea messageLabel = new LabelArea(resourceRepository().getString(this.messageKey), resourceRepository().getMnemonic(this.messageKey));
+		LabelArea messageLabel = new LabelArea(resourceRepository().getString(this.messageKey));
 		messageLabel.getAccessibleContext().setAccessibleName(messageLabel.getText());
 		messageLabel.setScrollable(true);
 

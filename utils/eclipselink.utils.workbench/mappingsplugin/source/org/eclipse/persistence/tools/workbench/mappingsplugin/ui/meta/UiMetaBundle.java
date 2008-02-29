@@ -46,7 +46,7 @@ public class UiMetaBundle
 		{"javaException", "Java Exception"},
 		{"list", "List:"},
 		{"lookIn","Look in:   "},
-		{"mapping","TopLink Workbench"},
+		{"mapping","EclipseLink Workbench"},
 		{"message", "Message:"},
 		{"mustBeAnInterface.", "The type you choose must be an interface."},
 		{"name", "Name:"},
