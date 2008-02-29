@@ -856,6 +856,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             }
             secondEm.close();
             undoEmployeeChanges();
+            System.out.println("*** flushOptimisticLockExceptionTest Diagnosis message - Got Exception: ");
+            e.printStackTrace();
             Assert.assertTrue(e instanceof javax.persistence.OptimisticLockException);            
         }        
     }
@@ -898,6 +900,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             }
             secondEm.close();
             undoEmployeeChanges();
+            System.out.println("*** commitOptimisticLockExceptionTest Diagnosis message - Got Exception: ");
+            e.printStackTrace();
             Assert.assertTrue("Exception not instance of opt Lock exception", e.getCause() instanceof javax.persistence.OptimisticLockException);            
             return;
         }    
@@ -940,6 +944,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
                 secondEm.getTransaction().rollback();
             }
             secondEm.close();
+            System.out.println("*** JTAOptimisticLockExceptionTest Diagnosis message - Got Exception: ");
+            e.printStackTrace();
             Assert.assertTrue(e instanceof javax.persistence.OptimisticLockException);            
         }finally {
             undoEmployeeChanges();
