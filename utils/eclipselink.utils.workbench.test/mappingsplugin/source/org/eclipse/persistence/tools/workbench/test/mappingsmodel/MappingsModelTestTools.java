@@ -12,7 +12,6 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -24,7 +23,10 @@ import javax.naming.InitialContext;
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.ClassExtractor;
+import org.eclipse.persistence.descriptors.DescriptorEventManager;
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.FieldsLockingPolicy;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.InterfacePolicy;
 import org.eclipse.persistence.descriptors.PessimisticLockingPolicy;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
@@ -59,7 +61,6 @@ import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.ConcurrentFixedCache;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
@@ -79,8 +80,8 @@ import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.mappings.transformers.MethodBasedAttributeTransformer;
-import org.eclipse.persistence.mappings.xdb.DirectToXMLTypeMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
@@ -89,22 +90,15 @@ import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.platform.xml.XMLComparer;
-import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.eclipse.persistence.platform.xml.jaxp.JAXPTransformer;
-import org.eclipse.persistence.platform.xml.xdk.XDKTransformer;
-import org.eclipse.persistence.descriptors.DescriptorEventManager;
-import org.eclipse.persistence.descriptors.DescriptorQueryManager;
-import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
-import org.eclipse.persistence.queries.JPQLCall;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.QueryResultsCachePolicy;
 import org.eclipse.persistence.queries.ReadAllQuery;
-import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.DefaultConnector;
 import org.eclipse.persistence.sessions.Project;
@@ -181,11 +175,9 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.db.jdbc.JDBCExt
 import org.eclipse.persistence.tools.workbench.mappingsmodel.spi.meta.classfile.CFExternalClassRepositoryFactory;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.xml.MWXmlField;
 import org.eclipse.persistence.tools.workbench.platformsmodel.DatabaseType;
-import org.eclipse.persistence.tools.workbench.platformsmodel.JDBCTypeToDatabaseTypeMapping;
 import org.eclipse.persistence.tools.workbench.utility.AbstractModel;
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.diff.CompositeDiff;
-import org.eclipse.persistence.tools.workbench.utility.diff.CompositeDifferentiator;
 import org.eclipse.persistence.tools.workbench.utility.diff.ContainerDiff;
 import org.eclipse.persistence.tools.workbench.utility.diff.ContainerDifferentiator;
 import org.eclipse.persistence.tools.workbench.utility.diff.Diff;
@@ -200,12 +192,7 @@ import org.eclipse.persistence.tools.workbench.utility.diff.MapEntryDifferentiat
 import org.eclipse.persistence.tools.workbench.utility.diff.NullDiff;
 import org.eclipse.persistence.tools.workbench.utility.diff.OrderedContainerDifferentiator;
 import org.eclipse.persistence.tools.workbench.utility.diff.ReflectiveDifferentiator;
-import org.eclipse.persistence.tools.workbench.utility.diff.SimpleDiff;
 import org.eclipse.persistence.tools.workbench.utility.node.AbstractNodeModel;
-
-import com.sun.org.apache.xalan.internal.xsltc.trax.TransformerImpl;
-
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
 /**
  * The main method simply builds the DiffEngine to see if all the
