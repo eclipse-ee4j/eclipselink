@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee;
@@ -89,6 +90,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testProjectOptimisticLockingSettings", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testExtendedEmployee", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testGiveExtendedEmployeeASexChange", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testNamedStoredProcedureQuery", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testNamedStoredProcedureQueryInOut", persistenceUnit));            
         }
         
         return new TestSetup(suite) {
@@ -96,6 +99,11 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             protected void setUp() {
             	DatabaseSession session = JUnitTestCase.getServerSession(persistenceUnit);   
             	new AdvancedTableCreator().replaceTables(session);
+            	
+            	// Populate the database with our examples.
+                EmployeePopulator employeePopulator = new EmployeePopulator();         
+                employeePopulator.buildExamples();
+                employeePopulator.persistExample(session);
             }
         
             protected void tearDown() {
@@ -605,6 +613,78 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         }
 
         assertFalse("employees.isEmpty()==true ", employees.isEmpty());
+    }
+    
+    /**
+     * Tests a named-stored-procedure-query setting
+     */
+    public void testNamedStoredProcedureQuery() {
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        beginTransaction(em);
+        
+        try {
+            Address address1 = new Address();
+        
+            address1.setCity("Ottawa");
+            address1.setPostalCode("K1G6P3");
+            address1.setProvince("ON");
+            address1.setStreet("123 Street");
+            address1.setCountry("Canada");
+
+            em.persist(address1);
+            commitTransaction(em);
+            
+            Address address2 = (Address) em.createNamedQuery("SProcXMLAddress").setParameter("ADDRESS_ID", address1.getId()).getSingleResult();
+            assertTrue("Address not found using stored procedure", address2.equals(address1));
+            
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        }
+        
+        closeEntityManager(em);
+    }
+    
+    /**
+     * Tests a named-stored-procedure-query setting
+     */
+    public void testNamedStoredProcedureQueryInOut() {
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        beginTransaction(em);
+        
+        try {
+            Address address1 = new Address();
+        
+            address1.setCity("Ottawa");
+            address1.setPostalCode("K1G6P3");
+            address1.setProvince("ON");
+            address1.setStreet("123 Street");
+            address1.setCountry("Canada");
+
+            em.persist(address1);
+            commitTransaction(em);
+
+            Address address2 = (Address)em.createNamedQuery("SProcXMLInOut").setParameter("ADDRESS_ID", address1.getId()).getSingleResult();
+        
+            assertTrue("Address not found using stored procedure", (address1.getId() == address2.getId()) && (address1.getStreet().equals(address2.getStreet())));
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        }
+        
+        closeEntityManager(em);
     }
 
 }

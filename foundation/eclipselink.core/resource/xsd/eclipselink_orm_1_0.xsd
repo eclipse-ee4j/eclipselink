@@ -93,6 +93,8 @@
                      minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="named-native-query" type="orm:named-native-query"
                      minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="named-stored-procedure-query" type="orm:named-stored-procedure-query"
+                     minOccurs="0" maxOccurs="unbounded"/>             
         <xsd:element name="sql-result-set-mapping" 
                      type="orm:sql-result-set-mapping" 
                      minOccurs="0" maxOccurs="unbounded"/>
@@ -227,6 +229,8 @@
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-native-query" type="orm:named-native-query" 
                    minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="named-stored-procedure-query" type="orm:named-stored-procedure-query"
+                   minOccurs="0" maxOccurs="unbounded"/>             
       <xsd:element name="sql-result-set-mapping" 
                    type="orm:sql-result-set-mapping" 
                    minOccurs="0" maxOccurs="unbounded"/>
@@ -2390,7 +2394,173 @@
 	  <xsd:attribute name="class" type="xsd:string" use="required"/>
 	</xsd:complexType>
   
+  <!-- **************************************************** -->
   
+  <xsd:complexType name="named-stored-procedure-query">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * A NamedStoredProcedureQuery annotation allows the definition of 
+         * queries that call stored procedures as named queries.
+         
+         * A NamedStoredProcedureQuery annotation may be defined on an Entity or
+         * MappedSuperclass. 
+         */ 
+	      @Target({TYPE})
+	      @Retention(RUNTIME)
+	      public @interface NamedStoredProcedureQuery {
+	        /**
+	         * (Required) Unique name that references this stored procedure query.
+	         */
+	        String name();
+	
+	        /**
+	         * (Optional) Query hints.
+	         */
+	        QueryHint[] hints() default {};
+	
+	        /**
+	         * (Optional) Refers to the class of the result.
+	         */
+	        Class resultClass() default void.class;
+	
+	        /**
+	         * (Optional) The name of the SQLResultMapping.
+	         */
+	        String resultSetMapping() default "";
+	
+	        /**
+	         * (Required) The name of the stored procedure.
+	         */
+	        String procedureName();
+	
+	        /**
+	         * (Optional) Whether the query should return a result set.
+	         */
+	        boolean returnsResultSet() default true; 
+	
+	        /**
+	         * (Optional) Defines arguments to the stored procedure.
+	         */
+	        StoredProcedureParameter[] procedureParameters() default {};
+	      }
+	
+	    </xsd:documentation>
+	  </xsd:annotation>
+	    <xsd:sequence>
+	      <xsd:element name="hint" type="orm:query-hint" minOccurs="0" 
+	                   maxOccurs="unbounded"/>
+	      <xsd:element name="procedure-parameter" type="orm:stored-procedure-parameter" 
+	                   minOccurs="0" maxOccurs="unbounded"/>
+	    </xsd:sequence>
+	  <xsd:attribute name="name" type="xsd:string" use="required"/>
+	  <xsd:attribute name="result-class" type="xsd:string"/>
+	  <xsd:attribute name="result-set-mapping" type="xsd:string"/>
+	  <xsd:attribute name="procedure-name" type="xsd:string" use="required"/>
+	  <xsd:attribute name="returns-result-set" type="xsd:boolean"/>
+	</xsd:complexType>
+  
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="stored-procedure-parameter">
+	  <xsd:annotation>
+	    <xsd:documentation>
+	
+        /** 
+         * A StoredProcedureParameter annotation is used within a 
+         * NamedStoredProcedureQuery annotation. 
+         */ 
+	      @Target({})
+	      @Retention(RUNTIME)
+	      public @interface StoredProcedureParameter {
+	        /**
+	         * (Optional) The direction of the stored procedure parameter.
+	         */
+	        Direction procedureParameterDirection() default IN;
+	
+	        /**
+	         * (Optional) Stored procedure parameter name.
+	         */
+	        String name() default "";
+	
+	        /**
+	         * (Required) The query parameter name.
+	         */
+	        String queryParameter();
+	
+	        /**
+	         * (Optional) The type of Java class desired back from the procedure, 
+	         * this is dependent on the type returned from the procedure.
+	         */
+	        Class type() default void.class;
+	
+	        /**
+	         * (Optional) The JDBC type code, this dependent on the type returned 
+	         * from the procedure.
+	         */
+	        int jdbcType() default -1;
+	
+	        /**
+	         * (Optional) The JDBC type name, this may be required for ARRAY or 
+	         * STRUCT types.
+	         */
+	        String jdbcTypeName() default "";
+	      }
+	
+	    </xsd:documentation>
+	  </xsd:annotation>
+	  <xsd:attribute name="direction" type="orm:direction-type"/>
+	  <xsd:attribute name="name" type="xsd:string"/>
+	  <xsd:attribute name="query-parameter" type="xsd:string" use="required"/>
+	  <xsd:attribute name="type" type="xsd:string"/>
+	  <xsd:attribute name="jdbc-type" type="xsd:integer"/>
+	  <xsd:attribute name="jdbc-type-name" type="xsd:string"/>
+	</xsd:complexType>
+	
+	<!-- **************************************************** -->
+	
+	<xsd:simpleType name="direction-type">
+	  <xsd:annotation>
+	    <xsd:documentation>
+	
+        /** 
+         * An enum that is used within the StoredProcedureParameter annotation.
+         * It is used to specify the direction of the stored procedure 
+         * parameters of a named stored procedure query.
+         */
+	      public enum Direction {
+	        /**
+	         * Input parameter
+	         */
+	        IN,
+	
+	        /**
+	         * Output parameter
+	         */
+	        OUT,
+	
+	        /**
+	         * Input and output parameter
+	         */
+	        IN_OUT,
+	
+	        /**
+	         * Output cursor
+	         */
+	        OUT_CURSOR
+	      }
+	
+	    </xsd:documentation>
+	  </xsd:annotation>
+	  <xsd:restriction base="xsd:token">
+	    <xsd:enumeration value="IN"/>
+	    <xsd:enumeration value="OUT"/>
+	    <xsd:enumeration value="IN_OUT"/>
+	    <xsd:enumeration value="OUT_CURSOR"/>
+	  </xsd:restriction>
+	</xsd:simpleType>
+	
 </xsd:schema>
 
 

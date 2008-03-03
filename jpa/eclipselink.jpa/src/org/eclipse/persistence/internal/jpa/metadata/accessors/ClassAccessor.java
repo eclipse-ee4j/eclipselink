@@ -129,6 +129,7 @@ public class ClassAccessor extends NonRelationshipAccessor {
     private List<AttributeOverrideMetadata> m_attributeOverrides;
     private List<NamedQueryMetadata> m_namedQueries;
     private List<NamedNativeQueryMetadata> m_namedNativeQueries;
+    private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries;
     private List<SecondaryTableMetadata> m_secondaryTables;
     private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings;
     private List<EntityListenerMetadata> m_entityListeners;
@@ -531,6 +532,14 @@ public class ClassAccessor extends NonRelationshipAccessor {
      */
     public List<NamedQueryMetadata> getNamedQueries() {
     	return m_namedQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
+        return m_namedStoredProcedureQueries;
     }
     
     /**
@@ -1662,7 +1671,8 @@ public class ClassAccessor extends NonRelationshipAccessor {
     
     /**
      * INTERNAL:
-     * Process the named native queries on this accessor.
+     * Process/collect the named native queries on this accessor and add them
+     * to the project for later processing.
      */
     protected void processNamedNativeQueries() {
     	// Process the XML named native queries first.
@@ -1675,20 +1685,21 @@ public class ClassAccessor extends NonRelationshipAccessor {
     	Annotation namedNativeQueries = getAnnotation(NamedNativeQueries.class);
         if (namedNativeQueries != null) {
             for (Annotation namedNativeQuery : (Annotation[])invokeMethod("value", namedNativeQueries)) { 
-            	getProject().processNamedNativeQuery(new NamedNativeQueryMetadata(namedNativeQuery, getJavaClassName()));
+            	getProject().addNamedNativeQuery(new NamedNativeQueryMetadata(namedNativeQuery, getJavaClassName()));
             }
         }
         
         // Look for a @NamedNativeQuery.
         Annotation namedNativeQuery = getAnnotation(NamedNativeQuery.class);
         if (namedNativeQuery != null) {
-        	getProject().processNamedNativeQuery(new NamedNativeQueryMetadata(namedNativeQuery, getJavaClassName()));
+        	getProject().addNamedNativeQuery(new NamedNativeQueryMetadata(namedNativeQuery, getJavaClassName()));
         }
     }
     
     /**
      * INTERNAL:
-     * Process the named queries on this accessor.
+     * Process/collect the named queries on this accessor and add them to the 
+     * project for later processing.
      */
     protected void processNamedQueries() {
 		// Process the XML named queries first.
@@ -1699,41 +1710,43 @@ public class ClassAccessor extends NonRelationshipAccessor {
         // Process the named query annotations second.
     	// Look for a @NamedQueries.
     	Annotation namedQueries = getAnnotation(NamedQueries.class);
-        
         if (namedQueries != null) {
             for (Annotation namedQuery : (Annotation[])invokeMethod("value", namedQueries)) { 
-            	getProject().processNamedQuery(new NamedQueryMetadata(namedQuery, getJavaClassName()));
+            	getProject().addNamedQuery(new NamedQueryMetadata(namedQuery, getJavaClassName()));
             }
         }
         
         // Look for a @NamedQuery.
         Annotation namedQuery = getAnnotation(NamedQuery.class);
-        
         if (namedQuery != null) {
-        	getProject().processNamedQuery(new NamedQueryMetadata(namedQuery, getJavaClassName()));
+        	getProject().addNamedQuery(new NamedQueryMetadata(namedQuery, getJavaClassName()));
         }
     }
     
     /**
      * INTERNAL:
-     * Process the NamedStoredProcedureQueries. The method will also look for 
-     * a NamedStoredProcedureQuery. This method currently only stores the 
-     * queries if there are some. The actually query processing isn't done 
-     * till addNamedQueriesToSession is called.
+     * Process/collect the named stored procedure queries on this accessor and 
+     * add them to the project for later processing.
      */
     protected void processNamedStoredProcedureQueries() {
+        // Process the XML named queries first.
+        if (m_namedStoredProcedureQueries != null) {
+            getEntityMappings().processNamedStoredProcedureQueries(m_namedStoredProcedureQueries, getJavaClassName());
+        }
+        
+        // Process the named stored procedure query annotations second.
         // Look for a @NamedStoredProcedureQueries.
         Annotation namedStoredProcedureQueries = getAnnotation(NamedStoredProcedureQueries.class);
         if (namedStoredProcedureQueries != null) {
             for (Annotation namedStoredProcedureQuery : (Annotation[])invokeMethod("value", namedStoredProcedureQueries)) { 
-                getProject().processNamedStoredProcedureQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, getJavaClass()));
+                getProject().addNamedStoredProcedureQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, getJavaClassName()));
             }
         }
         
         // Look for a @NamedStoredProcedureQuery.
         Annotation namedStoredProcedureQuery = getAnnotation(NamedStoredProcedureQuery.class);
         if (namedStoredProcedureQuery != null) {
-            getProject().processNamedStoredProcedureQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, getJavaClass()));
+            getProject().addNamedStoredProcedureQuery(new NamedStoredProcedureQueryMetadata(namedStoredProcedureQuery, getJavaClassName()));
         }
     }
     
@@ -1862,15 +1875,15 @@ public class ClassAccessor extends NonRelationshipAccessor {
     	Annotation sqlResultSetMappings = getAnnotation(SqlResultSetMappings.class);
 
         if (sqlResultSetMappings != null) {
-            for (Annotation sqlResultSetMapping : (Annotation[])invokeMethod("value", sqlResultSetMappings)) {
-                getProject().processSqlResultSetMapping(new SQLResultSetMappingMetadata(sqlResultSetMapping));
+            for (Annotation sqlResultSetMapping : (Annotation[]) invokeMethod("value", sqlResultSetMappings)) {
+                new SQLResultSetMappingMetadata(sqlResultSetMapping).process(getProject());
             }
         } else {
             // Look for a @SqlResultSetMapping.
             Annotation sqlResultSetMapping = getAnnotation(SqlResultSetMapping.class);
             
             if (sqlResultSetMapping != null) {
-                getProject().processSqlResultSetMapping(new SQLResultSetMappingMetadata(sqlResultSetMapping));
+                new SQLResultSetMappingMetadata(sqlResultSetMapping).process(getProject());
             }
         }
     }
@@ -2148,6 +2161,14 @@ public class ClassAccessor extends NonRelationshipAccessor {
      */
     public void setNamedQueries(List<NamedQueryMetadata> namedQueries) {
     	m_namedQueries = namedQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedStoredProcedureQueries(List<NamedStoredProcedureQueryMetadata> namedStoredProcedureQueries) {
+        m_namedStoredProcedureQueries = namedStoredProcedureQueries;
     }
     
     /**

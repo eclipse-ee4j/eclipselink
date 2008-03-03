@@ -13,8 +13,12 @@
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
 
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.EJBQLPlaceHolderQuery;
 
 /**
  * INTERNAL:
@@ -37,6 +41,7 @@ public class NamedQueryMetadata extends QueryMetadata {
     public NamedQueryMetadata(Annotation namedQuery, String javaClassName) {
     	setLoadedFromAnnotation();
         setLocation(javaClassName);
+        
         setName((String) invokeMethod("name", namedQuery));
         setQuery((String) invokeMethod("query", namedQuery));
         setHints((Annotation[]) invokeMethod("hints", namedQuery));     
@@ -71,5 +76,17 @@ public class NamedQueryMetadata extends QueryMetadata {
     	}
     	
     	return false;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void process(AbstractSession session) {
+        try {
+            HashMap<String, String> hints = processQueryHints(session);
+            session.addEjbqlPlaceHolderQuery(new EJBQLPlaceHolderQuery(getName(), getQuery(), hints));
+        } catch (Exception exception) {
+            throw ValidationException.errorProcessingNamedQuery(getClass(), getName(), exception);
+        }
     }
 }

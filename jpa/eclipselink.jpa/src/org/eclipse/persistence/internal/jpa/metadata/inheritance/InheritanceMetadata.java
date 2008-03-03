@@ -60,7 +60,7 @@ public class InheritanceMetadata {
         ClassDescriptor classDescriptor = descriptor.getClassDescriptor();
         
         if (m_strategy == null || m_strategy.equals(InheritanceType.SINGLE_TABLE)) {
-            // Future: Log a defaulting message is strategy is null.
+            // TODO: Log a defaulting message if strategy is null.
             classDescriptor.getInheritancePolicy().setSingleTableStrategy();
         } else if (m_strategy.equals(InheritanceType.JOINED)) {
             classDescriptor.getInheritancePolicy().setJoinedStrategy();

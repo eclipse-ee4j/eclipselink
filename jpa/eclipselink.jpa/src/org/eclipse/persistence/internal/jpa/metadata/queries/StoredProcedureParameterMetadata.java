@@ -12,6 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.persistence.annotations.Direction;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+
 /**
  * INTERNAL:
  * Object to hold onto a stored procedure parameter metadata.
@@ -21,41 +27,49 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
  */
 public class StoredProcedureParameterMetadata {
     private Class m_type;
-    private int m_jdbcType;
-    private String m_name;
-    private String m_direction;
+    private Enum m_direction;
+    private Integer m_jdbcType;
     private String m_jdbcTypeName;
+    private String m_name;
     private String m_queryParameter;
+    private String m_typeName;
+    
+    /**
+     * INTERNAL:
+     */
+    public StoredProcedureParameterMetadata() {}
     
     /**
      * INTERNAL:
      */
     public StoredProcedureParameterMetadata(Object storedProcedureParameter) {
-        Object direction = MetadataHelper.invokeMethod("procedureParameterDirection", storedProcedureParameter);
-        m_direction = (String)MetadataHelper.invokeMethod("name", direction);
-        m_name = (String)MetadataHelper.invokeMethod("name", storedProcedureParameter);
-        m_queryParameter = (String)MetadataHelper.invokeMethod("queryParameter", storedProcedureParameter); 
-        m_type = (Class)MetadataHelper.invokeMethod("type", storedProcedureParameter);
-        m_jdbcType = (Integer)MetadataHelper.invokeMethod("jdbcType", storedProcedureParameter);
-        m_jdbcTypeName = (String)MetadataHelper.invokeMethod("jdbcTypeName", storedProcedureParameter);
+        m_direction = (Enum) MetadataHelper.invokeMethod("procedureParameterDirection", storedProcedureParameter);
+        m_name = (String) MetadataHelper.invokeMethod("name", storedProcedureParameter);
+        m_queryParameter = (String) MetadataHelper.invokeMethod("queryParameter", storedProcedureParameter); 
+        m_type = (Class) MetadataHelper.invokeMethod("type", storedProcedureParameter);
+        m_jdbcType = (Integer) MetadataHelper.invokeMethod("jdbcType", storedProcedureParameter);
+        m_jdbcTypeName = (String) MetadataHelper.invokeMethod("jdbcTypeName", storedProcedureParameter);
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public String getDirection() {
+    public Enum getDirection() {
         return m_direction;
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public int getJdbcType() {
+    public Integer getJdbcType() {
         return m_jdbcType;
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public String getJdbcTypeName() {
         return m_jdbcTypeName;
@@ -63,6 +77,7 @@ public class StoredProcedureParameterMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public String getName() {
         return m_name;
@@ -70,6 +85,7 @@ public class StoredProcedureParameterMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public String getQueryParameter() {
         return m_queryParameter;
@@ -84,64 +100,139 @@ public class StoredProcedureParameterMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public boolean hasJdbcType() {
-        return getJdbcType() != -1;
+    public String getTypeName() {
+        return m_typeName;
     }
     
     /**
      * INTERNAL:
      */
-    public boolean hasJdbcTypeName() {
-        return ! getJdbcTypeName().equals("");
+    protected boolean hasJdbcType() {
+        return m_jdbcType != null && m_jdbcType.equals(-1);
     }
     
     /**
      * INTERNAL:
      */
-    public boolean hasType() {
-        return getType() != void.class;
+    protected boolean hasJdbcTypeName() {
+        return m_jdbcTypeName != null && ! m_jdbcTypeName.equals("");
     }
     
     /**
      * INTERNAL:
      */
-    protected void setDirection(String direction) {
+    protected boolean hasType() {
+        return m_type != void.class;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public List<String> process(StoredProcedureCall call) {
+        List<String> queryArguments = new ArrayList<String>();
+                    
+        // Process the procedure parameter name, defaults to the 
+        // argument field name.
+        // TODO: Log a message when defaulting.
+        String procedureParameterName = m_name.equals("") ? m_queryParameter : m_name;
+                        
+        // Process the parameter direction
+        if (m_direction == null || m_direction.equals(Direction.IN)) {
+            // TODO: Log a defaulting message if m_direction is null.
+            if (hasType()) {
+                call.addNamedArgument(procedureParameterName, m_queryParameter, m_type);
+            } else if (hasJdbcType() && hasJdbcTypeName()) {
+                call.addNamedArgument(procedureParameterName, m_queryParameter, m_jdbcType, m_jdbcTypeName);
+            } else if (hasJdbcType()) {
+                call.addNamedArgument(procedureParameterName, m_queryParameter, m_jdbcType);
+            } else {
+                call.addNamedArgument(procedureParameterName, m_queryParameter);
+            }
+                            
+            queryArguments.add(m_queryParameter);
+        } else if (m_direction.equals(Direction.OUT)) {
+            if (hasType()) {
+                call.addNamedOutputArgument(procedureParameterName, m_queryParameter, m_type);
+            } else if (hasJdbcType() && hasJdbcTypeName()) {
+                call.addNamedOutputArgument(procedureParameterName, m_queryParameter, m_jdbcType, m_jdbcTypeName);
+            } else if (hasJdbcType()) {
+                call.addNamedOutputArgument(procedureParameterName, m_queryParameter, m_jdbcType);
+            } else {
+                call.addNamedOutputArgument(procedureParameterName, m_queryParameter);
+            }
+        } else if (m_direction.equals(Direction.IN_OUT)) {
+            if (hasType()) {
+                call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, m_type);
+            } else if (hasJdbcType() && hasJdbcTypeName()) {
+                call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName);
+            } else if (hasJdbcType()) {
+                call.addNamedInOutputArgument(procedureParameterName, m_queryParameter, m_queryParameter, m_jdbcType);
+            } else {
+                call.addNamedInOutputArgument(procedureParameterName, m_queryParameter);
+            }
+                            
+            queryArguments.add(m_queryParameter);
+        } else if (m_direction.equals(Direction.OUT_CURSOR)) {
+            call.useNamedCursorOutputAsResultSet(m_queryParameter);
+        }
+      
+        return queryArguments;    
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setDirection(Enum direction) {
         m_direction = direction;
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    protected void setJdbcType(int jdbcType) {
+    public void setJdbcType(Integer jdbcType) {
         m_jdbcType = jdbcType;
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    protected void setJdbcTypeName(String jdbcTypeName) {
+    public void setJdbcTypeName(String jdbcTypeName) {
         m_jdbcTypeName = jdbcTypeName;
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    protected void setName(String name) {
+    public void setName(String name) {
         m_name = name;
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    protected void setQueryParameter(String queryParameter) {
+    public void setQueryParameter(String queryParameter) {
         m_queryParameter = queryParameter;
     }
     
     /**
      * INTERNAL:
      */
-    protected void setType(Class type) {
+    public void setType(Class type) {
         m_type = type;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setTypeName(String typeName) {
+        m_typeName = typeName;
     }
 }

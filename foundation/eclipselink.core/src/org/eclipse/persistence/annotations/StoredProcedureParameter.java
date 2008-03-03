@@ -52,7 +52,7 @@ public @interface StoredProcedureParameter {
     Class type() default void.class;
 
     /**
-     * (Optional) The JDBC type code, this dependent on the type returned 
+     * (Optional) The JDBC type code, this is dependent on the type returned 
      * from the procedure.
      */
     int jdbcType() default -1;

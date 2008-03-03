@@ -10,14 +10,14 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
-
-
- 
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
+
 import java.util.*;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
+import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
 
 /**
  * <p><b>Purpose</b>: To build and populate the database for example and testing purposes.
@@ -42,6 +42,36 @@ public class EmployeePopulator {
 
     }
 
+    public StoredProcedureDefinition buildOracleStoredProcedureReadFromAddress() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("SProc_Read_XMLAddress");
+        
+        proc.addInOutputArgument("address_id_v", Integer.class);
+        proc.addOutputArgument("street_v", String.class);
+        proc.addOutputArgument("city_v", String.class);
+        proc.addOutputArgument("country_v", String.class);
+        proc.addOutputArgument("province_v", String.class);
+        proc.addOutputArgument("p_code_v", String.class);
+                
+        String statement = "SELECT STREET, CITY, COUNTRY, PROVINCE, P_CODE INTO street_v, city_v, country_v, province_v, p_code_v FROM CMP3_XML_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
+        
+        proc.addStatement(statement);
+        return proc;
+    }
+    
+    public StoredProcedureDefinition buildOracleStoredProcedureReadInOut() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("SProc_Read_XMLInOut");
+        
+        proc.addInOutputArgument("address_id_v", Long.class);
+        proc.addOutputArgument("street_v", String.class);
+        
+        String statement = "SELECT ADDRESS_ID, STREET into address_id_v, street_v from CMP3_XML_ADDRESS where (ADDRESS_ID = address_id_v)";
+        
+        proc.addStatement(statement);
+        return proc;
+    }
+    
     public Address addressExample1() {
         Address address = new Address();
 
@@ -750,9 +780,7 @@ public class EmployeePopulator {
         smallProjectExample10();
     }
     
-    
-    public void persistExample(Session session)
-    {        
+    public void persistExample(Session session) {        
         Vector allObjects = new Vector();        
         UnitOfWork unitOfWork = session.acquireUnitOfWork();        
         PopulationManager.getDefaultManager().addAllObjectsForClass(Employee.class, allObjects);
@@ -761,7 +789,11 @@ public class EmployeePopulator {
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
         
+        SchemaManager schema = new SchemaManager(((org.eclipse.persistence.sessions.DatabaseSession) session));
+        schema.replaceObject(buildOracleStoredProcedureReadFromAddress());
+        schema.replaceObject(buildOracleStoredProcedureReadInOut());
     }
+    
     protected boolean containsObject(Class domainClass, String identifier) {
         return populationManager.containsObject(domainClass, identifier);
     }

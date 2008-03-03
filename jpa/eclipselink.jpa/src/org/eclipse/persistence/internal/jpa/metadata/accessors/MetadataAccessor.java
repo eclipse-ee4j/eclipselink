@@ -672,7 +672,7 @@ public abstract class MetadataAccessor  {
         // Check for a Converter annotation.
     	Annotation converter = getAnnotation(Converter.class);
         if (converter != null) {
-            m_project.processConverter(new ConverterMetadata(converter, getAnnotatedElement()));
+            m_project.addConverter(new ConverterMetadata(converter, getAnnotatedElement()));
         }
     }
     
@@ -690,7 +690,7 @@ public abstract class MetadataAccessor  {
         // Check for an ObjectTypeConverter annotation.
     	Annotation converter = getAnnotation(ObjectTypeConverter.class);
         if (converter != null) {
-        	m_project.processConverter(new ObjectTypeConverterMetadata(converter, getAnnotatedElement()));
+        	m_project.addConverter(new ObjectTypeConverterMetadata(converter, getAnnotatedElement()));
         }
     }
     
@@ -767,7 +767,7 @@ public abstract class MetadataAccessor  {
         // Check for a StructConverter annotation.
     	Annotation converter = getAnnotation(StructConverter.class);
         if (converter != null) {
-            m_project.processStructConverter(new StructConverterMetadata(converter, getAnnotatedElement()));
+            m_project.addStructConverter(new StructConverterMetadata(converter, getAnnotatedElement()));
         }
     }
     
@@ -794,7 +794,7 @@ public abstract class MetadataAccessor  {
         // Check for an TypeConverter annotation.
     	Annotation converter = getAnnotation(TypeConverter.class);
         if (converter != null) {
-        	m_project.processConverter(new TypeConverterMetadata(converter, getAnnotatedElement()));
+        	m_project.addConverter(new TypeConverterMetadata(converter, getAnnotatedElement()));
         }
     }
    

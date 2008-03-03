@@ -374,7 +374,7 @@ public class MetadataHelper {
      * Method to return a generic method return type.
      */
 	public static Type getGenericReturnType(Method method) {
-        // Future: Use PrivilegedAccessController
+        // TODO: Use PrivilegedAccessController
         return method.getGenericReturnType();
     }
     
@@ -383,7 +383,7 @@ public class MetadataHelper {
      * Method to return a generic field type.
      */
 	public static Type getGenericType(Field field) {
-        // Future: Use PrivilegedAccessController
+        // TODO: Use PrivilegedAccessController
         return field.getGenericType();
     }
     
@@ -556,7 +556,7 @@ public class MetadataHelper {
         if (value == null) {
             return defaultValue;
         } else {
-            // Future: log a defaulting message
+            // TODO: log a defaulting message
             return value;
         } 
     }
@@ -571,7 +571,7 @@ public class MetadataHelper {
         if (value != null && ! value.equals("")) {
             return value;
         } else {
-            // Future: log a defaulting message
+            // TODO: log a defaulting message
             return defaultValue;
         }
     }

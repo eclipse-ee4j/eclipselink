@@ -16,6 +16,13 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+
+import org.eclipse.persistence.queries.ColumnResult;
+import org.eclipse.persistence.queries.EntityResult;
+import org.eclipse.persistence.queries.FieldResult;
+import org.eclipse.persistence.queries.SQLResultSetMapping;
+
 /**
  * INTERNAL:
  * Object to hold onto an sql result mapping metadata.
@@ -68,16 +75,37 @@ public class SQLResultSetMappingMetadata {
     
     /**
      * INTERNAL:
+     * Process an sql result set mapping metadata into a EclipseLink 
+     * SqlResultSetMapping and store it on the session.
      */
-    public boolean hasColumnResults() {
-        return ! m_columnResults.isEmpty();
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean hasEntityResults() {
-        return ! m_entityResults.isEmpty();
+    public void process(MetadataProject project) {        
+        // Initialize a new SqlResultSetMapping (with the metadata name)
+        SQLResultSetMapping mapping = new SQLResultSetMapping(getName());
+        
+        // Process the entity results.
+        for (EntityResultMetadata eResult : m_entityResults) {
+            EntityResult entityResult = new EntityResult(eResult.getEntityClass().getName());
+        
+            // Process the field results.
+            if (eResult.hasFieldResults()) {
+                for (FieldResultMetadata fResult : eResult.getFieldResults()) {
+                    entityResult.addFieldResult(new FieldResult(fResult.getName(), fResult.getColumn()));
+                }
+            }
+        
+            // Process the discriminator value;
+            entityResult.setDiscriminatorColumn(eResult.getDiscriminatorColumn());
+        
+            // Add the result to the SqlResultSetMapping.
+            mapping.addResult(entityResult);
+        }
+        
+        // Process the column results.
+        for (String columnResult : m_columnResults) {
+            mapping.addResult(new ColumnResult(columnResult));
+        }
+            
+        project.getSession().getProject().addSQLResultSetMapping(mapping);
     }
     
     /**

@@ -13,7 +13,9 @@
 package org.eclipse.persistence.annotations;
 
 /** 
- * An enum that is used within the StoredProcedureParameter annotation.
+ * An enum that is used within the StoredProcedureParameter annotation. It is 
+ * used to specify the direction of the stored procedure parameters of a named 
+ * stored procedure query.
  * 
  * @see org.eclipse.persistence.annotations.StoredProcedureParameter
  * @author Guy Pelletier

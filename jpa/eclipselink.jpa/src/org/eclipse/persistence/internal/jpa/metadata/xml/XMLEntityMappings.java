@@ -36,7 +36,9 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMet
 import org.eclipse.persistence.internal.jpa.metadata.queries.EntityResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.StoredProcedureParameterMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
@@ -56,6 +58,7 @@ public class XMLEntityMappings {
 	private List<MappedSuperclassAccessor> m_mappedSuperclasses;
 	private List<NamedNativeQueryMetadata> m_namedNativeQueries;
 	private List<NamedQueryMetadata> m_namedQueries;
+	private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries;
 	private List<ObjectTypeConverterMetadata> m_objectTypeConverters;
 	private List<SequenceGeneratorMetadata> m_sequenceGenerators;
 	private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings;
@@ -265,6 +268,14 @@ public class XMLEntityMappings {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
+        return m_namedStoredProcedureQueries;
+    }
+    
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
 	public List<ObjectTypeConverterMetadata> getObjectTypeConverters() {
 		return m_objectTypeConverters;
 	}
@@ -430,6 +441,9 @@ public class XMLEntityMappings {
 
         // Process the XML named native queries.
     	processNamedNativeQueries(m_namedNativeQueries, getMappingFileName());
+    	
+    	// Process the XML named stored procedure queries.
+        processNamedStoredProcedureQueries(m_namedStoredProcedureQueries, getMappingFileName());
             
         // Process the XML sql result set mappings.
     	processSqlResultSetMappings(m_sqlResultSetMappings);
@@ -464,8 +478,8 @@ public class XMLEntityMappings {
     		// Set the fully qualified class name on the converter. 
     		converter.setClassName(getFullyQualifiedClassName(converter.getClassName()));
     		
-    		// Ask the project to process what we found.
-    		m_project.processConverter(converter);
+    		// Add the converter to the project for later processing.
+    		m_project.addConverter(converter);
     	}
     }
 	
@@ -527,8 +541,8 @@ public class XMLEntityMappings {
    			// Initialize the result class if specified (defaults to void.class)
    			namedNativeQuery.setResultClass(getClassForName(namedNativeQuery.getResultClassName()));
     		
-   			// Ask the project to process what we found.
-   			m_project.processNamedNativeQuery(namedNativeQuery);
+   			// Add the query to the project for later processing.
+   			m_project.addNamedNativeQuery(namedNativeQuery);
    		}
     }
     
@@ -542,9 +556,31 @@ public class XMLEntityMappings {
     		// Set the location of this named query.
     		namedQuery.setLocation(location);
     		
-    		// Ask the project to process what we found.
-    		m_project.processNamedQuery(namedQuery);
+    		// Add the query to the project for later processing.
+    		m_project.addNamedQuery(namedQuery);
     	}
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the named queries. ClassAccessor will also call this method which 
+     * will ensure we initialize our named queries in a common way.
+     */
+    public void processNamedStoredProcedureQueries(List<NamedStoredProcedureQueryMetadata> namedStoredProcedureQueries, String location) {
+        for (NamedStoredProcedureQueryMetadata namedStoredProcedureQuery : namedStoredProcedureQueries) {
+            // Set the location of this named query.
+            namedStoredProcedureQuery.setLocation(location);
+            
+            // Initialize the result class if specified (defaults to void.class)
+            namedStoredProcedureQuery.setResultClass(getClassForName(namedStoredProcedureQuery.getResultClassName()));
+            
+            for (StoredProcedureParameterMetadata procedureParameter : namedStoredProcedureQuery.getProcedureParameters()) {
+               procedureParameter.setType(getClassForName(procedureParameter.getTypeName()));
+            }
+            
+            // Add the query to the project for later processing.
+            m_project.addNamedStoredProcedureQuery(namedStoredProcedureQuery);
+        }
     }
     
 	/**
@@ -563,8 +599,8 @@ public class XMLEntityMappings {
     		objectTypeConverter.setDataType(getClassForName(objectTypeConverter.getDataTypeName()));
     		objectTypeConverter.setObjectType(getClassForName(objectTypeConverter.getObjectTypeName()));
     		
-    		// Ask the project to process what we found.
-    		m_project.processConverter(objectTypeConverter);
+    		// Add the converter to the project for later processing.
+    		m_project.addConverter(objectTypeConverter);
     	}
     }
     
@@ -602,8 +638,8 @@ public class XMLEntityMappings {
     	// Set the location of this sequence generator.
         sequenceGenerator.setLocation(location);
         	
-        // Ask the project to process what we found.
-        m_project.processSequenceGenerator(sequenceGenerator);
+        // Add the sequence generator to the project for later processing.
+        m_project.addSequenceGenerator(sequenceGenerator);
     }
     
 	/**
@@ -614,16 +650,13 @@ public class XMLEntityMappings {
     public void processSqlResultSetMappings(List<SQLResultSetMappingMetadata> sqlResultSetMappings) {
     	for (SQLResultSetMappingMetadata sqlResultSetMapping : sqlResultSetMappings) {
     		// Initialize the entity class for every entity result.
-    		if (sqlResultSetMapping.hasEntityResults()) {
-    			for (EntityResultMetadata entityResult : sqlResultSetMapping.getEntityResults()) {
-    				entityResult.setEntityClass(getClassForName(entityResult.getEntityClassName()));
-    			}
+    	    for (EntityResultMetadata entityResult : sqlResultSetMapping.getEntityResults()) {
+    	        entityResult.setEntityClass(getClassForName(entityResult.getEntityClassName()));
     		}
-    			
+    		
     		// Current processing is last one in win, may want to 
-    		// enhance that like we do with named queries.
-    		// Ask the project to process what we found.
-    		m_project.processSqlResultSetMapping(sqlResultSetMapping);
+            // enhance that like we do with named queries.
+    		sqlResultSetMapping.process(m_project);
     	}
     }
     
@@ -637,8 +670,8 @@ public class XMLEntityMappings {
     		// Set the location of this struct converter.
     		structConverter.setLocation(getMappingFileName());
     		
-    		// Ask the project to process what we found.
-    		m_project.processStructConverter(structConverter);
+    		// Add the struct converter to the project for later processing.
+    		m_project.addStructConverter(structConverter);
     	}
     }
     
@@ -651,8 +684,8 @@ public class XMLEntityMappings {
     	// Set the location of this sequence generator.
 		tableGenerator.setLocation(location);
 		    	
-		// Ask the project to process what we found.
-		m_project.processTableGenerator(tableGenerator, defaultCatalog, defaultSchema);
+		// Add the table generator to the project for later processing.
+		m_project.addTableGenerator(tableGenerator, defaultCatalog, defaultSchema);
     }
     
 	/**
@@ -670,8 +703,8 @@ public class XMLEntityMappings {
     		typeConverter.setDataType(getClassForName(typeConverter.getDataTypeName()));
     		typeConverter.setObjectType(getClassForName(typeConverter.getObjectTypeName()));
     		
-    		// Ask the project to process what we found.
-    		m_project.processConverter(typeConverter);
+    		// Add the converter to the project for later processing.
+    		m_project.addConverter(typeConverter);
     	}
     }
     
@@ -705,7 +738,7 @@ public class XMLEntityMappings {
     		return mappedSuperclass;
     	} catch (Exception e) {
     		throw new RuntimeException(e);
-    		// Future: Throw an EclipseLink exception.
+    		// TODO: Throw an EclipseLink exception.
     	}
     }
     
@@ -794,6 +827,14 @@ public class XMLEntityMappings {
 	public void setNamedQueries(List<NamedQueryMetadata> namedQueries) {
 		m_namedQueries = namedQueries;
 	}
+	
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedStoredProcedureQueries(List<NamedStoredProcedureQueryMetadata> namedStoredProcedureQueries) {
+        m_namedStoredProcedureQueries = namedStoredProcedureQueries;
+    }
 	
 	/**
      * INTERNAL:

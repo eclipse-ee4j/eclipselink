@@ -14,9 +14,12 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.persistence.internal.jpa.QueryHintsHandler;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * INTERNAL:
@@ -39,6 +42,7 @@ public abstract class QueryMetadata  {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public List<QueryHintMetadata> getHints() {
         return m_hints; 
@@ -53,6 +57,7 @@ public abstract class QueryMetadata  {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public String getName() {
         return m_name;
@@ -60,6 +65,7 @@ public abstract class QueryMetadata  {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public String getQuery() {
         return m_query;
@@ -102,6 +108,21 @@ public abstract class QueryMetadata  {
     
     /**
      * INTERNAL:
+     */ 
+    protected HashMap<String, String> processQueryHints(AbstractSession session) {
+        HashMap<String, String> hints = new HashMap<String, String>();
+        
+        for (QueryHintMetadata hint : m_hints) {
+            QueryHintsHandler.verify(hint.getName(), hint.getValue(), m_name, session);
+            hints.put(hint.getName(), hint.getValue());
+        }
+        
+        return hints;
+    } 
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
      */
     public void setHints(List<QueryHintMetadata> hints) {
         m_hints = hints;
@@ -110,13 +131,11 @@ public abstract class QueryMetadata  {
     /**
      * INTERNAL:
      */
-    protected void setHints(Object[] hints) {
+    protected void setHints(Annotation[] hints) {
     	m_hints = new ArrayList<QueryHintMetadata>();
 
-        for (Object hint : hints) {
-            m_hints.add(new QueryHintMetadata(
-                  (String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("name", hint),
-                  (String)org.eclipse.persistence.internal.jpa.metadata.queries.MetadataHelper.invokeMethod("value", hint)));
+        for (Annotation hint : hints) {
+            m_hints.add(new QueryHintMetadata((String) invokeMethod("name", hint), (String) invokeMethod("value", hint)));
         }
     }
     
@@ -143,6 +162,7 @@ public abstract class QueryMetadata  {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public void setName(String name) {
         m_name = name;
@@ -150,6 +170,7 @@ public abstract class QueryMetadata  {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public void setQuery(String query) {
         m_query = query;

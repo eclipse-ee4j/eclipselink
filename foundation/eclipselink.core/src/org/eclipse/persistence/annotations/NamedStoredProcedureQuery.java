@@ -24,6 +24,9 @@ import javax.persistence.QueryHint;
  * A NamedStoredProcedureQuery annotation allows the definition of queries that 
  * call stored procedures as named queries.
  * 
+ * A NamedStoredProcedureQuery annotation may be defined on an Entity or
+ * MappedSuperclass.
+ * 
  * @see org.eclipse.persistence.annotations.StoredProcedureParameter.
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0 

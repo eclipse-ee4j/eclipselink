@@ -14,7 +14,13 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.StoredProcedureCall;
 
 /**
  * INTERNAL:
@@ -24,7 +30,7 @@ import java.util.List;
  * @since TopLink 11g
  */
 public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata  {
-	private boolean m_returnsResultSet;
+	private Boolean m_returnsResultSet;
 	private List<StoredProcedureParameterMetadata> m_procedureParameters;
 	private String m_procedureName;
 	
@@ -32,28 +38,29 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      * INTERNAL:
      */
     public NamedStoredProcedureQueryMetadata() {
-    	this.setLoadedFromXML();
-    	// Will need an XML context ignore string when XML support is added.
+    	setLoadedFromXML();
     }
     
     /**
      * INTERNAL:
      */
-    public NamedStoredProcedureQueryMetadata(Annotation namedStoredProcedureQuery, Class javaClass) {
-    	m_procedureName = (String) invokeMethod("procedureName", namedStoredProcedureQuery);
-    	
+    public NamedStoredProcedureQueryMetadata(Annotation namedStoredProcedureQuery, String javaClassName) {
     	setLoadedFromAnnotation();
-    	setLocation(javaClass.getName());
+    	setLocation(javaClassName);
+    	
         setName((String) invokeMethod("name", namedStoredProcedureQuery));
         setHints((Annotation[]) invokeMethod("hints", namedStoredProcedureQuery));
         setResultClass((Class) invokeMethod("resultClass", namedStoredProcedureQuery));
         setResultSetMapping((String) invokeMethod("resultSetMapping", namedStoredProcedureQuery));
-        setReturnsResultSet((Boolean) invokeMethod("returnsResultSet", namedStoredProcedureQuery));
         setProcedureParameters((Annotation[]) invokeMethod("procedureParameters", namedStoredProcedureQuery));
+        
+        m_procedureName = (String) invokeMethod("procedureName", namedStoredProcedureQuery);
+        m_returnsResultSet = (Boolean) invokeMethod("returnsResultSet", namedStoredProcedureQuery);
     }
    
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public String getProcedureName() {
         return m_procedureName;
@@ -61,6 +68,7 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public List<StoredProcedureParameterMetadata> getProcedureParameters() {
         return m_procedureParameters;
@@ -69,19 +77,48 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     /**
      * INTERNAL:
      */
-    public boolean hasProcedureParameters() {
-        return ! m_procedureParameters.isEmpty();
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public boolean returnsResultSet() {
+    public Boolean getReturnsResultSet() {
         return m_returnsResultSet;
     }
     
     /**
      * INTERNAL:
+     */
+    public void process(AbstractSession session, ClassLoader loader) {
+        // Build the stored procedure call.
+        StoredProcedureCall call = new StoredProcedureCall();
+        
+        // Process the stored procedure parameters.
+        List<String> queryArguments = new ArrayList<String>();
+        for (StoredProcedureParameterMetadata parameter : m_procedureParameters) {
+            queryArguments.addAll(parameter.process(call));
+        }
+        
+        // Process the procedure name.
+        call.setProcedureName(m_procedureName);
+        
+        // Process the returns result set.
+        call.setReturnsResultSet((m_returnsResultSet == null) ? false : m_returnsResultSet);
+        
+        // Process the query hints.
+        HashMap<String, String> hints = processQueryHints(session);
+        
+        // Process the result class.
+        if (getResultClass() == void.class) {
+            if (getResultSetMapping().equals("")) {
+                // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
+                session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(call, queryArguments, hints));
+            } else {
+                session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(getResultSetMapping(), call, queryArguments, hints));
+            }
+        } else {
+            session.addQuery(getName(), EJBQueryImpl.buildStoredProcedureQuery(MetadataHelper.getClassForName(getResultClass().getName(), loader), call, queryArguments, hints));
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
      */
     public void setProcedureName(String procedureName) {
         m_procedureName = procedureName;
@@ -90,17 +127,27 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
     /**
      * INTERNAL:
      */
-    public void setProcedureParameters(Object[] procedureParameters) {
+    public void setProcedureParameters(Annotation[] procedureParameters) {
         m_procedureParameters = new ArrayList<StoredProcedureParameterMetadata>();
-        for (Object storedProcedureParameter : procedureParameters) {
+        
+        for (Annotation storedProcedureParameter : procedureParameters) {
            m_procedureParameters.add(new StoredProcedureParameterMetadata(storedProcedureParameter));
         }
     }
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public void setReturnsResultSet(boolean returnsResultSet) {
+    public void setProcedureParameters(List<StoredProcedureParameterMetadata> procedureParameters) {
+        m_procedureParameters = procedureParameters;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setReturnsResultSet(Boolean returnsResultSet) {
         m_returnsResultSet = returnsResultSet;
     }
 }
