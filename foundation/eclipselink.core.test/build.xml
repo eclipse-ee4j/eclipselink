@@ -98,24 +98,6 @@
         <pathelement path="${tools.jar}"/>
     </path>
 
-    <!-- Runs the test using the PromptTestRunner -->
-    <target name="test.prompt-runner" depends="process.resource">
-        <java   classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
-             fork="true"
-             maxmemory="512m"
-             failonerror="true"
-             dir="${run.dir}">
-            <jvmarg value="-Djava.security.policy=${eclipselink.core.test}/resource/java.policy.allpermissions"/>
-            <arg value="pfile=${eclipselink.core.test}/${core.test.properties}" />
-            <arg value="testmodel=org.eclipse.persistence.testing.tests.TestRunModel" />
-            <arg value="regressionlog=${eclipselink.core.test}/${core.test.regression.log}" />
-
-            <classpath>
-                <path refid="run.classpath"/>
-            </classpath>
-        </java>
-    </target>
-
     <!-- Default test target, runs test.class from test.properties (default is LRG). -->
     <target name="test">
         <antcall target="run.test" inheritRefs="true">
@@ -135,6 +117,40 @@
         <antcall target="run.test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.TestRunModel"/>
         </antcall>
+    </target>
+
+    <!-- Prompt runner test target, runs test.class from test.properties (default is LRG). -->
+    <target name="test.prompt">
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="${test.class}"/>
+        </antcall>
+    </target>
+
+    <!-- Runs performance tests. -->
+    <target name="test.performance">
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.performance.PerformanceTestModel"/>
+        </antcall>
+    </target>
+
+    <!-- Launches the testing browser -->
+    <target name="test.browser">
+        <echo>Running test browser with ${test.properties}</echo>
+        <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
+        <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
+             fork="true"
+             maxmemory="512m"
+             failonerror="true"
+             dir="${eclipselink.core.test}/${run.dir}">
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
+            <jvmarg value="-Djava.security.manager"/>
+            <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
+            <classpath>
+                <path refid="run.classpath"/>
+            </classpath>
+        </java>
     </target>
 
     <!-- Generic target for running tests. -->
@@ -161,6 +177,30 @@
             <report format="noframes" todir="${eclipselink.core.test}/${report.dir}"/>
         </junitreport>
         <fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
+    </target>
+
+    <!-- Runs the test using the PromptTestRunner -->
+    <target name="run.test.prompt">
+        <echo>Running test with ${test.properties} on ${db.url}</echo>
+        <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
+        <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
+             fork="true"
+             maxmemory="512m"
+             failonerror="true"
+             dir="${eclipselink.core.test}/${run.dir}">
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
+            <jvmarg value="-Djava.security.manager"/>
+            <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
+            <arg value="pfile=${test.properties.run}" />
+            <arg value="testmodel=${TEST_CLASS}" />
+            <arg value="regressionlog=../${report.dir}/test.log" />
+            <arg value="saveresults=true" />
+            <classpath>
+                <path refid="run.classpath"/>
+            </classpath>
+        </java>
     </target>
 
 </project>

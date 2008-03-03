@@ -10,21 +10,18 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
- package org.eclipse.persistence.testing.tests.jpa.performance;
+ package org.eclipse.persistence.testing.tests.jpa.memory;
 
 import org.eclipse.persistence.testing.framework.*;
 
 /**
- * Performance tests that compare JPA performance.
+ * Memory tests that compare JPA memory.
  */
-public class JPAPerformanceTestModel extends TestModel {
+public class JPAMemoryTestModel extends TestModel {
 
-    public JPAPerformanceTestModel() {
-        setDescription("Performance tests that compare JPA performance.");
-        addTest(new JPAPerformanceRegressionModel());
-        addTest(new JPAIsolatedPerformanceRegressionModel());
-        addTest(new HibernateJPAPerformanceRegressionModel());
-        addTest(new TopLinkJPAPerformanceRegressionModel());
-        addTest(new EssentialsJPAPerformanceRegressionModel());
+    public JPAMemoryTestModel() {
+        setDescription("Memory tests that compare JPA memory usage.");
+        addTest(new JPAMemoryLeakModel());
+        addTest(new JPAMemoryRegressionModel());
     }
 }

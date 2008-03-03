@@ -32,7 +32,7 @@ public class EssentialsJPAPerformanceRegressionModel extends JPAPerformanceRegre
      */
     public void setupProvider() {
         // Configure provider to be TopLink.
-        String providerClass = "org.eclipse.persistence.essentials.PersistenceProvider";
+        String providerClass = "oracle.toplink.essentials.PersistenceProvider";
         PersistenceProvider provider = null;
         try {
             provider = (PersistenceProvider)Class.forName(providerClass).newInstance();
@@ -40,11 +40,11 @@ public class EssentialsJPAPerformanceRegressionModel extends JPAPerformanceRegre
             throw new TestProblemException("Failed to create persistence provider.", error);
         }
         Map properties = new HashMap();
-        properties.put("eclipselink.jdbc.driver", getSession().getLogin().getDriverClassName());
-        properties.put("eclipselink.jdbc.url", getSession().getLogin().getConnectionString());
-        properties.put("eclipselink.jdbc.user", getSession().getLogin().getUserName());
-        properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());
-        properties.put("eclipselink.logging.level", getSession().getSessionLog().getLevelString());
+        properties.put("toplink.jdbc.driver", getSession().getLogin().getDriverClassName());
+        properties.put("toplink.jdbc.url", getSession().getLogin().getConnectionString());
+        properties.put("toplink.jdbc.user", getSession().getLogin().getUserName());
+        properties.put("toplink.jdbc.password", getSession().getLogin().getPassword());
+        properties.put("toplink.logging.level", getSession().getSessionLog().getLevelString());
         getExecutor().setEntityManagerFactory(provider.createEntityManagerFactory("performance", properties));
     }
 }

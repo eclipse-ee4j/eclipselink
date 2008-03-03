@@ -327,6 +327,7 @@ public class TestRunModel extends TestModel {
         performanceTests.addElement("org.eclipse.persistence.testing.tests.performance.ConcurrencyRegressionTestModel");
         performanceTests.addElement("org.eclipse.persistence.testing.tests.performance.JavaPerformanceComparisonModel");
         performanceTests.addElement("org.eclipse.persistence.testing.tests.jpa.performance.JPAPerformanceTestModel");
+        performanceTests.addElement("org.eclipse.persistence.testing.tests.jpa.memory.JPAMemoryTestModel");
                     
         TestModel performanceModel = new TestModel();
         performanceModel.setName("Performance Tests");

@@ -52,6 +52,10 @@ public class LoadBuildSummary {
             this.jvm = System.getProperty("java.vm.version");
             this.toplinkVersion = Version.getVersion() + " :" + Version.getBuildNumber();
             this.machine = InetAddress.getLocalHost().getHostName();
+            // Trim the machine name only because of network issues.
+            if (this.machine.indexOf(".") != -1) {
+                this.machine = this.machine.substring(0, this.machine.indexOf("."));
+            }
         } catch (Exception ignore) {
         }
     }

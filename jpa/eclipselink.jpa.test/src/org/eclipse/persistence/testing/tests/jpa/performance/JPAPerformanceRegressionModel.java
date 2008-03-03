@@ -116,10 +116,6 @@ public class JPAPerformanceRegressionModel extends TestModel {
         return suite;        
     }
 
-    public String getMappingResource() {
-        return "org/eclipse/persistence/testing/models/performance/hibernate/employee.hbm.xml";
-    }
-
     /**
      * Create/populate database.
      */

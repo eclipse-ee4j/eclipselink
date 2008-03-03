@@ -21,7 +21,7 @@
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
     <property file="${user.home}/test.properties"/>
-    <property file="./build.properties"/>
+    <property name="eclipselink.jpa.test" value="."/>
     <property file="${eclipselink.jpa.test}/build.properties"/>
     <property file="${eclipselink.jpa.test}/local.build.properties"/>
     <property file="${eclipselink.jpa.test}/${test.properties}"/>
@@ -95,7 +95,7 @@
     </target>
 
     <!-- Packages JPA persistent unit test jars. -->
-    <target name="package" depends="package.annotation, package.ddl, package.xml-only, package.xml-merge, package.xml-extended, package.validation-failed, package.jpa-advanced-field-access, package.jpa-advanced-properties" description="build EclipseLink jar">
+    <target name="package" depends="config.trunk, config.flat, package.annotation, package.ddl, package.xml-only, package.xml-merge, package.xml-extended, package.validation-failed, package.jpa-advanced-field-access, package.jpa-advanced-properties, package.jpa-performance" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/framework/**/*.class,

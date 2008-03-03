@@ -149,10 +149,7 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
             }
     
             try {
-                long testStartTime = System.currentTimeMillis();
-                executeTest();
-                long testEndTime = System.currentTimeMillis();
-    
+                executeTest();    
                 verify();
             } catch (EclipseLinkException exception) {
                 executeFailed = true;

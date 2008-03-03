@@ -33,10 +33,10 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
     protected void applyLOGIN() {
         org.eclipse.persistence.sessions.DatabaseLogin login = new org.eclipse.persistence.sessions.DatabaseLogin();
 
-        login.setUserName("jsutherl");
-        login.setPassword("password");
+        login.setUserName("loadbuild");
+        login.setPassword("results");
         login.setDriverClassName("oracle.jdbc.OracleDriver");
-        login.setConnectionString("jdbc:oracle:thin:@tlsvrdb3.ca.oracle.com:1521:toplink");
+        login.setConnectionString("jdbc:oracle:thin:@toplinkdb.ca.oracle.com:1521:STARTEAM");
         login.setPlatformClassName("org.eclipse.persistence.platform.database.oracle.OraclePlatform");
         NativeSequence sequence = new NativeSequence();
         sequence.setPreallocationSize(500);
@@ -56,16 +56,17 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
         Vector vector = new Vector();
         vector.addElement("LOADBUILD");
         descriptor.setTableNames(vector);
-        descriptor.addPrimaryKeyFieldName("LOADBUILD.id");
+        //descriptor.addPrimaryKeyFieldName("LOADBUILD.id");
+        descriptor.addPrimaryKeyFieldName("LOADBUILD.lbtimestamp");
 
         // SECTION: PROPERTIES
-        descriptor.setSequenceNumberName("RESULTSUM_SEQ");
-        descriptor.setSequenceNumberFieldName("id");
+        //descriptor.setSequenceNumberName("RESULTSUM_SEQ");
+        //descriptor.setSequenceNumberFieldName("id");
 
-        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        /*DirectToFieldMapping idMapping = new DirectToFieldMapping();
         idMapping.setAttributeName("id");
         idMapping.setFieldName("LOADBUILD.id");
-        descriptor.addMapping(idMapping);
+        descriptor.addMapping(idMapping);*/
         
         DirectToFieldMapping directtofieldmapping = new DirectToFieldMapping();
         directtofieldmapping.setAttributeName("errors");
@@ -123,7 +124,8 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
         onetomanymapping.setSetMethodName("setResultsHolder");
         onetomanymapping.setReferenceClass(org.eclipse.persistence.testing.framework.TestResult.class);
         onetomanymapping.setIsPrivateOwned(true);
-        onetomanymapping.addTargetForeignKeyFieldName("RESULT.lbuildId", "LOADBUILD.id");
+        onetomanymapping.addTargetForeignKeyFieldName("RESULT.lbuildTimestamp", "LOADBUILD.lbtimestamp");
+        //onetomanymapping.addTargetForeignKeyFieldName("RESULT.lbuildId", "LOADBUILD.id");
         descriptor.addMapping(onetomanymapping);
 
         org.eclipse.persistence.mappings.OneToManyMapping onetomanymapping1 = new org.eclipse.persistence.mappings.OneToManyMapping();
@@ -132,7 +134,8 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
         onetomanymapping1.setSetMethodName("setSummariesHolder");
         onetomanymapping1.setReferenceClass(org.eclipse.persistence.testing.framework.TestResultsSummary.class);
         onetomanymapping1.setIsPrivateOwned(true);
-        onetomanymapping1.addTargetForeignKeyFieldName("SUMMARY.lbuildId", "LOADBUILD.id");
+        onetomanymapping1.addTargetForeignKeyFieldName("SUMMARY.lbuildTimestamp", "LOADBUILD.lbtimestamp");
+        //onetomanymapping1.addTargetForeignKeyFieldName("SUMMARY.lbuildId", "LOADBUILD.id");
         descriptor.addMapping(onetomanymapping1);
 
         addDescriptor(descriptor);
@@ -208,7 +211,8 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
         onetoonemapping.setGetMethodName("getLoadBuildSummaryHolder");
         onetoonemapping.setSetMethodName("setLoadBuildSummaryHolder");
         onetoonemapping.setReferenceClass(org.eclipse.persistence.testing.framework.LoadBuildSummary.class);
-        onetoonemapping.addForeignKeyFieldName("RESULT.lbuildId", "LOADBUILD.id");
+        onetoonemapping.addForeignKeyFieldName("RESULT.lbuildTimestamp", "LOADBUILD.lbtimestamp");
+        //onetoonemapping.addForeignKeyFieldName("RESULT.lbuildId", "LOADBUILD.id");
         descriptor.addMapping(onetoonemapping);
 
         // SECTION: ONETOONEMAPPING
@@ -331,7 +335,8 @@ public class LoadBuildProject extends org.eclipse.persistence.sessions.Project {
         onetoonemapping.setGetMethodName("getLoadBuildSummaryHolder");
         onetoonemapping.setSetMethodName("setLoadBuildSummaryHolder");
         onetoonemapping.setReferenceClass(org.eclipse.persistence.testing.framework.LoadBuildSummary.class);
-        onetoonemapping.addForeignKeyFieldName("SUMMARY.lbuildId", "LOADBUILD.id");
+        onetoonemapping.addForeignKeyFieldName("SUMMARY.lbuildTimestamp", "LOADBUILD.lbtimestamp");
+        //onetoonemapping.addForeignKeyFieldName("SUMMARY.lbuildId", "LOADBUILD.id");
         descriptor.addMapping(onetoonemapping);
 
         org.eclipse.persistence.mappings.OneToOneMapping onetoonemapping1 = new org.eclipse.persistence.mappings.OneToOneMapping();
