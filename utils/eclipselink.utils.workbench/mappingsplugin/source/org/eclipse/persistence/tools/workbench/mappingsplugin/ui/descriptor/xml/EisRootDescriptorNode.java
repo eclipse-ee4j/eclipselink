@@ -33,7 +33,7 @@ public final class EisRootDescriptorNode extends EisDescriptorNode {
 	}
 
 	public String buildIconKey() {
-		return "descriptor.eis.root.bean";
+		return "descriptor.eis.root";
 	}
 	
 	protected JMenuItem buildAdvancedPropertiesMenuItem(WorkbenchContext workbenchContext)

@@ -46,13 +46,13 @@ public class DescriptorCellRendererAdapter extends NoneSelectedCellRendererAdapt
 	
 	private String buildIconKey(MWDescriptor descriptor) {
 		if (descriptor instanceof MWTableDescriptor) {
-			return "descriptor.bean";
+			return "descriptor.class";
 		}
 		else if (descriptor instanceof MWAggregateDescriptor) {
 			return "descriptor.aggregate";
 		}
 		else if (descriptor instanceof MWRootEisDescriptor) {
-			return "descriptor.eis.root.bean";
+			return "descriptor.eis.root";
 
 		}
 		else if (descriptor instanceof MWCompositeEisDescriptor) { 

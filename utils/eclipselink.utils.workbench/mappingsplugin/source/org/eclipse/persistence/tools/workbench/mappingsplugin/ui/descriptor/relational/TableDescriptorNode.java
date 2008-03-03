@@ -35,7 +35,7 @@ public final class TableDescriptorNode extends RelationalClassDescriptorNode {
 	}
 		
 	public String buildIconKey() {
-		return	"descriptor.bean";
+		return	"descriptor.class";
 	}
 	
 	MWTableDescriptor getTableDescriptor() {
