@@ -236,7 +236,7 @@ public class MetadataProcessor {
      * and no XML.
      */
     public void processAnnotations() {
-    	for (ClassAccessor accessor : m_project.getAllAccessors()) {
+    	for (ClassAccessor accessor : m_project.getClassAccessors()) {
     	    // If the accessor hasn't been processed yet, then process it.
             if (! accessor.isProcessed()) {
                 accessor.process();
