@@ -42,6 +42,9 @@ public class DefaultConnector implements Connector {
     /** cache up the instantiated Driver to speed up reconnects */
     protected Driver driver;
 
+    /** Save whether we have switched to direct connect (sql.Driver.connect()) mode */
+    boolean connectDirectly = false;
+    
     /**
      * PUBLIC:
      * Construct a Connector with default settings (Sun JDBC-ODBC bridge).
@@ -93,9 +96,15 @@ public class DefaultConnector implements Connector {
                 }
             }
         }
-        
+
         try {
-            return this.directConnect(properties);
+        	// A return of null indicates wrong type of driver, an SQLException means connection problems 
+        	Connection directConnection = this.directConnect(properties);
+        	// If this connection succeeded where the previous DriverManager connection failed - save state
+        	if(null != directConnection && null != driverManagerException) {
+        		connectDirectly = true;
+        	}
+       		return directConnection;
         } catch (DatabaseException directConnectException) {
             if(driverManagerException != null) {
                 throw DatabaseException.sqlException(driverManagerException, (org.eclipse.persistence.internal.sessions.AbstractSession) session, true);
@@ -104,6 +113,7 @@ public class DefaultConnector implements Connector {
             }
         }
     }
+        
 
     /**
      * INTERNAL: 
