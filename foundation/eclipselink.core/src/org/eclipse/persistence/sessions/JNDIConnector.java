@@ -135,7 +135,7 @@ public class JNDIConnector implements Connector {
                 return dataSource.getConnection(user, password);
             }
         } catch (SQLException exception) {
-            throw DatabaseException.sqlException(exception);
+            throw DatabaseException.sqlException(exception, true);
         }
     }
 

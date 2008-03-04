@@ -98,7 +98,7 @@ public class DefaultConnector implements Connector {
             return this.directConnect(properties);
         } catch (DatabaseException directConnectException) {
             if(driverManagerException != null) {
-                throw DatabaseException.sqlException(driverManagerException, (org.eclipse.persistence.internal.sessions.AbstractSession) session);
+                throw DatabaseException.sqlException(driverManagerException, (org.eclipse.persistence.internal.sessions.AbstractSession) session, true);
             } else {
                 throw directConnectException;
             }
@@ -127,7 +127,7 @@ public class DefaultConnector implements Connector {
             return this.driver.connect(this.getConnectionString(), properties);
         } catch (SQLException exception) {
             this.clearDriverClassAndDriver();
-            throw DatabaseException.sqlException(exception);
+            throw DatabaseException.sqlException(exception, true);
         }
     }
 

@@ -256,7 +256,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
             java.sql.Connection connection = ((DatabaseAccessor)executionSession.getAccessor()).getConnection();
             struct = (Struct)executionSession.getPlatform().getRefValue(ref,executionSession,connection);
         } catch (java.sql.SQLException exception) {
-            throw DatabaseException.sqlException(exception, executionSession);
+            throw DatabaseException.sqlException(exception, executionSession, false);
         }
         AbstractRecord targetRow = ((ObjectRelationalDataTypeDescriptor)getReferenceDescriptor()).buildRowFromStructure(struct);
         ((DatabaseAccessor)executionSession.getAccessor()).decrementCallCount();

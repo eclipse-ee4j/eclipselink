@@ -92,7 +92,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
             java.sql.Connection connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
             return session.getPlatform().createArray(elementDataTypeName, fields, session,connection);
         } catch (java.sql.SQLException ex) {
-            throw DatabaseException.sqlException(ex, session);
+            throw DatabaseException.sqlException(ex, session, false);
         } finally {
             ((DatabaseAccessor)session.getAccessor()).decrementCallCount();
         }
@@ -135,7 +135,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
 
             return session.getPlatform().createArray(structureName, fields, session,connection);
         } catch (java.sql.SQLException exception) {
-            throw DatabaseException.sqlException(exception, session);
+            throw DatabaseException.sqlException(exception, session, false);
         } finally {
             if (reconnected) {
                 ((DatabaseAccessor)session.getAccessor()).decrementCallCount();
@@ -156,7 +156,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
         try {
             objects = (Object[])fieldValue.getArray();
         } catch (java.sql.SQLException ex) {
-            throw DatabaseException.sqlException(ex, session);
+            throw DatabaseException.sqlException(ex, session, false);
         }
         if (objects == null) {
             return null;
@@ -300,7 +300,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
                         
             structure = session.getPlatform().createStruct(getStructureName(), fields, session, connection);
         } catch (java.sql.SQLException exception) {
-            throw DatabaseException.sqlException(exception, session);
+            throw DatabaseException.sqlException(exception, session, false);
         } finally {
             if (reconnected) {
                 ((DatabaseAccessor)session.getAccessor()).decrementCallCount();    

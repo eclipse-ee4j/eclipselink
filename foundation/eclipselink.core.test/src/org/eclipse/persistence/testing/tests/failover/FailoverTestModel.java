@@ -27,6 +27,7 @@ public class FailoverTestModel extends TestModel {
         public void addTests() {
             addTest(new SingleConnectionFailureTest());
             addTest(new ConnectionPoolFailureTest());
+            addTest(new FullDatabaseFailureTest());
         }
 
 }

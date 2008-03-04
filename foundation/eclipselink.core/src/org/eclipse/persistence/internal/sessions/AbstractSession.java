@@ -1090,30 +1090,46 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                     //was the failure communication based?  (ie timeout)
                     if (databaseException.isCommunicationFailure()){
                         this.log(SessionLog.INFO, "communication_failure_attempting_query_retry", (Object[])null, null);
+                        
+                        //attempt to reconnect connection:
+                        if (this.isDatabaseSession()){
+                        	while (retryCount < getLogin().getQueryRetryAttemptCount()){
+	                            try{
+                                    //if database session then re-establish connection
+                                    //else the session will just get a new connection from the pool
+                                    databaseException.getAccessor().reestablishConnection(this);
+	                                break;
+	                            }catch (DatabaseException ex){
+	                            	//failed to get connection because of database error.
+	                            	++retryCount;
+	                            	try{
+	                                    Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());  //lets give the failover time to recover.
+	                                    this.log(SessionLog.INFO, "communication_failure_attempting_query_retry", (Object[])null, null);
+	                                }catch (InterruptedException intEx){
+	                                    break;
+	                                }
+	                            }
+                        	}
+                        }
                         //retry
-                        while (retryCount < getLogin().getQueryRetryAttemptCount()){
+                        if (retryCount <= getLogin().getQueryRetryAttemptCount()){
                             try{
                                 // attempt to reconnect for a certain number of times.
                                 // servers may take some time to recover.
                                 ++retryCount;
                                 try{
-                                    if (this.isDatabaseSession()){
-                                        //if database session then re-establish connection
-                                        //else the session will just get a new connection from the pool
-                                        databaseException.getAccessor().reestablishConnection(this);
-                                    }
-                                    try{
-                                        //passing the retry count will prevent a runaway retry where
-                                        // we can acquire connections but are unable to execute any queries
-                                        return executeQuery(query, row, retryCount);
-                                    }catch (DatabaseException ex){
-                                        //replace original exception with last exception thrown
-                                        //this exception could be a data based exception as apposed
-                                        //to a connection exception that needs to go back to the customer.
-                                        exception = ex;
-                                    }
+                                    //passing the retry count will prevent a runaway retry where
+                                    // we can acquire connections but are unable to execute any queries
+                                	if (retryCount > 1){
+                                		//we are retrying more than once lets wait to give connection time to restart
+                                        Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());  //lets give the failover time to recover.
+                                	}
+                                    return executeQuery(query, row, retryCount);
                                 }catch (DatabaseException ex){
-                                    Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());  //lets give the failover time to recover.
+                                    //replace original exception with last exception thrown
+                                    //this exception could be a data based exception as apposed
+                                    //to a connection exception that needs to go back to the customer.
+                                    exception = ex;
                                 }
                             }catch (InterruptedException ex){
                                 //Ignore interrupted exception.

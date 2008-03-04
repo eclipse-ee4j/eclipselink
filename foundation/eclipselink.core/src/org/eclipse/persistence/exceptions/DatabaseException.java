@@ -290,16 +290,21 @@ public class DatabaseException extends EclipseLinkException {
     }
 
     public static DatabaseException sqlException(SQLException exception) {
+    	return sqlException(exception, false);
+    }
+
+    public static DatabaseException sqlException(SQLException exception, boolean commError) {
         DatabaseException databaseException = new DatabaseException(exception);
         databaseException.setErrorCode(SQL_EXCEPTION);
+        databaseException.setCommunicationFailure(commError);
         return databaseException;
     }
 
-    public static DatabaseException sqlException(SQLException exception, AbstractSession session) {
+    public static DatabaseException sqlException(SQLException exception, AbstractSession session, boolean commError) {
         if (session == null) {
-            return sqlException(exception);
+            return sqlException(exception, commError);
         } else {
-            return sqlException(exception, session.getAccessor(), session, false);
+            return sqlException(exception, session.getAccessor(), session, commError);
         }
     }
     

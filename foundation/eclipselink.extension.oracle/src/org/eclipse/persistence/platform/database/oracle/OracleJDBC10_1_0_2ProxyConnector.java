@@ -75,7 +75,7 @@ public class OracleJDBC10_1_0_2ProxyConnector extends JNDIConnector {
             try {
                 ((OracleConnection)conn).openProxySession(proxytype_int, properties);
             } catch (SQLException exception) {
-                throw DatabaseException.sqlException(exception);
+                throw DatabaseException.sqlException(exception, true);
             } catch (ClassCastException classCastException) {
                 throw ValidationException.oracleJDBC10_1_0_2ProxyConnectorRequiresOracleConnection();
             } catch (NoSuchMethodError noSuchMethodError) {

@@ -15,18 +15,22 @@
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class EmulatedDriver implements Driver {
 
     protected Map rows;
+    
+    public static boolean fullFailure = false;
 
     public EmulatedDriver(){
         this.rows = new HashMap();
     }
 
-    public Connection connect(String url, java.util.Properties info) {
+    public Connection connect(String url, java.util.Properties info) throws SQLException{
+    	if (fullFailure) throw new SQLException("Connections unavailable");
         return new EmulatedConnection(this);
     }
 

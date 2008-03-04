@@ -80,7 +80,7 @@ public class OracleOCIProxyConnector extends JNDIConnector {
                 }
                 return oracleOCIConnectionPool.getProxyConnection(proxytype, properties);
             } catch (SQLException exception) {
-                throw DatabaseException.sqlException(exception);
+                throw DatabaseException.sqlException(exception, true);
             } catch (ClassCastException classCastException) {
                 throw ValidationException.oracleOCIProxyConnectorRequiresOracleOCIConnectionPool();
             }
