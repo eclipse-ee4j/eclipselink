@@ -97,16 +97,31 @@ public class DefaultConnector implements Connector {
             }
         }
 
-        try {
-        	// A return of null indicates wrong type of driver, an SQLException means connection problems 
-        	Connection directConnection = this.directConnect(properties);
-        	// If this connection succeeded where the previous DriverManager connection failed - save state
-        	if(null != directConnection && null != driverManagerException) {
-        		connectDirectly = true;
-        	}
-       		return directConnection;
-        } catch (DatabaseException directConnectException) {
-            if(driverManagerException != null) {
+        // Save secondary exception state and don't clear original exception
+		boolean wrongDriverExceptionOccurred = false;
+		try {
+			// A return of null indicates wrong type of driver, an SQLException means connection problems
+			Connection directConnection = this.directConnect(properties);
+			if (null == directConnection) {
+			    // This connection failed specifically because of a wrong or unknown driver
+			    if (null != driverManagerException) {
+					wrongDriverExceptionOccurred = true;
+					// Nest root exception
+					throw DatabaseException.unableToAcquireConnectionFromDriverException(driverManagerException,
+							getDriverClassName(), properties.getProperty("user"), getDatabaseURL());
+				} else {
+					throw DatabaseException.unableToAcquireConnectionFromDriverException(
+							getDriverClassName(), driverClass.getCanonicalName(), getDatabaseURL());
+				}
+			} else {
+				if (null != driverManagerException) {
+					// If this connection succeeded where the previous DriverManager connection failed - save state and continue
+					connectDirectly = true;
+				}
+			}
+			return directConnection;
+		} catch (DatabaseException directConnectException) {
+			if (driverManagerException != null && !wrongDriverExceptionOccurred) {
                 throw DatabaseException.sqlException(driverManagerException, (org.eclipse.persistence.internal.sessions.AbstractSession) session, true);
             } else {
                 throw directConnectException;

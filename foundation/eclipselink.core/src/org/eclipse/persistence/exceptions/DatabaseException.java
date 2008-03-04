@@ -23,7 +23,7 @@ import org.eclipse.persistence.sessions.Record;
 
 /**
  * <P><B>Purpose</B>:
- * Wrapper for any database exception that occurred through TopLink.
+ * Wrapper for any database exception that occurred through EclipseLink.
  */
 public class DatabaseException extends EclipseLinkException {
     protected SQLException exception;
@@ -48,10 +48,11 @@ public class DatabaseException extends EclipseLinkException {
     public static final int TRANSACTION_MANAGER_NOT_SET_FOR_JTS_DRIVER = 4018;
     public static final int ERROR_RETRIEVE_DB_METADATA_THROUGH_JDBC_CONNECTION = 4019;
     public static final int COULD_NOT_FIND_MATCHED_DATABASE_FIELD_FOR_SPECIFIED_OPTOMISTICLOCKING_FIELDS = 4020;
+    public static final int UNABLE_TO_ACQUIRE_CONNECTION_FROM_DRIVER = 4021;    
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by the TopLink code.
+     * EclipseLink exceptions should only be thrown by the EclipseLink code.
      */
     protected DatabaseException(String message) {
         super(message);
@@ -59,7 +60,7 @@ public class DatabaseException extends EclipseLinkException {
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by the TopLink code.
+     * EclipseLink exceptions should only be thrown by the EclipseLink code.
      */
     protected DatabaseException(SQLException exception) {
         super(exception.toString(), exception);
@@ -214,7 +215,7 @@ public class DatabaseException extends EclipseLinkException {
     /**
      *    PUBLIC:
      *    This method returns the databaseQuery.
-     *    DatabaseQuery is a visible class to the TopLink user.
+     *    DatabaseQuery is a visible class to the EclipseLink user.
      *    Users create an appropriate query by creating an instance
      *    of a concrete subclasses of DatabaseQuery.
      */
@@ -240,7 +241,7 @@ public class DatabaseException extends EclipseLinkException {
 
     /**
      * PUBLIC:
-     * Return the query argements used in the original query when exception is thrown
+     * Return the query arguments used in the original query when exception is thrown
      */
     public Record getQueryArgumentsRecord() {
         return queryArguments;
@@ -273,7 +274,7 @@ public class DatabaseException extends EclipseLinkException {
     /**
      *    PUBLIC:
      *    This method set the databaseQuery.
-     *    DatabaseQuery is a visible class to the TopLink user.
+     *    DatabaseQuery is a visible class to the EclipseLink user.
      *    Users create an appropriate query by creating an instance
      *    of a concrete subclasses of DatabaseQuery.
      */
@@ -283,7 +284,7 @@ public class DatabaseException extends EclipseLinkException {
 
     /**
      * PUBLIC:
-     * Set the query argements used in the original query when exception is thrown
+     * Set the query arguments used in the original query when exception is thrown
      */
     public void setQueryArguments(AbstractRecord queryArguments) {
         this.queryArguments = queryArguments;
@@ -351,6 +352,38 @@ public class DatabaseException extends EclipseLinkException {
         return databaseException;
     }
 
+    /**
+	 * The connection returned from this driver was null, the driver may be
+	 * missing(using the default) or the wrong one for the database.
+	 * 
+	 * @param driver
+	 * @return
+	 */
+	public static DatabaseException unableToAcquireConnectionFromDriverException(
+			String driver, String user, String url) {
+		Object[] args = { driver, user, url };
+		DatabaseException databaseException = new DatabaseException(
+				ExceptionMessageGenerator.buildMessage(DatabaseException.class,
+						UNABLE_TO_ACQUIRE_CONNECTION_FROM_DRIVER, args));
+		databaseException.setErrorCode(UNABLE_TO_ACQUIRE_CONNECTION_FROM_DRIVER);
+		return databaseException;
+	}
+
+	/**
+	 * The connection returned from this driver was null, the driver may be
+	 * missing(using the default) or the wrong one for the database.
+	 * 
+	 * @param exception
+	 * @param driver
+	 * @return
+	 */
+	public static DatabaseException unableToAcquireConnectionFromDriverException(SQLException exception, 
+			String driver, String user, String url) {
+		DatabaseException databaseException = unableToAcquireConnectionFromDriverException(driver, user, url);
+		databaseException.setInternalException(exception);
+		return databaseException;
+	}
+    
 	public boolean isCommunicationFailure() {
 		return isCommunicationFailure;
 	}

@@ -564,7 +564,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     /**
      * PUBLIC:
      * Connect to the database using the predefined login.
-     * Durring connection attempt to auto detect the required database platform.
+     * During connection, attempt to auto detect the required database platform.
      * This method can be used in systems where for ease of use developers have
      * EclipseLink autodetect the platform.
      * To be safe, however, the platform should be configured directly.
@@ -582,7 +582,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         }catch (SQLException ex){
             DatabaseException dbEx =  DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
             // Typically exception would occur if user did not provide correct connection
-            // parameters. The root cause of exception should be propogated up
+            // parameters. The root cause of exception should be propagated up
             dbEx.initCause(ex);
             throw dbEx;
         }finally{
@@ -592,7 +592,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 }catch (SQLException ex){
                     DatabaseException dbEx =  DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
                     // Typically exception would occur if user did not provide correct connection
-                    // parameters. The root cause of exception should be propogated up
+                    // parameters. The root cause of exception should be propagated up
                     dbEx.initCause(ex);
                     throw dbEx;
                 }
@@ -743,7 +743,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     /**
      * PUBLIC:
      * Write all of the objects and all of their privately owned parts in the database.
-     * The objects will be commited through a single transaction.
+     * The objects will be committed through a single transaction.
      *
      * @exception DatabaseException if an error occurs on the database,
      * these include constraint violations, security violations and general database errors.
@@ -759,7 +759,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     /**
      * PUBLIC:
      * Write all of the objects and all of their privately owned parts in the database.
-     * The objects will be commited through a single transaction.
+     * The objects will be committed through a single transaction.
      *
      * @exception DatabaseException if an error occurs on the database,
      * these include constraint violations, security violations and general database errors.
