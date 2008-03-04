@@ -6,7 +6,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 
 import java.io.FileInputStream;
@@ -21,6 +21,7 @@ import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.SchemaResolver;
 import org.eclipse.persistence.testing.sdo.helper.xsdhelper.XSDHelperTestCases;
+import org.xml.sax.InputSource;
 
 public class ComplexImportsAndIncludesTestCases extends XSDHelperTestCases {
     public ComplexImportsAndIncludesTestCases(String name) {
@@ -32,14 +33,14 @@ public class ComplexImportsAndIncludesTestCases extends XSDHelperTestCases {
     }
 
     public String getSchemaToDefine() {
-		return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/complexincludesandimports/xsdfile6.txt";
+        return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/complexincludesandimports/xsdfile6.txt";
     }
 
     public void testDefineTest() throws Exception {
         InputStream is = new FileInputStream(getSchemaToDefine());
         StreamSource ss = new StreamSource(is);
         ss.setSystemId("includeDeptAndEmp.xsd");
-        List types = ((SDOXSDHelper)xsdHelper).define(ss, new TestSchemaResolver());
+        List types = ((SDOXSDHelper) xsdHelper).define(ss, new TestSchemaResolver());
 
         log("\nActual:\n");
         log(types);
@@ -57,7 +58,7 @@ public class ComplexImportsAndIncludesTestCases extends XSDHelperTestCases {
 
             java.util.Enumeration keyEnum = fileProps.keys();
             while (keyEnum.hasMoreElements()) {
-                String s = (String)keyEnum.nextElement();
+                String s = (String) keyEnum.nextElement();
                 fileIndex.put(fileProps.get(s), s);
             }
         }
@@ -81,7 +82,7 @@ public class ComplexImportsAndIncludesTestCases extends XSDHelperTestCases {
 
                 String destSysId = destURI.toString();
 
-                String s = (String)this.fileIndex.get(destSysId);
+                String s = (String) this.fileIndex.get(destSysId);
                 if (s == null) {
                     throw new IllegalArgumentException("cannot find " + destSysId);
                 }
@@ -94,6 +95,18 @@ public class ComplexImportsAndIncludesTestCases extends XSDHelperTestCases {
             } catch (Exception e) {
                 return null;
             }
+        }
+
+        /**
+         * Satisfy EntityResolver interface implementation.
+         * Allow resolution of external entities.
+         * 
+         * @param publicId
+         * @param systemId
+         * @return null
+         */
+        public InputSource resolveEntity(String publicId, String systemId) {
+            return null;
         }
     }
 }

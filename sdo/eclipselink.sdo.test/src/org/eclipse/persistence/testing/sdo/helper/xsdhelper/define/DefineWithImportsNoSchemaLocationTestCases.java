@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 
 import commonj.sdo.Type;
@@ -28,22 +28,23 @@ import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.SchemaResolver;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.xml.sax.InputSource;
 
-public class DefineWithImportsNoSchemaLocationTestCases  extends XSDHelperDefineTestCases {
- 
+public class DefineWithImportsNoSchemaLocationTestCases extends XSDHelperDefineTestCases {
+
     public DefineWithImportsNoSchemaLocationTestCases(String name) {
         super(name);
     }
-    
+
     public static void main(String[] args) {
         TestRunner.run(DefineWithImportsNoSchemaLocationTestCases.class);
     }
-    
+
     public void testDefine() {
-        
+
         InputStream is = getSchemaInputStream(getSchemaToDefine());
-                
-        List types = ((SDOXSDHelper)xsdHelper).define(new StreamSource(is), new TestResolver(getSchemaLocation()));        
+
+        List types = ((SDOXSDHelper) xsdHelper).define(new StreamSource(is), new TestResolver(getSchemaLocation()));
         log("\nExpected:\n");
         List controlTypes = getControlTypes();
         log(controlTypes);
@@ -53,19 +54,18 @@ public class DefineWithImportsNoSchemaLocationTestCases  extends XSDHelperDefine
 
         compare(getControlTypes(), types);
     }
-    
-    
+
     public String getSchemaToDefine() {
         return "org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/ImportsWithNamespacesNoSchemaLocations.xsd";
     }
 
-    protected String getSchemaLocation() {     
+    protected String getSchemaLocation() {
         return FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/";
     }
 
     public List<Type> getControlTypes() {
         List<Type> types = new ArrayList<Type>();
-        
+
         String uri = "my.uri";
         String uri2 = "my.uri2";
         String uri3 = "my.uri3";
@@ -79,7 +79,7 @@ public class DefineWithImportsNoSchemaLocationTestCases  extends XSDHelperDefine
         /****ADDRESS TYPE*****/
 
         //ADDRESS TYPE
-        SDOType USaddrType = new SDOType(uri2, "USAddress");        
+        SDOType USaddrType = new SDOType(uri2, "USAddress");
         USaddrType.setXsd(true);
         USaddrType.setXsdLocalName("USAddress");
         USaddrType.setDataType(false);
@@ -174,31 +174,43 @@ public class DefineWithImportsNoSchemaLocationTestCases  extends XSDHelperDefine
         types.add(quantityType);
         return types;
     }
-    
-      static class TestResolver implements SchemaResolver {
+
+    static class TestResolver implements SchemaResolver {
         String schemaLocationBase;
-        
+
         TestResolver(String schemaLocation) {
-          this.schemaLocationBase = schemaLocation;
+            this.schemaLocationBase = schemaLocation;
         }
 
         public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
             System.out.println(" **** resolving schema  **** " + namespace);
-            try{
-                if (namespace.equals("my.uri3")) {                              
+            try {
+                if (namespace.equals("my.uri3")) {
                     URL schemaUrl = new URI(schemaLocationBase).resolve("Quantity.xsd").toURL();
-                    return new StreamSource(schemaUrl.toExternalForm());                    
-                }else if (namespace.equals("my.uri2")) {                                                  
+                    return new StreamSource(schemaUrl.toExternalForm());
+                } else if (namespace.equals("my.uri2")) {
                     URL schemaUrl = new URI(schemaLocationBase).resolve("Address.xsd").toURL();
                     return new StreamSource(schemaUrl.toExternalForm());
-                }else if (namespace.equals("my.uri4")) {                                                  
+                } else if (namespace.equals("my.uri4")) {
                     URL schemaUrl = new URI(schemaLocationBase).resolve("SKU.xsd").toURL();
                     return new StreamSource(schemaUrl.toExternalForm());
-                }                
+                }
             } catch (Exception e) {
-                e.printStackTrace();                
+                e.printStackTrace();
                 return null;
             }
+            return null;
+        }
+
+        /**
+         * Satisfy EntityResolver interface implementation.
+         * Allow resolution of external entities.
+         * 
+         * @param publicId
+         * @param systemId
+         * @return null
+         */
+        public InputSource resolveEntity(String publicId, String systemId) {
             return null;
         }
     }

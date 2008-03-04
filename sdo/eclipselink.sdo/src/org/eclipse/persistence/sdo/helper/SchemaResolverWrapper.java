@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper;
 
 import java.util.ArrayList;
@@ -29,20 +29,20 @@ import javax.xml.transform.Source;
  * @see org.eclipse.persistence.sdo.helper.DefaultSchemaResolver
  */
 public class SchemaResolverWrapper {
-	private SchemaResolver schemaResolver;
-	private List<String> systemIdList;
-	
-	/**
-	 * This constructor sets schemaResolver to the given value.
-	 * 
-	 * @param resolver the SchemaResolver implementation that will be used to resolve
-	 * imports/includes from a give source schema.
-	 */
-	public SchemaResolverWrapper(SchemaResolver resolver) {
-		schemaResolver = resolver;
-		systemIdList = new ArrayList<String>();
-	}
-	
+    private SchemaResolver schemaResolver;
+    private List<String> systemIdList;
+
+    /**
+     * This constructor sets schemaResolver to the given value.
+     * 
+     * @param resolver the SchemaResolver implementation that will be used to resolve
+     * imports/includes from a give source schema.
+     */
+    public SchemaResolverWrapper(SchemaResolver resolver) {
+        schemaResolver = resolver;
+        systemIdList = new ArrayList<String>();
+    }
+
     /**
      * Allow the SchemaResolver implementation to attempt to return the referenced Schema based on 
      * given source schema, namespace and schemaLocation values from an import or include.  If the
@@ -55,19 +55,19 @@ public class SchemaResolverWrapper {
      * schema should be skipped
      */
     public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
-    	// Add sourceXSD's SystemId to the processed schema list to avoid re-processing
-    	addSchemaToList(sourceXSD.getSystemId());
+        // Add sourceXSD's SystemId to the processed schema list to avoid re-processing
+        addSchemaToList(sourceXSD.getSystemId());
 
-    	Source schemaSource = schemaResolver.resolveSchema(sourceXSD, namespace, schemaLocation);
-    	if (schemaSource != null) {
-	        String sysId = schemaSource.getSystemId();
-	        if (shouldProcessSchema(sysId)) {
-	            return schemaSource;
-	        }
-    	}
+        Source schemaSource = schemaResolver.resolveSchema(sourceXSD, namespace, schemaLocation);
+        if (schemaSource != null) {
+            String sysId = schemaSource.getSystemId();
+            if (shouldProcessSchema(sysId)) {
+                return schemaSource;
+            }
+        }
         return null;
     }
-    
+
     /**
      * Indicates if the schema represented by the given systemId (schema URL string) should be processed.
      * If systemId exists in the list, it should not be processed; otherwise, it will be added to the 
@@ -78,12 +78,12 @@ public class SchemaResolverWrapper {
      * false otherwise 
      */
     private boolean shouldProcessSchema(String systemId) {
-    	if (systemId == null) {
-    		return true;
-    	}
-    	return addSchemaToList(systemId);
+        if (systemId == null) {
+            return true;
+        }
+        return addSchemaToList(systemId);
     }
-    
+
     /**
      * Add the given SystemId to the list of processed schemas, if it isn't already in the list.  
      * 
@@ -92,10 +92,19 @@ public class SchemaResolverWrapper {
      * false if the id was not added to the list or systemId is null.
      */
     private boolean addSchemaToList(String systemId) {
-    	if (systemId == null || systemIdList.contains(systemId)) {
-    		return false;
-    	}
-    	systemIdList.add(systemId);
-    	return true;
+        if (systemId == null || systemIdList.contains(systemId)) {
+            return false;
+        }
+        systemIdList.add(systemId);
+        return true;
+    }
+
+    /**
+     * Return the SchemaResolver for this wrapper instance.
+     * 
+     * @return
+     */
+    public SchemaResolver getSchemaResolver() {
+        return schemaResolver;
     }
 }

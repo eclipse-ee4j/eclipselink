@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper;
 
 import java.net.URI;
@@ -17,6 +17,7 @@ import java.net.URL;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.xml.sax.InputSource;
 
 /**
  * <p><b>Purpose</b>: Default implementation of the org.eclipse.persistence.sdo.helper.SchemaResolver interface
@@ -47,17 +48,29 @@ public class DefaultSchemaResolver implements SchemaResolver {
     public Source resolveSchema(Source sourceXSD, String namespace, String schemaLocation) {
         try {
             URL schemaUrl = null;
-	        if (getBaseSchemaLocation() != null) {
-            	// Attempt to resolve the schema location against the base location
+            if (getBaseSchemaLocation() != null) {
+                // Attempt to resolve the schema location against the base location
                 schemaUrl = new URI(getBaseSchemaLocation()).resolve(schemaLocation).toURL();
-	        } else {
-            	schemaUrl = new URL(schemaLocation);
-	        }
-	        return new StreamSource(schemaUrl.toExternalForm());
-        } catch (Exception e) {        
-            AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "sdo_error_processing_referenced_schema", new Object[] {e.getClass().getName(), namespace, schemaLocation });
+            } else {
+                schemaUrl = new URL(schemaLocation);
+            }
+            return new StreamSource(schemaUrl.toExternalForm());
+        } catch (Exception e) {
+            AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "sdo_error_processing_referenced_schema", new Object[] { e.getClass().getName(), namespace, schemaLocation });
             AbstractSessionLog.getLog().logThrowable(AbstractSessionLog.FINEST, e);
         }
+        return null;
+    }
+
+    /**
+     * Satisfy EntityResolver interface implementation.
+     * Allow resolution of external entities.
+     * 
+     * @param publicId
+     * @param systemId
+     * @return null
+     */
+    public InputSource resolveEntity(String publicId, String systemId) {
         return null;
     }
 

@@ -9,21 +9,24 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.sdo.helper;
 
 import javax.xml.transform.Source;
+
+import org.xml.sax.EntityResolver;
 
 /**
  * <p><b>Purpose</b>: Interface that can be optionally implemented to resolve imported and included schemas.
  * <p><b>Responsibilities</b>:<ul>
  * <li> Given the source schema and namespace and schemaLocation values from an import or include return the referenced Schema
  * <li> Used by XSDHelper define methods and ClassGenerator generate methods
+ * <li> Given the publicId and systemId of an external entity, return the file associated with that entity
  * </ul>
  *
  * @see org.eclipse.persistence.sdo.helper.DefaultSchemaResolver
  */
-public interface SchemaResolver {
+public interface SchemaResolver extends EntityResolver {
 
     /**
      * Given the source schema and namespace and schemaLocation values from an import or include return the referenced Schema
