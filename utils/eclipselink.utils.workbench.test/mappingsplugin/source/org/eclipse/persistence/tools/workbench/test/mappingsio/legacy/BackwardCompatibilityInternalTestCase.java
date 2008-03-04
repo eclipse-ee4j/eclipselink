@@ -20,6 +20,7 @@ import org.eclipse.persistence.tools.workbench.test.models.projects.ComplexMappi
 import org.eclipse.persistence.tools.workbench.test.models.projects.InsuranceProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.LegacyEmployeeProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.LegacyPhoneCompanyProject;
+import org.eclipse.persistence.tools.workbench.test.models.projects.LegacyQueryProject50;
 import org.eclipse.persistence.tools.workbench.test.models.projects.LegacySimpleContactProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.ReadOnlyProject;
 import org.eclipse.persistence.tools.workbench.test.models.projects.SimpleAggregateProject;
@@ -195,9 +196,8 @@ public abstract class BackwardCompatibilityInternalTestCase extends BackwardComp
 	public void testSimpleContact() throws Exception {
 		this.compareToOldProject(this.buildSimpleContactProject());
 	}
-	
+		
 	protected MWRelationalProject buildSimpleContactProject() throws Exception {
 		return new LegacySimpleContactProject().getProject();
 	}
-		
 }

@@ -34,7 +34,6 @@ public class AllSCReadTests
 
 		suite.addTest(DatabaseSessionTests.suite());
 		suite.addTest(ModelLoadTests.suite());
-		suite.addTest(SessionsXml904Test.suite());
 		suite.addTest(LoadTopLinkSessionsTest.suite());
 		suite.addTest(SequenceTest.suite());
 

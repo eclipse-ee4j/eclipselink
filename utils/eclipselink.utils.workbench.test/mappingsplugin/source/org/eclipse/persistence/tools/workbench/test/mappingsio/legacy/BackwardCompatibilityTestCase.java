@@ -203,6 +203,7 @@ public abstract class BackwardCompatibilityTestCase
 		renamer.run();
 		// I don't understand: #run() is public, but #cleanup() is protected;
 		// and you can't call #run() without calling #cleanup() or the log doesn't get closed...
+		
 		ClassTools.invokeMethod(renamer, "cleanup");
 	
 		return destinationDirectory;
@@ -214,9 +215,8 @@ public abstract class BackwardCompatibilityTestCase
 	 */
 	protected File renameDirectoryTree(File sourceDirectory, String version) throws URISyntaxException {
 		// first rename the tree with the standard properties file...
-		File tempDirectory = this.renameDirectoryTree("packageRename.properties", sourceDirectory, sourceDirectory.getName() + " " + version + " (temp renamed)");
-		// ...then rename the output from that with the internal properties file
-		return this.renameDirectoryTree("packageRename-internal.properties", tempDirectory, sourceDirectory.getName() + " " + version + " (renamed)");
+		return this.renameDirectoryTree("eclipselinkPackageRename.properties", sourceDirectory, sourceDirectory.getName() + " " + version + " (temp renamed)");
+		
 	}
 
 	protected Diff diff(Object object1, Object object2) {

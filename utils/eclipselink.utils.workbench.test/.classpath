@@ -16,6 +16,6 @@
 	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/run/connector.jar"/>
 	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/eclipselink.jar" sourcepath="/eclipselink.utils.workbench.lib/source/eclipselink-src.zip"/>
 	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/xercesImpl.jar"/>
-	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/packageRename.jar"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/packageRename_g.jar"/>
 	<classpathentry kind="output" path="class"/>
 </classpath>

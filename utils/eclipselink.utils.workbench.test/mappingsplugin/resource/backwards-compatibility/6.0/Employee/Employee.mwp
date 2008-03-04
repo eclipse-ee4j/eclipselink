@@ -48,22 +48,22 @@
       <ejb-persistence-type>No EJB</ejb-persistence-type>
    </ejb-policy>
    <table-repository>
-      <platform-name>Oracle</platform-name>
+      <platform-name>MySQL4</platform-name>
       <login-infos>
          <login-info>
-            <name>Oracle</name>
-            <driver-class>oracle.jdbc.OracleDriver</driver-class>
-            <url>jdbc:oracle:thin:@tlserver12-2k.ca.oracle.com:1521:RALEIGH</url>
+            <name>MySQL</name>
+            <driver-class>com.mysql.jdbc.Driver</driver-class>
+            <url>jdbc:mysql://tlsvrdb4.ca.oracle.com/COREDEV1</url>
             <user-name>mwdev1</user-name>
             <password>BB742416276274A46959A54867978929</password>
             <save-password>true</save-password>
          </login-info>
       </login-infos>
       <deployment-login-spec-handle>
-         <login-spec-name>Oracle</login-spec-name>
+         <login-spec-name>MySQL</login-spec-name>
       </deployment-login-spec-handle>
       <development-login-spec-handle>
-         <login-spec-name>Oracle</login-spec-name>
+         <login-spec-name>MySQL</login-spec-name>
       </development-login-spec-handle>
       <table-names>
          <name>ADDRESS</name>
