@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.complexaggregate.Client</name>
+   <class-handle>
+      <type-name>test.oracle.models.complexaggregate.Client</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>Client</descriptor-alias>
+      <read-only>true</read-only>
+      <refresh-cache-policy/>
+      <caching-policy>
+         <cache-size>100</cache-size>
+         <cache-type>Full</cache-type>
+         <existence-checking>Assume non-existence</existence-checking>
+      </caching-policy>
+      <query-manager type="relational">
+         <query-list>
+            <query type="relational-read-object">
+               <name>query1</name>
+               <parameter-list>
+                  <query-parameter>
+                     <name>arg</name>
+                     <type-handle>
+                        <type-name>java.lang.String</type-name>
+                     </type-handle>
+                  </query-parameter>
+               </parameter-list>
+               <cache-usage>Check Cache by Primary Key</cache-usage>
+               <relational-options>
+                  <format type="ejb-ql">
+                     <query-string>foo</query-string>
+                  </format>
+                  <bind-all-parameters>false</bind-all-parameters>
+                  <cache-statement>false</cache-statement>
+               </relational-options>
+            </query>
+            <query type="relational-read-all">
+               <name>query2</name>
+               <parameter-list>
+                  <query-parameter>
+                     <name>arg</name>
+                     <type-handle>
+                        <type-name>org.eclipse.persistence.sessions.DatabaseLogin</type-name>
+                     </type-handle>
+                  </query-parameter>
+                  <query-parameter>
+                     <name>arg2</name>
+                     <type-handle>
+                        <type-name>java.lang.String</type-name>
+                     </type-handle>
+                  </query-parameter>
+               </parameter-list>
+               <lock-mode>Acquire Locks</lock-mode>
+               <refresh-identity-map-result>true</refresh-identity-map-result>
+               <refresh-remote-identity-map-result>true</refresh-remote-identity-map-result>
+               <cache-usage>Do Not Check Cache</cache-usage>
+               <relational-options>
+                  <format type="ejb-ql">
+                     <query-string>2</query-string>
+                  </format>
+                  <bind-all-parameters>true</bind-all-parameters>
+                  <cache-statement>true</cache-statement>
+               </relational-options>
+            </query>
+            <query type="relational-read-object">
+               <name>query3</name>
+               <maintain-cache>false</maintain-cache>
+               <cache-usage>Check Cache by Exact Primary Key</cache-usage>
+               <relational-options>
+                  <format type="ejb-ql">
+                     <query-string>3</query-string>
+                  </format>
+                  <bind-all-parameters>true</bind-all-parameters>
+                  <cache-statement>true</cache-statement>
+               </relational-options>
+            </query>
+            <query type="relational-read-all">
+               <name>query4</name>
+               <lock-mode>Acquire Locks</lock-mode>
+               <refresh-identity-map-result>true</refresh-identity-map-result>
+               <refresh-remote-identity-map-result>true</refresh-remote-identity-map-result>
+               <cache-usage>Check Cache Then Database</cache-usage>
+               <relational-options>
+                  <format type="sql">
+                     <query-string>yo</query-string>
+                  </format>
+                  <bind-all-parameters>true</bind-all-parameters>
+                  <cache-statement>false</cache-statement>
+               </relational-options>
+            </query>
+            <query type="relational-read-all">
+               <name>query5</name>
+               <cache-usage>Check Cache Only</cache-usage>
+               <relational-options>
+                  <format type="ejb-ql">
+                     <query-string>hi</query-string>
+                  </format>
+                  <bind-all-parameters>true</bind-all-parameters>
+                  <cache-statement>false</cache-statement>
+               </relational-options>
+            </query>
+            <query type="relational-read-object">
+               <name>query6</name>
+               <lock-mode>Acquire Locks NO WAIT</lock-mode>
+               <maintain-cache>false</maintain-cache>
+               <refresh-identity-map-result>true</refresh-identity-map-result>
+               <refresh-remote-identity-map-result>true</refresh-remote-identity-map-result>
+               <cache-usage>Conform Results in Unit of Work</cache-usage>
+               <relational-options>
+                  <format type="sql">
+                     <query-string>blah qwerty</query-string>
+                  </format>
+                  <bind-all-parameters>false</bind-all-parameters>
+                  <cache-statement>true</cache-statement>
+               </relational-options>
+            </query>
+         </query-list>
+         <insert-string>an insert</insert-string>
+         <update-string>an update</update-string>
+         <delete-string>an update</delete-string>
+         <read-object-string>read the object</read-object-string>
+         <read-all-string>read everything</read-all-string>
+      </query-manager>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>AGG_CLNT</column-table-name>
+               <column-name>CL_ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="aggregate">
+         <name>addressDescription</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexaggregate.Client</attribute-declaring-type-name>
+            <attribute-name>addressDescription</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.complexaggregate.AddressDescription</descriptor-name>
+         </reference-descriptor-handle>
+         <paths-to-fields>
+            <aggregate-path-to-field>
+               <field-description>EM_ADD_IN_REFERENCE_AGG_EMP_AGG_ADD</field-description>
+               <column-handle>
+                  <column-table-name>AGG_CLNT</column-table-name>
+                  <column-name>CL_ADD</column-name>
+               </column-handle>
+               <mapping-handles>
+                  <mapping-handle>
+                     <mapping-descriptor-name>test.oracle.models.complexaggregate.AddressDescription</mapping-descriptor-name>
+                     <mapping-name>address</mapping-name>
+                  </mapping-handle>
+               </mapping-handles>
+            </aggregate-path-to-field>
+            <aggregate-path-to-field>
+               <field-description>DIRECT</field-description>
+               <column-handle>
+                  <column-table-name>AGG_CLNT</column-table-name>
+                  <column-name>CL_EDATE</column-name>
+               </column-handle>
+               <mapping-handles>
+                  <mapping-handle>
+                     <mapping-descriptor-name>test.oracle.models.complexaggregate.AddressDescription</mapping-descriptor-name>
+                     <mapping-name>periodDescription</mapping-name>
+                  </mapping-handle>
+                  <mapping-handle>
+                     <mapping-descriptor-name>test.oracle.models.complexaggregate.PeriodDescription</mapping-descriptor-name>
+                     <mapping-name>period</mapping-name>
+                  </mapping-handle>
+                  <mapping-handle>
+                     <mapping-descriptor-name>test.oracle.models.complexaggregate.Period</mapping-descriptor-name>
+                     <mapping-name>endDate</mapping-name>
+                  </mapping-handle>
+               </mapping-handles>
+            </aggregate-path-to-field>
+            <aggregate-path-to-field>
+               <field-description>DIRECT</field-description>
+               <column-handle>
+                  <column-table-name>AGG_CLNT</column-table-name>
+                  <column-name>CL_SDATE</column-name>
+               </column-handle>
+               <mapping-handles>
+                  <mapping-handle>
+                     <mapping-descriptor-name>test.oracle.models.complexaggregate.AddressDescription</mapping-descriptor-name>
+                     <mapping-name>periodDescription</mapping-name>
+                  </mapping-handle>
+                  <mapping-handle>
+                     <mapping-descriptor-name>test.oracle.models.complexaggregate.PeriodDescription</mapping-descriptor-name>
+                     <mapping-name>period</mapping-name>
+                  </mapping-handle>
+                  <mapping-handle>
+                     <mapping-descriptor-name>test.oracle.models.complexaggregate.Period</mapping-descriptor-name>
+                     <mapping-name>startDate</mapping-name>
+                  </mapping-handle>
+               </mapping-handles>
+            </aggregate-path-to-field>
+            <aggregate-path-to-field>
+               <field-description>QUERY_KEY id</field-description>
+               <column-handle>
+                  <column-table-name>AGG_CLNT</column-table-name>
+                  <column-name>CL_ID</column-name>
+               </column-handle>
+            </aggregate-path-to-field>
+         </paths-to-fields>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>id</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexaggregate.Client</attribute-declaring-type-name>
+            <attribute-name>id</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>AGG_CLNT</column-table-name>
+            <column-name>CL_ID</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>name</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexaggregate.Client</attribute-declaring-type-name>
+            <attribute-name>name</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>AGG_CLNT</column-table-name>
+            <column-name>CL_NAME</column-name>
+         </column-handle>
+      </mapping>
+   </mappings>
+   <inheritance-policy type="relational">
+      <class-indicator-policy type="relational-field">
+         <indicator-type>
+            <type-handle>
+               <type-name>java.lang.String</type-name>
+            </type-handle>
+         </indicator-type>
+         <class-indicator-values>
+            <class-indicator-value>
+               <indicator>Client</indicator>
+               <descriptor-value-handle>
+                  <descriptor-name>test.oracle.models.complexaggregate.Client</descriptor-name>
+               </descriptor-value-handle>
+            </class-indicator-value>
+            <class-indicator-value>
+               <indicator>Eval</indicator>
+               <descriptor-value-handle>
+                  <descriptor-name>test.oracle.models.complexaggregate.EvaluationClient</descriptor-name>
+               </descriptor-value-handle>
+            </class-indicator-value>
+         </class-indicator-values>
+         <column-handle>
+            <column-table-name>AGG_CLNT</column-table-name>
+            <column-name>TYPE</column-name>
+         </column-handle>
+      </class-indicator-policy>
+      <read-subclasses-on-query>false</read-subclasses-on-query>
+   </inheritance-policy>
+   <primary-table-handle>
+      <table-name>AGG_CLNT</table-name>
+   </primary-table-handle>
+   <uses-sequencing>true</uses-sequencing>
+   <sequence-number-name>SEQ</sequence-number-name>
+   <sequence-number-table-handle>
+      <table-name>AGG_CLNT</table-name>
+   </sequence-number-table-handle>
+   <sequence-number-column-handle>
+      <column-table-name>AGG_CLNT</column-table-name>
+      <column-name>CL_ID</column-name>
+   </sequence-number-column-handle>
+</descriptor>

@@ -1,0 +1,1 @@
+<root><theString>theStringValue</theString>myTextNode<child>Child1</child><child>Child2</child><theInteger>15</theInteger><someChild>Child3</someChild><blah xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="childType">Child4</blah></root>

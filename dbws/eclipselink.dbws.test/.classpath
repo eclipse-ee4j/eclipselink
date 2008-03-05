@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.moxy"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.dbws"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.dbws.lib"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core.test"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri" xmlns="my.uri" elementFormDefault="qualified" sdoJava:package="com.example.myPackage" xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java">
+   <xsd:import namespace="commonj.sdo"/>
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:import namespace="commonj.sdo/xml"/>
+   <xsd:complexType name="Items">
+      <xsd:sequence>
+         <xsd:element name="item" type="Item" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="USAddress">
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="street" type="xsd:string"/>
+      <xsd:attribute name="city" type="xsd:string"/>
+      <xsd:attribute name="state" type="xsd:string"/>
+      <xsd:attribute name="zip" type="xsd:decimal"/>
+      <xsd:attribute name="country" type="xsd:string" default="US"/>
+   </xsd:complexType>
+   <xsd:complexType name="Item" sdoXML:name="ItemSDO">
+      <xsd:sequence>
+         <xsd:element name="porder" type="xsd:ID" minOccurs="0" sdoXML:string="true"/>
+      </xsd:sequence>
+      <xsd:attribute name="productName" type="xsd:string" sdoXML:readOnly="true"/>
+      <xsd:attribute name="quantity" type="xsd:anyType" sdoXML:dataType="sdo:Integer"/>
+      <xsd:attribute name="partNum" type="SKU" sdoXML:name="partNumSDO"/>
+      <xsd:attribute name="USPrice" type="xsd:decimal"/>
+      <xsd:attribute name="comment" type="xsd:string" sdoXML:aliasName="itemComment"/>
+      <xsd:attribute name="shipDate" type="xsd:date" sdoXML:string="true"/>
+   </xsd:complexType>
+   <xsd:complexType name="PurchaseOrder" mixed="true" sdoXML:aliasName="Purchase">
+      <xsd:choice maxOccurs="unbounded">
+         <xsd:element name="shipTo" type="USAddress" minOccurs="0" maxOccurs="unbounded" sdoXML:aliasName="mailingAddress"/>
+         <xsd:element name="billTo" type="USAddress" minOccurs="0" sdoXML:readOnly="true" sdoXML:name="billToSDO" sdoXML:many="false"/>
+         <xsd:element name="items" type="xsd:anyType" minOccurs="0" sdoXML:dataType="Items" sdoXML:many="false"/>
+         <xsd:element name="topPriorityItems" type="xsd:anyURI" minOccurs="0" sdoXML:propertyType="ItemSDO" sdoXML:many="false"/>
+      </xsd:choice>
+      <xsd:attribute name="comment" type="xsd:string"/>
+      <xsd:attribute name="orderDate" type="xsd:date" sdoXML:dataType="MyGregorianDate"/>
+   </xsd:complexType>
+   <xsd:element name="item" type="Item"/>
+   <xsd:element name="uSAddress" type="USAddress"/>
+   <xsd:element name="items" type="Items"/>
+   <xsd:element name="purchaseOrder" type="PurchaseOrder"/>
+   <xsd:simpleType name="MyGregorianDate" sdoXML:aliasName="TheGregorianDate" sdoJava:instanceClass="java.sql.Time"/>
+   <xsd:simpleType name="SKU" sdoXML:name="SKUSDO" sdoJava:instanceClass="com.example.myPackage.SKU"/>
+   <xsd:simpleType name="quantityType">
+      <xsd:restriction base="xsd:int"/>
+   </xsd:simpleType>
+</xsd:schema>

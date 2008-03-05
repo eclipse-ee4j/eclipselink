@@ -1,0 +1,22 @@
+<employee id="123">
+	<address>
+		<user-id>jane.doe</user-id>
+		<domain>example.com</domain>
+	</address>
+	<address>
+		<user-id>jdoe</user-id>
+		<domain>test.com</domain>
+	</address>
+	<address>
+		<street>1 Any Street</street>
+		<city>Ottawa</city>
+		<province>Ontario</province>
+		<postal-code>A1B 2C3</postal-code>
+	</address>
+	<address>
+		<street>2 Autre Rue.</street>
+		<city>Gatineau</city>
+		<province>Quebec</province>
+		<postal-code>X1Y 2Z3</postal-code>
+	</address>
+</employee>

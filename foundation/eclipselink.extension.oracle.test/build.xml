@@ -1,0 +1,118 @@
+<!-- This ant project includes the following tasks:
+        - all (default) : compiles all tests
+        - compile : compiles all tests
+        - package.structconverter : packages JPA structure converter model jar
+        - package.structconverter.tests : packages JPA structure converter test jar
+
+        The build file currently only compiles the tests, but does not define targets for running them as they are run through core and jpa.
+        It requires some configuration of the build.properties.
+    -->
+<project name="Eclipse Persistence Services" default="all" basedir=".">
+
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property file="${user.home}/build.properties"/>
+    <property file="./build.properties"/>
+
+    <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
+    <available file="${eclipselink.extension.oracle.test}/${eclipselink.jpa.trunk}" type="dir" property="is.trunk"/>
+
+    <!-- Configures paths for trunk checkout. -->
+    <target name="config.trunk" if="is.trunk">
+        <property name="eclipselink.jpa.dir" value="${eclipselink.extension.oracle.test}/${eclipselink.jpa.trunk}"/>
+        <property name="eclipselink.jpa.test.dir" value="${eclipselink.extension.oracle.test}/${eclipselink.jpa.test.trunk}"/>
+        <antcall target="config.compile-path" inheritRefs="true"/>
+    </target>
+
+    <!-- Configures paths for Eclipse project checkout. -->
+    <target name="config.flat" unless="is.trunk">
+        <property name="eclipselink.jpa.dir" value="${eclipselink.extension.oracle.test}/${eclipselink.jpa}"/>
+        <property name="eclipselink.jpa.test.dir" value="${eclipselink.extension.oracle.test}/${eclipselink.jpa.test}"/>
+        <antcall target="config.compile-path" inheritRefs="true"/>
+    </target>
+
+    <!-- Classpath used for compiling tests. -->
+    <target name="config.compile-path">
+        <path id="compile.path">
+            <fileset
+                dir="${eclipselink.core.lib}"
+                includes="${eclipselink.core.depend}"/>
+            <pathelement path="${eclipselink.core}/${classes.dir}"/>
+            <pathelement path="${eclipselink.core.test}/${classes.dir}"/>
+            <pathelement path="${eclipselink.jpa.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.jpa.test.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
+            <fileset
+                dir="${oracle.extensions.depend.dir}"
+                includes="${oracle.extensions.depend.jars}"/>
+            <pathelement path="${junit.lib}"/>
+        </path>
+    </target>
+
+    <!-- Default ant target, compiles and jars tests, packages jpa structconverter jar, does not run tests. -->
+    <target name="all" depends="clean, compile, package.structconverter, package.structconverter.tests, build.jar" description="compiles tests, packages jpa structconverter jar"/>
+
+    <!-- Compiles all tests. -->
+    <target name="compile" depends="config.trunk, config.flat" description="compile oracle tests">  
+        <mkdir dir="${eclipselink.extension.oracle.test}/${classes.dir}"/>
+        <javac srcdir="${eclipselink.extension.oracle.test}/${src.dir}" 
+               destdir="${eclipselink.extension.oracle.test}/${classes.dir}"
+               includes="org/eclipse/persistence/**"
+               debug="${javac.debug}" 
+               optimize="${javac.optimize}"
+               source="1.5" 
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true">
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- Package the structconverter JPA model jar. -->
+    <target name="package.structconverter">
+        <copy todir="${eclipselink.extension.oracle.test}/${build.dir}/${struct_converter.classes.dir}/META-INF">
+            <fileset dir="${eclipselink.extension.oracle.test}/resource/structconverter" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.extension.oracle.test}/${build.dir}/${struct_converter.classes.dir}">
+            <fileset dir="${eclipselink.extension.oracle.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/structconverter/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.extension.oracle.test}/eclipselink-struct-converter-model.jar">
+            <fileset dir="${eclipselink.extension.oracle.test}/${build.dir}/${struct_converter.classes.dir}">
+            </fileset>
+        </jar>
+    </target>
+
+    <!-- Package the structconverter JPA tests jar. -->
+    <target name="package.structconverter.tests">
+        <jar jarfile="${eclipselink.extension.oracle.test}/eclipselink-struct-converter-model-tests.jar">
+            <fileset dir="${eclipselink.extension.oracle.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/tests/spatial/jgeometry/**/*.class,
+                               org/eclipse/persistence/testing/tests/jpa/structconverter/**/*.class"/>
+        </jar>
+    </target>
+
+    <!-- Build tests jar. -->
+    <target name="build.jar" depends="compile" description="build a jar file other projects can use for dependancies if they cannot compile with oracle dependancies">
+      <jar jarfile="${eclipselink.oracle.depend.test.jar}">
+          <fileset dir="${eclipselink.extension.oracle.test}/${classes.dir}">
+            <include name="org/eclipse/persistence/**/*.class"/>
+          </fileset>
+      </jar>
+    </target>
+
+    <!-- Clean all build generated content. -->
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.extension.oracle.test}/${classes.dir}"/>
+            <fileset dir="${eclipselink.extension.oracle.test}/${struct_converter.classes.dir}"/>
+            <fileset dir="${eclipselink.extension.oracle.test}/${build.dir}"/>
+            <fileset dir="${eclipselink.extension.oracle.test}" includes="${eclipselink.oracle.depend.test.jar}"/>
+            <fileset dir="${eclipselink.extension.oracle.test}" includes="eclipselink-struct-converter-model-tests.jar"/>
+            <fileset dir="${eclipselink.extension.oracle.test}" includes="eclipselink-struct-converter-model.jar"/>
+        </delete>
+    </target>
+
+</project>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:employee xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:id>10</ns0:id>
+   <ns0:firstname>default-first</ns0:firstname>
+   <ns0:lastname>Doe</ns0:lastname>
+</ns0:employee>

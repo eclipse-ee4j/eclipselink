@@ -1,0 +1,58 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<!DOCTYPE toplink-configuration PUBLIC "-//Oracle Corp.//DTD TopLink Sessions 9.0.4//EN" "sessions_9_0_4.dtd">
+<toplink-configuration>
+   <session>
+      <name>DatabaseSession</name>
+      <project-xml>C:/toplink-deployment-descriptor.xml</project-xml>
+      <session-type>
+         <database-session/>
+      </session-type>
+      <login>
+         <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+         <connection-url>jdbc:oracle:thin:@tlsvrdb1.ca.oracle.com:1521:TOPLINK</connection-url>
+         <platform-class>org.eclipse.persistence.oraclespecific.Oracle9Platform</platform-class>
+      </login>
+   </session>
+   <session>
+      <name>ServerSession</name>
+      <project-xml>C:/toplink-deployment-descriptor.xml</project-xml>
+      <session-type>
+         <server-session/>
+      </session-type>
+      <event-listener-class>org.eclipse.persistence.test.EventListener1</event-listener-class>
+      <event-listener-class>org.eclipse.persistence.test.EventListener2</event-listener-class>
+      <profiler-class>org.eclipse.persistence.tools.profiler.PerformanceProfiler</profiler-class>
+      <external-transaction-controller-class>org.eclipse.persistence.test.ExternalTransactionController</external-transaction-controller-class>
+      <exception-handler-class>org.eclipse.persistence.test.ExceptionHandler</exception-handler-class>
+      <login>
+        <driver-class>sun.jdbc.odbc.JdbcOdbcDriver</driver-class>
+        <datasource>MyDataSource</datasource>
+        <platform-class>org.eclipse.persistence.internal.databaseaccess.SQLServerPlatform</platform-class>
+        <user-name>username</user-name>
+        <uses-native-sequencing>false</uses-native-sequencing>
+        <sequence-preallocation-size>45</sequence-preallocation-size>
+        <sequence-table>SEQUENCE_TABLE</sequence-table>
+        <sequence-name-field>SEQUENCE_NAME</sequence-name-field>
+        <sequence-counter-field>SEQUENCE_COUNT</sequence-counter-field>
+     </login>
+     <connection-pool>
+         <is-read-connection-pool>true</is-read-connection-pool>
+         <name>MyConnectionPool</name>
+         <max-connections>30</max-connections>
+         <min-connections>10</min-connections>
+      </connection-pool>
+      <connection-pool>
+         <is-read-connection-pool>false</is-read-connection-pool>
+         <name>Named Connection Pool</name>
+      </connection-pool>
+      <enable-logging>true</enable-logging>
+      <logging-options>
+         <log-debug>true</log-debug>
+         <log-exceptions>false</log-exceptions>
+         <print-thread>false</print-thread>
+         <print-session>true</print-session>
+         <print-connection>true</print-connection>
+         <print-date>true</print-date>
+      </logging-options>
+   </session>
+</toplink-configuration>

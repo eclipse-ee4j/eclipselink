@@ -1,0 +1,1 @@
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="employee-root"><id>123</id><info><email-address><user-id>jane.doe</user-id><domain>example.com</domain></email-address></info></root>

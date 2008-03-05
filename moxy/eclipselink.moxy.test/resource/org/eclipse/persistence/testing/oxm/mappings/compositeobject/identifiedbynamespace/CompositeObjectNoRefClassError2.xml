@@ -1,0 +1,7 @@
+<employee xmlns:email="www.example.com/some-dir/email.xsd" xmlns:mailing="www.example.com/some-dir/mailing.xsd">
+    <id>123</id>
+    <email:address>
+      <email:user-id>jane.doe</email:user-id>
+      <email:domain>example.com</email:domain>
+    </email:address>
+</employee>

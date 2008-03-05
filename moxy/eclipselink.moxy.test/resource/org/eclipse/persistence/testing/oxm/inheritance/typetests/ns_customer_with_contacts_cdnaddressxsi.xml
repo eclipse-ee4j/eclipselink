@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<customer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:oxm="http://www.example.com/toplink-oxm">
+  <contact-method xsi:type="oxm:canadian-address-type">
+    <id>123</id>
+    <street>1 A Street</street>
+    <postal-code>A1B 2C3</postal-code>
+  </contact-method>
+  <contact-method xsi:type="oxm:canadian-address-type">
+    <id>456</id>
+    <street>2 A Street</street>
+    <postal-code>A1B 2C3</postal-code>
+  </contact-method>
+  <contact-method xsi:type="oxm:canadian-address-type">
+    <id>789</id>
+    <street>3 A Street</street>
+    <postal-code>A1B 2C3</postal-code>
+  </contact-method>
+</customer>

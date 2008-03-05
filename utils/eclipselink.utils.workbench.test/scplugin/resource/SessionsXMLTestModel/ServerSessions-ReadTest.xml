@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<sessions version="10g (10.1.3 )" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+   <session xsi:type="server-session">
+      <name>ServerSessionTest</name>
+      <event-listener-classes/>
+      <primary-project xsi:type="class">sessions.threetier.model.Employee</primary-project>
+      <additional-project xsi:type="class">sessions.threetier.model.Address</additional-project>
+
+      <login xsi:type="database-login">
+         <platform-class>org.eclipse.persistence.oraclespecific.Oracle9Platform</platform-class>
+         <user-name>tl</user-name>
+         <password>password</password>
+         <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+         <connection-url>jdbc:oracle:thin:@TLSVRDB2:1521:TOPLINK</connection-url>
+         <native-sequencing>true</native-sequencing>
+         <sequence-preallocation-size>0</sequence-preallocation-size>
+         <byte-array-binding>false</byte-array-binding>
+         <optimize-data-conversion>false</optimize-data-conversion>
+         <trim-strings>false</trim-strings>
+         <jdbc-batch-writing>false</jdbc-batch-writing>
+         <max-batch-writing-size>0</max-batch-writing-size>
+      </login>
+
+      <connection-pools>
+         <read-connection-pool xsi:type="read-connection-pool">
+            <name>ReadConnectionPool</name>
+            <login xsi:type="database-login">
+               <platform-class>org.eclipse.persistence.oraclespecific.Oracle9Platform</platform-class>
+               <user-name>tl</user-name>
+               <password>password</password>
+               <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+               <connection-url>jdbc:oracle:thin:@TLSVRDB2:1521:TOPLINK</connection-url>
+               <native-sequencing>true</native-sequencing>
+               <sequence-preallocation-size>0</sequence-preallocation-size>
+               <byte-array-binding>false</byte-array-binding>
+               <optimize-data-conversion>false</optimize-data-conversion>
+               <trim-strings>false</trim-strings>
+               <jdbc-batch-writing>false</jdbc-batch-writing>
+               <max-batch-writing-size>0</max-batch-writing-size>
+            </login>
+         </read-connection-pool>
+
+         <write-connection-pool xsi:type="connection-pool">
+            <name>WriteConnectionPool</name>
+            <login xsi:type="database-login">
+               <platform-class>org.eclipse.persistence.oraclespecific.Oracle9Platform</platform-class>
+               <user-name>tl</user-name>
+               <password>password</password>
+               <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+               <connection-url>jdbc:oracle:thin:@TLSVRDB2:1521:TOPLINK</connection-url>
+               <native-sequencing>true</native-sequencing>
+               <sequence-preallocation-size>0</sequence-preallocation-size>
+               <byte-array-binding>false</byte-array-binding>
+               <optimize-data-conversion>false</optimize-data-conversion>
+               <trim-strings>false</trim-strings>
+               <jdbc-batch-writing>false</jdbc-batch-writing>
+               <max-batch-writing-size>0</max-batch-writing-size>
+            </login>
+         </write-connection-pool>
+
+         <connection-pool xsi:type="connection-pool">
+            <name>WriteConnectionPool</name>
+            <login xsi:type="database-login">
+               <platform-class>org.eclipse.persistence.oraclespecific.Oracle9Platform</platform-class>
+               <user-name>tl</user-name>
+               <password>password</password>
+               <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+               <connection-url>jdbc:oracle:thin:@TLSVRDB2:1521:TOPLINK</connection-url>
+               <native-sequencing>true</native-sequencing>
+               <sequence-preallocation-size>0</sequence-preallocation-size>
+               <byte-array-binding>false</byte-array-binding>
+               <optimize-data-conversion>false</optimize-data-conversion>
+               <trim-strings>false</trim-strings>
+               <jdbc-batch-writing>false</jdbc-batch-writing>
+               <max-batch-writing-size>0</max-batch-writing-size>
+            </login>
+         </connection-pool>
+
+         <connection-pool xsi:type="connection-pool">
+            <name>MyConnection</name>
+            <login xsi:type="database-login">
+               <platform-class>org.eclipse.persistence.oraclespecific.Oracle9Platform</platform-class>
+               <user-name>tl</user-name>
+               <password>password</password>
+               <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+               <connection-url>jdbc:oracle:thin:@TLSVRDB2:1521:TOPLINK</connection-url>
+               <native-sequencing>true</native-sequencing>
+               <sequence-preallocation-size>0</sequence-preallocation-size>
+               <byte-array-binding>false</byte-array-binding>
+               <optimize-data-conversion>false</optimize-data-conversion>
+               <trim-strings>false</trim-strings>
+               <jdbc-batch-writing>false</jdbc-batch-writing>
+               <max-batch-writing-size>0</max-batch-writing-size>
+            </login>
+         </connection-pool>
+      </connection-pools>
+
+   </session>
+
+
+</sessions>

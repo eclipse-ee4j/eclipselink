@@ -1,0 +1,37 @@
+<project name="EclipseLink MOXy Build" default="all">
+    <property file="${user.home}/build.properties"/>
+    <property file="./build.properties"/>
+    <propertyset id="parser.properties">
+	    <propertyref prefix="javax.xml"/>
+	</propertyset>
+    <path id="moxy.compile.path">
+        <pathelement path="${jaxb-api.lib}"/>
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${eclipselink.core}/${classes.dir}"/>
+    </path>
+	<target name="all" depends="clean, compile.core" description="build moxy classes">
+		<javac srcdir="${eclipselink.moxy}/${src.dir}"
+			destdir="${eclipselink.moxy}/${classes.dir}"
+            debug="${javac.debug}" 
+            optimize="${javac.optimize}"
+            source="1.5" 
+            deprecation="${javac.deprecation}"
+            failonerror="true"
+			includes="org/eclipse/persistence/**/*.java">
+			<classpath>
+				<path refid="moxy.compile.path"/>
+			</classpath>
+		</javac>
+	</target>
+	<target name="compile.core" description="build core classes">
+		<ant antfile="${eclipselink.core}/build.xml" target="compile"/>
+	</target>
+    <target name="clean" description="clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.moxy}/${classes.dir}"/>
+        </delete>
+		<mkdir dir="${eclipselink.moxy}/${classes.dir}"/>
+    </target>
+</project>	

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.readonly.Country</name>
+   <class-handle>
+      <type-name>test.oracle.models.readonly.Country</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>Country</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy>
+         <cache-size>100</cache-size>
+         <cache-type>Full</cache-type>
+      </caching-policy>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>COUNTRY</column-table-name>
+               <column-name>COUNTRY_ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="direct-to-field">
+         <name>id</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.readonly.Country</attribute-declaring-type-name>
+            <attribute-name>id</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>COUNTRY</column-table-name>
+            <column-name>COUNTRY_ID</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>name</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.readonly.Country</attribute-declaring-type-name>
+            <attribute-name>name</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>COUNTRY</column-table-name>
+            <column-name>NAME</column-name>
+         </column-handle>
+      </mapping>
+   </mappings>
+   <primary-table-handle>
+      <table-name>COUNTRY</table-name>
+   </primary-table-handle>
+   <uses-sequencing>true</uses-sequencing>
+   <sequence-number-name>COUNTRY_SEQ</sequence-number-name>
+   <sequence-number-table-handle>
+      <table-name>COUNTRY</table-name>
+   </sequence-number-table-handle>
+   <sequence-number-column-handle>
+      <column-table-name>COUNTRY</column-table-name>
+      <column-name>COUNTRY_ID</column-name>
+   </sequence-number-column-handle>
+</descriptor>

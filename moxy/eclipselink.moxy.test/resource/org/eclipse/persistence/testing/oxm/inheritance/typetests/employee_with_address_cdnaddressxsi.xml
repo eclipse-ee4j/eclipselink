@@ -1,0 +1,8 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<employee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:oxm="http://www.example.com/toplink-oxm">
+  <address xsi:type="canadian-address-type">
+    <id>123</id>
+    <street>1 A Street</street>
+    <postal-code>A1B 2C3</postal-code>
+  </address>
+</employee>

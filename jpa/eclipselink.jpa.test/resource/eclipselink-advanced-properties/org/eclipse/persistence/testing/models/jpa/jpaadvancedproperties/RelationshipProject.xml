@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipselink:object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:eclipselink="http://xmlns.oracle.com/ias/xsds/eclipselink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <eclipselink:name></eclipselink:name>
+   <eclipselink:class-mapping-descriptors>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</eclipselink:class>
+         <eclipselink:alias>Customer</eclipselink:alias>
+         <eclipselink:primary-key>
+            <eclipselink:field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+         </eclipselink:primary-key>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy">
+             <eclipselink:queries>
+               <eclipselink:query name="customerReadByName" xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left name="name" xsi:type="eclipselink:query-key-expression">
+                        <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:constant-expression">
+                        <eclipselink:value xsi:type="xsd:string">George W.</eclipselink:value>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:arguments>
+                     <eclipselink:argument name="name">
+                        <eclipselink:type>java.lang.Object</eclipselink:type>
+                     </eclipselink:argument>
+                  </eclipselink:arguments>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</eclipselink:reference-class>
+               </eclipselink:query>
+            </eclipselink:queries>
+            <eclipselink:timeout>0</eclipselink:timeout>
+            <eclipselink:insert-query xsi:type="eclipselink:insert-object-query"/>
+            <eclipselink:delete-query xsi:type="eclipselink:delete-object-query"/>
+            <eclipselink:does-exist-query xsi:type="eclipselink:does-exist-query">
+               <eclipselink:existence-check>check-database</eclipselink:existence-check>
+            </eclipselink:does-exist-query>
+            <eclipselink:read-object-query xsi:type="eclipselink:read-object-query">
+               <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                  <eclipselink:left xsi:type="eclipselink:field-expression">
+                     <eclipselink:field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                  </eclipselink:left>
+                  <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                     <eclipselink:parameter table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:right>
+               </eclipselink:criteria>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</eclipselink:reference-class>
+            </eclipselink:read-object-query>
+         </eclipselink:querying>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>customerId</eclipselink:attribute-name>
+               <eclipselink:get-method>getCustomerId</eclipselink:get-method>
+               <eclipselink:set-method>setCustomerId</eclipselink:set-method>
+               <eclipselink:field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>name</eclipselink:attribute-name>
+               <eclipselink:get-method>getName</eclipselink:get-method>
+               <eclipselink:set-method>setName</eclipselink:set-method>
+               <eclipselink:field table="JPA_PROPS_CUSTOMER" name="NAME" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>version</eclipselink:attribute-name>
+               <eclipselink:get-method>getVersion</eclipselink:get-method>
+               <eclipselink:set-method>setVersion</eclipselink:set-method>
+               <eclipselink:field table="JPA_PROPS_CUSTOMER" name="CUST_VERSION" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>city</eclipselink:attribute-name>
+               <eclipselink:get-method>getCity</eclipselink:get-method>
+               <eclipselink:set-method>setCity</eclipselink:set-method>
+               <eclipselink:field table="JPA_PROPS_CUSTOMER" name="CITY" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-many-mapping">
+               <eclipselink:attribute-name>orders</eclipselink:attribute-name>
+               <eclipselink:get-method>getOrders</eclipselink:get-method>
+               <eclipselink:set-method>setOrders</eclipselink:set-method>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Order</eclipselink:reference-class>
+               <eclipselink:cascade-persist>true</eclipselink:cascade-persist>
+               <eclipselink:cascade-merge>true</eclipselink:cascade-merge>
+               <eclipselink:cascade-refresh>true</eclipselink:cascade-refresh>
+               <eclipselink:cascade-remove>true</eclipselink:cascade-remove>
+               <eclipselink:target-foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="JPA_PROPS_ORDER" name="CUSTOMER_CUST_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:target-foreign-key>
+               <eclipselink:container xsi:type="eclipselink:container-policy">
+                  <eclipselink:collection-type>org.eclipse.persistence.indirection.IndirectList</eclipselink:collection-type>
+               </eclipselink:container>
+               <eclipselink:indirection xsi:type="eclipselink:transparent-collection-indirection-policy"/>
+               <eclipselink:selection-query xsi:type="eclipselink:read-all-query">
+                  <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left xsi:type="eclipselink:field-expression">
+                        <eclipselink:field table="JPA_PROPS_ORDER" name="CUSTOMER_CUST_ID" xsi:type="eclipselink:column"/>
+                        <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                        <eclipselink:parameter table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Order</eclipselink:reference-class>
+                  <eclipselink:container xsi:type="eclipselink:container-policy">
+                     <eclipselink:collection-type>org.eclipse.persistence.indirection.IndirectList</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:selection-query>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:many-to-many-mapping">
+               <eclipselink:attribute-name>cCustomers</eclipselink:attribute-name>
+               <eclipselink:get-method>getCCustomers</eclipselink:get-method>
+               <eclipselink:set-method>setCCustomers</eclipselink:set-method>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</eclipselink:reference-class>
+               <eclipselink:relation-table>JPA_PROPS_C_C</eclipselink:relation-table>
+               <eclipselink:source-relation-foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="JPA_PROPS_C_C" name="C_C_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:source-relation-foreign-key>
+               <eclipselink:target-relation-foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="JPA_PROPS_C_C" name="CC_C_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:target-relation-foreign-key>
+               <eclipselink:container xsi:type="eclipselink:container-policy">
+                  <eclipselink:collection-type>org.eclipse.persistence.indirection.IndirectList</eclipselink:collection-type>
+               </eclipselink:container>
+               <eclipselink:indirection xsi:type="eclipselink:transparent-collection-indirection-policy"/>
+               <eclipselink:selection-query xsi:type="eclipselink:read-all-query">
+                  <eclipselink:criteria operator="and" xsi:type="eclipselink:logic-expression">
+                     <eclipselink:left operator="equal" xsi:type="eclipselink:relation-expression">
+                        <eclipselink:left xsi:type="eclipselink:field-expression">
+                           <eclipselink:field table="JPA_PROPS_C_C" name="C_C_ID" xsi:type="eclipselink:column"/>
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:left>
+                        <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                           <eclipselink:parameter table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+                        </eclipselink:right>
+                     </eclipselink:left>
+                     <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                        <eclipselink:left xsi:type="eclipselink:field-expression">
+                           <eclipselink:field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:left>
+                        <eclipselink:right xsi:type="eclipselink:field-expression">
+                           <eclipselink:field table="JPA_PROPS_C_C" name="CC_C_ID" xsi:type="eclipselink:column"/>
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:right>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</eclipselink:reference-class>
+                  <eclipselink:container xsi:type="eclipselink:container-policy">
+                     <eclipselink:collection-type>org.eclipse.persistence.indirection.IndirectList</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:selection-query>
+               <eclipselink:insert-query xsi:type="eclipselink:data-modify-query"/>
+               <eclipselink:delete-query xsi:type="eclipselink:data-modify-query">
+                  <eclipselink:criteria operator="and" xsi:type="eclipselink:logic-expression">
+                     <eclipselink:left operator="equal" xsi:type="eclipselink:relation-expression">
+                        <eclipselink:left xsi:type="eclipselink:field-expression">
+                           <eclipselink:field table="JPA_PROPS_C_C" name="CC_C_ID" xsi:type="eclipselink:column"/>
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:left>
+                        <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                           <eclipselink:parameter table="JPA_PROPS_C_C" name="CC_C_ID" xsi:type="eclipselink:column"/>
+                        </eclipselink:right>
+                     </eclipselink:left>
+                     <eclipselink:right operator="equal" xsi:type="eclipselink:relation-expression">
+                        <eclipselink:left xsi:type="eclipselink:field-expression">
+                           <eclipselink:field table="JPA_PROPS_C_C" name="C_C_ID" xsi:type="eclipselink:column"/>
+                           <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                        </eclipselink:left>
+                        <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                           <eclipselink:parameter table="JPA_PROPS_C_C" name="C_C_ID" xsi:type="eclipselink:column"/>
+                        </eclipselink:right>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+               </eclipselink:delete-query>
+               <eclipselink:delete-all-query xsi:type="eclipselink:data-modify-query">
+                  <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left xsi:type="eclipselink:field-expression">
+                        <eclipselink:field table="JPA_PROPS_C_C" name="C_C_ID" xsi:type="eclipselink:column"/>
+                        <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                        <eclipselink:parameter table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+               </eclipselink:delete-all-query>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
+         <eclipselink:locking xsi:type="eclipselink:version-locking-policy">
+            <eclipselink:version-field table="JPA_PROPS_CUSTOMER" name="CUST_VERSION" xsi:type="eclipselink:column"/>
+            <eclipselink:store-version-in-cache>false</eclipselink:store-version-in-cache>
+         </eclipselink:locking>
+         <eclipselink:sequencing>
+            <eclipselink:sequence-name>JPA_PROPS_CUSTOMER_SEQ</eclipselink:sequence-name>
+            <eclipselink:sequence-field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+         </eclipselink:sequencing>
+         <eclipselink:caching>
+            <eclipselink:cache-size>500</eclipselink:cache-size>
+         </eclipselink:caching>
+         <eclipselink:remote-caching>
+            <eclipselink:cache-size>500</eclipselink:cache-size>
+         </eclipselink:remote-caching>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:change-policy xsi:type="eclipselink:deferred-detection-change-policy"/>
+         <eclipselink:tables>
+            <eclipselink:table name="JPA_PROPS_CUSTOMER"/>
+         </eclipselink:tables>
+      </eclipselink:class-mapping-descriptor>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Order</eclipselink:class>
+         <eclipselink:alias>OrderBean</eclipselink:alias>
+         <eclipselink:primary-key>
+            <eclipselink:field table="JPA_PROPS_ORDER" name="ORDER_ID" xsi:type="eclipselink:column"/>
+         </eclipselink:primary-key>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy">
+            <eclipselink:timeout>0</eclipselink:timeout>
+            <eclipselink:insert-query xsi:type="eclipselink:insert-object-query"/>
+            <eclipselink:delete-query xsi:type="eclipselink:delete-object-query"/>
+            <eclipselink:does-exist-query xsi:type="eclipselink:does-exist-query">
+               <eclipselink:existence-check>check-database</eclipselink:existence-check>
+            </eclipselink:does-exist-query>
+            <eclipselink:read-object-query xsi:type="eclipselink:read-object-query">
+               <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                  <eclipselink:left xsi:type="eclipselink:field-expression">
+                     <eclipselink:field table="JPA_PROPS_ORDER" name="ORDER_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                  </eclipselink:left>
+                  <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                     <eclipselink:parameter table="JPA_PROPS_ORDER" name="ORDER_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:right>
+               </eclipselink:criteria>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Order</eclipselink:reference-class>
+            </eclipselink:read-object-query>
+         </eclipselink:querying>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>orderId</eclipselink:attribute-name>
+               <eclipselink:get-method>getOrderId</eclipselink:get-method>
+               <eclipselink:set-method>setOrderId</eclipselink:set-method>
+               <eclipselink:field table="JPA_PROPS_ORDER" name="ORDER_ID" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>version</eclipselink:attribute-name>
+               <eclipselink:get-method>getVersion</eclipselink:get-method>
+               <eclipselink:set-method>setVersion</eclipselink:set-method>
+               <eclipselink:field table="JPA_PROPS_ORDER" name="ORDER_VERSION" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>shippingAddress</eclipselink:attribute-name>
+               <eclipselink:get-method>getShippingAddress</eclipselink:get-method>
+               <eclipselink:set-method>setShippingAddress</eclipselink:set-method>
+               <eclipselink:field table="JPA_PROPS_ORDER" name="SHIP_ADDR" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>quantity</eclipselink:attribute-name>
+               <eclipselink:get-method>getQuantity</eclipselink:get-method>
+               <eclipselink:set-method>setQuantity</eclipselink:set-method>
+               <eclipselink:field table="JPA_PROPS_ORDER" name="QUANTITY" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-one-mapping">
+               <eclipselink:attribute-name>customer</eclipselink:attribute-name>
+               <eclipselink:get-method>getCustomer</eclipselink:get-method>
+               <eclipselink:set-method>setCustomer</eclipselink:set-method>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</eclipselink:reference-class>
+               <eclipselink:foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="JPA_PROPS_ORDER" name="CUSTOMER_CUST_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:foreign-key>
+               <eclipselink:foreign-key-fields>
+                  <eclipselink:field table="JPA_PROPS_ORDER" name="CUSTOMER_CUST_ID" xsi:type="eclipselink:column"/>
+               </eclipselink:foreign-key-fields>
+               <eclipselink:selection-query xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left xsi:type="eclipselink:field-expression">
+                        <eclipselink:field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+                        <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                        <eclipselink:parameter table="JPA_PROPS_ORDER" name="CUSTOMER_CUST_ID" xsi:type="eclipselink:column"/>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</eclipselink:reference-class>
+               </eclipselink:selection-query>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-one-mapping">
+               <eclipselink:attribute-name>salesPerson</eclipselink:attribute-name>
+               <eclipselink:get-method>getSalesPerson</eclipselink:get-method>
+               <eclipselink:set-method>setSalesPerson</eclipselink:set-method>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.SalesPerson</eclipselink:reference-class>
+               <eclipselink:foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="JPA_PROPS_ORDER" name="SALESPERSON_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:foreign-key>
+               <eclipselink:foreign-key-fields>
+                  <eclipselink:field table="JPA_PROPS_ORDER" name="SALESPERSON_ID" xsi:type="eclipselink:column"/>
+               </eclipselink:foreign-key-fields>
+               <eclipselink:selection-query xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left xsi:type="eclipselink:field-expression">
+                        <eclipselink:field table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="eclipselink:column"/>
+                        <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                        <eclipselink:parameter table="JPA_PROPS_ORDER" name="SALESPERSON_ID" xsi:type="eclipselink:column"/>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.SalesPerson</eclipselink:reference-class>
+               </eclipselink:selection-query>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-one-mapping">
+               <eclipselink:attribute-name>billedCustomer</eclipselink:attribute-name>
+               <eclipselink:get-method>getBilledCustomer</eclipselink:get-method>
+               <eclipselink:set-method>setBilledCustomer</eclipselink:set-method>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</eclipselink:reference-class>
+               <eclipselink:foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="JPA_PROPS_ORDER" name="BILLEDCUSTOMER_CUST_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:foreign-key>
+               <eclipselink:foreign-key-fields>
+                  <eclipselink:field table="JPA_PROPS_ORDER" name="BILLEDCUSTOMER_CUST_ID" xsi:type="eclipselink:column"/>
+               </eclipselink:foreign-key-fields>
+               <eclipselink:selection-query xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left xsi:type="eclipselink:field-expression">
+                        <eclipselink:field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="eclipselink:column"/>
+                        <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                        <eclipselink:parameter table="JPA_PROPS_ORDER" name="BILLEDCUSTOMER_CUST_ID" xsi:type="eclipselink:column"/>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</eclipselink:reference-class>
+               </eclipselink:selection-query>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-one-mapping">
+               <eclipselink:attribute-name>item</eclipselink:attribute-name>
+               <eclipselink:get-method>getItem</eclipselink:get-method>
+               <eclipselink:set-method>setItem</eclipselink:set-method>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Item</eclipselink:reference-class>
+               <eclipselink:cascade-persist>true</eclipselink:cascade-persist>
+               <eclipselink:cascade-merge>true</eclipselink:cascade-merge>
+               <eclipselink:cascade-refresh>true</eclipselink:cascade-refresh>
+               <eclipselink:cascade-remove>true</eclipselink:cascade-remove>
+               <eclipselink:foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="JPA_PROPS_ORDER" name="ITEM_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="JPA_PROPS_ITEM" name="ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:foreign-key>
+               <eclipselink:foreign-key-fields>
+                  <eclipselink:field table="JPA_PROPS_ORDER" name="ITEM_ID" xsi:type="eclipselink:column"/>
+               </eclipselink:foreign-key-fields>
+               <eclipselink:selection-query xsi:type="eclipselink:read-object-query">
+                  <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left xsi:type="eclipselink:field-expression">
+                        <eclipselink:field table="JPA_PROPS_ITEM" name="ID" xsi:type="eclipselink:column"/>
+                        <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                        <eclipselink:parameter table="JPA_PROPS_ORDER" name="ITEM_ID" xsi:type="eclipselink:column"/>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Item</eclipselink:reference-class>
+               </eclipselink:selection-query>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
+         <eclipselink:locking xsi:type="eclipselink:version-locking-policy">
+            <eclipselink:version-field table="JPA_PROPS_ORDER" name="ORDER_VERSION" xsi:type="eclipselink:column"/>
+            <eclipselink:store-version-in-cache>false</eclipselink:store-version-in-cache>
+         </eclipselink:locking>
+         <eclipselink:sequencing>
+            <eclipselink:sequence-name>JPA_PROPS_ORDER_SEQ</eclipselink:sequence-name>
+            <eclipselink:sequence-field table="JPA_PROPS_ORDER" name="ORDER_ID" xsi:type="eclipselink:column"/>
+         </eclipselink:sequencing>
+         <eclipselink:caching>
+            <eclipselink:cache-size>500</eclipselink:cache-size>
+         </eclipselink:caching>
+         <eclipselink:remote-caching>
+            <eclipselink:cache-size>500</eclipselink:cache-size>
+         </eclipselink:remote-caching>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:change-policy xsi:type="eclipselink:deferred-detection-change-policy"/>
+         <eclipselink:tables>
+            <eclipselink:table name="JPA_PROPS_ORDER"/>
+         </eclipselink:tables>
+      </eclipselink:class-mapping-descriptor>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Item</eclipselink:class>
+         <eclipselink:alias>Item</eclipselink:alias>
+         <eclipselink:primary-key>
+            <eclipselink:field table="JPA_PROPS_ITEM" name="ID" xsi:type="eclipselink:column"/>
+         </eclipselink:primary-key>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy">
+            <eclipselink:timeout>0</eclipselink:timeout>
+            <eclipselink:insert-query xsi:type="eclipselink:insert-object-query"/>
+            <eclipselink:delete-query xsi:type="eclipselink:delete-object-query"/>
+            <eclipselink:does-exist-query xsi:type="eclipselink:does-exist-query">
+               <eclipselink:existence-check>check-database</eclipselink:existence-check>
+            </eclipselink:does-exist-query>
+            <eclipselink:read-object-query xsi:type="eclipselink:read-object-query">
+               <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                  <eclipselink:left xsi:type="eclipselink:field-expression">
+                     <eclipselink:field table="JPA_PROPS_ITEM" name="ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                  </eclipselink:left>
+                  <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                     <eclipselink:parameter table="JPA_PROPS_ITEM" name="ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:right>
+               </eclipselink:criteria>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Item</eclipselink:reference-class>
+            </eclipselink:read-object-query>
+         </eclipselink:querying>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>itemId</eclipselink:attribute-name>
+               <eclipselink:get-method>getItemId</eclipselink:get-method>
+               <eclipselink:set-method>setItemId</eclipselink:set-method>
+               <eclipselink:field table="JPA_PROPS_ITEM" name="ID" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>name</eclipselink:attribute-name>
+               <eclipselink:get-method>getName</eclipselink:get-method>
+               <eclipselink:set-method>setName</eclipselink:set-method>
+               <eclipselink:field table="JPA_PROPS_ITEM" name="NAME" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>version</eclipselink:attribute-name>
+               <eclipselink:get-method>getVersion</eclipselink:get-method>
+               <eclipselink:set-method>setVersion</eclipselink:set-method>
+               <eclipselink:field table="JPA_PROPS_ITEM" name="ITEM_VERSION" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>description</eclipselink:attribute-name>
+               <eclipselink:get-method>getDescription</eclipselink:get-method>
+               <eclipselink:set-method>setDescription</eclipselink:set-method>
+               <eclipselink:field table="JPA_PROPS_ITEM" name="DESCRIPTION" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
+         <eclipselink:locking xsi:type="eclipselink:version-locking-policy">
+            <eclipselink:version-field table="JPA_PROPS_ITEM" name="ITEM_VERSION" xsi:type="eclipselink:column"/>
+            <eclipselink:store-version-in-cache>false</eclipselink:store-version-in-cache>
+         </eclipselink:locking>
+         <eclipselink:sequencing>
+            <eclipselink:sequence-name>ITEM_SEQ</eclipselink:sequence-name>
+            <eclipselink:sequence-field table="JPA_PROPS_ITEM" name="ID" xsi:type="eclipselink:column"/>
+         </eclipselink:sequencing>
+         <eclipselink:caching>
+            <eclipselink:cache-size>500</eclipselink:cache-size>
+         </eclipselink:caching>
+         <eclipselink:remote-caching>
+            <eclipselink:cache-size>500</eclipselink:cache-size>
+         </eclipselink:remote-caching>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:change-policy xsi:type="eclipselink:deferred-detection-change-policy"/>
+         <eclipselink:tables>
+            <eclipselink:table name="JPA_PROPS_ITEM"/>
+         </eclipselink:tables>
+      </eclipselink:class-mapping-descriptor>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.SalesPerson</eclipselink:class>
+         <eclipselink:alias>SalesPerson</eclipselink:alias>
+         <eclipselink:primary-key>
+            <eclipselink:field table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="eclipselink:column"/>
+         </eclipselink:primary-key>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy">
+            <eclipselink:timeout>0</eclipselink:timeout>
+            <eclipselink:insert-query xsi:type="eclipselink:insert-object-query"/>
+            <eclipselink:delete-query xsi:type="eclipselink:delete-object-query"/>
+            <eclipselink:does-exist-query xsi:type="eclipselink:does-exist-query">
+               <eclipselink:existence-check>check-database</eclipselink:existence-check>
+            </eclipselink:does-exist-query>
+            <eclipselink:read-object-query xsi:type="eclipselink:read-object-query">
+               <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                  <eclipselink:left xsi:type="eclipselink:field-expression">
+                     <eclipselink:field table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                  </eclipselink:left>
+                  <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                     <eclipselink:parameter table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:right>
+               </eclipselink:criteria>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.SalesPerson</eclipselink:reference-class>
+            </eclipselink:read-object-query>
+         </eclipselink:querying>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>id</eclipselink:attribute-name>
+               <eclipselink:get-method>getId</eclipselink:get-method>
+               <eclipselink:set-method>setId</eclipselink:set-method>
+               <eclipselink:field table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>name</eclipselink:attribute-name>
+               <eclipselink:get-method>getName</eclipselink:get-method>
+               <eclipselink:set-method>setName</eclipselink:set-method>
+               <eclipselink:field table="JPA_PROPS_SALESPERSON" name="NAME" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-many-mapping">
+               <eclipselink:attribute-name>orders</eclipselink:attribute-name>
+               <eclipselink:get-method>getOrders</eclipselink:get-method>
+               <eclipselink:set-method>setOrders</eclipselink:set-method>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Order</eclipselink:reference-class>
+               <eclipselink:cascade-persist>true</eclipselink:cascade-persist>
+               <eclipselink:cascade-merge>true</eclipselink:cascade-merge>
+               <eclipselink:cascade-refresh>true</eclipselink:cascade-refresh>
+               <eclipselink:cascade-remove>true</eclipselink:cascade-remove>
+               <eclipselink:target-foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="JPA_PROPS_ORDER" name="SALESPERSON_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:target-foreign-key>
+               <eclipselink:container xsi:type="eclipselink:container-policy">
+                  <eclipselink:collection-type>org.eclipse.persistence.indirection.IndirectList</eclipselink:collection-type>
+               </eclipselink:container>
+               <eclipselink:indirection xsi:type="eclipselink:transparent-collection-indirection-policy"/>
+               <eclipselink:selection-query xsi:type="eclipselink:read-all-query">
+                  <eclipselink:criteria operator="equal" xsi:type="eclipselink:relation-expression">
+                     <eclipselink:left xsi:type="eclipselink:field-expression">
+                        <eclipselink:field table="JPA_PROPS_ORDER" name="SALESPERSON_ID" xsi:type="eclipselink:column"/>
+                        <eclipselink:base xsi:type="eclipselink:base-expression"/>
+                     </eclipselink:left>
+                     <eclipselink:right xsi:type="eclipselink:parameter-expression">
+                        <eclipselink:parameter table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="eclipselink:column"/>
+                     </eclipselink:right>
+                  </eclipselink:criteria>
+                  <eclipselink:reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Order</eclipselink:reference-class>
+                  <eclipselink:container xsi:type="eclipselink:container-policy">
+                     <eclipselink:collection-type>org.eclipse.persistence.indirection.IndirectList</eclipselink:collection-type>
+                  </eclipselink:container>
+               </eclipselink:selection-query>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
+         <eclipselink:sequencing>
+            <eclipselink:sequence-name>SALESPERSON_SEQ</eclipselink:sequence-name>
+            <eclipselink:sequence-field table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="eclipselink:column"/>
+         </eclipselink:sequencing>
+         <eclipselink:caching>
+            <eclipselink:cache-size>500</eclipselink:cache-size>
+         </eclipselink:caching>
+         <eclipselink:remote-caching>
+            <eclipselink:cache-size>500</eclipselink:cache-size>
+         </eclipselink:remote-caching>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:change-policy xsi:type="eclipselink:deferred-detection-change-policy"/>
+         <eclipselink:tables>
+            <eclipselink:table name="JPA_PROPS_SALESPERSON"/>
+         </eclipselink:tables>
+      </eclipselink:class-mapping-descriptor>
+   </eclipselink:class-mapping-descriptors>
+</eclipselink:object-persistence>

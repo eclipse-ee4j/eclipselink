@@ -1,0 +1,8 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<employee-data>
+  <id>10</id>
+  <address>
+    <street>123 Fake Street</street>
+    <city>Ottawa</city>
+  </address>
+</employee-data>

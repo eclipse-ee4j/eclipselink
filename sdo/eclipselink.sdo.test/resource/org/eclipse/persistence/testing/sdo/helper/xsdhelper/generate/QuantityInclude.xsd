@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri" xmlns="my.uri" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:simpleType name="quantityType">
+      <xsd:restriction base="xsd:int"/>
+   </xsd:simpleType>
+</xsd:schema>

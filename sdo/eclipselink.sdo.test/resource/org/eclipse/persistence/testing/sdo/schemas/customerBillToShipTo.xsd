@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri" xmlns="my.uri" elementFormDefault="qualified" sdoJava:package="defaultPackage" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:complexType name="AddressType">
+      <xsd:attribute name="street" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:complexType name="CustomerType">
+      <xsd:sequence>
+         <xsd:element name="billToType" type="AddressType" minOccurs="0"/>
+         <xsd:element name="shipToType" type="AddressType" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="customerType" type="CustomerType"/>
+   <xsd:element name="addressType" type="AddressType"/>
+</xsd:schema>

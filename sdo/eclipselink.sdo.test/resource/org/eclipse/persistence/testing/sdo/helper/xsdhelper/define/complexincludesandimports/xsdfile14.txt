@@ -1,0 +1,71 @@
+<xsd:schema elementFormDefault="qualified" targetNamespace="http://example.com/serviceTypes" xmlns="http://example.com/serviceTypes" xmlns:errors="errorsNamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java" xmlns:sdoXML="commonj.sdo/xml" sdoJava:package="types">
+   <xsd:import namespace="errorsNamespace" schemaLocation="includeException.xsd"/>
+   <xsd:import namespace="commonj.sdo" schemaLocation="includeSdoModel.xsd"/>
+   <xsd:import namespace="commonj.sdo/java" schemaLocation="includeSdoJava.xsd"/>
+   <xsd:import namespace="commonj.sdo/xml" schemaLocation="includeSdoXML.xsd"/>
+   <xsd:element name="parentElement" type="ParentType"/>
+   <xsd:complexType name="ParentType">
+      <xsd:sequence>
+         <xsd:element name="name" type="xsd:string" default="0"/>
+         <xsd:element name="filter" type="ReferencedType" minOccurs="0"/>
+         <xsd:element name="childElement" type="childType" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="ReferencedType">
+      <xsd:sequence>
+         <xsd:element name="referencedElement" type="ReferencedType2" maxOccurs="unbounded"/>
+         <xsd:element name="nested" type="ReferencedType" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="ReferencedType2">
+      <xsd:sequence>
+         <xsd:element name="referencedElement2" type="xsd:boolean" default="false"/>
+         <xsd:element name="item" type="ReferencedType3" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="ReferencedType3">
+      <xsd:sequence>
+         <xsd:element name="referencedElement3" type="xsd:string"/>
+         <xsd:choice>
+            <xsd:element name="value" type="xsd:anySimpleType" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="nested" type="ReferencedType"/>
+         </xsd:choice>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="childType">
+      <xsd:complexContent>
+         <xsd:extension base="ParentType">
+            <xsd:sequence>
+               <xsd:element name="someChildElement" type="xsd:string"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="booleanType" type="MyBooleanType"/>
+   <xsd:complexType name="MyBooleanType">
+      <xsd:sequence>
+         <xsd:element name="myBoolean" type="xsd:boolean" default="false"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="test" type="Test"/>
+   <xsd:complexType name="Test">
+      <xsd:sequence>
+         <xsd:element name="someElement" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="anotherElement" type="xsd:boolean" default="false"/>
+      </xsd:sequence>
+   </xsd:complexType>  
+   <xsd:complexType name="SomeResult">
+      <xsd:sequence>
+         <xsd:element name="Message" type="errors:Message" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>   
+   <xsd:complexType name="StringResult">
+      <xsd:complexContent>
+         <xsd:extension base="SomeResult">
+            <xsd:sequence>
+               <xsd:element name="stringValue" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+</xsd:schema>

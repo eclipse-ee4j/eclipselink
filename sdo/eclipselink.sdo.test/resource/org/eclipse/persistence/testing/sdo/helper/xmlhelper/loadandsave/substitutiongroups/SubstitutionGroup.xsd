@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="TEST/NS" xmlns:ns0="TEST/NS">
+   <xsd:complexType name="address-type">
+      <xsd:sequence>
+         <xsd:element name="street-name" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="city" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="country-name" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="blah" type="xsd:int"/>
+   </xsd:complexType>
+   <xsd:complexType name="canadian-address-type">
+      <xsd:sequence>
+         <xsd:element name="street-name" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="city" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="country-name" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="postal-code" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="blah" type="xsd:int"/>
+   </xsd:complexType>
+   <xsd:complexType name="employee-type">
+      <xsd:sequence>
+         <xsd:element name="firstName" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="lastName" type="xsd:string" minOccurs="0"/>
+         <xsd:element ref="ns0:address" minOccurs="0"/>
+      </xsd:sequence> 
+   </xsd:complexType>
+   <xsd:element name="employee-data" type="ns0:employee-type"/>
+   <xsd:element name="address" type="ns0:address-type"/>
+   <xsd:element name="canadian-address" type="ns0:canadian-address-type" substitutionGroup="ns0:address"/>
+</xsd:schema>

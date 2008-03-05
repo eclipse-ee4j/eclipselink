@@ -1,0 +1,21 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://example.com/app/"
+     xmlns:tns="http://example.com/app/" xmlns:ns0="http://example.com/process/"
+     xmlns:ns1="http://example.com/dept/">
+    <import namespace="http://example.com/dept/" schemaLocation="Dept.xsd"/>
+    <import namespace="http://example.com/dept/" schemaLocation="Emp.xsd"/>
+    <import namespace="http://example.com/process/" schemaLocation="Process.xsd"/>
+    <element name="processCSDeptElement">
+        <complexType>
+            <sequence>
+                <element name="processData" type="ns0:ProcessData"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="processCSDeptResponseElement">
+        <complexType>
+            <sequence>
+                <element name="result" type="ns0:ProcessData"/>
+            </sequence>
+        </complexType>
+    </element>
+</schema>

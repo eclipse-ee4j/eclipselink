@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="windows-1252"?>
+		<schema attributeFormDefault="qualified"
+			elementFormDefault="qualified"
+			targetNamespace="http://www.globalcompany.com/ns/OrderBooking"
+             xmlns:po="http://www.globalcompany.com/ns/order"                        
+	                  xmlns:nsTest3="blah"
+			xmlns="http://www.w3.org/2001/XMLSchema">
+      
+      <import namespace="http://www.globalcompany.com/ns/order" schemaLocation="OrderBookingPO.xsd"/>
+      
+			<element name="SOAOrderBookingProcessRequest" xmlns:nsTest="http://www.globalcompany.com/ns/order">
+				<complexType xmlns:nsTest2="http://www.globalcompany.com/ns/order" xmlns:nsTest3="http://www.globalcompany.com/ns/order">
+					<sequence>
+			    	           <element ref="po:PurchaseOrder"/>
+   		                           <element ref="nsTest:PurchaseOrder2"/>
+					   <element ref="nsTest2:PurchaseOrder3"/>
+		                           <element ref="nsTest3:PurchaseOrder4"/>
+                  <!--element name="PurchaseOrder" type="po:PurchaseOrderType"/-->
+					</sequence>
+				</complexType>
+			</element>
+		</schema>
+

@@ -1,0 +1,39 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<sessions version="10g (10.1.3 )" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <session xsi:type="server-session">
+      <name>EIS-Session</name>
+      <event-listener-classes/>
+      <profiler>eclipselink</profiler>
+      <exception-handler-class>org.eclipse.persistence.exceptions.ExceptionHandler</exception-handler-class>
+      <logging xsi:type="java-log"/>
+      <primary-project xsi:type="class">sessions.threetier.model.Employee</primary-project>
+      <additional-project xsi:type="class">sessions.threetier.model.Address</additional-project>
+
+      <login xsi:type="eis-login">
+         <platform-class>org.eclipse.persistence.eis.EISPlatform</platform-class>
+         <external-transaction-controller>false</external-transaction-controller>
+         <connection-spec-class>sun.rmi.transport.Connection</connection-spec-class>
+         <connection-factory-url>//connection-factory-name</connection-factory-url>
+      </login>
+      <connection-pools>
+
+         <read-connection-pool>
+            <name>ReadConnectionPool</name>
+            <login xsi:type="eis-login">
+            </login>
+         </read-connection-pool>
+
+         <write-connection-pool xsi:type="connection-pool">
+            <name>WriteConnectionPool</name>
+            <login xsi:type="eis-login">
+            </login>
+         </write-connection-pool>
+
+         <connection-pool>
+            <name>WriteConnectionPool</name>
+            <login xsi:type="eis-login">
+            </login>
+         </connection-pool>
+      </connection-pools>
+   </session>
+</sessions>

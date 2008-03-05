@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='US-ASCII'?>
+<xsd:schema targetNamespace="http://www.example.org" xmlns="http://www.example.org" elementFormDefault="qualified" sdoJava:package="org.example" xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:sdo="commonj.sdo">
+   <xsd:import namespace="commonj.sdo"/>
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:import namespace="commonj.sdo/xml"/>
+   <xsd:complexType name="rootType">
+      <xsd:sequence>
+         <xsd:element name="test1" type="xsd:int" minOccurs="0" sdoXML:dataType="sdoJava:IntObject"/>
+         <xsd:element name="test2" type="xsd:boolean" minOccurs="0" sdoXML:dataType="sdoJava:BooleanObject"/>
+         <xsd:element name="test3" type="xsd:dateTime" minOccurs="0" sdoXML:dataType="sdo:Date"/>
+         <xsd:element name="test4" type="xsd:dateTime" minOccurs="0" sdoXML:dataType="sdo:DateTime"/>
+         <xsd:element name="test5" type="xsd:short" minOccurs="0" sdoXML:dataType="sdoJava:ShortObject"/>
+         <xsd:element name="test6" type="xsd:anyType" minOccurs="0" sdoXML:dataType="sdo:DataObject"/>
+         <xsd:element name="test7" type="childType" minOccurs="0" sdoXML:dataType="sdo:DataObject"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="childType">
+      <xsd:sequence>
+         <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="rootType" type="rootType"/>
+   <xsd:element name="childType" type="childType"/>
+</xsd:schema>

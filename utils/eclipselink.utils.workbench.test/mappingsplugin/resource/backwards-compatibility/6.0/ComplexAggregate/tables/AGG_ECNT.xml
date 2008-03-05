@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table>
+   <short-name>AGG_ECNT</short-name>
+   <columns>
+      <column>
+         <name>CL_ID</name>
+         <type>NUMBER</type>
+         <size>15</size>
+         <unique>true</unique>
+         <primary-key>true</primary-key>
+      </column>
+      <column>
+         <name>EV_EDATE</name>
+         <type>DATE</type>
+         <allows-null>true</allows-null>
+      </column>
+      <column>
+         <name>EV_SDATE</name>
+         <type>DATE</type>
+         <allows-null>true</allows-null>
+      </column>
+   </columns>
+</table>

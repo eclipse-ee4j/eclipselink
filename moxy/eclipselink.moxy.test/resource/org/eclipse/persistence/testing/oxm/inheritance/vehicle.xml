@@ -1,0 +1,6 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<vehicle xsi:type="prefix:vehicle-type" xmlns:prefix="mynamespaceuri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <model>Blah Blah</model>
+   <manufacturer>Some Place</manufacturer>
+   <top-speed>10000</top-speed>
+</vehicle>

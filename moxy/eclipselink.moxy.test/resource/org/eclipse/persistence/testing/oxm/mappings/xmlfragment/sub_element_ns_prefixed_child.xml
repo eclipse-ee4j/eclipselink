@@ -1,0 +1,7 @@
+<root xmlns:ns1="http://www.example.com/test-uri">
+  <ns1:xml-node id="10">
+      <ns1:child>childtext</ns1:child>
+      <ns1:child xmlns:ns1="http://www.example.com/some-other-uri">morechildtext</ns1:child>
+      <ns1:child>evenmorechildtext</ns1:child>
+  </ns1:xml-node>
+</root>

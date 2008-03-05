@@ -1,0 +1,14 @@
+<xsd:schema elementFormDefault="qualified" targetNamespace="SchemaBNamespace"
+     xmlns:ns0="SchemaANamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    
+    <xsd:import namespace="SchemaCNamespace" schemaLocation="SchemaC.xsd"/>
+    <xsd:complexType name="MiddleType">
+         <xsd:complexContent>
+            <xsd:extension base="ns0:RootType">
+                <xsd:sequence>                    
+                    <xsd:element name="someMiddleElement" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>        
+    </xsd:complexType>
+</xsd:schema>

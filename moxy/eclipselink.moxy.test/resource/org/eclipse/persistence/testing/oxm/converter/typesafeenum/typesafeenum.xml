@@ -1,0 +1,8 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<employee>
+   <first-name>Linda</first-name>
+   <last-name>Jones</last-name>
+   <shirt-size>large</shirt-size>
+   <hat-size>medium</hat-size>
+    <hat-size>small</hat-size>
+</employee>
