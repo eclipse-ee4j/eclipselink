@@ -43,7 +43,7 @@ public class DefaultConnector implements Connector {
     protected Driver driver;
 
     /** Save whether we have switched to direct connect (sql.Driver.connect()) mode */
-    boolean connectDirectly = false;
+    private boolean connectDirectly = false;
     
     /**
      * PUBLIC:
