@@ -6,11 +6,11 @@ JVM_ARGS=-Xmx256m
 JVM_ARGS="${JVM_ARGS} -Dice.pilots.html4.ignoreNonGenericFonts=true"
 
 # Please do not change any of the following lines:
-CLASSPATH=`dirname $0`/../../eclipselink.utils.workbench.lib/compile/xercesImpl.jar:\
-`dirname $0`/../../eclipselink.utils.workbench.lib/run/connector.jar:\
-`dirname $0`/../../eclipselink.utils.workbench.lib/compile/eclipselink.jar:\
-`dirname $0`/../../eclipselink.utils.workbench.lib/mw/elmwcore.jar:\
-`dirname $0`/../../eclipselink.utils.workbench.lib/mw/eclipselinkmw.jar:\
+CLASSPATH=`dirname $0`/../jlib/xercesImpl.jar:\
+`dirname $0`/../jlib/connector.jar:\
+`dirname $0`/../../jlib/eclipselink.jar:\
+`dirname $0`/../jlib/elmwcore.jar:\
+`dirname $0`/../jlib/eclipselinkmw.jar:\
 `dirname $0`/../config:\
 `dirname $0`/../lib/java/internal:\
 ${DRIVER_CLASSPATH}

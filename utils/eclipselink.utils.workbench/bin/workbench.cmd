@@ -11,11 +11,11 @@ set _FIXPATH=
 call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
 
-set CLASSPATH=%THIS%..\..\eclipselink.utils.workbench.lib\compile\xercesImpl.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\..\eclipselink.utils.workbench.lib\run\connector.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\..\eclipselink.utils.workbench.lib\compile\eclipselink.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\..\eclipselink.utils.workbench.lib\mw\elmwcore.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\..\eclipselink.utils.workbench.lib\mw\eclipselinkmw.jar
+set CLASSPATH=%THIS%..\jlib\xercesImpl.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\connector.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\..\jlib\eclipselink.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\elmwcore.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselinkmw.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\config
 set CLASSPATH=%CLASSPATH%;%THIS%..\lib\java\internal
 set CLASSPATH=%CLASSPATH%;%DRIVER_CLASSPATH%

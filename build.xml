@@ -256,6 +256,7 @@
             <zipfileset dir="utils/eclipselink.utils.workbench.lib/mw/" includes="elmwcore.jar" prefix="eclipselink/workbench/jlib"/>
             <zipfileset dir="utils/eclipselink.utils.workbench.lib/mw/" includes="eclipselinkmw.jar" prefix="eclipselink/workbench/jlib"/>
             <zipfileset dir="utils/eclipselink.utils.workbench.lib/compile/" includes="xercesImpl.jar" prefix="eclipselink/workbench/jlib"/>
+            <zipfileset dir="utils/eclipselink.utils.workbench.lib/run/" includes="connector.jar" prefix="eclipselink/workbench/jlib"/>
 	      <zipfileset dir="utils/eclipselink.utils.workbench/config/" includes="*" prefix="eclipselink/workbench/config"/>
 	      <zipfileset dir="utils/eclipselink.utils.workbench/config/platforms/" includes="*" prefix="eclipselink/workbench/config/platforms"/>
             <zipfileset dir="utils/eclipselink.utils.workbench/bin/" includes="*" prefix="eclipselink/workbench/bin"/>
