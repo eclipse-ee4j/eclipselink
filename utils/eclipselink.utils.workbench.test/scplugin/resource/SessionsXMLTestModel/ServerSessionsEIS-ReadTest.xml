@@ -1,9 +1,9 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
-<toplink-sessions version="10g (10.1.3 )" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<sessions version="10g (10.1.3 )" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <session xsi:type="server-session">
       <name>EIS-Session</name>
       <event-listener-classes/>
-      <profiler>toplink</profiler>
+      <profiler>eclipselink</profiler>
       <exception-handler-class>org.eclipse.persistence.exceptions.ExceptionHandler</exception-handler-class>
       <logging xsi:type="java-log"/>
       <primary-project xsi:type="class">sessions.threetier.model.Employee</primary-project>
@@ -36,4 +36,4 @@
          </connection-pool>
       </connection-pools>
    </session>
-</toplink-sessions>
+</sessions>

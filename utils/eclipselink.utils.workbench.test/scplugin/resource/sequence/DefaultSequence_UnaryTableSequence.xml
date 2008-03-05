@@ -1,5 +1,5 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
-<toplink-sessions version="10g (10.1.3 )" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<sessions version="10g (10.1.3 )" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <session xsi:type="database-session">
       <name>Session</name>
       <event-listener-classes/>
@@ -23,4 +23,4 @@
          <connection-url>jdbc:oracle:thin:@default:custom</connection-url>
       </login>
    </session>
-</toplink-sessions>
+</sessions>
