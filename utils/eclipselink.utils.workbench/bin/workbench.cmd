@@ -4,7 +4,6 @@ call "%~dp0setenv.cmd"
 
 @REM User may increase Java memory setting(s) if desired:
 set JVM_ARGS=-Xmx256m
-set JVM_ARGS=%JVM_ARGS% -Dice.pilots.html4.ignoreNonGenericFonts=true
 
 REM Please do not change any of the following lines:
 set _FIXPATH=
@@ -17,7 +16,6 @@ set CLASSPATH=%CLASSPATH%;%THIS%..\..\jlib\eclipselink.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\elmwcore.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselinkmw.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\config
-set CLASSPATH=%CLASSPATH%;%THIS%..\lib\java\internal
 set CLASSPATH=%CLASSPATH%;%DRIVER_CLASSPATH%
 
 set WORKBENCH_ARGS=-open %*
