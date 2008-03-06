@@ -14,14 +14,20 @@ package org.eclipse.persistence.testing.models.jpa.xml.merge.relationships;
 
 import javax.persistence.*;
 import java.util.Collection;
+
+import org.eclipse.persistence.annotations.*;
+
 import static javax.persistence.GenerationType.*;
 
+/**
+ * This class is mapped in the following file:
+ *  - eclipselink.jpa.test\resource\eclipselink-xml-merge-model\orm-annotation-merge-relationships-entity-mappings.xml
+ * 
+ * Its equivalent testing file is:
+ *  - org.eclipse.persistence.testing.tests.jpa.xml.merge.relationships.EntityMappingsMergeRelationshipsJUnitTestCase  
+ */
 @Entity(name="XMLMergeItem")
 @Table(name="CMP3_XML_MERGE_ITEM")
-/*@NamedQuery(
-	name="findAllXMLMergeItemsByName",
-	query="SELECT OBJECT(item) FROM XMLMergeItem item WHERE item.name = ?1"
-)*/
 public class Item implements java.io.Serializable {
 	private Integer itemId;
 	private int version;
@@ -64,6 +70,12 @@ public class Item implements java.io.Serializable {
         this.version = version; 
     }
 
+	/**
+	 * Description is mapped in XML, therefore, the Temporal annotation should 
+     * be ignored. If it is not and is processed, the metadata processing will 
+     * throw an exception (invalid temporal type).
+	 */
+	@Temporal(TemporalType.DATE)
 	public String getDescription() { 
         return description; 
     }
@@ -72,6 +84,12 @@ public class Item implements java.io.Serializable {
         this.description = desc; 
     }
 
+    /**
+     * Name is mapped in XML and is not marked as mutable. Therefore, the 
+     * Mutable annotation should be ignored. There is a JUnit test to verify 
+     * the setting.
+     */
+    @Mutable
     public String getName() { 
         return name; 
     }

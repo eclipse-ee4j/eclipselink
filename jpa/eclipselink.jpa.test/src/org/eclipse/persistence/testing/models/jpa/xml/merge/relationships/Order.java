@@ -18,12 +18,15 @@ import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 
+/**
+ * This class is mapped in the following file:
+ *  - eclipselink.jpa.test\resource\eclipselink-xml-merge-model\orm-annotation-merge-relationships-entity-mappings.xml
+ * 
+ * Its equivalent testing file is:
+ *  - org.eclipse.persistence.testing.tests.jpa.xml.merge.relationships.EntityMappingsMergeRelationshipsJUnitTestCase  
+ */
 @Entity(name="XMLMergeOrderBean")
 @Table(name="CMP3_XML_MERGE_ORDER")
-/*@NamedQuery(
-	name="findAllXMLMergeOrdersByItem",
-	query="SELECT OBJECT(theorder) FROM XMLMergeOrderBean theorder WHERE theorder.item.itemId = :id"
-)*/
 public class Order implements java.io.Serializable {
 	private Integer orderId;
 	private int version;
@@ -75,6 +78,16 @@ public class Order implements java.io.Serializable {
         this.item = item; 
     }
 
+	/**
+	 * Quantity is mapped in XML as follows:
+     *  <basic name="quantity"/>
+     *
+     * Note, no column definition meaning it should default to QUANTITY.
+     * The Column annotation below should be ignored. If it is not and is
+     * processed, the existing tests for this model will fail.
+	 * 
+	 */
+	@Column(name="INVALID_QUANTITY_FIELD")
 	public int getQuantity() { 
         return quantity; 
     }
@@ -92,8 +105,17 @@ public class Order implements java.io.Serializable {
 		this.shippingAddress = shippingAddress;
 	}
 
-	@ManyToOne(fetch=LAZY)
-	@JoinColumn(name="CUST_ID")
+	/**
+	 * Customer is mapped in XML as follows:
+     *  <many-to-one name="customer" target-entity="Customer" fetch="LAZY"/>
+     *    
+     * Note, no join columns are specified and therefore they should default 
+     * and the annotation should be ignored. If JoinColumn is processed, the 
+     * model will be processed incorrectly and the existing tests for this
+     * model will fail. 
+	 */
+	@ManyToOne(fetch=EAGER)
+	@JoinColumn(name="INVALID_FK", referencedColumnName="INVALID_PK")
 	public Customer getCustomer() { 
         return customer; 
     }

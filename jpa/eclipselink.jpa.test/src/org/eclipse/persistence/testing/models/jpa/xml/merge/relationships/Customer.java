@@ -14,23 +14,21 @@ package org.eclipse.persistence.testing.models.jpa.xml.merge.relationships;
 
 import java.util.Collection;
 import javax.persistence.*;
+
+import org.eclipse.persistence.annotations.PrivateOwned;
+
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
 
+/**
+ * This class is mapped in the following file:
+ *  - eclipselink.jpa.test\resource\eclipselink-xml-merge-model\orm-annotation-merge-relationships-entity-mappings.xml
+ * 
+ * Its equivalent testing file is:
+ *  - org.eclipse.persistence.testing.tests.jpa.xml.merge.relationships.EntityMappingsMergeRelationshipsJUnitTestCase  
+ */
 @Entity(name="XMLMergeCustomer")
 @Table(name="CMP3_XML_MERGE_CUSTOMER")
-/*@NamedQuery(
-	name="findAllXMLMergeCustomers",
-	query="SELECT OBJECT(thecust) FROM XMLMergeCustomer thecust"
-)
-@NamedNativeQueries(value={
-@NamedNativeQuery(name="findAllXMLMergeCustomers",
-    query="select * from CMP3_XML_MERGE_CUSTOMER"),
-@NamedNativeQuery(name="insertCustomer1111XMLMerge",
-    query="INSERT INTO CMP3_XML_MERGE_CUSTOMER (CUST_ID, NAME, CITY, CUST_VERSION) VALUES (1111, NULL, NULL, 1)"),
-@NamedNativeQuery(name="deleteCustomer1111XMLMerge",
-    query="DELETE FROM CMP3_XML_MERGE_CUSTOMER WHERE (CUST_ID=1111)")})
-    */
 public class Customer implements java.io.Serializable{
 	private Integer customerId;
 	private int version;
@@ -71,6 +69,12 @@ public class Customer implements java.io.Serializable{
 		this.version = version;
 	}
 
+	/**
+	 * City is mapped in XML, therefore, the Lob annotation should be ignored. 
+     * If it is not and is processed, the metadata processing will throw an 
+     * exception (invalid lob type).
+	 */
+	@Lob
 	public String getCity() {
         return city; 
     }
@@ -79,6 +83,12 @@ public class Customer implements java.io.Serializable{
         this.city = aCity; 
     }
 
+    /**
+     * Name is mapped in XML, therefore, the Enumerated annotation should be 
+     * ignored. If it is not and is processed, the metadata processing will 
+     * throw an exception (invalid enumerated type).
+     */
+    @Enumerated
     public String getName() { 
         return name; 
     }
@@ -87,7 +97,21 @@ public class Customer implements java.io.Serializable{
         this.name = aName; 
     }
 
+    /**
+     * Order is mapped in XML as follows:
+     *  <one-to-many name="orders" target-entity="Order" mapped-by="customer">
+     *    <cascade>
+     *      <cascade-persist/>
+     *      <cascade-remove/>
+     *    </cascade>
+     * </one-to-many>
+     * The annotations should be ignored. If OrderBy is processed, the value
+     * will cause an exception during processing.
+     * 
+     */
 	@OneToMany(cascade=ALL, mappedBy="customer")
+	@PrivateOwned
+	@OrderBy("valueThatShouldCauseAnException")
     public Collection<Order> getOrders() { 
         return orders; 
     }

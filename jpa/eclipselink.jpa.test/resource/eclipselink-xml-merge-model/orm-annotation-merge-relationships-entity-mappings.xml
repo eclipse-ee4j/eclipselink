@@ -18,10 +18,6 @@
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
         <attributes>
-            <!--id name="customerId">
-                <column name="CUST_ID"/>
-                <generated-value strategy="TABLE" generator="XML_MERGE_CUSTOMER_GENERATOR_TABLE"/>
-            </id-->
             <basic name="city">
                 <column name="CITY"/>
             </basic>
@@ -33,7 +29,8 @@
             </version>
             <one-to-many name="orders" target-entity="Order" mapped-by="customer">
                 <cascade>
-                    <cascade-all/>
+                    <cascade-persist/>
+                    <cascade-remove/>
                 </cascade>
             </one-to-many>
         </attributes>
@@ -43,10 +40,6 @@
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
         <attributes>
-            <!--id name="orderId">
-                <column name="ORDER_ID"/>
-                <generated-value strategy="TABLE" generator="XML_MERGE_ORDER_TABLE_GENERATOR"/>
-            </id-->
             <basic name="quantity"/>
             <basic name="shippingAddress">
                 <column name="SHIP_ADDR"/>
@@ -54,9 +47,7 @@
             <version name="version">
                 <column name="ORDER_VERSION"/>
             </version>
-            <many-to-one name="customer" target-entity="Customer" fetch="LAZY">
-                <join-column name="CUST_ID"/>
-            </many-to-one>
+            <many-to-one name="customer" target-entity="Customer" fetch="LAZY"/>
             <one-to-one name="item" fetch="LAZY">
                 <join-column name="ITEM_ID"/>
                 <cascade>
@@ -70,10 +61,6 @@
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
         <attributes>
-            <!--id name="itemId">
-                <column name="ITEM_ID"/>
-                <generated-value strategy="TABLE" generator="XML_MERGE_ITEM_TABLE_GENERATOR"/>
-            </id-->
             <basic name="name"/>
             <basic name="description"/>
             <basic name="image">
@@ -92,10 +79,6 @@
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
         <attributes>
-            <!--id name="partsListId">
-                <column name="ID"/>
-                <generated-value strategy="TABLE" generator="XML_MERGE_PARTSLIST_TABLE_GENERATOR"/>
-            </id-->
             <version name="version">
                 <column name="VERSION"/>
             </version>

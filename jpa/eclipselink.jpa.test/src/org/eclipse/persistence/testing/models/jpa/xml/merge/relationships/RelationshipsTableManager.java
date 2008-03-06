@@ -25,7 +25,6 @@ public class RelationshipsTableManager extends TableCreator {
         addTableDefinition(buildCMP3_CUSTOMERTable());
         addTableDefinition(buildCMP3_ITEMTable());
         addTableDefinition(buildCMP3_ORDERTable());
-        //addTableDefinition(buildCMP3_ORDER_SEQTable());
         addTableDefinition(buildCMP3_PARTSLISTTable());
         addTableDefinition(buildCMP3_PARTSLIST_ITEMTable());
     }
@@ -148,7 +147,7 @@ public class RelationshipsTableManager extends TableCreator {
         table.setName("CMP3_XML_MERGE_ORDER");
 
         FieldDefinition fieldCUST_ID = new FieldDefinition();
-        fieldCUST_ID.setName("CUST_ID");
+        fieldCUST_ID.setName("CUSTOMER_CUST_ID");
         fieldCUST_ID.setTypeName("NUMBER");
         fieldCUST_ID.setSize(15);
         fieldCUST_ID.setSubSize(0);
@@ -215,35 +214,6 @@ public class RelationshipsTableManager extends TableCreator {
         table.addField(field10);
 
        return table;
-    }
-
-    public static TableDefinition buildCMP3_ORDER_SEQTable() {
-        TableDefinition table = new TableDefinition();
-        table.setName("CMP3_XML_MERGE_CUSTOMER_SEQ");
-
-        FieldDefinition fieldSEQ_NAME = new FieldDefinition();
-        fieldSEQ_NAME.setName("SEQ_NAME");
-        fieldSEQ_NAME.setTypeName("VARCHAR");
-        fieldSEQ_NAME.setSize(80);
-        fieldSEQ_NAME.setSubSize(0);
-        fieldSEQ_NAME.setIsPrimaryKey(true);
-        fieldSEQ_NAME.setIsIdentity(false);
-        fieldSEQ_NAME.setUnique(false);
-        fieldSEQ_NAME.setShouldAllowNull(false);
-        table.addField(fieldSEQ_NAME);
-
-        FieldDefinition fieldSEQ_VALUE = new FieldDefinition();
-        fieldSEQ_VALUE.setName("SEQ_COUNT");
-        fieldSEQ_VALUE.setTypeName("NUMERIC");
-        fieldSEQ_VALUE.setSize(15);
-        fieldSEQ_VALUE.setSubSize(0);
-        fieldSEQ_VALUE.setIsPrimaryKey(false);
-        fieldSEQ_VALUE.setIsIdentity(false);
-        fieldSEQ_VALUE.setUnique(false);
-        fieldSEQ_VALUE.setShouldAllowNull(false);
-        table.addField(fieldSEQ_VALUE);
-
-        return table;
     }
 
     public static TableDefinition buildCMP3_PARTSLISTTable() {

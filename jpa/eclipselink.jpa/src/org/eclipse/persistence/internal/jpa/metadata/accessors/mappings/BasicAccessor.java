@@ -65,6 +65,9 @@ public class BasicAccessor extends DirectAccessor {
             setOptional((Boolean) MetadataHelper.invokeMethod("optional", basic));
         }
         
+        // Set the column metadata if one if present.
+        m_column = new ColumnMetadata(getAnnotation(Column.class), getAttributeName());
+        
         // Set the mutable value if one is present.
         Annotation mutable = getAnnotation(Mutable.class);
         if (mutable != null) {
@@ -87,7 +90,7 @@ public class BasicAccessor extends DirectAccessor {
      */
     protected ColumnMetadata getColumn(String loggingCtx) {
     	if (m_column == null) {
-            return new ColumnMetadata(getAnnotation(Column.class), getAttributeName());
+            return new ColumnMetadata(getAttributeName());
     	} else {
     		return m_column;
     	}

@@ -18,8 +18,13 @@ import javax.persistence.EntityManager;
 
 import junit.framework.*;
 import junit.extensions.TestSetup;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.relationships.Customer;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.relationships.Item;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.relationships.Order;
@@ -47,6 +52,12 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
     
     public static Test suite() {
         TestSuite suite = new TestSuite("Relationships Model");
+        
+        // These tests will verify some merging rules.
+        suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testCustomerOrdersMapping"));
+        suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testOrderCustomerMapping"));
+        suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testItemNameMapping"));
+        
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testCreateCustomer"));
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testCreateItem"));
         suite.addTest(new EntityMappingsMergeRelationshipsJUnitTestCase("testCreateOrder"));
@@ -78,6 +89,43 @@ public class EntityMappingsMergeRelationshipsJUnitTestCase extends JUnitTestCase
                 clearCache();
             }
         };
+    }
+    
+    /**
+     * Verifies the merging of Customer's one to many mapping 'orders'.
+     */
+    public void testCustomerOrdersMapping() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        ClassDescriptor descriptor = session.getDescriptor(Customer.class);
+        ForeignReferenceMapping mapping = (ForeignReferenceMapping) descriptor.getMappingForAttributeName("orders");
+        
+        assertTrue("Orders mapping on Customer is not set to cascade persist.", mapping.isCascadePersist());
+        assertTrue("Orders mapping on Customer is not set to cascade remove.", mapping.isCascadeRemove());
+        assertFalse("Orders mapping on Customer is set to cascade refresh.", mapping.isCascadeRefresh());
+        assertFalse("Orders mapping on Customer is set to cascade merge.", mapping.isCascadeMerge());
+        assertFalse("Orders mapping on Customer is set to private owned.", mapping.isPrivateOwned());
+    }
+    
+    /**
+     * Verifies the merging of Order's many to one mapping 'customer'.
+     */
+    public void testOrderCustomerMapping() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        ClassDescriptor descriptor = session.getDescriptor(Order.class);
+        ForeignReferenceMapping mapping = (ForeignReferenceMapping) descriptor.getMappingForAttributeName("customer");
+        
+        assertTrue("Customer mapping on Order is not set to LAZY loading.", mapping.usesIndirection());
+    }
+    
+    /**
+     * Verifies the merging of Item's basic mapping 'name'.
+     */
+    public void testItemNameMapping() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        ClassDescriptor descriptor = session.getDescriptor(Item.class);
+        DirectToFieldMapping mapping = (DirectToFieldMapping) descriptor.getMappingForAttributeName("name");
+        
+        assertFalse("Customer mapping on Order is not set to LAZY loading.", mapping.isMutable());
     }
     
     public void testCreateCustomer() {
