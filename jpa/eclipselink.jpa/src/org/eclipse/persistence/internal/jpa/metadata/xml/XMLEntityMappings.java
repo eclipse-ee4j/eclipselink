@@ -14,16 +14,19 @@ package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.io.File;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddableAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.MappedSuperclassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
@@ -42,6 +45,8 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.StoredProcedurePara
 
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 
 /**
  * Object to hold onto the XML entity mappings metadata.
@@ -52,7 +57,7 @@ import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMe
 public class XMLEntityMappings {
 	private ClassLoader m_loader;
 	
-	private List<ClassAccessor> m_entities;
+	private List<EntityAccessor> m_entities;
 	private List<ConverterMetadata> m_converters;
 	private List<EmbeddableAccessor> m_embeddables;
 	private List<MappedSuperclassAccessor> m_mappedSuperclasses;
@@ -99,6 +104,26 @@ public class XMLEntityMappings {
 		return m_catalog;
 	}
 	
+    /**
+     * INTERNAL: XMLEntityMappings calls this one
+     * Load a class from a given class name.
+     */
+    static Class getClassForName(String classname, ClassLoader loader) {
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    return (Class) AccessController.doPrivileged(new PrivilegedClassForName(classname, true, loader));
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.unableToLoadClass(classname, exception.getException());
+                }
+            } else {
+                return PrivilegedAccessHelper.getClassForName(classname, true, loader);
+            }
+        } catch (ClassNotFoundException exception) {
+            throw ValidationException.unableToLoadClass(classname, exception);
+        }
+    }
+    
 	/**
      * INTERNAL:
      * This will initialize the given classname, and append the default
@@ -129,7 +154,7 @@ public class XMLEntityMappings {
 		} else if (className.equalsIgnoreCase("String")) {
 			return String.class;
 		} else {
-			return MetadataHelper.getClassForName(getFullyQualifiedClassName(className), m_loader);
+			return getClassForName(getFullyQualifiedClassName(className), m_loader);
 		}
 	}
 	
@@ -195,7 +220,7 @@ public class XMLEntityMappings {
 	 * INTERNAL:
 	 * Used for OX mapping.
 	 */
-	public List<ClassAccessor> getEntities() {
+	public List<EntityAccessor> getEntities() {
 		return m_entities;
 	}
 	
@@ -357,13 +382,13 @@ public class XMLEntityMappings {
 	 */
 	public void initPersistenceUnitClasses(MetadataProject project) {
     	// Process the entities
-    	for (ClassAccessor entity : getEntities()) {
+    	for (EntityAccessor entity : getEntities()) {
     		// Initialize the class with the package from entity mappings.
     		Class entityClass = getClassForName(entity.getClassName());
     		entity.init(new MetadataClass(entityClass), new MetadataDescriptor(entityClass, entity), project, this);
     		
     		// Add it to the project.
-    		project.addClassAccessor(entity);
+    		project.addEntityAccessor(entity);
     		
     		// Set any entity-mappings default if available. This must be 
     		// done after the accessor has been added to the project since
@@ -786,7 +811,7 @@ public class XMLEntityMappings {
 	 * INTERNAL:
 	 * Used for OX mapping.
 	 */
-	public void setEntities(List<ClassAccessor> entities) {
+	public void setEntities(List<EntityAccessor> entities) {
 		m_entities = entities;
 	}
 	

@@ -19,8 +19,10 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
@@ -31,6 +33,26 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
  * @since TopLink 11g
  */
 final class MetadataHelper {
+    /**
+     * INTERNAL:
+     * Load a class from a given class name.
+     */
+    static Class getClassForName(String classname, ClassLoader loader) {
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    return (Class) AccessController.doPrivileged(new PrivilegedClassForName(classname, true, loader));
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.unableToLoadClass(classname, exception.getException());
+                }
+            } else {
+                return PrivilegedAccessHelper.getClassForName(classname, true, loader);
+            }
+        } catch (ClassNotFoundException exception) {
+            throw ValidationException.unableToLoadClass(classname, exception);
+        }
+    }
+    
     /** 
      * INTERNAL:
      * Invoke the specified named method on the object, handling the necessary 

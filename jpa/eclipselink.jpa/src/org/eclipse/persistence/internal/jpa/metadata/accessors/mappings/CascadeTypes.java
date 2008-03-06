@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.ArrayList;
 import java.util.List;

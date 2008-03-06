@@ -26,7 +26,7 @@ import java.util.HashMap;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.DirectAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;

@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -19,7 +19,7 @@ import javax.persistence.FetchType;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.PrimaryKeyJoinColumns;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
@@ -98,7 +98,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     protected OneToOneMapping initOneToOneMapping() {
     	OneToOneMapping mapping = new OneToOneMapping();
         mapping.setIsReadOnly(false);
-        mapping.setIsPrivateOwned(hasPrivateOwned());
+        mapping.setIsPrivateOwned(isPrivateOwned());
         mapping.setJoinFetch(getMappingJoinFetchType(getJoinFetch()));
         mapping.setIsOptional(isOptional());
         mapping.setAttributeName(getAttributeName());

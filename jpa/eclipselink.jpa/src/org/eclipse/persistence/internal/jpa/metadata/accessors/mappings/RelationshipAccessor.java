@@ -10,9 +10,10 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.FetchType;
@@ -25,6 +26,7 @@ import javax.persistence.PrimaryKeyJoinColumns;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
+import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
@@ -33,9 +35,9 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnsMetadata;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 /**
@@ -65,6 +67,32 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
      */
     protected RelationshipAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
+        
+        // Set the join fetch if one is present.
+        Annotation joinFetch = getAnnotation(JoinFetch.class);            
+        if (joinFetch != null) {
+            m_joinFetch = (Enum) MetadataHelper.invokeMethod("value", joinFetch);
+        }
+        
+        // Set the private owned if one is present.
+        m_privateOwned = isAnnotationPresent(PrivateOwned.class);
+        
+        // Set the join columns if some are present.
+        m_joinColumns = new ArrayList<JoinColumnMetadata>();
+        
+        // Process all the join columns first.
+        Annotation joinColumns = getAnnotation(JoinColumns.class);
+        if (joinColumns != null) {
+            for (Annotation jColumn : (Annotation[]) MetadataHelper.invokeMethod("value", joinColumns)) {
+                m_joinColumns.add(new JoinColumnMetadata(jColumn));
+            }
+        }
+        
+        // Process the single key join column second.
+        Annotation joinColumn = getAnnotation(JoinColumn.class);
+        if (joinColumn != null) {
+            m_joinColumns.add(new JoinColumnMetadata(joinColumn));
+        }
     }
     
     /**
@@ -184,22 +212,6 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-	 * Method to check if an annotated element has a JoinColumn annotation.
-     */
-	public boolean hasJoinColumn() {
-		return isAnnotationPresent(JoinColumn.class);
-    }
-    
-    /**
-     * INTERNAL:
-	 * Method to check if an annotated element has a JoinColumns annotation.
-     */
-	public boolean hasJoinColumns() {
-		return isAnnotationPresent(JoinColumns.class);
-    }
-    
-    /**
-     * INTERNAL:
      * Return true if this accessor has any primary key join columns specified.
      */
 	public boolean hasPrimaryKeyJoinColumns() {
@@ -208,15 +220,7 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
 		} else {
 			return isAnnotationPresent(PrimaryKeyJoinColumns.class) || isAnnotationPresent(PrimaryKeyJoinColumn.class);
 		}
-    }
-	
-    /**
-     * INTERNAL: (Overridden in ManyToOneAccessor and ManyToManyAccessor)
-     * Method to check if this accessor is marked as private owned.
-     */
-    protected boolean hasPrivateOwned() {
-    	return m_privateOwned || isAnnotationPresent(PrivateOwned.class);
-    }
+	}
     
     /**
      * INTERNAL: (Override from MetadataAccessor)
@@ -241,7 +245,7 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
     }
     
 	/**
-	 * INTERNAL:
+	 * INTERNAL: (Overridden in ManyToOneAccessor and ManyToManyAccessor)
 	 * Used for OX mapping.
 	 */
 	public boolean isPrivateOwned() {
@@ -266,23 +270,13 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Process a @JoinColumns or @JoinColumn. Will look for association
-     * overrides.
+     * Process the join column metadata. Will look for association overrides.
      */	
     protected List<JoinColumnMetadata> processJoinColumns() { 
         if (getDescriptor().hasAssociationOverrideFor(getAttributeName())) {
-            return processJoinColumns(new JoinColumnsMetadata(getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinColumns()), getReferenceDescriptor());
+            return processJoinColumns(getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinColumns(), getReferenceDescriptor());
         } else {
-        	if (m_joinColumns == null || m_joinColumns.isEmpty()) {
-        		// Process the join columns from annotations.
-        	    Annotation joinColumn = getAnnotation(JoinColumn.class);
-        	    Annotation joinColumns = getAnnotation(JoinColumns.class);
-            
-        		return processJoinColumns(new JoinColumnsMetadata(joinColumns, joinColumn), getReferenceDescriptor());
-        	} else {
-        		// Process the join columns from XML.
-        		return processJoinColumns(new JoinColumnsMetadata(m_joinColumns), getReferenceDescriptor());
-        	}
+        	return processJoinColumns(m_joinColumns, getReferenceDescriptor());
         }
     }
     
@@ -291,28 +285,56 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
      * 
      * Process JoinColumnsMetadata.
      */	
-    protected List<JoinColumnMetadata> processJoinColumns(JoinColumnsMetadata joinColumns, MetadataDescriptor descriptor) {
-    	List<JoinColumnMetadata> jColumns = joinColumns.values(descriptor);
+    protected List<JoinColumnMetadata> processJoinColumns(List<JoinColumnMetadata> joinColumns, MetadataDescriptor descriptor) {
+        if (joinColumns.isEmpty()) {
+            if (descriptor.hasCompositePrimaryKey()) {
+                // Add a default one for each part of the composite primary
+                // key. Foreign and primary key to have the same name.
+                for (String primaryKeyField : descriptor.getPrimaryKeyFieldNames()) {
+                    JoinColumnMetadata joinColumn = new JoinColumnMetadata();
+                    joinColumn.setReferencedColumnName(primaryKeyField);
+                    joinColumn.setName(primaryKeyField);
+                    joinColumns.add(joinColumn);
+                }
+            } else {
+                // Add a default one for the single case, not setting any
+                // foreign and primary key names. They will default based
+                // on which accessor is using them.
+                joinColumns.add(new JoinColumnMetadata());
+            }
+        } else {
+            // Need to update any join columns that use a foreign key name
+            // for the primary key name. E.G. User specifies the renamed id
+            // field name from a primary key join column as the primary key in
+            // an inheritance subclass.
+            for (JoinColumnMetadata joinColumn : joinColumns) {
+                // Doing this could potentially change a value entered in XML.
+                // However, in this case I think that is ok since in theory we 
+                // are writing out the correct value that EclipseLink needs to 
+                // form valid queries.
+                joinColumn.setReferencedColumnName(descriptor.getPrimaryKeyJoinColumnAssociation(joinColumn.getReferencedColumnName()));
+            }
+        }
         
         if (descriptor.hasCompositePrimaryKey()) {
             // The number of join columns should equal the number of primary key fields.
-            if (jColumns.size() != descriptor.getPrimaryKeyFields().size()) {
+            if (joinColumns.size() != descriptor.getPrimaryKeyFields().size()) {
             	throw ValidationException.incompleteJoinColumnsSpecified(getAnnotatedElement(), getJavaClass());
             }
             
             // All the primary and foreign key field names should be specified.
-            for (JoinColumnMetadata jColumn : jColumns) {
-                if (jColumn.isPrimaryKeyFieldNotSpecified() || jColumn.isForeignKeyFieldNotSpecified()) {
+            for (JoinColumnMetadata joinColumn : joinColumns) {
+                if (joinColumn.isPrimaryKeyFieldNotSpecified() || joinColumn.isForeignKeyFieldNotSpecified()) {
                 	throw ValidationException.incompleteJoinColumnsSpecified(getAnnotatedElement(), getJavaClass());
                 }
             }
         } else {
-            if (jColumns.size() > 1) {
+            if (joinColumns.size() > 1) {
             	throw ValidationException.excessiveJoinColumnsSpecified(getAnnotatedElement(), getJavaClass());
             }
         }
         
-        return jColumns;
+        return joinColumns;
     }
     
     /**

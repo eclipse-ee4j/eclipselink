@@ -10,15 +10,16 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
+import java.util.Map;
 
 import org.eclipse.persistence.annotations.BasicMap;
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 
@@ -51,16 +52,16 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
         
         Annotation basicMap = getAnnotation(BasicMap.class);
 
-        m_keyColumn = new ColumnMetadata((Annotation) invokeMethod("keyColumn", basicMap), getAttributeName());
+        m_keyColumn = new ColumnMetadata((Annotation) MetadataHelper.invokeMethod("keyColumn", basicMap), getAttributeName());
 
-        Object keyConvert = invokeMethod("keyConverter", basicMap);
-        m_keyConverter = (String)invokeMethod("value", keyConvert);
+        Annotation keyConvert = (Annotation) MetadataHelper.invokeMethod("keyConverter", basicMap);
+        m_keyConverter = (String) MetadataHelper.invokeMethod("value", keyConvert);
 
-        Object valueConvert = invokeMethod("valueConverter", basicMap);
-        m_valueConverter = (String)invokeMethod("value", valueConvert);
+        Annotation valueConvert = (Annotation) MetadataHelper.invokeMethod("valueConverter", basicMap);
+        m_valueConverter = (String)MetadataHelper.invokeMethod("value", valueConvert);
         
-        setValueColumn(new ColumnMetadata((Annotation) invokeMethod("valueColumn", basicMap), getAttributeName()));
-        setFetch((Enum)invokeMethod("fetch", basicMap));
+        setValueColumn(new ColumnMetadata((Annotation) MetadataHelper.invokeMethod("valueColumn", basicMap), getAttributeName()));
+        setFetch((Enum) MetadataHelper.invokeMethod("fetch", basicMap));
     }
    
     /**
@@ -146,13 +147,21 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     
     /**
      * INTERNAL:
+     * Returns true if the given class is a valid basic map type.
+     */ 
+    protected boolean isValidBasicMapType(Class cls) {
+        return cls.equals(Map.class);
+    }
+    
+    /**
+     * INTERNAL:
      * The processing of JPA converters for a basic map has been disabled, since 
      * we will not know which part of the map (key or value) to apply the JPA 
      * converter. See isLob, isTemporal and isEnumerated calls for log warning 
      * details.
      */
     public void process() {
-        if (MetadataHelper.isValidBasicMapType(getRawClass())) {
+        if (isValidBasicMapType(getRawClass())) {
             // Initialize our mapping.
             DirectMapMapping mapping = new DirectMapMapping();
             

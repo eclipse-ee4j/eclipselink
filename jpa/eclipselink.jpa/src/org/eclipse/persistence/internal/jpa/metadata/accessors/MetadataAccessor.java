@@ -22,11 +22,6 @@ import java.lang.Boolean;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -34,7 +29,6 @@ import javax.persistence.PrimaryKeyJoinColumns;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
-import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.ReturnInsert;
@@ -42,11 +36,8 @@ import org.eclipse.persistence.annotations.ReturnUpdate;
 import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.annotations.StructConverter;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
@@ -78,7 +69,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
- * Top level metatata accessor.
+ * Top level metadata accessor.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
@@ -111,14 +102,22 @@ public abstract class MetadataAccessor  {
      * INTERNAL:
      */
     public MetadataAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
-        init(accessibleObject, classAccessor);
+        init(accessibleObject, classAccessor.getDescriptor(), classAccessor.getProject(), null);
     }
     
     /**
      * INTERNAL:
      */
     public MetadataAccessor(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
-    	init(accessibleObject, descriptor, project,  null);
+    	init(accessibleObject, descriptor, project, null);
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns the accessible object for this accessor.
+     */
+    public MetadataAccessibleObject getAccessibleObject() {
+        return m_accessibleObject;
     }
     
     /**
@@ -151,14 +150,7 @@ public abstract class MetadataAccessor  {
      * Return the annotated element for this accessor.
      */
     protected <T extends Annotation> T getAnnotation(Class annotation) {
-        Object loadedAnnotation = m_accessibleObject.getAnnotations().get(annotation.getName());
-        
-        if (loadedAnnotation != null && m_descriptor.ignoreAnnotations()) {
-            m_descriptor.getLogger().logWarningMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, m_accessibleObject.getAnnotatedElement());
-            return null;
-        } else {
-            return (T) loadedAnnotation;
-        }
+        return (T) m_accessibleObject.getAnnotation(annotation, m_descriptor);
     }
     
     /**
@@ -238,13 +230,7 @@ public abstract class MetadataAccessor  {
      */
     protected int getMappingJoinFetchType(Enum joinFetchType) {
         if (joinFetchType == null) {
-            // Will check against metadata complete.
-            Object joinFetch = getAnnotation(JoinFetch.class);            
-            if (joinFetch == null) {
-               return ForeignReferenceMapping.NONE;	
-            } else if (((Enum)invokeMethod("value", joinFetch)).equals(JoinFetchType.INNER)) {
-               return ForeignReferenceMapping.INNER_JOIN;
-            }
+            return ForeignReferenceMapping.NONE;
         } else if (joinFetchType.equals(JoinFetchType.INNER)) {
             return ForeignReferenceMapping.INNER_JOIN;
         }
@@ -475,12 +461,14 @@ public abstract class MetadataAccessor  {
     
     /**
      * INTERNAL: 
-     * Overridden in those accessor classes that need to initialize
-     * any classes or other metadata before processing.
+     * Overridden in those accessor classes that need to initialize any classes 
+     * or other metadata before processing. This init should only be called on 
+     * those accessors that were loaded through OX, that is, specified in XML.
      * - RelationshipAccessor - target entity name
      * - BasicAccessor - attribute name on the column
      * - BasicCollectionAccessor - attribute name on the value column
      * - BasicMapAccessor - attribute name on the key column
+     * - EmbeddedAccessor
      */
     public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
     	init(accessibleObject, accessor.getDescriptor(), accessor.getProject(), accessor.getEntityMappings());
@@ -496,45 +484,15 @@ public abstract class MetadataAccessor  {
         m_entityMappings = entityMappings;
         m_accessibleObject = accessibleObject;
     }
-    
+
     /** 
      * INTERNAL:
-     * Invoke the specified named method on the object, handling the necessary 
-     * exceptions.
+     * Indicates whether the specified annotation is present on the annotated
+     * element for this accessor. Method checks against the metadata complete
+     * flag.
      */
-    Object invokeMethod(String methodName, Object target) {
-        Method method = null;
-        
-        try {
-            method = Helper.getDeclaredMethod(target.getClass(), methodName);            
-        } catch (NoSuchMethodException e) {
-            EntityManagerSetupException.methodInvocationFailed(method, target,e);
-        }
-        
-        if (method != null) {
-             try {
-                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                     try {
-                         return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, target));
-                     } catch (PrivilegedActionException exception) {
-                         Exception throwableException = exception.getException();
-                         if (throwableException instanceof IllegalAccessException) {
-                             throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
-                         } else {
-                             throw EntityManagerSetupException.methodInvocationFailed(method, target, throwableException);
-                         }
-                     }
-                 } else {
-                     return PrivilegedAccessHelper.invokeMethod(method, target);
-                 }
-             } catch (IllegalAccessException ex1) {
-                 throw EntityManagerSetupException.cannotAccessMethodOnObject(method, target);
-             } catch (InvocationTargetException ex2) {
-                 throw EntityManagerSetupException.methodInvocationFailed(method, target, ex2);
-             }
-        } else {
-            return null;
-        }
+    protected boolean isAnnotationNotPresent(Class<? extends Annotation> annotation, AnnotatedElement annotatedElement) {
+        return m_accessibleObject.isAnnotationNotPresent(annotation, annotatedElement);
     }
     
     /** 
@@ -544,7 +502,7 @@ public abstract class MetadataAccessor  {
      * flag.
      */
     protected boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
-        return isAnnotationPresent(annotation, getAnnotatedElement());
+        return m_accessibleObject.isAnnotationPresent(annotation, getAnnotatedElement(), m_descriptor);
     }
     
     /** 
@@ -554,7 +512,7 @@ public abstract class MetadataAccessor  {
      * flag.
      */
     protected boolean isAnnotationPresent(Class<? extends Annotation> annotation, AnnotatedElement annotatedElement) {
-        return MetadataHelper.isAnnotationPresent(annotation, annotatedElement, m_descriptor);
+        return m_accessibleObject.isAnnotationPresent(annotation, annotatedElement, m_descriptor);
     }
     
     /**
@@ -570,14 +528,6 @@ public abstract class MetadataAccessor  {
      * Return true if this accessor represents an aggregate mapping.
      */
     public boolean isEmbedded() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents an aggregate id mapping.
-     */
-    public boolean isEmbeddedId() {
         return false;
     }
     
@@ -645,7 +595,7 @@ public abstract class MetadataAccessor  {
      * INTERNAL:
      * Process the globally defined converters.
      */
-    protected void processConverters() {
+    public void processConverters() {
         // Process the custom converters if defined.
         processCustomConverters();
         

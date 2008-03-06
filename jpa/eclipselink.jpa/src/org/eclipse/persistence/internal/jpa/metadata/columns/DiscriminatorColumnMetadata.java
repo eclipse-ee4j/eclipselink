@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.jpa.metadata.columns;
 
 import java.lang.annotation.Annotation;
 
+import javax.persistence.DiscriminatorType;
+
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
@@ -103,7 +105,15 @@ public class DiscriminatorColumnMetadata {
         field.setColumnDefinition(MetadataHelper.getValue(m_columnDefinition, ""));
         
         // Process the type.
-        field.setType(MetadataHelper.getDiscriminatorType(m_discriminatorType));
+        if (m_discriminatorType == null || m_discriminatorType.equals(DiscriminatorType.STRING)) {
+            field.setType(String.class);
+        } else if (m_discriminatorType.equals(DiscriminatorType.CHAR)) {
+            field.setType(Character.class);
+        } else {
+            // Through annotation and XML validation, it must be 
+            // DiscriminatorType.INTEGER and can't be anything else. 
+            field.setType(Integer.class);
+        }
         
         // Set the table.
         field.setTable(descriptor.getPrimaryTable());

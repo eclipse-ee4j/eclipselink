@@ -15,19 +15,19 @@ package org.eclipse.persistence.internal.jpa.metadata.xml;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.BasicAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.BasicCollectionAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.BasicMapAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedIdAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.IdAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicCollectionAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicMapAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedIdAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.IdAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToOneAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToManyAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransientAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ManyToManyAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ManyToOneAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.OneToManyAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.OneToOneAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.TransientAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.VersionAccessor;
 
 /**
  * Object to represent all the attributes of an XML defined entity,

@@ -29,39 +29,46 @@ import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.OptimisticLockingType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.BasicAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.BasicCollectionAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.BasicMapAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.CascadeTypes;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddableAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedIdAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.IdAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ManyToManyAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ManyToOneAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.MappedSuperclassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.OneToManyAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.OneToOneAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.TransientAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.VersionAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
+
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicCollectionAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicMapAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.CascadeTypes;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedIdAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.IdAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToOneAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToManyAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransientAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
+
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.TimeOfDayMetadata;
+
 import org.eclipse.persistence.internal.jpa.metadata.changetracking.ChangeTrackingMetadata;
+
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
+
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConversionValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
+
 import org.eclipse.persistence.internal.jpa.metadata.inheritance.InheritanceMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.locking.OptimisticLockingMetadata;
+
 import org.eclipse.persistence.internal.jpa.metadata.queries.EntityResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.FieldResultMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
@@ -70,9 +77,11 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedur
 import org.eclipse.persistence.internal.jpa.metadata.queries.QueryHintMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.StoredProcedureParameterMetadata;
+
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
+
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
@@ -736,7 +745,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
      */
     protected ClassDescriptor buildEntityDescriptor() {
     	XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(ClassAccessor.class);
+        descriptor.setJavaClass(EntityAccessor.class);
 
         descriptor.addMapping(getDescriptionMapping());
         descriptor.addMapping(getCustomizerMapping());
@@ -922,7 +931,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         entityMapping.setAttributeName("m_entities");
         entityMapping.setGetMethodName("getEntities");
         entityMapping.setSetMethodName("setEntities");
-        entityMapping.setReferenceClass(ClassAccessor.class);
+        entityMapping.setReferenceClass(EntityAccessor.class);
         entityMapping.setXPath("orm:entity");
         descriptor.addMapping(entityMapping);
         

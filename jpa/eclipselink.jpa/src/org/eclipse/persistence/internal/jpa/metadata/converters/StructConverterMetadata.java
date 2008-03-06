@@ -19,7 +19,7 @@ import java.sql.Types;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.DirectAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
 
 import org.eclipse.persistence.jpa.config.StructConverterType;
 

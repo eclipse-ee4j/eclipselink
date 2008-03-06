@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
 
@@ -18,7 +18,7 @@ import javax.persistence.ManyToOne;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 import org.eclipse.persistence.mappings.OneToOneMapping;
@@ -43,10 +43,10 @@ public class ManyToOneAccessor extends ObjectAccessor {
         
         Annotation manyToOne = getAnnotation(ManyToOne.class);
         
-        setTargetEntity((Class) invokeMethod("targetEntity", manyToOne));
-        setCascadeTypes((Enum[]) invokeMethod("cascade", manyToOne));
-        setFetch((Enum) invokeMethod("fetch", manyToOne));
-        setOptional((Boolean) invokeMethod("optional", manyToOne));
+        setTargetEntity((Class) MetadataHelper.invokeMethod("targetEntity", manyToOne));
+        setCascadeTypes((Enum[]) MetadataHelper.invokeMethod("cascade", manyToOne));
+        setFetch((Enum) MetadataHelper.invokeMethod("fetch", manyToOne));
+        setOptional((Boolean) MetadataHelper.invokeMethod("optional", manyToOne));
     }
 
     /**
@@ -67,23 +67,23 @@ public class ManyToOneAccessor extends ObjectAccessor {
     }
     
     /**
-     * INTERNAL: (Override from RelationshipAccessor)
-     * A PrivateOwned annotation used with a ManyToOne annotation is ignored. 
-     * A log warning is issued.
-     */
-	protected boolean hasPrivateOwned() {
-        if (super.hasPrivateOwned()) {
-            getLogger().logWarningMessage(MetadataLogger.IGNORE_PRIVATE_OWNED_ANNOTATION, this);
-        }
-        
-        return false;
-    }
-    
-    /**
      * INTERNAL:
      */
 	public boolean isManyToOne() {
         return true;
+    }
+    
+    /**
+     * INTERNAL: (Override from RelationshipAccessor) 
+     * A PrivateOwned setting on a ManyToOne is ignored. A log warning is
+     * issued.
+     */
+    public boolean isPrivateOwned() {
+        if (super.isPrivateOwned()) {
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_PRIVATE_OWNED_ANNOTATION, this);
+        }
+        
+        return false;
     }
     
     /**

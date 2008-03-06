@@ -10,9 +10,11 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.Map;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -23,9 +25,9 @@ import org.eclipse.persistence.annotations.ReturnInsert;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 
@@ -56,11 +58,17 @@ public class BasicAccessor extends DirectAccessor {
     public BasicAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
         
+        // Set the basic metadata if one is present.
         Annotation basic = getAnnotation(Basic.class);
-        
         if (basic != null) {
-            setFetch((Enum) invokeMethod("fetch", basic));
-            setOptional((Boolean) invokeMethod("optional", basic));
+            setFetch((Enum) MetadataHelper.invokeMethod("fetch", basic));
+            setOptional((Boolean) MetadataHelper.invokeMethod("optional", basic));
+        }
+        
+        // Set the mutable value if one is present.
+        Annotation mutable = getAnnotation(Mutable.class);
+        if (mutable != null) {
+            m_mutable = (Boolean) MetadataHelper.invokeMethod("value", mutable);
         }
     }
     
@@ -122,6 +130,22 @@ public class BasicAccessor extends DirectAccessor {
     
     /**
      * INTERNAL:
+     * Method to return whether a class is a collection or not. 
+     */
+    protected boolean isCollectionClass(Class cls) {
+        return Collection.class.isAssignableFrom(cls);
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to return whether a class is a map or not. 
+     */
+    protected boolean isMapClass(Class cls) {
+        return Map.class.isAssignableFrom(cls);
+    }
+    
+    /**
+     * INTERNAL:
      * Process a basic accessor.
      */
     public void process() {
@@ -161,14 +185,16 @@ public class BasicAccessor extends DirectAccessor {
         // Will check for PROPERTY access.
         setAccessorMethods(mapping);
 
-        // Process a converter for this mapping. We will look for a Convert
+        // Process a converter for this mapping. We will look for a convert
         // value first. If none is found then we'll look for a JPA converter, 
         // that is, Enumerated, Lob and Temporal. With everything falling into 
         // a serialized mapping if no converter whatsoever is found.
         processMappingConverter(mapping);
 
         // Process a mutable setting.
-        processMutable(mapping);
+        if (m_mutable != null) {
+            mapping.setIsMutable(m_mutable.booleanValue());
+        }
 
         // Add the mapping to the descriptor.
         getDescriptor().addMapping(mapping);
@@ -185,7 +211,7 @@ public class BasicAccessor extends DirectAccessor {
         // don't want to put a TypeConversionConverter on the mapping. Instead, 
         // we will want a serialized converter. For example, we could have 
         // an EnumSet<Enum> relation type.
-        if (MetadataHelper.isCollectionClass(getReferenceClass()) || MetadataHelper.isMapClass(getReferenceClass())) {
+        if (isCollectionClass(getReferenceClass()) || isMapClass(getReferenceClass())) {
             processSerialized(mapping);
         } else {
             super.processEnumerated(mapping);
@@ -201,28 +227,12 @@ public class BasicAccessor extends DirectAccessor {
         // If the raw class is a collection or map (with generics or not), we 
         // don't want to put a TypeConversionConverter on the mapping. Instead, 
         // we will want a serialized converter.
-        if (MetadataHelper.isCollectionClass(getReferenceClass()) || MetadataHelper.isMapClass(getReferenceClass())) {
+        if (isCollectionClass(getReferenceClass()) || isMapClass(getReferenceClass())) {
             setFieldClassification(mapping, java.sql.Blob.class);
             processSerialized(mapping);
         } else {
             super.processLob(mapping);
         }
-    }
-            
-    /**
-     * INTERNAL:
-     * Process the Mutable annotation.
-     */
-    public void processMutable(DatabaseMapping mapping) {
-    	if (m_mutable == null) {
-    		Object mutable = getAnnotation(Mutable.class);
-    		
-    		if (mutable != null) {
-    			((DirectToFieldMapping)mapping).setIsMutable((Boolean)invokeMethod("value", mutable));
-    		}
-    	} else {
-    		((DirectToFieldMapping)mapping).setIsMutable(m_mutable.booleanValue());
-    	}
     }
     
     /**
@@ -234,7 +244,7 @@ public class BasicAccessor extends DirectAccessor {
 
         if (returnInsert != null) {
             // Process return only.
-            processReturnInsert(field, (Boolean)invokeMethod("returnOnly", returnInsert)); 
+            processReturnInsert(field, (Boolean) MetadataHelper.invokeMethod("returnOnly", returnInsert)); 
         }
     }
 

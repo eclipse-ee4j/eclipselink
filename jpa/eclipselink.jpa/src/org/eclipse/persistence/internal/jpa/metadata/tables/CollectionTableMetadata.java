@@ -38,16 +38,21 @@ public class CollectionTableMetadata extends TableMetadata {
     /**
      * INTERNAL:
      */
+    public CollectionTableMetadata(String annotatedElementName) {
+        super(annotatedElementName);
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public CollectionTableMetadata(Annotation collectionTable, String annotatedElementName) {
     	super(annotatedElementName);
     	
-        if (collectionTable != null) {
-            setName((String) invokeMethod("name", collectionTable));
-            setSchema((String) invokeMethod("schema", collectionTable));
-            setCatalog((String) invokeMethod("catalog", collectionTable));
-            setUniqueConstraints((Annotation[]) invokeMethod("uniqueConstraints", collectionTable));
-            setPrimaryKeyJoinColumns((Annotation[]) invokeMethod("primaryKeyJoinColumns", collectionTable));
-        }
+        setName((String) invokeMethod("name", collectionTable));
+        setSchema((String) invokeMethod("schema", collectionTable));
+        setCatalog((String) invokeMethod("catalog", collectionTable));
+        setUniqueConstraints((Annotation[]) invokeMethod("uniqueConstraints", collectionTable));
+        setPrimaryKeyJoinColumns((Annotation[]) invokeMethod("primaryKeyJoinColumns", collectionTable));
     }
     
     /**

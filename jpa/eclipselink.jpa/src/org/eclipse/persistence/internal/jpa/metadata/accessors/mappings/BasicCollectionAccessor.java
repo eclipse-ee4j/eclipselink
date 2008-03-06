@@ -10,21 +10,25 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.FetchType;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.CollectionTable;
+import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
@@ -60,13 +64,26 @@ public class BasicCollectionAccessor extends DirectAccessor {
     public BasicCollectionAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
 
-        Annotation basicCollection = getAnnotation(BasicCollection.class);
-
         // Must check, BasicMapAccessor calls this constructor ...
+        Annotation basicCollection = getAnnotation(BasicCollection.class);
         if (basicCollection != null) {
-            m_valueColumn = new ColumnMetadata((Annotation) invokeMethod("valueColumn", basicCollection), getAttributeName());
-            setFetch((Enum)invokeMethod("fetch", basicCollection));
+            m_valueColumn = new ColumnMetadata((Annotation) MetadataHelper.invokeMethod("valueColumn", basicCollection), getAttributeName());
+            setFetch((Enum) MetadataHelper.invokeMethod("fetch", basicCollection));
         }
+        
+        // Set the collection table if one is present.
+        if (isAnnotationPresent(CollectionTable.class)) {
+            m_collectionTable = new CollectionTableMetadata(getAnnotation(CollectionTable.class), getAnnotatedElementName());
+        }
+        
+        // Set the join fetch if one is present.
+        Annotation joinFetch = getAnnotation(JoinFetch.class);            
+        if (joinFetch != null) {
+            m_joinFetch = (Enum) MetadataHelper.invokeMethod("value", joinFetch);
+        }
+        
+        // Set the private owned if one is present.
+        m_privateOwned = isAnnotationPresent(PrivateOwned.class);
     }
     
     /**
@@ -143,13 +160,6 @@ public class BasicCollectionAccessor extends DirectAccessor {
     }
     
     /**
-     * INTERNAL:
-     */
-    protected boolean hasPrivateOwned() {
-    	return m_privateOwned || isAnnotationPresent(PrivateOwned.class);
-    }
-    
-    /**
      * INTERNAL: (Override from MetadataAccessor, Overridden in BasicMapAccessor)
      */
     public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
@@ -159,6 +169,11 @@ public class BasicCollectionAccessor extends DirectAccessor {
     	// set through XML.
     	if (m_valueColumn != null) {
     		m_valueColumn.setAttributeName(getAttributeName());
+    	}
+    	
+    	// Set the location for this collection table.
+    	if (m_collectionTable != null) {
+    	    m_collectionTable.setLocation(getAnnotatedElementName());
     	}
     }
     
@@ -179,10 +194,22 @@ public class BasicCollectionAccessor extends DirectAccessor {
 	}
 	
     /**
+     * INTERNAL:
+     * Returns true if the given class is a valid basic collection type.
+     */ 
+    protected boolean isValidBasicCollectionType() {
+        Class rawClass = getRawClass();
+        
+        return rawClass.equals(Collection.class) || 
+               rawClass.equals(Set.class) ||
+               rawClass.equals(List.class);
+    }
+    
+    /**
      * INTERNAL: (Overridden in BasicMapAccessor)
      */
     public void process() {
-        if (MetadataHelper.isValidBasicCollectionType(getRawClass())) {
+        if (isValidBasicCollectionType()) {
             // Initialize our mapping.
             DirectCollectionMapping mapping = new DirectCollectionMapping();
             
@@ -199,7 +226,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
             // call to processConverter, since it may set a field classification)
             mapping.setDirectField(getDatabaseField(mapping.getReferenceTable(), MetadataLogger.VALUE_COLUMN));
             
-            // Process a converter for this mapping. We will look for a Convert
+            // Process a converter for this mapping. We will look for a convert
             // value. If none is found then we'll look for a JPA converter, that 
             // is, Enumerated, Lob and Temporal. With everything falling into 
             // a serialized mapping if no converter whatsoever is found.
@@ -220,7 +247,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
         setAccessorMethods(mapping);
         
         // Process private owned.
-        mapping.setIsPrivateOwned(hasPrivateOwned());
+        mapping.setIsPrivateOwned(m_privateOwned);
         
         // Process join fetch type.
         mapping.setJoinFetch(getMappingJoinFetchType(m_joinFetch));
@@ -240,24 +267,22 @@ public class BasicCollectionAccessor extends DirectAccessor {
      * Process a MetadataCollectionTable.
      */
     protected void processCollectionTable(DirectCollectionMapping mapping) {
-    	CollectionTableMetadata collectionTable;
-    	
-    	if (m_collectionTable == null) {
-    		collectionTable = new CollectionTableMetadata(getAnnotation(CollectionTable.class), getAnnotatedElementName());
-    	} else {
-    		collectionTable = m_collectionTable;
-    	}
+        // Check that we loaded a collection table otherwise default one.        
+        if (m_collectionTable == null) {
+            // TODO: Log a defaulting message.
+            m_collectionTable = new CollectionTableMetadata(getAnnotatedElementName());
+        }
         
         // Process any table defaults and log warning messages.
-        processTable(collectionTable, getDefaultCollectionTableName());
+        processTable(m_collectionTable, getDefaultCollectionTableName());
         
         // Set the reference table on the mapping.
-        mapping.setReferenceTable(collectionTable.getDatabaseTable());
+        mapping.setReferenceTable(m_collectionTable.getDatabaseTable());
         
         // Add all the primaryKeyJoinColumns (reference key fields) to the 
         // mapping. Primary key join column validation is performed in the
         // processPrimaryKeyJoinColumns call.
-        for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(collectionTable.getPrimaryKeyJoinColumns()))) {
+        for (PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn : processPrimaryKeyJoinColumns(new PrimaryKeyJoinColumnsMetadata(m_collectionTable.getPrimaryKeyJoinColumns()))) {
             // The default name is the primary key of the owning entity.
             DatabaseField pkField = primaryKeyJoinColumn.getPrimaryKeyField();
             pkField.setName(getName(pkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.PK_COLUMN));
@@ -266,7 +291,7 @@ public class BasicCollectionAccessor extends DirectAccessor {
             // The default name is the primary key of the owning entity.
             DatabaseField fkField = primaryKeyJoinColumn.getForeignKeyField();
             fkField.setName(getName(fkField, getDescriptor().getPrimaryKeyFieldName(), MetadataLogger.FK_COLUMN));
-            fkField.setTable(collectionTable.getDatabaseTable());
+            fkField.setTable(m_collectionTable.getDatabaseTable());
             
             // Add the reference key field for the direct collection mapping.
             mapping.addReferenceKeyField(fkField, pkField);

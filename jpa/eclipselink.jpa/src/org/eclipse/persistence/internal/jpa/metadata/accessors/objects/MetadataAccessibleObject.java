@@ -12,13 +12,36 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.annotation.Annotation;
 
+import javax.persistence.Basic;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.Version;
 
+
+import org.eclipse.persistence.annotations.BasicCollection;
+import org.eclipse.persistence.annotations.BasicMap;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 /**
  * Parent object that is used to hold onto a valid EJB 3.0 decorated method
@@ -60,6 +83,21 @@ public abstract class MetadataAccessibleObject  {
     
     /**
      * INTERNAL:
+     * Return the annotated element for this accessor.
+     */
+    public <T extends Annotation> T getAnnotation(Class annotation, MetadataDescriptor descriptor) {
+        Object loadedAnnotation = m_annotations.get(annotation.getName());
+        
+        if (loadedAnnotation != null && descriptor.ignoreAnnotations()) {
+            descriptor.getLogger().logWarningMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, m_annotatedElement);
+            return null;
+        } else {
+            return (T) loadedAnnotation;
+        }
+    }
+    
+    /**
+     * INTERNAL:
      */
     public String getAttributeName() {
         return m_attributeName;
@@ -71,11 +109,11 @@ public abstract class MetadataAccessibleObject  {
      * the Map key type if generics are used, null otherwise.
      */
     public Class getMapKeyClass() {
-        if (MetadataHelper.isGenericCollectionType(m_relationType)) {
+        if (isGenericCollectionType()) {
             // By default, the reference class is equal to the relation
             // class. But if the relation class is a generic we need to 
             // extract and set the actual reference class from the generic. 
-            return MetadataHelper.getMapKeyTypeFromGeneric(m_relationType);
+            return (Class) ((ParameterizedType) m_relationType).getActualTypeArguments()[0];
         } else {
             return null;
         }
@@ -97,11 +135,11 @@ public abstract class MetadataAccessibleObject  {
      */
     public Class getRawClass() {
         if (m_rawClass == null) {
-            if (MetadataHelper.isGenericCollectionType(m_relationType)) {
+            if (isGenericCollectionType()) {
                 // By default, the raw class is equal to the relation
                 // class. But if the relation class is a generic we need to 
                 // extract and set the actual raw class from the generic. 
-                m_rawClass = MetadataHelper.getRawClassFromGeneric(m_relationType);
+                return (Class)(((ParameterizedType) m_relationType).getRawType());
             } else {
                 m_rawClass = (Class) m_relationType;
             }
@@ -123,8 +161,14 @@ public abstract class MetadataAccessibleObject  {
      * 5 - public Map getTasks() => null
      */
     public Class getReferenceClassFromGeneric() {
-        if (MetadataHelper.isGenericCollectionType(m_relationType)) {
-            return MetadataHelper.getReturnTypeFromGeneric(m_relationType);
+        if (isGenericCollectionType()) {
+            ParameterizedType pType = (ParameterizedType) m_relationType;
+            
+            if (java.util.Map.class.isAssignableFrom((Class) pType.getRawType())) {
+                return (Class) pType.getActualTypeArguments()[1];
+            }
+            
+            return (Class) pType.getActualTypeArguments()[0];
         } else {
             return null;
         }
@@ -136,6 +180,201 @@ public abstract class MetadataAccessibleObject  {
      */
     public Type getRelationType() {
         return m_relationType;
+    }
+    
+    /** 
+     * INTERNAL:
+     * Indicates whether the specified annotation is actually not present on 
+     * the specified class. Used for defaulting. Need this check since the
+     * isAnnotationPresent calls can return a false when true because of the
+     * meta-data complete feature.
+     */
+    public boolean isAnnotationNotPresent(Class annotation, AnnotatedElement annotatedElement) {
+        return ! isAnnotationPresent(annotation, annotatedElement);
+    }
+    
+    /** 
+     * INTERNAL:
+     * Indicates whether the specified annotation is present on the specified 
+     * class. NOTE: Calling this method directly does not take any metadata
+     * complete flag into consideration. Look at the other isAnnotationPresent
+     * methods that take a descriptor. 
+     */
+    public boolean isAnnotationPresent(Class annotation, AnnotatedElement annotatedElement) {
+        return MetadataHelper.isAnnotationPresent(annotation, annotatedElement);
+    }
+    
+    /** 
+     * INTERNAL:
+     * Indicates whether the specified annotation is present on the specified 
+     * class.
+     */
+    public boolean isAnnotationPresent(Class annotation, AnnotatedElement annotatedElement, MetadataDescriptor descriptor) {
+        boolean isAnnotationPresent = isAnnotationPresent(annotation, annotatedElement);
+        
+        if (isAnnotationPresent && descriptor.ignoreAnnotations()) {
+            descriptor.getLogger().logWarningMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, annotatedElement);
+            return false;
+        } else {
+            return isAnnotationPresent;
+        }
+    }
+    
+    /** 
+     * INTERNAL:
+     * Indicates whether the specified annotation is present on java class
+     * for the given descriptor metadata. 
+     */
+    public boolean isAnnotationPresent(Class annotation, MetadataDescriptor descriptor) {
+        return isAnnotationPresent(annotation, m_annotatedElement, descriptor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a basic mapping.
+     */
+    public boolean isBasic(MetadataDescriptor descriptor) {
+        return isAnnotationPresent(Basic.class, descriptor) ||
+               isAnnotationPresent(Lob.class, descriptor) ||
+               isAnnotationPresent(Temporal.class, descriptor) ||
+               isAnnotationPresent(Enumerated.class, descriptor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a basic collection mapping.
+     */
+    public boolean isBasicCollection(MetadataDescriptor descriptor) {
+        return isAnnotationPresent(BasicCollection.class, descriptor);
+    }
+    
+    /**
+     * INTERNAL: 
+     * Return true if this accessor represents a basic collection mapping.
+     */
+    public boolean isBasicMap(MetadataDescriptor descriptor) {
+        return isAnnotationPresent(BasicMap.class, descriptor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents an aggregate mapping. True is
+     * returned if an Embedded annotation is found or if an Embeddable 
+     * annotation is found on the raw/reference class.
+     */
+    public boolean isEmbedded(MetadataDescriptor descriptor) {
+        if (isAnnotationNotPresent(Embedded.class, m_annotatedElement) && isAnnotationNotPresent(EmbeddedId.class, m_annotatedElement)) {
+            Class rawClass = getRawClass();
+            // Use the class loader from the descriptor's java class and not
+            // that from the rawClass since it may be an int, String etc. which
+            // would not have been loaded from the temp loader, hence will not
+            // find the Embeddable.class.
+            return (isAnnotationPresent(Embeddable.class, rawClass) || descriptor.getProject().hasEmbeddable(rawClass));
+        } else {
+            // Still need to make the call since we may need to ignore it
+            // because of meta-data complete.
+            return isAnnotationPresent(Embedded.class, descriptor);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents an aggregate id mapping.
+     */
+    public boolean isEmbeddedId(MetadataDescriptor descriptor) {
+        return isAnnotationPresent(EmbeddedId.class, descriptor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to return whether a collection type is a generic.
+     */
+    public boolean isGenericCollectionType() {
+        return m_relationType instanceof ParameterizedType;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents an id mapping.
+     */
+    public boolean isId(MetadataDescriptor descriptor) {
+        return isAnnotationPresent(Id.class, descriptor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this field accessor represents a m-m relationship.
+     */
+    public boolean isManyToMany(MetadataDescriptor descriptor) {
+        return isAnnotationPresent(ManyToMany.class, descriptor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a m-1 relationship.
+     */
+    public boolean isManyToOne(MetadataDescriptor descriptor) {
+        return isAnnotationPresent(ManyToOne.class, descriptor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a 1-m relationship.
+     */
+    public boolean isOneToMany(MetadataDescriptor descriptor) {
+        if (isAnnotationNotPresent(OneToMany.class, m_annotatedElement)) {
+            if (isGenericCollectionType() && isSupportedCollectionClass() && descriptor.getProject().hasEntity(getReferenceClassFromGeneric())) {
+                descriptor.getLogger().logConfigMessage(MetadataLogger.ONE_TO_MANY_MAPPING, m_annotatedElement);
+                return true;
+            }
+            
+            return false;
+        } else {
+            // Still need to make the call since we may need to ignore it
+            // because of meta-data complete.
+            return isAnnotationPresent(OneToMany.class, descriptor);
+        }
+    }
+    
+    /**
+     * INTERNAL: 
+     * Return true if this accessor represents a 1-1 relationship.
+     */
+    public boolean isOneToOne(MetadataDescriptor descriptor) {        
+        if (isAnnotationNotPresent(OneToOne.class, m_annotatedElement)) {
+            if (descriptor.getProject().hasEntity(getRawClass()) && ! isEmbedded(descriptor)) {
+                descriptor.getLogger().logConfigMessage(MetadataLogger.ONE_TO_ONE_MAPPING, m_annotatedElement);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            // Still need to make the call since we may need to ignore it
+            // because of meta-data complete.
+            return isAnnotationPresent(OneToOne.class, descriptor);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to return whether a class is a supported Collection. EJB 3.0 spec 
+     * currently only supports Collection, Set, List and Map.
+     */
+    public boolean isSupportedCollectionClass() {
+        Class rawClass = getRawClass();
+        
+        return rawClass.equals(Collection.class) || 
+               rawClass.equals(Set.class) || 
+               rawClass.equals(List.class) || 
+               rawClass.equals(Map.class);
+    }
+    
+    /**
+     * INTERNAL: 
+     * Return true if this accessor represents a version mapping.
+     */
+    public boolean isVersion(MetadataDescriptor descriptor) {
+        return isAnnotationPresent(Version.class, descriptor);
     }
     
     /**
@@ -150,7 +389,7 @@ public abstract class MetadataAccessibleObject  {
         // For bug210258, the getAnnotation and isAnnotationPresent method will 
         // use the hashmap to determine declared annotation.
         m_annotations = new HashMap();
-        for(Annotation annotation : annotatedElement.getDeclaredAnnotations()){
+        for (Annotation annotation : annotatedElement.getDeclaredAnnotations()) {
             String annotationName = annotation.toString().substring(1, annotation.toString().indexOf("("));
             m_annotations.put(annotationName,annotation);
         }

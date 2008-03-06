@@ -28,10 +28,9 @@ import org.eclipse.persistence.descriptors.DescriptorEventManager;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
-
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
 /**
  * A MetadataEntityListener and is placed on the owning entity's descriptor. 
@@ -147,7 +146,7 @@ public class EntityListenerMetadata extends DescriptorEventAdapter {
 		
 		return listener;
 	}
-	
+    
 	/**
 	 * INTERNAL:
 	 * Used for OX mapping.
@@ -361,7 +360,21 @@ public class EntityListenerMetadata extends DescriptorEventAdapter {
      * INTERNAL:
      */
     public void initializeListenerClass(Class listenerClass) {
-    	m_listener = MetadataHelper.getClassInstance(listenerClass);	
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    m_listener = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(listenerClass));
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.errorInstantiatingClass(listenerClass, exception.getException());
+                }
+            } else {
+                m_listener = PrivilegedAccessHelper.newInstanceFromClass(listenerClass);
+            }
+        } catch (IllegalAccessException exception) {
+            throw ValidationException.errorInstantiatingClass(listenerClass, exception);
+        } catch (InstantiationException exception) {
+            throw ValidationException.errorInstantiatingClass(listenerClass, exception);
+        }
     }
     
     /**

@@ -19,7 +19,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.DirectAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;

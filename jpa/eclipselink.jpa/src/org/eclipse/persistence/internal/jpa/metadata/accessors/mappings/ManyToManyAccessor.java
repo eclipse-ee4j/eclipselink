@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
 
@@ -19,7 +19,7 @@ import javax.persistence.ManyToMany;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 import org.eclipse.persistence.mappings.ManyToManyMapping;
@@ -44,10 +44,10 @@ public class ManyToManyAccessor extends CollectionAccessor {
         
         Annotation manyToMany = getAnnotation(ManyToMany.class);
         
-        setTargetEntity((Class) invokeMethod("targetEntity", manyToMany));
-        setCascadeTypes((Enum[]) invokeMethod("cascade", manyToMany));
-        setFetch((Enum) invokeMethod("fetch", manyToMany));
-        setMappedBy((String) invokeMethod("mappedBy", manyToMany));
+        setTargetEntity((Class) MetadataHelper.invokeMethod("targetEntity", manyToMany));
+        setCascadeTypes((Enum[]) MetadataHelper.invokeMethod("cascade", manyToMany));
+        setFetch((Enum) MetadataHelper.invokeMethod("fetch", manyToMany));
+        setMappedBy((String) MetadataHelper.invokeMethod("mappedBy", manyToMany));
     }
     
     /**
@@ -59,23 +59,23 @@ public class ManyToManyAccessor extends CollectionAccessor {
     }
     
     /**
-     * INTERNAL: (Override from RelationshipAccessor) 
-	 * A PrivateOwned setting on a ManyToMany is ignored. A log warning is
-     * issued.
-     */
-	protected boolean hasPrivateOwned() {
-        if (super.hasPrivateOwned()) {
-            getLogger().logWarningMessage(MetadataLogger.IGNORE_PRIVATE_OWNED_ANNOTATION, this);
-        }
-        
-        return false;
-    }
-    
-    /**
      * INTERNAL:
      */
 	public boolean isManyToMany() {
         return true;
+    }
+	
+    /**
+     * INTERNAL: (Override from RelationshipAccessor) 
+     * A PrivateOwned setting on a ManyToMany is ignored. A log warning is
+     * issued.
+     */
+    public boolean isPrivateOwned() {
+        if (super.isPrivateOwned()) {
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_PRIVATE_OWNED_ANNOTATION, this);
+        }
+        
+        return false;
     }
     
     /**

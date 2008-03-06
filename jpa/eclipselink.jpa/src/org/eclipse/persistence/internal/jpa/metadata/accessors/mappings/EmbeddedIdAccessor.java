@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.HashMap;
 
@@ -19,9 +19,10 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
-import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -49,13 +50,6 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
      */
     public EmbeddedIdAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
-    }
-    
-    /**
-     * INTERNAL: (Override from MetadataAccesor)
-     */
-	public boolean isEmbeddedId() {
-        return true;
     }
     
     /**
@@ -94,15 +88,15 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
      * Process an attribute override for an  embedded object, that is, an 
      * aggregate object mapping in EclipseLink.
 	 */
-	protected void processAttributeOverride(AggregateObjectMapping mapping, ColumnMetadata column) {
-        super.processAttributeOverride(mapping, column);
+	protected void processAttributeOverride(AggregateObjectMapping mapping, AttributeOverrideMetadata attributeOverride) {
+        super.processAttributeOverride(mapping, attributeOverride);
         
         // Update our primary key field with the attribute override field.
         // The super class with ensure the correct field is on the metadata
         // column.
-        DatabaseField field = column.getDatabaseField();
+        DatabaseField field = attributeOverride.getColumn().getDatabaseField();
         field.setTable(getDescriptor().getPrimaryTable());
-        m_idFields.put(column.getAttributeName(), field);
+        m_idFields.put(attributeOverride.getName(), field);
 	}
     
     /**
@@ -117,17 +111,15 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
         // After processing the embeddable class, we need to gather our 
         // primary keys fields that we will eventually set on the owning 
         // descriptor metadata.
-        if (isEmbeddedId()) {
-            if (embeddableDescriptor.getMappings().isEmpty()) {
-                String accessType = embeddableDescriptor.usesPropertyAccess() ? AccessType.PROPERTY.name() : AccessType.FIELD.name();
-                throw ValidationException.embeddedIdHasNoAttributes(getDescriptor().getJavaClass(), embeddableDescriptor.getJavaClass(), accessType);
-            }
+        if (embeddableDescriptor.getMappings().isEmpty()) {
+            String accessType = embeddableDescriptor.usesPropertyAccess() ? AccessType.PROPERTY.name() : AccessType.FIELD.name();
+            throw ValidationException.embeddedIdHasNoAttributes(getDescriptor().getJavaClass(), embeddableDescriptor.getJavaClass(), accessType);
+        }
 
-            for (DatabaseMapping mapping : embeddableDescriptor.getMappings()) {
-                DatabaseField field = (DatabaseField) mapping.getField().clone();
-                field.setTable(getDescriptor().getPrimaryTable());
-                m_idFields.put(mapping.getAttributeName(), field);
-            }
+        for (DatabaseMapping mapping : embeddableDescriptor.getMappings()) {
+            DatabaseField field = (DatabaseField) mapping.getField().clone();
+            field.setTable(getDescriptor().getPrimaryTable());
+            m_idFields.put(mapping.getAttributeName(), field);
         }
         
         return embeddableDescriptor;

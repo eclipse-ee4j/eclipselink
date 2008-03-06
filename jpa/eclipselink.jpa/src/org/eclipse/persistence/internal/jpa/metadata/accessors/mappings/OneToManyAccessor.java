@@ -10,16 +10,18 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.OneToMany;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -53,10 +55,10 @@ public class OneToManyAccessor extends CollectionAccessor {
         
         // We must check because OneToMany's can default.
         if (oneToMany != null) {
-        	setTargetEntity((Class) invokeMethod("targetEntity", oneToMany));
-        	setCascadeTypes((Enum[]) invokeMethod("cascade", oneToMany));
-        	setFetch((Enum) invokeMethod("fetch", oneToMany));
-        	setMappedBy((String) invokeMethod("mappedBy", oneToMany));
+        	setTargetEntity((Class) MetadataHelper.invokeMethod("targetEntity", oneToMany));
+        	setCascadeTypes((Enum[]) MetadataHelper.invokeMethod("cascade", oneToMany));
+        	setFetch((Enum) MetadataHelper.invokeMethod("fetch", oneToMany));
+        	setMappedBy((String) MetadataHelper.invokeMethod("mappedBy", oneToMany));
         } else {
         	// Set the annotation defaults.
         	setTargetEntity(void.class);
@@ -94,7 +96,7 @@ public class OneToManyAccessor extends CollectionAccessor {
         // Should be treated as a uni-directional mapping using a join table.
         if (mappedBy.equals("")) {
             // If we find a JoinColumn(s) annotations, then throw an exception.
-            if (hasJoinColumn() || hasJoinColumns()) {
+            if (isAnnotationPresent(JoinColumn.class) || isAnnotationPresent(JoinColumns.class)) {
             	throw ValidationException.uniDirectionalOneToManyHasJoinColumnAnnotations(getAttributeName(), getJavaClass());
             }
             

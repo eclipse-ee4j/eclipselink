@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.GenerationType;
 import javax.persistence.spi.PersistenceUnitInfo;
@@ -27,11 +28,13 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.DirectAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddableAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.MappedSuperclassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.RelationshipAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
+
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
@@ -59,7 +62,6 @@ import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 
-import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 
 /**
@@ -97,8 +99,8 @@ public class MetadataProject {
     // All the class accessors for this project (Entities and Embeddables).
     private HashMap<String, ClassAccessor> m_allAccessors;
     
-    // The class accessors for this project
-    private HashMap<String, ClassAccessor> m_classAccessors;
+    // The entity accessors for this project
+    private HashMap<String, EntityAccessor> m_entityAccessors;
     
     // The embeddable accessors for this project
     private HashMap<String, EmbeddableAccessor> m_embeddableAccessors;
@@ -151,7 +153,7 @@ public class MetadataProject {
 
         m_mappedSuperclasses = new HashMap<String, MappedSuperclassAccessor>();
         m_allAccessors = new HashMap<String, ClassAccessor>();
-        m_classAccessors = new HashMap<String, ClassAccessor>();
+        m_entityAccessors = new HashMap<String, EntityAccessor>();
         m_embeddableAccessors = new HashMap<String, EmbeddableAccessor>();
         m_accessorsWithCustomizer = new HashSet<ClassAccessor>();
         m_accessorsWithRelationships = new HashSet<ClassAccessor>();
@@ -189,11 +191,10 @@ public class MetadataProject {
         	}
         }
 
-        Project project = getSession().getProject();
-        ClassDescriptor descriptorOnProject = MetadataHelper.findDescriptor(project, descriptor.getJavaClass());
+        ClassDescriptor descriptorOnProject = findDescriptor(descriptor.getJavaClass());
 
         if (descriptorOnProject == null) {
-            project.addDescriptor(descriptor.getClassDescriptor());
+            getSession().getProject().addDescriptor(descriptor.getClassDescriptor());
         } else {
             descriptor.setDescriptor(descriptorOnProject);
         }
@@ -218,10 +219,10 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     * Add a ClassAccessor to this project.
+     * Add a EntityAccessor to this project.
      */
-    public void addClassAccessor(ClassAccessor accessor) {
-    	m_classAccessors.put(accessor.getJavaClassName(), accessor);
+    public void addEntityAccessor(EntityAccessor accessor) {
+    	m_entityAccessors.put(accessor.getJavaClassName(), accessor);
     	
     	addAccessor(accessor);
     }
@@ -485,6 +486,26 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * Search our sessions list of ordered descriptors for a descriptor 
+     * for the class named the same as the given class.
+     * 
+     * We do not use the session based getDescriptor() methods because they 
+     * require the project be initialized with classes.  We are avoiding using 
+     * a project with loaded classes so the project can be constructed prior to 
+     * any class weaving.
+     */
+    public ClassDescriptor findDescriptor(Class cls) {
+        for (ClassDescriptor descriptor : (Vector<ClassDescriptor>) getSession().getProject().getOrderedDescriptors()) {
+            if (descriptor.getJavaClassName().equals(cls.getName())){
+                return descriptor;
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
      * Return the accessor for the given class. Could be an entity or an
      * embeddable. Note: It may return null.
      */
@@ -516,8 +537,8 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public Collection<ClassAccessor> getClassAccessors() {
-        return m_classAccessors.values();
+    public Collection<EntityAccessor> getEntityAccessors() {
+        return m_entityAccessors.values();
     }
     
     /**
@@ -539,6 +560,14 @@ public class MetadataProject {
      */
     public EmbeddableAccessor getEmbeddableAccessor(String className) {
     	return m_embeddableAccessors.get(className);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the entity accessor for the given class.
+     */
+    public EntityAccessor getEntityAccessor(String className) {
+        return m_entityAccessors.get(className);
     }
     
     /**
@@ -625,7 +654,7 @@ public class MetadataProject {
      * INTERNAL:
      */
     public boolean hasEntity(Class cls) {
-        return m_classAccessors.containsKey(cls.getName());
+        return m_entityAccessors.containsKey(cls.getName());
     }
     
     /**
@@ -905,7 +934,18 @@ public class MetadataProject {
         String schema = MetadataHelper.getName(table.getSchema(), defaultSchema, table.getSchemaContext(), m_logger, table.getLocation());
         
         // Build a fully qualified name and set it on the table.
-        table.setFullyQualifiedTableName(MetadataHelper.getFullyQualifiedTableName(name, catalog, schema));
+        // schema, attach it if specified
+        String tableName = new String(name);
+        if (! schema.equals("")) {
+            tableName = schema + "." + tableName;
+        }
+    
+        // catalog, attach it if specified
+        if (! catalog.equals("")) {
+            tableName = catalog + "." + tableName;
+        }
+        
+        table.setFullyQualifiedTableName(tableName);
         
         // Process the unique constraints
         table.processUniqueConstraints();

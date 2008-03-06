@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.lang.annotation.Annotation;
 
@@ -19,6 +19,7 @@ import javax.persistence.OneToOne;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 import org.eclipse.persistence.mappings.OneToOneMapping;
@@ -47,11 +48,11 @@ public class OneToOneAccessor extends ObjectAccessor {
         
         // We must check because OneToMany's can default.
         if (oneToOne != null) {
-        	setTargetEntity((Class) invokeMethod("targetEntity", oneToOne));
-        	setCascadeTypes((Enum[]) invokeMethod("cascade", oneToOne));
-        	setFetch((Enum) invokeMethod("fetch", oneToOne));
-        	setOptional((Boolean) invokeMethod("optional", oneToOne));
-        	setMappedBy((String) invokeMethod("mappedBy", oneToOne));
+        	setTargetEntity((Class) MetadataHelper.invokeMethod("targetEntity", oneToOne));
+        	setCascadeTypes((Enum[]) MetadataHelper.invokeMethod("cascade", oneToOne));
+        	setFetch((Enum) MetadataHelper.invokeMethod("fetch", oneToOne));
+        	setOptional((Boolean) MetadataHelper.invokeMethod("optional", oneToOne));
+        	setMappedBy((String) MetadataHelper.invokeMethod("mappedBy", oneToOne));
         } else {
         	// Set the annotation defaults.
         	setTargetEntity(void.class);

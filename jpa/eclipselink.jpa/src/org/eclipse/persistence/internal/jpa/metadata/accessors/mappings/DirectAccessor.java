@@ -10,22 +10,25 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 
 import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverterMetadata;
@@ -49,19 +52,21 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
  * @author Guy Pelletier
  * @since TopLink 11g
  */
-public abstract class DirectAccessor extends NonRelationshipAccessor {
+public abstract class DirectAccessor extends MetadataAccessor {
     // Reserved converter names
     private static final String CONVERT_NONE = "none";
     private static final String CONVERT_SERIALIZED = "serialized";
     
 	private final static String DEFAULT_MAP_KEY_COLUMN_SUFFIX = "_KEY";
 	
-	private Enum m_fetch;
-	private Boolean m_optional;
 	private Boolean m_lob;
+    private Boolean m_optional;
+    
+	private Enum m_fetch;
 	private Enum m_enumerated;
-	private String m_convert;
 	private Enum m_temporal;
+	
+	private String m_convert;
 	
     /**
      * INTERNAL:
@@ -73,6 +78,29 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      */
     protected DirectAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
     	super(accessibleObject, classAccessor);
+    	
+    	// Set the lob if one is present.
+    	if (isAnnotationPresent(Lob.class)) {
+    	    m_lob = new Boolean(true);
+    	}
+    	
+    	// Set the enumerated if one is present.
+    	Annotation enumerated = getAnnotation(Enumerated.class);
+        if (enumerated != null) {
+            m_enumerated = (Enum) MetadataHelper.invokeMethod("value", enumerated);
+        }
+        
+        // Set the temporal type if one is present.
+        Annotation temporal = getAnnotation(Temporal.class);
+        if (temporal != null) {
+            m_temporal = (Enum) MetadataHelper.invokeMethod("value", temporal);
+        }
+        
+        // Set the convert value if one is present.
+        Annotation convert = getAnnotation(Convert.class);
+        if (convert != null) {
+            m_convert = (String) MetadataHelper.invokeMethod("value", convert);
+        }
     }
     
     /**
@@ -158,6 +186,22 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
     
     /**
      * INTERNAL:
+     * Return the field classification for the given temporal type.
+     */
+    protected Class getFieldClassification(Enum type) {
+        if (type.equals(TemporalType.DATE)){
+            return java.sql.Date.class;
+        } else if(type.equals(TemporalType.TIME)){
+            return java.sql.Time.class;
+        } else if(type.equals(TemporalType.TIMESTAMP)){
+            return java.sql.Timestamp.class;
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public Boolean getLob() {
@@ -184,34 +228,9 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * INTERNAL:
      */
     protected boolean hasConvert() {
-    	return m_convert != null || isAnnotationPresent(Convert.class);
+    	return m_convert != null;
     }
     
-    /**
-     * INTERNAL:
-	 * Method to check if this basic accessor has an enumerated sub-element.
-     */
-	public boolean hasEnumerated() {
-		return m_enumerated != null || isAnnotationPresent(Enumerated.class);
-    }
-	
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor represents an BLOB/CLOB mapping.
-     */
-    public boolean hasLob() {
-    	return m_lob != null || isAnnotationPresent(Lob.class);
-    }
-    
-    /**
-     * INTERNAL:
-     * Return true if this accessor is a temporal.
-     */
-    public boolean hasTemporal() {
-    	return m_temporal != null || isAnnotationPresent(Temporal.class);
-    }
-
     /**
      * INTERNAL:
      * Return true if this represents an enum type mapping. Will return true
@@ -221,13 +240,13 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
     	if (hasConvert()) {
     		// If we have an @Enumerated with a @Convert, the @Convert takes
     		// precedence and we will ignore the @Enumerated and log a message.
-    		if (hasEnumerated()) {
+    		if (m_enumerated != null) {
     			getLogger().logWarningMessage(MetadataLogger.IGNORE_ENUMERATED, getJavaClass(), getAnnotatedElement());
     		}
             
     		return false;
     	} else {
-    		return hasEnumerated() || MetadataHelper.isValidEnumeratedType(getReferenceClass());
+    		return m_enumerated != null || isValidEnumeratedType(getReferenceClass());
     	}
     }
     
@@ -237,15 +256,15 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      */
     public boolean isLob() {
     	if (hasConvert()) {
-			// If we have a @Lob with a @Convert, the @Convert takes precedence 
-    		// and we will ignore the @Lob and log a message.
-    		if (hasLob()) {
+			// If we have a Lob specified with a Convert, the Convert takes 
+    	    // precedence and we will ignore the Lob and log a message.
+    		if (m_lob != null) {
     			getLogger().logWarningMessage(MetadataLogger.IGNORE_LOB, getJavaClass(), getAnnotatedElement());
     		}
     		
     		return false;
     	} else {
-    		return hasLob();
+    		return m_lob != null;
     	}
     }
     
@@ -262,6 +281,27 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
     
     /**
      * INTERNAL:
+     * Returns true is the given class is primitive wrapper type.
+     */
+    protected boolean isPrimitiveWrapperClass(Class cls) {
+        return Long.class.isAssignableFrom(cls) ||
+               Short.class.isAssignableFrom(cls) ||
+               Float.class.isAssignableFrom(cls) ||
+               Byte.class.isAssignableFrom(cls) ||
+               Double.class.isAssignableFrom(cls) ||
+               Number.class.isAssignableFrom(cls) ||
+               Boolean.class.isAssignableFrom(cls) ||
+               Integer.class.isAssignableFrom(cls) ||
+               Character.class.isAssignableFrom(cls) ||
+               String.class.isAssignableFrom(cls) ||
+               java.math.BigInteger.class.isAssignableFrom(cls) ||
+               java.math.BigDecimal.class.isAssignableFrom(cls) ||
+               java.util.Date.class.isAssignableFrom(cls) ||
+               java.util.Calendar.class.isAssignableFrom(cls);
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if this accessor represents a serialized mapping.
      */
     public boolean isSerialized() {
@@ -269,7 +309,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
     		getLogger().logWarningMessage(MetadataLogger.IGNORE_SERIALIZED, getJavaClass(), getAnnotatedElement());
     		return false;
     	} else {
-    		return MetadataHelper.isValidSerializedType(getReferenceClass());
+    		return isValidSerializedType(getReferenceClass());
     	}
     }
     
@@ -285,14 +325,86 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
     		// If we have a Temporal specification with a Convert specification, 
     		// the Convert takes precedence and we will ignore the Temporal and 
     		// log a message.
-    		if (hasTemporal()) {
+    		if (m_temporal != null) {
     			getLogger().logWarningMessage(MetadataLogger.IGNORE_TEMPORAL, getJavaClass(), getAnnotatedElement());
     		}
             
     		return false;
     	} else {
-    		return hasTemporal() || MetadataHelper.isValidTemporalType(getReferenceClass());
+    		return m_temporal != null || isValidTemporalType(getReferenceClass());
     	}
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns true if the given class is a valid blob type.
+     */ 
+    protected boolean isValidBlobType(Class cls) {
+        return cls.equals(byte[].class) ||
+               cls.equals(Byte[].class) ||
+               cls.equals(java.sql.Blob.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns true if the given class is a valid clob type.
+     */  
+    protected boolean isValidClobType(Class cls) {
+        return cls.equals(char[].class) ||
+               cls.equals(String.class) ||
+               cls.equals(Character[].class) ||
+               cls.equals(java.sql.Clob.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns true if the given class is a valid lob type.
+     */
+    protected boolean isValidLobType(Class cls) {
+        return isValidClobType(cls) || isValidBlobType(cls);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if the given class is a valid enum type.
+     */
+    protected boolean isValidEnumeratedType(Class cls) {
+        return cls.isEnum();    
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns true if the given class is valid for SerializedObjectMapping.
+     */
+    protected boolean isValidSerializedType(Class cls) {
+        if (cls.isPrimitive()) {
+            return false;
+        }
+        
+        if (isPrimitiveWrapperClass(cls)) {    
+            return false;
+        }   
+        
+        if (isValidLobType(cls)) {
+            return false;
+        }
+        
+        if (isValidTemporalType(cls)) {
+            return false;
+        }
+     
+        return true;   
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns true if the given class is a valid temporal type and must be
+     * marked temporal.
+     */
+    protected boolean isValidTemporalType(Class cls) {
+        return (cls.equals(java.util.Date.class) ||
+                cls.equals(java.util.Calendar.class) ||
+                cls.equals(java.util.GregorianCalendar.class));
     }
     
     /**
@@ -304,9 +416,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * called on accessors that have a convert value specified.
      */
     public void processConvert() {
-    	Object convert = getAnnotation(Convert.class);
-    	String convertValue  = (m_convert == null) ? (String)invokeMethod("value", convert) : m_convert;
-    	processConvert(getDescriptor().getMappingForAttributeName(getAttributeName()), convertValue);
+    	processConvert(getDescriptor().getMappingForAttributeName(getAttributeName()), m_convert);
     }
     
     /**
@@ -350,33 +460,23 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
     protected void processEnumerated(DatabaseMapping mapping) {
         // If this accessor is tagged as an enumerated type, validate the
         // reference class.
-        if (hasEnumerated()) {
-            if (! MetadataHelper.isValidEnumeratedType(getReferenceClass())) {
-            	throw ValidationException.invalidTypeForEnumeratedAttribute(mapping.getAttributeName(), getReferenceClass(), getJavaClass());
+        if (m_enumerated != null && !isValidEnumeratedType(getReferenceClass())) {
+            throw ValidationException.invalidTypeForEnumeratedAttribute(mapping.getAttributeName(), getReferenceClass(), getJavaClass());
+        } else {
+            // Create an EnumTypeConverter and set it on the mapping.
+            if (m_enumerated == null) {
+                // TODO: Log a defaulting message
+                setConverter(mapping, new EnumTypeConverter(mapping, getReferenceClass(), true));
+            } else {
+                setConverter(mapping, new EnumTypeConverter(mapping, getReferenceClass(), m_enumerated.equals(EnumType.ORDINAL)));
             }
         }
-
-        Enum enumType;
-        if (m_enumerated == null) {
-    		Object enumerated = getAnnotation(Enumerated.class);
-            
-            if (enumerated == null) {
-            	enumType = EnumType.ORDINAL;
-            } else {
-            	enumType = (Enum)invokeMethod("value", enumerated); 
-            }
-    	} else {
-    		enumType = m_enumerated;
-    	}
-        
-        // Create an EnumTypeConverter and set it on the mapping.
-        setConverter(mapping, new EnumTypeConverter(mapping, getReferenceClass(), enumType.equals(EnumType.ORDINAL)));
     }
     
     /**
      * INTERNAL:
      * 
-     * Process an @Enumerated, @Lob or @Temporal annotation. Will default
+     * Process an Enumerated, Lob or Temporal specification. Will default
      * a serialized converter if necessary.
      */
     protected void processJPAConverters(DatabaseMapping mapping) {
@@ -403,10 +503,10 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
     protected void processLob(DatabaseMapping mapping) {
         // Set the field classification type on the mapping based on the
         // referenceClass type.
-        if (MetadataHelper.isValidClobType(getReferenceClass())) {
+        if (isValidClobType(getReferenceClass())) {
             setFieldClassification(mapping, java.sql.Clob.class);   
             setConverter(mapping, new TypeConversionConverter(mapping));
-        } else if (MetadataHelper.isValidBlobType(getReferenceClass())) {
+        } else if (isValidBlobType(getReferenceClass())) {
             setFieldClassification(mapping, java.sql.Blob.class);
             setConverter(mapping, new TypeConversionConverter(mapping));
         } else if (Helper.classImplementsInterface(getReferenceClass(), Serializable.class)) {
@@ -425,13 +525,7 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      */
     protected void processMappingConverter(DatabaseMapping mapping) {
     	if (m_convert == null) {
-            Object convert = getAnnotation(Convert.class);
-            
-            if (convert == null) {
-            	processJPAConverters(mapping);
-            } else {
-            	processMappingConverter(mapping, (String)invokeMethod("value", convert)); 
-            }
+            processJPAConverters(mapping);
     	} else {
     		processMappingConverter(mapping, m_convert);
     	}
@@ -490,26 +584,23 @@ public abstract class DirectAccessor extends NonRelationshipAccessor {
      * Process a temporal type accessor.
      */
     protected void processTemporal(DatabaseMapping mapping) {
-    	Enum temporalType = null;
-    	
-    	if (m_temporal == null) {
-        	Object temporal = getAnnotation(Temporal.class);
-        	
-        	if (temporal != null) {
-        	    temporalType=(Enum)invokeMethod("value", temporal);
-        	}
-        } else {
-        	temporalType = m_temporal;
-        }
-    	
-        if (temporalType == null) {
+        if (m_temporal == null) {
         	// We have a temporal basic, but the temporal type was not
         	// specified. Per the JPA spec we must throw an exception.
         	throw ValidationException.noTemporalTypeSpecified(getAttributeName(), getJavaClass());
         } else {
-            if (MetadataHelper.isValidTemporalType(getReferenceClass())) {
+            if (isValidTemporalType(getReferenceClass())) {
                 // Set a TypeConversionConverter on the mapping.
-                setFieldClassification(mapping, MetadataHelper.getFieldClassification(temporalType));
+                if (m_temporal.equals(TemporalType.DATE)) {
+                    setFieldClassification(mapping, java.sql.Date.class);
+                } else if(m_temporal.equals(TemporalType.TIME)) {
+                    setFieldClassification(mapping,java.sql.Time.class);
+                } else {
+                    // Through annotation and XML validation, it must be 
+                    // TemporalType.TIMESTAMP and can't be anything else.
+                    setFieldClassification(mapping, java.sql.Timestamp.class);
+                }
+                
                 setConverter(mapping, new TypeConversionConverter(mapping));
             } else {
             	throw ValidationException.invalidTypeForTemporalAttribute(getAttributeName(), getReferenceClass(), getJavaClass());

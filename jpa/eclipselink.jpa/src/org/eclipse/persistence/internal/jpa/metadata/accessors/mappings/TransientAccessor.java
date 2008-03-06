@@ -10,40 +10,27 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 
 /**
- * A mapped superclass accessor.
+ * An transient accessor ... which does nothing ... just a clever way to
+ * make sure we don't process the accessible object for annotations.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class MappedSuperclassAccessor extends ClassAccessor {
+public class TransientAccessor extends MetadataAccessor {
 	/**
      * INTERNAL:
      */
-    public MappedSuperclassAccessor() {}
+    public TransientAccessor() {}
     
     /**
      * INTERNAL:
      */
-    public MappedSuperclassAccessor(Class cls, MetadataDescriptor descriptor, MetadataProject project) {
-    	super(cls, descriptor, project);
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the items of interest on a mapped superclass.
-     */
-    public void process() {
-        // Process the common class level attributes that an entity or
-        // mapped superclass may define.
-        processClassMetadata();
-            
-        // Process the accessors from the mapped superclass.
-        processAccessors();
-    }
+     public void process() {
+    	 // Does nothing ...
+     }
 }

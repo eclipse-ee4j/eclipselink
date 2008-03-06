@@ -17,7 +17,7 @@ import java.lang.reflect.AnnotatedElement;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.DirectAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
 
 /**
  * INTERNAL:

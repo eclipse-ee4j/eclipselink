@@ -14,8 +14,6 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import java.lang.reflect.Field;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
-
 /**
  * An object to hold onto a valid EJB 3.0 decorated field.
  * 
@@ -31,6 +29,6 @@ public class MetadataField extends MetadataAccessibleObject {
         
         setName(field.getName());
         setAttributeName(field.getName());
-        setRelationType(MetadataHelper.getGenericType(field));
+        setRelationType(field.getGenericType());
     }
 }

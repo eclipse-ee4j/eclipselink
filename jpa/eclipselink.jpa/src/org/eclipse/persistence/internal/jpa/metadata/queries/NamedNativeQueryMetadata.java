@@ -16,7 +16,6 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -60,19 +59,19 @@ public class NamedNativeQueryMetadata extends QueryMetadata {
     	if (objectToCompare instanceof NamedNativeQueryMetadata) {
     		NamedNativeQueryMetadata namedNativeQuery = (NamedNativeQueryMetadata) objectToCompare;
     		
-    		if (! MetadataHelper.valuesMatch(getName(), namedNativeQuery.getName())) {
+    		if (! org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.valuesMatch(getName(), namedNativeQuery.getName())) {
     			return false;
     		}
     		
-    		if (! MetadataHelper.valuesMatch(getQuery(), namedNativeQuery.getQuery())) {
+    		if (! org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.valuesMatch(getQuery(), namedNativeQuery.getQuery())) {
     			return false;
     		}
     		
-    		if (! MetadataHelper.valuesMatch(getResultClass(), namedNativeQuery.getResultClass())) {
+    		if (! org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.valuesMatch(getResultClass(), namedNativeQuery.getResultClass())) {
     			return false;
     		}
     		
-    		if (! MetadataHelper.valuesMatch(getResultSetMapping(), namedNativeQuery.getResultSetMapping())) {
+    		if (! org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.valuesMatch(getResultSetMapping(), namedNativeQuery.getResultSetMapping())) {
     			return false;
     		}
     		

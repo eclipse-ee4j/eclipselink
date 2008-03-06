@@ -15,7 +15,7 @@ package org.eclipse.persistence.internal.jpa.metadata.listeners;
 import java.lang.reflect.Method;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 
 /**
  * A callback listener for those entities that define callback methods. 
@@ -29,7 +29,7 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
     /**
      * INTERNAL: 
      */
-    public EntityClassListenerMetadata(ClassAccessor classAccessor) {
+    public EntityClassListenerMetadata(EntityAccessor classAccessor) {
         super(classAccessor.getJavaClass());
         
         // Set any XML defined call back method names.

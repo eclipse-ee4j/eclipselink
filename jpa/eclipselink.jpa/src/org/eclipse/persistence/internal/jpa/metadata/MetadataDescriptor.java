@@ -26,10 +26,11 @@ import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.BasicCollectionAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicCollectionAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.RelationshipAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
@@ -314,7 +315,7 @@ public class MetadataDescriptor {
         
         if (accessor == null) {
             // Perhaps we have a property name ...
-            accessor = m_accessors.get(MetadataHelper.getAttributeNameFromMethodName(fieldOrPropertyName));
+            accessor = m_accessors.get(MetadataMethod.getAttributeNameFromMethodName(fieldOrPropertyName));
            
             // If still no accessor and we are an inheritance subclass, check 
             // the root descriptor now.

@@ -35,8 +35,9 @@ import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.ClassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddableAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 
@@ -82,7 +83,7 @@ public class MetadataProcessor {
     	// Process the listeners for all the class accessors, but before
     	// doing so, update the accessors associated class since the loader 
     	// should have changed changed.
-    	for (ClassAccessor accessor : m_project.getClassAccessors()) { 
+    	for (EntityAccessor accessor : m_project.getEntityAccessors()) { 
             accessor.setJavaClass(accessor.getDescriptor().getClassDescriptor().getJavaClass());
             accessor.processListeners(m_loader);
     	}
@@ -209,7 +210,7 @@ public class MetadataProcessor {
             Class candidateClass = PersistenceUnitProcessor.loadClass(className, m_loader, true);
             
             if (PersistenceUnitProcessor.isEntity(candidateClass) && ! m_project.hasEntity(candidateClass)) {
-            	m_project.addClassAccessor(new ClassAccessor(candidateClass, m_project));
+            	m_project.addEntityAccessor(new EntityAccessor(candidateClass, m_project));
             } else if (PersistenceUnitProcessor.isEmbeddable(candidateClass) && ! m_project.hasEmbeddable(candidateClass)) {
             	m_project.addEmbeddableAccessor(new EmbeddableAccessor(candidateClass, m_project));
             } 

@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 

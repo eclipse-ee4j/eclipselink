@@ -10,14 +10,15 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import static org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedAccessor.AccessType.MIXED;
-import static org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedAccessor.AccessType.PROPERTY;
-import static org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedAccessor.AccessType.FIELD;
-import static org.eclipse.persistence.internal.jpa.metadata.accessors.EmbeddedAccessor.AccessType.UNDEFINED;
+import static org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor.AccessType.MIXED;
+import static org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor.AccessType.PROPERTY;
+import static org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor.AccessType.FIELD;
+import static org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor.AccessType.UNDEFINED;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.AssociationOverride;
@@ -30,13 +31,14 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -51,16 +53,12 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
 public class EmbeddedAccessor extends MetadataAccessor {
     enum AccessType {FIELD, PROPERTY, UNDEFINED, MIXED};
     
-    private boolean m_loadedFromAnnotations;
     private List<AttributeOverrideMetadata> m_attributeOverrides;
 
     /**
      * INTERNAL:
-     * Default constructor.
      */
-    public EmbeddedAccessor() {
-    	m_loadedFromAnnotations = false;
-    }
+    public EmbeddedAccessor() {}
     
     /**
      * INTERNAL:
@@ -68,7 +66,22 @@ public class EmbeddedAccessor extends MetadataAccessor {
     public EmbeddedAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
         
-        m_loadedFromAnnotations = true;
+        // Set the attribute overrides if some are present.
+        m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
+        
+        // Process the attribute overrides first.
+        Annotation attributeOverrides = getAnnotation(AttributeOverrides.class);
+        if (attributeOverrides != null) {
+            for (Annotation attributeOverride : (Annotation[]) MetadataHelper.invokeMethod("value", attributeOverrides)) {
+                m_attributeOverrides.add(new AttributeOverrideMetadata(attributeOverride, getJavaClassName()));
+            }
+        }
+        
+        // Process the single attribute override second.
+        Annotation attributeOverride = getAnnotation(AttributeOverride.class);  
+        if (attributeOverride != null) {
+            m_attributeOverrides.add(new AttributeOverrideMetadata(attributeOverride, getJavaClassName()));
+        }
     }
     
     /**
@@ -170,6 +183,18 @@ public class EmbeddedAccessor extends MetadataAccessor {
 	}
 	
     /**
+     * INTERNAL: (Override from MetadataAccessor)
+     */
+    public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
+        super.init(accessibleObject, accessor);
+        
+        // Set other column metadata that was not populated through OX.
+        for (AttributeOverrideMetadata attributeOverride : m_attributeOverrides) {
+            attributeOverride.getColumn().setAttributeName(attributeOverride.getName());
+        }
+    }
+    
+    /**
      * INTERNAL:
      */
 	public boolean isEmbedded() {
@@ -218,9 +243,11 @@ public class EmbeddedAccessor extends MetadataAccessor {
             setAccessorMethods(mapping);
         
             // Process attribute overrides.
-            processAttributeOverrides(mapping);
+            for (AttributeOverrideMetadata attributeOverride : m_attributeOverrides) {
+                processAttributeOverride(mapping, attributeOverride);
+            } 
             
-            // Process association overrides.
+            // Process association overrides (this is an annotation only thing).
             processAssociationOverrides(mapping);
         
             // Add the mapping to the descriptor and we are done.
@@ -246,13 +273,13 @@ public class EmbeddedAccessor extends MetadataAccessor {
         
         // AssociationOverride.name(), the name of the attribute we want to
         // override.
-        String name = (String)invokeMethod("name", associationOverride); 
+        String name = (String) MetadataHelper.invokeMethod("name", associationOverride); 
         DatabaseMapping mapping = aggregateDescriptor.getMappingForAttributeName(name);
         
         if (mapping != null && mapping.isOneToOneMapping()) {
             int index = 0;
             
-            for (Object joinColumn : (Object[])invokeMethod("joinColumns", associationOverride)) { 
+            for (Annotation joinColumn : (Annotation[]) MetadataHelper.invokeMethod("joinColumns", associationOverride)) { 
                 // We can't change the mapping from the aggregate descriptor
                 // so we have to add field name translations. This needs to be
                 // tested since I am not entirely sure if this will acutally
@@ -263,7 +290,7 @@ public class EmbeddedAccessor extends MetadataAccessor {
                 // therefore in the same order the foreign keys were added to
                 // the mapping.
                 DatabaseField fkField = ((OneToOneMapping) mapping).getForeignKeyFields().elementAt(index++);
-                aggregateMapping.addFieldNameTranslation((String)invokeMethod("name", joinColumn), fkField.getName());
+                aggregateMapping.addFieldNameTranslation((String) MetadataHelper.invokeMethod("name", joinColumn), fkField.getName());
             }   
         } else {
             // For now fail silently.
@@ -279,15 +306,15 @@ public class EmbeddedAccessor extends MetadataAccessor {
      */
     protected void processAssociationOverrides(AggregateObjectMapping mapping) {
         // Look for an @AssociationOverrides.
-        Object associationOverrides = getAnnotation(AssociationOverrides.class);
+        Annotation associationOverrides = getAnnotation(AssociationOverrides.class);
         if (associationOverrides != null) {
-            for (Object associationOverride : (Object[])invokeMethod("value", associationOverrides)) {
+            for (Annotation associationOverride : (Annotation[]) MetadataHelper.invokeMethod("value", associationOverrides)) {
                 processAssociationOverride(associationOverride, mapping);
             }
         }
         
         // Look for an @AssociationOverride.
-        Object associationOverride = getAnnotation(AssociationOverride.class);	
+        Annotation associationOverride = getAnnotation(AssociationOverride.class);	
         if (associationOverride != null) {
             processAssociationOverride(associationOverride, mapping);
         }
@@ -298,8 +325,8 @@ public class EmbeddedAccessor extends MetadataAccessor {
      * Process an attribute override for an embedded object, that is, an 
      * aggregate object mapping in EclipseLink.
 	 */
-	protected void processAttributeOverride(AggregateObjectMapping mapping, ColumnMetadata column) {
-        String attributeName = column.getAttributeName();
+	protected void processAttributeOverride(AggregateObjectMapping mapping, AttributeOverrideMetadata attributeOverride) {
+        String attributeName = attributeOverride.getName();
         
         // Set the attribute name on the aggregate.
         DatabaseMapping aggregateMapping = getReferenceDescriptor().getMappingForAttributeName(attributeName);
@@ -313,52 +340,11 @@ public class EmbeddedAccessor extends MetadataAccessor {
         if (getDescriptor().hasAttributeOverrideFor(attributeName)) {
             // Update the field on this metadata column. We do that so that
             // an embedded id can associate the correct id fields.
-            column.setDatabaseField(getDescriptor().getAttributeOverrideFor(attributeName).getColumn().getDatabaseField());
+            attributeOverride.getColumn().setDatabaseField(getDescriptor().getAttributeOverrideFor(attributeName).getColumn().getDatabaseField());
         } 
         
-        mapping.addFieldNameTranslation(column.getDatabaseField().getQualifiedName(), aggregateMapping.getField().getName());
+        mapping.addFieldNameTranslation(attributeOverride.getColumn().getDatabaseField().getQualifiedName(), aggregateMapping.getField().getName());
 	}
-    
-    /**
-     * INTERNAL: (Overridden in EmbeddedIdAccessor)
-     * Process the AttributeOverrides annotation for an embedded object, that 
-     * is, an aggregate object mapping in EclipseLink. 
-     * 
-     * It will also look for an AttributeOverride annotation.
-     */
-    protected void processAttributeOverrides(AggregateObjectMapping mapping) {
-    	// Process the attribute overrides from XML if specified.
-    	if (m_attributeOverrides != null) {
-    		for (AttributeOverrideMetadata attributeOverride : m_attributeOverrides) {
-    			ColumnMetadata overrideColumn = attributeOverride.getColumn();
-    		
-    			// Set other column metadata that was not populated through OX.
-    			overrideColumn.setAttributeName(attributeOverride.getName());
-    		
-    			// Process the attribute override.
-    			processAttributeOverride(mapping, overrideColumn);
-    		}
-    	} else if (m_loadedFromAnnotations) {
-    		// If the embedded is specified in XML with no attribute overrides, 
-    		// we do NOT search the class for attribute overrides. It is assumed 
-    		// that they are to be defaulted.
-    	     
-	        // Look for an @AttributeOverrides.
-	        Annotation attributeOverrides = getAnnotation(AttributeOverrides.class);
-	        
-	        if (attributeOverrides != null) {
-	            for (Annotation attributeOverride : (Annotation[])invokeMethod("value", attributeOverrides)) {
-	                processAttributeOverride(mapping, new ColumnMetadata((Annotation) invokeMethod("column", attributeOverride), (String) invokeMethod("name", attributeOverride)));
-	            }
-	        }
-	        
-	        // Look for an @AttributeOverride.
-	        Annotation attributeOverride = getAnnotation(AttributeOverride.class);	
-	        if (attributeOverride != null) {
-	            processAttributeOverride(mapping, new ColumnMetadata((Annotation) invokeMethod("column", attributeOverride), (String) invokeMethod("name", attributeOverride)));
-	        }
-    	}
-    }
     
     /**
      * INTERNAL: (Overridden in EmbeddedIdAccessor)
@@ -382,7 +368,7 @@ public class EmbeddedAccessor extends MetadataAccessor {
         	// or an embedded element within a known entity. Therefore validate 
         	// that the reference class does indeed have an Embeddable 
         	// annotation.
-        	if (MetadataHelper.isAnnotationNotPresent(Embeddable.class, getReferenceClass())) {
+        	if (isAnnotationNotPresent(Embeddable.class, getReferenceClass())) {
         		throw ValidationException.invalidEmbeddedAttribute(getJavaClass(), getAttributeName(), getReferenceClass());
         	} else {
         		embeddableAccessor = new EmbeddableAccessor(getReferenceClass(), getProject());

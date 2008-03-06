@@ -37,18 +37,28 @@ public class JoinTableMetadata extends TableMetadata {
     
     /**
      * INTERNAL:
+     * Constructor used when defaultign a join table. Initialize
+     * the join columns to empty lists.
+     */
+    public JoinTableMetadata(String annotatedElementName) {
+        super(annotatedElementName);
+        
+        m_joinColumns = new ArrayList<JoinColumnMetadata>();
+        m_inverseJoinColumns = new ArrayList<JoinColumnMetadata>();
+    }
+    
+    /**
+     * INTERNAL:
      */
     public JoinTableMetadata(Annotation joinTable, String annotatedElementName) {
     	super(annotatedElementName);
     	
-        if (joinTable != null) {
-            setName((String) invokeMethod("name", joinTable));
-            setSchema((String) invokeMethod("schema", joinTable));
-            setCatalog((String) invokeMethod("catalog", joinTable));
-            setUniqueConstraints((Annotation[]) invokeMethod("uniqueConstraints", joinTable));
-            setJoinColumns((Annotation[]) invokeMethod("joinColumns", joinTable));
-    	    setInverseJoinColumns((Annotation[]) invokeMethod("inverseJoinColumns", joinTable));
-        }
+        setName((String) invokeMethod("name", joinTable));
+        setSchema((String) invokeMethod("schema", joinTable));
+        setCatalog((String) invokeMethod("catalog", joinTable));
+        setUniqueConstraints((Annotation[]) invokeMethod("uniqueConstraints", joinTable));
+        setJoinColumns((Annotation[]) invokeMethod("joinColumns", joinTable));
+    	setInverseJoinColumns((Annotation[]) invokeMethod("inverseJoinColumns", joinTable));
     }
     
     /**

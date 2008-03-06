@@ -10,8 +10,10 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.accessors;
+package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
+import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 
 /**
@@ -38,16 +40,17 @@ public class EmbeddableAccessor extends ClassAccessor {
      * Process the items of interest on an embeddable class.
      */
     public void process() {
+        // If a Cache annotation is present throw an exception.
+        if (isAnnotationPresent(Cache.class)) {
+            throw ValidationException.cacheNotSupportedWithEmbeddable(getJavaClass());
+        } 
+        
     	// This accessor represents an embeddable class
         // Process @Customizer
         processCustomizer();
         
         // Process the TopLink converters if specified.
-        processConverters();
-        
-        // Process the @Cache (doesn't really, will throw an exception
-        // if defined on an embeddable)
-        processCache();
+        processConverters();   
         
         // Process the @ChangeTracking
         processChangeTracking();
