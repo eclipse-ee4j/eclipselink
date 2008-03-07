@@ -15,14 +15,14 @@ package org.eclipse.persistence.internal.identitymaps;
 import java.lang.ref.*;
 
 /**
- * <p><b>Purpose</b>: A SoftCacheWeakIdentityMap is identical to the WeakIdentityMap, however the weak
+ * <p><b>Purpose</b>: A SoftCacheWeakIdentityMap is identical to the WeakIdentityMap, however the weak reference
  * can be a performance problem for some types of apps because it can cause too much garbage collection
  * of objects read causing them to be re-read and re-built (this defeats the purpose of the cache).
- * The SoftCacheWeakIdentityMap solves this through also holding a fixed number of objects is memory to improve caching.
+ * The SoftCacheWeakIdentityMap solves this through also holding a fixed number of objects in memory to improve caching.
  * <p><b>Responsibilities</b>:<ul>
  * <li> Guarantees identity
  * <li> Allows garbage collection
- * <li> Increases performance through maintaining a fixed size cache of MRU objects when memory is available.
+ * <li> Increases performance by maintaining a fixed size cache of MRU objects when memory is available.
  * <li> The default size of the reference cache is the max size.
  * </ul>
  * @since TOPLink/Java 1.2

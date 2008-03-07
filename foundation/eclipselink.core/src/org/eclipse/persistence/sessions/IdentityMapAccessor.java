@@ -82,7 +82,7 @@ public interface IdentityMapAccessor {
      * of the specified row (ie. the database record) and Class type.
      * @param rowContainingPrimaryKey Record
      * @param theClass Class type to be found 
-     * @return boolean - true if Object in indentity map
+     * @return boolean - true if Object is in identity map
      */
     public boolean containsObjectInIdentityMap(Record rowContainingPrimaryKey, Class theClass);
 

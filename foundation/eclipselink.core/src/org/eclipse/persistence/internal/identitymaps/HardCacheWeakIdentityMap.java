@@ -16,20 +16,21 @@ import java.util.*;
 import org.eclipse.persistence.internal.helper.linkedlist.*;
 
 /**
- * <p><b>Purpose</b>: A weak cache is identical to the weak identity map, however the weak
+ * <p><b>Purpose</b>: A HardCacheWeakIdentityMap is identical to the weak identity map, however the weak reference
  * can be a performance problem for some types of apps because it can cause too much garbage collection
  * of objects read causing them to be re-read and re-built (this defeats the purpose of the cache).
- * The weak cache solves this through also holding a fixed number of objects is memory to improve caching.
- * This makes used of an exposed node linked list to maintain the objects by storing the link nodes in the cache key.
+ * The hard weak cache solves this by also holding a fixed number of objects in memory to improve caching.<br>
+ * This class makes use of an exposed node linked list to maintain the objects by storing the link nodes in the cache key.
  * <p><b>Responsibilities</b>:<ul>
  * <li> Guarantees identity
  * <li> Allows garbage collection
- * <li> Increases performance through maintaining a fixed size cache of MRU objects when memory is available
+ * <li> Increases performance by maintaining a fixed size cache of LRU objects when memory is available
  * <li> The default size of the reference cache is half the max size
  * </ul>
  * @since TOPLink/Java 1.2
  */
 public class HardCacheWeakIdentityMap extends WeakIdentityMap {
+    /** A subset of cache entries have hard references maintained in this list to reduce garbage collection frequency */
     protected ExposedNodeLinkedList referenceCache;
 
     public HardCacheWeakIdentityMap(int size) {

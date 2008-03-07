@@ -537,7 +537,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Reset the entire object cache.
      * <p> NOTE: be careful using this method. This method blows away both this session's and its parents caches,
      * this includes the server cache or any other cache. This throws away any objects that have been read in.
-     * Extream caution should be used before doing this because object identity will no longer
+     * Extreme caution should be used before doing this because object identity will no longer
      * be maintained for any objects currently read in.  This should only be called
      * if the application knows that it no longer has references to object held in the cache.
      */
@@ -562,7 +562,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * PUBLIC:
      * Reset the entire local object cache.
      * This throws away any objects that have been read in.
-     * Extream caution should be used before doing this because object identity will no longer
+     * Extreme caution should be used before doing this because object identity will no longer
      * be maintained for any objects currently read in.  This should only be called
      * if the application knows that it no longer has references to object held in the cache.
      */
@@ -577,7 +577,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     /**
      * ADVANCED:
      * Set an object to be invalid in the TopLink identity maps.
-     * If the object does not exist in the cache, thiss method will return
+     * If the object does not exist in the cache, this method will return
      * without any action
      */
     public void invalidateObject(Object object) {

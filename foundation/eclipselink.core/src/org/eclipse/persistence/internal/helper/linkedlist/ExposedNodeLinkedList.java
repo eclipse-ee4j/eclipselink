@@ -19,7 +19,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
  * INTERNAL:
  * A custom implementation of a linked list.  This list exposes the linked nodes
  * directly to the developer.  It allows nodes to be referenced in code for quick
- * list manipulation (ie reshuffle, remove, or queueing)
+ * list manipulation (ie reshuffle, remove, or queuing)
  * It is specifically used in the EclipseLink cache write lock mechanism in order
  * to allow quick removal of objects from the list while still providing the getFirst()
  * addLast() functionality of a queue.  The alternative java classes LinkedList, LinkedHashMap
