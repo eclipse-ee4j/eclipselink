@@ -15,6 +15,8 @@ package org.eclipse.persistence.sdo;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
+import commonj.sdo.helper.XSDHelper;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1122,5 +1124,71 @@ public class SDOProperty implements Property, Serializable {
     
     public boolean isFinalized(){
       return finalized;
+    }
+    
+    /**
+     * Return a unique hashCode (as an int) for this instance.
+     */
+    public int hashCode() {
+        int hash = 7;
+        hash = (31 * hash) + ((null == getName()) ? 0 : getName().hashCode());
+        hash = (31 * hash) + ((null == getUri()) ? 0 : getUri().hashCode());
+        return hash;
+    }
+
+    /**
+     * Indicate if a given SDOProperty instance is equal to this instance.
+     * Equality is determined based on name, uri, and type.  In addition,
+     * checking will be done to ensure that both properties are to be
+     * serialized in the same manner, ie. both to XML element or both to 
+     * XML attribute.
+     * 
+     * @param obj Object to compare to this SDOProperty instance
+     * @return true if obj is equal to this SDOProperty instance, false if not 
+     */
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        SDOProperty prop;
+        try {
+            prop = (SDOProperty) obj;
+        } catch (ClassCastException ccx) {
+            // not an SDOProperty
+            return false;
+        }
+        // check type
+        if (prop.getType() == null) {
+            if (this.getType() != null) {
+                return false;
+            }
+        } else if (this.getType() == null || !((SDOType)this.getType()).equals((SDOType)prop.getType())) {
+            return false;
+        }
+        // check name and URI
+        if (prop.getName() == null) {
+            if (this.getName() != null) {
+                return false;
+            }
+        } else if (this.getName() == null || !this.getName().equals(prop.getName())) {
+            return false;
+        }
+        if (prop.getUri() == null) {
+            if (this.getUri() != null) {
+                return false;
+            }
+        } else if (this.getUri() == null || !this.getUri().equals(prop.getUri())) {
+            return false;
+        }
+        // check attribute vs. element
+        XSDHelper helper = aHelperContext.getXSDHelper(); 
+        if (helper.isAttribute(this)) {
+            if (helper.isElement(prop)) {
+                return false;
+            }
+        } else if (helper.isAttribute(prop)) {
+            return false;
+        }
+        return true;
     }
 }
