@@ -232,6 +232,46 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         field4.setIsIdentity(false );
         table.addField(field4);
     
+        FieldDefinition field5 = new FieldDefinition();
+        field5.setName("START_TIME");
+        field5.setTypeName("TIME");
+        field5.setSize(23);
+        field5.setShouldAllowNull(true);
+        field5.setIsPrimaryKey(false);
+        field5.setUnique(false);
+        field5.setIsIdentity(false);
+        table.addField(field5);
+
+        FieldDefinition field6 = new FieldDefinition();
+        field6.setName("END_TIME");
+        field6.setTypeName("TIME");
+        field6.setSize(23);
+        field6.setShouldAllowNull(true);
+        field6.setIsPrimaryKey(false);
+        field6.setUnique(false);
+        field6.setIsIdentity(false);
+        table.addField(field6);
+
+        FieldDefinition fieldOvertimeStart = new FieldDefinition();
+        fieldOvertimeStart.setName("START_OVERTIME");
+        fieldOvertimeStart.setTypeName("TIME");
+        fieldOvertimeStart.setSize(23);
+        fieldOvertimeStart.setShouldAllowNull(true);
+        fieldOvertimeStart.setIsPrimaryKey(false);
+        fieldOvertimeStart.setUnique(false);
+        fieldOvertimeStart.setIsIdentity(false);
+        table.addField(fieldOvertimeStart);
+
+        FieldDefinition fieldOvertimeEnd = new FieldDefinition();
+        fieldOvertimeEnd.setName("END_OVERTIME");
+        fieldOvertimeEnd.setTypeName("TIME");
+        fieldOvertimeEnd.setSize(23);
+        fieldOvertimeEnd.setShouldAllowNull(true);
+        fieldOvertimeEnd.setIsPrimaryKey(false);
+        fieldOvertimeEnd.setUnique(false);
+        fieldOvertimeEnd.setIsIdentity(false);
+        table.addField(fieldOvertimeEnd);
+
         // SECTION: FIELD
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field8 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field8.setName("ADDR_ID");

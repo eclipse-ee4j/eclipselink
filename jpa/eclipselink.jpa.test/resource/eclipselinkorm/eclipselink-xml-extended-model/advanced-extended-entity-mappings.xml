@@ -117,6 +117,24 @@
                     <column name="END_DATE" nullable="true"/>
                 </attribute-override>
             </embedded>
+            <transformation name="normalHours" mutable="false">
+                <read-transformer method="buildNormalHours"/>
+                <write-transformer method="getStartTime">
+                    <column name="START_TIME"/>
+                </write-transformer>
+                <write-transformer method="getEndTime">
+                    <column name="END_TIME"/>
+                </write-transformer>
+            </transformation>
+            <transformation name="overtimeHours" mutable="false">
+                <read-transformer transformer-class="org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedReadTransformer"/>
+                <write-transformer transformer-class="org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedWriteTransformer">
+                    <column name="START_OVERTIME"/>
+                </write-transformer>
+                <write-transformer transformer-class="org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedWriteTransformer">
+                    <column name="END_OVERTIME"/>
+                </write-transformer>
+            </transformation>
         </attributes>
     </entity>
     <entity name="XMLAddress" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Address" access="PROPERTY">

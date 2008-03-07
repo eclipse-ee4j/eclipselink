@@ -41,6 +41,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.Embedded
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.IdAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransformationAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -142,6 +143,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // A OneToOne can currently default, that is, doesn't require
                 // an annotation to be present.
                 return new OneToOneAccessor(accessibleObject, this);
+            } else if (accessibleObject.isTransformation(getDescriptor())) { 
+                return new TransformationAccessor(accessibleObject, this);
             } else {
                 // Default case (everything else currently falls into this)
                 return new BasicAccessor(accessibleObject, this);

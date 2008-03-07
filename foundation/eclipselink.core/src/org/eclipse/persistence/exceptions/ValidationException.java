@@ -339,6 +339,15 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_PROFILER_CLASS = 7285;
     public static final int CANNOT_INSTANTIATE_PROFILER_CLASS = 7286;
     
+    // JPA Transformation mapping processing
+    public static final int READ_TRANSFORMER_CLASS_DOESNT_IMPLEMENT_ATTRIBUTE_TRANSFORMER = 7287;    
+    public static final int READ_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD = 7288;
+    public static final int READ_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD = 7289;
+    public static final int WRITE_TRANSFORMER_CLASS_DOESNT_IMPLEMENT_FIELD_TRANSFORMER = 7290;
+    public static final int WRITE_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD = 7291;
+    public static final int WRITE_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD = 7292;
+    public static final int WRITE_TRANSFORMER_HAS_NO_COLUMN_NAME = 7293;
+    
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -2439,5 +2448,94 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    
+    /**
+     * PUBLIC:
+     * Cause: ReadTransformer for the specified attribute of the specified class
+     * doesn't implement the required interface AttributeTransforer. 
+     */
+    public static ValidationException readTransformerClassDoesntImplementAttributeTransformer(String attributeName, String className) {
+        Object[] args = { attributeName, className };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, READ_TRANSFORMER_CLASS_DOESNT_IMPLEMENT_ATTRIBUTE_TRANSFORMER, args));
+        validationException.setErrorCode(READ_TRANSFORMER_CLASS_DOESNT_IMPLEMENT_ATTRIBUTE_TRANSFORMER);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Cause: ReadTransformer for the specified attribute of the specified class
+     * specifies both class and method. 
+     */
+    public static ValidationException readTransformerHasBothClassAndMethod(String attributeName, String className) {
+        Object[] args = { attributeName, className };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, READ_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD, args));
+        validationException.setErrorCode(READ_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Cause: ReadTransformer for the specified attribute of the specified class
+     * specifies neither class nor method. 
+     */
+    public static ValidationException readTransformerHasNeitherClassNorMethod(String attributeName, String className) {
+        Object[] args = { attributeName, className };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, READ_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD, args));
+        validationException.setErrorCode(READ_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Cause: WriteTransformer for the specified attribute of the specified class and specified column
+     * doesn't implement the required interface FieldTransforer. 
+     */
+    public static ValidationException writeTransformerClassDoesntImplementFieldTransformer(String attributeName, String className, String columnName) {
+        Object[] args = { attributeName, className, columnName };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, WRITE_TRANSFORMER_CLASS_DOESNT_IMPLEMENT_FIELD_TRANSFORMER, args));
+        validationException.setErrorCode(WRITE_TRANSFORMER_CLASS_DOESNT_IMPLEMENT_FIELD_TRANSFORMER);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Cause: WriteTransformer for the specified attribute of the specified class and specified column
+     * specifies both class and method. 
+     */
+    public static ValidationException writeTransformerHasBothClassAndMethod(String attributeName, String className, String columnName) {
+        Object[] args = { attributeName, className, columnName };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, WRITE_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD, args));
+        validationException.setErrorCode(WRITE_TRANSFORMER_HAS_BOTH_CLASS_AND_METHOD);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Cause: WriteTransformer for the specified attribute of the specified class and specified column
+     * specifies neither class nor method. 
+     */
+    public static ValidationException writeTransformerHasNeitherClassNorMethod(String attributeName, String className, String columnName) {
+        Object[] args = { attributeName, className, columnName };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, WRITE_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD, args));
+        validationException.setErrorCode(WRITE_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD);
+        return validationException;
+    }
+
+    /**
+     * PUBLIC:
+     * Cause: WriteTransformer for the specified attribute of the specified class
+     * has no column specified, of the specified column doesn't have name.
+     */
+    public static ValidationException writeTransformerHasNoColumnName(String attributeName, String className) {
+        Object[] args = { attributeName, className };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, WRITE_TRANSFORMER_HAS_NO_COLUMN_NAME, args));
+        validationException.setErrorCode(WRITE_TRANSFORMER_HAS_NO_COLUMN_NAME);
+        return validationException;
+    }
 }

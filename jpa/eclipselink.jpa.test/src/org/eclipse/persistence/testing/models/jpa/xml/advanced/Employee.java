@@ -12,10 +12,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
+import java.sql.Time;
 import java.util.*;
 import java.io.Serializable;
 
 import javax.persistence.Transient;
+
+import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * Employees have a one-to-many relationship with Employees through the 
@@ -61,12 +65,21 @@ public class Employee implements Serializable {
     private static final String MASTERCARD = "Mastercard";
     private static final String VISA = "Visa";
     
+    /** Transformation mapping, a two(2) element array holding the employee's normal working hours (START_TIME & END_TIME),
+    this is stored into two different fields in the employee table. */
+    private Time[] normalHours;
+    /** Transformation mapping, a two(2) element array holding the employee's overtime hours (OVERTIME_START_TIME & OVERTIME_END_TIME),
+    this is stored into two different fields in the employee table. */
+    private Time[] overtimeHours;
+    
 	public Employee () {
         phoneNumbers = new Vector<PhoneNumber>();
         projects = new Vector<Project>();
         managedEmployees = new Vector<Employee>();
         responsibilities = new Vector<String>();
         creditCards = new HashMap<String, Long>();
+        normalHours = new Time[2];
+        overtimeHours = new Time[2];
 	}
     
     public Employee(String firstName, String lastName){
@@ -109,6 +122,20 @@ public class Employee implements Serializable {
         getCreditCards().put(VISA, new Long(number));
     }
     
+    /**
+     * Builds the normalHours Vector.
+     * IMPORTANT: This method builds the value but does not set it.
+     * The mapping will set it using method or direct access as defined in the descriptor.
+     */
+    public Time[] buildNormalHours(Record row, Session session) {
+        Time[] hours = new Time[2];
+
+        /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */
+        hours[0] = (Time) session.getDatasourcePlatform().convertObject(row.get("START_TIME"), java.sql.Time.class);
+        hours[1] = (Time) session.getDatasourcePlatform().convertObject(row.get("END_TIME"), java.sql.Time.class);
+        return hours;
+    }
+
     public String displayString() {
         StringBuffer sbuff = new StringBuffer();
         sbuff.append("Employee ").append(getId()).append(": ").append(getLastName()).append(", ").append(getFirstName()).append(getSalary());
@@ -135,6 +162,22 @@ public class Employee implements Serializable {
         return creditCards;
     }
     
+    /**
+     * Return the last element of the Transformation mapped overtimeHours.
+     */
+    @Transient
+    public Time getEndOvertime() {
+        return getOvertimeHours()[1];
+    }
+
+    /**
+     * Return the last element of the Transformation mapped normalHours.
+     */
+    @Transient
+    public Time getEndTime() {
+        return getNormalHours()[1];
+    }
+
     public String getFirstName() { 
         return firstName; 
     }
@@ -159,6 +202,16 @@ public class Employee implements Serializable {
         return manager; 
     }
 	
+	@Transient
+	protected Time[] getNormalHours() {
+        return normalHours;
+    }
+
+    @Transient
+    protected Time[] getOvertimeHours() {
+        return overtimeHours;
+    }
+
 	public EmploymentPeriod getPeriod() {
 		return period;
 	}
@@ -181,6 +234,22 @@ public class Employee implements Serializable {
         return salary; 
     }
     
+    /**
+     * Return the first element of the Transformation mapped overtimeHours.
+     */
+    @Transient
+    public java.sql.Time getStartOvertime() {
+        return getOvertimeHours()[0];
+    }
+
+    /**
+     * Return the first element of the Transformation mapped normalHours.
+     */
+    @Transient
+    public java.sql.Time getStartTime() {
+        return getNormalHours()[0];
+    }
+
     public int getVersion() { 
         return version; 
     }
@@ -250,6 +319,26 @@ public class Employee implements Serializable {
         this.creditCards = creditCards;
     }  
     
+    /**
+     * Set the last element of the Transformation mapped overtimeHours.
+     * In order to have change tracking, the transformation mapping is not mutable,
+     * therefore the whole new array should be created in case either element is changed.
+     */
+    public void setEndOvertime(Time endOvertime) {
+        Time[] newOvertimeHours = new Time[] {getStartOvertime(), endOvertime};
+        setOvertimeHours(newOvertimeHours);
+    }
+
+    /**
+     * Set the last element of the Transformation mapped normalHours.
+     * In order to have change tracking, the transformation mapping is not mutable,
+     * therefore the whole new array should be created in case either element is changed.
+     */
+    public void setEndTime(Time endTime) {
+        Time[] newNormalHours = new Time[] {getStartTime(), endTime};
+        setNormalHours(newNormalHours);
+    }
+
     public void setFemale() {
         this.gender = Gender.Female;
     }
@@ -282,6 +371,14 @@ public class Employee implements Serializable {
 		this.manager = manager;
 	}
 	
+    public void setNormalHours(Time[] normalHours) {
+        this.normalHours = normalHours;
+    }
+
+    public void setOvertimeHours(Time[] overtimeHours) {
+        this.overtimeHours = overtimeHours;
+    }
+
 	public void setPeriod(EmploymentPeriod period) {
 		this.period = period;
 	}
@@ -302,6 +399,26 @@ public class Employee implements Serializable {
         this.salary = salary; 
     }
 	
+    /**
+     * Set the first element of the Transformation mapped overtimeHours.
+     * In order to have change tracking, the transformation mapping is not mutable,
+     * therefore the whole new array should be created in case either element is changed.
+     */
+    public void setStartOvertime(Time startOvertime) {
+        Time[] newOvertimeHours = new Time[] {startOvertime, getEndOvertime()};
+        setOvertimeHours(newOvertimeHours);
+    }
+
+    /**
+     * Set the first element of the Transformation mapped normalHours.
+     * In order to have change tracking, the transformation mapping is not mutable,
+     * therefore the whole new array should be created in case either element is changed.
+     */
+    public void setStartTime(Time startTime) {
+        Time[] newNormalHours = new Time[] {startTime, getEndTime()};
+        setNormalHours(newNormalHours);
+    }
+
 	protected void setVersion(int version) {
 		this.version = version;
 	}    

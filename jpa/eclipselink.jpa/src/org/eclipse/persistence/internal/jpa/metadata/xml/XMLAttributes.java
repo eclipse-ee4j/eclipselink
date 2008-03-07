@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToMa
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransformationAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransientAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -49,6 +50,7 @@ public class XMLAttributes {
 	private List<MetadataAccessor> m_allAccessors;
 	private List<OneToManyAccessor> m_oneToManys;
 	private List<OneToOneAccessor> m_oneToOnes;
+    private List<TransformationAccessor> m_transformations;
 	private List<TransientAccessor> m_transients;
 	private List<VersionAccessor> m_versions;
 	
@@ -74,6 +76,7 @@ public class XMLAttributes {
 			m_allAccessors.addAll(m_basicMaps);
 			m_allAccessors.addAll(m_versions);
 			m_allAccessors.addAll(m_embeddeds);
+            m_allAccessors.addAll(m_transformations);
 			m_allAccessors.addAll(m_transients);
 			m_allAccessors.addAll(m_manyToManys);
 			m_allAccessors.addAll(m_manyToOnes);
@@ -163,6 +166,14 @@ public class XMLAttributes {
 	public List<OneToOneAccessor> getOneToOnes() {
 		return m_oneToOnes;
 	}
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<TransformationAccessor> getTransformations() {
+        return m_transformations;
+    }
 
 	/**
      * INTERNAL:
@@ -260,7 +271,15 @@ public class XMLAttributes {
 		m_oneToOnes = oneToOnes;
 	}
 
-	/**
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setTransformations(List<TransformationAccessor> transformations) {
+        m_transformations = transformations;
+    }
+
+    /**
      * INTERNAL:
      * Used for OX mapping.
      */

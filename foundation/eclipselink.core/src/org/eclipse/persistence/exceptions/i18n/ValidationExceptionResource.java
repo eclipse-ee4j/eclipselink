@@ -276,7 +276,14 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7284", "The class [{0}] is not a valid comparator. The class must implement the Comparator interface."},
                                            { "7285", "The specified profiler class [{0}] is invalid, the class must exist in the classpath and implement the interface SessionProfiler."},
                                            { "7286", "Unable instantiate the profiler class [{0}] specified in the property eclipselink.profiler [{1}]."},
-    };
+                                           { "7287", "ReadTransformer specified for attribute [{0}] of class [{1}] doesn''t implement required interface AttributeTransformer."},
+                                           { "7288", "ReadTransformer specified for attribute [{0}] of class [{1}] has both class and method. Either class or method is required, but not both of them."},
+                                           { "7289", "ReadTransformer specified for attribute [{0}] of class [{1}] has neither class nor method. Either class or method is required, but not both of them."},
+                                           { "7290", "WriteTransformer specified for column {[2]} for attribute [{0}] of class [{1}] doesn''t implement required interface FieldTransformer."},
+                                           { "7291", "WriteTransformer specified for column {[2]} for attribute [{0}] of class [{1}] has both class and method. Either class or method is required, but not both of them."},
+                                           { "7292", "WriteTransformer specified for column {[2]} for attribute [{0}] of class [{1}] has neither class nor method. Either class or method is required, but not both of them."},
+                                           { "7293", "WriteTransformer specified for attribute [{0}] of class [{1}] either doesn''t have a column or the column doesn''t have name."},
+ };
 
     /**
      * Return the lookup table.

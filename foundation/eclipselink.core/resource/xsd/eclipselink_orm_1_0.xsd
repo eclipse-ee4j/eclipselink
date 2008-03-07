@@ -302,6 +302,8 @@
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="transient" type="orm:transient"
                    minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="transformation" type="orm:transformation"
+                   minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -921,6 +923,68 @@
         <xsd:element name="enumerated" type="orm:enumerated" minOccurs="0"/>
         <xsd:element name="convert" type="xsd:string" minOccurs="0"/>
       </xsd:choice>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="fetch" type="orm:fetch-type"/>
+    <xsd:attribute name="optional" type="xsd:boolean"/>
+    <xsd:attribute name="mutable" type="xsd:boolean"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="read-transformer">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({}) @Retention(RUNTIME)
+        public @interface ReadTransformer {
+          Class class() default void.class;
+          String method default "";
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="transformer-class" type="xsd:string"/>
+    <xsd:attribute name="method" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="write-transformer">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({}) @Retention(RUNTIME)
+        public @interface WriteTransformer {
+          Class class() default void.class;
+          String method() default "";
+          Column column();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="column" type="orm:column"/>
+    </xsd:sequence>
+    <xsd:attribute name="transformer-class" type="xsd:string"/>
+    <xsd:attribute name="method" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="transformation">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({FIELD}) @Retention(RUNTIME)
+        public @interface Transformation {
+          String name() default "";
+          FetchType fetch() default EAGER;
+          boolean optional() default true;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="read-transformer" type="orm:read-transformer"/>
+      <xsd:element name="write-transformer" type="orm:write-transformer" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="access" type="orm:access-type" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="fetch" type="orm:fetch-type"/>

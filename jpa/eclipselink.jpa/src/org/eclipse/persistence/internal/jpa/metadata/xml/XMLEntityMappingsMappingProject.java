@@ -44,6 +44,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToMa
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransformationAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransientAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
 
@@ -87,6 +88,8 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.UniqueConstraintMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.transformers.ReadTransformerMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.transformers.WriteTransformerMetadata;
 
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 
@@ -168,6 +171,10 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildStructConverterDescriptor());
         addDescriptor(buildChangeTrackingDescriptor());
         
+        addDescriptor(buildReadTransformerDescriptor());
+        addDescriptor(buildWriteTransformerDescriptor());
+        addDescriptor(buildTransformationDescriptor());
+
         // Set the name spaces on all descriptors.
         NamespaceResolver namespaceResolver = new NamespaceResolver();
         namespaceResolver.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
@@ -307,6 +314,14 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         embeddedsMapping.setReferenceClass(EmbeddedAccessor.class);
         embeddedsMapping.setXPath("orm:embedded");
         descriptor.addMapping(embeddedsMapping);
+        
+        XMLCompositeCollectionMapping transformationsMapping = new XMLCompositeCollectionMapping();
+        transformationsMapping.setAttributeName("m_transformations");
+        transformationsMapping.setGetMethodName("getTransformations");
+        transformationsMapping.setSetMethodName("setTransformations");
+        transformationsMapping.setReferenceClass(TransformationAccessor.class);
+        transformationsMapping.setXPath("orm:transformation");
+        descriptor.addMapping(transformationsMapping);
         
         XMLCompositeCollectionMapping transientsMapping = new XMLCompositeCollectionMapping();
         transientsMapping.setAttributeName("m_transients");
@@ -1465,6 +1480,31 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: readTransformer
+     */
+    protected ClassDescriptor buildReadTransformerDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(ReadTransformerMetadata.class);
+        
+        XMLDirectMapping transformerClassNameMapping = new XMLDirectMapping();
+        transformerClassNameMapping.setAttributeName("m_TransformerClassName");
+        transformerClassNameMapping.setGetMethodName("getTransformerClassName");
+        transformerClassNameMapping.setSetMethodName("setTransformerClassName");
+        transformerClassNameMapping.setXPath("@transformer-class");
+        descriptor.addMapping(transformerClassNameMapping);
+        
+        XMLDirectMapping methodMapping = new XMLDirectMapping();
+        methodMapping.setAttributeName("m_method");
+        methodMapping.setGetMethodName("getMethod");
+        methodMapping.setSetMethodName("setMethod");
+        methodMapping.setXPath("@method");
+        descriptor.addMapping(methodMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: query-hint
      */
     protected ClassDescriptor buildQueryHintDescriptor() {
@@ -1731,6 +1771,38 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: transformation
+     */
+    protected ClassDescriptor buildTransformationDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(TransformationAccessor.class);
+        
+        XMLCompositeObjectMapping readTransformerMapping = new XMLCompositeObjectMapping();
+        readTransformerMapping.setAttributeName("m_readTransformer");
+        readTransformerMapping.setGetMethodName("getReadTransformer");
+        readTransformerMapping.setSetMethodName("setReadTransformer");
+        readTransformerMapping.setReferenceClass(ReadTransformerMetadata.class);
+        readTransformerMapping.setXPath("orm:read-transformer");
+        descriptor.addMapping(readTransformerMapping);
+        
+        XMLCompositeCollectionMapping writeTransformersMapping = new XMLCompositeCollectionMapping();
+        writeTransformersMapping.setAttributeName("m_writeTransformers");
+        writeTransformersMapping.setGetMethodName("getWriteTransformers");
+        writeTransformersMapping.setSetMethodName("setWriteTransformers");
+        writeTransformersMapping.setReferenceClass(WriteTransformerMetadata.class);
+        writeTransformersMapping.setXPath("orm:write-transformer");
+        descriptor.addMapping(writeTransformersMapping);
+        
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getFetchAttributeMapping());
+        descriptor.addMapping(getOptionalAttributeMapping());
+        descriptor.addMapping(getMutableAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: transient
      */
     protected ClassDescriptor buildTransientDescriptor() {
@@ -1788,6 +1860,33 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getConvertMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getMutableAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: writeTransformer
+     */
+    protected ClassDescriptor buildWriteTransformerDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(WriteTransformerMetadata.class);
+        
+        XMLDirectMapping transformerClassNameMapping = new XMLDirectMapping();
+        transformerClassNameMapping.setAttributeName("m_TransformerClassName");
+        transformerClassNameMapping.setGetMethodName("getTransformerClassName");
+        transformerClassNameMapping.setSetMethodName("setTransformerClassName");
+        transformerClassNameMapping.setXPath("@transformer-class");
+        descriptor.addMapping(transformerClassNameMapping);
+        
+        XMLDirectMapping methodMapping = new XMLDirectMapping();
+        methodMapping.setAttributeName("m_method");
+        methodMapping.setGetMethodName("getMethod");
+        methodMapping.setSetMethodName("setMethod");
+        methodMapping.setXPath("@method");
+        descriptor.addMapping(methodMapping);
+        
+        descriptor.addMapping(getColumnMapping());
         
         return descriptor;
     }

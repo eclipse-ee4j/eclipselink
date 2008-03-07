@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -477,6 +478,61 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         return true;
     }
  
+    /**
+     * INTERNAL:
+     * Convert all the class-name-based settings in this mapping to actual class-based
+     * settings
+     * @param classLoader 
+     */
+    public void convertClassNamesToClasses(ClassLoader classLoader){
+        super.convertClassNamesToClasses(classLoader);
+
+        if (this.attributeTransformerClassName == null) {
+            return;
+        }
+        Class attributeTransformerClass = null;
+        try{
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    attributeTransformerClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(attributeTransformerClassName, true, classLoader));
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(attributeTransformerClassName, exception.getException());
+                }
+            } else {
+                attributeTransformerClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(attributeTransformerClassName, true, classLoader);
+            }
+        } catch (ClassNotFoundException exc){
+            throw ValidationException.classNotFoundWhileConvertingClassNames(attributeTransformerClassName, exc);
+        }
+        this.setAttributeTransformerClass(attributeTransformerClass);
+        
+        for (Enumeration stream = getFieldTransformations().elements(); stream.hasMoreElements();) {
+            FieldTransformation transformation = (FieldTransformation)stream.nextElement();
+            if (transformation instanceof TransformerBasedFieldTransformation) {
+                TransformerBasedFieldTransformation transformer = (TransformerBasedFieldTransformation)transformation;
+                String transformerClassName = transformer.getTransformerClassName(); 
+                if (transformerClassName == null) {
+                    return;
+                }
+                Class transformerClass = null;
+                try{
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                        try {
+                            transformerClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(transformerClassName, true, classLoader));
+                        } catch (PrivilegedActionException exception) {
+                            throw ValidationException.classNotFoundWhileConvertingClassNames(transformerClassName, exception.getException());
+                        }
+                    } else {
+                        transformerClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(transformerClassName, true, classLoader);
+                    }
+                } catch (ClassNotFoundException exc){
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(transformerClassName, exc);
+                }
+                transformer.setTransformerClass(transformerClass);
+            }
+        }
+    }
+
     /**
      * INTERNAL:
      * Builder the unit of work value holder.

@@ -39,6 +39,9 @@ import javax.persistence.Version;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.BasicMap;
+import org.eclipse.persistence.annotations.ReadTransformer;
+import org.eclipse.persistence.annotations.WriteTransformer;
+import org.eclipse.persistence.annotations.WriteTransformers;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -367,6 +370,16 @@ public abstract class MetadataAccessibleObject  {
                rawClass.equals(Set.class) || 
                rawClass.equals(List.class) || 
                rawClass.equals(Map.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents an transformation mapping.
+     */
+    public boolean isTransformation(MetadataDescriptor descriptor) {
+        return isAnnotationPresent(ReadTransformer.class, descriptor) ||
+               isAnnotationPresent(WriteTransformers.class, descriptor) ||
+               isAnnotationPresent(WriteTransformer.class, descriptor);
     }
     
     /**

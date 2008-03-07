@@ -586,6 +586,14 @@ public abstract class MetadataAccessor  {
     
     /**
      * INTERNAL:
+     * Return true if this accessor represents transformation mapping.
+     */
+    public boolean isTransformation() {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
      * Every accessor knows how to process themselves since they have all the
      * information they need.
      */

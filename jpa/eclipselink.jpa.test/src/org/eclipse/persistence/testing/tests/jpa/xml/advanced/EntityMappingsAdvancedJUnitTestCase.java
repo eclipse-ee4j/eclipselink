@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
@@ -31,6 +32,7 @@ import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidat
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;  
 import org.eclipse.persistence.internal.helper.ClassConstants; 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -92,6 +94,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testGiveExtendedEmployeeASexChange", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testNamedStoredProcedureQuery", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testNamedStoredProcedureQueryInOut", persistenceUnit));            
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testMethodBasedTransformationMapping", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testClassBasedTransformationMapping", persistenceUnit));
         }
         
         return new TestSetup(suite) {
@@ -687,4 +691,93 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         closeEntityManager(em);
     }
 
+    public void testMethodBasedTransformationMapping() {
+        internalTestTransformationMapping("normalHours");
+    }
+    
+    public void testClassBasedTransformationMapping() {
+        internalTestTransformationMapping("overtimeHours");
+    }
+    
+    protected void internalTestTransformationMapping(String attributeName) {
+        // setup: create an Employee, insert into db
+        int startHour = 8, startMin = 30, startSec = 15;
+        int endHour = 17, endMin = 15, endSec = 45;
+        String firstName = attributeName;
+        Employee employee = new Employee();
+        employee.setFirstName(firstName);
+        if(attributeName.equals("normalHours")) {
+            employee.setStartTime(Helper.timeFromHourMinuteSecond(startHour, startMin, startSec));
+            employee.setEndTime(Helper.timeFromHourMinuteSecond(endHour, endMin, endSec));
+        } else if(attributeName.equals("overtimeHours")) {
+            employee.setStartOvertime(Helper.timeFromHourMinuteSecond(startHour, startMin, startSec));
+            employee.setEndOvertime(Helper.timeFromHourMinuteSecond(endHour, endMin, endSec));
+        } else {
+            throw new RuntimeException("Unknown attributeName");
+        }
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        beginTransaction(em);
+        try {    
+            em.persist(employee);
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+        int id = employee.getId();
+
+        // test
+        // clear cache
+        this.clearCache();        
+        // read the employee from the db
+        em = createEntityManager(m_persistenceUnit);
+        employee = em.find(Employee.class,id);
+        
+        // verify
+        Calendar calendarStart = Calendar.getInstance();
+        Calendar calendarEnd = Calendar.getInstance();
+        if(attributeName.equals("normalHours")) {
+            calendarStart.setTime(employee.getStartTime());        
+            calendarEnd.setTime(employee.getEndTime());        
+        } else if(attributeName.equals("overtimeHours")) {
+            calendarStart.setTime(employee.getStartOvertime());        
+            calendarEnd.setTime(employee.getEndOvertime());        
+        }
+        String errorMsg = "";
+        if(calendarStart.get(Calendar.HOUR_OF_DAY) != startHour || calendarStart.get(Calendar.MINUTE) != startMin || calendarStart.get(Calendar.SECOND) != startSec) {
+            if(attributeName.equals("normalHours")) {
+                errorMsg = "startTime = " + employee.getStartTime().toString() + " is wrong";
+            } else if(attributeName.equals("overtimeHours")) {
+                errorMsg = "startOvertime = " + employee.getStartOvertime().toString() + " is wrong";
+            }
+        }
+        if(calendarEnd.get(Calendar.HOUR_OF_DAY) != endHour || calendarEnd.get(Calendar.MINUTE) != endMin || calendarEnd.get(Calendar.SECOND) != endSec) {
+            if(errorMsg.length() > 0) {
+                errorMsg = errorMsg + "; ";
+            }
+            if(attributeName.equals("normalHours")) {
+                errorMsg = "endTime = " + employee.getEndTime().toString() + " is wrong";
+            } else if(attributeName.equals("overtimeHours")) {
+                errorMsg = "endOvertime = " + employee.getEndOvertime().toString() + " is wrong";
+            }
+        }
+        
+        // clean up
+        beginTransaction(em);
+        try {    
+            em.remove(employee);
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+        
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
 }
