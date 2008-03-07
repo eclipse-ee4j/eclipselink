@@ -288,6 +288,9 @@
     <target name="test.core" description="run the core tests">
         <ant antfile="${eclipselink.core.test}/build.xml" target="test"/>
     </target>
+     <target name="test.browser" description="run the core tests">
+        <ant antfile="${eclipselink.core.test}/build.xml" target="test.browser"/>
+    </target>
     <!-- Run core SRG. -->
     <target name="test.core.srg" description="run the core tests">
         <ant antfile="${eclipselink.core.test}/build.xml" target="test.srg"/>
