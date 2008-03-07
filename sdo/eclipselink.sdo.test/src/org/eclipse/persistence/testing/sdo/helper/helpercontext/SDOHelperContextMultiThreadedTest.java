@@ -98,6 +98,7 @@ public class SDOHelperContextMultiThreadedTest extends SDOHelperContextTestCases
     }
     
     public void setUp()  {
+        super.setUp();
     	count = 0;
     }
  

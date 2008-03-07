@@ -31,6 +31,7 @@ public class SequenceJIRA242TestCases extends SDOTestCase {
     }
 
     public void setUp() {
+        super.setUp();
         DataObject customerTypeDO = dataFactory.create(SDOConstants.SDO_TYPE);
         customerTypeDO.set("uri", "someUri");
         customerTypeDO.set("name", "theName");

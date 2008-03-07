@@ -22,6 +22,7 @@ public class DataHelperTestCases extends SDOTestCase {
     }
 
     public void setUp() {
+        super.setUp();
         sb = new StringBuffer();
     }
 

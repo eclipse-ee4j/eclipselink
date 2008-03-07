@@ -44,6 +44,7 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
     }
     
     public void tearDown() throws Exception{      
+        super.tearDown();
         List<String> packages = getPackages();
         for (int i = 0; i < getFileNamesToCompile().size(); i++) {
             String nextFileName = getFileNamesToCompile().get(i);

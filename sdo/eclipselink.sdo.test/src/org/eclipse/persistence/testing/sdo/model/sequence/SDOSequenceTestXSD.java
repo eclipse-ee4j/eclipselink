@@ -63,19 +63,24 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
     
     protected DataObject root;
     protected ChangeSummary cs;
-    protected Type stringType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.STRING);
-    protected Type dateType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATE);
-    protected Type yearMonthDayType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.YEARMONTHDAY);
-    protected Type decimalType = SDOConstants.SDO_DECIMAL;
-    protected Type idType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.ID);
+    protected Type stringType;
+    protected Type dateType;
+    protected Type yearMonthDayType;
+    protected Type decimalType;
+    protected Type idType;
     
     
     public SDOSequenceTestXSD(String name) {
         super(name);
     }
 
-    public void setup() {
-    	super.setUp();
+    public void setUp() {
+        super.setUp();
+        stringType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.STRING);
+        dateType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATE);
+        yearMonthDayType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.YEARMONTHDAY);
+        decimalType = SDOConstants.SDO_DECIMAL;
+        idType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.ID);     
     }
     
     public static void main(String[] args) {

@@ -14,6 +14,9 @@
 package org.eclipse.persistence.testing.sdo.util;
 
 //import com.sun.tools.javac.Main;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
 
 public class CompileUtil {
 
@@ -40,6 +43,14 @@ public class CompileUtil {
 
 		try {
 			Process proc = Runtime.getRuntime().exec(args);
+            InputStream stderr = proc.getErrorStream();
+            InputStreamReader isr = new InputStreamReader(stderr);
+            BufferedReader br = new BufferedReader(isr);
+            String line = null;
+            System.out.println("<ERROR>");
+            while ( (line = br.readLine()) != null)
+                System.out.println(line);
+            System.out.println("</ERROR>");			
             exitVal = proc.waitFor();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -62,5 +73,4 @@ public class CompileUtil {
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException(); 
 	}
-	
 }

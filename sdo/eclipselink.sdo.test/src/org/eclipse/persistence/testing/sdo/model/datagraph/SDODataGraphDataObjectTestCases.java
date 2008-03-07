@@ -39,11 +39,11 @@ public class SDODataGraphDataObjectTestCases extends SDOTestCase {
     public static final String ADDRESS_TYPENAME = "USAddress";
     public static final String ITEM_TYPENAME = "Item";
 
-    protected Type stringType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.STRING);
-    protected Type dateType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATE);
-    protected Type yearMonthDayType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.YEARMONTHDAY);
-    protected Type decimalType = SDOConstants.SDO_DECIMAL;
-    protected Type idType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.ID);
+    protected Type stringType;
+    protected Type dateType;
+    protected Type yearMonthDayType;
+    protected Type decimalType;
+    protected Type idType;
 
     protected SDOType type;
 
@@ -54,6 +54,11 @@ public class SDODataGraphDataObjectTestCases extends SDOTestCase {
     public void setUp() {
         super.setUp();
         dataGraph = new SDODataGraph(aHelperContext);
+        stringType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.STRING);
+        dateType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.DATE);
+        yearMonthDayType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.YEARMONTHDAY);
+        decimalType = SDOConstants.SDO_DECIMAL;
+        idType = typeHelper.getType(SDOConstants.SDO_URL, SDOConstants.ID);     
     }
    
     /**

@@ -86,7 +86,6 @@ public class SDOTestCase extends junit.framework.TestCase {
     
     public SDOTestCase(String name) {
         super(name);
-        xmlComparer = new SDOXMLComparer();
         useLogging = Boolean.getBoolean("useLogging");
         ignoreCRLF = Boolean.getBoolean("ignoreCRLF");
         customContext = Boolean.getBoolean("customContext");
@@ -106,6 +105,10 @@ public class SDOTestCase extends junit.framework.TestCase {
 
         // reverse the flags so that a false(from the flag not found) will not
         // default to a static context
+    }
+    
+    public void setUp() {
+        xmlComparer = new SDOXMLComparer();
         if (customContext) {
             // default to instance of a HelperContext
             aHelperContext = new SDOHelperContext();
@@ -131,8 +134,28 @@ public class SDOTestCase extends junit.framework.TestCase {
             fail("Could not create parser.");
             e.printStackTrace();
         }
+        ((SDOTypeHelper) aHelperContext.getTypeHelper()).reset();
+        ((SDOXMLHelper) aHelperContext.getXMLHelper()).reset();
+        ((SDOXSDHelper) aHelperContext.getXSDHelper()).reset();
     }
     
+    public void tearDown() throws Exception {
+        ((SDOTypeHelper) aHelperContext.getTypeHelper()).reset();
+        ((SDOXMLHelper) aHelperContext.getXMLHelper()).reset();
+        ((SDOXSDHelper) aHelperContext.getXSDHelper()).reset();
+        
+        typeHelper = null;
+        xmlHelper = null;
+        xsdHelper = null;
+        equalityHelper = null;
+        copyHelper = null;
+        dataFactory = null;
+        parser = null;
+        aHelperContext = null;
+        
+        
+    }
+        
     public void assertXMLIdentical(Document control, Document test) {
         assertTrue("Node " + control + " is not equal to node " + test, xmlComparer.isNodeEqual(control, test));
     }
@@ -303,12 +326,6 @@ public class SDOTestCase extends junit.framework.TestCase {
             }
         }
         return currentList;
-    }
-
-    public void setUp() {
-        ((SDOTypeHelper) aHelperContext.getTypeHelper()).reset();
-        ((SDOXMLHelper) aHelperContext.getXMLHelper()).reset();
-        ((SDOXSDHelper) aHelperContext.getXSDHelper()).reset();       
     }
 
     protected void assertCreated(DataObject dataObject, ChangeSummary changeSummary) {

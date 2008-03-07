@@ -96,6 +96,7 @@ public class ChangeSummaryVolumetricsTest extends ChangeSummaryTestCases {
     }
 
     public void setUp() {
+        super.setUp();
         DataObject rootTypeDO = defineType(URINAME, TYPENAME);
         rootType = (SDOType)typeHelper.define(rootTypeDO);
 
