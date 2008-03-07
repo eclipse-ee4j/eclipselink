@@ -86,11 +86,12 @@ public class IntegrityChecker implements Serializable {
             // load the tables from the session
             initializeTables(session);
         }
-        //MySQL converts all the table names to lower case.
-        if (session.getPlatform().isMySQL()) {
+        boolean tableExists =  getTables().contains(table.getName());
+        //Some DBs (e.g. some versions of MySQL) convert all the table names to lower case.
+        if (!tableExists && session.getPlatform().isMySQL()) {
             return getTables().contains(table.getName().toLowerCase());
         }
-        return getTables().contains(table.getName());
+        return tableExists;
     }
 
     /**

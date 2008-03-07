@@ -60,7 +60,6 @@ public class ProjectClassGeneratorTestModel extends XMLProjectWriterTestModel {
         unicodeSuite.setName("UnicodeSuite");
         unicodeSuite.setDescription("Tests to ensure unicode/non-unicode are generated as required.");
         unicodeSuite.addTest(new ProjectClassGeneratorUnicodeTest());
-        unicodeSuite.addTest(new ProjectClassGeneratorNonUnicodeTest());
         addTest(unicodeSuite);
 
         addTest(new ProjectClassGeneratorOrderByQueryKeysTest());

@@ -391,7 +391,7 @@ public class EmbeddedAccessor extends MetadataAccessor {
         // in the embeddable class.
         if (! isMetadataPresent(embeddableDescriptor)) {
         	if (embeddableDescriptor.usesPropertyAccess() != getDescriptor().usesPropertyAccess()) {
-        		throw ValidationException.conflictingAccessTypeForEmbeddable(embeddableDescriptor.getJavaClass());
+        		throw ValidationException.conflictingAccessTypeForEmbeddable(embeddableDescriptor.getJavaClass(), embeddableDescriptor.usesPropertyAccess(), getDescriptor().getJavaClass(), getDescriptor().usesPropertyAccess());
             }
         }
         

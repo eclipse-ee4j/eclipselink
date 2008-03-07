@@ -2223,8 +2223,8 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(CLASS_NOT_LISTED_IN_PERSISTENCE_UNIT);
         return validationException;
     }
-    public static ValidationException conflictingAccessTypeForEmbeddable(Class embeddableClass) {
-        Object[] args = {embeddableClass };
+    public static ValidationException conflictingAccessTypeForEmbeddable(Class embeddableClass, boolean embeddableAccessType, Class descriptorClass, boolean descriptorAccessType) {
+        Object[] args = {embeddableClass, embeddableAccessType, descriptorClass, descriptorAccessType};
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CONFLICTNG_ACCESS_TYPE_FOR_EMBEDDABLE, args));
         validationException.setErrorCode(CONFLICTNG_ACCESS_TYPE_FOR_EMBEDDABLE);
         return validationException;

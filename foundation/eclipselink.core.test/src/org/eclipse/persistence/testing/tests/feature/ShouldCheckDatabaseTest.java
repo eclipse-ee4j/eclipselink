@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.feature;
 
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.sessions.*;
 
 /**
@@ -27,7 +28,7 @@ public class ShouldCheckDatabaseTest extends org.eclipse.persistence.testing.fra
     public void test() {
         EmployeeProjectForDatabaseChecking project = new EmployeeProjectForDatabaseChecking();
         project.setDatasourceLogin(getSession().getDatasourceLogin());
-        DatabaseSession session = new Project(getSession().getDatasourceLogin()).createDatabaseSession();
+        DatabaseSessionImpl session = (DatabaseSessionImpl)new Project(getSession().getDatasourceLogin()).createDatabaseSession();
         boolean caughtError = false;
         try {
             session.setSessionLog(getSession().getSessionLog());

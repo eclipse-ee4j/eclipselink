@@ -18,6 +18,10 @@ import org.eclipse.persistence.sessions.factories.ProjectClassGenerator;
 //Check if ProjectClassGenerator does not generate unicode escaped characters for non-ASCII
 //characters when false is passed in to generate().  Compile on the generated project file 
 //should fail.
+
+// This test has been removed from the test suite because the IBM VM on the eclipse build server
+// does not write the unicode characters in the expected manner.  Instead of ??Mapping, we get the
+// actual unicode characters.  This may be because the VM is running on a 64 bit linux server
 public class ProjectClassGeneratorNonUnicodeTest extends ProjectClassGeneratorResultFileTest {
 
     public ProjectClassGeneratorNonUnicodeTest() {

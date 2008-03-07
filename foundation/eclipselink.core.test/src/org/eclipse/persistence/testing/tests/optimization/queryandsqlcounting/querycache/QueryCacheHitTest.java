@@ -164,7 +164,7 @@ public class QueryCacheHitTest extends TestCase {
     
     public void testNoResultsCachedDataRead() {
         DataReadQuery dataReadQuery1 = new DataReadQuery();
-        String sqlString1 = "select f_name, l_name from employee where f_name = 'impossible'";
+        String sqlString1 = "SELECT F_NAME, L_NAME FROM EMPLOYEE WHERE F_NAME = 'impossible'";
         dataReadQuery1.setSQLString(sqlString1);
         dataReadQuery1.setQueryResultsCachePolicy(new QueryResultsCachePolicy(2));
         // Test DataReadQuery with zero expected results ("no results" cached)
@@ -185,7 +185,7 @@ public class QueryCacheHitTest extends TestCase {
     
     public void testValidResultsCachedDataRead() {
         DataReadQuery dataReadQuery2 = new DataReadQuery();
-        String sqlString2 = "select f_name, l_name from employee";
+        String sqlString2 = "SELECT F_NAME, L_NAME FROM EMPLOYEE";
         dataReadQuery2.setSQLString(sqlString2);
         dataReadQuery2.setQueryResultsCachePolicy(new QueryResultsCachePolicy(2));
         

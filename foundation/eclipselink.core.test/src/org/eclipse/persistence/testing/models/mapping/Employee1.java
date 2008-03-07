@@ -19,6 +19,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.expressions.*;
 
 public class Employee1 implements Serializable {
@@ -55,19 +56,18 @@ public class Employee1 implements Serializable {
     /**
      * Amend the Employee1 descriptor with a join expression to join the multiple tables in the database.
      */
-    public static void amendEmployee1WithFKInfo(DatabaseSession session) {
+    public static void amendEmployee1WithFKInfo(DatabaseSessionImpl session) {
         ClassDescriptor descriptor = (ClassDescriptor)new LegacyTestProject().getDescriptors().get(Employee1.class);
-
         amendEmployee1WithFKInfo(descriptor);
-
         // Insert new descriptor.
         session.addDescriptor(descriptor);
+        session.initializeDescriptors();
     }
 
     /**
      * Amend the Employee1 descriptor with a join expression to join the multiple tables in the database.
      */
-    public static void amendEmployee1WithJoinOnly(DatabaseSession aSession) {
+    public static void amendEmployee1WithJoinOnly(DatabaseSessionImpl aSession) {
         ClassDescriptor descriptor = (ClassDescriptor)new LegacyTestProject().getDescriptors().get(Employee1.class);
 
         // Setup the join from the employee table to the address table using a custom join expression and 
@@ -77,6 +77,7 @@ public class Employee1 implements Serializable {
 
         // Insert new descriptor.
         aSession.addDescriptor(descriptor);
+        aSession.initializeDescriptors();
     }
 
     /**
@@ -98,13 +99,14 @@ public class Employee1 implements Serializable {
     /**
      * Amend the Employee1 descriptor with a join expression to join the multiple tables in the database.
      */
-    public static void amendEmployee1WithJoinWithInsert(DatabaseSession aSession) {
+    public static void amendEmployee1WithJoinWithInsert(DatabaseSessionImpl aSession) {
         ClassDescriptor descriptor = (ClassDescriptor)new LegacyTestProject().getDescriptors().get(Employee1.class);
 
         amendEmployee1WithJoinWithInsert(descriptor);
 
         // Insert new descriptor.
         aSession.addDescriptor(descriptor);
+        aSession.initializeDescriptors();
     }
 
     public static Employee1 example1() {
