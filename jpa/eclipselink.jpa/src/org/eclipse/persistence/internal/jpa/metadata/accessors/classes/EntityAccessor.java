@@ -616,21 +616,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     }
     
     /**
-     * INTERNAL: Guy
-     * Process the mapped superclass class for lifecycle callback event methods.
-     */
-    //public void processMappedSuperclassEventListener(EntityListenerMetadata listener, Class entityClass, ClassLoader classLoader) {
-        // Process the lifecycle callback events from XML.
-       //Method[] candidateMethods = MetadataHelper.getCandidateCallbackMethodsForMappedSuperclass(getJavaClass(), entityClass);
-        
-        // Process the XML defined callback methods.
-        //processCallbackMethodNames(candidateMethods, listener);
-        
-        // Check the mapped superclass for lifecycle callback annotations.
-        //processCallbackMethods(candidateMethods, listener);
-    //}
-    
-    /**
      * INTERNAL: (Override from MappedSuperclassAccessor)
      * Process/collect the named native queries on this accessor and add them
      * to the project for later processing.
