@@ -245,11 +245,11 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
         this.assertEquals(3, types.size());
 
         for (int i = 0; i < types.size(); i++) {
-            Type type = (Type)types.get(0);
+            Type type = (Type)types.get(i);
             if (type.getName().equals("my-int")) {
                 assertEquals(type.getName(), "my-int");
                 assertFalse(type.isAbstract());
-                assertEquals(ClassConstants.BIGDECIMAL, type.getInstanceClass());
+                assertEquals(ClassConstants.BIGINTEGER, type.getInstanceClass());
                 assertEquals(0, type.getBaseTypes().size());
                 assertTrue(type.isDataType());
                 assertEquals(type.getURI(), "http://www.example.org");
@@ -257,11 +257,11 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
         }
 
         for (int i = 0; i < types.size(); i++) {
-            Type type = (Type)types.get(0);
+            Type type = (Type)types.get(i);
             if (type.getName().equals("my-other-int")) {
                 assertEquals(type.getName(), "my-other-int");
                 assertFalse(type.isAbstract());
-                assertEquals(ClassConstants.BIGDECIMAL, type.getInstanceClass());
+                assertEquals(ClassConstants.BIGINTEGER, type.getInstanceClass());
                 assertEquals(1, type.getBaseTypes().size());
                 assertTrue(type.isDataType());
                 assertEquals(type.getURI(), "http://www.example.org");
@@ -269,7 +269,7 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
         }
 
         for (int i = 0; i < types.size(); i++) {
-            Type type = (Type)types.get(0);
+            Type type = (Type)types.get(i);
             if (type.getName().equals("testComplexType")) {
                 assertEquals(type.getName(), "testComplexType");
                 assertFalse(type.isAbstract());
@@ -281,7 +281,7 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
                 SDOProperty prop = (SDOProperty)type.getDeclaredProperties().get(0);
                 assertEquals("testElement", prop.getName());
                 assertEquals("my-int", prop.getType().getName());
-                assertEquals(BigInteger.class, prop.getType().getInstanceClass());
+                assertEquals(ClassConstants.BIGINTEGER, prop.getType().getInstanceClass());
             }
         }
     }
