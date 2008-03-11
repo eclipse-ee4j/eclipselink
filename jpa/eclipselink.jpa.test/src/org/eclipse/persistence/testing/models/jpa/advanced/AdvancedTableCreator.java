@@ -34,6 +34,7 @@ public class AdvancedTableCreator extends TableCreator {
         addTableDefinition(buildPHONENUMBERSTATUSTable());
         addTableDefinition(buildPLATINUMBUYERTable());
         addTableDefinition(buildPROJECT_EMPTable());
+        addTableDefinition(buildPROJECT_PROPSTable());
         addTableDefinition(buildPROJECTTable());
         addTableDefinition(buildRESPONSTable());
         addTableDefinition(buildSALARYTable());
@@ -892,6 +893,34 @@ public class AdvancedTableCreator extends TableCreator {
         field1.setIsIdentity(false );
         field1.setForeignKeyFieldName("CMP3_PROJECT.PROJ_ID");
         table.addField(field1);
+
+        return table;
+    }
+
+    public static TableDefinition buildPROJECT_PROPSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_PROJ_PROPS");
+
+        FieldDefinition projectIdField = new FieldDefinition();
+        projectIdField.setName("PROJ_ID");
+        projectIdField.setTypeName("NUMERIC");
+        projectIdField.setSize(15);
+        projectIdField.setShouldAllowNull(false);
+        projectIdField.setIsPrimaryKey(false);
+        projectIdField.setUnique(false);
+        projectIdField.setIsIdentity(false);
+        projectIdField.setForeignKeyFieldName("CMP3_PROJECT.PROJ_ID");
+        table.addField(projectIdField);
+    
+        FieldDefinition propertiesField = new FieldDefinition();
+        propertiesField.setName("PROPS");
+        propertiesField.setTypeName("VARCHAR");
+        propertiesField.setSize(45);
+        propertiesField.setShouldAllowNull(true);
+        propertiesField.setIsPrimaryKey(false);
+        propertiesField.setUnique(false);
+        propertiesField.setIsIdentity(false);
+        table.addField(propertiesField);
 
         return table;
     }

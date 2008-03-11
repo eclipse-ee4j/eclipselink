@@ -41,7 +41,7 @@ public class AdvancedWriteTransformer implements FieldTransformer {
      * @param fieldName - the name of the field being transformed. Used if the user wants to use this transformer for multiple fields.
      * @return - The value to be written for the field associated with this transformer
      */
-    public Object buildFieldValue(Object instance, String fieldName, Session session) {
+    public Time buildFieldValue(Object instance, String fieldName, Session session) {
         if(attributeName.equals("overtimeHours")) {
             if(fieldName.equals("START_OVERTIME")) {
                 return ((Employee)instance).getOvertimeHours()[0];

@@ -32,6 +32,9 @@ import javax.persistence.*;
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.InheritanceType.*;
 
+import org.eclipse.persistence.annotations.BasicCollection;
+import org.eclipse.persistence.annotations.CollectionTable;
+
 /**
  * Employees have a many-to-many relationship with Projects through the
  * projects attribute.
@@ -63,9 +66,11 @@ public class Project implements Serializable {
     private String m_description;
     protected Employee m_teamLeader;
     private Collection<Employee> m_teamMembers;
+    private List<String> m_properties;
 
     public Project () {
-        this.m_teamMembers = new Vector<Employee>();
+        m_teamMembers = new Vector<Employee>();
+        m_properties = new ArrayList<String>();
     }
 
     @Id
@@ -108,6 +113,17 @@ public class Project implements Serializable {
         this.m_description = description; 
     }
 
+
+    @BasicCollection(valueColumn=@Column(name="PROPS"))
+    @CollectionTable(name="CMP3_PROJ_PROPS")
+    public List<String> getProperties() { 
+        return m_properties; 
+    }
+    
+    public void setProperties(List<String> properties) { 
+        this.m_properties = properties; 
+    }
+    
     @OneToOne(cascade = {CascadeType.MERGE})
     @JoinColumn(name="LEADER_ID")
     public Employee getTeamLeader() {

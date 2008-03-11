@@ -34,7 +34,6 @@ import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.annotations.WriteTransformer;
 import org.eclipse.persistence.annotations.WriteTransformers;
-import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
 
