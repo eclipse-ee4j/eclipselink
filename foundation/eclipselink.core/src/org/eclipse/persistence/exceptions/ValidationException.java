@@ -275,7 +275,10 @@ public class ValidationException extends EclipseLinkException {
     public static final int CANNOT_PERSIST_MANAGED_OBJECT = 7231;
     public static final int UNSPECIFIED_COMPOSITE_PK_NOT_SUPPORTED = 7232;
     public static final int MAPPING_METADATA_APPLIED_TO_METHOD_WITH_ARGUMENTS = 7233;
-    // 7234 - 7236 available
+    
+    public static final int MISSING_FIELD_TYPE_FOR_DDL_GENERATION_OF_CLASS_TRANSFORMATION_ = 7234;
+    public static final int MISSING_TRANSFORMER_METHOD_FOR_DDL_GENERATION_OF_CLASS_TRANSFORMATION = 7235;
+    // 7236 available
     public static final int NON_UNIQUE_ENTITY_NAME = 7237;
     
     public static final int CONFLICTING_SEQUENCE_AND_TABLE_GENERATORS_SPECIFIED = 7238;
@@ -2042,6 +2045,22 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MISSING_MAPPING, args));
         validationException.setErrorCode(MISSING_MAPPING);
+        return validationException;
+    }
+    
+    public static ValidationException missingFieldTypeForDDLGenerationOfClassTransformation(ClassDescriptor descriptor, String attributeName, String methodName) {
+        Object[] args = { descriptor, attributeName, methodName };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MISSING_FIELD_TYPE_FOR_DDL_GENERATION_OF_CLASS_TRANSFORMATION_, args));
+        validationException.setErrorCode(MISSING_FIELD_TYPE_FOR_DDL_GENERATION_OF_CLASS_TRANSFORMATION_);
+        return validationException;
+    }
+    
+    public static ValidationException missingTransformerMethodForDDLGenerationOfClassTransformation(ClassDescriptor descriptor, String attributeName, String methodName) {
+        Object[] args = { descriptor, attributeName, methodName };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MISSING_TRANSFORMER_METHOD_FOR_DDL_GENERATION_OF_CLASS_TRANSFORMATION, args));
+        validationException.setErrorCode(MISSING_TRANSFORMER_METHOD_FOR_DDL_GENERATION_OF_CLASS_TRANSFORMATION);
         return validationException;
     }
     

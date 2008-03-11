@@ -24,8 +24,11 @@ import java.util.Vector;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.descriptors.FieldTransformation;
 import org.eclipse.persistence.internal.descriptors.MethodBasedFieldTransformation;
+import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -50,6 +53,7 @@ import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -426,21 +430,46 @@ public class DefaultTableGenerator {
     }
 
     /**
-     * Reste the transformation mapping field types
+     * Reset the transformation mapping field types
      */
     private void resetTransformedFieldType(TransformationMapping mapping) {
         Iterator transIter = mapping.getFieldTransformations().iterator();
         while (transIter.hasNext()) {
-            MethodBasedFieldTransformation transformation = (MethodBasedFieldTransformation)transIter.next(); 
-            try {
-                Class returnType = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), transformation.getMethodName(), null).getReturnType();
-                getFieldDefFromDBField(transformation.getField(), false).setType(returnType);
-            } catch (NoSuchMethodException ex) {
-                //for some reason, the method type could not be retrieved, use the default java.lang.String type
-            }
+            FieldTransformation transformation = (FieldTransformation) transIter.next();
             
+            if (transformation instanceof MethodBasedFieldTransformation) {
+                MethodBasedFieldTransformation methodTransformation = (MethodBasedFieldTransformation) transformation; 
+                try {
+                    Class returnType = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), methodTransformation.getMethodName(), null).getReturnType();
+                    getFieldDefFromDBField(methodTransformation.getField(), false).setType(returnType);
+                } catch (NoSuchMethodException ex) {
+                    // For some reason, the method type could not be retrieved, 
+                    // use the default java.lang.String type
+                }
+            } else {
+                // Must be a TransformerBasedFieldTransformation
+                TransformerBasedFieldTransformation classTransformation = (TransformerBasedFieldTransformation) transformation;
+                String methodName = "buildFieldValue";
+                Class[] params = new Class[] {Object.class, String.class, Session.class};
+                
+                try {
+                    Class returnType = Helper.getDeclaredMethod(classTransformation.getTransformerClass(), methodName, params).getReturnType();
+                    
+                    if (returnType.equals(Object.class)) {
+                        // User needs to be more specific with their class
+                        // transformer return type if they are using DDL. Throw
+                        // an exception.
+                        throw ValidationException.missingFieldTypeForDDLGenerationOfClassTransformation(mapping.getDescriptor(), mapping.getAttributeName(), methodName);
+                    }
+                    
+                    getFieldDefFromDBField(classTransformation.getField(), false).setType(returnType);
+                } catch (NoSuchMethodException ex) {
+                    // For some reason, the method type could not be retrieved.
+                    // Did the interface method change? Throw an exception. 
+                    throw ValidationException.missingTransformerMethodForDDLGenerationOfClassTransformation(mapping.getDescriptor(), mapping.getAttributeName(), methodName);
+                }
+            }
         }
-        
     }
 
     /**
