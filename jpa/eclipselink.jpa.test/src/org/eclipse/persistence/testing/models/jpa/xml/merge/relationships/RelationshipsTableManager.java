@@ -155,7 +155,6 @@ public class RelationshipsTableManager extends TableCreator {
         fieldCUST_ID.setIsIdentity(false);
         fieldCUST_ID.setUnique(false);
         fieldCUST_ID.setShouldAllowNull(true);
-        fieldCUST_ID.setForeignKeyFieldName("CMP3_XML_MERGE_CUSTOMER.CUST_ID");
         table.addField(fieldCUST_ID);
 
         FieldDefinition fieldITEM_ID = new FieldDefinition();
