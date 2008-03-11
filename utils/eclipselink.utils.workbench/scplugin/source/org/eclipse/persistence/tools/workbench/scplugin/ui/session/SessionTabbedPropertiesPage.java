@@ -32,6 +32,7 @@ import org.eclipse.persistence.tools.workbench.scplugin.ui.session.basic.Session
 import org.eclipse.persistence.tools.workbench.scplugin.ui.session.basic.SessionOptionsPropertiesPage;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.session.basic.SessionProjectPropertiesPage;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.session.basic.SessionServerPlatformPropertiesPage;
+import org.eclipse.persistence.tools.workbench.scplugin.ui.session.clustering.SessionClusteringPropertiesPage;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.tools.InfoPropertiesPage;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.tools.PropertiesPageContainer;
 import org.eclipse.persistence.tools.workbench.scplugin.ui.tools.SessionDisplayableTranslatorAdapter;
@@ -59,6 +60,17 @@ abstract class SessionTabbedPropertiesPage extends TabbedPropertiesPage
 	SessionTabbedPropertiesPage(WorkbenchContext context)
 	{
 		super(context);
+	}
+
+	protected Component buildClusteringPropertiesPage()
+	{
+		return buildPropertiesPage(SessionClusteringPropertiesPage.class,
+											"SESSION_CLUSTERING_TAB_MESSAGE");
+	}
+
+	protected String buildClusteringPropertiesPageTitle()
+	{
+		return "SESSION_CLUSTERING_TAB_TITLE";
 	}
 
 	protected AbstractPropertiesPage buildConnectionPolicyPropertiesPage()

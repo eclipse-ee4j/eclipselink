@@ -46,6 +46,7 @@ final class RdbmsSessionTabbedPropertiesPage extends SessionTabbedPropertiesPage
 		addTab(buildOptionsPropertiesPage(),    buildOptionsPropertiesPageTitle());
 		addTab(buildLoginPropertiesPage(),      buildLoginPropertiesPageTitle());
 		addTab(buildLoggingPropertiesPage(),    buildLoggingPropertiesPageTitle());
+		addTab(buildClusteringPropertiesPage(), buildClusteringPropertiesPageTitle());
 		addTab(buildConnectionPolicyVisibleHolder(), 5, buildConnectionPolicyPropertiesPage(), buildConnectionPolicyPropertiesPageTitle());
 	}
 
