@@ -126,7 +126,6 @@
         <zip zipfile="${eclipselink-src.zip}">
            <fileset dir="${eclipselink.core}/${src.dir}">
               <include name="org/eclipse/persistence/**/*.java"/>
-              <include name="deprecated/**/*.java"/>
           </fileset>
           <fileset dir="${eclipselink.jpa}/${src.dir}">
               <include name="org/eclipse/persistence/**/*.java"/>
