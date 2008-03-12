@@ -11,7 +11,8 @@
 
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
-    <property file="./build.properties"/>
+    <property name="eclipselink.extension.oracle.test" value="."/>
+    <property file="${eclipselink.extension.oracle.test}/build.properties"/>
 
     <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
     <available file="${eclipselink.extension.oracle.test}/${eclipselink.jpa.trunk}" type="dir" property="is.trunk"/>
