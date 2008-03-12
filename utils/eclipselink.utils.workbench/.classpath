@@ -13,7 +13,7 @@
 	<classpathentry kind="lib" path="config"/>
 	<classpathentry kind="lib" path="iconlib/resource"/>
 	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/ant.jar"/>
-	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/eclipselink.jar"/>
 	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="C:/EclipseLinkSource/trunk/eclipselink.jar" sourcepath="C:/EclipseLinkSource/trunk/eclipselink-src.zip"/>
 	<classpathentry kind="output" path="class"/>
 </classpath>
