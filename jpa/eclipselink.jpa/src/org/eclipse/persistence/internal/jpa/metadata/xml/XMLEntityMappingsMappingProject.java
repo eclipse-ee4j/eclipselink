@@ -1486,19 +1486,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(ReadTransformerMetadata.class);
         
-        XMLDirectMapping transformerClassNameMapping = new XMLDirectMapping();
-        transformerClassNameMapping.setAttributeName("m_TransformerClassName");
-        transformerClassNameMapping.setGetMethodName("getTransformerClassName");
-        transformerClassNameMapping.setSetMethodName("setTransformerClassName");
-        transformerClassNameMapping.setXPath("@transformer-class");
-        descriptor.addMapping(transformerClassNameMapping);
-        
-        XMLDirectMapping methodMapping = new XMLDirectMapping();
-        methodMapping.setAttributeName("m_method");
-        methodMapping.setGetMethodName("getMethod");
-        methodMapping.setSetMethodName("setMethod");
-        methodMapping.setXPath("@method");
-        descriptor.addMapping(methodMapping);
+        descriptor.addMapping(getTransformerClassNameMapping());
+        descriptor.addMapping(getMethodMapping());
         
         return descriptor;
     }
@@ -1872,20 +1861,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(WriteTransformerMetadata.class);
         
-        XMLDirectMapping transformerClassNameMapping = new XMLDirectMapping();
-        transformerClassNameMapping.setAttributeName("m_TransformerClassName");
-        transformerClassNameMapping.setGetMethodName("getTransformerClassName");
-        transformerClassNameMapping.setSetMethodName("setTransformerClassName");
-        transformerClassNameMapping.setXPath("@transformer-class");
-        descriptor.addMapping(transformerClassNameMapping);
-        
-        XMLDirectMapping methodMapping = new XMLDirectMapping();
-        methodMapping.setAttributeName("m_method");
-        methodMapping.setGetMethodName("getMethod");
-        methodMapping.setSetMethodName("setMethod");
-        methodMapping.setXPath("@method");
-        descriptor.addMapping(methodMapping);
-        
+        descriptor.addMapping(getTransformerClassNameMapping());
+        descriptor.addMapping(getMethodMapping());
         descriptor.addMapping(getColumnMapping());
         
         return descriptor;
@@ -2351,6 +2328,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLDirectMapping getMethodMapping() {
+        XMLDirectMapping methodMapping = new XMLDirectMapping();
+        methodMapping.setAttributeName("m_method");
+        methodMapping.setGetMethodName("getMethod");
+        methodMapping.setSetMethodName("setMethod");
+        methodMapping.setXPath("@method");
+        return methodMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLDirectMapping getMutableAttributeMapping() {
         XMLDirectMapping mutableMapping = new XMLDirectMapping();
         mutableMapping.setAttributeName("m_mutable");
@@ -2760,6 +2749,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     	temporalMapping.setConverter(new EnumTypeConverter(temporalMapping, TemporalType.class, false));
     	temporalMapping.setXPath("orm:temporal/text()");	
     	return temporalMapping;
+    }
+    
+    /**
+     * INTERNAL
+     */
+    protected XMLDirectMapping getTransformerClassNameMapping() {
+        XMLDirectMapping transformerClassNameMapping = new XMLDirectMapping();
+        transformerClassNameMapping.setAttributeName("m_transformerClassName");
+        transformerClassNameMapping.setGetMethodName("getTransformerClassName");
+        transformerClassNameMapping.setSetMethodName("setTransformerClassName");
+        transformerClassNameMapping.setXPath("@transformer-class");
+        return transformerClassNameMapping;
     }
     
     /**

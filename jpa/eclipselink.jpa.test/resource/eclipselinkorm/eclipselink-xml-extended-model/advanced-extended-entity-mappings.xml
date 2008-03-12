@@ -127,11 +127,11 @@
                 </write-transformer>
             </transformation>
             <transformation name="overtimeHours" mutable="false">
-                <read-transformer transformer-class="org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedReadTransformer"/>
-                <write-transformer transformer-class="org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedWriteTransformer">
+                <read-transformer transformer-class="AdvancedReadTransformer"/>
+                <write-transformer transformer-class="AdvancedWriteTransformer">
                     <column name="START_OVERTIME"/>
                 </write-transformer>
-                <write-transformer transformer-class="org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedWriteTransformer">
+                <write-transformer transformer-class="AdvancedWriteTransformer">
                     <column name="END_OVERTIME"/>
                 </write-transformer>
             </transformation>

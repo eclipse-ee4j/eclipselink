@@ -6,32 +6,29 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * 
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     Andrei Ilitchev (Oracle), March 7, 2008 
+ *        - New file introduced for bug 211300.  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.transformers;
 
-import org.eclipse.persistence.annotations.WriteTransformer;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.mappings.TransformationMapping;
-import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 
+/**
+ * Matadata for WriteTransformer.
+ * 
+ * @author Andrei Ilitchev
+ * @since EclipseLink 1.0 
+ */
 public class WriteTransformerMetadata extends ReadTransformerMetadata {
     private ColumnMetadata m_column;
     
     public WriteTransformerMetadata() {
         super();
-    }
-
-    public WriteTransformerMetadata(WriteTransformer writeTransformer) {
-        super();
-        setTransformerClass(writeTransformer.transformerClass());
-        setMethod(writeTransformer.method());
-        setColumn(new ColumnMetadata(writeTransformer.column()));
     }
 
     public ColumnMetadata getColumn() {
@@ -42,6 +39,12 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
         m_column = column;
     }
 
+    /**
+     * INTERNAL:
+     * The method in the parent class calls the overridden methods
+     *  applyMethod, applyField, 
+     *  throwBothClassAndMethodSpecifiedException, throwNeitherClassNorMethodSpecifiedException
+     */
     public void process(TransformationMapping mapping) {
         if(hasFieldName()) {
             super.process(mapping);
@@ -50,10 +53,18 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Indicates whether there is a column name.
+     */
     public boolean hasFieldName() {
         return m_column != null && m_column.getName() != null && m_column.getName().length() > 0;   
     }
     
+    /**
+     * INTERNAL:
+     * The name may be set by TransformationAccessor in case there's none specified.
+     */
     public void setFieldName(String fieldName) {
         if(m_column == null) {
             m_column = new ColumnMetadata();
@@ -72,10 +83,6 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
         } else {
             throw ValidationException.writeTransformerClassDoesntImplementFieldTransformer(mapping.getAttributeName(), mapping.getDescriptor().getJavaClassName(), m_column.getName());
         }
-    }
-
-    protected void applyClassName(TransformationMapping mapping) {
-        mapping.addFieldTransformerClassName(m_column.getDatabaseField(), getTransformerClassName());
     }
 
     protected void throwBothClassAndMethodSpecifiedException(TransformationMapping mapping) {

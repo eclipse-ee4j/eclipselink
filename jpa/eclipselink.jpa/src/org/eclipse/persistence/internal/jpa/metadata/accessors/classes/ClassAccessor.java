@@ -131,6 +131,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 return new EmbeddedAccessor(accessibleObject, this);
             } else if (accessibleObject.isEmbeddedId(getDescriptor())) {
                 return new EmbeddedIdAccessor(accessibleObject, this);
+            } else if (accessibleObject.isTransformation(getDescriptor())) { 
+                return new TransformationAccessor(accessibleObject, this);
             } else if (accessibleObject.isManyToMany(getDescriptor())) {
                 return new ManyToManyAccessor(accessibleObject, this);
             } else if (accessibleObject.isManyToOne(getDescriptor())) {
@@ -143,8 +145,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 // A OneToOne can currently default, that is, doesn't require
                 // an annotation to be present.
                 return new OneToOneAccessor(accessibleObject, this);
-            } else if (accessibleObject.isTransformation(getDescriptor())) { 
-                return new TransformationAccessor(accessibleObject, this);
             } else {
                 // Default case (everything else currently falls into this)
                 return new BasicAccessor(accessibleObject, this);

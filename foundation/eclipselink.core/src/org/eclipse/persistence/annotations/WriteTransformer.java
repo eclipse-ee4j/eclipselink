@@ -6,44 +6,70 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * 
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     Andrei Ilitchev (Oracle), March 7, 2008 
+ *        - New file introduced for bug 211300.  
  ******************************************************************************/  
 package org.eclipse.persistence.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.sql.Time;
 
 import javax.persistence.Column;
+
+import org.eclipse.persistence.sessions.Session;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * An optional annotation for org.eclipse.persistence.mappings.TransformationMapping.
- * WriteTransformer defines a function that applied to the attribute value produces
- * the value to be inserted in the database's column.
- * A single WriteTransformer may be specified directly on the method or field,
- * multiple WriteTransformers should be wrapped into WriteTransformers annotation.
- * No WriteTransformers specified for read-only mapping. 
+ * Annotation for org.eclipse.persistence.mappings.TransformationMapping.
+ * WriteTransformer defines transformation of the attribute value to a single
+ * database column value (column is specified in the WriteTransformer).
+ *  
+ * A single WriteTransformer may be specified directly on the method or attribute.
+ * Multiple WriteTransformers should be wrapped into WriteTransformers annotation.
+ * No WriteTransformers specified for read-only mapping.
+ * Unless the TransformationMapping is write-only, it should have a ReadTransformer,
+ * it defines transformation of database column(s) value(s)into attribute value.
+ *
+ * @see org.eclipse.persistence.annotations.ReadTransformer
+ * @see org.eclipse.persistence.annotations.Transformation
+ * @see org.eclipse.persistence.annotations.WriteTransformers
+ * 
+ * Transformation can be specified within an Entity, MappedSuperclass 
+ * and Embeddable class.
+ * 
+ * @author Andrei Ilitchev
+ * @since EclipseLink 1.0 
  */ 
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface WriteTransformer {
     /**
-     * User-defined class implementing org.eclipse.persistence.mappings.transformers.FieldTransformer interface.
+     * User-defined class that must implement org.eclipse.persistence.mappings.transformers.FieldTransformer interface.
      * The class will be instantiated, its buildFieldValue will be used to create the value to be written into
      * the database column.
-     * Either transformerClass or method should be specified, but not both.
+     * Note that for ddl generation and returning to be supported the method buildFieldValue in the class
+     * should be defined to return the relevant Java type, not just Object as defined in the interface,
+     * for instance:
+     * public Time buildFieldValue(Object instance, String fieldName, Session session).
+     * Either transformerClass or method must be specified, but not both.
      */ 
     Class transformerClass() default void.class;
 
     /**
      * The mapped class must have a method with this name which returns a value to be written into
      * the database column.
-     * Either transformerClass or method should be specified, but not both.
+     * Note that for ddl generation and returning to be supported the method
+     * should be defined to return a particular type, not just Object,
+     * for instance:
+     * public Time getStartTime().
+     * The method may require @Transient annotation to avoid being mapped as @Basic by default.
+     * Either transformerClass or method must be specified, but not both.
      */ 
     String method() default "";
 

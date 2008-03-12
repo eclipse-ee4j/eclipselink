@@ -6,28 +6,30 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * 
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     Andrei Ilitchev (Oracle), March 7, 2008 
+ *        - New file introduced for bug 211300.  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.transformers;
 
-import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 
+/**
+ * Metadata for ReadTransformer.
+ * 
+ * @author Andrei Ilitchev
+ * @since EclipseLink 1.0 
+ */
 public class ReadTransformerMetadata {
     private Class m_transformerClass;
     private String m_transformerClassName;
     private String m_method;
 
     public ReadTransformerMetadata() {
-    }
-
-    public ReadTransformerMetadata(ReadTransformer readTransformer) {
-        setTransformerClass(readTransformer.transformerClass());
-        setMethod(readTransformer.method());
+        super();
     }
 
     public Class getTransformerClass() {
@@ -62,43 +64,56 @@ public class ReadTransformerMetadata {
         return m_transformerClass != null && !m_transformerClass.equals(void.class);
     }
     
+    /**
+     * INTERNAL:
+     * Indicates whether there is a class name set. If that's the case
+     * then TransformationAccessor sets the corresponding class.
+     */
     public boolean hasClassName() {
         return m_transformerClassName != null && m_transformerClassName.length() > 0;
     }
     
+    /**
+     * INTERNAL:
+     * When this method is called there must be either method or class (but not both!).
+     * If there was not class but className, then by now the class should have been set.
+     */
     public void process(TransformationMapping mapping) {
         if(hasMethod()) {
-            if(!hasClass() && !hasClassName()) {
-                applyMethod(mapping);
-            } else {
+            if(hasClass()) {
                 throwBothClassAndMethodSpecifiedException(mapping);
+            } else {
+                applyMethod(mapping);
             }
         } else {
             if(hasClass()) {
                 applyClass(mapping);
-            } else if(hasClassName()) {
-                applyClassName(mapping);
             } else {
                 throwNeitherClassNorMethodSpecifiedException(mapping);
             }
         }
     }
 
+    /**
+     * INTERNAL:
+     * Method was specified - apply it to the mapping.
+     */
     protected void applyMethod(TransformationMapping mapping) {
         mapping.setAttributeTransformation(getMethod());
     }
 
+    /**
+     * INTERNAL:
+     * Class was specified - apply it to the mapping.
+     * Note that because this method is called from predeploy with temporary classloader
+     * the class name should be set. However having the class allows validation.
+     */
     protected void applyClass(TransformationMapping mapping) {
         if(AttributeTransformer.class.isAssignableFrom(getTransformerClass())) {
-            // this is called from predeploy with temp classLoader, therefore should set class name, can't set class.
             mapping.setAttributeTransformerClassName(getTransformerClass().getName());
         } else {
             throw ValidationException.readTransformerClassDoesntImplementAttributeTransformer(mapping.getAttributeName(), mapping.getDescriptor().getJavaClassName());
         }
-    }
-
-    protected void applyClassName(TransformationMapping mapping) {
-        mapping.setAttributeTransformerClassName(getTransformerClassName());
     }
 
     protected void throwBothClassAndMethodSpecifiedException(TransformationMapping mapping) {

@@ -6,16 +6,15 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * 
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     Andrei Ilitchev (Oracle), March 7, 2008 
+ *        - New file introduced for bug 211300.  
  ******************************************************************************/  
 package org.eclipse.persistence.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import javax.persistence.Column;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -26,6 +25,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * A single WriteTransformer may be specified directly on the method or field,
  * multiple WriteTransformers should be wrapped into WriteTransformers annotation.
  * No WriteTransformers specified for read-only mapping. 
+ *
+ * @see org.eclipse.persistence.annotations.Transformation
+ * @see org.eclipse.persistence.annotations.ReadTransformer
+ * @see org.eclipse.persistence.annotations.WriteTransformer
+ * 
+ * Transformation can be specified within an Entity, MappedSuperclass 
+ * and Embeddable class.
+ * 
+ * @author Andrei Ilitchev
+ * @since EclipseLink 1.0 
  */ 
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)

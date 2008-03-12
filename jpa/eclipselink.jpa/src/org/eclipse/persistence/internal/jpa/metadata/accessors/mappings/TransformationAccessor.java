@@ -6,9 +6,10 @@
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * 
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     Andrei Ilitchev (Oracle), March 7, 2008 
+ *        - New file introduced for bug 211300.  
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -16,7 +17,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.persistence.annotations.Mutable;
+import javax.persistence.Column;
+
 import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.Transformation;
 import org.eclipse.persistence.annotations.WriteTransformer;
@@ -26,6 +28,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.transformers.ReadTransformerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.transformers.WriteTransformerMetadata;
 
@@ -36,7 +39,7 @@ import org.eclipse.persistence.mappings.TransformationMapping;
  * accessible object.
  * 
  * @author Andrei Ilitchev
- * @since TopLink EJB 3.0 Reference Implementation
+ * @since EclipseLink 1.0 
  */
 public class TransformationAccessor extends BasicAccessor {
     private ReadTransformerMetadata m_readTransformer;
@@ -57,30 +60,25 @@ public class TransformationAccessor extends BasicAccessor {
         
         Transformation transformation = getAnnotation(Transformation.class);
         if (transformation != null) {
-            setFetch(transformation.fetch());
-            setOptional(transformation.optional());
-        }
-
-        Mutable mutable = getAnnotation(Mutable.class);
-        if (mutable != null) {
-            setMutable(mutable.value());
+            setFetch((Enum) MetadataHelper.invokeMethod("fetch", transformation));
+            setOptional((Boolean) MetadataHelper.invokeMethod("optional", transformation));
         }
 
         ReadTransformer readTransformer = getAnnotation(ReadTransformer.class);
         if (readTransformer != null) {
-            m_readTransformer = new ReadTransformerMetadata(readTransformer);
+            setReadTransformer(readTransformer);
         }
 
         WriteTransformer writeTransformer = getAnnotation(WriteTransformer.class);
         if (writeTransformer != null) {
-            m_writeTransformers.add(new WriteTransformerMetadata(writeTransformer));
+            addWriteTransformer(writeTransformer);
         }
         
         WriteTransformers writeTransformers = getAnnotation(WriteTransformers.class);
         if (writeTransformers != null) {
             WriteTransformer[] writeTransformerArray = writeTransformers.value();
             for(int i=0; i<writeTransformerArray.length; i++) {
-                m_writeTransformers.add(new WriteTransformerMetadata(writeTransformerArray[i]));
+                addWriteTransformer(writeTransformerArray[i]);
             }
         }
 
@@ -93,6 +91,19 @@ public class TransformationAccessor extends BasicAccessor {
     
     public List<WriteTransformerMetadata> getWriteTransformers() {
         return m_writeTransformers;
+    }
+    
+    /**
+    * INTERNAL: (Override from MetadataAccessor)
+    */
+    public void init(MetadataAccessibleObject accessibleObject, ClassAccessor accessor) {
+        super.init(accessibleObject, accessor);
+        if (m_readTransformer != null && m_readTransformer.hasClassName()) {
+            m_readTransformer.setTransformerClass(getEntityMappings().getClassForName(m_readTransformer.getTransformerClassName()));
+        }
+        for (WriteTransformerMetadata writeTransformer : m_writeTransformers) {
+            writeTransformer.setTransformerClass(getEntityMappings().getClassForName(writeTransformer.getTransformerClassName()));
+        }
     }
     
     /**
@@ -164,5 +175,19 @@ public class TransformationAccessor extends BasicAccessor {
     
     public void setWriteTransformers(List<WriteTransformerMetadata> writeTransformers) {
         m_writeTransformers = writeTransformers;
+    }
+    
+    protected void setReadTransformer(ReadTransformer readTransformer) {
+        m_readTransformer = new ReadTransformerMetadata();        
+        m_readTransformer.setTransformerClass((Class)MetadataHelper.invokeMethod("transformerClass", readTransformer));
+        m_readTransformer.setMethod((String)MetadataHelper.invokeMethod("method", readTransformer));
+    }
+
+    protected void addWriteTransformer(WriteTransformer writeTransformer) {
+        WriteTransformerMetadata writeTransformerMetadata = new WriteTransformerMetadata();        
+        writeTransformerMetadata.setTransformerClass((Class)MetadataHelper.invokeMethod("transformerClass", writeTransformer));
+        writeTransformerMetadata.setMethod((String)MetadataHelper.invokeMethod("method", writeTransformer));
+        writeTransformerMetadata.setColumn(new ColumnMetadata((Column)MetadataHelper.invokeMethod("column", writeTransformer)));
+        m_writeTransformers.add(writeTransformerMetadata);
     }
 }
