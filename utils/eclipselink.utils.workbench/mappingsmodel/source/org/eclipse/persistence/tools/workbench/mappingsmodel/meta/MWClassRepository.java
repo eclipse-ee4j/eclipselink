@@ -149,7 +149,12 @@ public final class MWClassRepository
 	private static final Class[] CORE_KEYS =
 		new Class[] {
 			java.lang.Object.class,		// rt.jar
-//			javax.ejb.EnterpriseBean.class,		// javax.ejb
+			//some custom jvms have the classes divided between more than one jar which can cause problems
+			//associated with bug #6789722
+			java.util.List.class,
+			java.util.Map.class,
+			java.util.Collection.class,
+			java.util.Set.class,
 			org.eclipse.persistence.indirection.ValueHolderInterface.class		// toplink.jar
 		};
 
@@ -510,12 +515,14 @@ public final class MWClassRepository
 	 * resolved relative to the project save directory)
 	 */
 	private File[] buildExternalClassRepositoryClasspath() {
-		List files = new ArrayList(this.classpathEntriesSize() + CORE_KEYS.length);
+		List<String> coreFiles = buildCoreClassLocations();
+		List files = new ArrayList(this.classpathEntriesSize() + coreFiles.size());
 		CollectionTools.addAll(files, this.fullyQualifiedClasspathFiles());
+		ListIterator<String> coreFileIter = coreFiles.listIterator();
 		// hard-code the "core" classes at the back of the classpath
 		// so they can be overridden by the client
-		for (int i = 0; i < CORE_KEYS.length; i++) {
-			files.add(new File(Classpath.locationFor(CORE_KEYS[i])));
+		while (coreFileIter.hasNext()) {
+			files.add(new File(coreFileIter.next()));
 		}
 		return (File[]) files.toArray(new File[files.size()]);
 	}
@@ -1177,18 +1184,26 @@ public final class MWClassRepository
 
 	private static Set buildCoreClassNames() {
 		Set result = new HashSet(10000);
-	
+		
 		// void, boolean, int, float, etc.
 		CollectionTools.addAll(result, MWClass.nonReferenceClassNames());
 
-		List locations = new ArrayList();
-		for (int i = 0; i < CORE_KEYS.length; i++) {
-			locations.add(Classpath.locationFor(CORE_KEYS[i]));
-		}
+		List locations = buildCoreClassLocations();		
 		Classpath cp = new Classpath(locations);
 		cp.addClassNamesTo(result);
 	
 		return result;
+	}
+
+	private static List<String> buildCoreClassLocations() {
+		List<String> locations = new ArrayList<String>();
+		for (int i = 0; i < CORE_KEYS.length; i++) {
+			String classpath = Classpath.locationFor(CORE_KEYS[i]);
+			if (!locations.contains(classpath)) {
+				locations.add(classpath);
+			}
+		}
+		return locations;
 	}
 
 	/**
