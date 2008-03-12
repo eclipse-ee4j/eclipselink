@@ -670,15 +670,20 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             
         if (getDescriptor().usesPropertyAccess()) {
             for (Method method : MetadataHelper.getDeclaredMethods(pkClass)) {
-                MetadataMethod metadataMethod = new MetadataMethod(method);
+                if (isValidPersistenceElement(method, method.getModifiers())) {
+                    MetadataMethod metadataMethod = new MetadataMethod(method);
                     
-                if (metadataMethod.isValidPersistenceMethodName()) {
-                    getDescriptor().addPKClassId(metadataMethod.getAttributeName(), metadataMethod.getRelationType());
+                    
+                    if (metadataMethod.isValidPersistenceMethodName()) {
+                        getDescriptor().addPKClassId(metadataMethod.getAttributeName(), metadataMethod.getRelationType());
+                    }
                 }
             }    
         } else {
             for (Field field : MetadataHelper.getFields(pkClass)) {
-                getDescriptor().addPKClassId(field.getName(), field.getGenericType());
+                if (isValidPersistenceElement(field, field.getModifiers())) {
+                    getDescriptor().addPKClassId(field.getName(), field.getGenericType());
+                }
             }
         } 
     }

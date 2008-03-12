@@ -464,7 +464,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
             			throw ValidationException.mappingMetadataAppliedToInvalidAttribute(method, getJavaClass());
             		}
             	}
-            	
             }
         }
     }

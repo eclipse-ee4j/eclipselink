@@ -19,6 +19,11 @@ public class PartnerLinkPK {
     private Integer manId;
 	@Id
     private Integer womanId;
+	
+	// This should not get processed as part of the primary key.
+	public static final long serialVersionUID = 7696472275622076147L;
+	// Nor this ...
+	public transient Integer transientField = 0;
 
 	public PartnerLinkPK() {}    
     
