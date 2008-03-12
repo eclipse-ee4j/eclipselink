@@ -120,6 +120,17 @@ public class AdvancedTableCreator extends org.eclipse.persistence.tools.schemafr
         fieldCOUNTRY.setUnique(false);
         fieldCOUNTRY.setShouldAllowNull(true);
         table.addField(fieldCOUNTRY);
+        
+        FieldDefinition fieldType = new FieldDefinition();
+        fieldType.setName("TYPE");
+        fieldType.setTypeName("VARCHAR2");
+        fieldType.setSize(150);
+        fieldType.setSubSize(0);
+        fieldType.setIsPrimaryKey(false);
+        fieldType.setIsIdentity(false);
+        fieldType.setUnique(false);
+        fieldType.setShouldAllowNull(true);
+        table.addField(fieldType);
 
         return table;
     }

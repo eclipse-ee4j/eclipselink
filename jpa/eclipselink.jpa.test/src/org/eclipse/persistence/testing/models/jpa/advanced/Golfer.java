@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.Convert;
+
 @Entity
 @Table(name="CMP3_GOLFER")
 public class Golfer implements java.io.Serializable {
@@ -36,6 +38,7 @@ public class Golfer implements java.io.Serializable {
     public void setGolferPK(GolferPK golferPK) {
         this.golferPK = golferPK;
     }
+
     
     public void setWorldRank(WorldRank worldRank) {
         this.worldRank = worldRank;

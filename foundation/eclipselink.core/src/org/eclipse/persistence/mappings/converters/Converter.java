@@ -26,7 +26,6 @@ import org.eclipse.persistence.sessions.Session;
  * @see DirectCollectionMapping#setConverter(Converter)
  * @see ObjectTypeConverter
  * @see TypeConversionConverter
- * @see SerializedObjectConverter
  *
  * @author James Sutherland
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)

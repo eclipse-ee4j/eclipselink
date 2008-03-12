@@ -28,6 +28,11 @@ package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
 import java.io.Serializable;
 
+import org.eclipse.persistence.testing.models.jpa.advanced.AddressType;
+
+import javax.persistence.Transient;
+
+
 /**
  * <p><b>Purpose</b>: Represents the mailing address on an Employee
  * <p><b>Description</b>: Held in a private 1:1 relationship from Employee
@@ -40,6 +45,8 @@ public class Address implements Serializable {
     private String province;
     private String postalCode;
     private String country;
+    @Transient
+    private AddressType type;
 
     public Address() {
         city = "";
@@ -103,5 +110,13 @@ public class Address implements Serializable {
     
 	public void setCountry(String country) { 
         this.country = country;
+    }
+	
+    public AddressType getType(){
+        return type;
+    }
+    
+    public void setType(AddressType type){
+        this.type = type;
     }
 }

@@ -37,6 +37,7 @@ import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.models.jpa.advanced.Bungalow;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedTableCreator;
@@ -96,6 +97,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testNamedStoredProcedureQueryInOut", persistenceUnit));            
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testMethodBasedTransformationMapping", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testClassBasedTransformationMapping", persistenceUnit));
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testClassInstanceConverter", persistenceUnit));
         }
         
         return new TestSetup(suite) {
@@ -780,4 +782,27 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
             fail(errorMsg);
         }
     }
+
+    public void testClassInstanceConverter(){
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        beginTransaction(em);
+        Address add = new Address();
+        add.setCity("St. Louis");
+        add.setType(new Bungalow());
+        em.persist(add);
+        commitTransaction(em);
+        int assignedSequenceNumber = add.getId();
+        
+        em.clear();
+        getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+
+        add = em.find(Address.class, assignedSequenceNumber);
+
+        assertTrue("Did not correctly persist a mapping using a class-instance converter", (add.getType() instanceof Bungalow));
+
+        beginTransaction(em);
+        em.remove(add);
+        commitTransaction(em);
+    }
+    
 }

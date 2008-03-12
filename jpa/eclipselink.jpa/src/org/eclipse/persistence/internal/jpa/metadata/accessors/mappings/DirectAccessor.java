@@ -42,6 +42,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
+import org.eclipse.persistence.mappings.converters.ClassInstanceConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 
 /**
@@ -56,6 +57,7 @@ public abstract class DirectAccessor extends MetadataAccessor {
     // Reserved converter names
     private static final String CONVERT_NONE = "none";
     private static final String CONVERT_SERIALIZED = "serialized";
+    private static final String CONVERT_CLASS_INSTANCE = "class-instance";
     
 	private final static String DEFAULT_MAP_KEY_COLUMN_SUFFIX = "_KEY";
 	
@@ -407,6 +409,18 @@ public abstract class DirectAccessor extends MetadataAccessor {
                 cls.equals(java.util.GregorianCalendar.class));
     }
     
+    
+    /**
+     * INTERNAL:
+     * 
+     * Process a potential class-instance attribute. If the reference class is a Class, 
+     * set the converter on the mapping
+     */
+    protected void processClassInstance(DatabaseMapping mapping) {
+            ClassInstanceConverter converter = new ClassInstanceConverter();
+            setConverter(mapping, converter);
+    }
+    
     /**
      * INTERNAL: (Overridden in BasicMapAccessor)
      * Process a convert value to apply the specified EclipseLink converter 
@@ -433,6 +447,8 @@ public abstract class DirectAccessor extends MetadataAccessor {
         if (! converterName.equals(CONVERT_NONE)) {
             if (converterName.equals(CONVERT_SERIALIZED)) {
                 processSerialized(mapping);
+            } else if (converterName.equals(CONVERT_CLASS_INSTANCE)){
+                processClassInstance(mapping);
             } else {
             	AbstractConverterMetadata converter = getProject().getConverter(converterName);
                 

@@ -175,6 +175,9 @@
               <convert>ProvinceConverter</convert>
             </basic>
             <basic name="country"/>
+            <basic name="type">
+                <convert>class-instance</convert>
+            </basic>
         </attributes>
     </entity>
     <entity name="XMLPhoneNumber" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.PhoneNumber" access="PROPERTY">

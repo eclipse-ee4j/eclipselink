@@ -20,6 +20,7 @@ import static javax.persistence.CascadeType.*;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
 import org.eclipse.persistence.annotations.StoredProcedureParameter;
+import org.eclipse.persistence.annotations.Convert;
 import static org.eclipse.persistence.annotations.Direction.OUT;
 import static org.eclipse.persistence.annotations.Direction.IN_OUT;
 
@@ -86,6 +87,7 @@ public class Address implements Serializable {
     private String province;
     private String postalCode;
     private String country;
+    private AddressType type;
 	private Collection<Employee> employees;
 
     public Address() {
@@ -171,4 +173,14 @@ public class Address implements Serializable {
     public void setEmployees(Collection<Employee> employees) {
 		this.employees = employees;
 	}
+    
+    @Basic
+    @Convert("class-instance")
+    public AddressType getType(){
+        return type;
+    }
+    
+    public void setType(AddressType type){
+        this.type = type;
+    }
 }

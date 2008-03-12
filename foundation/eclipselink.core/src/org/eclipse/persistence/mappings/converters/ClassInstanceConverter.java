@@ -26,6 +26,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <b>Purpose</b>: Allows a class name to be converter to and from a new instance of the class.
+ * 
+ * When using a ClassInstanceConverter, the database will store the Class name and the java object
+ * model will contain an instance of that class initialized with its default construtor
  *
  * @author James Sutherland
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)

@@ -94,6 +94,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public static Test suite() {
+        try{
         TestSuite suite = new TestSuite(EntityManagerJUnitTestSuite.class);
 
         return new TestSetup(suite) {
@@ -106,6 +107,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 clearCache();
             }
         };
+        } catch (Throwable t){
+            t.printStackTrace();
+            return null;
+        }
     }
     
     /**
@@ -5384,5 +5389,25 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
-    
+    public void testClassInstanceConverter(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Address add = new Address();
+        add.setCity("St. Louis");
+        add.setType(new Bungalow());
+        em.persist(add);
+        commitTransaction(em);
+        int assignedSequenceNumber = add.getId();
+        
+        em.clear();
+        getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+
+        add = em.find(Address.class, assignedSequenceNumber);
+        
+        assertTrue("Did not correctly persist a mapping using a class-instance converter", (add.getType() instanceof Bungalow));
+
+        beginTransaction(em);
+        em.remove(add);
+        commitTransaction(em);
+    }
 }

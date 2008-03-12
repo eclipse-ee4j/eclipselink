@@ -25,11 +25,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * reserved names:
  *  - serialized: Will use an org.eclipse.persistence.mappings.converters.SerializedObjectConverter 
  *  on the associated mapping. 
+ *  - class-instance: Will use an org.eclipse.persistence.mappings.converters.ClassInstanceConverter
+ *  on the associated mapping
  *  - none - Will place no converter on the associated mapping. 
  * 
  * @see org.eclipse.persistence.annotations.Converter
  * @see org.eclipse.persistence.annotations.ObjectTypeConverter
  * @see org.eclipse.persistence.annotations.TypeConverter
+ * @see org.eclipse.persistence.mappings.converters.SerializedObjectConverter 
+ * @see org.eclipse.persistence.mappings.converters.ClassInstanceConverter
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0 
  */ 

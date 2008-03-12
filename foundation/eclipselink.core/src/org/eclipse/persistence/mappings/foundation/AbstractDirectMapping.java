@@ -47,6 +47,7 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
  * @see ObjectTypeConverter
  * @see TypeConversionConverter
  * @see SerializedObjectConverter
+ * @see ClassInstanceConverter
  *
  * @author Sati
  * @since TopLink/Java 1.0

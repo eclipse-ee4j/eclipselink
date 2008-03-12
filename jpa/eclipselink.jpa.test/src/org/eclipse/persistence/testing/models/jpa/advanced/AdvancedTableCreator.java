@@ -115,6 +115,17 @@ public class AdvancedTableCreator extends TableCreator {
         fieldCOUNTRY.setShouldAllowNull(true);
         table.addField(fieldCOUNTRY);
 
+        FieldDefinition fieldType = new FieldDefinition();
+        fieldType.setName("TYPE");
+        fieldType.setTypeName("VARCHAR2");
+        fieldType.setSize(150);
+        fieldType.setSubSize(0);
+        fieldType.setIsPrimaryKey(false);
+        fieldType.setIsIdentity(false);
+        fieldType.setUnique(false);
+        fieldType.setShouldAllowNull(true);
+        table.addField(fieldType);
+        
         return table;
     }
     
@@ -608,6 +619,7 @@ public class AdvancedTableCreator extends TableCreator {
         IDfield.setUnique(false);
         IDfield.setIsIdentity(true);
         table.addField(IDfield);
+        
         ForeignKeyConstraint foreignKeyGOLFER_WORLDRANK = new ForeignKeyConstraint();
         foreignKeyGOLFER_WORLDRANK.setName("WORLDRANK_ID");
         foreignKeyGOLFER_WORLDRANK.setTargetTable("CMP3_WORLDRANK"); 
