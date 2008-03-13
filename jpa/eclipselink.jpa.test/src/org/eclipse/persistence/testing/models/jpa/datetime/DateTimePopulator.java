@@ -71,6 +71,7 @@ public class DateTimePopulator {
         return buildAttributes(cal);
     }
 
+    @SuppressWarnings("deprecation")
     public DateTime buildAttributes(Calendar cal) {
         DateTime dateTime = new DateTime();
         long time = cal.getTime().getTime();;

@@ -28,6 +28,7 @@ import org.eclipse.persistence.testing.models.jpa.inherited.SerialNumber;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
  
+@SuppressWarnings("deprecation")
 public class OrderedListJunitTest extends JUnitTestCase {
     private static Integer m_beerConsumerId;
     

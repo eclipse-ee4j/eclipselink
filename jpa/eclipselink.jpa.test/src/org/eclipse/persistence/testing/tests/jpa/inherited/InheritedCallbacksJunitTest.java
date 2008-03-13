@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.SerialNumber;
 import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
  
+@SuppressWarnings("deprecation")
 public class InheritedCallbacksJunitTest extends JUnitTestCase {
     private static Integer m_Id;
     

@@ -23,6 +23,7 @@ import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
  *
  * @author Guy Pelletier
  */
+@SuppressWarnings("deprecation")
 public class InheritedCRUDTest extends EntityContainerTestBase {
     protected boolean m_reset = false;    // reset gets called twice on error
     protected Exception m_exception;
@@ -42,7 +43,7 @@ public class InheritedCRUDTest extends EntityContainerTestBase {
         ((EntityManagerImpl)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
     
-    public void test() throws Exception {
+	public void test() throws Exception {
         try {
             beginTransaction();
             

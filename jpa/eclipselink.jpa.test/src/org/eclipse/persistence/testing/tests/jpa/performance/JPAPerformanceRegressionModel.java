@@ -276,7 +276,8 @@ public class JPAPerformanceRegressionModel extends TestModel {
     /**
      * Add a test to see if the provider is using change tracking.
      */
-    public TestCase buildDateChangeTrackingTest() {
+   @SuppressWarnings("deprecation")
+   public TestCase buildDateChangeTrackingTest() {
         TestCase test = new TestCase() {
             public void test() throws Exception {                
                 Employee employee = (Employee)getSession().readObject(Employee.class);
