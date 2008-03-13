@@ -14,6 +14,7 @@ package org.eclipse.persistence.jaxb;
 
 import java.io.OutputStream;
 import java.io.Writer;
+import java.io.File;
 import java.util.HashMap;
 
 import javax.xml.bind.JAXBElement;
@@ -209,6 +210,14 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 		}
 	}
 
+	public void marshal(Object object, File file) throws JAXBException {
+		try {
+			java.io.FileWriter writer = new java.io.FileWriter(file);
+			marshal(object, writer);
+		} catch(Exception ex) {
+			throw new MarshalException(ex);
+		}
+	}
 	public void marshal(Object object, Result result) throws JAXBException {
         if (object == null || result == null) {
             throw new IllegalArgumentException();
