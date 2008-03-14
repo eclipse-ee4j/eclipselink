@@ -136,7 +136,7 @@ public class DefaultConnector implements Connector {
      * @return boolean 
      */
      public boolean shouldUseDriverManager(Properties properties, Session session) {
-         return (session == null) || session.getServerPlatform().shouldUseDriverManager();
+         return  !connectDirectly && ((session == null) || session.getServerPlatform().shouldUseDriverManager());
      }
      
     /**
