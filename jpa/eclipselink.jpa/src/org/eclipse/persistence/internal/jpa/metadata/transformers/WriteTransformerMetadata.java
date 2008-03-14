@@ -27,30 +27,38 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 public class WriteTransformerMetadata extends ReadTransformerMetadata {
     private ColumnMetadata m_column;
     
+    /**
+     * INTERNAL:
+     */
     public WriteTransformerMetadata() {
         super();
     }
 
-    public ColumnMetadata getColumn() {
-        return m_column;
-    }
-
-    public void setColumn(ColumnMetadata column) {
-        m_column = column;
-    }
-
     /**
      * INTERNAL:
-     * The method in the parent class calls the overridden methods
-     *  applyMethod, applyField, 
-     *  throwBothClassAndMethodSpecifiedException, throwNeitherClassNorMethodSpecifiedException
      */
-    public void process(TransformationMapping mapping) {
-        if(hasFieldName()) {
-            super.process(mapping);
+    protected void applyClass(TransformationMapping mapping) {
+        if (FieldTransformer.class.isAssignableFrom(getTransformerClass())) {
+            // this is called from predeploy with temp classLoader, therefore should set class name, can't set class.
+            mapping.addFieldTransformerClassName(m_column.getDatabaseField(), getTransformerClass().getName());
         } else {
-            throw ValidationException.writeTransformerHasNoColumnName(mapping.getAttributeName(), mapping.getDescriptor().getJavaClassName());
+            throw ValidationException.writeTransformerClassDoesntImplementFieldTransformer(mapping.getAttributeName(), mapping.getDescriptor().getJavaClassName(), m_column.getName());
         }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected void applyMethod(TransformationMapping mapping) {
+        mapping.addFieldTransformation(m_column.getDatabaseField(), getMethod());
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public ColumnMetadata getColumn() {
+        return m_column;
     }
 
     /**
@@ -60,35 +68,52 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
     public boolean hasFieldName() {
         return m_column != null && m_column.getName() != null && m_column.getName().length() > 0;   
     }
+
+    /**
+     * INTERNAL:
+     * The method in the parent class calls the overridden methods
+     *  applyMethod, applyField, 
+     *  throwBothClassAndMethodSpecifiedException, throwNeitherClassNorMethodSpecifiedException
+     */
+    public void process(TransformationMapping mapping) {
+        if (hasFieldName()) {
+            super.process(mapping);
+        } else {
+            throw ValidationException.writeTransformerHasNoColumnName(mapping.getAttributeName(), mapping.getDescriptor().getJavaClassName());
+        }
+    }
     
     /**
      * INTERNAL:
-     * The name may be set by TransformationAccessor in case there's none specified.
+     * Used for OX mapping.
+     */
+    public void setColumn(ColumnMetadata column) {
+        m_column = column;
+    }
+    
+    /**
+     * INTERNAL:
+     * The name may be set by TransformationAccessor in case there's none 
+     * specified.
      */
     public void setFieldName(String fieldName) {
-        if(m_column == null) {
+        if (m_column == null) {
             m_column = new ColumnMetadata();
         }
+        
         m_column.setName(fieldName);
     }
     
-    protected void applyMethod(TransformationMapping mapping) {
-        mapping.addFieldTransformation(m_column.getDatabaseField(), getMethod());
-    }
-
-    protected void applyClass(TransformationMapping mapping) {
-        if(FieldTransformer.class.isAssignableFrom(getTransformerClass())) {
-            // this is called from predeploy with temp classLoader, therefore should set class name, can't set class.
-            mapping.addFieldTransformerClassName(m_column.getDatabaseField(), getTransformerClass().getName());
-        } else {
-            throw ValidationException.writeTransformerClassDoesntImplementFieldTransformer(mapping.getAttributeName(), mapping.getDescriptor().getJavaClassName(), m_column.getName());
-        }
-    }
-
+    /**
+     * INTERNAL:
+     */
     protected void throwBothClassAndMethodSpecifiedException(TransformationMapping mapping) {
         throw ValidationException.writeTransformerHasBothClassAndMethod(mapping.getAttributeName(), mapping.getDescriptor().getJavaClassName(), m_column.getName());
     }
 
+    /**
+     * INTERNAL:
+     */
     protected void throwNeitherClassNorMethodSpecifiedException(TransformationMapping mapping) {
         throw ValidationException.writeTransformerHasNeitherClassNorMethod(mapping.getAttributeName(), mapping.getDescriptor().getJavaClassName(), m_column.getName());
     }
