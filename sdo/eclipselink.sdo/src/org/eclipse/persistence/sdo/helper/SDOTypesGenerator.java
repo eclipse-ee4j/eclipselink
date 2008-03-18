@@ -106,6 +106,21 @@ public class SDOTypesGenerator {
                     //Only throw this error if we're not processing an import.
                     throw SDOException.typeReferencedButNotDefined(nextSDOType.getURI(), nextSDOType.getName());
                 }
+                
+                Iterator<Property> propertiesIter = nextSDOType.getProperties().iterator();
+                while (propertiesIter.hasNext()) {
+                	SDOProperty prop = (SDOProperty) propertiesIter.next();
+                	if (prop.getType().isDataType() && prop.isContainment()) {
+                		// If isDataType is true, then isContainment has to be false.
+                		// This property was likely created as a stub, and isContainment never got reset
+                		// when the property was fully defined.
+                		// This problem was uncovered in bug 6809767
+                		// TODO: We might want to refactor this for performance reasons so that isContainment
+                		// gets reset at a more opportune time
+                		prop.setContainment(false);
+                	}
+                }
+                
             }
             Iterator<Property> propertiesIter = getGeneratedGlobalElements().values().iterator();
             while (propertiesIter.hasNext()) {
