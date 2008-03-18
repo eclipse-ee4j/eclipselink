@@ -13,7 +13,8 @@
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
 import javax.persistence.*;
-import org.eclipse.persistence.testing.models.performance.*;
+
+import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
@@ -32,9 +33,11 @@ public class JPAUpdateAddressPerformanceComparisonTest extends PerformanceRegres
      * Get an address id.
      */
     public void setup() {
-        Address address = (Address)getSession().readObject(Address.class);
+        EntityManager manager = createEntityManager();
+        Address address = (Address)manager.createQuery("Select a from Address a").getResultList().get(0);
         addressId = address.getId();
         street = address.getStreet();
+        manager.close();
         count = 0;
     }
 
@@ -44,7 +47,7 @@ public class JPAUpdateAddressPerformanceComparisonTest extends PerformanceRegres
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
-        Address address = manager.getReference(Address.class, new Long(this.addressId));
+        Address address = manager.find(Address.class, new Long(this.addressId));
         count++;
         address.setStreet(street + count);
         manager.getTransaction().commit();

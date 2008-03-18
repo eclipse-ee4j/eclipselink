@@ -13,7 +13,8 @@
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
 import javax.persistence.*;
-import org.eclipse.persistence.testing.models.performance.*;
+
+import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
@@ -28,9 +29,11 @@ public class JPAMassInsertAddressPerformanceComparisonTest extends PerformanceRe
      * Delete all addresses.
      */
     public void reset() {
-        getSession().executeNonSelectingSQL("Delete from ADDRESS where STREET = 'Hastings Perf'");
-        //getSession().getIdentityMapAccessor().initializeIdentityMaps();
-        //HibernatePerformanceComparisonModel.getSessionFactory().evict(Address.class);
+        EntityManager manager = createEntityManager();
+        manager.getTransaction().begin();
+        manager.createQuery("Delete from Address where street = 'Hastings Perf'").executeUpdate();
+        manager.getTransaction().commit();
+        manager.close();
     }
 
     /**
@@ -49,8 +52,10 @@ public class JPAMassInsertAddressPerformanceComparisonTest extends PerformanceRe
         manager.getTransaction().commit();
         manager.close();
 
-        getSession().executeNonSelectingSQL("Delete from ADDRESS where STREET = 'Hastings Perf'");
-        //getSession().getIdentityMapAccessor().initializeIdentityMaps();
-        //HibernatePerformanceComparisonModel.getSessionFactory().evict(Address.class);
+        manager = createEntityManager();
+        manager.getTransaction().begin();
+        manager.createNativeQuery("Delete from ADDRESS where STREET = 'Hastings Perf'").executeUpdate();
+        manager.getTransaction().commit();
+        manager.close();
     }
 }

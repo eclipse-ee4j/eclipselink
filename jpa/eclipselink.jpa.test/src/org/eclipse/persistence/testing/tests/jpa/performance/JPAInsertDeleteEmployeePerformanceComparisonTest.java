@@ -14,7 +14,7 @@
 
 import javax.persistence.*;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.testing.models.performance.*;
+import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.framework.*;
 
 /**

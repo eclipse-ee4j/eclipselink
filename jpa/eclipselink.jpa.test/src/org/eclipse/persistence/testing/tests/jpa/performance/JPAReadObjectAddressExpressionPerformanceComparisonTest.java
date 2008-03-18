@@ -13,13 +13,14 @@
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
 import javax.persistence.*;
-import org.eclipse.persistence.testing.models.performance.*;
+
+import org.eclipse.persistence.testing.models.jpa.performance.*;
 
 /**
  * This test compares the performance of read object Address.
  */
 public class JPAReadObjectAddressExpressionPerformanceComparisonTest extends JPAReadPerformanceComparisonTest {
-    protected long addressId;
+    protected String street;
 
     public JPAReadObjectAddressExpressionPerformanceComparisonTest(boolean isReadOnly) {
         super(isReadOnly);
@@ -28,10 +29,12 @@ public class JPAReadObjectAddressExpressionPerformanceComparisonTest extends JPA
     }
 
     /**
-     * Get an address id.
+     * Get an address street.
      */
     public void setup() {
-        addressId = ((Address)getSession().readObject(Address.class)).getId();
+        EntityManager manager = createEntityManager();
+        street = ((Address)manager.createQuery("Select a from Address a").getResultList().get(0)).getStreet();
+        manager.close();
     }
 
     /**
@@ -39,8 +42,8 @@ public class JPAReadObjectAddressExpressionPerformanceComparisonTest extends JPA
      */
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
-        Query query = manager.createQuery("Select a from Address a where a.city = :city");
-        query.setParameter("city", "Ottawa");
+        Query query = manager.createQuery("Select a from Address a where a.street = :street");
+        query.setParameter("street", street);
         Address address = (Address)uniqueResult(query, manager);
         manager.close();
     }

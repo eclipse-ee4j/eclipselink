@@ -13,7 +13,8 @@
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
 import javax.persistence.*;
-import org.eclipse.persistence.testing.models.performance.*;
+
+import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
@@ -30,7 +31,9 @@ public class JPAReadObjectAddressPerformanceComparisonTest extends PerformanceRe
      * Get an address id.
      */
     public void setup() {
-        addressId = ((Address)getSession().readObject(Address.class)).getId();
+        EntityManager manager = createEntityManager();
+        addressId = ((Address)manager.createQuery("Select a from Address a").getResultList().get(0)).getId();
+        manager.close();
     }
 
     /**

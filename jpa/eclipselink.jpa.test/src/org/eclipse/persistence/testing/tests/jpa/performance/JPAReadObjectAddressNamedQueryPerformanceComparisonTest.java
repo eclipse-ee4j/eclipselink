@@ -13,15 +13,27 @@
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
 import javax.persistence.*;
-import org.eclipse.persistence.testing.models.performance.*;
+
+import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
  * This test compares the performance of read object Address.
  */
 public class JPAReadObjectAddressNamedQueryPerformanceComparisonTest extends PerformanceRegressionTestCase {
+    protected String street;
+    
     public JPAReadObjectAddressNamedQueryPerformanceComparisonTest() {
         setDescription("This test compares the performance of read object Address using a named query.");
+    }
+
+    /**
+     * Get an address street.
+     */
+    public void setup() {
+        EntityManager manager = createEntityManager();
+        street = ((Address)manager.createQuery("Select a from Address a").getResultList().get(0)).getStreet();
+        manager.close();
     }
 
     /**
@@ -30,8 +42,8 @@ public class JPAReadObjectAddressNamedQueryPerformanceComparisonTest extends Per
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
-        Query query = manager.createNamedQuery("findAddressByCity");
-        query.setParameter("city", "Ottawa");
+        Query query = manager.createNamedQuery("findAddressByStreet");
+        query.setParameter("street", street);
         Address address = (Address)query.getSingleResult();
         manager.getTransaction().commit();
         manager.close();

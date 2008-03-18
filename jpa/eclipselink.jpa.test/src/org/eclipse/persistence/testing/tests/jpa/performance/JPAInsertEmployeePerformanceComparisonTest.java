@@ -13,8 +13,9 @@
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
 import javax.persistence.*;
+
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.testing.models.performance.*;
+import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
@@ -29,13 +30,13 @@ public class JPAInsertEmployeePerformanceComparisonTest extends PerformanceRegre
      * Delete all employees.
      */
     public void reset() {
-        getSession().executeNonSelectingSQL("Delete from PHONE where P_NUMBER = '9991111'");
-        getSession().executeNonSelectingSQL("Delete from EMPLOYEE where F_NAME = 'NewGuy'");
-        getSession().executeNonSelectingSQL("Delete from ADDRESS where STREET = 'Hasting Perf'");
-        //getSession().getIdentityMapAccessor().initializeIdentityMaps();
-        //HibernatePerformanceComparisonModel.getSessionFactory().evict(Address.class);
-        //HibernatePerformanceComparisonModel.getSessionFactory().evict(PhoneNumber.class);
-        //HibernatePerformanceComparisonModel.getSessionFactory().evict(Employee.class);
+        EntityManager manager = createEntityManager();
+        manager.getTransaction().begin();
+        manager.createQuery("Delete from Phone where number = '9991111'").executeUpdate();
+        manager.createQuery("Delete from Employee where firstName = 'NewGuy'").executeUpdate();
+        manager.createQuery("Delete from Address where firstName = 'Hasting Perf'").executeUpdate();
+        manager.getTransaction().commit();
+        manager.close();
     }
 
     /**

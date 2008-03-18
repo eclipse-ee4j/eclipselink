@@ -34,14 +34,14 @@ import org.eclipse.persistence.testing.framework.server.TestRunner;
  * Provides convenience methods for transactional access as well as to access
  * login information and to create any sessions required for setup.
  *
- * Assumes the existence of a titl.properties file on the classpath that defines the
+ * Assumes the existence of a test.properties file on the classpath that defines the
  * following properties:
  *
- * login.databaseplatform
- * login.username
- * login.password
- * login.databaseURL
- * login.driverClass
+ * db.platform
+ * db.user
+ * db.pwd
+ * db.url
+ * db.driver
  * 
  * If you are using the TestingBrowser, these properties come from the login panel instead.
  * If you are running the test in JEE the properties come from the server config.
@@ -353,7 +353,6 @@ public abstract class JUnitTestCase extends TestCase {
      */
     public void runBareClient() throws Throwable {
         Properties properties = new Properties();
-        // TODO: make url platform independent.
         String url = System.getProperty("server.url");
         if (url == null) {
             fail("System property 'server.url' must be set.");
@@ -386,11 +385,20 @@ public abstract class JUnitTestCase extends TestCase {
     
     /**
      * Used by subclasses to pass any properties into the
-     * server's vm.  Should be used with caution!
+     * server's vm.  Should be used with caution.
      */
     protected Properties getServerProperties() {
         return null;
     }
     
+    /**
+     * Verifies that the object was merged to the cache, and written to the database correctly.
+     */
+    public void verifyObject(Object writtenObject) {
+        Object readObject = getServerSession().readObject(writtenObject);
+        if (!getServerSession().compareObjects(readObject, writtenObject)) {
+            fail("Object: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
+        }
+    }
 
 }

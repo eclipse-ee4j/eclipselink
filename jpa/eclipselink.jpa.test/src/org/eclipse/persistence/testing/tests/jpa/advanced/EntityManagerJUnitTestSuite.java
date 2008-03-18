@@ -39,7 +39,6 @@ import javax.persistence.PersistenceException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.RollbackException;
 
-import junit.extensions.TestSetup;
 import junit.framework.*;
 
 import org.eclipse.persistence.jpa.config.CacheUsage;
@@ -55,7 +54,6 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -82,8 +80,8 @@ import org.eclipse.persistence.testing.models.jpa.advanced.*;
  */
 public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
-	/** The field length for the firstname */
-	public static final int MAX_FIRST_NAME_FIELD_LENGTH = 255;
+    /** The field length for the firstname */
+    public static final int MAX_FIRST_NAME_FIELD_LENGTH = 255;
 	
     public EntityManagerJUnitTestSuite() {
         super();
@@ -92,25 +90,151 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public EntityManagerJUnitTestSuite(String name) {
         super(name);
     }
-    
+
     public static Test suite() {
-        try{
-        TestSuite suite = new TestSuite(EntityManagerJUnitTestSuite.class);
+        TestSuite suite = new TestSuite();
+        suite.setName("EntityManagerJUnitTestSuite");
+        
+        suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testWeaving"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testClearEntityManagerWithoutPersistenceContext"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testUpdateAllProjects"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testUpdateUsingTempStorage"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testSequenceObjectDefinition"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFindDeleteAllPersist"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testExtendedPersistenceContext"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testRemoveFlushFind"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testRemoveFlushPersistContains"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testTransactionRequired"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testSubString"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFlushModeOnUpdateQuery"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testContainsRemoved"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testRefreshRemoved"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testRefreshNotManaged"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDoubleMerge"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDescriptorNamedQueryForMultipleQueries"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDescriptorNamedQuery"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testClearEntityManagerWithoutPersistenceContextSimulateJTA"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testMultipleEntityManagerFactories"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testOneToManyDefaultJoinTableName"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testClosedEmShouldThrowException"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testRollbackOnlyOnException"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testUpdateAllProjectsWithNullTeamLeader"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testUpdateAllLargeProjectsWithNullTeamLeader"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testUpdateAllSmallProjectsWithNullTeamLeader"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testUpdateAllProjectsWithName"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testUpdateAllLargeProjectsWithName"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testUpdateAllSmallProjectsWithName"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testUpdateAllLargeProjects"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testUpdateAllSmallProjects"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testUpdateUsingTempStorageWithParameter"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDeleteAllLargeProjectsWithNullTeamLeader"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDeleteAllSmallProjectsWithNullTeamLeader"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDeleteAllProjectsWithNullTeamLeader"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDeleteAllPhonesWithNullOwner"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testSetFieldForPropertyAccessWithNewEM"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testSetFieldForPropertyAccessWithRefresh"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testSetFieldForPropertyAccess"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testInitializeFieldForPropertyAccess"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testCascadePersistToNonEntitySubclass"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testCascadeMergeManaged"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testCascadeMergeDetached"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPrimaryKeyUpdatePKFK"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPrimaryKeyUpdateSameValue"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPrimaryKeyUpdate"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testRemoveNull"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testContainsNull"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPersistNull"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testMergeNull"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testMergeRemovedObject"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testMergeDetachedObject"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testSerializedLazy"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testCloneable"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testLeftJoinOneToOneQuery"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testNullifyAddressIn"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testQueryOnClosedEM"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testIncorrectBatchQueryHint"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFetchQueryHint"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testBatchQueryHint"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testQueryHints"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testParallelMultipleFactories"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testMultipleFactories"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPersistenceProperties"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testBeginTransactionCloseCommitTransaction"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testBeginTransactionClose"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testClose"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPersistOnNonEntity"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testWRITELock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh_Flush"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll_Flush"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_UpdateAll"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_CustomUpdate_Refresh_Flush"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_CustomUpdate_Refresh"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_CustomUpdate_Flush"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_OriginalInCache_CustomUpdate"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_UpdateAll_Refresh_Flush"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_UpdateAll_Refresh"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_UpdateAll_Flush"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_UpdateAll"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_CustomUpdate_Refresh_Flush"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_CustomUpdate_Refresh"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_CustomUpdate_Flush"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testReadTransactionIsolation_CustomUpdate"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testClearInTransaction"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testClearWithFlush"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testClear"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testCheckVersionOnMerge"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFindWithNullPk"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFindWithWrongTypePk"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPersistManagedNoException"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPersistManagedException"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPersistRemoved"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testREADLock"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testIgnoreRemovedObjectsOnDatabaseSync"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testIdentityOutsideTransaction"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testIdentityInsideTransaction"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDatabaseSyncNewObject"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testSetRollbackOnly"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFlushModeEmCommitQueryAuto"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFlushModeEmCommit"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFlushModeEmCommitQueryCommit"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFlushModeEmAutoQueryAuto"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFlushModeEmAuto"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testFlushModeEmAutoQueryCommit"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testCacheUsage"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testSequencePreallocationUsingCallbackTest"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testForceSQLExceptionFor219097"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testRefreshInvalidateDeletedObject"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testClearWithFlush2"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testEMFWrapValidationException"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testEMDefaultTxType"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testCloneable"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testMergeNewObject"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testMergeNewObject2"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testMergeNewObject3_UseSequencing"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testMergeNewObject3_DontUseSequencing"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testCreateEntityManagerFactory"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testCreateEntityManagerFactory2"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testPessimisticLockHintStartsTransaction"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testManyToOnePersistCascadeOnFlush"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testDiscoverNewReferencedObject"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testManagedEmployeesMassInsertUseSequencing"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testManagedEmployeesMassInsertDoNotUseSequencing"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testManagedEmployeesMassMergeUseSequencing"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testManagedEmployeesMassMergeDoNotUseSequencing"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testBulkDeleteThenMerge"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testNativeSequences"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testGetReference"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testGetReferenceUpdate"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testGetReferenceUsedInUpdate"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testClassInstanceConverter"));
+        
+        return suite;
+    }
 
-        return new TestSetup(suite) {
-            protected void setUp(){
-                SchemaManager schemaManager = new SchemaManager(JUnitTestCase.getServerSession());
-                new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession(), schemaManager);
-            }
-
-            protected void tearDown() {
-                clearCache();
-            }
-        };
-        } catch (Throwable t){
-            t.printStackTrace();
-            return null;
-        }
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
     }
     
     /**
@@ -222,7 +346,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     //Bug5955326, refresh should invalidate the shared cached object that was deleted outside of JPA.
     public void testRefreshInvalidateDeletedObject(){
-        Object obj;
         EntityManager em1 = createEntityManager();
         EntityManager em2 = createEntityManager();
         Address address = new Address();
@@ -391,13 +514,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         clearCache();
         
         Employee emp;
-        Query query = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName like '"+firstName+"'");
-        if(queryFlushMode != null) {
-            query.setFlushMode(queryFlushMode);
-        }
         FlushModeType emFlushModeOriginal = em.getFlushMode();
-        em.setFlushMode(emFlushMode);
-
         // create a new Employee
         emp = new Employee();
         emp.setFirstName(firstName);
@@ -405,6 +522,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Employee result = null;
         try{
             beginTransaction(em);
+            Query query = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName like '"+firstName+"'");
+            if(queryFlushMode != null) {
+                query.setFlushMode(queryFlushMode);
+            }
+            emFlushModeOriginal = em.getFlushMode();
+            em.setFlushMode(emFlushMode);
             em.persist(emp);
             result = (Employee) query.getSingleResult();
         } catch (javax.persistence.NoResultException ex) {
@@ -436,14 +559,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         String firstName = "testFlushModeOnUpdateQuery";
         Employee emp;
         EntityManager em = createEntityManager();
-        Query readQuery = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.phoneNumbers IS EMPTY and e.firstName like '"+firstName+"'");
-        Query updateQuery = em.createQuery("UPDATE Employee e set e.salary = 100 where e.firstName like '" + firstName + "'");
-        updateQuery.setFlushMode(FlushModeType.AUTO);
         emp = new Employee();
         emp.setFirstName(firstName);
         try{
             try{
                 beginTransaction(em);
+                Query readQuery = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.phoneNumbers IS EMPTY and e.firstName like '"+firstName+"'");
+                Query updateQuery = em.createQuery("UPDATE Employee e set e.salary = 100 where e.firstName like '" + firstName + "'");
+                updateQuery.setFlushMode(FlushModeType.AUTO);
                 em.persist(emp);
                 updateQuery.executeUpdate();
                 Employee result = (Employee) readQuery.getSingleResult();
@@ -484,34 +607,42 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             throw ex;
         }
         clearCache();
-        EntityManager localEm = createEntityManager();
-        localEm.getTransaction().begin();
-        List result = localEm.createQuery("SELECT e from Employee e").getResultList();
+        em = createEntityManager();
+        beginTransaction(em);
+        List result = em.createQuery("SELECT e FROM Employee e").getResultList();
         Employee emp = (Employee)result.get(0);
         Employee emp2 = (Employee)result.get(1);
         String newName = ""+System.currentTimeMillis();
         emp2.setFirstName(newName);
-        localEm.flush();
+        em.flush();
         emp2.setLastName("Whatever");
         emp2.setVersion(0);
         try{
-            localEm.flush();
+            em.flush();
         }catch (Exception ex){
-            localEm.clear(); //prevent the flush again
-            String eName = (String)localEm.createQuery("SELECT e.firstName from Employee e where e.id = " + emp2.getId()).getSingleResult();
+            em.clear(); //prevent the flush again
+            String eName = (String)em.createQuery("SELECT e.firstName FROM Employee e where e.id = " + emp2.getId()).getSingleResult();
             assertTrue("Failed to keep txn open for set RollbackOnly", eName.equals(newName));
         }
         try{
-            assertTrue("Failed to mark txn rollback only", localEm.getTransaction().getRollbackOnly());
-        }finally{
+            if (isOnServer()) {
+                assertTrue("Failed to mark txn rollback only", !isTransactionActive(em));
+            } else {
+                assertTrue("Failed to mark txn rollback only", em.getTransaction().getRollbackOnly());
+            }
+        } finally{
             try{
-                localEm.getTransaction().commit();
+                commitTransaction(em);
             }catch (RollbackException ex){
                 return;    
             }catch (RuntimeException ex){
-                localEm.getTransaction().rollback();
-                throw ex;
-                
+                if (ex.getCause() instanceof javax.transaction.RollbackException) {
+                    return;
+                }
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                throw ex;                
             }
         }
         fail("Failed to throw rollback exception");
@@ -649,10 +780,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     public void testIgnoreRemovedObjectsOnDatabaseSync() {
         EntityManager em = createEntityManager();
-        Query phoneQuery = em.createQuery("Select p from PhoneNumber p where p.owner.lastName like 'Dow%'");
-        Query empQuery = em.createQuery("Select e from Employee e where e.lastName like 'Dow%'");
 
         beginTransaction(em);
+        Query phoneQuery = em.createQuery("Select p from PhoneNumber p where p.owner.lastName like 'Dow%'");
+        Query empQuery = em.createQuery("Select e FROM Employee e where e.lastName like 'Dow%'");
         //--setup
         try{
             Employee emp = new Employee();
@@ -725,6 +856,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testREADLock(){
+        // Cannot create parallel entity managers in the server.
+        if (isOnServer()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         Employee employee = null;
@@ -1724,30 +1859,38 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             throw ex;
         }
         clearCache();
-        EntityManager localEm = createEntityManager();
-        localEm.getTransaction().begin();
+        em = createEntityManager();
+        beginTransaction(em);
         Employee emp = null;
         String originalName = "";
-        try{
-            Query query = localEm.createQuery("Select e from Employee e where e.firstName is not null");
+        try {
+            Query query = em.createQuery("Select e FROM Employee e where e.firstName is not null");
             emp = (Employee)query.getResultList().get(0);
             originalName = emp.getFirstName();
             emp.setFirstName("Bobster");
-            localEm.clear();
-            localEm.getTransaction().commit();
-        }catch (RuntimeException ex){
-            localEm.getTransaction().rollback();
-            localEm.close();
+            em.clear();
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
             throw ex;
         }
-        boolean cleared = !localEm.contains(emp);
-        emp = localEm.find(Employee.class, emp.getId());
-        localEm.close();
+        boolean cleared = !em.contains(emp);
+        emp = em.find(Employee.class, emp.getId());
+        closeEntityManager(em);
         assertTrue("EntityManager not properly cleared", cleared);
         assertTrue("Employee was updated although EM was cleared", emp.getFirstName().equals(originalName));
     }
     
     public void testExtendedPersistenceContext() {
+        // Extended persistence context are not supported in the server.
+        // TODO: make this test use an extended entity manager in the server by creating from the factory and joining transaction.
+        if (isOnServer()) {
+            return;
+        }
+        
         String firstName = "testExtendedPersistenceContext";
         int originalSalary = 0;
 
@@ -2111,13 +2254,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         em.clear();
         
-        Query selectQuery = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'");
         Employee employeeUOW = null;
 
         int salaryNew = 100;
         String lastNameNew = "New";
 
         beginTransaction(em);
+        Query selectQuery = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'");
         
         try{
             if(shouldRefresh) {
@@ -2302,6 +2445,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testWRITELock(){
+        // Cannot create parallel transactions.
+        if (isOnServer()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         Employee employee = new Employee();
         employee.setFirstName("Mark");
@@ -2407,16 +2554,22 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         boolean testPass = false;
         Object nonEntity = new Object();
         EntityManager em = createEntityManager();
-        
+        beginTransaction(em);
         try {
             em.persist(nonEntity);
         } catch (IllegalArgumentException e) {
             testPass = true;
+        } finally {
+            rollbackTransaction(em);
         }
         Assert.assertTrue(testPass);
     }
 
     public void testClose() {
+        // Close is not used on server.
+        if (isOnServer()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         if(!em.isOpen()) {
             fail("Created EntityManager is not open");
@@ -2428,6 +2581,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testBeginTransactionClose() {
+        // Close is not used on server.
+        if (isOnServer()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try{
@@ -2452,6 +2609,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testBeginTransactionCloseCommitTransaction() {
+        // EntityManager is always open in server.
+        if (isOnServer()) {
+            return;
+        }
         String firstName = "testBeginTrCloseCommitTr";
         EntityManager em = createEntityManager();
 
@@ -2533,6 +2694,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }*/
     
     public void testPersistenceProperties() {
+        // Different properties are used on the server.
+        if (isOnServer()) {
+            return;
+        }
+        
         EntityManager em = createEntityManager();
         ServerSession ss = ((org.eclipse.persistence.internal.jpa.EntityManagerImpl)em).getServerSession();
         
@@ -3012,6 +3178,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      * Bug51411440: need to throw IllegalStateException if query executed on closed em
      */
     public void testQueryOnClosedEM() {
+        // Server entity managers are not closed.
+        if (isOnServer()) {
+            return;
+        }
         boolean exceptionWasThrown = false;
         EntityManager em = createEntityManager();
         Query q =  em.createQuery("SELECT e FROM Employee e ");
@@ -3094,7 +3264,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     // test for GlassFish bug 711 - throw a descriptive exception when an uninstantiated valueholder is serialized and then accessed
     public void testSerializedLazy(){
-        org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();      
+        EntityManager em = createEntityManager();      
        
         beginTransaction(em);
         
@@ -3110,7 +3280,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         commitTransaction(em);
         closeEntityManager(em);
         clearCache();
-        em = (org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager();
+        em = createEntityManager();
         String ejbqlString = "SELECT e FROM Employee e WHERE e.firstName = 'Owen' and e.lastName = 'Hargreaves'";
         List result = em.createQuery(ejbqlString).getResultList();
         emp = (Employee)result.get(0);
@@ -3262,7 +3432,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         
         beginTransaction(em);
-        em.remove(emp); 	//attempt to remove the Employee
+        em.remove(em.find(Employee.class, emp.getId())); //attempt to remove the Employee
         try{  
             em.merge(emp);	//then attempt to merge the Employee
             fail("No exception thrown when merging a removed entity is attempted.");
@@ -3506,27 +3676,35 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         commitTransaction(em);
         
         beginTransaction(em);
+        emp = em.merge(emp);
         emp.setId(id + 1);
         
         try {
             commitTransaction(em);
-        } catch (PersistenceException pe) {
-            if (isTransactionActive(em)){
+        } catch (Exception exception) {
+            if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-
-            if (pe.getCause() instanceof ValidationException) {
-                ValidationException ve = (ValidationException) pe.getCause();
+            Throwable persistenceException = exception;
+            if (exception.getCause() instanceof javax.transaction.RollbackException) {
+                // In the server this is always a rollback exception, need to get nested exception.
+                persistenceException = exception.getCause().getCause();
+            }
+            if (!(persistenceException instanceof PersistenceException)) {            
+                AssertionFailedError failure = new AssertionFailedError("Wrong exception type thrown: " + persistenceException.getClass());
+                failure.initCause(exception);
+                throw failure;
+            }
+            if (persistenceException.getCause() instanceof ValidationException) {
+                ValidationException ve = (ValidationException) persistenceException.getCause();
                 if (ve.getErrorCode() == ValidationException.PRIMARY_KEY_UPDATE_DISALLOWED) {
                     return;
                 } else {
                     fail("Wrong error code for ValidationException: " + ve.getErrorCode());
                 }
             } else {
-                fail("ValiationException expected, thrown: " + pe.getCause());
+                fail("ValiationException expected, thrown: " + persistenceException.getCause());
             }
-        } catch (Exception e) {
-            fail("Wrong exception type thrown: " + e.getClass());
         } finally {
             closeEntityManager(em);
         }
@@ -3587,23 +3765,34 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         try {
             commitTransaction(em);
-        } catch (PersistenceException pe) {
-            if (isTransactionActive(em)){
+        } catch (Exception exception) {
+            if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-
-            if (pe.getCause() instanceof ValidationException) {
-                ValidationException ve = (ValidationException) pe.getCause();
+            Throwable persistenceException = exception;
+            if (exception.getCause() instanceof javax.transaction.RollbackException) {
+                // In the server this is always a rollback exception, need to get nested exception.
+                persistenceException = exception.getCause().getCause();
+            }
+            if (!(persistenceException instanceof PersistenceException)) {
+                AssertionFailedError failure = new AssertionFailedError("Wrong exception type thrown: " + persistenceException.getClass());
+                failure.initCause(exception);
+                throw failure;
+            }
+            if (persistenceException.getCause() instanceof ValidationException) {
+                ValidationException ve = (ValidationException) persistenceException.getCause();
                 if (ve.getErrorCode() == ValidationException.PRIMARY_KEY_UPDATE_DISALLOWED) {
                     return;
                 } else {
-                    fail("Wrong error code for ValidationException: " + ve.getErrorCode());
+                    AssertionFailedError failure = new AssertionFailedError("Wrong error code for ValidationException: " + ve.getErrorCode());
+                    failure.initCause(ve);
+                    throw failure;
                 }
             } else {
-                fail("ValiationException expected, thrown: " + pe.getCause());
+                AssertionFailedError failure = new AssertionFailedError("ValiationException expected, thrown: " + persistenceException.getCause());
+                failure.initCause(persistenceException);
+                throw failure;
             }
-        } catch (Exception e) {
-            fail("Wrong exception type thrown: " + e.getClass());
         } finally {
             closeEntityManager(em);
         }
@@ -3811,18 +4000,20 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         clearCache();
         
-        employee = em.find(Employee.class, new Integer(id));
-        address = employee.getAddress();
-        
-        assertTrue("The address was not persisted.", employee.getAddress() != null);
-        assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Shawshank"));
-        
+        em = createEntityManager();
         beginTransaction(em);
-        employee.setAddress((Address)null);
-        em.remove(address);
-        em.remove(employee);
-        commitTransaction(em);
-    
+        try {
+            employee = em.find(Employee.class, new Integer(id));
+            address = employee.getAddress();
+            
+            assertTrue("The address was not persisted.", employee.getAddress() != null);
+            assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Shawshank"));
+        } finally {        
+            employee.setAddress((Address)null);
+            em.remove(address);
+            em.remove(employee);
+            commitTransaction(em);
+        }    
     }
 
     /**
@@ -3866,19 +4057,22 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         clearCache();
         
-        employee = em.find(Employee.class, new Integer(id));
-        address = employee.getAddress();
-
-        assertTrue("The address was not persisted.", employee.getAddress() != null);
-        assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
-    
-        Address initialAddress = em.find(Address.class, new Integer(addressId));
+        em = createEntityManager();
         beginTransaction(em);
-        employee.setAddress((Address)null);
-        em.remove(address);
-        em.remove(employee);
-        em.remove(initialAddress);
-        commitTransaction(em);
+        try {
+            employee = em.find(Employee.class, new Integer(id));
+            address = employee.getAddress();
+    
+            assertTrue("The address was not persisted.", employee.getAddress() != null);
+            assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
+        } finally {    
+            Address initialAddress = em.find(Address.class, new Integer(addressId));
+            employee.setAddress((Address)null);
+            em.remove(address);
+            em.remove(employee);
+            em.remove(initialAddress);
+            commitTransaction(em);
+        }
     }
 
     /**
@@ -3905,6 +4099,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         int addressId = address.getId();
         
         beginTransaction(em);
+        employee = em.getReference(Employee.class, employee.getId());
         em.refresh(employee);
         employee.getAddress();
 
@@ -3922,19 +4117,22 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         clearCache();
         
-        employee = em.find(Employee.class, new Integer(id));
-        address = employee.getAddress();
-
-        assertTrue("The address was not persisted.", employee.getAddress() != null);
-        assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
-    
-        Address initialAddress = em.find(Address.class, new Integer(addressId));
+        em = createEntityManager();
         beginTransaction(em);
-        employee.setAddress((Address)null);
-        em.remove(address);
-        em.remove(employee);
-        em.remove(initialAddress);
-        commitTransaction(em);
+        try {
+            employee = em.find(Employee.class, new Integer(id));
+            address = employee.getAddress();
+    
+            assertTrue("The address was not persisted.", employee.getAddress() != null);
+            assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
+        } finally {
+            Address initialAddress = em.find(Address.class, new Integer(addressId));
+            employee.setAddress((Address)null);
+            em.remove(address);
+            em.remove(employee);
+            em.remove(initialAddress);
+            commitTransaction(em);
+        }
     }
     
     /**
@@ -4362,8 +4560,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             try {
                 if(map != null) {
                     EntityManager em = createEntityManager();
-                    List projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
                     beginTransaction(em);
+                    List projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
                     try {
                         for(int i=0; i<projects.size(); i++) {
                             Project p = (Project)projects.get(i);
@@ -4591,7 +4789,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             Employee emp = em.find(Employee.class, "");
             fail("IllegalArgumentException has not been thrown");
         } catch(IllegalArgumentException ex) {
-            assertTrue("Transaction is not roll back only", em.getTransaction().getRollbackOnly());
+            if (isOnServer()) {
+                assertTrue("Transaction is not roll back only", !isTransactionActive(em));
+            } else {
+                assertTrue("Transaction is not roll back only", em.getTransaction().getRollbackOnly());
+            }
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -4599,6 +4801,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testClosedEmShouldThrowException() {
+        // Close is not used on server.
+        if (isOnServer()) {
+            return;
+        }
         EntityManager em = createEntityManager();
         closeEntityManager(em);
         String errorMsg = "";
@@ -5389,6 +5595,113 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
+    /**
+     * Create a test employee.
+     */
+    protected Employee createEmployee(String name) {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee employee = new Employee();
+        employee.setFirstName(name);
+        em.persist(employee);
+        commitTransaction(em);
+        return employee;
+    }
+    
+    /**
+     * Test getReference() API.
+     */
+    public void testGetReference() {
+        int id = createEmployee("testGetReference").getId();
+        
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee employee = em.getReference(Employee.class, id);
+        if (!employee.getFirstName().equals("testGetReference")) {
+            fail("getReference returned the wrong object");
+        }
+        commitTransaction(em);
+        
+        clearCache();
+        
+        em = createEntityManager();
+        beginTransaction(em);
+        employee = em.getReference(Employee.class, id);
+        if (!employee.getFirstName().equals("testGetReference")) {
+            fail("getReference returned the wrong object");
+        }
+        commitTransaction(em);
+        
+        em = createEntityManager();
+        beginTransaction(em);
+        employee = em.find(Employee.class, id);
+        if (!employee.getFirstName().equals("testGetReference")) {
+            fail("find returned the wrong object");
+        }
+        commitTransaction(em);
+        
+        List key = new ArrayList();
+        key.add(id);
+        em = createEntityManager();
+        beginTransaction(em);
+        employee = em.getReference(Employee.class, key);
+        if (!employee.getFirstName().equals("testGetReference")) {
+            fail("getReference returned the wrong object");
+        }
+        commitTransaction(em);
+        
+        em = createEntityManager();
+        beginTransaction(em);
+        employee = em.find(Employee.class, key);
+        if (!employee.getFirstName().equals("testGetReference")) {
+            fail("find returned the wrong object");
+        }
+        commitTransaction(em);
+    }
+    
+    /**
+     * Test getReference() with update.
+     */
+    public void testGetReferenceUpdate() {
+        int id = createEmployee("testGetReference").getId();
+                
+        clearCache();
+        
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee employee = em.getReference(Employee.class, id);
+        employee.setFirstName("changed");
+        commitTransaction(em);
+
+        verifyObject(employee);
+        clearCache();
+        verifyObject(employee);
+    }
+    
+    /**
+     * Test getReference() used in update.
+     */
+    public void testGetReferenceUsedInUpdate() {
+        int id = createEmployee("testGetReference").getId();
+
+        clearCache();
+
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Employee employee = em.getReference(Employee.class, id);
+        Employee newEmployee = new Employee();
+        newEmployee.setFirstName("new");
+        newEmployee.setManager(employee);
+        em.persist(newEmployee);
+        commitTransaction(em);
+
+        verifyObject(newEmployee);
+        verifyObject(employee);
+        clearCache();
+        verifyObject(newEmployee);
+        verifyObject(employee);
+    }
+
     public void testClassInstanceConverter(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -5410,4 +5723,5 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.remove(add);
         commitTransaction(em);
     }
+    
 }

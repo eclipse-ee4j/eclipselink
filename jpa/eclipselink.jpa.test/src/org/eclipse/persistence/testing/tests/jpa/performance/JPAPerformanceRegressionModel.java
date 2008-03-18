@@ -20,7 +20,7 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.spi.PersistenceProvider;
 
-import org.eclipse.persistence.testing.models.performance.*;
+import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.testing.framework.*;
 
@@ -31,10 +31,6 @@ public class JPAPerformanceRegressionModel extends TestModel {
 
     public JPAPerformanceRegressionModel() {
         setDescription("Performance tests that compare JPA performance.");
-    }
-
-    public void addRequiredSystems() {
-        addRequiredSystem(new EmployeeSystem());
     }
 
     public void addTests() {
@@ -120,7 +116,17 @@ public class JPAPerformanceRegressionModel extends TestModel {
      * Create/populate database.
      */
     public void setup() {
-        // Populate database (through TopLink).
+        setupProvider();
+        getSession().logMessage(getExecutor().getEntityManagerFactory().getClass().toString());
+        System.out.println(getExecutor().getEntityManagerFactory().getClass().toString());
+        
+        // Create schema.
+        new EmployeeTableCreator().replaceTables(getDatabaseSession());
+        
+        // Populate database.
+        EntityManager manager = getExecutor().createEntityManager();
+        manager.getTransaction().begin();
+
         for (int j = 0; j < 100; j++) {
             Employee empInsert = new Employee();
             empInsert.setFirstName("Brendan");
@@ -141,11 +147,11 @@ public class JPAPerformanceRegressionModel extends TestModel {
             empInsert.getAddress().setCountry("Canada");
             empInsert.addPhoneNumber(new PhoneNumber("Work Fax", "613", "2255943"));
             empInsert.addPhoneNumber(new PhoneNumber("Home", "613", "2224599"));
-            getDatabaseSession().insertObject(empInsert);
+            manager.persist(empInsert);
         }
-        setupProvider();
-        getSession().logMessage(getExecutor().getEntityManagerFactory().getClass().toString());
-        System.out.println(getExecutor().getEntityManagerFactory().getClass().toString());
+        
+        manager.getTransaction().commit();
+        manager.close();
     }
     
     /**
@@ -184,12 +190,10 @@ public class JPAPerformanceRegressionModel extends TestModel {
      */
     public TestCase buildChangeTrackingTest() {
         TestCase test = new TestCase() {
-            public void test() throws Exception {                
-                Address address = (Address)getSession().readObject(Address.class);
-                long addressId = address.getId();                
+            public void test() throws Exception {
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
-                address = manager.getReference(Address.class, new Long(addressId));
+                Address address = (Address)manager.createQuery("Select a from Address a").getResultList().get(0);
                 try {
                     Field field = Address.class.getDeclaredField("street");
                     field.setAccessible(true);
@@ -199,7 +203,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                address = manager.getReference(Address.class, new Long(addressId));
+                address = manager.find(Address.class, new Long(address.getId()));
                 if (address.getStreet().equals("Hastings")) {
                     throwError("Change tracking detected the change (not used?).");
                 } else {
@@ -217,11 +221,9 @@ public class JPAPerformanceRegressionModel extends TestModel {
     public TestCase buildFieldAccessChangeTrackingTest() {
         TestCase test = new TestCase() {
             public void test() throws Exception {                
-                Address address = (Address)getSession().readObject(Address.class);
-                long addressId = address.getId();                
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
-                address = manager.getReference(Address.class, new Long(addressId));
+                Address address = (Address)manager.createQuery("Select a from Address a").getResultList().get(0);
                 try {
                     address.internalSetStreet("Hastings");
                 } finally {
@@ -229,7 +231,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                address = manager.getReference(Address.class, new Long(addressId));
+                address = manager.find(Address.class, new Long(address.getId()));
                 if (address.getStreet().equals("Hastings")) {
                     throwError("Change tracking detected the change (not used?).");
                 } else {
@@ -247,11 +249,9 @@ public class JPAPerformanceRegressionModel extends TestModel {
     public TestCase buildEmployeeChangeTrackingTest() {
         TestCase test = new TestCase() {
             public void test() throws Exception {                
-                Employee employee = (Employee)getSession().readObject(Employee.class);
-                long employeeId = employee.getId();                
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
-                employee = manager.getReference(Employee.class, new Long(employeeId));
+                Employee employee = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);
                 try {
                     Field field = Employee.class.getDeclaredField("lastName");
                     field.setAccessible(true);
@@ -261,7 +261,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                employee = manager.getReference(Employee.class, new Long(employeeId));
+                employee = manager.getReference(Employee.class, new Long(employee.getId()));
                 if (employee.getLastName().equals("Hastings")) {
                     throwError("Change tracking detected the change (not used?).");
                 } else {
@@ -276,15 +276,12 @@ public class JPAPerformanceRegressionModel extends TestModel {
     /**
      * Add a test to see if the provider is using change tracking.
      */
-   @SuppressWarnings("deprecation")
-   public TestCase buildDateChangeTrackingTest() {
+    public TestCase buildDateChangeTrackingTest() {
         TestCase test = new TestCase() {
             public void test() throws Exception {                
-                Employee employee = (Employee)getSession().readObject(Employee.class);
-                long employeeId = employee.getId();                
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
-                employee = manager.getReference(Employee.class, new Long(employeeId));
+                Employee employee = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);
                 try {
                     employee.getPeriod().getStartDate().setDate(7);
                 } finally {
@@ -292,7 +289,7 @@ public class JPAPerformanceRegressionModel extends TestModel {
                     manager.close();
                 }
                 manager = createEntityManager();
-                employee = manager.getReference(Employee.class, new Long(employeeId));
+                employee = manager.getReference(Employee.class, new Long(employee.getId()));
                 manager.refresh(employee);
                 if (employee.getPeriod().getStartDate().getDate() == 7) {
                     throwError("Change tracking detected the change (not used?).");

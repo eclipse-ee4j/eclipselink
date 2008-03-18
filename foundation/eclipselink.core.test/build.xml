@@ -133,6 +133,13 @@
         </antcall>
     </target>
 
+    <!-- Runs concurrency tests. -->
+    <target name="test.concurrency">
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.performance.ConcurrencyComparisonTestModel"/>
+        </antcall>
+    </target>
+
     <!-- Launches the testing browser -->
     <target name="test.browser">
         <echo>Running test browser with ${test.properties}</echo>
@@ -191,8 +198,8 @@
              dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Dtest.properties=${test.properties.run}"/>
-            <jvmarg value="-Djava.security.manager"/>
-            <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
+            <jvmarg value="${test.security-manager}"/>
+            <jvmarg value="${test.security-manager.policy}"/>
             <arg value="pfile=${test.properties.run}" />
             <arg value="testmodel=${TEST_CLASS}" />
             <arg value="regressionlog=../${report.dir}/test.log" />

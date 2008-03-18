@@ -13,7 +13,8 @@
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
 import javax.persistence.*;
-import org.eclipse.persistence.testing.models.performance.*;
+
+import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
@@ -30,7 +31,9 @@ public class JPAReadObjectEmployeePerformanceComparisonTest extends PerformanceR
      * Get an employee id.
      */
     public void setup() {
-        employeeId = ((Employee)getSession().readObject(org.eclipse.persistence.testing.models.performance.toplink.Employee.class)).getId();
+        EntityManager manager = createEntityManager();
+        employeeId = ((Employee)manager.createQuery("Select e from Employee e").getResultList().get(0)).getId();
+        manager.close();
     }
 
     /**

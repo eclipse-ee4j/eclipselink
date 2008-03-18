@@ -14,7 +14,7 @@
 
 import java.util.*;
 import javax.persistence.*;
-import org.eclipse.persistence.testing.models.performance.*;
+import org.eclipse.persistence.testing.models.jpa.performance.*;
 
 /**
  * This test compares the performance of read all Employee.
@@ -36,6 +36,7 @@ public class JPAReadAllEmployeeCompletelyPerformanceComparisonTest extends JPARe
         Query query = manager.createQuery("Select e from Employee e");
         query.setHint("org.hibernate.readOnly", new Boolean(isReadOnly()));
         query.setHint("eclipselink.return-shared", new Boolean(isReadOnly()));
+        query.setHint("toplink.return-shared", new Boolean(isReadOnly()));
         List result = query.getResultList();
         for (Iterator iterator = result.iterator(); iterator.hasNext();) {
             Employee employee = (Employee)iterator.next();

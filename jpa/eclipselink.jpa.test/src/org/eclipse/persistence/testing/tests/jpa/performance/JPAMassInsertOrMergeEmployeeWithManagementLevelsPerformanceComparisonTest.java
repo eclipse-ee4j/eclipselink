@@ -17,9 +17,8 @@ import java.util.Iterator;
 
 import javax.persistence.*;
 
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.performance.Employee;
+import org.eclipse.persistence.testing.models.jpa.performance.Employee;
 
 /**
  * This test compares the performance of inserting Employee.
@@ -136,9 +135,9 @@ public class JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparis
     public void reset() throws Exception {
         // Delete all employees
         EntityManager manager = createEntityManager();
-        ((EntityManagerImpl)manager).getServerSession().executeNonSelectingSQL("Delete from EMPLOYEE where F_NAME like 'Level_%'");
-        // clear the cache - otherwise the next run will throw OptimisticLockException
-        ((EntityManagerImpl)manager).getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        manager.getTransaction().begin();
+        manager.createQuery("Delete from Employee where firstName like 'Level_%'").executeUpdate();
+        manager.getTransaction().commit();
         manager.close();
     }
 }

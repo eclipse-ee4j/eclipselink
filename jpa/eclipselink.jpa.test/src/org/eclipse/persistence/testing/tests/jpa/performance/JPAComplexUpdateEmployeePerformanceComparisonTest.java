@@ -14,7 +14,7 @@
 
 import java.util.*;
 import javax.persistence.*;
-import org.eclipse.persistence.testing.models.performance.*;
+import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
@@ -32,10 +32,12 @@ public class JPAComplexUpdateEmployeePerformanceComparisonTest extends Performan
      * Get an employee id.
      */
     public void setup() {
-        this.originalEmployee = (Employee)getSession().acquireUnitOfWork().readObject(org.eclipse.persistence.testing.models.performance.toplink.Employee.class);
+        EntityManager manager = createEntityManager();
+        this.originalEmployee = (Employee)manager.createQuery("Select e from Employee e").getResultList().get(0);
         this.originalEmployee.getAddress();
         this.originalEmployee.getPhoneNumbers().size();
         this.count = 0;
+        manager.close();
     }
 
     /**
@@ -44,7 +46,7 @@ public class JPAComplexUpdateEmployeePerformanceComparisonTest extends Performan
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();
-        Employee employee = manager.getReference(Employee.class, new Long(originalEmployee.getId()));
+        Employee employee = manager.find(Employee.class, new Long(originalEmployee.getId()));
         count++;
         employee.setFirstName(originalEmployee.getFirstName() + count);
         employee.setLastName(originalEmployee.getLastName() + count);
