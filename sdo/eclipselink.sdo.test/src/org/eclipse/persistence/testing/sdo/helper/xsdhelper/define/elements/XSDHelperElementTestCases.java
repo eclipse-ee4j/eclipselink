@@ -15,6 +15,9 @@ package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.elements;
 import commonj.sdo.Property;
 import commonj.sdo.Type;
 import java.util.List;
+
+import junit.textui.TestRunner;
+
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.helper.xsdhelper.XSDHelperTestCases;
@@ -25,6 +28,11 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
         super(name);
     }
 
+    public static void main(String[] args) {
+        String[] arguments = { "-c", "org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.elements.XSDHelperElementTestCases" };
+        TestRunner.main(arguments);
+    }
+    
     public void testElementWithName() {
         String xsdSchema = getSchema("org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/elements/ElementWithName.xsd");
 
@@ -188,9 +196,7 @@ public class XSDHelperElementTestCases extends XSDHelperTestCases {
             assertNotNull(prop);
             assertEquals(1, nextType.getDeclaredProperties().size());
             assertTrue(prop.isMany());
-            assertTrue(prop.isContainment());
-            assertTrue(prop.getContainingType()!=null);
-            assertTrue(prop.getContainingType().isSequenced());
+            assertFalse(prop.isContainment());
             assertEquals(SDOConstants.SDO_OBJECT, prop.getType());
             assertTrue((Boolean)prop.get(SDOConstants.XMLELEMENT_PROPERTY));             
         }
