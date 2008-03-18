@@ -16,6 +16,8 @@ import java.io.IOException;
 import javax.naming.Context;
 import javax.rmi.PortableRemoteObject;
 import java.rmi.Naming;
+import java.rmi.NoSuchObjectException;
+import java.rmi.server.UnicastRemoteObject;
 import java.net.InetAddress;
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
@@ -233,6 +235,17 @@ public class RMITransportManager extends TransportManager {
             } else {
                 return;
             }
+			// unexport the local connection from the RMI runtime 
+			if (getConnectionToLocalHost() != null) {
+				RMIRemoteCommandConnection commandConnection = ((RMIRemoteConnection)getConnectionToLocalHost()).getConnection();
+				if (commandConnection != null) {
+					try {
+						UnicastRemoteObject.unexportObject(commandConnection, true);
+					} catch (NoSuchObjectException nso) {
+						// if the object isn't exported, ignore this exception since cleanup is being performed 
+					}
+				}
+			}
         } catch (Exception exception) {
             rcm.handleException(RemoteCommandManagerException.errorUnbindingLocalConnection(unbindName, exception));
         }

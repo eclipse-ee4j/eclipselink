@@ -52,4 +52,14 @@ public class RMIRemoteConnection extends RemoteConnection {
             throw CommunicationException.errorInInvocation(exception);
         }
     }
+    
+    /**
+     * INTERNAL
+     * Return the RemoteCommandConnection associated with this RemoteConnection
+     * @return RMIRemoteCommandConnection connection
+     */
+    public RMIRemoteCommandConnection getConnection() {
+    	return this.connection;
+    }
+    
 }
