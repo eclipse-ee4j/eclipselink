@@ -19,12 +19,18 @@ public class SelectComplexLikeTest extends org.eclipse.persistence.testing.tests
         Employee emp;
         emp = (Employee)getSomeEmployees().firstElement();
         String firstName = emp.getFirstName();
-        String partialFirstName = emp.getFirstName().substring(0, 1);
-        partialFirstName = partialFirstName + "_";
-        partialFirstName = partialFirstName + firstName.substring(2, 4);
-        partialFirstName = partialFirstName + "%";
+        StringBuffer partialFirstName = new StringBuffer();
+        // Bug 223005: Handle possible null or too short firstname because of different JVM Collections ordering implementations                
+        if(firstName.length() > 0) {
+        	partialFirstName.append(firstName.substring(0, 1));
+        }
+        partialFirstName.append("_");
+        if(firstName.length() > 3) {
+        	partialFirstName.append(firstName.substring(2, 4));
+        }
+        partialFirstName.append( "%");
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName LIKE \"" + partialFirstName + "\"";
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName LIKE \"" + partialFirstName.toString() + "\"";
 
         setEjbqlString(ejbqlString);
         setOriginalOject(emp);
