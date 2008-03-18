@@ -15,26 +15,20 @@ package org.eclipse.persistence.testing.tests.jpql;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
 public class SelectComplexLikeTest extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
-    public void setup() {
-        Employee emp;
-        emp = (Employee)getSomeEmployees().firstElement();
+	protected final static int MIN_FIRSTNAME_LENGTH = 4;
+	
+	public void setup() {
+        // Bug 223005: Verify that we have at least 1 employee with the required field length otherwise an EclipseLinkException will be thrown
+        Employee emp = getEmployeeWithRequiredNameLength(MIN_FIRSTNAME_LENGTH, getName());
         String firstName = emp.getFirstName();
-        StringBuffer partialFirstName = new StringBuffer();
-        // Bug 223005: Handle possible null or too short firstname because of different JVM Collections ordering implementations                
-        if(firstName.length() > 0) {
-        	partialFirstName.append(firstName.substring(0, 1));
-        }
-        partialFirstName.append("_");
-        if(firstName.length() > 3) {
-        	partialFirstName.append(firstName.substring(2, 4));
-        }
-        partialFirstName.append( "%");
-
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName LIKE \"" + partialFirstName.toString() + "\"";
-
-        setEjbqlString(ejbqlString);
-        setOriginalOject(emp);
-
-        super.setup();
-    }
+    	StringBuffer partialFirstName = new StringBuffer();
+    	partialFirstName.append(firstName.substring(0, 1));
+    	partialFirstName.append("_");
+    	partialFirstName.append(firstName.substring(2, 4));
+    	partialFirstName.append( "%");
+    	String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName LIKE \"" + partialFirstName.toString() + "\"";
+    	setEjbqlString(ejbqlString);
+    	setOriginalOject(emp);
+    	super.setup();
+	}
 }

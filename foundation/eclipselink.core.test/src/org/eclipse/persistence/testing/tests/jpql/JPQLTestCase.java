@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.tests.jpql;
 
 import java.util.*;
+
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.expressions.*;
@@ -24,7 +25,7 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 
 /**
  * Generic EJBQL test case.
- * Executes the EJBQL string and verfies the results.
+ * Executes the EJBQL string and verifies the results.
  */
 public class JPQLTestCase extends TransactionalTestCase {
     private String ejbql;
@@ -95,6 +96,52 @@ public class JPQLTestCase extends TransactionalTestCase {
         super.reset();
     }
 
+    /**
+     * Return the first employee that has a long enough name for the test.
+     * If no match is found throw a warning exception.
+     * See bug 223005
+     * @param minFirstNameLength
+     * @param testName
+     * @return
+     */
+    public Employee getEmployeeWithRequiredNameLength(int minFirstNameLength, String testName) {
+    	return getEmployeeWithRequiredNameLength(getSomeEmployees(), minFirstNameLength, testName);
+    }
+    
+    /**
+     * Return the first employee that has a long enough name for the test.
+     * If no match is found throw a warning exception.
+     * See bug 223005
+     * @param vectorOfEmployees
+     * @param minFirstNameLength
+     * @param testName
+     * @return
+     */
+    public Employee getEmployeeWithRequiredNameLength(Vector vectorOfEmployees, int minFirstNameLength, String testName) {
+        Employee empMatch = null;
+        Vector<Employee> employees = vectorOfEmployees;        
+        String firstName;
+        StringBuffer partialFirstName;
+        
+        // Loop through the collection of employees to find one that matches our test requirements
+        for(int i=0; i<employees.size();i++) {
+            empMatch = employees.get(i);
+            firstName = empMatch.getFirstName();
+            // Verify length criteria
+            if(firstName.length() >= minFirstNameLength) {
+                // exit the for loop - return the last empMatch
+                i = employees.size();
+            }
+        }
+        
+        // If we could not find a proper employee for testing - throw a warning
+        if(null == empMatch) {
+        	throw new RuntimeException(testName + " Setup Failed: unable to find an Employee with firstName size of at least  " + minFirstNameLength);
+        } else {
+        	return empMatch;
+        }
+    }
+    
     public void setup() {
         if (!isPlatformSupported(getSession().getLogin().getPlatform())) {
             throw new TestWarningException("This EJBQL is not supported on this platform.");
