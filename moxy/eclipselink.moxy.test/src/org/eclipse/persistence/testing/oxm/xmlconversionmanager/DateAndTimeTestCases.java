@@ -28,52 +28,96 @@ public class DateAndTimeTestCases extends OXTestCase {
 	private static final String WRONG_EXCEPTION_THROWN = "The incorrect exception was thrown.";
 	
     // 1975-02-21
-    private static final long CONTROL_DATE = 162190800000L;
+    private long CONTROL_DATE = 162190800000L;
 
     // 1975-02-21T07:47:15.0
-    private static final long CONTROL_DATE_TIME_0MS = 162218835000L;
+    private long CONTROL_DATE_TIME_0MS = 162218835000L;
 
     // 1975-02-21T07:47:15.001
-    private static final long CONTROL_DATE_TIME_1MS = 162218835001L;
+    private long CONTROL_DATE_TIME_1MS = 162218835001L;
 
     // 1975-02-21T07:47:15.01
-    private static final long CONTROL_DATE_TIME_10MS = 162218835010L;
+    private long CONTROL_DATE_TIME_10MS = 162218835010L;
 
     // 1975-02-21T07:47:15.1    
-    private static final long CONTROL_DATE_TIME_100MS = 162218835100L;
+    private long CONTROL_DATE_TIME_100MS = 162218835100L;
 
     // 07:47:15.0
-    private static final long CONTROL_TIME_0MS = 46035000L;
+    private long CONTROL_TIME_0MS = 46035000L;
 
     // 07:47:15.001
-    private static final long CONTROL_TIME_1MS = 46035001L;
+    private long CONTROL_TIME_1MS = 46035001L;
 
     // 07:47:15.01
-    private static final long CONTROL_TIME_10MS = 46035010L;
+    private long CONTROL_TIME_10MS = 46035010L;
 
     // 07:47:15.1
-    private static final long CONTROL_TIME_100MS = 46035100L;
+    private long CONTROL_TIME_100MS = 46035100L;
     
     // ----21
-    private static final long CONTROL_G_DAY = 1746000000L;
+    private long CONTROL_G_DAY = 1746000000L;
     
     // --02--
-    private static final long CONTROL_G_MONTH = 2696400000L;
+    private long CONTROL_G_MONTH = 2696400000L;
     
     // --02-21
-    private static final long CONTROL_G_MONTH_DAY = 4424400000L;
+    private long CONTROL_G_MONTH_DAY = 4424400000L;
     
     // 1975
-    private static final long CONTROL_G_YEAR = 157784400000L;
+    private long CONTROL_G_YEAR = 157784400000L;
     
     // 1975-02
-    private static final long CONTROL_G_YEAR_MONTH = 160462800000L;
+    private long CONTROL_G_YEAR_MONTH = 160462800000L;
 
     // XML Conversion Manager
     private XMLConversionManager xcm;
 
     public DateAndTimeTestCases(String name) {
         super(name);
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.set(1975, 1, 21);
+        
+        CONTROL_DATE = cal.getTimeInMillis();
+        
+        cal.clear();
+        cal.set(1975, 1, 21, 7, 47, 15);
+        this.CONTROL_DATE_TIME_0MS = cal.getTimeInMillis();
+        this.CONTROL_DATE_TIME_100MS = cal.getTimeInMillis() + 100;
+        this.CONTROL_DATE_TIME_10MS = cal.getTimeInMillis() + 10;
+        this.CONTROL_DATE_TIME_1MS = cal.getTimeInMillis() + 1;
+        
+        cal.clear();
+        cal.set(1970, 0, 1, 7, 47, 15);
+        
+        this.CONTROL_TIME_0MS = cal.getTimeInMillis();
+        this.CONTROL_TIME_100MS = cal.getTimeInMillis() + 100;
+        this.CONTROL_TIME_10MS = cal.getTimeInMillis() + 10;
+        this.CONTROL_TIME_1MS = cal.getTimeInMillis() + 1;
+        
+        cal.clear();
+        cal.set(Calendar.DAY_OF_MONTH, 21);
+        this.CONTROL_G_DAY = cal.getTimeInMillis();
+        
+        cal.clear();
+        cal.set(Calendar.MONTH, 1);
+        this.CONTROL_G_MONTH = cal.getTimeInMillis();
+        
+        cal.clear();
+        cal.set(Calendar.MONTH, 1);
+        cal.set(Calendar.DATE, 21);
+        this.CONTROL_G_MONTH_DAY = cal.getTimeInMillis();
+        
+        cal.clear();
+        cal.set(Calendar.YEAR, 1975);
+        this.CONTROL_G_YEAR = cal.getTimeInMillis();
+        
+        cal.clear();
+        cal.set(Calendar.YEAR, 1975);
+        cal.set(Calendar.MONTH, 1);
+        this.CONTROL_G_YEAR_MONTH = cal.getTimeInMillis();
+        
+        
     }
 
     public void setUp() {
