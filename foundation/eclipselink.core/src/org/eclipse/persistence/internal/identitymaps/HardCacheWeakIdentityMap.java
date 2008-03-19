@@ -70,20 +70,6 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
     }
 
     /**
-     * Store the object in the cache with the cache key.
-     * Also store the linked list node in the cache key.
-     */
-    protected void put(CacheKey cacheKey) {
-        ReferenceCacheKey referenceCacheKey = (ReferenceCacheKey)cacheKey;
-        LinkedNode node = null;
-        synchronized (getReferenceCache()) {
-            node = getReferenceCache().addFirst(buildReference(referenceCacheKey.getObject()));
-        }
-        referenceCacheKey.setReferenceCacheNode(node);
-        super.put(cacheKey);
-    }
-
-    /**
      * Also insert the link if the cacheKey is put.
      */
     protected CacheKey getCacheKeyIfAbsentPut(CacheKey searchKey) {
