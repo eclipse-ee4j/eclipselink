@@ -187,8 +187,10 @@ public class FeatureTestModel extends TestModel {
         TestSuite suite;
         suite = new TestSuite();
         suite.setName("Fielded Message Logging");
-        suite.setDescription("This Suite tests the functionality of Logging messages containing formatting string.");
+        suite.setDescription("This Suite tests the functionality of Logging messages containing formatting strings.");
         suite.addTest(new FieldedMessageLoggingTest());
+        // This test exercises the code that does a key:value lookup for messages that are not translated
+        suite.addTest(new FieldedMessageLoggingTraceLocalizationTest());
         return suite;
     }
 
