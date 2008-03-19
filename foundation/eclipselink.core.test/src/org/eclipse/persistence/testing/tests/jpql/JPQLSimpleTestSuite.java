@@ -142,7 +142,7 @@ public class JPQLSimpleTestSuite extends TestSuite {
     
     /**
      * This tests using query properties with EJBQL.
-     * It verfiies that the parse cache is not used if properties are used.
+     * It verifies that the parse cache is not used if properties are used.
      */
     public TestCase buildMaxRowsTest() {
         return new TestCase() {

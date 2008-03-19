@@ -41,7 +41,7 @@ public class JPQLParameterTestCase extends JPQLTestCase {
         return argumentNames;
     }
 
-    //populate the arguements of the query
+    //populate the arguments of the query
     public void populateQuery() {
         if (getArgumentNames() == null) {
             return;

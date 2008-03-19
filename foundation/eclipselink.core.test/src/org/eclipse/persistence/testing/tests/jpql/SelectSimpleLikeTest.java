@@ -15,11 +15,14 @@ package org.eclipse.persistence.testing.tests.jpql;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
 public class SelectSimpleLikeTest extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
-    public void setup() {
-        Employee emp;
-        emp = (Employee)getSomeEmployees().firstElement();
+	protected final static int MIN_FIRSTNAME_LENGTH = 3;
 
-        String partialFirstName = emp.getFirstName().substring(0, 3) + "%";
+    public void setup() {
+        // Bug 223005: Verify that we have at least 1 employee with the required field length otherwise an EclipseLinkException will be thrown
+        Employee emp = getEmployeeWithRequiredNameLength(MIN_FIRSTNAME_LENGTH, getName());
+
+        String partialFirstName;        
+        partialFirstName = emp.getFirstName().substring(0, 3) + "%";
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName LIKE \"" + partialFirstName + "\"";
 
         setEjbqlString(ejbqlString);

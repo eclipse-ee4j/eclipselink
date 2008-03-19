@@ -15,7 +15,7 @@ package org.eclipse.persistence.testing.framework;
 
 /**
  * <p>
- * <b>Purpose</b>: The exeception is raised if the test case failed because of TopLink logic.
+ * <b>Purpose</b>: The exception is raised if the test case failed because of EclipseLink logic.
  */
 public class TestErrorException extends TestException {
     public TestErrorException(String message) {

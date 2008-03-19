@@ -42,7 +42,7 @@ public class JPQLSystem extends TestSystem {
     public EmployeeProject buildProject() {
         EmployeeProject employeeProject = new EmployeeProject();
 
-        //add a mapping for addressId wo we can use it in from "emp"
+        //add a mapping for addressId so we can use it in from "emp"
         DirectToFieldMapping addressIdMapping = new DirectToFieldMapping();
         addressIdMapping.setAttributeName("addressId");
         addressIdMapping.setFieldName("EMPLOYEE.ADDR_ID");
@@ -83,7 +83,7 @@ public class JPQLSystem extends TestSystem {
      * This method demonstrates how a descriptor can be modified after being read with it's project (INI Files).
      * The properties of the PhoneNumber's Descriptor provide this method name to be called after the descriptor is built.
      * 1. Add a query key 'id' so that it may be used within expressions.
-     * 2. Add a defined query whic will retrieve all phone numbers with area code 613 (local Ottawa numbers).
+     * 2. Add a defined query which will retrieve all phone numbers with area code 613 (local Ottawa numbers).
      */
     public static void modifyPhoneDescriptor(ClassDescriptor descriptor) {
         // 1. Add query key 'id'

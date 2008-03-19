@@ -15,16 +15,18 @@ package org.eclipse.persistence.testing.tests.jpql;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
 public class SimpleReverseConcatTest extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
+	protected final static int MIN_FIRSTNAME_LENGTH = 2;
+	
     public void setup() {
-        Employee emp = (Employee)getSomeEmployees().firstElement();
+        // Bug 223005: Verify that we have at least 1 employee with the required field length otherwise an EclipseLinkException will be thrown
+        Employee emp = getEmployeeWithRequiredNameLength(MIN_FIRSTNAME_LENGTH, getName());
 
         String partOne;
         String partTwo;
         String ejbqlString;
 
-        partOne = emp.getFirstName().substring(0, 2);
-        partTwo = emp.getFirstName().substring(2);
-
+         partOne = emp.getFirstName().substring(0, 2);
+         partTwo = emp.getFirstName().substring(2);
         ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + "CONCAT(\"";
         ejbqlString = ejbqlString + partOne;

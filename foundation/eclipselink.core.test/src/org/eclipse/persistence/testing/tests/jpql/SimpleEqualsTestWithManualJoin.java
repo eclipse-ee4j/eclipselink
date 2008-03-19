@@ -21,7 +21,7 @@ public class SimpleEqualsTestWithManualJoin extends JPQLTestCase {
     public void setup() {
         setReferenceClass(Employee.class);
 
-        //add a mapping for addressId wo we can use it in from "emp"
+        //add a mapping for addressId so we can use it in from "emp"
         //        DirectToFieldMapping addressIdMapping = new DirectToFieldMapping();
         //        addressIdMapping.setAttributeName("addressId");
         //        addressIdMapping.setFieldName("EMPLOYEE.ADDR_ID");

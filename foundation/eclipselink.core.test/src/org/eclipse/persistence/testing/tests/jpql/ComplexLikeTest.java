@@ -18,10 +18,12 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.*;
 
 public class ComplexLikeTest extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
+	protected final static int MIN_FIRSTNAME_LENGTH = 4;
+
     public void setup() {
         Vector employees = new Vector();
-        Employee emp;
-        emp = (Employee)getSomeEmployees().firstElement();
+        // Bug 223005: Verify that we have at least 1 employee with the required field length otherwise an EclipseLinkException will be thrown
+        Employee emp = getEmployeeWithRequiredNameLength(MIN_FIRSTNAME_LENGTH, getName());
 
         String firstName = emp.getFirstName();
         String partialFirstName = emp.getFirstName().substring(0, 1);

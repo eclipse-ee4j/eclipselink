@@ -15,8 +15,11 @@ package org.eclipse.persistence.testing.tests.jpql;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
 public class SelectSimpleSubstringTest extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
+	protected final static int MIN_FIRSTNAME_LENGTH = 4;
+	
     public void setup() {
-        Employee emp = (Employee)getSomeEmployees().firstElement();
+        // Bug 223005: Verify that we have at least 1 employee with the required field length otherwise an EclipseLinkException will be thrown
+        Employee emp = getEmployeeWithRequiredNameLength(MIN_FIRSTNAME_LENGTH, getName());
 
         String firstNamePart;
         String ejbqlString;
