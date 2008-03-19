@@ -4032,12 +4032,17 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Address address = new Address();
         address.setCity("Shawshank");
         employee.setAddress(address);
+        Employee manager = new Employee();
+        manager.setFirstName("Bobby");
+        manager.setLastName("Dufresne");
+        employee.setManager(manager);
         
         beginTransaction(em);
         em.persist(employee);
         commitTransaction(em);
         int id = employee.getId();
         int addressId = address.getId();
+        int managerId = manager.getId();
         
         beginTransaction(em);
         employee = em.find(Employee.class, new Integer(id));
@@ -4045,8 +4050,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         address = new Address();
         address.setCity("Metropolis");
-        employee.setAddressField(address);
-        try{
+        employee.setAddress(address);
+        manager = new Employee();
+        manager.setFirstName("Metro");
+        manager.setLastName("Dufresne");
+        employee.setManagerField(manager);
+        try {
             commitTransaction(em);
         } catch (RuntimeException e){
             if (isTransactionActive(em)){
@@ -4059,20 +4068,26 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         em = createEntityManager();
         beginTransaction(em);
-        try {
-            employee = em.find(Employee.class, new Integer(id));
-            address = employee.getAddress();
-    
-            assertTrue("The address was not persisted.", employee.getAddress() != null);
-            assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
-        } finally {    
-            Address initialAddress = em.find(Address.class, new Integer(addressId));
-            employee.setAddress((Address)null);
-            em.remove(address);
-            em.remove(employee);
-            em.remove(initialAddress);
-            commitTransaction(em);
-        }
+        
+        employee = em.find(Employee.class, new Integer(id));
+        address = employee.getAddress();
+        manager = employee.getManager();
+
+        assertTrue("The address was not persisted.", employee.getAddress() != null);
+        assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
+
+        assertTrue("The manager was not persisted.", employee.getManager() != null);
+        assertTrue("The manager was not correctly persisted.", employee.getManager().getFirstName().equals("Metro"));
+        
+        Address initialAddress = em.find(Address.class, new Integer(addressId));
+        Employee initialManager = em.find(Employee.class, new Integer(managerId));
+        employee.setAddress((Address)null);
+        em.remove(address);
+        em.remove(employee);
+        em.remove(manager);
+        em.remove(initialAddress);
+        em.remove(initialManager);
+        commitTransaction(em);
     }
 
     /**
@@ -4091,12 +4106,17 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Address address = new Address();
         address.setCity("Shawshank");
         employee.setAddress(address);
+        Employee manager = new Employee();
+        manager.setFirstName("Bobby");
+        manager.setLastName("Dufresne");
+        employee.setManager(manager);
         
         beginTransaction(em);
         em.persist(employee);
         commitTransaction(em);
         int id = employee.getId();
         int addressId = address.getId();
+        int managerId = manager.getId();
         
         beginTransaction(em);
         employee = em.getReference(Employee.class, employee.getId());
@@ -4105,7 +4125,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         address = new Address();
         address.setCity("Metropolis");
-        employee.setAddressField(address);
+        employee.setAddress(address);
+        manager = new Employee();
+        manager.setFirstName("Metro");
+        manager.setLastName("Dufresne");
+        employee.setManagerField(manager);
         try{
             commitTransaction(em);
         } catch (RuntimeException e){
@@ -4119,20 +4143,26 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         em = createEntityManager();
         beginTransaction(em);
-        try {
-            employee = em.find(Employee.class, new Integer(id));
-            address = employee.getAddress();
-    
-            assertTrue("The address was not persisted.", employee.getAddress() != null);
-            assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
-        } finally {
-            Address initialAddress = em.find(Address.class, new Integer(addressId));
-            employee.setAddress((Address)null);
-            em.remove(address);
-            em.remove(employee);
-            em.remove(initialAddress);
-            commitTransaction(em);
-        }
+        
+        employee = em.find(Employee.class, new Integer(id));
+        address = employee.getAddress();
+        manager = employee.getManager();
+
+        assertTrue("The address was not persisted.", employee.getAddress() != null);
+        assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
+
+        assertTrue("The manager was not persisted.", employee.getManager() != null);
+        assertTrue("The manager was not correctly persisted.", employee.getManager().getFirstName().equals("Metro"));
+        
+        Address initialAddress = em.find(Address.class, new Integer(addressId));
+        Employee initialManager = em.find(Employee.class, new Integer(managerId));
+        employee.setAddress((Address)null);
+        em.remove(address);
+        em.remove(employee);
+        em.remove(manager);
+        em.remove(initialAddress);
+        em.remove(initialManager);
+        commitTransaction(em);
     }
     
     /**
@@ -4189,6 +4219,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         clearCache();
 
         em = createEntityManager();
+        beginTransaction(em);
         employee = em.find(Employee.class, new Integer(id));
         address = employee.getAddress();
         manager = employee.getManager();
@@ -4201,7 +4232,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         Address initialAddress = em.find(Address.class, new Integer(addressId));
         Employee initialManager = em.find(Employee.class, new Integer(managerId));
-        beginTransaction(em);
+        
         employee.setAddress((Address)null);
         em.remove(address);
         em.remove(employee);
@@ -5640,23 +5671,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         commitTransaction(em);
         
-        List key = new ArrayList();
-        key.add(id);
-        em = createEntityManager();
-        beginTransaction(em);
-        employee = em.getReference(Employee.class, key);
-        if (!employee.getFirstName().equals("testGetReference")) {
-            fail("getReference returned the wrong object");
-        }
-        commitTransaction(em);
-        
-        em = createEntityManager();
-        beginTransaction(em);
-        employee = em.find(Employee.class, key);
-        if (!employee.getFirstName().equals("testGetReference")) {
-            fail("find returned the wrong object");
-        }
-        commitTransaction(em);
     }
     
     /**
