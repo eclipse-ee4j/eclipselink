@@ -108,7 +108,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     protected Writer writer;
 
-    protected static String DATE_FORMAT_STR = "yyyy.MM.dd hh:mm:ss.SSS";
+    protected static String DATE_FORMAT_STR = "yyyy.MM.dd HH:mm:ss.SSS";
     /**
      * Format use to print the current date/time.
      */
