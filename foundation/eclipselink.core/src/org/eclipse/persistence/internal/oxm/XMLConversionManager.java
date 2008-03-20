@@ -488,6 +488,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     	int decimalIndex = string.lastIndexOf('.');
     	if(-1 == decimalIndex) {
     		Date date = dateFormat.parse(string);
+    		applyTimeZone(date, string);
     		return Helper.timestampFromDate(date);
     	}
     	Date date = dateFormat.parse(string.substring(0, decimalIndex));
