@@ -44,6 +44,7 @@ public class PersistenceWeaver implements ClassTransformer {
     public static final String WEAVING_SHOULD_OVERWRITE = "eclipselink.weaving.overwrite.existing";
     public static final String WEAVER_NOT_OVERWRITING = "weaver_not_overwriting";
     public static final String WEAVER_COULD_NOT_WRITE = "weaver_could_not_write";
+    public static final String EXCEPTION_WHILE_WEAVING = "exception_while_weaving";
     
     protected Session session; // for logging
     // Map<String, ClassDetails> where the key is className in JVM '/' format 
@@ -112,7 +113,8 @@ public class PersistenceWeaver implements ClassTransformer {
                 ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
             }
         } catch (Throwable exception) {
-            ((AbstractSession)session).log(SessionLog.WARNING, SessionLog.WEAVER, WEAVER_COULD_NOT_WRITE, className, exception);            
+            ((AbstractSession)session).log(SessionLog.WARNING, SessionLog.WEAVER, EXCEPTION_WHILE_WEAVING, className, exception);
+            ((AbstractSession)session).logThrowable(SessionLog.FINEST, SessionLog.WEAVER, exception);
         }
         return null; // returning null means 'use existing class bytes'
     }
@@ -150,6 +152,7 @@ public class PersistenceWeaver implements ClassTransformer {
         } catch (Exception e){
             ((AbstractSession)session).log(
                     SessionLog.WARNING, SessionLog.WEAVER, WEAVER_COULD_NOT_WRITE, className, e);
+            ((AbstractSession)session).logThrowable(SessionLog.FINEST, SessionLog.WEAVER, e);
         }
     }
     

@@ -259,6 +259,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "weaver_disable_by_system_property", "Weaving disabled by system property {0}"},		
         { "weaver_not_overwriting", "Weaver is not overwriting class {0} because it has not been set to overwrite."},
         { "weaver_could_not_write", "Weaver encountered an exception while trying to write class {0} to the file system.  The exception was: {1}"},
+        { "exception_while_weaving", "Weaver encountered an exception while trying to weave class {0}.  The exception was: {1}"},
         
         { "weaver_class_not_in_project", "Weaver found a class that is not part of the project: {0}."},
         { "weaver_processing_class", "Weaver processing class: {0}."},
