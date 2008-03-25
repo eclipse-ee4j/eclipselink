@@ -190,7 +190,7 @@ public class MethodWeaver extends CodeAdapter implements Constants {
     }
     
     /**
-     * Makes modifications to the begging of a method.
+     * Makes modifications to the beginning of a method.
      * 
      * 1. Modifies getter method for attributes using property access
      * 
