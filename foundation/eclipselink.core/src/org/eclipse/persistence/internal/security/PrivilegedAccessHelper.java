@@ -162,7 +162,7 @@ public class PrivilegedAccessHelper {
         if (shouldSetAccessible) {
             field.setAccessible(true);
         }
-            return field;
+        return field;
     }
 
     /**
