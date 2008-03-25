@@ -104,7 +104,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         mapping.setAttributeName(getAttributeName());
         mapping.setReferenceClassName(getReferenceClassName());
         
-        // If the global weave for value holders is true, the use the value
+        // If the global weave for value holders is true, then use the value
         // from usesIndirection. Otherwise, force it to false.
         boolean usesIndirection = (getProject().enableLazyForOneToOne()) ? usesIndirection() : false;
         if (usesIndirection && getDescriptor().usesPropertyAccess()) {
