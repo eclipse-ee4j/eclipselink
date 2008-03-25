@@ -90,9 +90,10 @@ public class JavaSECMPInitializer implements PersistenceInitializationActivator 
      * transformer returned to be used for weaving.
      */
     protected boolean callPredeploy(SEPersistenceUnitInfo persistenceUnitInfo, Map m, PersistenceInitializationActivator persistenceActivator) {
-        // we will only attempt to deploy when TopLink is specified as the provider or the provider is unspecified
+        // we will only attempt to deploy when EclipseLink is specified as the provider or the provider is unspecified
         String providerClassName = persistenceUnitInfo.getPersistenceProviderClassName();
         if (persistenceActivator.isPersistenceProviderSupported(providerClassName)){
+            // Bug 210280/215865: this decoded URL path + PU name [puName] must be used as the key in the EMSetup map below
             String puName = PersistenceUnitProcessor.buildPersistenceUnitName(persistenceUnitInfo.getPersistenceUnitRootUrl(),persistenceUnitInfo.getPersistenceUnitName());
             EntityManagerSetupImpl emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(puName);
             // if we already have an EntityManagerSetupImpl this PU has already been processed.  Use the existing one
@@ -121,7 +122,8 @@ public class JavaSECMPInitializer implements PersistenceInitializationActivator 
             persistenceUnitInfo.setNewTempClassLoader(tempLoader);
             if (emSetupImpl == null){
                 emSetupImpl = new EntityManagerSetupImpl();
-                EntityManagerFactoryProvider.addEntityManagerSetupImpl(persistenceUnitInfo.getPersistenceUnitRootUrl()+persistenceUnitInfo.getPersistenceUnitName(), emSetupImpl);
+                // Bug 210280/215865: use the decoded URL path + PU name as the key in the EMSetup map - to handle paths with spaces
+                EntityManagerFactoryProvider.addEntityManagerSetupImpl(puName, emSetupImpl);
             }
            
             persistenceUnitInfo.setClassLoader(getMainLoader());
@@ -189,7 +191,7 @@ public class JavaSECMPInitializer implements PersistenceInitializationActivator 
      * Initialize one persistence unit.
      * Initialization is a two phase process.  First the predeploy process builds the metadata
      * and creates any required transformers.
-     * Second the deploy process creates a TopLink session based on that metadata.
+     * Second the deploy process creates an EclipseLink session based on that metadata.
      */
     protected void initPersistenceUnits(Archive archive, Map m, PersistenceInitializationActivator persistenceActivator){
         Iterator<SEPersistenceUnitInfo> persistenceUnits = PersistenceUnitProcessor.getPersistenceUnits(archive, sessionClassLoader).iterator();

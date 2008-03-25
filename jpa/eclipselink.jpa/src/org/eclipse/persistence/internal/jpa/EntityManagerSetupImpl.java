@@ -797,7 +797,7 @@ public class EntityManagerSetupImpl {
             }
             state = STATE_PREDEPLOYED;
             session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), state, factoryCount});
-            //gf3146: if static weaving is used, we should not return a transformer.  Transformer should still be created though as it modifies descriptros 
+            //gf3146: if static weaving is used, we should not return a transformer.  Transformer should still be created though as it modifies descriptors 
             if (isWeavingStatic) {
                 return null;
             } else {
