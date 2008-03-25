@@ -17,15 +17,15 @@ import org.eclipse.persistence.sessions.Session;
 
 /**
  * SessionLog is the ever-so-simple interface used by
- * TopLink to log generated messages and SQL. An implementor of
- * this interface can be passed to the TopLink session
+ * EclipseLink to log generated messages and SQL. An implementor of
+ * this interface can be passed to the EclipseLink session
  * (via the #setSessionLog(SessionLog) method); and
  * all logging data will be passed through to the implementor
  * via an instance of SessionLogEntry. This can be used
  * to supplement debugging; or the entries could be stored
  * in a database instead of logged to System.out, etc.
  * <p>
- * This class defines Toplink logging levels (that are used throughout Toplink code) with the following integer values:
+ * This class defines Eclipselink logging levels (that are used throughout EclipseLink code) with the following integer values:
  * <table>
  * <tr><td>&nbsp;</td><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
  * <tr><td>&nbsp;</td><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -38,7 +38,7 @@ import org.eclipse.persistence.sessions.Session;
  * <tr><td>&nbsp;</td><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
  * </table>
  * <p>
- * In addition, TopLink categories used for logging name space are defined with the following String values:
+ * In addition, EclipseLink categories used for logging name space are defined with the following String values:
  * <table>
  * <tr><td>&nbsp;</td><td>SQL</td>           <td>&nbsp;</td><td>= "sql"</td>
  * <tr><td>&nbsp;</td><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td>
@@ -211,7 +211,7 @@ public interface SessionLog extends Cloneable {
      * Return the log level; category is only needed where name space
      * is available.
      * <p>
-     * The Toplink logging levels returned correspond to:
+     * The EclipseLink logging levels returned correspond to:
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -224,7 +224,7 @@ public interface SessionLog extends Cloneable {
      * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
      * </table>
      * <p>
-     * The Toplink categories for logging name space are: 
+     * The EclipseLink categories for logging name space are: 
      * <table>
      * <tr><td>SQL</td>              <td>&nbsp;</td><td>= "sql"</td>
      * <tr><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td>
@@ -247,7 +247,7 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * Set the log level.  Used when session is not available.
      * <p>
-     * The Toplink logging levels available are:
+     * The EclipseLink logging levels available are:
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -267,7 +267,7 @@ public interface SessionLog extends Cloneable {
      * Set the log level.  Category is only needed where name space
      * is available.
      * <p>
-     * The Toplink logging levels available are:
+     * The EclipseLink logging levels available are:
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -280,7 +280,7 @@ public interface SessionLog extends Cloneable {
      * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
      * </table>
      * <p>
-     * The Toplink categories for logging name space are: 
+     * The EclipseLink categories for logging name space are: 
      * <table>
      * <tr><td>SQL</td>              <td>&nbsp;</td><td>= "sql"</td>
      * <tr><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td>
@@ -302,7 +302,7 @@ public interface SessionLog extends Cloneable {
      * Check if a message of the given level would actually be logged.
      * Used when session is not available.
      * <p>
-     * The Toplink logging levels available are:
+     * The Eclipselink logging levels available are:
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -322,7 +322,7 @@ public interface SessionLog extends Cloneable {
      * Check if a message of the given level would actually be logged.
      * Category is only needed where name space is available.
      * <p>
-     * The Toplink logging levels available are:
+     * The EclipseLink logging levels available are:
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -335,7 +335,7 @@ public interface SessionLog extends Cloneable {
      * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
      * </table>
      * <p>
-     * The Toplink categories for logging name space are: 
+     * The EclipseLink categories for logging name space are: 
      * <table>
      * <tr><td>SQL</td>              <td>&nbsp;</td><td>= "sql"</td>
      * <tr><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td>
@@ -355,9 +355,9 @@ public interface SessionLog extends Cloneable {
     /**
      * PUBLIC:
      * Log a message that does not need to be translated.  This method is intended for 
-     * external use when logging messages are wanted within the TopLink output.
+     * external use when logging messages are wanted within the EclipseLink output.
      * <p>
-     * The Toplink logging levels available are:
+     * The EclipseLink logging levels available are:
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -376,7 +376,7 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * Log a message with one parameter that needs to be translated.
      * <p>
-     * The Toplink logging levels available are:
+     * The EclipseLink logging levels available are:
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -395,7 +395,7 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * Log a message with two parameters that needs to be translated.
      * <p>
-     * The Toplink logging levels available are:
+     * The EclipseLink logging levels available are:
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -414,7 +414,7 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * Log a message with three parameters that needs to be translated.
      * <p>
-     * The Toplink logging levels available are:
+     * The EclipseLink logging levels available are:
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -434,7 +434,7 @@ public interface SessionLog extends Cloneable {
      * This method is called when the log request is from somewhere session is not available.
      * The message needs to be translated.
      * <p>
-     * The Toplink logging levels available are:
+     * The EclipseLink logging levels available are:
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -454,7 +454,7 @@ public interface SessionLog extends Cloneable {
      * This method is called when the log request is from somewhere session is not available.
      * shouldTranslate flag determines if the message needs to be translated.
      * <p>
-     * The Toplink logging levels available are:
+     * The EclipseLink logging levels available are:
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
@@ -528,7 +528,7 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * Log a throwable with level.
      * <p>
-     * The Toplink logging levels available are:
+     * The EclipseLink logging levels available are:
      * <table>
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>

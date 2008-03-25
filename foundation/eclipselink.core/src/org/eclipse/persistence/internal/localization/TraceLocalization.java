@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.localization;
 /**
  *  <p>
  * <b>Purpose</b>: This is for any trace related messages
+ * Messages are not currently translated by default here.
  *
  * @author: Shannon Chen
  * @since OracleAS TopLink 10<i>g</i> (9.0.4)
@@ -25,6 +26,14 @@ public class TraceLocalization extends EclipseLinkLocalization {
         return buildMessage("TraceLocalization", key, arguments);
     }
 
+    public static String buildMessage(String key, Object[] arguments, boolean translate) {
+        return buildMessage("TraceLocalization", key, arguments, translate);
+    }
+    
+    public static String buildMessage(String key, boolean translate) {
+        return buildMessage(key, (Object[])null, translate);
+    }
+    
     public static String buildMessage(String key) {
         return buildMessage(key, (Object[])null);
     }

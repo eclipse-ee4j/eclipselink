@@ -783,7 +783,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             if (entry.getLevel() > FINE) {
                 message = LoggingLocalization.buildMessage(message, entry.getParameters());
             } else {
-                message = TraceLocalization.buildMessage(message, entry.getParameters());
+                message = TraceLocalization.buildMessage(message, entry.getParameters(), true);
             }
         } else {
             //Bug5976657, if there are entry parameters and the string "{0" contained in the message
@@ -791,10 +791,13 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             if (entry.getParameters()!=null && entry.getParameters().length>0 && message.indexOf("{0") >= 0) {
                 message = java.text.MessageFormat.format(message, entry.getParameters());
             } else {
-            	// Bug 222698 Look for message ID in TraceLocalization (untranslated at FINE, FINER, FINEST levels)
-            	// If the key is already transformed to a value containing {N} then do not use it as a key
-            	if(message.indexOf("{") == -1) {
-            		message = TraceLocalization.buildMessage(message, entry.getParameters());
+            	/*
+            	 * Bug 222698 Look for message ID in TraceLocalization (untranslated at FINE, FINER, FINEST levels)
+            	 * If the key is already transformed to a value containing {N} then do not use it as a key
+            	 * For cases where a message is a single word - we cannot differentiate whether it is a value or a key.
+            	 */            	
+            	if(message.indexOf("{") == -1) { // invalid calls with translate=false and parameters like {0} are not modified
+            		message = TraceLocalization.buildMessage(message, false);
             	}
             }
         }

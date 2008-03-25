@@ -31,6 +31,19 @@ public abstract class EclipseLinkLocalization {
      * Return the message for the given exception class and error number.
      */
     public static String buildMessage(String localizationClassName, String key, Object[] arguments) {
+    	return buildMessage(localizationClassName, key, arguments, true);
+    }
+
+    /**
+     * Return the message for the given exception class and error number.
+     * Based on the state of the translate flag - look up translation for the key:value message
+     * @param localizationClassName
+     * @param key
+     * @param arguments
+     * @param translate
+     * @return
+     */
+    public static String buildMessage(String localizationClassName, String key, Object[] arguments, boolean translate) {
         String message = key;
         ResourceBundle bundle = null;
 
@@ -43,7 +56,7 @@ public abstract class EclipseLinkLocalization {
             }
         }
 
-        bundle = ResourceBundle.getBundle("org.eclipse.persistence.internal.localization.i18n." + localizationClassName + "Resource", Locale.getDefault());
+       	bundle = ResourceBundle.getBundle("org.eclipse.persistence.internal.localization.i18n." + localizationClassName + "Resource", Locale.getDefault());
 
         try {
             message = bundle.getString(key);
@@ -53,8 +66,14 @@ public abstract class EclipseLinkLocalization {
             bundle = ResourceBundle.getBundle("org.eclipse.persistence.internal.localization.i18n.EclipseLinkLocalizationResource", Locale.getDefault());
             String noTranslationMessage = bundle.getString("NoTranslationForThisLocale");
 
-            return MessageFormat.format(message, arguments) + noTranslationMessage;
+            if(translate) {
+            	return MessageFormat.format(message, arguments) + noTranslationMessage;
+            } else {
+            	// For FINE* logs there is no translation
+            	return MessageFormat.format(message, arguments);
+            }
         }
         return MessageFormat.format(message, arguments);
     }
+    
 }
