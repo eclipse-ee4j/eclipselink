@@ -187,7 +187,7 @@ public class CMP3Policy extends CMPPolicy {
      *            corresponding pk fields
      * @return TopLinkCmpEntity
      */
-    protected Object createBeanUsingKey(Object key, AbstractSession session) {
+    public Object createBeanUsingKey(Object key, AbstractSession session) {
         try {
             Object bean = this.getDescriptor().getInstantiationPolicy().buildNewInstance();
             KeyElementAccessor[] keyElements = this.getKeyClassFields(key.getClass());

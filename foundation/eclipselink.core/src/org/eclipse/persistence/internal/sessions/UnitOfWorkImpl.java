@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
 import java.io.*;
+
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.internal.descriptors.*;
@@ -27,6 +28,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
@@ -5168,5 +5170,67 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             getProperties().put(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY,new Integer(((DatasourceAccessor)getAccessor()).getWriteStatementsCount()));
             getProperties().put(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY,new Integer(((DatasourceAccessor)getAccessor()).getStoredProcedureStatementsCount()));
         }
+    }
+    
+    /**
+     * Get an instance, whose state may be lazily fetched.
+     * If the requested instance does not exist in the database, null is returned, or the object will fail when accessed.
+     * The instance will be lazy when it does not exist in the cache, and supports fetch groups.
+     * @param primaryKey - The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
+     */
+    public Object getReference(Class theClass, Object primaryKey) {
+        ClassDescriptor descriptor = getDescriptor(theClass);
+        if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { theClass }));
+        }
+        Object reference;
+        if (primaryKey == null) { //gf721 - check for null PK
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_pk"));
+        }
+        Vector primaryKeyValues;
+        if (primaryKey instanceof List) {
+            primaryKeyValues = new NonSynchronizedVector((List)primaryKey);
+        } else {
+            if (descriptor.getCMPPolicy() != null) {
+                if (descriptor.getCMPPolicy().getPKClass() != null && !descriptor.getCMPPolicy().getPKClass().isAssignableFrom(primaryKey.getClass())) {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { descriptor.getCMPPolicy().getPKClass(), primaryKey.getClass() }));
+                }
+                primaryKeyValues = descriptor.getCMPPolicy().createPkVectorFromKey(primaryKey, this);
+            } else {
+                if (!primaryKey.getClass().equals(theClass)) {
+                    primaryKeyValues = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(primaryKey, this);
+                } else {
+                    primaryKeyValues = new NonSynchronizedVector(1);
+                    primaryKeyValues.add(primaryKey);
+                }
+            }
+        }
+        // If the class supports fetch groups then return a un-fetched instance.
+        if (ClassConstants.FetchGroupTracker_class.isAssignableFrom(theClass)) {
+            reference = getIdentityMapAccessor().getFromIdentityMap(primaryKeyValues, theClass);
+            if (reference == null) {
+                if (primaryKey instanceof List) {
+                    AbstractRecord row = descriptor.getObjectBuilder().buildRowFromPrimaryKeyValues(primaryKeyValues, this);
+                    reference = descriptor.getObjectBuilder().buildNewInstance();
+                    descriptor.getObjectBuilder().buildPrimaryKeyAttributesIntoObject(reference, row, new ReadObjectQuery());
+                } else {
+                    reference = descriptor.getCMPPolicy().createBeanUsingKey(primaryKey, this);
+                }
+                ((FetchGroupTracker)reference)._persistence_setSession(this);
+                FetchGroup fetchGroup = new FetchGroup();
+                for (DatabaseMapping mapping : descriptor.getObjectBuilder().getPrimaryKeyMappings()) {
+                    fetchGroup.addAttribute(mapping.getAttributeName());
+                }
+                ((FetchGroupTracker)reference)._persistence_setFetchGroup(fetchGroup);
+                reference = registerExistingObject(reference);
+            }
+        } else {
+            ReadObjectQuery query = new ReadObjectQuery(descriptor.getJavaClass());
+            query.setSelectionKey(primaryKeyValues);
+            query.conformResultsInUnitOfWork();
+            query.setIsExecutionClone(true);
+            reference = executeQuery(query);
+        }
+        return reference;
     }
 }

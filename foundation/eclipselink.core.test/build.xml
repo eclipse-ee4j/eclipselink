@@ -30,10 +30,11 @@
             dir="${eclipselink.core.lib}"
             includes="${eclipselink.core.depend}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
+        <pathelement path="${eclipselink.jar}"/>
     </path>
 
     <!-- Default ant target, compiles and translates resources, does not run tests. -->
-    <target name="all" depends="clean, compile, process.resource" description="build EclipseLink jar"/>
+    <target name="all" depends="clean, package" description="build EclipseLink jar"/>
 
     <!-- Compiles all tests. -->
     <target name="compile" depends="" description="compile EclipseLink core tests">  
@@ -75,6 +76,15 @@
          </copy>
     </target>
 
+
+    <!-- Packages tests jar. -->
+    <target name="package" depends="compile, process.resource" description="jat tests">
+        <jar jarfile="${eclipselink.core.test}/${eclipselink.tests.jar}">
+           <fileset dir="${eclipselink.core.test}/${classes.dir}"/>
+           <fileset dir="${eclipselink.core.test}/${run.dir}"/>
+        </jar>
+    </target>
+
     <!-- Clean all build generated content. -->
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
@@ -94,6 +104,8 @@
         <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
         <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
         <pathelement path="${eclipselink.extension.oracle}/eclipselink-extension-oracle.jar"/>
+        <pathelement path="${eclipselink.jar}"/>
+        <pathelement path="${eclipselink.core.test}/${eclipselink-tests.jar}"/>
         <pathelement path="${jdbc.driver.jar}"/>
         <pathelement path="${tools.jar}"/>
     </path>

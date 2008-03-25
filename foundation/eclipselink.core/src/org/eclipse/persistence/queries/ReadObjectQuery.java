@@ -731,13 +731,12 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         return controller.replaceValueHoldersIn(object);
     }
 
-
     /**
      * PUBLIC:
      * The primary key can be specified if used instead of an expression or selection object.
      * If composite the primary must be in the same order as defined in the descriptor.
      */
-    public void setSelectionKey(Vector selectionKey) {
+    public void setSelectionKey(List selectionKey) {
         if (selectionKey == null) {
             this.selectionKey = null;
         } else {

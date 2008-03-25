@@ -31,6 +31,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.TransactionRequiredException;
@@ -228,6 +229,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("testGetReference"));
         suite.addTest(new EntityManagerJUnitTestSuite("testGetReferenceUpdate"));
         suite.addTest(new EntityManagerJUnitTestSuite("testGetReferenceUsedInUpdate"));
+        suite.addTest(new EntityManagerJUnitTestSuite("testBadGetReference"));
         suite.addTest(new EntityManagerJUnitTestSuite("testClassInstanceConverter"));
         
         return suite;
@@ -5643,25 +5645,38 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      * Test getReference() API.
      */
     public void testGetReference() {
-        int id = createEmployee("testGetReference").getId();
+        Employee employee = createEmployee("testGetReference");
+        int id = employee.getId();
+        int version = employee.getVersion();
         
         EntityManager em = createEntityManager();
-        beginTransaction(em);
-        Employee employee = em.getReference(Employee.class, id);
-        if (!employee.getFirstName().equals("testGetReference")) {
-            fail("getReference returned the wrong object");
-        }
-        commitTransaction(em);
-        
-        clearCache();
-        
-        em = createEntityManager();
         beginTransaction(em);
         employee = em.getReference(Employee.class, id);
         if (!employee.getFirstName().equals("testGetReference")) {
             fail("getReference returned the wrong object");
         }
         commitTransaction(em);
+        if (employee.getVersion() != version) {
+            fail("fetched object was updated");
+        }
+        
+        clearCache();
+        
+        em = createEntityManager();
+        beginTransaction(em);
+        employee = em.getReference(Employee.class, id);
+        if (employee instanceof FetchGroupTracker) {
+            if (((FetchGroupTracker)employee)._persistence_isAttributeFetched("firstName")) {
+                fail("getReference fetched object.");
+            }
+        }
+        if (!employee.getFirstName().equals("testGetReference")) {
+            fail("getReference returned the wrong object");
+        }
+        commitTransaction(em);
+        if (employee.getVersion() != version) {
+            fail("fetched object was updated");
+        }
         
         em = createEntityManager();
         beginTransaction(em);
@@ -5671,6 +5686,23 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         commitTransaction(em);
         
+        List key = new ArrayList();
+        key.add(id);
+        em = createEntityManager();
+        beginTransaction(em);
+        employee = em.getReference(Employee.class, key);
+        if (!employee.getFirstName().equals("testGetReference")) {
+            fail("getReference returned the wrong object");
+        }
+        commitTransaction(em);
+        
+        em = createEntityManager();
+        beginTransaction(em);
+        employee = em.find(Employee.class, key);
+        if (!employee.getFirstName().equals("testGetReference")) {
+            fail("find returned the wrong object");
+        }
+        commitTransaction(em);
     }
     
     /**
@@ -5687,33 +5719,63 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         employee.setFirstName("changed");
         commitTransaction(em);
 
-        verifyObject(employee);
+        verifyObjectInCacheAndDatabase(employee);
+    }
+    
+    /**
+     * Test getReference() with bad id.
+     */
+    public void testBadGetReference() {
+                
         clearCache();
-        verifyObject(employee);
+        
+        EntityManager em = createEntityManager();
+        Exception caught = null;
+        try {
+            Employee employee = em.getReference(Employee.class, -123);
+            employee.getFirstName();
+        } catch (EntityNotFoundException exception) {
+            caught = exception;
+        }
+        if (caught == null) {
+            fail("getReference did not throw an error for a bad id");
+        }
+
     }
     
     /**
      * Test getReference() used in update.
      */
     public void testGetReferenceUsedInUpdate() {
-        int id = createEmployee("testGetReference").getId();
-
+        Employee employee = createEmployee("testGetReference");
+        int id = employee.getId();
+        int version = employee.getVersion();
+        
         clearCache();
 
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        Employee employee = em.getReference(Employee.class, id);
+        employee = em.getReference(Employee.class, id);
+        if (employee instanceof FetchGroupTracker) {
+            if (((FetchGroupTracker)employee)._persistence_isAttributeFetched("firstName")) {
+                fail("getReference fetched object.");
+            }
+        }
         Employee newEmployee = new Employee();
         newEmployee.setFirstName("new");
         newEmployee.setManager(employee);
         em.persist(newEmployee);
         commitTransaction(em);
+        if (employee instanceof FetchGroupTracker) {
+            if (((FetchGroupTracker)employee)._persistence_isAttributeFetched("firstName")) {
+                fail("commit fetched object.");
+            }
+        }
+        if (employee.getVersion() != version) {
+            fail("un-fetched object was updated");
+        }
 
-        verifyObject(newEmployee);
-        verifyObject(employee);
-        clearCache();
-        verifyObject(newEmployee);
-        verifyObject(employee);
+        verifyObjectInCacheAndDatabase(newEmployee);
     }
 
     public void testClassInstanceConverter(){

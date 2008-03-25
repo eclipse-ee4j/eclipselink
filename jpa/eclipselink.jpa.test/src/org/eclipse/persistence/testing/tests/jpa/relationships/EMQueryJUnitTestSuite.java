@@ -53,10 +53,10 @@ public class EMQueryJUnitTestSuite extends JUnitTestCase {
         Exception exception= null;
         try{
             customer = createEntityManager().getReference(Customer.class,nonExistingCustomerId );
+            customer.getCity();
         }catch(Exception e){
             exception=e;
         }
-        assertTrue("Test problem: Customer was found with an id of "+nonExistingCustomerId,customer==null );
         assertTrue("getReference() did not throw an instance of EntityNotFoundException", exception instanceof EntityNotFoundException);
     }
 

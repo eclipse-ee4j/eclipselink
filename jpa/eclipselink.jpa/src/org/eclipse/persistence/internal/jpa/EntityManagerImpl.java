@@ -12,8 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
@@ -36,10 +35,11 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import java.util.*;
 import org.eclipse.persistence.internal.jpa.transaction.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
@@ -48,10 +48,10 @@ import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 * <p>
 * <b>Purpose</b>: Contains the implementation of the EntityManager.
 * <p>
-* <b>Description</b>: This class provides the implementation for the combined TopLink
-* and EJB3.0 EntityManager class.  
+* <b>Description</b>: This class provides the implementation for the combined EclipseLink
+* and JPA EntityManager class.  
 * <p>
-* <b>Responsibilities</b>:It is responcible for tracking transaction state and the
+* <b>Responsibilities</b>:It is responsible for tracking transaction state and the
 * objects within that transaction.
 * @see javax.persistence.EntityManager
 * @see org.eclipse.persistence.jpa.JpaEntityManager
@@ -86,7 +86,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Constructor returns an EntityManager assigned to the a particular ServerSession.
      * @param sessionName the ServerSession name that should be used.
-     * This constructor can potentially throw TopLink exceptions regarding the existence, or
+     * This constructor can potentially throw EclipseLink exceptions regarding the existence, or
      * errors with the specified session.
      */
     public EntityManagerImpl(String sessionName, boolean propagatePersistenceContext, boolean extended) {
@@ -193,28 +193,28 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw e;
             }
         } catch (RuntimeException e) {
-            this.setRollbackOnly();
+            setRollbackOnly();
             throw e;
         }
     }
 
-	/**
-	 * Merge the state of the given entity into the
-	 * current persistence context, using the unqualified
-	 * class name as the entity name.
-	 * @param entity
-	 * @return the instance that the state was merged to
-	 */
-	public <T> T merge(T entity){
-        try{
+    /**
+     * Merge the state of the given entity into the current persistence
+     * context, using the unqualified class name as the entity name.
+     * 
+     * @param entity
+     * @return the instance that the state was merged to
+     */
+    public <T> T merge(T entity) {
+        try {
             verifyOpen();
             return (T) mergeInternal(entity);
-        }catch (RuntimeException e){
-            this.transaction.setRollbackOnlyInternal();
+        } catch (RuntimeException e) {
+            setRollbackOnly();
             throw e;
         }
-	}
-	
+    }
+
     /**
      * Merge the state of the given entity into the
      * current persistence context, using the unqualified
@@ -255,38 +255,43 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw e;
             }
         } catch (RuntimeException e) {
-            this.setRollbackOnly();
+            setRollbackOnly();
             throw e;
         }
     }
 
-	/**
-	* Find by primary key.
-	* @param entityClass
-	* @param primaryKey
-	* @return the found entity instance
-	* or null if the entity does not exist
-	* @throws IllegalArgumentException if the first argument does
-	* not denote an entity type or the second argument is not a valid type for that
-	* entity's primary key
-	*/
-	public <T> T find(Class<T> entityClass, Object primaryKey){
+    /**
+     * Find by primary key.
+     * @param entityClass - the entity class to find.
+     * @param primaryKey - the entity primary key value, or primary key class, or a List of primary key values.
+     * @return the found entity instance or null if the entity does not exist
+     * @throws IllegalArgumentException
+     *   if the first argument does not denote an entity type or
+     *   the second argument is not a valid type for that entity's
+     *   primary key.
+     */
+    public <T> T find(Class<T> entityClass, Object primaryKey) {
         try {
             verifyOpen();
-            return (T) findInternal(entityClass, primaryKey);
+            Session session = getActiveSession();
+            ClassDescriptor descriptor = session.getDescriptor(entityClass);
+            if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { entityClass }));
+            }
+            return (T) findInternal(descriptor, session, primaryKey);
         } catch (RuntimeException e) {
-            this.transaction.setRollbackOnlyInternal();
+            setRollbackOnly();
             throw e;
         }
-	}
+    }
 	
     /**
      * Find by primary key.
-     * @param entityName
-     * @param primaryKey
-     * @return the found entity instance
+     * @param entityClass - the entity class to find.
+     * @param primaryKey - the entity primary key value, or primary key class, or a List of primary key values.
+     * @return the found entity instance or null, if the entity does not exist.
      * @throws IllegalArgumentException if the first argument does not indicate an entity or if the
-     * second argument is not a valid type for that entity's primaryKey
+     *   second argument is not a valid type for that entity's primaryKey.
      */
     public Object find(String entityName, Object primaryKey) {
         try {
@@ -296,65 +301,39 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_entitybean_name", new Object[] { entityName }));
             }
-            if (primaryKey == null) { //gf721 - check for null PK
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_pk"));
-            }
-            if (((CMP3Policy)descriptor.getCMPPolicy()).getPKClass() != null && !((CMP3Policy)descriptor.getCMPPolicy()).getPKClass().isAssignableFrom(primaryKey.getClass())) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { ((CMP3Policy)descriptor.getCMPPolicy()).getPKClass(), primaryKey.getClass() }));
-            }
             return findInternal(descriptor, session, primaryKey);
         } catch (RuntimeException e) {
-            this.setRollbackOnly();
+            setRollbackOnly();
             throw e;
         }
     }
 
     /**
      * Find by primary key.
-     * @param entityClass
-     * @param primaryKey
-     * @return the found entity instance or null
-     * if the entity does not exist
+     * @param entityClass - the entity class to find.
+     * @param primaryKey - the entity primary key value, or primary key class, or a List of primary key values.
+     * @return the found entity instance or null, if the entity does not exist.
      * @throws IllegalArgumentException if the first argument does
-     * not denote an entity type or the second argument is not a valid type for that
-     * entity's primary key
+     *   not denote an entity type or the second argument is not a valid type for that
+     *   entity's primary key.
      */
-    protected Object findInternal(Class entityClass, Object primaryKey) {
-        Session session = getActiveSession();
-        ClassDescriptor descriptor = session.getDescriptor(entityClass);
-        if (descriptor == null || descriptor.isAggregateDescriptor() || descriptor.isAggregateCollectionDescriptor()) {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { entityClass }));
-        }
+    protected Object findInternal(ClassDescriptor descriptor, Session session, Object primaryKey) {
         if (primaryKey == null) { //gf721 - check for null PK
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_pk"));
         }
-        if (((CMP3Policy)descriptor.getCMPPolicy()).getPKClass() != null && !((CMP3Policy)descriptor.getCMPPolicy()).getPKClass().isAssignableFrom(primaryKey.getClass())) {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { ((CMP3Policy)descriptor.getCMPPolicy()).getPKClass(), primaryKey.getClass() }));
-        }
-        return findInternal(descriptor, session, primaryKey);
-    }
-
-    /**
-     * Find by primary key.
-     * @param descriptor
-     * @param session
-     * @param primaryKey
-     * @return the found entity instance or null
-     * if the entity does not exist
-     * @throws IllegalArgumentException if the first argument does
-     * not denote an entity type or the second argument is not a valid type for that
-     * entity's primary key
-     */
-    protected static Object findInternal(ClassDescriptor descriptor, Session session, Object primaryKey) {
-        Vector pk;
-        if (primaryKey instanceof Vector) {
-            pk = (Vector)primaryKey;
+        List primaryKeyValues;
+        if (primaryKey instanceof List) {
+            primaryKeyValues = (List)primaryKey;
         } else {
-            pk = ((CMP3Policy)descriptor.getCMPPolicy()).createPkVectorFromKey(primaryKey, (org.eclipse.persistence.internal.sessions.AbstractSession)session);
+            if (descriptor.getCMPPolicy().getPKClass() != null && !descriptor.getCMPPolicy().getPKClass().isAssignableFrom(primaryKey.getClass())) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_pk_class", new Object[] { descriptor.getCMPPolicy().getPKClass(), primaryKey.getClass() }));
+            }
+            primaryKeyValues = descriptor.getCMPPolicy().createPkVectorFromKey(primaryKey, (AbstractSession)session);
         }
         ReadObjectQuery query = new ReadObjectQuery(descriptor.getJavaClass());
-        query.setSelectionKey(pk);
+        query.setSelectionKey(primaryKeyValues);
         query.conformResultsInUnitOfWork();
+        query.setIsExecutionClone(true);
         return session.executeQuery(query);
     }
 
@@ -375,7 +354,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 throw e;
             }
         } catch (RuntimeException e) {
-            this.setRollbackOnly();
+            setRollbackOnly();
             throw e;
         }
     }
@@ -441,7 +420,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
             return contains(entity, getActivePersistenceContext(checkForTransaction(false)));
         } catch (RuntimeException e) {
-            this.setRollbackOnly();
+            setRollbackOnly();
             throw e;
         }
     }
@@ -451,7 +430,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * context.
      */
     protected boolean contains(Object entity, UnitOfWork uow) {
-        return ((org.eclipse.persistence.internal.sessions.UnitOfWorkImpl)uow).isObjectRegistered(entity) && !((org.eclipse.persistence.internal.sessions.UnitOfWorkImpl)uow).isObjectDeleted(entity);
+        return ((UnitOfWorkImpl)uow).isObjectRegistered(entity) && !((UnitOfWorkImpl)uow).isObjectDeleted(entity);
     }
     
     public javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass){
@@ -470,42 +449,44 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             }
             return null;
         } catch (RuntimeException e) {
-            this.transaction.setRollbackOnlyInternal();
+            setRollbackOnly();
             throw e;
         }
     }
     
     /**
-	 * Create an instance of Query for executing a
-	 * named query (in EJBQL or native SQL).
-	 * @param name the name of a query defined in metadata
-	 * @return the new query instance
-	 */
-	public Query createNamedQuery(String name){
+     * Create an instance of Query for executing a named query (in EJBQL or
+     * native SQL).
+     * 
+     * @param name the name of a query defined in metadata
+     * @return the new query instance
+     */
+    public Query createNamedQuery(String name) {
         try {
             verifyOpen();
             return new EJBQueryImpl(name, this, true);
         } catch (RuntimeException e) {
-            this.transaction.setRollbackOnlyInternal();
+            setRollbackOnly();
             throw e;
         }
-	}
-	
-	/**
-	 * Create an instance of Query for executing
-	 * a native SQL query.
-	 * @param sqlString a native SQL query string
-	 * @return the new query instance
-	 */
-	public Query createNativeQuery(String sqlString){
+    }
+
+    /**
+     * Create an instance of Query for executing a native SQL query.
+     * 
+     * @param sqlString a native SQL query string
+     * @return the new query instance
+     */
+    public Query createNativeQuery(String sqlString) {
         try {
             verifyOpen();
-            return new EJBQueryImpl( EJBQueryImpl.buildSQLDatabaseQuery( sqlString, false), this );
+            return new EJBQueryImpl(EJBQueryImpl.buildSQLDatabaseQuery(
+                    sqlString, false), this);
         } catch (RuntimeException e) {
-            this.transaction.setRollbackOnlyInternal();
+            setRollbackOnly();
             throw e;
         }
-	}
+    }
 
     /**
      * This method is used to create a query using SQL.  The class, must be the expected
@@ -517,19 +498,19 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             DatabaseQuery query = createNativeQueryInternal(sqlString, resultType);
             return new EJBQueryImpl(query, this);
         } catch (RuntimeException e) {
-            this.transaction.setRollbackOnlyInternal();
+            setRollbackOnly();
             throw e;
         }
     }
      
     /**
-    * Create an instance of Query for executing
-    * a native SQL query.
-    * @param sqlString a native SQL query string
-    * @param resultSetMapping the name of the result set mapping
-    * @return the new query instance
-    * @throws IllegalArgumentException if query string is not valid
-    */
+     * Create an instance of Query for executing
+     * a native SQL query.
+     * @param sqlString a native SQL query string
+     * @param resultSetMapping the name of the result set mapping
+     * @return the new query instance
+     * @throws IllegalArgumentException if query string is not valid
+     */
     public Query createNativeQuery(String sqlString, String resultSetMapping){
         try {
             verifyOpen();
@@ -539,7 +520,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             query.setIsUserDefined(true);
             return new EJBQueryImpl(query, this);
         } catch (RuntimeException e) {
-            this.transaction.setRollbackOnlyInternal();
+            setRollbackOnly();
             throw e;
         }
     }
@@ -568,7 +549,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             verifyOpen();
             return this;
         } catch (RuntimeException e) {
-            this.setRollbackOnly();
+            setRollbackOnly();
             throw e;
         }
     }
@@ -583,7 +564,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             verifyOpen();
             return flushMode;
         } catch (RuntimeException e) {
-            this.transaction.setRollbackOnlyInternal();
+            setRollbackOnly();
             throw e;
         }
     }
@@ -605,7 +586,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         return null;
     }
     
-	/**
+    /**
      * Returns the resource-level transaction object.
      * The EntityTransaction instance may be used serially to
      * begin and commit multiple transactions.
@@ -617,7 +598,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         try {
             return ((TransactionWrapper)transaction).getTransaction();
         } catch (RuntimeException e) {
-            this.transaction.setRollbackOnlyInternal();
+            setRollbackOnly();
             throw e;
         }
     }
@@ -652,27 +633,27 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * application while the entity manager was open.
      * @param entityClass
      * @param primaryKey
-     * @return the found entity instance
+     * @return the found entity instance.
      * @throws IllegalArgumentException if the first argument does
-     * not denote an entity type or the second
-     * argument is not a valid type for that
-     * entity's primary key
+     *   not denote an entity type or the second argument is not a valid type for that
+     *   entity's primary key.
      * @throws EntityNotFoundException if the entity state
-     * cannot be accessed
+     *   cannot be accessed.
      */
     public <T> T getReference(Class<T> entityClass, Object primaryKey) {
         try {
             verifyOpen();
-            Object returnValue = findInternal(entityClass, primaryKey);
-            if (returnValue ==null){
-                Object[] o = {primaryKey};
-                String message = ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", o);
+            UnitOfWork session = (UnitOfWork)getActiveSession();            
+            Object reference = session.getReference(entityClass, primaryKey);
+            if (reference == null) {
+                Object[] args = {primaryKey};
+                String message = ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", args);
                 throw new javax.persistence.EntityNotFoundException(message);
             }
-            return (T)returnValue;
-        } catch (RuntimeException e) {
-            this.transaction.setRollbackOnlyInternal();
-            throw e;
+            return (T)reference;
+        } catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw exception;
         }
     }
 
@@ -682,6 +663,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public ServerSession getServerSession() {
         return this.serverSession;
     }
+    
     /**
      * This method is used to create a query using SQL.  The class, must be the expected
      * return type.
@@ -695,7 +677,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     
     
     /**
-     * This method is used to create a query using a Toplink Expression and the return type.
+     * This method is used to create a query using a EclipseLink Expression and the return type.
      */
     public javax.persistence.Query createQuery(Expression expression, Class resultType){
         try {
@@ -703,43 +685,37 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             DatabaseQuery query = createQueryInternal(expression, resultType);
             return new EJBQueryImpl(query, this);
         } catch (RuntimeException e) {
-            this.transaction.setRollbackOnlyInternal();
+            setRollbackOnly();
             throw e;
         }
     }  
     
     /**
-	 * Create an instance of Query for executing an
-	 * EJBQL query.
-	 * @param ejbqlString an EJBQL query string
-	 * @return the new query instance
-	 */
-    public Query createQuery(String ejbqlString){
-    
+     * Create an instance of Query for executing an JPQL query.
+     * 
+     * @param jpqlString an JPQL query string
+     * @return the new query instance
+     */
+    public Query createQuery(String jpqlString) {    
         try {
-            verifyOpen();
-            
+            verifyOpen();            
             EJBQueryImpl ejbqImpl;
             
-            try
-            {
-                ejbqImpl = new EJBQueryImpl(ejbqlString, this);    
-            }
-            
-            catch(JPQLException ex)
-            {            
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("wrap_ejbql_exception"), ex);            
+            try {
+                ejbqImpl = new EJBQueryImpl(jpqlString, this);    
+            } catch(JPQLException exception) {            
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("wrap_ejbql_exception"), exception);            
             }
             
             return ejbqImpl;
         } catch (RuntimeException e) {
-            this.transaction.setRollbackOnlyInternal();
+            setRollbackOnly();
             throw e;
         }
     }
-	
+
     /**
-     * This method is used to create a query using a Toplink Expression and the return type.
+     * This method is used to create a query using a EclipseLink Expression and the return type.
      */
     protected DatabaseQuery createQueryInternal(Expression expression, Class resultType) {
         ReadAllQuery query = new ReadAllQuery(resultType);
@@ -778,7 +754,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 extendedPersistenceContext = null;
             }
         } catch (RuntimeException e) {
-            this.setRollbackOnly();
+            setRollbackOnly();
             throw e;
         }
     }
@@ -825,7 +801,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             }
             context.forceUpdateToVersionField(entity, (lockMode == LockModeType.WRITE));
         } catch (RuntimeException e) {
-            this.setRollbackOnly();
+            setRollbackOnly();
             throw e;
         }
     }
@@ -912,7 +888,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             verifyOpen();
             transaction.registerUnitOfWorkWithTxn(getActivePersistenceContext(checkForTransaction(true)));
         } catch (RuntimeException e) {
-            this.setRollbackOnly();
+            setRollbackOnly();
             throw e;
         }
     }
@@ -948,7 +924,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             verifyOpen();
             this.flushMode = flushMode;
         } catch (RuntimeException e) {
-            this.transaction.setRollbackOnlyInternal();
+            setRollbackOnly();
             throw e;
         }
     }

@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.descriptors.changetracking.AggregateObje
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -134,11 +135,16 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
         }
         dissableEventProcessing(clone);
         // Must also ensure the listener has been set on collections and aggregates.
+        FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
+        boolean isPartialObject = (fetchGroupManager != null) && fetchGroupManager.isPartialObject(clone);
         List mappings = descriptor.getMappings();
         int size = mappings.size();
+        // Only cascade fetched mappings.
         for (int index = 0; index < size; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-            mapping.setChangeListener(clone, listener, uow);
+            if (!isPartialObject || fetchGroupManager.isAttributeFetched(clone, mapping.getAttributeName())) {
+                mapping.setChangeListener(clone, listener, uow);
+            }
         }
         enableEventProcessing(clone);
     }

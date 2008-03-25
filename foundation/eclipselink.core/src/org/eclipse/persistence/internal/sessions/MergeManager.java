@@ -569,10 +569,15 @@ public class MergeManager {
         if (original == null) {
             return clone;
         }
-
-        // Merge into the clone from the original, use clone as backup as anything different should be merged.
-        descriptor.getObjectBuilder().mergeIntoObject(clone, false, original, this);
-
+        
+        // Toggle change tracking during the merge.
+        descriptor.getObjectChangePolicy().dissableEventProcessing(clone);
+        try {
+            // Merge into the clone from the original, use clone as backup as anything different should be merged.
+            descriptor.getObjectBuilder().mergeIntoObject(clone, false, original, this);
+        } finally {
+            descriptor.getObjectChangePolicy().enableEventProcessing(clone);
+        }
         //update the change policies with the refresh
         descriptor.getObjectChangePolicy().revertChanges(clone, descriptor, (UnitOfWorkImpl)this.getSession(), ((UnitOfWorkImpl)this.getSession()).getCloneMapping());
         Vector primaryKey = getSession().keyFromObject(clone);

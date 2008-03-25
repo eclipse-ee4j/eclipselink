@@ -14,11 +14,13 @@ package org.eclipse.persistence.descriptors;
 
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -60,7 +62,12 @@ public class FetchGroupManager implements Cloneable {
     public static void loadUnfetchedObject(Object object) {
         ReadObjectQuery query = new ReadObjectQuery(object);
         query.setShouldUseDefaultFetchGroup(false);
-        ((FetchGroupTracker)object)._persistence_getSession().executeQuery(query);
+        Object result = ((FetchGroupTracker)object)._persistence_getSession().executeQuery(query);
+        if (result == null) {
+            Object[] args = {query.getSelectionKey()};
+            String message = ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", args);
+            throw new javax.persistence.EntityNotFoundException(message);
+        }
     }
 
     /**
@@ -190,7 +197,9 @@ public class FetchGroupManager implements Cloneable {
         if (workingClone != backupClone) {
             setObjectFetchGroup(backupClone, union, uow);
         }
-        
+        ObjectChangePolicy policy = descriptor.getObjectChangePolicy();
+        // Turn it 'off' to prevent unwanted events.
+        policy.dissableEventProcessing(workingClone);
         //if refresh is set, force to fill in fetch group data
         if (((FetchGroupTracker)partialObject)._persistence_shouldRefreshFetchGroup()) {
             //refresh and fill in the fetch group data
@@ -199,6 +208,7 @@ public class FetchGroupManager implements Cloneable {
             //revert the unfetched attributes of the clones.
             revertDataIntoUnfetchedAttributesOfClones(partialObject, workingClone, backupClone, fetchGroupInObject, fetchGroupInClone, uow);
         }
+        policy.enableEventProcessing(workingClone);
     }
 
     /**

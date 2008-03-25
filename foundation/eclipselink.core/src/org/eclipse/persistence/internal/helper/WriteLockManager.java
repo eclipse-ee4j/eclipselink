@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.helper;
 import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -159,35 +160,39 @@ public class WriteLockManager {
     public CacheKey traverseRelatedLocks(Object objectForClone, Map lockedObjects, ClassDescriptor descriptor, AbstractSession session, UnitOfWorkImpl unitOfWork) {
         // If all mappings have indirection short-circuit.
         if (descriptor.shouldAcquireCascadedLocks()) {
+            FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
+            boolean isPartialObject = (fetchGroupManager != null) && fetchGroupManager.isPartialObject(objectForClone);
             for (Iterator mappings = descriptor.getLockableMappings().iterator();
                      mappings.hasNext();) {
                 DatabaseMapping mapping = (DatabaseMapping)mappings.next();
-    
-                // any mapping in this list must not have indirection.
-                Object objectToLock = mapping.getAttributeValueFromObject(objectForClone);
-                if (mapping.isCollectionMapping()) {
-                    // Ignore null, means empty.
-                    if (objectToLock != null) {
-                        ContainerPolicy cp = mapping.getContainerPolicy();
-                        Object iterator = cp.iteratorFor(objectToLock);
-                        while (cp.hasNext(iterator)) {
-                            Object object = cp.next(iterator, session);
-                            if (mapping.getReferenceDescriptor().hasWrapperPolicy()) {
-                                object = mapping.getReferenceDescriptor().getWrapperPolicy().unwrapObject(object, session);
-                            }
-                            CacheKey toWaitOn = checkAndLockObject(object, lockedObjects, mapping, session, unitOfWork);
-                            if (toWaitOn != null) {
-                                return toWaitOn;
+                // Only cascade fetched mappings.
+                if (!isPartialObject || (fetchGroupManager.isAttributeFetched(objectForClone, mapping.getAttributeName()))) {
+                    // any mapping in this list must not have indirection.
+                    Object objectToLock = mapping.getAttributeValueFromObject(objectForClone);
+                    if (mapping.isCollectionMapping()) {
+                        // Ignore null, means empty.
+                        if (objectToLock != null) {
+                            ContainerPolicy cp = mapping.getContainerPolicy();
+                            Object iterator = cp.iteratorFor(objectToLock);
+                            while (cp.hasNext(iterator)) {
+                                Object object = cp.next(iterator, session);
+                                if (mapping.getReferenceDescriptor().hasWrapperPolicy()) {
+                                    object = mapping.getReferenceDescriptor().getWrapperPolicy().unwrapObject(object, session);
+                                }
+                                CacheKey toWaitOn = checkAndLockObject(object, lockedObjects, mapping, session, unitOfWork);
+                                if (toWaitOn != null) {
+                                    return toWaitOn;
+                                }
                             }
                         }
-                    }
-                } else {
-                    if (mapping.getReferenceDescriptor().hasWrapperPolicy()) {
-                        objectToLock = mapping.getReferenceDescriptor().getWrapperPolicy().unwrapObject(objectToLock, session);
-                    }
-                    CacheKey toWaitOn = checkAndLockObject(objectToLock, lockedObjects, mapping, session, unitOfWork);
-                    if (toWaitOn != null) {
-                        return toWaitOn;
+                    } else {
+                        if (mapping.getReferenceDescriptor().hasWrapperPolicy()) {
+                            objectToLock = mapping.getReferenceDescriptor().getWrapperPolicy().unwrapObject(objectToLock, session);
+                        }
+                        CacheKey toWaitOn = checkAndLockObject(objectToLock, lockedObjects, mapping, session, unitOfWork);
+                        if (toWaitOn != null) {
+                            return toWaitOn;
+                        }
                     }
                 }
             }

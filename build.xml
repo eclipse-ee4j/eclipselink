@@ -3,7 +3,7 @@
         - build.all : compiles all components and tests, including Oracle extensions
         - clean : removes all build generated files
         - build.distribution : compiles and packages all jars, javadocs, installer
-        - build.core : compiles all components, excluding tests and Oracle extensions
+        - build.core : compiles all components, excluding tests, workbench, and Oracle extensions
         - build.extension : compiles Oracle extensions and tests
         - build.test : compiles all tests, excluding Oracle extensions
         - package.eclipselink.jar : packages eclipselink.jar
@@ -56,6 +56,9 @@
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
     <target name="build.distribution" depends="package.eclipselink.jar, build.workbench, package.src.jar, package.package-renamer.jar, build.javadocs, package.javadoc.zip, package.installer.zip"/>
 
+    <!-- Compiles all components and tests (excluding workbench). -->
+    <target name="build.core.all" depends="build.core, build.core.test, build.extension"/>
+
     <!-- Compiles all components (excluding tests, Oracle extensions). -->
     <target name="build.core">
         <ant antfile="${eclipselink.core}/build.xml" target="all"/>
@@ -69,17 +72,21 @@
     </target>
 
     <!-- Compiles Oracle extensions and tests. -->
-    <target name="build.extension" depends="build.core, build.test">
+    <target name="build.extension" depends="build.core, build.core.test">
         <ant antfile="${eclipselink.extension.oracle}/build.xml" target="all"/>
         <ant antfile="${eclipselink.extension.oracle.test}/build.xml" target="all"/>
     </target>
 
-    <!-- Compiles all tests (excluding Oracle extensions). -->
-    <target name="build.test">
+    <!-- Compiles tests (excluding workbench, and Oracle extensions). -->
+    <target name="build.core.test">
         <ant antfile="${eclipselink.core.test}/build.xml" target="all"/>
         <ant antfile="${eclipselink.jpa.test}/build.xml" target="all"/>
         <ant antfile="${eclipselink.moxy.test}/build.xml" target="compile.tests"/>
         <ant antfile="${eclipselink.sdo.test}/build.xml" target="compile.sdo.tests"/>
+    </target>
+
+    <!-- Compiles all tests (excluding Oracle extensions). -->
+    <target name="build.test" depends="build.core.test">
         <ant antfile="build.xml" dir="${eclipselink.workbench.test}" target="all"/>
     </target>
 
@@ -287,16 +294,20 @@
     <target name="test.core" description="run the core tests">
         <ant antfile="${eclipselink.core.test}/build.xml" target="test"/>
     </target>
-     <target name="test.browser" description="run the core tests">
+     <target name="test.browser" description="run the core testing browser">
         <ant antfile="${eclipselink.core.test}/build.xml" target="test.browser"/>
     </target>
     <!-- Run core SRG. -->
-    <target name="test.core.srg" description="run the core tests">
+    <target name="test.core.srg" description="run the core srg tests">
         <ant antfile="${eclipselink.core.test}/build.xml" target="test.srg"/>
     </target>
     <!-- Run JPA LRG. -->
     <target name="test.jpa" description="run the jpa tests">
         <ant antfile="${eclipselink.jpa.test}/build.xml" target="test"/>
+    </target>
+    <!-- Run JPA SRG. -->
+    <target name="test.jpa.srg" description="run the jpa srg tests">
+        <ant antfile="${eclipselink.jpa.test}/build.xml" target="test.srg"/>
     </target>
     <!-- Run SDO & MOXY tests. -->
     <target name="test.sdo" description="run the sdo tests">

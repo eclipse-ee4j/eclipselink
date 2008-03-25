@@ -401,4 +401,20 @@ public abstract class JUnitTestCase extends TestCase {
         }
     }
 
+    
+    /**
+     * Verifies that the object was merged to the cache, and written to the database correctly.
+     */
+    public void verifyObjectInCacheAndDatabase(Object writtenObject) {
+        Object readObject = getServerSession().readObject(writtenObject);
+        if (!getServerSession().compareObjects(readObject, writtenObject)) {
+            fail("Object from cache: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
+        }
+        clearCache();
+        readObject = getServerSession().readObject(writtenObject);
+        if (!getServerSession().compareObjects(readObject, writtenObject)) {
+            fail("Object from database: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
+        }
+    }
+
 }

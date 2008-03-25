@@ -655,4 +655,12 @@ public interface UnitOfWork extends Session {
      * Use to commit a UnitOfWork in two stages.
      */
     public void writeChanges();
+    
+    /**
+     * Get an instance, whose state may be lazily fetched.
+     * If the requested instance does not exist in the database, null is returned, or the object will fail when accessed.
+     * The instance will be lazy when it does not exist in the cache, and supports fetch groups.
+     * @param primaryKey - The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
+     */
+    public Object getReference(Class theClass, Object primaryKey);
 }

@@ -387,7 +387,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     }
     
     /**
-     * Return an instance of the recievers javaClass. Set the attributes of an instance
+     * Return an instance of the receivers javaClass. Set the attributes of an instance
      * from the values stored in the database row.
      */
     public Object buildObject(ObjectLevelReadQuery query, AbstractRecord databaseRow) throws DatabaseException, QueryException {
@@ -400,7 +400,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     }
 
     /**
-     * Return an instance of the recievers javaClass. Set the attributes of an instance
+     * Return an instance of the receivers javaClass. Set the attributes of an instance
      * from the values stored in the database row.
      */
     public Object buildObject(ObjectBuildingQuery query, AbstractRecord databaseRow, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
@@ -464,7 +464,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
     /**
      * For executing all reads on the UnitOfWork, the session when building
-     * objects from rows will now be the UnitOfWork.  Usefull if the rows were
+     * objects from rows will now be the UnitOfWork.  Useful if the rows were
      * read via a dirty write connection and we want to avoid putting uncommitted
      * data in the global cache.
      * <p>
@@ -530,7 +530,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     }
 
     /**
-     * Return an instance of the recievers javaClass. Set the attributes of an instance
+     * Return an instance of the receivers javaClass. Set the attributes of an instance
      * from the values stored in the database row.
      */
     protected Object buildObject(ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Vector primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
@@ -557,7 +557,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                         //releasing one at the end of the build object call.
 			//bug 5156075
                         cacheKey.releaseDeferredLock();
-                        //sleep and try again if we arenot the owner of the lock for CR 2317
+                        //sleep and try again if we are not the owner of the lock for CR 2317
                         // prevents us from modifying a cache key that another thread has locked.												
                         try {
                             Thread.sleep(10);
@@ -605,7 +605,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 //check if the cached object has been invalidated
                 boolean isInvalidated = concreteDescriptor.getCacheInvalidationPolicy().isInvalidated(cacheKey, query.getExecutionTime());
 
-                //CR #4365 - Queryid comparison used to prevent infinit recursion on refresh object cascade all
+                //CR #4365 - Queryid comparison used to prevent infinite recursion on refresh object cascade all
                 //if the concurrency manager is locked by the merge process then no refresh is required.
                 // bug # 3388383 If this thread does not have the active lock then someone is building the object so in order to maintain data integrity this thread will not
                 // fight to overwrite the object ( this also will avoid potential deadlock situations
@@ -719,10 +719,10 @@ public class ObjectBuilder implements Cloneable, Serializable {
         //the cached object is either invalidated, or staled as the version is newer, or a refresh is explicitly set on the query.
         //clean all data of the cache object.
         concreteDescriptor.getFetchGroupManager().reset(domainObject);
+        //set fetch group reference to the cached object
+        concreteDescriptor.getFetchGroupManager().setObjectFetchGroup(domainObject, query.getFetchGroup(), session);
         //read in the fetch group data only
         concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, false);
-        //set fetch group refrence to the cached object
-        concreteDescriptor.getFetchGroupManager().setObjectFetchGroup(domainObject, query.getFetchGroup(), session);
         //set refresh on fetch group
         concreteDescriptor.getFetchGroupManager().setRefreshOnFetchGroupToObject(domainObject, (query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache()));
         //set query id to prevent infinite recursion on refresh object cascade all
@@ -941,7 +941,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
     /**
      * Build the row representation of an object. The row built is used only for translations
-     * for the expressions in the expresion framework.
+     * for the expressions in the expression framework.
      */
     public AbstractRecord buildRowForTranslation(Object object, AbstractSession session) {
         AbstractRecord databaseRow = createRecord();
@@ -977,7 +977,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // If this descriptor is involved in inheritance and is an Aggregate, add the class type.
         // Added Nov 8, 2000 Mostly by PWK but also JED
         // Prs 24801
-        // Modified  Dec 11, 2000 TGW with assitance from PWK
+        // Modified  Dec 11, 2000 TGW with assistance from PWK
         // Prs 27554
         if (getDescriptor().hasInheritance() && getDescriptor().isAggregateDescriptor()) {
             if (query.getObject() != null) {
@@ -1333,7 +1333,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Builds a working copy clone directly from a result set.
-     * PERF: This method is optimizied for a specific case of building objects
+     * PERF: This method is optimized for a specific case of building objects
      * so can avoid many of the normal checks, only queries that have this criteria
      * can use this method of building objects.
      */
@@ -1398,7 +1398,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * This method is used by the UnitOfWork to cascade registration of new objects.
-     * It may raise exceptions as described inthe EJB3 specification
+     * It may raise exceptions as described in the EJB3 specification
      */
     public void cascadePerformRemove(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // PERF: Avoid iterator.
@@ -1412,28 +1412,52 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
-     * It may raise exceptions as described inthe EJB3 specification
+     * It may raise exceptions as described in the EJB3 specification
      */
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
         // PERF: Avoid iterator.
-        List mappings = getDescriptor().getMappings();
-        for (int index = 0; index < mappings.size(); index++) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-            mapping.cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+        List mappings = descriptor.getMappings();
+        int size = mappings.size();
+        FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
+        // Only cascade fetched mappings.
+        if ((fetchGroupManager != null) && fetchGroupManager.isPartialObject(object)) {
+            for (int index = 0; index < size; index++) {
+                DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                if (fetchGroupManager.isAttributeFetched(object, mapping.getAttributeName())) {
+                    mapping.cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+                }
+            }
+        } else {
+            for (int index = 0; index < size; index++) {
+                DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                mapping.cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+            }
         }
     }
     
     /**
      * INTERNAL:
      * This method is used by the UnitOfWork to cascade registration of new objects.
-     * It may raise exceptions as described inthe EJB3 specification
+     * It may raise exceptions as described in the EJB3 specification
      */
     public void cascadeRegisterNewForCreate(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // PERF: Avoid iterator.
-        List mappings = getDescriptor().getMappings();
-        for (int index = 0; index < mappings.size(); index++) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-            mapping.cascadeRegisterNewIfRequired(object, uow, visitedObjects);
+        List mappings = descriptor.getMappings();
+        int size = mappings.size();
+        FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
+        // Only cascade fetched mappings.
+        if ((fetchGroupManager != null) && fetchGroupManager.isPartialObject(object)) {
+            for (int index = 0; index < size; index++) {
+                DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                if (fetchGroupManager.isAttributeFetched(object, mapping.getAttributeName())) {
+                    mapping.cascadeRegisterNewIfRequired(object, uow, visitedObjects);
+                }
+            }
+        } else {
+            for (int index = 0; index < size; index++) {
+                DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                mapping.cascadeRegisterNewIfRequired(object, uow, visitedObjects);
+            }
         }
     }
 
@@ -1443,7 +1467,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * @return ChangeRecord
      */
     public ObjectChangeSet compareForChange(Object clone, Object backUp, UnitOfWorkChangeSet changeSet, AbstractSession session) {
-        // delegate the change comparision to this objects ObjectChangePolicy - TGW
+        // delegate the change comparison to this objects ObjectChangePolicy - TGW
         return descriptor.getObjectChangePolicy().calculateChanges(clone, backUp, changeSet, session, getDescriptor(), true);
     }
 
@@ -1879,7 +1903,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Return the classifiction for the field contained in the mapping.
+     * Return the classification for the field contained in the mapping.
      * This is used to convert the row value to a consistent java value.
      */
     public Class getFieldClassification(DatabaseField fieldToClassify) throws DescriptorException {
@@ -2179,7 +2203,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * buildWorkingCopyCloneFromRow.
      */
     protected void copyQueryInfoToCacheKey(CacheKey cacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, ClassDescriptor concreteDescriptor) {
-        //CR #4365 - used to prevent infinit recursion on refresh object cascade all
+        //CR #4365 - used to prevent infinite recursion on refresh object cascade all
         cacheKey.setLastUpdatedQueryId(query.getQueryId());
 
         if (concreteDescriptor.usesOptimisticLocking()) {
@@ -2203,7 +2227,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         this.getPrimaryKeyMappings().clear();
         this.getNonPrimaryKeyMappings().clear();
 
-        // This must be before because the scondary table primary key fields are registered after
+        // This must be before because the secondary table primary key fields are registered after
         for (Iterator fields = getMappingsByField().keySet().iterator(); fields.hasNext();) {
             DatabaseField field = (DatabaseField)fields.next();
             if (!primaryKeyfields.contains(field)) {
@@ -2228,7 +2252,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             }
 
             // Use the same mapping to map the additional table primary key fields.
-            // This is required if someone trys to map to one of these fields.
+            // This is required if someone tries to map to one of these fields.
             if (getDescriptor().hasMultipleTables() && (mapping != null)) {
                 for (Map keyMapping : getDescriptor().getAdditionalTablePrimaryKeyFields().values()) {
                     DatabaseField secondaryField = (DatabaseField) keyMapping.get(primaryKeyField);
@@ -2266,7 +2290,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
     /**
      * Returns the clone of the specified object. This is called only from unit of work.
-     * This only instatiates the clone instance, it does not clone the attributes,
+     * This only instantiates the clone instance, it does not clone the attributes,
      * this allows the stub of the clone to be registered before cloning its parts.
      */
     public Object instantiateClone(Object domainObject, AbstractSession session) {
@@ -2303,7 +2327,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Perform the itteration opperation on the objects attributes through the mappings.
+     * Perform the iteration operation on the objects attributes through the mappings.
      */
     public void iterate(DescriptorIterator iterator) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
@@ -2316,7 +2340,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Merge changes between the objects, this merge algorthim is dependent on the merge manager.
+     * Merge changes between the objects, this merge algorithm is dependent on the merge manager.
      */
     public void mergeChangesIntoObject(Object target, ObjectChangeSet changeSet, Object source, MergeManager mergeManager) {
         for (Enumeration changes = changeSet.getChanges().elements(); changes.hasMoreElements();) {
@@ -2341,7 +2365,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
-     * Merge the contents of one object into another, this merge algorthim is dependent on the merge manager.
+     * Merge the contents of one object into another, this merge algorithm is dependent on the merge manager.
      * This merge also prevents the extra step of calculating the changes when it is not required.
      */
     public void mergeIntoObject(Object target, boolean isUnInitialized, Object source, MergeManager mergeManager) {
@@ -2350,7 +2374,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
-     * Merge the contents of one object into another, this merge algorthim is dependent on the merge manager.
+     * Merge the contents of one object into another, this merge algorithm is dependent on the merge manager.
      * This merge also prevents the extra step of calculating the changes when it is not required.
      * If 'cascadeOnly' is true, only foreign reference mappings are merged.
      */

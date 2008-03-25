@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
+import java.util.Vector;
+
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.UpdateObjectQuery;
@@ -380,6 +382,42 @@ public class CMPPolicy implements java.io.Serializable {
     	// This method only works in CMP3Policy but was added here for separation
     	// of components
     	throw new RuntimeException("Should not get here.");
+    }
+
+    /**
+     * INTERNAL:
+     * Use the key to create a TopLink primary key Vector.
+     * If the key is simple (direct mapped) then just add it to a vector,
+     * otherwise must go through the inefficient process of copying the key into the bean
+     * and extracting the key from the bean.
+     *
+     * @param key Object the primary key to use for creating the vector
+     * @return Vector
+     */
+    public Vector createPkVectorFromKey(Object key, AbstractSession session) {
+        // TODO fix this exception so that it is more descriptive
+        // This method only works in CMP3Policy but was added here for separation
+        // of components
+        throw new RuntimeException("Should not get here.");
+    }
+
+    /**
+     * INTERNAL:
+     * Use the key to create a bean and initialize its primary key fields.
+     * Note: If is a compound PK then a primary key object is being used.
+     * This method should only be used for 'templates' when executing
+     * queries.  The bean built will not be given an EntityContext and should
+     * not be used as an actual entity bean.
+     *
+     * @param key Object the primary key to use for initializing the bean's
+     *            corresponding pk fields
+     * @return TopLinkCmpEntity
+     */
+    public Object createBeanUsingKey(Object key, AbstractSession session) {
+        // TODO fix this exception so that it is more descriptive
+        // This method only works in CMP3Policy but was added here for separation
+        // of components
+        throw new RuntimeException("Should not get here.");
     }
     
     /**
