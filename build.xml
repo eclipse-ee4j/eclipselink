@@ -54,7 +54,7 @@
     <target name="build.all" depends="build.core, build.workbench, build.test, build.extension"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
-    <target name="build.distribution" depends="package.eclipselink.jar, build.workbench, package.src.jar, package.package-renamer.jar, build.javadocs, package.javadoc.zip, package.installer.zip"/>
+    <target name="build.distribution" depends="package.eclipselink.jar, build.eclipselink.bundles, build.workbench, package.src.jar, package.package-renamer.jar, build.javadocs, package.javadoc.zip, package.installer.zip"/>
 
     <!-- Compiles all components and tests (excluding workbench). -->
     <target name="build.core.all" depends="build.core, build.core.test, build.extension"/>
@@ -90,11 +90,15 @@
         <ant antfile="build.xml" dir="${eclipselink.workbench.test}" target="all"/>
     </target>
 
-    <!-- Packages the eclipselink.jar. -->
-    <target name="package.eclipselink.jar" depends="build.core" description="build EclipseLink jar">
+	<!-- Updates and copies the manifest file to build dir.  Extracts the oracle extension jar to the build dir -->
+	<target name="create.build.dir" depends="build.core" description="create the directory used to build jars from">
         <unjar src="${eclipselink.extension.oracle}/${eclipselink.oracle.depend.jar}" dest="${build.dir}"/>
         <filter token="VERSION" value="${release.version} ${build_number_string}"/>
         <copy file="${eclipselink.core}/${resource.dir}/META-INF/MANIFEST.MF" tofile="${build.dir}/META-INF/MANIFEST.MF" filtering="true" overwrite="true"/>
+	</target>
+
+	<!-- Packages the eclipselink.jar. -->
+    <target name="package.eclipselink.jar" depends="create.build.dir" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.core}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
@@ -125,7 +129,52 @@
                 <include name="commonj/sdo/impl/HelperProviderImpl.class"/>
             </fileset>
         </jar>
-        <delete dir="${build.dir}"/>
+    </target>
+
+
+    <!-- Builds the eclipselink bundles. -->
+
+    <target name="build.eclipselink.bundles" depends="create.build.dir" description="build eclipselink bundles">
+        <jar jarfile="${eclipselink.core}/${eclipselink.core.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
+            <fileset dir="${eclipselink.core}/${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+                <include name="deprecated/**/*.class"/>
+            </fileset>
+			<fileset dir="${eclipselink.core}/${resource.dir}">
+                <include name="xsd/*.xsd"/>
+                <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
+            </fileset>
+            <fileset dir="${eclipselink.core.lib}/${asm}/${classes.dir}">
+                <include name="org/eclipse/persistence/internal/libraries/asm/**/*.class"/>
+            </fileset>
+            <fileset dir="${eclipselink.core.lib}/${antlr}/${classes.dir}">
+                <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.class"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${eclipselink.jpa}/${eclipselink.jpa.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
+            <fileset dir="${eclipselink.core}/${resource.dir}">
+                <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
+            </fileset>
+			<fileset dir="${eclipselink.jpa}/${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+			</fileset>
+		</jar>
+        <jar jarfile="${eclipselink.moxy}/${eclipselink.moxy.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
+            <fileset dir="${eclipselink.moxy}/${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+		</jar>
+        <jar jarfile="${eclipselink.sdo}/${eclipselink.sdo.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
+            <fileset dir="${eclipselink.sdo}/${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+                <include name="commonj/sdo/impl/HelperProviderImpl.class"/>
+            </fileset>
+		</jar>
+        <jar jarfile="${eclipselink.extension.oracle}/${eclipselink.extension.oracle.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
+            <fileset dir="${build.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+		</jar>
     </target>
 
     <!-- Packages the eclipselink source jar. -->
