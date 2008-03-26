@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
-import java.sql.Time;
 import java.util.Calendar;
 import java.util.Collection;
 import javax.persistence.EntityManager;
