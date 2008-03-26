@@ -22,8 +22,11 @@ import java.net.URL;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -36,6 +39,8 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
+import org.eclipse.persistence.platform.xml.XMLTransformer;
 
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
@@ -451,8 +456,13 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             } else {
                 return unmarshal(streamSource.getSystemId());
             }
+        } else {
+        	XMLUnmarshallerHandler handler = this.xmlUnmarshaller.getUnmarshallerHandler();
+        	XMLTransformer transformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
+        	SAXResult result = new SAXResult(handler);
+        	transformer.transform(source, result);
+        	return handler.getResult();
         }
-        return null;
     }
 
     public Object unmarshal(Source source, Class clazz) {
@@ -479,8 +489,13 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             } else {
                 return unmarshal(streamSource.getSystemId(), clazz);
             }
+        } else {
+        	DOMResult result = new DOMResult();
+        	XMLTransformer transformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
+        	transformer.transform(source, result);
+        	return unmarshal(result.getNode(), clazz);
+        	
         }
-        return null;
     }
 
     public Object unmarshal(URL url) {

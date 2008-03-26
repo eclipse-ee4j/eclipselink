@@ -240,7 +240,7 @@ public class XMLMarshaller {
             } else if (result instanceof SAXResult) {
                 SAXResult saxResult = (SAXResult)result;
                 marshal(object, saxResult.getHandler());
-            } else {
+            } else if (result instanceof StreamResult) {
                 StreamResult streamResult = (StreamResult)result;
                 Writer writer = streamResult.getWriter();
                 if (null == writer) {
@@ -248,6 +248,12 @@ public class XMLMarshaller {
                 } else {
                     marshal(object, writer);
                 }
+            } else {
+            	java.io.StringWriter writer = new java.io.StringWriter();
+            	marshal(object, writer);
+            	System.out.println(writer.toString());
+            	javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource(new java.io.StringReader(writer.toString()));
+            	transformer.transform(source, result);
             }
             return;
         }
