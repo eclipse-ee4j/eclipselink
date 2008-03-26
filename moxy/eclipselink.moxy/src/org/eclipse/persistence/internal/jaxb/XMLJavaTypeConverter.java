@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jaxb;
 
 import java.security.AccessController;
@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -115,9 +116,9 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         try {
             XmlAdapter adapter = this.xmlAdapter;
             if (unmarshaller != null) {
-                HashMap adapters = (HashMap)unmarshaller.getProperty(JAXBUnmarshaller.XML_JAVATYPE_ADAPTERS);
+                HashMap adapters = (HashMap) unmarshaller.getProperty(JAXBUnmarshaller.XML_JAVATYPE_ADAPTERS);
                 if (adapters != null) {
-                    XmlAdapter runtimeAdapter = (XmlAdapter)adapters.get(this.xmlAdapterClass);
+                    XmlAdapter runtimeAdapter = (XmlAdapter) adapters.get(this.xmlAdapterClass);
                     if (runtimeAdapter != null) {
                         adapter = runtimeAdapter;
                     }
@@ -126,12 +127,12 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
             Object toConvert = dataValue;
             if ((dataValue != null) && !(dataValue.getClass() == this.valueType)) {
                 if (this.mapping instanceof XMLBinaryDataMapping) {
-                    toConvert = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(dataValue, valueType);
+                    toConvert = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(dataValue, valueType, (AbstractSession) session);
                 } else {
                     if (getSchemaType() != null) {
-                        toConvert = XMLConversionManager.getDefaultXMLManager().convertObject(dataValue, valueType, getSchemaType());
+                        toConvert = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(dataValue, valueType, getSchemaType());
                     } else {
-                        toConvert = XMLConversionManager.getDefaultXMLManager().convertObject(dataValue, valueType);
+                        toConvert = session.getDatasourcePlatform().getConversionManager().convertObject(dataValue, valueType);
                     }
                 }
             }
@@ -148,9 +149,9 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         try {
             XmlAdapter adapter = this.xmlAdapter;
             if (marshaller != null) {
-                HashMap adapters = (HashMap)marshaller.getProperty(JAXBMarshaller.XML_JAVATYPE_ADAPTERS);
+                HashMap adapters = (HashMap) marshaller.getProperty(JAXBMarshaller.XML_JAVATYPE_ADAPTERS);
                 if (adapters != null) {
-                    XmlAdapter runtimeAdapter = (XmlAdapter)adapters.get(this.xmlAdapterClass);
+                    XmlAdapter runtimeAdapter = (XmlAdapter) adapters.get(this.xmlAdapterClass);
                     if (runtimeAdapter != null) {
                         adapter = runtimeAdapter;
                     }
@@ -204,16 +205,16 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         if (xmlAdapterClass == null) {
             // TODO: which classloader should we use here?
             try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try{
-                        xmlAdapterClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getXmlAdapterClassName()));
-                    }catch (PrivilegedActionException ex){
-                        if (ex.getCause() instanceof ClassNotFoundException){
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    try {
+                        xmlAdapterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(getXmlAdapterClassName()));
+                    } catch (PrivilegedActionException ex) {
+                        if (ex.getCause() instanceof ClassNotFoundException) {
                             throw (ClassNotFoundException) ex.getCause();
                         }
-                        throw (RuntimeException)ex.getCause();
+                        throw (RuntimeException) ex.getCause();
                     }
-                }else{
+                } else {
                     xmlAdapterClass = PrivilegedAccessHelper.getClassForName(getXmlAdapterClassName());
                 }
             } catch (ClassNotFoundException cnfe) {
@@ -221,16 +222,17 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
                 return;
             }
         }
-        
+
         this.mapping = mapping;
         Method[] methods = null;
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-            try{
-                methods = (Method[])AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(xmlAdapterClass));;
-            }catch (PrivilegedActionException ex){
-                throw (RuntimeException)ex.getCause();
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            try {
+                methods = (Method[]) AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(xmlAdapterClass));
+                ;
+            } catch (PrivilegedActionException ex) {
+                throw (RuntimeException) ex.getCause();
             }
-        }else{
+        } else {
             methods = PrivilegedAccessHelper.getDeclaredMethods(xmlAdapterClass);
         }
         Method method;
@@ -249,20 +251,21 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         }
 
         try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try{
-                    xmlAdapter = (XmlAdapter)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getXmlAdapterClass()));;
-                }catch (PrivilegedActionException ex){
-                    if (ex.getCause() instanceof IllegalAccessException){
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                try {
+                    xmlAdapter = (XmlAdapter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getXmlAdapterClass()));
+                    ;
+                } catch (PrivilegedActionException ex) {
+                    if (ex.getCause() instanceof IllegalAccessException) {
                         throw (IllegalAccessException) ex.getCause();
                     }
-                    if (ex.getCause() instanceof InstantiationException){
+                    if (ex.getCause() instanceof InstantiationException) {
                         throw (InstantiationException) ex.getCause();
                     }
-                    throw (RuntimeException)ex.getCause();
+                    throw (RuntimeException) ex.getCause();
                 }
-            }else{
-                xmlAdapter = (XmlAdapter)PrivilegedAccessHelper.newInstanceFromClass(getXmlAdapterClass());
+            } else {
+                xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.newInstanceFromClass(getXmlAdapterClass());
             }
         } catch (Exception ex) {
             // TODO:  need to throw an exception here
@@ -292,7 +295,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     public void setXmlAdapterClass(Class xmlAdapterClass) {
         this.xmlAdapterClass = xmlAdapterClass;
     }
-    
+
     /**
      * Set the XmlAdapter class to be used with this converter.
      *
