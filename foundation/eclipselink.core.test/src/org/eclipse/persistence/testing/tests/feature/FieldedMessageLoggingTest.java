@@ -25,7 +25,7 @@ public class FieldedMessageLoggingTest extends AutoVerifyTestCase {
     protected Exception caughtException = null;
 
     public FieldedMessageLoggingTest() {
-        setDescription("Tests that message Logging containing formatting string like '{0'");
+        setDescription("Tests that message Logging containing formatting string like '{0' - does not cause a parse exception");
     }
 
      public void setup() {

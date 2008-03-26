@@ -221,7 +221,8 @@ public class MetadataProcessor {
     
     /**
      * INTERNAL:
-     * Log an untranslated message to the TopLink log at FINER level.
+     * Log an untranslated message to the EclipseLink log at FINER level.<br>
+     * The message should not contain a bundle key.
      */
     protected void logMessage(String message) {
         if (m_session == null) {

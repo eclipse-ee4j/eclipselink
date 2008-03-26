@@ -26,8 +26,8 @@ import org.eclipse.persistence.exceptions.ValidationException;
 
 /**
  * Represents the abstract log that implements all the generic logging functions.
- * It contains a singleton SessionLog that logs messages from outside any TopLink session.
- * The singleton SessionLog can also be passed to a TopLink session when messages
+ * It contains a singleton SessionLog that logs messages from outside any EclipseLink session.
+ * The singleton SessionLog can also be passed to an EclipseLink session when messages
  * are logged through that session.  When JDK1.4 is used, a singleton JavaLog is created.
  * Otherwise a singleton DefaultSessionLog is created.
  *
@@ -350,15 +350,16 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * PUBLIC:
      * <p>
      * Log a message that does not need to be translated.  This method is intended for 
-     * external use when logging messages are wanted within the TopLink output.
+     * external use when logging messages are required within the EclipseLink output.
      * </p><p>
      *
      * @param level the log request level value
      * </p><p>
-     * @param message the string message
+     * @param message the string message - this should not be a bundle key
      * </p>
      */
     public void log(int level, String message) {
+    	// Warning: do not use this function to pass in bundle keys as they will not get transformed into string messages
         if (!shouldLog(level)) {
             return;
         }
@@ -477,7 +478,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Log a SessionLogEntry
      * </p><p>
      *
-     * @param entry SessionLogEntry that holds all the information for a TopLink logging event
+     * @param entry SessionLogEntry that holds all the information for an EclipseLink logging event
      * </p>
      */
     public abstract void log(SessionLogEntry sessionLogEntry);
@@ -702,7 +703,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * Print the prefix string representing TopLink logging
+     * Print the prefix string representing EclipseLink logging
      */
 
     //Bug3135111  Prefix strings are not translated until the first time they are used.
