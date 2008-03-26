@@ -219,7 +219,6 @@ public class CopyBookParser {
     private FieldMetaData buildField(StringTokenizer lineTokens) throws Exception {
         FieldMetaData field;
         String fieldName;
-        String nextToken = null;
         boolean redefine = false;
         int arraySize = -1;
         String[] tokens = new String[lineTokens.countTokens()];
