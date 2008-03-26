@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.ArrayList;
@@ -37,8 +37,8 @@ public class TypeNodeValue extends NodeValue {
         if ((null == fieldValue) || (null == namespaceResolver)) {
             return false;
         }
-        XMLField xmlField = (XMLField)directMapping.getField();
-        QName schemaType = getSchemaType(xmlField, fieldValue);
+        XMLField xmlField = (XMLField) directMapping.getField();
+        QName schemaType = getSchemaType(xmlField, fieldValue, session);
         if (null == schemaType) {
             return false;
         }
@@ -58,29 +58,29 @@ public class TypeNodeValue extends NodeValue {
         this.directMapping = directMapping;
     }
 
-    private QName getSchemaType(XMLField xmlField, Object value) {
+    private QName getSchemaType(XMLField xmlField, Object value, AbstractSession session) {
         QName schemaType = null;
         if (xmlField.isTypedTextField()) {
             schemaType = xmlField.getXMLType(value.getClass());
         } else if (xmlField.isUnionField()) {
-            return getSchemaTypeForUnion((XMLUnionField)xmlField, value);
+            return getSchemaTypeForUnion((XMLUnionField) xmlField, value, session);
         } else if (xmlField.getSchemaType() != null) {
             schemaType = xmlField.getSchemaType();
         }
         return schemaType;
     }
 
-    private QName getSchemaTypeForUnion(XMLUnionField xmlField, Object value) {
+    private QName getSchemaTypeForUnion(XMLUnionField xmlField, Object value, AbstractSession session) {
         ArrayList schemaTypes = xmlField.getSchemaTypes();
         QName schemaType = null;
         QName nextQName;
         Class javaClass;
         for (int i = 0; i < schemaTypes.size(); i++) {
-            nextQName = (QName)(xmlField).getSchemaTypes().get(i);
+            nextQName = (QName) (xmlField).getSchemaTypes().get(i);
             try {
                 if (nextQName != null) {
                     javaClass = xmlField.getJavaClass(nextQName);
-                    value = XMLConversionManager.getDefaultXMLManager().convertObject(value, javaClass, nextQName);
+                    value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, javaClass, nextQName);
                     schemaType = nextQName;
                     break;
                 }
@@ -95,7 +95,7 @@ public class TypeNodeValue extends NodeValue {
 
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         //assume this is being called for xsi:type field
-        if(value != null) {
+        if (value != null) {
             String namespace = null;
             int colonIndex = value.indexOf(COLON);
             if (colonIndex > -1) {
@@ -103,7 +103,7 @@ public class TypeNodeValue extends NodeValue {
                 namespace = unmarshalRecord.resolveNamespacePrefix(prefix);
                 value = value.substring(colonIndex + 1);
             }
-            unmarshalRecord.setTypeQName(new QName(namespace, value));            
+            unmarshalRecord.setTypeQName(new QName(namespace, value));
         }
     }
 

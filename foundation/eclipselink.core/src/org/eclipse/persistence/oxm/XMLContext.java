@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm;
 
 import java.util.ArrayList;
@@ -127,7 +127,6 @@ public class XMLContext {
         XMLSessionConfigLoader loader = null;
         if (xmlResource != null) {
             loader = new XMLSessionConfigLoader(xmlResource);
-
         } else {
             loader = new XMLSessionConfigLoader();
         }
@@ -141,7 +140,7 @@ public class XMLContext {
             index++;
         }
         for (int x = index - 1; x >= 0; x--) {
-            storeXMLDescriptorsByQName((DatabaseSession)sessions.get(x));
+            storeXMLDescriptorsByQName((DatabaseSession) sessions.get(x));
         }
     }
 
@@ -152,8 +151,13 @@ public class XMLContext {
      *            A TopLink project
      */
     public XMLContext(Project project) {
+        this(project, Thread.currentThread().getContextClassLoader());
+    }
+
+    public XMLContext(Project project, ClassLoader classLoader) {
         if ((project.getDatasourceLogin() == null) || !(project.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
             XMLPlatform platform = new SAXPlatform();
+            platform.getConversionManager().setLoader(classLoader);
             project.setLogin(new XMLLogin(platform));
         }
         sessions = new ArrayList(1);
@@ -176,9 +180,9 @@ public class XMLContext {
     private DatabaseSession buildSession(String sessionName, ClassLoader classLoader, XMLSessionConfigLoader sessionLoader) throws XMLMarshalException {
         DatabaseSession dbSession;
         if (classLoader != null) {
-            dbSession = (DatabaseSession)SessionManager.getManager().getSession(sessionLoader, sessionName, classLoader, false, true);
+            dbSession = (DatabaseSession) SessionManager.getManager().getSession(sessionLoader, sessionName, classLoader, false, true);
         } else {
-            dbSession = (DatabaseSession)SessionManager.getManager().getSession(sessionLoader, sessionName, PrivilegedAccessHelper.privilegedGetClassLoaderForClass(this.getClass()), false, false, false);
+            dbSession = (DatabaseSession) SessionManager.getManager().getSession(sessionLoader, sessionName, PrivilegedAccessHelper.privilegedGetClassLoaderForClass(this.getClass()), false, false, false);
         }
         if ((dbSession.getDatasourceLogin() == null) || !(dbSession.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
             XMLPlatform platform = new SAXPlatform();
@@ -189,7 +193,7 @@ public class XMLContext {
             List listeners = dbSession.getEventManager().getListeners();
             int listenersSize = listeners.size();
             for (int x = 0; x < listenersSize; x++) {
-                session.getEventManager().addListener((SessionEventListener)listeners.get(x));
+                session.getEventManager().addListener((SessionEventListener) listeners.get(x));
             }
         }
         session.setExceptionHandler(dbSession.getExceptionHandler());
@@ -213,7 +217,7 @@ public class XMLContext {
             List listeners = sessionToAdd.getEventManager().getListeners();
             int listenersSize = listeners.size();
             for (int x = 0; x < listenersSize; x++) {
-                session.getEventManager().addListener((SessionEventListener)listeners.get(x));
+                session.getEventManager().addListener((SessionEventListener) listeners.get(x));
             }
         }
         session.setExceptionHandler(sessionToAdd.getExceptionHandler());
@@ -279,8 +283,8 @@ public class XMLContext {
         }
         int numberOfSessions = sessions.size();
         for (int x = 0; x < numberOfSessions; x++) {
-            AbstractSession next = ((AbstractSession)sessions.get(x));
-            XMLDescriptor xmlDescriptor = (XMLDescriptor)next.getDescriptor(object);
+            AbstractSession next = ((AbstractSession) sessions.get(x));
+            XMLDescriptor xmlDescriptor = (XMLDescriptor) next.getDescriptor(object);
             if (xmlDescriptor != null) {
                 // we don't currently support document preservation
                 // and non-shared cache (via unit of work)
@@ -309,8 +313,8 @@ public class XMLContext {
         }
         int numberOfSessions = sessions.size();
         for (int x = 0; x < numberOfSessions; x++) {
-            AbstractSession next = ((AbstractSession)sessions.get(x));
-            XMLDescriptor xmlDescriptor = (XMLDescriptor)next.getDescriptor(clazz);
+            AbstractSession next = ((AbstractSession) sessions.get(x));
+            XMLDescriptor xmlDescriptor = (XMLDescriptor) next.getDescriptor(clazz);
             if (xmlDescriptor != null) {
                 // we don't currently support document preservation
                 // and non-shared cache (via unit of work)
@@ -339,7 +343,7 @@ public class XMLContext {
         }
         int numberOfSessions = sessions.size();
         for (int x = 0; x < numberOfSessions; x++) {
-            AbstractSession next = ((AbstractSession)sessions.get(x));
+            AbstractSession next = ((AbstractSession) sessions.get(x));
             if (next.getProject().getOrderedDescriptors().contains(xmlDescriptor)) {
                 // we don't currently support document preservation
                 // and non-shared cache (via unit of work)
@@ -369,7 +373,7 @@ public class XMLContext {
         if (null == sessions) {
             return null;
         }
-        return (DatabaseSession)sessions.get(index);
+        return (DatabaseSession) sessions.get(index);
     }
 
     /**
@@ -383,7 +387,7 @@ public class XMLContext {
         }
         int numberOfSessions = sessions.size();
         for (int x = 0; x < numberOfSessions; x++) {
-            AbstractSession next = ((AbstractSession)sessions.get(x));
+            AbstractSession next = ((AbstractSession) sessions.get(x));
             if (next.getDescriptor(object) != null) {
                 return next;
             }
@@ -402,7 +406,7 @@ public class XMLContext {
         }
         int numberOfSessions = sessions.size();
         for (int x = 0; x < numberOfSessions; x++) {
-            AbstractSession next = ((AbstractSession)sessions.get(x));
+            AbstractSession next = ((AbstractSession) sessions.get(x));
             if (next.getDescriptor(clazz) != null) {
                 return next;
             }
@@ -421,7 +425,7 @@ public class XMLContext {
         }
         int numberOfSessions = sessions.size();
         for (int x = 0; x < numberOfSessions; x++) {
-            AbstractSession next = ((AbstractSession)sessions.get(x));
+            AbstractSession next = ((AbstractSession) sessions.get(x));
             if (next.getProject().getOrderedDescriptors().contains(xmlDescriptor)) {
                 return next;
             }
@@ -432,7 +436,7 @@ public class XMLContext {
     private void storeXMLDescriptorsByQName(DatabaseSession session) {
         Iterator iterator = session.getProject().getOrderedDescriptors().iterator();
         while (iterator.hasNext()) {
-            XMLDescriptor xmlDescriptor = (XMLDescriptor)iterator.next();
+            XMLDescriptor xmlDescriptor = (XMLDescriptor) iterator.next();
             storeXMLDescriptorByQName(xmlDescriptor);
         }
     }
@@ -446,7 +450,7 @@ public class XMLContext {
 
         Vector tableNames = xmlDescriptor.getTableNames();
         for (int i = 0; i < tableNames.size(); i++) {
-            defaultRootName = (String)tableNames.get(i);
+            defaultRootName = (String) tableNames.get(i);
 
             if (null != defaultRootName) {
                 int index = defaultRootName.indexOf(':');
@@ -462,7 +466,7 @@ public class XMLContext {
                     descriptorsByQName.put(descriptorQName, xmlDescriptor);
                 } else {
                     //this means we have a descriptor that is a child in an inheritance hierarchy
-                    XMLDescriptor existingDescriptor = (XMLDescriptor)descriptorsByQName.get(descriptorQName);
+                    XMLDescriptor existingDescriptor = (XMLDescriptor) descriptorsByQName.get(descriptorQName);
                     if (existingDescriptor == null) {
                         descriptorsByQName.put(descriptorQName, xmlDescriptor);
                     }
@@ -491,7 +495,7 @@ public class XMLContext {
      * the QName paramater.
      */
     public XMLDescriptor getDescriptor(QName qName) {
-        return (XMLDescriptor)descriptorsByQName.get(qName);
+        return (XMLDescriptor) descriptorsByQName.get(qName);
     }
 
     /**
@@ -499,7 +503,7 @@ public class XMLContext {
      * XPathFragment parameter.
      */
     public XMLDescriptor getDescriptorByGlobalType(XPathFragment xPathFragment) {
-        return (XMLDescriptor)this.descriptorsByGlobalType.get(xPathFragment);
+        return (XMLDescriptor) this.descriptorsByGlobalType.get(xPathFragment);
     }
 
     /**
@@ -509,16 +513,16 @@ public class XMLContext {
      * @return
      */
     public DocumentPreservationPolicy getDocumentPreservationPolicy(AbstractSession session) {
-        XMLLogin login = (XMLLogin)session.getDatasourceLogin();
+        XMLLogin login = (XMLLogin) session.getDatasourceLogin();
         return login.getDocumentPreservationPolicy();
     }
 
     public void setupDocumentPreservationPolicy(DatabaseSession session) {
-        XMLLogin login = (XMLLogin)session.getDatasourceLogin();
+        XMLLogin login = (XMLLogin) session.getDatasourceLogin();
         if (login.getDocumentPreservationPolicy() == null) {
             Iterator iterator = session.getProject().getOrderedDescriptors().iterator();
             while (iterator.hasNext()) {
-                XMLDescriptor xmlDescriptor = (XMLDescriptor)iterator.next();
+                XMLDescriptor xmlDescriptor = (XMLDescriptor) iterator.next();
                 if (xmlDescriptor.shouldPreserveDocument()) {
                     login.setDocumentPreservationPolicy(new DescriptorLevelDocumentPreservationPolicy(this));
                     break;

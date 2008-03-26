@@ -9,44 +9,45 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.ArrayList;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnionField;
 
 public abstract class XMLSimpleMappingNodeValue extends NodeValue {
     protected String getValueToWrite(QName schemaType, Object value, XMLConversionManager xmlConversionManager) {
-        return (String)xmlConversionManager.convertObject(value, ClassConstants.STRING, schemaType);
+        return (String) xmlConversionManager.convertObject(value, ClassConstants.STRING, schemaType);
     }
 
-    protected QName getSchemaType(XMLField xmlField, Object value) {
+    protected QName getSchemaType(XMLField xmlField, Object value, AbstractSession session) {
         QName schemaType = null;
         if (xmlField.isTypedTextField()) {
             schemaType = xmlField.getXMLType(value.getClass());
         } else if (xmlField.isUnionField()) {
-            return getSingleValueToWriteForUnion((XMLUnionField)xmlField, value);
+            return getSingleValueToWriteForUnion((XMLUnionField) xmlField, value, session);
         } else if (xmlField.getSchemaType() != null) {
             schemaType = xmlField.getSchemaType();
         }
         return schemaType;
     }
 
-    protected QName getSingleValueToWriteForUnion(XMLUnionField xmlField, Object value) {
+    protected QName getSingleValueToWriteForUnion(XMLUnionField xmlField, Object value, AbstractSession session) {
         ArrayList schemaTypes = xmlField.getSchemaTypes();
         QName schemaType = null;
         QName nextQName;
         Class javaClass;
         for (int i = 0; i < schemaTypes.size(); i++) {
-            nextQName = (QName)(xmlField).getSchemaTypes().get(i);
+            nextQName = (QName) (xmlField).getSchemaTypes().get(i);
             try {
                 if (nextQName != null) {
                     javaClass = xmlField.getJavaClass(nextQName);
-                    value = XMLConversionManager.getDefaultXMLManager().convertObject(value, javaClass, nextQName);
+                    value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, javaClass, nextQName);
                     schemaType = nextQName;
                     break;
                 }

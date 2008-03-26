@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings;
 
 import java.util.ArrayList;
@@ -24,7 +24,6 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.Namespace;
-import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
@@ -104,7 +103,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     public Object clone() {
         // Bug 3037701 - clone the AttributeAccessor
         XMLAnyAttributeMapping mapping = null;
-        mapping = (XMLAnyAttributeMapping)super.clone();
+        mapping = (XMLAnyAttributeMapping) super.clone();
         mapping.setContainerPolicy(this.getContainerPolicy());
         mapping.setField(this.getField());
         return mapping;
@@ -155,7 +154,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         }
         ContainerPolicy cp = getContainerPolicy();
         if (cp != null && cp.getContainerClass() == null) {
-            Class cls = ConversionManager.getDefaultManager().convertClassNameToClass(cp.getContainerClassName());
+            Class cls = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(cp.getContainerClassName());
             cp.setContainerClass(cls);
         }
     }
@@ -192,43 +191,43 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         if (!cp.isDirectMapPolicy()) {
             throw DescriptorException.invalidContainerPolicy(cp, this.getClass());
         }
-        this.containerPolicy = (DirectMapContainerPolicy)cp;
+        this.containerPolicy = (DirectMapContainerPolicy) cp;
     }
 
     public void setField(DatabaseField field) {
-        this.field = (XMLField)field;
+        this.field = (XMLField) field;
     }
 
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
-        XMLRecord record = (XMLRecord)row;
+        XMLRecord record = (XMLRecord) row;
 
         if (getField() != null) {
             //Get the nested row represented by this field to build the collection from
             Object nested = record.get(getField());
             if (nested instanceof Vector) {
-                nested = ((Vector)nested).firstElement();
+                nested = ((Vector) nested).firstElement();
             }
             if (!(nested instanceof XMLRecord)) {
                 return null;
             }
-            record = (XMLRecord)nested;
+            record = (XMLRecord) nested;
         }
-        return buildObjectValuesFromDOMRecord((DOMRecord)record, executionSession, sourceQuery);
+        return buildObjectValuesFromDOMRecord((DOMRecord) record, executionSession, sourceQuery);
     }
 
     private Object buildObjectValuesFromDOMRecord(DOMRecord record, AbstractSession session, ObjectBuildingQuery query) {
         //This DOMRecord represents the root node of the AnyType instance
         //Grab ALL children to populate the collection.
-        DirectMapContainerPolicy cp = (DirectMapContainerPolicy)getContainerPolicy();
+        DirectMapContainerPolicy cp = (DirectMapContainerPolicy) getContainerPolicy();
         Object container = cp.containerInstance();
-        org.w3c.dom.Element root = (Element)record.getDOM();
+        org.w3c.dom.Element root = (Element) record.getDOM();
         NamedNodeMap attributes = root.getAttributes();
         Attr next;
         String localName;
         for (int i = 0; i < attributes.getLength(); i++) {
-            next = (Attr)attributes.item(i);
+            next = (Attr) attributes.item(i);
             localName = next.getLocalName();
-            if(null == localName) {
+            if (null == localName) {
                 localName = next.getName();
             }
             QName key = new QName(next.getNamespaceURI(), localName);
@@ -253,14 +252,14 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
             return;
         }
         Object attributeValue = this.getAttributeValueFromObject(object);
-        writeSingleValue(attributeValue, object, (XMLRecord)row, session);
+        writeSingleValue(attributeValue, object, (XMLRecord) row, session);
     }
 
     protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord parentRow) {
-        XMLDescriptor referenceDescriptor = (XMLDescriptor)session.getDescriptor(attributeValue.getClass());
+        XMLDescriptor referenceDescriptor = (XMLDescriptor) session.getDescriptor(attributeValue.getClass());
         if ((referenceDescriptor != null) && (referenceDescriptor.getDefaultRootElement() != null)) {
-            XMLObjectBuilder objectBuilder = (XMLObjectBuilder)referenceDescriptor.getObjectBuilder();
-            return objectBuilder.buildRow(attributeValue, session, referenceDescriptor.buildField(referenceDescriptor.getDefaultRootElement()), (XMLRecord)parentRow);
+            XMLObjectBuilder objectBuilder = (XMLObjectBuilder) referenceDescriptor.getObjectBuilder();
+            return objectBuilder.buildRow(attributeValue, session, referenceDescriptor.buildField(referenceDescriptor.getDefaultRootElement()), (XMLRecord) parentRow);
         }
         return null;
     }
@@ -279,19 +278,20 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         }
         this.containerPolicy.setContainerClass(concreteMapClass);
     }
+
     public void writeSingleValue(Object attributeValue, Object parent, XMLRecord row, AbstractSession session) {
-        DirectMapContainerPolicy cp = (DirectMapContainerPolicy)this.getContainerPolicy();
+        DirectMapContainerPolicy cp = (DirectMapContainerPolicy) this.getContainerPolicy();
         if ((attributeValue == null) || (cp.sizeFor(attributeValue) == 0)) {
             return;
         }
-        DOMRecord record = (DOMRecord)row;
-        if(record.getDOM().getNodeType() != Node.ELEMENT_NODE) {
+        DOMRecord record = (DOMRecord) row;
+        if (record.getDOM().getNodeType() != Node.ELEMENT_NODE) {
             return;
         }
-        Element root = (Element)record.getDOM();
+        Element root = (Element) record.getDOM();
 
         if (field != null) {
-            root = (Element)XPathEngine.getInstance().create((XMLField)getField(), root);
+            root = (Element) XPathEngine.getInstance().create((XMLField) getField(), root);
         }
         List extraNamespaces = new ArrayList();
         NamespaceResolver nr = row.getNamespaceResolver();
@@ -299,20 +299,20 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
             Object key = cp.next(iter, session);
             if ((key != null) && key instanceof QName) {
                 Object value = cp.valueFromKey(key, attributeValue);
-                QName attributeName = (QName)key;
+                QName attributeName = (QName) key;
                 String namespaceURI = attributeName.getNamespaceURI();
                 String qualifiedName = attributeName.getLocalPart();
-                                
+
                 if (nr != null) {
                     String prefix = nr.resolveNamespaceURI(attributeName.getNamespaceURI());
                     if ((prefix != null) && !prefix.equals("")) {
                         qualifiedName = prefix + ":" + qualifiedName;
-                    }else if(attributeName.getNamespaceURI() != null && !attributeName.getNamespaceURI().equals("")){
+                    } else if (attributeName.getNamespaceURI() != null && !attributeName.getNamespaceURI().equals("")) {
                         String generatedPrefix = nr.generatePrefix();
                         qualifiedName = generatedPrefix + ":" + qualifiedName;
-                        nr.put(generatedPrefix,attributeName.getNamespaceURI());
-                        extraNamespaces.add(new Namespace(generatedPrefix,attributeName.getNamespaceURI()));                  
-                        row.getNamespaceResolver().put(generatedPrefix,attributeName.getNamespaceURI());                    
+                        nr.put(generatedPrefix, attributeName.getNamespaceURI());
+                        extraNamespaces.add(new Namespace(generatedPrefix, attributeName.getNamespaceURI()));
+                        row.getNamespaceResolver().put(generatedPrefix, attributeName.getNamespaceURI());
                     }
                 }
                 if (namespaceURI != null) {
@@ -322,10 +322,10 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
                 }
             }
         }
-        ((XMLObjectBuilder)descriptor.getObjectBuilder()).writeExtraNamespaces(extraNamespaces, row);
-        ((XMLObjectBuilder)descriptor.getObjectBuilder()).removeExtraNamespacesFromNamespaceResolver(row, extraNamespaces, session);
+        ((XMLObjectBuilder) descriptor.getObjectBuilder()).writeExtraNamespaces(extraNamespaces, row);
+        ((XMLObjectBuilder) descriptor.getObjectBuilder()).removeExtraNamespacesFromNamespaceResolver(row, extraNamespaces, session);
     }
-    
+
     /**
      * INTERNAL:
      * Indicates the Map class to be used.  

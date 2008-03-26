@@ -531,7 +531,7 @@ public class XMLField extends DatabaseField {
                 return (Class)userXMLTypes.get(qname);
             }
         }
-        return (Class)XMLConversionManager.getDefaultXMLManager().getDefaultXMLTypes().get(qname);
+        return (Class)XMLConversionManager.getDefaultXMLTypes().get(qname);
     }
 
     /**
@@ -546,7 +546,7 @@ public class XMLField extends DatabaseField {
             }
         }
 
-        return (QName)XMLConversionManager.getDefaultXMLManager().getDefaultJavaTypes().get(javaClass);
+        return (QName)XMLConversionManager.getDefaultJavaTypes().get(javaClass);
     }
 
     /**

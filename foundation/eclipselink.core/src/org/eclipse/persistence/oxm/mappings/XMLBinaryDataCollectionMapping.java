@@ -9,16 +9,14 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings;
 
 import java.util.Enumeration;
 import java.util.Vector;
 import javax.activation.DataHandler;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
@@ -37,7 +35,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.queries.ObjectBuildingQuery;;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
 /**
  * <p><b>Purpose:</b>Provide a mapping for a collection of binary data values that can be treated
@@ -156,20 +154,20 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
     }
 
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
-        XMLRecord record = (XMLRecord)row;
+        XMLRecord record = (XMLRecord) row;
         XMLMarshaller marshaller = record.getMarshaller();
         Object attributeValue = getAttributeValueFromObject(object);
 
         ContainerPolicy cp = this.getContainerPolicy();
         Vector elements = new Vector(cp.sizeFor(attributeValue));
-        XMLField field = (XMLField)getField();
+        XMLField field = (XMLField) getField();
         NamespaceResolver resolver = field.getNamespaceResolver();
         boolean isAttribute = field.getLastXPathFragment().isAttribute();
         String prefix = null;
         XMLField includeField = null;
         if (!isAttribute) {
             if ((marshaller.getAttachmentMarshaller() != null) && marshaller.getAttachmentMarshaller().isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
-                field = (XMLField)getField();
+                field = (XMLField) getField();
 
                 // If the field's resolver is non-null and has an entry for XOP, 
                 // use it - otherwise, create a new resolver, set the XOP entry, 
@@ -212,11 +210,11 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
     public Object getValueToWrite(Object value, Object parent, XMLRecord record, XMLField field, XMLField includeField, AbstractSession session) {
         XMLMarshaller marshaller = record.getMarshaller();
         Object element = value;
-        boolean isAttribute = ((XMLField)getField()).getLastXPathFragment().isAttribute();
+        boolean isAttribute = ((XMLField) getField()).getLastXPathFragment().isAttribute();
         if (getValueConverter() != null) {
             Converter converter = getValueConverter();
             if (converter instanceof XMLConverter) {
-                element = ((XMLConverter)converter).convertObjectValueToDataValue(element, session, record.getMarshaller());
+                element = ((XMLConverter) converter).convertObjectValueToDataValue(element, session, record.getMarshaller());
             } else {
                 element = converter.convertObjectValueToDataValue(element, session);
             }
@@ -226,9 +224,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
             if (isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
                 //should be a DataHandler here
                 try {
-                    String id = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler)element);
-
-                    //row.put(field, value);
+                    String id = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler) element);
                     element = id;
                 } catch (ClassCastException cce) {
                     throw XMLMarshalException.invalidSwaRefAttribute(getAttributeClassification().getName());
@@ -236,12 +232,8 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
             } else {
                 //inline case
                 XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(element, record.getMarshaller(), mimeTypePolicy.getMimeType(parent));
-                String base64Value = XMLConversionManager.getDefaultXMLManager().buildBase64StringFromBytes(data.getData());
-
+                String base64Value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).buildBase64StringFromBytes(data.getData());
                 element = base64Value;
-
-                //MODIFIED
-                //row.put(field, base64Value);
             }
         } else {
             if ((marshaller.getAttachmentMarshaller() != null) && marshaller.getAttachmentMarshaller().isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
@@ -249,11 +241,12 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                 String c_id = "";
                 if ((getCollectionContentType() == ClassConstants.ABYTE) || (getCollectionContentType() == ClassConstants.APBYTE)) {
                     if (getCollectionContentType() == ClassConstants.ABYTE) {
-                        element = XMLConversionManager.getDefaultXMLManager().convertObject(element, ClassConstants.APBYTE);
+                        element = session.getDatasourcePlatform().getConversionManager().convertObject(element, ClassConstants.APBYTE);
                     }
-                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((byte[])element, 0, ((byte[])element).length, this.mimeTypePolicy.getMimeType(parent), field.getLastXPathFragment().getLocalName(), field.getLastXPathFragment().getNamespaceURI());
+                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((byte[]) element, 0, ((byte[]) element).length, this.mimeTypePolicy.getMimeType(parent), field.getLastXPathFragment().getLocalName(),
+                            field.getLastXPathFragment().getNamespaceURI());
                 } else if (getCollectionContentType() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
-                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler)element, field.getLastXPathFragment().getLocalName(), field.getLastXPathFragment().getNamespaceURI());
+                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler) element, field.getLastXPathFragment().getLocalName(), field.getLastXPathFragment().getNamespaceURI());
                 } else {
                     XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(element, marshaller, this.mimeTypePolicy.getMimeType(parent));
                     byte[] bytes = data.getData();
@@ -262,27 +255,27 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                 DOMRecord include = new DOMRecord(field.getLastXPathFragment().getLocalName());
                 include.put(includeField, c_id);
                 element = include;
-                
+
                 // Need to call setAttributeNS on the record, unless the xop prefix
                 // is defined on the descriptor's resolver already
                 NamespaceResolver resolver = ((XMLField) getField()).getNamespaceResolver();
                 if (resolver == null || resolver.resolveNamespaceURI(XMLConstants.XOP_URL) == null) {
                     resolver = new NamespaceResolver();
                     resolver.put(XMLConstants.XOP_PREFIX, XMLConstants.XOP_URL);
-                    String xpath = XMLConstants.XOP_PREFIX+":"+INCLUDE;
+                    String xpath = XMLConstants.XOP_PREFIX + ":" + INCLUDE;
                     XMLField incField = new XMLField(xpath);
                     incField.setNamespaceResolver(resolver);
                     Object obj = include.getIndicatingNoEntry(incField);
                     if (obj != null && obj instanceof DOMRecord) {
-                        if(((DOMRecord)obj).getDOM().getNodeType() == Node.ELEMENT_NODE) {
-                            ((Element)((DOMRecord)obj).getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + XMLConstants.XOP_PREFIX, XMLConstants.XOP_URL);
+                        if (((DOMRecord) obj).getDOM().getNodeType() == Node.ELEMENT_NODE) {
+                            ((Element) ((DOMRecord) obj).getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + XMLConstants.XOP_PREFIX, XMLConstants.XOP_URL);
                         }
                     }
                 }
             } else if (isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
                 //element should be a data-handler
                 try {
-                    String c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler)element);
+                    String c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler) element);
                     element = c_id;
                 } catch (Exception ex) {
                 }
@@ -298,14 +291,14 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
 
     public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session) {
         XMLMarshaller marshaller = record.getMarshaller();
-        XMLField field = (XMLField)getField();
+        XMLField field = (XMLField) getField();
         NamespaceResolver resolver = field.getNamespaceResolver();
         boolean isAttribute = field.getLastXPathFragment().isAttribute();
         String prefix = null;
         XMLField includeField = null;
         if (!isAttribute) {
             if ((marshaller.getAttachmentMarshaller() != null) && marshaller.getAttachmentMarshaller().isXOPPackage() && !isSwaRef() && !shouldInlineBinaryData()) {
-                field = (XMLField)getField();
+                field = (XMLField) getField();
 
                 // If the field's resolver is non-null and has an entry for XOP, 
                 // use it - otherwise, create a new resolver, set the XOP entry, 
@@ -321,7 +314,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                     resolver = new NamespaceResolver();
                     resolver.put(prefix, XMLConstants.XOP_URL);
                 }
-                
+
                 includeField = new XMLField(prefix + ":" + INCLUDE + "/@href");
                 includeField.setNamespaceResolver(resolver);
             } else {
@@ -334,7 +327,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         Object valueToWrite = getValueToWrite(value, parent, record, field, includeField, session);
         record.add(field, valueToWrite);
     }
-    
+
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
         ContainerPolicy cp = this.getContainerPolicy();
 
@@ -355,25 +348,25 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
             // PERF: Direct variable access.
             //Object value = row.get(field);
             //Object fieldValue = null;
-            XMLUnmarshaller unmarshaller = ((XMLRecord)row).getUnmarshaller();
+            XMLUnmarshaller unmarshaller = ((XMLRecord) row).getUnmarshaller();
             if (element instanceof String) {
                 if (this.isSwaRef() && (unmarshaller.getAttachmentUnmarshaller() != null)) {
-                    fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler((String)element);
+                    fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler((String) element);
                 } else if (!this.isSwaRef()) {
                     //should be base64
-                    byte[] bytes = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(element);
+                    byte[] bytes = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(element);
                     fieldValue = bytes;
                 }
             } else {
                 //this was an element, so do the XOP/SWAREF/Inline binary cases for an element
-                XMLRecord record = (XMLRecord)element;
+                XMLRecord record = (XMLRecord) element;
 
                 if ((unmarshaller.getAttachmentUnmarshaller() != null) && unmarshaller.getAttachmentUnmarshaller().isXOPPackage() && !this.isSwaRef() && !this.shouldInlineBinaryData()) {
                     //look for the include element:
                     String xpath = "";
 
                     //  need a prefix for XOP
-                    NamespaceResolver resolver = ((XMLDescriptor)getDescriptor()).getNamespaceResolver();
+                    NamespaceResolver resolver = ((XMLDescriptor) getDescriptor()).getNamespaceResolver();
                     String prefix = null;
                     if (resolver != null) {
                         prefix = resolver.resolveNamespaceURI(XMLConstants.XOP_URL);
@@ -389,7 +382,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                     xpath = prefix + ":" + INCLUDE + "/@href";
                     XMLField field = new XMLField(xpath);
                     field.setNamespaceResolver(resolver);
-                    String includeValue = (String)record.get(field);
+                    String includeValue = (String) record.get(field);
                     if (element != null) {
                         if ((getCollectionContentType() == ClassConstants.ABYTE) || (getCollectionContentType() == ClassConstants.APBYTE)) {
                             fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsByteArray(includeValue);
@@ -398,27 +391,27 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                         }
                     }
                 } else if ((unmarshaller.getAttachmentUnmarshaller() != null) && isSwaRef()) {
-                    String refValue = (String)record.get("text()");
+                    String refValue = (String) record.get("text()");
                     if (refValue != null) {
                         fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(refValue);
                     }
                 } else {
                     fieldValue = record.get("text()");
                     //should be a base64 string
-                    fieldValue = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(fieldValue);
+                    fieldValue = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(fieldValue);
                 }
             }
             Object attributeValue = fieldValue;
             if (getValueConverter() != null) {
                 if (getValueConverter() instanceof XMLConverter) {
-                    attributeValue = ((XMLConverter)getValueConverter()).convertDataValueToObjectValue(fieldValue, executionSession, unmarshaller);
+                    attributeValue = ((XMLConverter) getValueConverter()).convertDataValueToObjectValue(fieldValue, executionSession, unmarshaller);
                 } else {
                     attributeValue = getValueConverter().convertDataValueToObjectValue(fieldValue, executionSession);
                 }
             }
 
             if (collectionContentType != null) {
-                attributeValue = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(attributeValue, collectionContentType);
+                attributeValue = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(attributeValue, collectionContentType, executionSession);
             }
             cp.addInto(attributeValue, result, query.getSession());
             //return attributeValue;

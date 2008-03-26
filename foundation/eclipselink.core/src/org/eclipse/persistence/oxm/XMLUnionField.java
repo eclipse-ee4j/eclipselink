@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm;
 
 import java.util.ArrayList;
@@ -105,7 +105,7 @@ public class XMLUnionField extends XMLField {
       */
     public QName getSchemaType() {
         if (schemaTypes != null) {
-            return (QName)getSchemaTypes().get(0);
+            return (QName) getSchemaTypes().get(0);
         }
         return null;
     }
@@ -130,7 +130,7 @@ public class XMLUnionField extends XMLField {
         Iterator it = types.iterator();
 
         while (it.hasNext()) {
-            type = (QName)it.next();
+            type = (QName) it.next();
             if (type.equals(value)) {
                 return true;
             }
@@ -153,7 +153,7 @@ public class XMLUnionField extends XMLField {
     public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager) {
         Object convertedValue = value;
         for (int i = 0; i < schemaTypes.size(); i++) {
-            QName nextQName = (QName)schemaTypes.get(i);
+            QName nextQName = (QName) schemaTypes.get(i);
             try {
                 if (nextQName != null) {
                     Class javaClass = getType();
@@ -179,10 +179,10 @@ public class XMLUnionField extends XMLField {
     public Class getJavaClass(QName qname) {
         if (userXMLTypes != null) {
             if (userXMLTypes.containsKey(qname)) {
-                return (Class)userXMLTypes.get(qname);
+                return (Class) userXMLTypes.get(qname);
             }
         }
-        Class javaClass = (Class)XMLConversionManager.getDefaultXMLManager().getDefaultXMLTypes().get(qname);
+        Class javaClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qname);
         return XMLConversionManager.getObjectClass(javaClass);
     }
 }

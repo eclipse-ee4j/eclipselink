@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings;
 
 import java.lang.reflect.Modifier;
@@ -26,7 +26,6 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -158,7 +157,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     public void initialize(AbstractSession session) throws DescriptorException {
         //modified so that reference class on composite mappings is no longer mandatory
         if ((getReferenceClass() == null) && (getReferenceClassName() != null)) {
-            setReferenceClass(ConversionManager.getDefaultManager().convertClassNameToClass(getReferenceClassName()));
+            setReferenceClass(session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(getReferenceClassName()));
         }
         if (getReferenceClass() != null) {
             super.initialize(session);
@@ -177,11 +176,11 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         ContainerPolicy cp = getContainerPolicy();
         if (cp != null) {
             if (cp.getContainerClass() == null) {
-                Class cls = ConversionManager.getDefaultManager().convertClassNameToClass(cp.getContainerClassName());
+                Class cls = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(cp.getContainerClassName());
                 cp.setContainerClass(cls);
             }
             if (cp instanceof MapContainerPolicy) {
-                ((MapContainerPolicy)cp).setElementClass(this.getReferenceClass());
+                ((MapContainerPolicy) cp).setElementClass(this.getReferenceClass());
             }
         }
     }
@@ -210,15 +209,15 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
 
     protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, AbstractRecord parentRow) {
         ClassDescriptor classDesc = getReferenceDescriptor(attributeValue, session);
-        XMLObjectBuilder objectBuilder = (XMLObjectBuilder)classDesc.getObjectBuilder();
-        XMLField xmlFld = (XMLField)getField();
+        XMLObjectBuilder objectBuilder = (XMLObjectBuilder) classDesc.getObjectBuilder();
+        XMLField xmlFld = (XMLField) getField();
         if (xmlFld.hasLastXPathFragment() && xmlFld.getLastXPathFragment().hasLeafElementType()) {
-            XMLRecord xmlRec = (XMLRecord)parentRow;
+            XMLRecord xmlRec = (XMLRecord) parentRow;
             xmlRec.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
         }
-        XMLRecord parent = (XMLRecord)parentRow;
-        boolean addXsiType = shouldAddXsiType((XMLRecord)parentRow, classDesc);
-        XMLRecord child = (XMLRecord)objectBuilder.createRecordFor(attributeValue, (XMLField)getField(), parent, this);
+        XMLRecord parent = (XMLRecord) parentRow;
+        boolean addXsiType = shouldAddXsiType((XMLRecord) parentRow, classDesc);
+        XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parent, this);
         child.setNamespaceResolver(parent.getNamespaceResolver());
         objectBuilder.buildIntoNestedRow(child, attributeValue, session, addXsiType);
         return child;
@@ -246,7 +245,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             // convert the value - if necessary
             if (hasConverter()) {
                 if (getConverter() instanceof XMLConverter) {
-                    element = ((XMLConverter)getConverter()).convertObjectValueToDataValue(element, session, ((XMLRecord)row).getMarshaller());
+                    element = ((XMLConverter) getConverter()).convertObjectValueToDataValue(element, session, ((XMLRecord) row).getMarshaller());
                 } else {
                     element = getConverter().convertObjectValueToDataValue(element, session);
                 }
@@ -260,6 +259,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
         row.put(this.getField(), fieldValue);
     }
+
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         ContainerPolicy cp = this.getContainerPolicy();
 
@@ -277,21 +277,21 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
 
         Object result = cp.containerInstance(nestedRows.size());
         for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
-            AbstractRecord nestedRow = (AbstractRecord)stream.nextElement();
+            AbstractRecord nestedRow = (AbstractRecord) stream.nextElement();
 
-            ClassDescriptor aDescriptor = getReferenceDescriptor((DOMRecord)nestedRow);
+            ClassDescriptor aDescriptor = getReferenceDescriptor((DOMRecord) nestedRow);
             if (aDescriptor.hasInheritance()) {
                 Class newElementClass = aDescriptor.getInheritancePolicy().classFromRow(nestedRow, executionSession);
                 if (newElementClass == null) {
                     // no xsi:type attribute - look for type indicator on the field
-                    QName leafElementType = ((XMLField)getField()).getLeafElementType();
+                    QName leafElementType = ((XMLField) getField()).getLeafElementType();
                     if (leafElementType != null) {
                         Object indicator = aDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
                         // if the inheritance policy does not contain the user-set type, throw an exception
                         if (indicator == null) {
                             throw DescriptorException.missingClassForIndicatorFieldValue(leafElementType, aDescriptor.getInheritancePolicy().getDescriptor());
                         }
-                        newElementClass = (Class)indicator;
+                        newElementClass = (Class) indicator;
                     }
                 }
                 if (newElementClass != null) {
@@ -309,7 +309,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             Object element = buildCompositeObject(aDescriptor, nestedRow, sourceQuery, joinManager);
             if (hasConverter()) {
                 if (getConverter() instanceof XMLConverter) {
-                    element = ((XMLConverter)getConverter()).convertDataValueToObjectValue(element, executionSession, ((XMLRecord)nestedRow).getUnmarshaller());
+                    element = ((XMLConverter) getConverter()).convertDataValueToObjectValue(element, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());
                 } else {
                     element = getConverter().convertDataValueToObjectValue(element, executionSession);
                 }
@@ -324,7 +324,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
 
         if (returnDescriptor == null) {
             // Try to find a descriptor based on the schema type
-            String type = ((Element)xmlRecord.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            String type = ((Element) xmlRecord.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
 
             if ((null != type) && !type.equals("")) {
                 XPathFragment typeFragment = new XPathFragment(type);
@@ -335,14 +335,14 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
 
             } else {
                 //try leaf element type
-                QName leafType = ((XMLField)getField()).getLastXPathFragment().getLeafElementType();
+                QName leafType = ((XMLField) getField()).getLastXPathFragment().getLeafElementType();
                 if (leafType != null) {
                     XPathFragment frag = new XPathFragment();
                     String xpath = leafType.getLocalPart();
                     String uri = leafType.getNamespaceURI();
                     if ((uri != null) && !uri.equals("")) {
                         frag.setNamespaceURI(uri);
-                        String prefix = ((XMLDescriptor)getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
+                        String prefix = ((XMLDescriptor) getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
                         if ((prefix != null) && !prefix.equals("")) {
                             xpath = prefix + ":" + xpath;
                         }
@@ -373,16 +373,16 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
     }
 
-
     /**
      * INTERNAL:
      */
     public boolean shouldAddXsiType(XMLRecord record, ClassDescriptor descriptor) {
-        XMLDescriptor xmlDescriptor = (XMLDescriptor)descriptor;
+        XMLDescriptor xmlDescriptor = (XMLDescriptor) descriptor;
         if ((getReferenceDescriptor() == null) && (xmlDescriptor.getSchemaReference() != null)) {
             if (descriptor.hasInheritance()) {
-                XMLField indicatorField = (XMLField)descriptor.getInheritancePolicy().getClassIndicatorField();
-                if ((indicatorField.getLastXPathFragment().getNamespaceURI() != null) && indicatorField.getLastXPathFragment().getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL) && indicatorField.getLastXPathFragment().getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)) {
+                XMLField indicatorField = (XMLField) descriptor.getInheritancePolicy().getClassIndicatorField();
+                if ((indicatorField.getLastXPathFragment().getNamespaceURI() != null) && indicatorField.getLastXPathFragment().getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL)
+                        && indicatorField.getLastXPathFragment().getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)) {
                     return false;
                 }
             }
@@ -390,7 +390,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
             if ((xmlRef.getType() == XMLSchemaReference.COMPLEX_TYPE) && xmlRef.isGlobalDefinition()) {
                 QName ctxQName = xmlRef.getSchemaContextAsQName(xmlDescriptor.getNamespaceResolver());
-                QName leafType = ((XMLField)getField()).getLeafElementType();
+                QName leafType = ((XMLField) getField()).getLeafElementType();
 
                 if ((leafType == null) || (!ctxQName.equals(record.getLeafElementType()))) {
                     return true;
@@ -399,16 +399,17 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
         }
         return false;
     }
+
     public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session) {
         Object element = value;
         if (hasConverter()) {
             if (getConverter() instanceof XMLConverter) {
-                element = ((XMLConverter)getConverter()).convertObjectValueToDataValue(element, session, record.getMarshaller());
+                element = ((XMLConverter) getConverter()).convertObjectValueToDataValue(element, session, record.getMarshaller());
             } else {
                 element = getConverter().convertObjectValueToDataValue(element, session);
             }
         }
-        XMLRecord nestedRow = (XMLRecord)buildCompositeRow(element, session, record);
+        XMLRecord nestedRow = (XMLRecord) buildCompositeRow(element, session, record);
         record.add(getField(), nestedRow);
     }
 }

@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.List;
@@ -60,9 +60,6 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         if (xmlAnyCollectionMapping.isReadOnly()) {
             return false;
         }
-        XMLDescriptor descriptor;
-        TreeObjectBuilder objectBuilder;
-        AbstractSession childSession;
         ContainerPolicy cp = xmlAnyCollectionMapping.getContainerPolicy();
         Object collection = xmlAnyCollectionMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (null == collection) {
@@ -177,11 +174,11 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             workingDescriptor = null;
         } else {
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
-            
-            UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyCollectionMapping.getKeepAsElementPolicy();         
+
+            UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyCollectionMapping.getKeepAsElementPolicy();
             if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() != 0)) {
-               //Grab the fragment and put it into the collection
-               unmarshalRecord.addAttributeValue(this, builder.getNodes().pop());
+                //Grab the fragment and put it into the collection
+                unmarshalRecord.addAttributeValue(this, builder.getNodes().pop());
             } else {
                 //TEXT VALUE
                 endElementProcessText(unmarshalRecord, collection, xPathFragment);
@@ -203,10 +200,9 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         if (!EMPTY_STRING.equals(value) && xmlAnyCollectionMapping.isMixedContent()) {
             QName qname = unmarshalRecord.getTypeQName();
             if (qname != null) {
-                XMLConversionManager xmlConversionManager = (XMLConversionManager)unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
-                Class theClass = (Class)xmlConversionManager.getDefaultXMLTypes().get(qname);
+                Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qname);
                 if (theClass != null) {
-                    value = xmlConversionManager.convertObject(value, theClass, qname);
+                    value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, qname);
                 }
             }
 
@@ -234,7 +230,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     public ContainerPolicy getContainerPolicy() {
         return xmlAnyCollectionMapping.getContainerPolicy();
     }
-    
+
     public boolean isContainerValue() {
         return true;
     }
@@ -256,10 +252,10 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     }
 
     public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        if(null == value) {
+        if (null == value) {
             return;
         }
-        
+
         boolean wasXMLRoot = false;
         XPathFragment xmlRootFragment = null;
         Object originalValue = value;
@@ -273,25 +269,25 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         if (xmlAnyCollectionMapping.usesXMLRoot() && (value instanceof XMLRoot)) {
             xmlRootFragment = new XPathFragment();
             wasXMLRoot = true;
-            value = ((XMLRoot)value).getObject();
+            value = ((XMLRoot) value).getObject();
         }
         UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyCollectionMapping.getKeepAsElementPolicy();
         if (value instanceof String) {
             marshalSimpleValue(xmlRootFragment, marshalRecord, originalValue, object, value, session, namespaceResolver);
         } else if (((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) && value instanceof org.w3c.dom.Node) {
-            marshalRecord.node((org.w3c.dom.Node)value, marshalRecord.getNamespaceResolver());
+            marshalRecord.node((org.w3c.dom.Node) value, marshalRecord.getNamespaceResolver());
         } else {
             try {
                 childSession = marshaller.getXMLContext().getSession(value);
-            } catch (XMLMarshalException e) {                
+            } catch (XMLMarshalException e) {
                 marshalSimpleValue(xmlRootFragment, marshalRecord, originalValue, object, value, session, namespaceResolver);
                 return;
             }
-            descriptor = (XMLDescriptor)childSession.getDescriptor(value);
-            objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
+            descriptor = (XMLDescriptor) childSession.getDescriptor(value);
+            objectBuilder = (TreeObjectBuilder) descriptor.getObjectBuilder();
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
             if (wasXMLRoot) {
-                Namespace generatedNamespace = setupFragment(((XMLRoot)originalValue), xmlRootFragment, marshalRecord);
+                Namespace generatedNamespace = setupFragment(((XMLRoot) originalValue), xmlRootFragment, marshalRecord);
                 if (generatedNamespace != null) {
                     if (extraNamespaces == null) {
                         extraNamespaces = new java.util.ArrayList();
@@ -353,18 +349,14 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
     private void marshalSimpleValue(XPathFragment xmlRootFragment, MarshalRecord marshalRecord, Object originalValue, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlRootFragment != null) {
-            QName qname = ((XMLRoot)originalValue).getSchemaType();
-                          
-            XMLConversionManager xmlConversionManager = (XMLConversionManager)session.getDatasourcePlatform().getConversionManager();                
-            value = xmlConversionManager.convertObject(value, ClassConstants.STRING, qname);
-            
-            Namespace generatedNamespace = setupFragment((XMLRoot)originalValue, xmlRootFragment, marshalRecord);
-
+            QName qname = ((XMLRoot) originalValue).getSchemaType();
+            value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, qname);
+            Namespace generatedNamespace = setupFragment((XMLRoot) originalValue, xmlRootFragment, marshalRecord);
             getXPathNode().startElement(marshalRecord, xmlRootFragment, object, session, namespaceResolver, null, null);
             if (generatedNamespace != null) {
                 marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + generatedNamespace.getPrefix(), generatedNamespace.getNamespaceURI());
             }
-            if (qname != null) {                
+            if (qname != null) {
                 String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(qname.getNamespaceURI());
                 if ((prefix == null) || prefix.equals("")) {
                     prefix = marshalRecord.getNamespaceResolver().generatePrefix();
@@ -375,15 +367,15 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             }
         }
 
-        marshalRecord.characters((String)value);
+        marshalRecord.characters((String) value);
 
         if (xmlRootFragment != null) {
             marshalRecord.endElement(xmlRootFragment, namespaceResolver);
         }
     }
-    
+
     public XMLAnyCollectionMapping getMapping() {
         return xmlAnyCollectionMapping;
-    }    
- 
+    }
+
 }

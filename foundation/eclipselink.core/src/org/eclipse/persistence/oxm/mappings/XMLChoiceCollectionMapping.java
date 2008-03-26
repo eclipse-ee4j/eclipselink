@@ -25,6 +25,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -42,7 +43,6 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
-
 
 /**
  * PUBLIC:
@@ -73,7 +73,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     private Map<XMLField, XMLMapping> choiceElementMappings;
     private Map<String, String> fieldToClassNameMappings;
     private ContainerPolicy containerPolicy;
-    
+
     public XMLChoiceCollectionMapping() {
         fieldToClassMappings = new HashMap<XMLField, Class>();
         fieldToClassNameMappings = new HashMap<String, String>();
@@ -81,218 +81,216 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         choiceElementMappings = new HashMap<XMLField, XMLMapping>();
         this.containerPolicy = ContainerPolicy.buildPolicyFor(ClassConstants.Vector_class);
     }
-    
-    
+
     /**
      * INTERNAL:
      * Clone the attribute from the clone and assign it to the backup.
      */
-     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
-         throw DescriptorException.invalidMappingOperation(this, "buildBackupClone");
-     }
+    public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
+        throw DescriptorException.invalidMappingOperation(this, "buildBackupClone");
+    }
 
-     /**
+    /**
+    * INTERNAL:
+    * Clone the attribute from the original and assign it to the clone.
+    */
+    public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
+        throw DescriptorException.invalidMappingOperation(this, "buildClone");
+    }
+
+    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
+        throw DescriptorException.invalidMappingOperation(this, "buildCloneFromRow");
+    }
+
+    /**
      * INTERNAL:
-     * Clone the attribute from the original and assign it to the clone.
+     * Cascade perform delete through mappings that require the cascade
      */
-     public void buildClone(Object original, Object clone, UnitOfWorkImpl unitOfWork) {
-         throw DescriptorException.invalidMappingOperation(this, "buildClone");
-     }
+    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        //objects referenced by this mapping are not registered as they have
+        // no identity, this is a no-op.
+    }
 
-     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
-         throw DescriptorException.invalidMappingOperation(this, "buildCloneFromRow");
-     }
+    /**
+     * INTERNAL:
+     * Cascade registerNew for Create through mappings that require the cascade
+     */
+    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
+        //Our current XML support does not make use of the UNitOfWork.
+    }
 
-     /**
-      * INTERNAL:
-      * Cascade perform delete through mappings that require the cascade
-      */
-     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-         //objects referenced by this mapping are not registered as they have
-         // no identity, this is a no-op.
-     }
+    /**
+     * INTERNAL:
+     * This method was created in VisualAge.
+     * @return prototype.changeset.ChangeRecord
+     */
+    public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
+        throw DescriptorException.invalidMappingOperation(this, "compareForChange");
+    }
 
-     /**
-      * INTERNAL:
-      * Cascade registerNew for Create through mappings that require the cascade
-      */
-     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-         //Our current XML support does not make use of the UNitOfWork.
-     }
+    /**
+    * INTERNAL:
+    * Compare the attributes belonging to this mapping for the objects.
+    */
+    public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
+        throw DescriptorException.invalidMappingOperation(this, "compareObjects");
+    }
 
-     /**
-      * INTERNAL:
-      * This method was created in VisualAge.
-      * @return prototype.changeset.ChangeRecord
-      */
-      public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner, AbstractSession session) {
-          throw DescriptorException.invalidMappingOperation(this, "compareForChange");
-      }
+    /**
+    * INTERNAL:
+    * An object has been serialized from the server to the client.
+    * Replace the transient attributes of the remote value holders
+    * with client-side objects.
+    */
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+        throw DescriptorException.invalidMappingOperation(this, "fixObjectReferences");
+    }
 
-      /**
-      * INTERNAL:
-      * Compare the attributes belonging to this mapping for the objects.
-      */
-      public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
-          throw DescriptorException.invalidMappingOperation(this, "compareObjects");
-      }
+    /**
+     * INTERNAL:
+     * Iterate on the appropriate attribute value.
+     */
+    public void iterate(DescriptorIterator iterator) {
+        throw DescriptorException.invalidMappingOperation(this, "iterate");
+    }
 
-      /**
-      * INTERNAL:
-      * An object has been serialized from the server to the client.
-      * Replace the transient attributes of the remote value holders
-      * with client-side objects.
-      */
-      public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
-          throw DescriptorException.invalidMappingOperation(this, "fixObjectReferences");
-      }
+    /**
+     * INTERNAL:
+     * Merge changes from the source to the target object.
+     */
+    public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
+        throw DescriptorException.invalidMappingOperation(this, "mergeChangesIntoObject");
+    }
 
-      /**
-       * INTERNAL:
-       * Iterate on the appropriate attribute value.
-       */
-       public void iterate(DescriptorIterator iterator) {
-           throw DescriptorException.invalidMappingOperation(this, "iterate");
-       }
+    /**
+    * INTERNAL:
+    * Merge changes from the source to the target object.
+    */
+    public void mergeIntoObject(Object target, boolean isTargetUninitialized, Object source, MergeManager mergeManager) {
+        throw DescriptorException.invalidMappingOperation(this, "mergeIntoObject");
+    }
 
-       /**
-        * INTERNAL:
-        * Merge changes from the source to the target object.
-        */
-        public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager) {
-            throw DescriptorException.invalidMappingOperation(this, "mergeChangesIntoObject");
+    public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+        return null;
+    }
+
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) throws DescriptorException {
+
+    }
+
+    public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
+
+    }
+
+    public boolean isXMLMapping() {
+        return true;
+    }
+
+    public Vector<DatabaseField> getFields() {
+        return this.collectFields();
+    }
+
+    protected Vector<DatabaseField> collectFields() {
+        Vector<DatabaseField> fields = new Vector<DatabaseField>(getFieldToClassMappings().keySet());
+        return fields;
+    }
+
+    public void addChoiceElement(String xpath, Class elementType) {
+        XMLField field = new XMLField(xpath);
+        getFieldToClassMappings().put(field, elementType);
+        if (classToFieldMappings.get(elementType) == null) {
+            classToFieldMappings.put(elementType, field);
+        }
+    }
+
+    public void addChoiceElement(String xpath, String elementTypeName) {
+        this.fieldToClassNameMappings.put(xpath, elementTypeName);
+    }
+
+    public Map<XMLField, Class> getFieldToClassMappings() {
+        return fieldToClassMappings;
+    }
+
+    public void initialize(AbstractSession session) throws DescriptorException {
+        super.initialize(session);
+        if (this.fieldToClassMappings.size() == 0) {
+            this.convertClassNamesToClasses(((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).getLoader());
         }
 
-        /**
-        * INTERNAL:
-        * Merge changes from the source to the target object.
-        */
-        public void mergeIntoObject(Object target, boolean isTargetUninitialized, Object source, MergeManager mergeManager) {
-            throw DescriptorException.invalidMappingOperation(this, "mergeIntoObject");
-        }
-
-        public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
-            return null;
-        }
-            
-        public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) throws DescriptorException {
-            
-        }
-        
-        public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
-            
-        }
-        
-        public boolean isXMLMapping() {
-            return true;
-        }
-
-        public Vector<DatabaseField> getFields() {
-            return this.collectFields();
-        }
-
-        protected Vector<DatabaseField> collectFields() {
-            Vector<DatabaseField> fields = new Vector<DatabaseField>(getFieldToClassMappings().keySet());
-            return fields;
-        }
-        
-        public void addChoiceElement(String xpath, Class elementType) {
-            XMLField field = new XMLField(xpath);
-            getFieldToClassMappings().put(field, elementType);
-            if(classToFieldMappings.get(elementType) == null) {
-                classToFieldMappings.put(elementType, field);
+        //create mappings for each field.
+        Iterator<XMLField> fields = getFieldToClassMappings().keySet().iterator();
+        while (fields.hasNext()) {
+            XMLField next = fields.next();
+            if (next.getLastXPathFragment().nameIsText()) {
+                //if it's a simple value, create a Direct Mapping
+                XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();
+                xmlMapping.setAttributeName(this.getAttributeName());
+                xmlMapping.setAttributeAccessor(this.getAttributeAccessor());
+                xmlMapping.setAttributeElementClass(getFieldToClassMappings().get(next));
+                xmlMapping.setField(next);
+                xmlMapping.setDescriptor(this.getDescriptor());
+                xmlMapping.setContainerPolicy(getContainerPolicy());
+                this.choiceElementMappings.put(next, xmlMapping);
+                xmlMapping.initialize(session);
+            } else {
+                XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();
+                xmlMapping.setAttributeName(this.getAttributeName());
+                xmlMapping.setAttributeAccessor(this.getAttributeAccessor());
+                xmlMapping.setReferenceClass(getFieldToClassMappings().get(next));
+                xmlMapping.setField(next);
+                xmlMapping.setDescriptor(this.getDescriptor());
+                xmlMapping.setContainerPolicy(getContainerPolicy());
+                this.choiceElementMappings.put(next, xmlMapping);
+                xmlMapping.initialize(session);
             }
         }
-        
-        public void addChoiceElement(String xpath, String elementTypeName) {
-            this.fieldToClassNameMappings.put(xpath, elementTypeName);
-        }
-        
-        
-        public Map<XMLField, Class> getFieldToClassMappings() {
-            return fieldToClassMappings;
-        }
-        public void initialize(AbstractSession session) throws DescriptorException {
-            super.initialize(session);
-            if(this.fieldToClassMappings.size() == 0) {
-                this.convertClassNamesToClasses(org.eclipse.persistence.internal.helper.ConversionManager.getDefaultManager().getLoader());
-            }
+    }
 
-            //create mappings for each field.
-            Iterator<XMLField> fields = getFieldToClassMappings().keySet().iterator();
-            while(fields.hasNext()) {
-                XMLField next = fields.next();
-                if(next.getLastXPathFragment().nameIsText()) {
-                    //if it's a simple value, create a Direct Mapping
-                    XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();
-                    xmlMapping.setAttributeName(this.getAttributeName());
-                    xmlMapping.setAttributeAccessor(this.getAttributeAccessor());
-                    xmlMapping.setAttributeElementClass(getFieldToClassMappings().get(next));
-                    xmlMapping.setField(next);
-                    xmlMapping.setDescriptor(this.getDescriptor());
-                    xmlMapping.setContainerPolicy(getContainerPolicy());
-                    this.choiceElementMappings.put(next, xmlMapping);
-                    xmlMapping.initialize(session);
-                } else {
-                    XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();
-                    xmlMapping.setAttributeName(this.getAttributeName());
-                    xmlMapping.setAttributeAccessor(this.getAttributeAccessor());
-                    xmlMapping.setReferenceClass(getFieldToClassMappings().get(next));
-                    xmlMapping.setField(next);
-                    xmlMapping.setDescriptor(this.getDescriptor());
-                    xmlMapping.setContainerPolicy(getContainerPolicy());
-                    this.choiceElementMappings.put(next, xmlMapping);
-                    xmlMapping.initialize(session);
-                }
-            }
-        }
-        
-        public Map<Class, XMLField> getClassToFieldMappings() {
-            return classToFieldMappings;
-        }
-        
-        public Map<XMLField, XMLMapping> getChoiceElementMappings() {
-            return choiceElementMappings;
-        }
+    public Map<Class, XMLField> getClassToFieldMappings() {
+        return classToFieldMappings;
+    }
 
-        public ContainerPolicy getContainerPolicy() {
-            return containerPolicy;
-        }
+    public Map<XMLField, XMLMapping> getChoiceElementMappings() {
+        return choiceElementMappings;
+    }
 
-        public void setContainerPolicy(ContainerPolicy cp) {
-            this.containerPolicy = cp;
-        }
-        
-        public void useCollectionClass(Class concreteContainerClass) {
-            this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteContainerClass));
-        }
-        
-        public void useCollectionClassName(String concreteContainerClassName) {
-            this.setContainerPolicy(new CollectionContainerPolicy(concreteContainerClassName));
-        }
+    public ContainerPolicy getContainerPolicy() {
+        return containerPolicy;
+    }
 
-        public void convertClassNamesToClasses(ClassLoader classLoader){
-            Iterator<String> xpaths = fieldToClassNameMappings.keySet().iterator();
-            while(xpaths.hasNext()) {
-                String xpath = xpaths.next();
-                String className = fieldToClassNameMappings.get(xpath);
-                Class elementType = null;
-                try{
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try {
-                            elementType = (Class)AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
-                        } catch (PrivilegedActionException exception) {
-                            throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
-                        }
-                    } else {
-                        elementType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, classLoader);
+    public void setContainerPolicy(ContainerPolicy cp) {
+        this.containerPolicy = cp;
+    }
+
+    public void useCollectionClass(Class concreteContainerClass) {
+        this.setContainerPolicy(ContainerPolicy.buildPolicyFor(concreteContainerClass));
+    }
+
+    public void useCollectionClassName(String concreteContainerClassName) {
+        this.setContainerPolicy(new CollectionContainerPolicy(concreteContainerClassName));
+    }
+
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        Iterator<String> xpaths = fieldToClassNameMappings.keySet().iterator();
+        while (xpaths.hasNext()) {
+            String xpath = xpaths.next();
+            String className = fieldToClassNameMappings.get(xpath);
+            Class elementType = null;
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    try {
+                        elementType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                     }
-                } catch (ClassNotFoundException exc){
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
+                } else {
+                    elementType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, classLoader);
                 }
-                addChoiceElement(xpath, elementType);
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
             }
+            addChoiceElement(xpath, elementType);
         }
+    }
 
-        
 }

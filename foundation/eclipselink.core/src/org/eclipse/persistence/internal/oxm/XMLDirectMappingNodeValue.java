@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
@@ -48,7 +48,7 @@ public class XMLDirectMappingNodeValue extends XMLSimpleMappingNodeValue impleme
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
         return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
-    
+
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlDirectMapping.isReadOnly()) {
             return false;
@@ -57,19 +57,18 @@ public class XMLDirectMappingNodeValue extends XMLSimpleMappingNodeValue impleme
         Object fieldValue = xmlDirectMapping.getFieldValue(objectValue, session, marshalRecord);
         // Check for a null value 
         if (null == fieldValue) {
-        	// Perform marshal operations based on the null policy
-        	return xmlDirectMapping.getNullPolicy().directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
+            // Perform marshal operations based on the null policy
+            return xmlDirectMapping.getNullPolicy().directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         } else {
-            QName schemaType = getSchemaType((XMLField)xmlDirectMapping.getField(), fieldValue);
-            XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
-            String stringValue = getValueToWrite(schemaType, fieldValue, xmlConversionManager);
+            QName schemaType = getSchemaType((XMLField) xmlDirectMapping.getField(), fieldValue, session);
+            String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             if (xPathFragment.isAttribute()) {
                 marshalRecord.attribute(xPathFragment, namespaceResolver, stringValue);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
             } else {
                 marshalRecord.closeStartGroupingElements(groupingFragment);
-                if(xmlDirectMapping.isCDATA()) {
+                if (xmlDirectMapping.isCDATA()) {
                     marshalRecord.cdata(stringValue);
                 } else {
                     marshalRecord.characters(stringValue);
@@ -78,12 +77,11 @@ public class XMLDirectMappingNodeValue extends XMLSimpleMappingNodeValue impleme
             return true;
         }
     }
-    
+
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         unmarshalRecord.removeNullCapableValue(this);
-        XMLField xmlField = (XMLField)xmlDirectMapping.getField();
-        XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
-        Object realValue = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager);
+        XMLField xmlField = (XMLField) xmlDirectMapping.getField();
+        Object realValue = xmlField.convertValueBasedOnSchemaType(value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager());
         // Perform operations on the object based on the null policy
         Object convertedValue = xmlDirectMapping.getAttributeValue(realValue, unmarshalRecord.getSession(), unmarshalRecord);
         xmlDirectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), convertedValue);
@@ -91,7 +89,7 @@ public class XMLDirectMappingNodeValue extends XMLSimpleMappingNodeValue impleme
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         unmarshalRecord.removeNullCapableValue(this);
-        XMLField xmlField = (XMLField)xmlDirectMapping.getField();
+        XMLField xmlField = (XMLField) xmlDirectMapping.getField();
         if (!xmlField.getLastXPathFragment().nameIsText()) {
             return;
         }

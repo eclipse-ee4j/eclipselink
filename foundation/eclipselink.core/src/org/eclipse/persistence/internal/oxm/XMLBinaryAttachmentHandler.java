@@ -47,7 +47,7 @@ public class XMLBinaryAttachmentHandler implements ContentHandler {
         this.nodeValue = nodeValue;
         converter = mapping.getConverter();
     }
-    
+
     public XMLBinaryAttachmentHandler(UnmarshalRecord unmarshalRecord, NodeValue nodeValue, XMLBinaryDataCollectionMapping mapping) {
         record = unmarshalRecord;
         this.mapping = mapping;
@@ -55,40 +55,33 @@ public class XMLBinaryAttachmentHandler implements ContentHandler {
         this.nodeValue = nodeValue;
         isCollection = true;
     }
+
     public void startPrefixMapping(String prefix, String URI) {
-   
     }
-    
+
     public void ignorableWhitespace(char[] chars, int offset, int length) {
-        
     }
-    
+
     public void characters(char[] characters, int offset, int length) {
-        
     }
-    
+
     public void endDocument() {
-        
     }
-    
+
     public void startDocument() {
-        
     }
-    
+
     public void skippedEntity(String entity) {
-        
     }
-    
+
     public void setDocumentLocator(Locator locator) {
-        
     }
-    
+
     public void endPrefixMapping(String prefix) {
-        
     }
-    
+
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        if(namespaceURI.equals(XMLConstants.XOP_URL) && (localName.equals("Include") || qName.equals("Include"))) {
+        if (namespaceURI.equals(XMLConstants.XOP_URL) && (localName.equals("Include") || qName.equals("Include"))) {
             this.c_id = atts.getValue("", "href");
         } else {
             //Return control to the UnmarshalRecord
@@ -96,51 +89,45 @@ public class XMLBinaryAttachmentHandler implements ContentHandler {
             record.startElement(namespaceURI, localName, qName, atts);
         }
     }
+
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-        if(namespaceURI.equals(XMLConstants.XOP_URL) && (localName.equals("Include") || qName.equals("Include"))) {
+        if (namespaceURI.equals(XMLConstants.XOP_URL) && (localName.equals("Include") || qName.equals("Include"))) {
             //Get the attachment and set it in the object.
             XMLAttachmentUnmarshaller attachmentUnmarshaller = record.getUnmarshaller().getAttachmentUnmarshaller();
             Object data = attachmentUnmarshaller.getAttachmentAsByteArray(this.c_id);
-            if(this.converter != null) {
+            if (this.converter != null) {
                 Converter converter = this.converter;
-                if(converter instanceof XMLConverter) {
-                    data = ((XMLConverter)converter).convertDataValueToObjectValue(data, record.getSession(), record.getUnmarshaller());
+                if (converter instanceof XMLConverter) {
+                    data = ((XMLConverter) converter).convertDataValueToObjectValue(data, record.getSession(), record.getUnmarshaller());
                 } else {
                     data = converter.convertDataValueToObjectValue(data, record.getSession());
                 }
             }
-            data = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(data, mapping.getAttributeClassification());
+            data = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(data, mapping.getAttributeClassification(), record.getSession());
             //check for collection case
-            if(isCollection) {
-                Object container = record.getContainerInstance((XMLBinaryDataCollectionMappingNodeValue)nodeValue);
-                ((XMLBinaryDataCollectionMapping)mapping).getContainerPolicy().addInto(data, container, record.getSession());
+            if (isCollection) {
+                Object container = record.getContainerInstance((XMLBinaryDataCollectionMappingNodeValue) nodeValue);
+                ((XMLBinaryDataCollectionMapping) mapping).getContainerPolicy().addInto(data, container, record.getSession());
             } else {
                 mapping.setAttributeValueInObject(record.getCurrentObject(), data);
             }
-            /*if(mapping.getAttributeClassification() == ClassConstants.ABYTE || mapping.getAttributeClassification() == ClassConstants.APBYTE) {
-                byte[] attachment = attachmentUnmarshaller.getAttachmentAsByteArray(this.c_id);
-                mapping.setAttributeValueInObject(record.getObject(), mapping.getAttributeValue(attachment, record.getSession()));
-            } else {
-                DataHandler data = attachmentUnmarshaller.getAttachmentAsDataHandler(c_id);
-                Object objectValue = getObjectValueFromDataHandler(data, mapping.getAttributeClassification());
-            }*/
             //Return control to the UnmarshalRecord
             record.getXMLReader().setContentHandler(record);
-        }
-        else {
+        } else {
             record.getXMLReader().setContentHandler(record);
             record.endElement(namespaceURI, localName, qName);
         }
     }
+
     public void processingInstruction(String target, String data) throws SAXException {
     }
-   
+
     public String getCID() {
         return this.c_id;
     }
-    
+
     public Object getObjectValueFromDataHandler(DataHandler handler, Class cls) {
-        return XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(handler, cls);
+        return XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(handler, cls, record.getSession());
     }
-    
+
 }

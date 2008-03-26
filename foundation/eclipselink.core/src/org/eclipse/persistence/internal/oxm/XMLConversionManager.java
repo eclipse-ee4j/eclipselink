@@ -33,7 +33,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
  * INTERNAL:
- * <p><b>Purpose</b>: Primarly used to convert objects from a given XML Schema type to a different type in Java.
+ * <p><b>Purpose</b>: Primarily used to convert objects from a given XML Schema type to a different type in Java.
  * Uses a singleton instance</p>
  * @since    OracleAS TopLink 10<i>g</i>
  */
@@ -44,35 +44,27 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
     protected static XMLConversionManager defaultXMLManager;
 
-    // Static hashtables for the default conversion pairs
+    // Static hash tables for the default conversion pairs
     protected static HashMap defaultXMLTypes;
     protected static HashMap defaultJavaTypes;
 
     // The formatters XML Schema types xsd:date, xsd:time and xsd:dateTime,
     //  xsd:gDay, xsd:gMonth, xsd:gMonthDay, xsd:gYear, xsd:gYearMonth
-    protected static final String XSD_DATE_FORMAT_STR =
-        "yyyy-MM-dd";
+    protected static final String XSD_DATE_FORMAT_STR = "yyyy-MM-dd";
     protected DateFormatThreadLocal dateFormatter;
-    protected static final String XSD_TIME_FORMAT_STR =
-        "HH:mm:ss";
+    protected static final String XSD_TIME_FORMAT_STR = "HH:mm:ss";
     protected DateFormatThreadLocal timeFormatter;
-    protected static final String XSD_DATE_TIME_FORMAT_STR =
-        "yyyy-MM-dd'T'HH:mm:ss";
+    protected static final String XSD_DATE_TIME_FORMAT_STR = "yyyy-MM-dd'T'HH:mm:ss";
     protected DateFormatThreadLocal dateTimeFormatter;
-    protected static final String XSD_GDAY_FORMAT_STR =
-        "----dd";
+    protected static final String XSD_GDAY_FORMAT_STR = "----dd";
     protected DateFormatThreadLocal gDayFormatter;
-    protected static final String XSD_GMONTH_FORMAT_STR =
-        "--MM--";
+    protected static final String XSD_GMONTH_FORMAT_STR = "--MM--";
     protected DateFormatThreadLocal gMonthFormatter;
-    protected static final String XSD_GMONTH_DAY_FORMAT_STR =
-        "--MM-dd";
+    protected static final String XSD_GMONTH_DAY_FORMAT_STR = "--MM-dd";
     protected DateFormatThreadLocal gMonthDayFormatter;
-    protected static final String XSD_GYEAR_FORMAT_STR =
-        "yyyy";
+    protected static final String XSD_GYEAR_FORMAT_STR = "yyyy";
     protected DateFormatThreadLocal gYearFormatter;
-    protected static final String XSD_GYEAR_MONTH_FORMAT_STR =
-        "yyyy-MM";
+    protected static final String XSD_GYEAR_MONTH_FORMAT_STR = "yyyy-MM";
     protected DateFormatThreadLocal gYearMonthFormatter;
 
     protected boolean timeZoneQualified;
@@ -81,31 +73,23 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     public XMLConversionManager() {
         super();
         buildFormatters(this);
-      	timeZoneQualified = false;
+        timeZoneQualified = false;
     }
 
     protected static void buildFormatters(XMLConversionManager xmlConversionManager) {
-      xmlConversionManager.dateFormatter =
-        new DateFormatThreadLocal(XSD_DATE_FORMAT_STR, null);
-      xmlConversionManager.timeFormatter =
-        new DateFormatThreadLocal(XSD_TIME_FORMAT_STR, xmlConversionManager);
-      xmlConversionManager.dateTimeFormatter =
-        new DateFormatThreadLocal(XSD_DATE_TIME_FORMAT_STR, xmlConversionManager);
-      xmlConversionManager.gDayFormatter =
-        new DateFormatThreadLocal(XSD_GDAY_FORMAT_STR, null);
-      xmlConversionManager.gMonthFormatter =
-        new DateFormatThreadLocal(XSD_GMONTH_FORMAT_STR, null);
-      xmlConversionManager.gMonthDayFormatter =
-        new DateFormatThreadLocal(XSD_GMONTH_DAY_FORMAT_STR, null);
-      xmlConversionManager.gYearFormatter =
-        new DateFormatThreadLocal(XSD_GYEAR_FORMAT_STR, null);
-      xmlConversionManager.gYearMonthFormatter =
-        new DateFormatThreadLocal(XSD_GYEAR_MONTH_FORMAT_STR, null);
+        xmlConversionManager.dateFormatter = new DateFormatThreadLocal(XSD_DATE_FORMAT_STR, null);
+        xmlConversionManager.timeFormatter = new DateFormatThreadLocal(XSD_TIME_FORMAT_STR, xmlConversionManager);
+        xmlConversionManager.dateTimeFormatter = new DateFormatThreadLocal(XSD_DATE_TIME_FORMAT_STR, xmlConversionManager);
+        xmlConversionManager.gDayFormatter = new DateFormatThreadLocal(XSD_GDAY_FORMAT_STR, null);
+        xmlConversionManager.gMonthFormatter = new DateFormatThreadLocal(XSD_GMONTH_FORMAT_STR, null);
+        xmlConversionManager.gMonthDayFormatter = new DateFormatThreadLocal(XSD_GMONTH_DAY_FORMAT_STR, null);
+        xmlConversionManager.gYearFormatter = new DateFormatThreadLocal(XSD_GYEAR_FORMAT_STR, null);
+        xmlConversionManager.gYearMonthFormatter = new DateFormatThreadLocal(XSD_GYEAR_MONTH_FORMAT_STR, null);
     }
+
     public static XMLConversionManager getDefaultXMLManager() {
         if (defaultXMLManager == null) {
             defaultXMLManager = new XMLConversionManager();
-            //defaultXMLManager.setShouldUseClassLoaderFromCurrentThread(true);
         }
         return defaultXMLManager;
     }
@@ -115,12 +99,11 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      * conversions.
      */
     public TimeZone getTimeZone() {
-      if (timeZone == null) {
-          return TimeZone.getDefault();
-      }
-      else {
-        return timeZone;
-      }
+        if (timeZone == null) {
+            return TimeZone.getDefault();
+        } else {
+            return timeZone;
+        }
     }
 
     /**
@@ -128,14 +111,14 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      * conversions.  By default the TimeZone from the JVM is used.
      */
     public void setTimeZone(TimeZone timeZone) {
-         this.timeZone = timeZone;
+        this.timeZone = timeZone;
     }
 
     /**
       *
       */
     public boolean isTimeZoneQualified() {
-    	return timeZoneQualified;
+        return timeZoneQualified;
     }
 
     /**
@@ -145,7 +128,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      */
 
     public void setTimeZoneQualified(boolean timeZoneQualified) {
-    	this.timeZoneQualified = timeZoneQualified;
+        this.timeZoneQualified = timeZoneQualified;
     }
 
     /**
@@ -182,7 +165,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
                 return super.convertObject(sourceObject, javaClass);
             } catch (ConversionException ex) {
                 if (sourceObject.getClass() == ClassConstants.STRING) {
-                    return super.convertObject(((String)sourceObject).trim(), javaClass);
+                    return super.convertObject(((String) sourceObject).trim(), javaClass);
                 }
                 throw ex;
             }
@@ -225,14 +208,14 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return convertListToString(sourceObject);
         } else if (sourceObject instanceof byte[]) {
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(XMLConstants.BASE_64_BINARY)) {
-                return buildBase64StringFromBytes((byte[])sourceObject);
+                return buildBase64StringFromBytes((byte[]) sourceObject);
             }
-            return Helper.buildHexStringFromBytes((byte[])sourceObject);
+            return Helper.buildHexStringFromBytes((byte[]) sourceObject);
         } else if (sourceObject instanceof Byte[]) {
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(XMLConstants.BASE_64_BINARY)) {
-                return buildBase64StringFromObjectBytes((Byte[])sourceObject);
+                return buildBase64StringFromObjectBytes((Byte[]) sourceObject);
             }
-            return buildHexStringFromObjectBytes((Byte[])sourceObject);
+            return buildHexStringFromObjectBytes((Byte[]) sourceObject);
         } else if ((javaClass == ClassConstants.UTILDATE)) {
             return convertObjectToUtilDate(sourceObject, schemaTypeQName);
         } else if (javaClass == ClassConstants.SQLDATE) {
@@ -252,7 +235,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
                 return super.convertObject(sourceObject, javaClass);
             } catch (ConversionException ex) {
                 if (sourceObject.getClass() == ClassConstants.STRING) {
-                    return super.convertObject(((String)sourceObject).trim(), javaClass);
+                    return super.convertObject(((String) sourceObject).trim(), javaClass);
                 }
                 throw ex;
             }
@@ -285,11 +268,11 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      */
     protected QName convertObjectToQName(Object sourceObject) throws ConversionException {
         if (sourceObject instanceof QName) {
-            return (QName)sourceObject;
+            return (QName) sourceObject;
         }
 
         if (sourceObject instanceof String) {
-            return qnameFromString((String)sourceObject);
+            return qnameFromString((String) sourceObject);
         }
 
         throw ConversionException.couldNotBeConverted(sourceObject, XMLConstants.QNAME_CLASS);
@@ -301,14 +284,14 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      */
     protected Calendar convertObjectToCalendar(Object sourceObject) throws ConversionException {
         if (sourceObject instanceof String) {
-            String sourceString = (String)sourceObject;
+            String sourceString = (String) sourceObject;
             if (sourceString.lastIndexOf('T') != -1) {
-                return convertStringToCalendar((String)sourceObject, XMLConstants.DATE_TIME_QNAME);
+                return convertStringToCalendar((String) sourceObject, XMLConstants.DATE_TIME_QNAME);
             } else {
                 if (sourceString.lastIndexOf(':') != -1) {
-                    return convertStringToCalendar((String)sourceObject, XMLConstants.TIME_QNAME);
+                    return convertStringToCalendar((String) sourceObject, XMLConstants.TIME_QNAME);
                 } else {
-                    return convertStringToCalendar((String)sourceObject, XMLConstants.DATE_QNAME);
+                    return convertStringToCalendar((String) sourceObject, XMLConstants.DATE_QNAME);
                 }
             }
         }
@@ -317,59 +300,49 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
     /**
      * INTERNAL:
-     * Converts objects to thier string representations.
+     * Converts objects to their string representations.
      */
     protected String convertObjectToString(Object sourceObject) throws ConversionException {
         if (sourceObject instanceof Calendar) {
-            return stringFromCalendar((Calendar)sourceObject);
+            return stringFromCalendar((Calendar) sourceObject);
         }
 
         if (sourceObject instanceof QName) {
-            return stringFromQName((QName)sourceObject);
+            return stringFromQName((QName) sourceObject);
         }
         if (sourceObject instanceof java.sql.Date) {
-            return stringFromSQLDate((java.sql.Date)sourceObject);
+            return stringFromSQLDate((java.sql.Date) sourceObject);
         }
         if (sourceObject instanceof java.sql.Time) {
-            return stringFromSQLTime((java.sql.Time)sourceObject);
+            return stringFromSQLTime((java.sql.Time) sourceObject);
         }
         if (sourceObject instanceof java.sql.Timestamp) {
-            return stringFromTimestamp((Timestamp)sourceObject);
+            return stringFromTimestamp((Timestamp) sourceObject);
         }
         if (sourceObject instanceof java.util.Date) {
-            return stringFromDate((java.util.Date)sourceObject);
+            return stringFromDate((java.util.Date) sourceObject);
         }
-
-        /*
-                if (sourceObject instanceof byte[]) {
-                    return buildBase64StringFromBytes((byte[]) sourceObject);
-                }
-
-                if (sourceObject instanceof Byte[]) {
-                    return buildBase64StringFromObjectBytes((Byte[]) sourceObject);
-                }
-        */
         return super.convertObjectToString(sourceObject);
     }
 
     protected String convertObjectToString(Object sourceObject, QName schemaTypeQName) throws ConversionException {
         if (sourceObject instanceof Calendar) {
-            return stringFromCalendar((Calendar)sourceObject, schemaTypeQName);
+            return stringFromCalendar((Calendar) sourceObject, schemaTypeQName);
         }
         if (sourceObject instanceof QName) {
-            return stringFromQName((QName)sourceObject);
+            return stringFromQName((QName) sourceObject);
         }
         if (sourceObject instanceof java.sql.Date) {
-            return stringFromSQLDate((java.sql.Date)sourceObject, schemaTypeQName);
+            return stringFromSQLDate((java.sql.Date) sourceObject, schemaTypeQName);
         }
         if (sourceObject instanceof java.sql.Time) {
-            return stringFromSQLTime((java.sql.Time)sourceObject, schemaTypeQName);
+            return stringFromSQLTime((java.sql.Time) sourceObject, schemaTypeQName);
         }
         if (sourceObject instanceof java.sql.Timestamp) {
-            return stringFromTimestamp((Timestamp)sourceObject, schemaTypeQName);
+            return stringFromTimestamp((Timestamp) sourceObject, schemaTypeQName);
         }
         if (sourceObject instanceof java.util.Date) {
-            return stringFromDate((java.util.Date)sourceObject, schemaTypeQName);
+            return stringFromDate((java.util.Date) sourceObject, schemaTypeQName);
         }
 
         return super.convertObjectToString(sourceObject);
@@ -384,9 +357,9 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     public Calendar convertStringToCalendar(String sourceString, QName schemaTypeQName) {
-    	java.util.Date date = convertStringToDate(sourceString, schemaTypeQName);
-    	applyTimeZone(date, sourceString);
-    	return Helper.calendarFromUtilDate(date);
+        java.util.Date date = convertStringToDate(sourceString, schemaTypeQName);
+        applyTimeZone(date, sourceString);
+        return Helper.calendarFromUtilDate(date);
     }
 
     private Date convertObjectToUtilDate(Object sourceObject, QName schemaTypeQName) {
@@ -413,120 +386,120 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     protected Timestamp convertStringToTimestamp(String sourceObject) {
-    	return convertStringToTimestamp(sourceObject, XMLConstants.DATE_TIME_QNAME);
+        return convertStringToTimestamp(sourceObject, XMLConstants.DATE_TIME_QNAME);
     }
 
     protected Timestamp convertObjectToTimestamp(Object sourceObject, QName schemaTypeQName) {
         if (sourceObject instanceof String) {
-            return convertStringToTimestamp((String)sourceObject, schemaTypeQName);
+            return convertStringToTimestamp((String) sourceObject, schemaTypeQName);
         }
         return super.convertObjectToTimestamp(sourceObject);
     }
 
     public java.sql.Timestamp convertStringToTimestamp(String sourceString, QName schemaType) {
-    	Date date;
-    	if(XMLConstants.DATE_QNAME.equals(schemaType)) {
-    		try {
-    			date = dateFormatter.get().parse(sourceString);
-    		} catch(ParseException e) {
-    			throw ConversionException.incorrectDateFormat(sourceString);
-    		}
-    	} else if(XMLConstants.TIME_QNAME.equals(schemaType)) {
-    		try {
-    			return convertStringToTimestamp(sourceString, timeFormatter.get());
-    		} catch(ParseException e) {
-    			throw XMLConversionException.incorrectTimestampTimeFormat(sourceString);
-    		} catch(NumberFormatException e) {
-    			throw XMLConversionException.incorrectTimestampTimeFormat(sourceString);
-    		}
-    	} else if(XMLConstants.G_DAY_QNAME.equals(schemaType)) {
-    		try {
-    			date = gDayFormatter.get().parse(sourceString);
-    		} catch(ParseException e) {
-    			throw XMLConversionException.incorrectGDayFormat(sourceString);
-    		}
-    	} else if(XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
-    		try {
-    			date = gMonthFormatter.get().parse(sourceString);
-    		} catch(ParseException e) {
-    			throw XMLConversionException.incorrectGMonthFormat(sourceString);
-    		}
-    	} else if(XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
-    		try {
-    			return Helper.timestampFromDate(gMonthDayFormatter.get().parse(sourceString));
-    		} catch(ParseException e) {
-    			throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
-    		}
-    	} else if(XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
-    		try {
-    			date = gYearFormatter.get().parse(sourceString);
-    		} catch(ParseException e) {
-    			throw XMLConversionException.incorrectGYearFormat(sourceString);
-    		}
-    	} else if(XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
-    		try {
-    			date = gYearMonthFormatter.get().parse(sourceString);
-    		} catch(ParseException e) {
-    			throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
-    		}
-    	} else if(XMLConstants.DURATION_QNAME.equals(schemaType)) {
-    		throw new IllegalArgumentException();
-    	} else {
-    		try {
-    			return convertStringToTimestamp(sourceString, dateTimeFormatter.get());
-    		} catch(ParseException e) {
-    			throw XMLConversionException.incorrectTimestampDateTimeFormat(sourceString);
-    		} catch(NumberFormatException e) {
-    			throw XMLConversionException.incorrectTimestampDateTimeFormat(sourceString);
-    		}
-    	}
-		applyTimeZone(date, sourceString);
-		return Helper.timestampFromDate(date);
+        Date date;
+        if (XMLConstants.DATE_QNAME.equals(schemaType)) {
+            try {
+                date = dateFormatter.get().parse(sourceString);
+            } catch (ParseException e) {
+                throw ConversionException.incorrectDateFormat(sourceString);
+            }
+        } else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
+            try {
+                return convertStringToTimestamp(sourceString, timeFormatter.get());
+            } catch (ParseException e) {
+                throw XMLConversionException.incorrectTimestampTimeFormat(sourceString);
+            } catch (NumberFormatException e) {
+                throw XMLConversionException.incorrectTimestampTimeFormat(sourceString);
+            }
+        } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+            try {
+                date = gDayFormatter.get().parse(sourceString);
+            } catch (ParseException e) {
+                throw XMLConversionException.incorrectGDayFormat(sourceString);
+            }
+        } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+            try {
+                date = gMonthFormatter.get().parse(sourceString);
+            } catch (ParseException e) {
+                throw XMLConversionException.incorrectGMonthFormat(sourceString);
+            }
+        } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+            try {
+                return Helper.timestampFromDate(gMonthDayFormatter.get().parse(sourceString));
+            } catch (ParseException e) {
+                throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
+            }
+        } else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+            try {
+                date = gYearFormatter.get().parse(sourceString);
+            } catch (ParseException e) {
+                throw XMLConversionException.incorrectGYearFormat(sourceString);
+            }
+        } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+            try {
+                date = gYearMonthFormatter.get().parse(sourceString);
+            } catch (ParseException e) {
+                throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
+            }
+        } else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+            throw new IllegalArgumentException();
+        } else {
+            try {
+                return convertStringToTimestamp(sourceString, dateTimeFormatter.get());
+            } catch (ParseException e) {
+                throw XMLConversionException.incorrectTimestampDateTimeFormat(sourceString);
+            } catch (NumberFormatException e) {
+                throw XMLConversionException.incorrectTimestampDateTimeFormat(sourceString);
+            }
+        }
+        applyTimeZone(date, sourceString);
+        return Helper.timestampFromDate(date);
     }
 
     private Timestamp convertStringToTimestamp(String string, DateFormat dateFormat) throws ParseException {
-    	int decimalIndex = string.lastIndexOf('.');
-    	if(-1 == decimalIndex) {
-    		Date date = dateFormat.parse(string);
-    		applyTimeZone(date, string);
-    		return Helper.timestampFromDate(date);
-    	}
-    	Date date = dateFormat.parse(string.substring(0, decimalIndex));
-		applyTimeZone(date, string);
-    	Timestamp timestamp = Helper.timestampFromDate(date);
+        int decimalIndex = string.lastIndexOf('.');
+        if(-1 == decimalIndex) {
+            Date date = dateFormat.parse(string);
+            applyTimeZone(date, string);
+            return Helper.timestampFromDate(date);
+        }
+        Date date = dateFormat.parse(string.substring(0, decimalIndex));
+        applyTimeZone(date, string);
+        Timestamp timestamp = Helper.timestampFromDate(date);
 
-    	int timeZoneIndex = string.lastIndexOf(GMT_SUFFIX);
-    	if(-1 == timeZoneIndex) {
-    		timeZoneIndex = string.lastIndexOf('-');
-    		if(timeZoneIndex < decimalIndex) {
-    			timeZoneIndex = -1;
-    		}
-    		if(-1 == timeZoneIndex) {
-        		timeZoneIndex = string.lastIndexOf('+');
-    		}
-    	}
-    	String nsString;
-    	if(-1 == timeZoneIndex) {
-    		nsString = string.substring(decimalIndex + 1);
-    	} else {
-    		nsString = string.substring((decimalIndex + 1), timeZoneIndex);
-    	}
-    	double ns = Long.valueOf(nsString).doubleValue();
-    	ns = ns * Math.pow(10, 9 - nsString.length());
-    	timestamp.setNanos((int) ns);
-    	return timestamp;
+        int timeZoneIndex = string.lastIndexOf(GMT_SUFFIX);
+        if(-1 == timeZoneIndex) {
+            timeZoneIndex = string.lastIndexOf('-');
+            if(timeZoneIndex < decimalIndex) {
+                timeZoneIndex = -1;
+            }
+            if(-1 == timeZoneIndex) {
+                timeZoneIndex = string.lastIndexOf('+');
+            }
+        }
+        String nsString;
+        if(-1 == timeZoneIndex) {
+            nsString = string.substring(decimalIndex + 1);
+        } else {
+            nsString = string.substring((decimalIndex + 1), timeZoneIndex);
+        }
+        double ns = Long.valueOf(nsString).doubleValue();
+        ns = ns * Math.pow(10, 9 - nsString.length());
+        timestamp.setNanos((int) ns);
+        return timestamp;
     }
-
+    
     public String stringFromCalendar(Calendar sourceCalendar, QName schemaTypeQName) {
         return stringFromDate(sourceCalendar.getTime(), schemaTypeQName);
     }
 
     private String stringFromCalendar(Calendar sourceCalendar) {
         if (!(sourceCalendar.isSet(Calendar.HOUR) || sourceCalendar.isSet(Calendar.MINUTE) || sourceCalendar.isSet(Calendar.SECOND) || sourceCalendar.isSet(Calendar.MILLISECOND))) {
-        	return dateFormatter.get().format(sourceCalendar.getTime());
+            return dateFormatter.get().format(sourceCalendar.getTime());
         } else if (!(sourceCalendar.isSet(Calendar.YEAR) || sourceCalendar.isSet(Calendar.MONTH) || sourceCalendar.isSet(Calendar.DATE))) {
             String string = timeFormatter.get().format(sourceCalendar.getTime());
-            int ms = (int)(sourceCalendar.getTimeInMillis() % 1000);
+            int ms = (int) (sourceCalendar.getTimeInMillis() % 1000);
             if (0 == ms) {
                 string += ".0";
             } else {
@@ -539,164 +512,164 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     private String stringFromDate(java.util.Date sourceDate) {
-    	String string = dateTimeFormatter.get().format(sourceDate);
-		int ms = (int) (sourceDate.getTime() % 1000);
-		if(0 == ms) {
-			string += ".0";
-		} else {
-			string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ms, 3));
-		}
+        String string = dateTimeFormatter.get().format(sourceDate);
+        int ms = (int) (sourceDate.getTime() % 1000);
+        if (0 == ms) {
+            string += ".0";
+        } else {
+            string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ms, 3));
+        }
         return appendTimeZone(string);
     }
 
     public java.util.Date convertStringToDate(String sourceString, QName schemaType) {
-    	Date date;
-    	if(XMLConstants.DATE_QNAME.equals(schemaType)) {
-    		try {
-    			date = dateFormatter.get().parse(sourceString);
-    		} catch(ParseException e) {
-    			throw ConversionException.incorrectDateFormat(sourceString);
-    		}
-    	} else if(XMLConstants.TIME_QNAME.equals(schemaType)) {
-    		try {
-    			return convertStringToDate(sourceString, timeFormatter.get());
-    		} catch(ParseException e) {
-    			throw ConversionException.incorrectTimeFormat(sourceString);
-    		} catch(NumberFormatException e) {
-    			throw ConversionException.incorrectTimeFormat(sourceString);
-    		}
-    	} else if(XMLConstants.G_DAY_QNAME.equals(schemaType)) {
-    		try {
-    			date = gDayFormatter.get().parse(sourceString);
-    		} catch(ParseException e) {
-    			throw XMLConversionException.incorrectGDayFormat(sourceString);
-    		}
-    	} else if(XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
-    		try {
-    			date = gMonthFormatter.get().parse(sourceString);
-    		} catch(ParseException e) {
-    			throw XMLConversionException.incorrectGMonthFormat(sourceString);
-    		}
-    	} else if(XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
-    		try {
-    			date = gMonthDayFormatter.get().parse(sourceString);
-    		} catch(ParseException e) {
-    			throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
-    		}
-    	} else if(XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
-    		try {
-    			date = gYearFormatter.get().parse(sourceString);
-    		} catch(ParseException e) {
-    			throw XMLConversionException.incorrectGYearFormat(sourceString);
-    		}
-    	} else if(XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
-    		try {
-    			date = gYearMonthFormatter.get().parse(sourceString);
-    		} catch(ParseException e) {
-    			throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
-    		}
-    	} else if(XMLConstants.DURATION_QNAME.equals(schemaType)) {
-    		throw new IllegalArgumentException();
-    	} else {
-    		try {
-    			return convertStringToDate(sourceString, dateTimeFormatter.get());
-    		} catch(ParseException e) {
-    			throw ConversionException.incorrectDateTimeFormat(sourceString);
-    		} catch(NumberFormatException e) {
-    			throw ConversionException.incorrectDateTimeFormat(sourceString);
-    		}
-    	}
-		applyTimeZone(date, sourceString);
-		return date;
+        Date date;
+        if (XMLConstants.DATE_QNAME.equals(schemaType)) {
+            try {
+                date = dateFormatter.get().parse(sourceString);
+            } catch (ParseException e) {
+                throw ConversionException.incorrectDateFormat(sourceString);
+            }
+        } else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
+            try {
+                return convertStringToDate(sourceString, timeFormatter.get());
+            } catch (ParseException e) {
+                throw ConversionException.incorrectTimeFormat(sourceString);
+            } catch (NumberFormatException e) {
+                throw ConversionException.incorrectTimeFormat(sourceString);
+            }
+        } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+            try {
+                date = gDayFormatter.get().parse(sourceString);
+            } catch (ParseException e) {
+                throw XMLConversionException.incorrectGDayFormat(sourceString);
+            }
+        } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+            try {
+                date = gMonthFormatter.get().parse(sourceString);
+            } catch (ParseException e) {
+                throw XMLConversionException.incorrectGMonthFormat(sourceString);
+            }
+        } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+            try {
+                date = gMonthDayFormatter.get().parse(sourceString);
+            } catch (ParseException e) {
+                throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
+            }
+        } else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+            try {
+                date = gYearFormatter.get().parse(sourceString);
+            } catch (ParseException e) {
+                throw XMLConversionException.incorrectGYearFormat(sourceString);
+            }
+        } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+            try {
+                date = gYearMonthFormatter.get().parse(sourceString);
+            } catch (ParseException e) {
+                throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
+            }
+        } else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+            throw new IllegalArgumentException();
+        } else {
+            try {
+                return convertStringToDate(sourceString, dateTimeFormatter.get());
+            } catch (ParseException e) {
+                throw ConversionException.incorrectDateTimeFormat(sourceString);
+            } catch (NumberFormatException e) {
+                throw ConversionException.incorrectDateTimeFormat(sourceString);
+            }
+        }
+        applyTimeZone(date, sourceString);
+        return date;
     }
 
     private java.util.Date convertStringToDate(String string, DateFormat dateFormat) throws ParseException {
-    	Date date;
-    	int decimalIndex = string.lastIndexOf('.');
-    	if(-1 == decimalIndex) {
-    		date = dateFormat.parse(string);
-    		applyTimeZone(date, string);
-    		return date;
-    	}
-    	date = dateFormat.parse(string.substring(0, decimalIndex));
+        Date date;
+        int decimalIndex = string.lastIndexOf('.');
+        if (-1 == decimalIndex) {
+            date = dateFormat.parse(string);
+            applyTimeZone(date, string);
+            return date;
+        }
+        date = dateFormat.parse(string.substring(0, decimalIndex));
 
-    	int timeZoneIndex = string.lastIndexOf(GMT_SUFFIX);
-    	if(-1 == timeZoneIndex) {
-    		timeZoneIndex = string.lastIndexOf('-');
-    		if(timeZoneIndex < decimalIndex) {
-    			timeZoneIndex = -1;
-    		}
-    		if(-1 == timeZoneIndex) {
-        		timeZoneIndex = string.lastIndexOf('+');
-    		}
-    	}
-    	String msString;
-    	if(-1 == timeZoneIndex) {
-    		msString = string.substring(decimalIndex + 1);
-    	} else {
-    		msString = string.substring((decimalIndex + 1), timeZoneIndex);
-    	}
-     	double ms = Long.valueOf(msString).doubleValue();
-    	ms = ms * Math.pow(10, 3 - msString.length());
-    	date.setTime(date.getTime() + (long) ms);
-		applyTimeZone(date, string);
-    	return date;
+        int timeZoneIndex = string.lastIndexOf(GMT_SUFFIX);
+        if (-1 == timeZoneIndex) {
+            timeZoneIndex = string.lastIndexOf('-');
+            if (timeZoneIndex < decimalIndex) {
+                timeZoneIndex = -1;
+            }
+            if (-1 == timeZoneIndex) {
+                timeZoneIndex = string.lastIndexOf('+');
+            }
+        }
+        String msString;
+        if (-1 == timeZoneIndex) {
+            msString = string.substring(decimalIndex + 1);
+        } else {
+            msString = string.substring((decimalIndex + 1), timeZoneIndex);
+        }
+        double ms = Long.valueOf(msString).doubleValue();
+        ms = ms * Math.pow(10, 3 - msString.length());
+        date.setTime(date.getTime() + (long) ms);
+        applyTimeZone(date, string);
+        return date;
     }
 
     public String stringFromDate(java.util.Date sourceDate, QName schemaType) {
-    	if(XMLConstants.DATE_QNAME.equals(schemaType)) {
-    		return dateFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.TIME_QNAME.equals(schemaType)) {
-    		String string = timeFormatter.get().format(sourceDate);
-    		int ms = (int) (sourceDate.getTime() % 1000);
-    		if(0 == ms) {
-    			string += ".0";
-    		} else {
-    			string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ms, 3));
-    		}
+        if (XMLConstants.DATE_QNAME.equals(schemaType)) {
+            return dateFormatter.get().format(sourceDate);
+        } else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
+            String string = timeFormatter.get().format(sourceDate);
+            int ms = (int) (sourceDate.getTime() % 1000);
+            if (0 == ms) {
+                string += ".0";
+            } else {
+                string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ms, 3));
+            }
             return appendTimeZone(string);
-    	} else if(XMLConstants.G_DAY_QNAME.equals(schemaType)) {
-    		return gDayFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
-    		return gMonthFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
-    		return gMonthDayFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
-    		return gYearFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
-    		return gYearMonthFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.DURATION_QNAME.equals(schemaType)) {
-    		throw new IllegalArgumentException();
-    	} else {
-    		return stringFromDate(sourceDate);
-    	}
+        } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+            return gDayFormatter.get().format(sourceDate);
+        } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+            return gMonthFormatter.get().format(sourceDate);
+        } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+            return gMonthDayFormatter.get().format(sourceDate);
+        } else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+            return gYearFormatter.get().format(sourceDate);
+        } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+            return gYearMonthFormatter.get().format(sourceDate);
+        } else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+            throw new IllegalArgumentException();
+        } else {
+            return stringFromDate(sourceDate);
+        }
     }
 
     private String stringFromSQLDate(java.sql.Date sourceDate) {
-         return dateFormatter.get().format(sourceDate);
+        return dateFormatter.get().format(sourceDate);
     }
 
     private String stringFromSQLDate(java.sql.Date sourceDate, QName schemaType) {
-    	if(XMLConstants.DATE_TIME_QNAME.equals(schemaType)) {
-    		return dateTimeFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.TIME_QNAME.equals(schemaType)) {
-    		String string = timeFormatter.get().format(sourceDate);
+        if (XMLConstants.DATE_TIME_QNAME.equals(schemaType)) {
+            return dateTimeFormatter.get().format(sourceDate);
+        } else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
+            String string = timeFormatter.get().format(sourceDate);
             return appendTimeZone(string);
-    	} else if(XMLConstants.G_DAY_QNAME.equals(schemaType)) {
-    		return gDayFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
-    		return gMonthFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
-    		return gMonthDayFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
-    		return gYearFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
-    		return gYearMonthFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.DURATION_QNAME.equals(schemaType)) {
-    		throw new IllegalArgumentException();
-    	} else {
-    		return stringFromSQLDate(sourceDate);
-    	}
+        } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+            return gDayFormatter.get().format(sourceDate);
+        } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+            return gMonthFormatter.get().format(sourceDate);
+        } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+            return gMonthDayFormatter.get().format(sourceDate);
+        } else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+            return gYearFormatter.get().format(sourceDate);
+        } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+            return gYearMonthFormatter.get().format(sourceDate);
+        } else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+            throw new IllegalArgumentException();
+        } else {
+            return stringFromSQLDate(sourceDate);
+        }
     }
 
     private String stringFromSQLTime(Time sourceTime) {
@@ -705,36 +678,36 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     private String stringFromSQLTime(Time sourceTime, QName schemaType) {
-    	if(XMLConstants.DATE_TIME_QNAME.equals(schemaType)) {
-    		String string = dateTimeFormatter.get().format(sourceTime);
+        if (XMLConstants.DATE_TIME_QNAME.equals(schemaType)) {
+            String string = dateTimeFormatter.get().format(sourceTime);
             return appendTimeZone(string);
-    	} else if(XMLConstants.DATE_QNAME.equals(schemaType)) {
-    		return dateFormatter.get().format(sourceTime);
-    	} else if(XMLConstants.G_DAY_QNAME.equals(schemaType)) {
-    		return gDayFormatter.get().format(sourceTime);
-    	} else if(XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
-    		return gMonthFormatter.get().format(sourceTime);
-    	} else if(XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
-    		return gMonthDayFormatter.get().format(sourceTime);
-    	} else if(XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
-    		return gYearFormatter.get().format(sourceTime);
-    	} else if(XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
-    		return gYearMonthFormatter.get().format(sourceTime);
-    	} else if(XMLConstants.DURATION_QNAME.equals(schemaType)) {
-    		throw new IllegalArgumentException();
-    	} else {
-    		return stringFromSQLTime(sourceTime);
-    	}
-     }
+        } else if (XMLConstants.DATE_QNAME.equals(schemaType)) {
+            return dateFormatter.get().format(sourceTime);
+        } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+            return gDayFormatter.get().format(sourceTime);
+        } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+            return gMonthFormatter.get().format(sourceTime);
+        } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+            return gMonthDayFormatter.get().format(sourceTime);
+        } else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+            return gYearFormatter.get().format(sourceTime);
+        } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+            return gYearMonthFormatter.get().format(sourceTime);
+        } else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+            throw new IllegalArgumentException();
+        } else {
+            return stringFromSQLTime(sourceTime);
+        }
+    }
 
     private String stringFromTimestamp(Timestamp sourceDate) {
         String string = dateTimeFormatter.get().format(sourceDate);
-		int ns = sourceDate.getNanos();
-		if(0 == ns) {
-			string += ".0";
-		} else {
-			string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ns, 9));
-		}
+        int ns = sourceDate.getNanos();
+        if (0 == ns) {
+            string += ".0";
+        } else {
+            string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ns, 9));
+        }
         return appendTimeZone(string);
     }
 
@@ -742,38 +715,38 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (XMLConstants.DATE_TIME_QNAME.equals(schemaType)) {
             String string = dateTimeFormatter.get().format(sourceDate);
             int ns = sourceDate.getNanos();
-            if(0 == ns) {
+            if (0 == ns) {
                 string += ".0";
             } else {
                 string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ns, 9));
             }
             return appendTimeZone(string);
-        } else if(XMLConstants.DATE_QNAME.equals(schemaType)) {
-    		return dateFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.TIME_QNAME.equals(schemaType)) {
-    		String string = timeFormatter.get().format(sourceDate);
-    		int ns = sourceDate.getNanos();
-    		if(0 == ns) {
-    			string += ".0";
-    		} else {
-    			string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ns, 9));
-    		}
+        } else if (XMLConstants.DATE_QNAME.equals(schemaType)) {
+            return dateFormatter.get().format(sourceDate);
+        } else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
+            String string = timeFormatter.get().format(sourceDate);
+            int ns = sourceDate.getNanos();
+            if (0 == ns) {
+                string += ".0";
+            } else {
+                string += ('.' + Helper.buildZeroPrefixAndTruncTrailZeros(ns, 9));
+            }
             return appendTimeZone(string);
-    	} else if(XMLConstants.G_DAY_QNAME.equals(schemaType)) {
-    		return gDayFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
-    		return gMonthFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
-    		return gMonthDayFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
-    		return gYearFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
-    		return gYearMonthFormatter.get().format(sourceDate);
-    	} else if(XMLConstants.DURATION_QNAME.equals(schemaType)) {
-    		throw new IllegalArgumentException();
-    	} else {
-    		return stringFromTimestamp(sourceDate);
-    	}
+        } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+            return gDayFormatter.get().format(sourceDate);
+        } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+            return gMonthFormatter.get().format(sourceDate);
+        } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+            return gMonthDayFormatter.get().format(sourceDate);
+        } else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+            return gYearFormatter.get().format(sourceDate);
+        } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+            return gYearMonthFormatter.get().format(sourceDate);
+        } else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+            throw new IllegalArgumentException();
+        } else {
+            return stringFromTimestamp(sourceDate);
+        }
     }
 
     private String stringFromQName(QName sourceQName) {
@@ -800,7 +773,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (!(sourceObject instanceof String)) {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.APBYTE);
         }
-        byte[] bytes = Base64.base64Decode(((String)sourceObject).getBytes());
+        byte[] bytes = Base64.base64Decode(((String) sourceObject).getBytes());
         return bytes;
     }
 
@@ -817,7 +790,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         byte[] convertedBytes = Base64.base64Encode(bytes);
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < convertedBytes.length; i++) {
-            buffer.append((char)convertedBytes[i]);
+            buffer.append((char) convertedBytes[i]);
         }
         return buffer.toString();
     }
@@ -841,7 +814,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     protected List convertStringToList(Object sourceObject) throws ConversionException {
         ArrayList list = new ArrayList();
         if (sourceObject instanceof String) {
-            StringTokenizer tokenizer = new StringTokenizer((String)sourceObject, " ");
+            StringTokenizer tokenizer = new StringTokenizer((String) sourceObject, " ");
             while (tokenizer.hasMoreElements()) {
                 String token = tokenizer.nextToken();
                 list.add(token);
@@ -853,7 +826,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     protected String convertListToString(Object sourceObject) throws ConversionException {
         String returnString = new String();
         if (sourceObject instanceof List) {
-            List list = (List)sourceObject;
+            List list = (List) sourceObject;
             for (int i = 0; i < list.size(); i++) {
                 Object next = list.get(i);
                 if (next instanceof String) {
@@ -868,21 +841,21 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     private TimeZone convertStringToTimeZone(String string) {
-    	if(GMT_SUFFIX.equals(string)) {
-    		return TimeZone.getTimeZone(GMT_ID);
-    	} else{
-    		return TimeZone.getTimeZone(GMT_ID + string);
-    	}
+        if (GMT_SUFFIX.equals(string)) {
+            return TimeZone.getTimeZone(GMT_ID);
+        } else {
+            return TimeZone.getTimeZone(GMT_ID + string);
+        }
     }
 
-    public HashMap getDefaultXMLTypes() {
+    public static HashMap getDefaultXMLTypes() {
         if (defaultXMLTypes == null) {
             defaultXMLTypes = buildXMLTypes();
         }
         return defaultXMLTypes;
     }
 
-    public HashMap getDefaultJavaTypes() {
+    public static HashMap getDefaultJavaTypes() {
         if (defaultJavaTypes == null) {
             defaultJavaTypes = buildJavaTypes();
         }
@@ -892,7 +865,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     /**
     * Build and return a Hashtable containing the default XML to Java conversion pairs
     */
-    private HashMap buildXMLTypes() {
+    private static HashMap buildXMLTypes() {
         HashMap XMLTypes = new HashMap();
 
         //jaxb 1.0 spec pairs
@@ -923,7 +896,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     /**
      * Build and return a Hashtable containing the default Java to XML conversion pairs
      */
-    private HashMap buildJavaTypes() {
+    private static HashMap buildJavaTypes() {
         HashMap javaTypes = new HashMap();
 
         //jaxb 1.0 spec pairs
@@ -956,75 +929,75 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     private String appendTimeZone(String string) {
-    	if(!timeZoneQualified){
-    		return string;
-    	}
+        if (!timeZoneQualified) {
+            return string;
+        }
 
-    	StringBuilder stringBuilder = new StringBuilder(string);
+        StringBuilder stringBuilder = new StringBuilder(string);
 
-    	// GMT Time Zone
-    	int rawMinuteOffset = getTimeZone().getRawOffset() / 60000;
-    	if(0 == rawMinuteOffset) {
-    		stringBuilder.append(GMT_SUFFIX);
-    		return stringBuilder.toString();
-    	}
+        // GMT Time Zone
+        int rawMinuteOffset = getTimeZone().getRawOffset() / 60000;
+        if (0 == rawMinuteOffset) {
+            stringBuilder.append(GMT_SUFFIX);
+            return stringBuilder.toString();
+        }
 
-    	// +HH:MM
-    	if(rawMinuteOffset < 0) {
-    		stringBuilder.append('-');
-    		rawMinuteOffset = Math.abs(rawMinuteOffset);
-    	} else {
-    		stringBuilder.append('+');
-    	}
-    	int hourOffset = rawMinuteOffset / 60;
-    	if(hourOffset < 10) {
-    		stringBuilder.append('0');
-    	}
-    	stringBuilder.append(hourOffset);
-    	stringBuilder.append(':');
-    	int minuteOffset = rawMinuteOffset % 60;
-    	if(minuteOffset < 10) {
-    		stringBuilder.append('0');
-    	}
-    	stringBuilder.append(minuteOffset);
-    	return stringBuilder.toString();
+        // +HH:MM
+        if (rawMinuteOffset < 0) {
+            stringBuilder.append('-');
+            rawMinuteOffset = Math.abs(rawMinuteOffset);
+        } else {
+            stringBuilder.append('+');
+        }
+        int hourOffset = rawMinuteOffset / 60;
+        if (hourOffset < 10) {
+            stringBuilder.append('0');
+        }
+        stringBuilder.append(hourOffset);
+        stringBuilder.append(':');
+        int minuteOffset = rawMinuteOffset % 60;
+        if (minuteOffset < 10) {
+            stringBuilder.append('0');
+        }
+        stringBuilder.append(minuteOffset);
+        return stringBuilder.toString();
     }
 
     private void applyTimeZone(java.util.Date date, String string) {
-    	if(null == string) {
-    		return;
-    	}
+        if (null == string) {
+            return;
+        }
 
-    	int stringTimeZoneRawOffset;
-    	if(string.charAt(string.length() -1) == 'Z') {
-    		stringTimeZoneRawOffset = 0;
-    	} else {
-    		int timeZoneIndex = string.lastIndexOf('+');
-    		if(-1 == timeZoneIndex) {
-    			timeZoneIndex = string.lastIndexOf('-');
-    			if(-1 == timeZoneIndex) {
-    				return;
-    			} else {
-    	    		int lastColonIndex = string.lastIndexOf(':');
-    	    		if((lastColonIndex - timeZoneIndex)  != 3) {
-    	    			return;
-    	    		}
-    			}
-    		}
-        	TimeZone stringTimeZone = convertStringToTimeZone(string.substring(timeZoneIndex));
-        	stringTimeZoneRawOffset = stringTimeZone.getRawOffset();
-    	}
+        int stringTimeZoneRawOffset;
+        if (string.charAt(string.length() - 1) == 'Z') {
+            stringTimeZoneRawOffset = 0;
+        } else {
+            int timeZoneIndex = string.lastIndexOf('+');
+            if (-1 == timeZoneIndex) {
+                timeZoneIndex = string.lastIndexOf('-');
+                if (-1 == timeZoneIndex) {
+                    return;
+                } else {
+                    int lastColonIndex = string.lastIndexOf(':');
+                    if ((lastColonIndex - timeZoneIndex) != 3) {
+                        return;
+                    }
+                }
+            }
+            TimeZone stringTimeZone = convertStringToTimeZone(string.substring(timeZoneIndex));
+            stringTimeZoneRawOffset = stringTimeZone.getRawOffset();
+        }
 
-    	int formatTimeZoneRawOffset = getTimeZone().getRawOffset();
-    	int timeZoneAdjustment = formatTimeZoneRawOffset - stringTimeZoneRawOffset;
-    	date.setTime(date.getTime() + timeZoneAdjustment);
+        int formatTimeZoneRawOffset = getTimeZone().getRawOffset();
+        int timeZoneAdjustment = formatTimeZoneRawOffset - stringTimeZoneRawOffset;
+        date.setTime(date.getTime() + timeZoneAdjustment);
     }
 
     /**
      * INTERNAL:
      */
     public Object clone() {
-      	XMLConversionManager clone = (XMLConversionManager)super.clone();
+        XMLConversionManager clone = (XMLConversionManager) super.clone();
         buildFormatters(clone);
         return clone;
     }

@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.StringTokenizer;
@@ -76,7 +76,6 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
         String stringValue = "";
         String newValue;
         QName schemaType;
-        XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
         if (xmlCompositeDirectCollectionMapping.usesSingleNode()) {
             while (cp.hasNext(iterator)) {
                 objectValue = cp.next(iterator, session);
@@ -87,8 +86,8 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
                         objectValue = xmlCompositeDirectCollectionMapping.getValueConverter().convertObjectValueToDataValue(objectValue, session);
                     }
                 }
-                schemaType = getSchemaType((XMLField)xmlCompositeDirectCollectionMapping.getField(), objectValue);
-                newValue = getValueToWrite(schemaType, objectValue, xmlConversionManager);
+                schemaType = getSchemaType((XMLField) xmlCompositeDirectCollectionMapping.getField(), objectValue, session);
+                newValue = getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
                 if (null != newValue) {
                     stringValue += newValue;
                     if (cp.hasNext(iterator)) {
@@ -102,7 +101,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
                 marshalRecord.closeStartGroupingElements(groupingFragment);
             } else {
                 marshalRecord.closeStartGroupingElements(groupingFragment);
-                if(xmlCompositeDirectCollectionMapping.isCDATA()) {
+                if (xmlCompositeDirectCollectionMapping.isCDATA()) {
                     marshalRecord.cdata(stringValue);
                 } else {
                     marshalRecord.characters(stringValue);
@@ -127,9 +126,10 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
         } else {
             addUnmarshalValue(unmarshalRecord, value, collection);
         }
-    }        
+    }
+
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
-        XMLField xmlField = (XMLField)xmlCompositeDirectCollectionMapping.getField();
+        XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
         if (xmlField.getLastXPathFragment().nameIsText()) {
             String type = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
             if (null != type) {
@@ -142,10 +142,10 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
                 }
                 unmarshalRecord.setTypeQName(new QName(namespaceURI, type));
             }
-        } else if(xmlField.getLastXPathFragment().isAttribute()) {
-            if(!this.xmlCompositeDirectCollectionMapping.usesSingleNode()) {
+        } else if (xmlField.getLastXPathFragment().isAttribute()) {
+            if (!this.xmlCompositeDirectCollectionMapping.usesSingleNode()) {
                 String namespaceURI = xmlField.getLastXPathFragment().getNamespaceURI();
-                if(namespaceURI == null) {
+                if (namespaceURI == null) {
                     namespaceURI = EMPTY_STRING;
                 }
                 String value = atts.getValue(namespaceURI, xmlField.getLastXPathFragment().getLocalName());
@@ -162,7 +162,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
         unmarshalRecord.resetStringBuffer();
 
         if (xmlCompositeDirectCollectionMapping.usesSingleNode()) {
-            StringTokenizer stringTokenizer = new StringTokenizer((String)value);
+            StringTokenizer stringTokenizer = new StringTokenizer((String) value);
             while (stringTokenizer.hasMoreTokens()) {
                 addUnmarshalValue(unmarshalRecord, stringTokenizer.nextToken(), collection);
             }
@@ -176,19 +176,20 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
         unmarshalRecord.resetStringBuffer();
 
         if (xmlCompositeDirectCollectionMapping.usesSingleNode()) {
-            StringTokenizer stringTokenizer = new StringTokenizer((String)value);
+            StringTokenizer stringTokenizer = new StringTokenizer((String) value);
             while (stringTokenizer.hasMoreTokens()) {
                 addUnmarshalValue(unmarshalRecord, stringTokenizer.nextToken(), collection);
             }
         } else {
             addUnmarshalValue(unmarshalRecord, value, collection);
         }
-    }    
+    }
+
     private void addUnmarshalValue(UnmarshalRecord unmarshalRecord, Object value, Object collection) {
         if ((null == value) || EMPTY_STRING.equals(value)) {
             return;
         }
-        XMLField xmlField = (XMLField)xmlCompositeDirectCollectionMapping.getField();
+        XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
 
         XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
         if (unmarshalRecord.getTypeQName() != null) {
@@ -219,11 +220,11 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
     public ContainerPolicy getContainerPolicy() {
         return xmlCompositeDirectCollectionMapping.getContainerPolicy();
     }
-    
+
     public boolean isContainerValue() {
         return true;
     }
-    
+
     public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlCompositeDirectCollectionMapping.hasValueConverter()) {
             if (xmlCompositeDirectCollectionMapping.getValueConverter() instanceof XMLConverter) {
@@ -232,10 +233,9 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
                 value = xmlCompositeDirectCollectionMapping.getValueConverter().convertObjectValueToDataValue(value, session);
             }
         }
-        XMLField xmlField = (XMLField)xmlCompositeDirectCollectionMapping.getField();
-        QName schemaType = getSchemaType(xmlField, value);
-        XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
-        String stringValue = getValueToWrite(schemaType, value, xmlConversionManager);
+        XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
+        QName schemaType = getSchemaType(xmlField, value, session);
+        String stringValue = getValueToWrite(schemaType, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
         if (null != stringValue) {
             marshalRecord.openStartElement(xPathFragment, namespaceResolver);
             XPathFragment nextFragment = xPathFragment.getNextFragment();
@@ -249,7 +249,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
                     marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, schemaType.getLocalPart(), typeQName, schemaTypePrefix + ':' + schemaType.getLocalPart());
                 }
                 marshalRecord.closeStartElement();
-                if(xmlCompositeDirectCollectionMapping.isCDATA()) {
+                if (xmlCompositeDirectCollectionMapping.isCDATA()) {
                     marshalRecord.cdata(stringValue);
                 } else {
                     marshalRecord.characters(stringValue);
@@ -257,7 +257,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends XMLSimpleMappi
             }
             marshalRecord.endElement(xPathFragment, namespaceResolver);
         }
-        
+
     }
 
     public XMLCompositeDirectCollectionMapping getMapping() {

@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings;
 
 import java.util.Enumeration;
@@ -17,7 +17,6 @@ import java.util.Vector;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -216,7 +215,8 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
 public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping {
-	private boolean isCDATA;
+    private boolean isCDATA;
+
     public XMLCompositeDirectCollectionMapping() {
         super();
     }
@@ -235,18 +235,18 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         if (this.getField() instanceof XMLField && getValueConverter() instanceof TypeConversionConverter) {
-            TypeConversionConverter converter = (TypeConversionConverter)getValueConverter();
+            TypeConversionConverter converter = (TypeConversionConverter) getValueConverter();
             this.getField().setType(converter.getObjectClass());
         }
 
         ContainerPolicy cp = getContainerPolicy();
         if (cp != null) {
             if (cp.getContainerClass() == null) {
-                Class cls = ConversionManager.getDefaultManager().convertClassNameToClass(cp.getContainerClassName());
+                Class cls = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(cp.getContainerClassName());
                 cp.setContainerClass(cls);
             }
         }
-        ((XMLField)this.getField()).setIsCDATA(this.isCDATA());
+        ((XMLField) this.getField()).setIsCDATA(this.isCDATA());
     }
 
     /**
@@ -267,9 +267,11 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     public String getXPath() {
         return getFieldName();
     }
+
     public void useCollectionClassName(String concreteContainerClassName) {
         this.setContainerPolicy(new CollectionContainerPolicy(concreteContainerClassName));
     }
+
     /**
      * INTERNAL:
      * Build the nested collection from the database row.
@@ -292,7 +294,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
             Object element = stream.nextElement();
             if (hasValueConverter()) {
                 if (getValueConverter() instanceof XMLConverter) {
-                    element = ((XMLConverter)getValueConverter()).convertDataValueToObjectValue(element, executionSession, ((XMLRecord)row).getUnmarshaller());
+                    element = ((XMLConverter) getValueConverter()).convertDataValueToObjectValue(element, executionSession, ((XMLRecord) row).getUnmarshaller());
                 } else {
                     element = getValueConverter().convertDataValueToObjectValue(element, executionSession);
                 }
@@ -301,6 +303,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
         }
         return result;
     }
+
     /**
      * INTERNAL:
      */
@@ -322,7 +325,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
             Object element = cp.next(iter, session);
             if (hasValueConverter()) {
                 if (getValueConverter() instanceof XMLConverter) {
-                    element = ((XMLConverter)getValueConverter()).convertObjectValueToDataValue(element, session, ((XMLRecord)row).getMarshaller());
+                    element = ((XMLConverter) getValueConverter()).convertObjectValueToDataValue(element, session, ((XMLRecord) row).getMarshaller());
                 } else {
                     element = getValueConverter().convertObjectValueToDataValue(element, session);
                 }
@@ -338,25 +341,24 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
         }
         row.put(this.getField(), fieldValue);
     }
+
     public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session) {
         Object element = value;
         if (hasValueConverter()) {
             if (getValueConverter() instanceof XMLConverter) {
-                element = ((XMLConverter)getValueConverter()).convertObjectValueToDataValue(element, session, record.getMarshaller());
+                element = ((XMLConverter) getValueConverter()).convertObjectValueToDataValue(element, session, record.getMarshaller());
             } else {
                 element = getValueConverter().convertObjectValueToDataValue(element, session);
             }
         }
         record.add(this.getField(), element);
     }
-        
-    
-    
+
     public void setIsCDATA(boolean CDATA) {
         isCDATA = CDATA;
     }
-    
+
     public boolean isCDATA() {
         return isCDATA;
-    }    
+    }
 }

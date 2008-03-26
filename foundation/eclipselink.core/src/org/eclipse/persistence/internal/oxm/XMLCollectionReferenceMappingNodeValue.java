@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
@@ -80,8 +80,7 @@ public class XMLCollectionReferenceMappingNodeValue extends XMLSimpleMappingNode
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         if (value != null) {
-            XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
-            Object realValue = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager);
+            Object realValue = xmlField.convertValueBasedOnSchemaType(value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager());
             // build a reference which will be resolved after unmarshalling is complete
             xmlCollectionReferenceMapping.buildReference(unmarshalRecord, xmlField, realValue, unmarshalRecord.getSession());
         }
@@ -122,17 +121,17 @@ public class XMLCollectionReferenceMappingNodeValue extends XMLSimpleMappingNode
      * Indicate if the next XPathFragment is an attribute or text() node.
      */
     public boolean isOwningNode(XPathFragment xPathFragment) {
-    	if (xmlCollectionReferenceMapping.usesSingleNode()) {
+        if (xmlCollectionReferenceMapping.usesSingleNode()) {
             return xPathFragment.nameIsText() || xPathFragment.isAttribute();
-    	}
+        }
         XPathFragment nextFragment = xPathFragment.getNextFragment();
         return (nextFragment != null) && (nextFragment.nameIsText() || nextFragment.isAttribute());
     }
-    
+
     public boolean isContainerValue() {
         return true;
     }
-    
+
     public Object getContainerInstance() {
         return getContainerPolicy().containerInstance();
     }
@@ -157,7 +156,7 @@ public class XMLCollectionReferenceMappingNodeValue extends XMLSimpleMappingNode
         if (collection == null) {
             return false;
         }
-        
+
         Object iterator = cp.iteratorFor(collection);
         if (cp.hasNext(iterator)) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
@@ -165,13 +164,12 @@ public class XMLCollectionReferenceMappingNodeValue extends XMLSimpleMappingNode
         } else {
             return false;
         }
-        
+
         Object objectValue;
         String stringValue = "";
         String newValue;
         QName schemaType;
 
-        XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
         if (xmlCollectionReferenceMapping.usesSingleNode()) {
             while (cp.hasNext(iterator)) {
                 objectValue = cp.next(iterator, session);
@@ -179,8 +177,8 @@ public class XMLCollectionReferenceMappingNodeValue extends XMLSimpleMappingNode
                 if (fieldValue == null) {
                     return false;
                 }
-                schemaType = getSchemaType(xmlField, fieldValue);
-                newValue = getValueToWrite(schemaType, fieldValue, xmlConversionManager);
+                schemaType = getSchemaType(xmlField, fieldValue, session);
+                newValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
                 if (newValue != null) {
                     stringValue += newValue;
                     if (cp.hasNext(iterator)) {
@@ -193,11 +191,11 @@ public class XMLCollectionReferenceMappingNodeValue extends XMLSimpleMappingNode
             while (cp.hasNext(iterator)) {
                 objectValue = cp.next(iterator, session);
                 marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
-		    }
+            }
         }
         return true;
     }
-    
+
     /**
      * @override
      * @param xPathFragment
@@ -219,28 +217,26 @@ public class XMLCollectionReferenceMappingNodeValue extends XMLSimpleMappingNode
             }
         }
         return true;
-    }    
-    
+    }
+
     public void marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlCollectionReferenceMapping.usesSingleNode()) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             if (xPathFragment.isAttribute()) {
-                marshalRecord.attribute(xPathFragment, namespaceResolver, (String)value);
+                marshalRecord.attribute(xPathFragment, namespaceResolver, (String) value);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
             } else {
                 marshalRecord.closeStartGroupingElements(groupingFragment);
-                marshalRecord.characters((String)value);
+                marshalRecord.characters((String) value);
             }
         } else {
-            XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
             QName schemaType;
-            
             Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(value, xmlField, session);
             if (fieldValue == null) {
                 return;
             }
-            schemaType = getSchemaType(xmlField, fieldValue);
-            String stringValue = getValueToWrite(schemaType, fieldValue, xmlConversionManager);
+            schemaType = getSchemaType(xmlField, fieldValue, session);
+            String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
             if (stringValue != null) {
                 marshalRecord.openStartElement(xPathFragment, namespaceResolver);
                 XPathFragment nextFragment = xPathFragment.getNextFragment();
@@ -253,12 +249,11 @@ public class XMLCollectionReferenceMappingNodeValue extends XMLSimpleMappingNode
                 }
                 marshalRecord.endElement(xPathFragment, namespaceResolver);
             }
-            
+
         }
     }
 
     public XMLCollectionReferenceMapping getMapping() {
         return xmlCollectionReferenceMapping;
     }
-
 }

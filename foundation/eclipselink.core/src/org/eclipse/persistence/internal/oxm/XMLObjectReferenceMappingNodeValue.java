@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
@@ -86,8 +86,7 @@ public class XMLObjectReferenceMappingNodeValue extends XMLSimpleMappingNodeValu
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         if (value != null) {
-            XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
-            Object realValue = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager);
+            Object realValue = xmlField.convertValueBasedOnSchemaType(value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager());
             // build a reference which will be resolved after unmarshalling is complete
             xmlObjectReferenceMapping.buildReference(unmarshalRecord, xmlField, realValue, unmarshalRecord.getSession());
         }
@@ -155,9 +154,8 @@ public class XMLObjectReferenceMappingNodeValue extends XMLSimpleMappingNodeValu
             return false;
         }
 
-        QName schemaType = getSchemaType(xmlField, fieldValue);
-        XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
-        String stringValue = getValueToWrite(schemaType, fieldValue, xmlConversionManager);
+        QName schemaType = getSchemaType(xmlField, fieldValue, session);
+        String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
 
         if (xPathFragment.isAttribute()) {

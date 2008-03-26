@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings;
 
 import javax.activation.DataHandler;
@@ -76,11 +76,14 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
     private MimeTypePolicy mimeTypePolicy;
     private boolean isSwaRef;
     private static final String include = ":Include/@href";
+
     public XMLBinaryDataMapping() {
     }
+
     public boolean shouldInlineBinaryData() {
         return shouldInlineBinaryData;
     }
+
     public void setShouldInlineBinaryData(boolean b) {
         shouldInlineBinaryData = b;
     }
@@ -127,6 +130,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
     public boolean isSwaRef() {
         return isSwaRef;
     }
+
     public void setSwaRef(boolean swaRef) {
         isSwaRef = swaRef;
     }
@@ -141,35 +145,36 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
 
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
         Object attributeValue = getAttributeValueFromObject(object);
-        if(attributeValue == null) {
+        if (attributeValue == null) {
             return;
         }
-        writeSingleValue(attributeValue, object, (XMLRecord)row, session);
+        writeSingleValue(attributeValue, object, (XMLRecord) row, session);
     }
+
     public void writeSingleValue(Object attributeValue, Object parent, XMLRecord record, AbstractSession session) {
         XMLMarshaller marshaller = record.getMarshaller();
         if (getConverter() != null) {
             Converter converter = getConverter();
             if (converter instanceof XMLConverter) {
-                attributeValue = ((XMLConverter)converter).convertObjectValueToDataValue(attributeValue, session, record.getMarshaller());
+                attributeValue = ((XMLConverter) converter).convertObjectValueToDataValue(attributeValue, session, record.getMarshaller());
             } else {
                 attributeValue = converter.convertObjectValueToDataValue(attributeValue, session);
             }
         }
-        XMLField field = (XMLField)getField();
+        XMLField field = (XMLField) getField();
         if (field.getLastXPathFragment().isAttribute()) {
             if (isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
                 //should be a DataHandler here
                 try {
                     String value = null;
-                    if (getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {                    
-                        value = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler)attributeValue);
+                    if (getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
+                        value = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler) attributeValue);
                     } else {
                         XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                                 attributeValue, marshaller, getMimeType(parent));
                         byte[] bytes = data.getData();
                         value = marshaller.getAttachmentMarshaller().addSwaRefAttachment(bytes, 0, bytes.length);
-                       
+
                     }
                     record.put(field, value);
                 } catch (ClassCastException cce) {
@@ -177,9 +182,8 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                 }
             } else {
                 //inline case
-                XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
-                attributeValue, record.getMarshaller(), getMimeType(parent));
-                String base64Value = XMLConversionManager.getDefaultXMLManager().buildBase64StringFromBytes(data.getData());
+                XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(attributeValue, record.getMarshaller(), getMimeType(parent));
+                String base64Value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).buildBase64StringFromBytes(data.getData());
                 record.put(field, base64Value);
             }
         }
@@ -188,26 +192,26 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
             String c_id = "";
             if ((getAttributeClassification() == ClassConstants.ABYTE) || (getAttributeClassification() == ClassConstants.APBYTE)) {
                 if (getAttributeClassification() == ClassConstants.ABYTE) {
-                    attributeValue = XMLConversionManager.getDefaultXMLManager().convertObject(attributeValue, ClassConstants.APBYTE);
+                    attributeValue = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(attributeValue, ClassConstants.APBYTE);
                 }
                 c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(//
-                    (byte[])attributeValue, 0,//
-                    ((byte[])attributeValue).length,// 
-                    this.getMimeType(parent),//
-                    field.getLastXPathFragment().getLocalName(),// 
-                    field.getLastXPathFragment().getNamespaceURI());//
+                        (byte[]) attributeValue, 0,//
+                        ((byte[]) attributeValue).length,// 
+                        this.getMimeType(parent),//
+                        field.getLastXPathFragment().getLocalName(),// 
+                        field.getLastXPathFragment().getNamespaceURI());//
             } else if (getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                 c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(//
-                    (DataHandler)attributeValue, field.getLastXPathFragment().getLocalName(), field.getLastXPathFragment().getNamespaceURI());
+                        (DataHandler) attributeValue, field.getLastXPathFragment().getLocalName(), field.getLastXPathFragment().getNamespaceURI());
             } else {
                 XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
-                attributeValue, marshaller, getMimeType(parent));
+                        attributeValue, marshaller, getMimeType(parent));
                 byte[] bytes = data.getData();
                 c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0,//
-                                                                              bytes.length,//
-                                                                              data.getMimeType(),//
-                                                                              field.getLastXPathFragment().getLocalName(),//
-                                                                              field.getLastXPathFragment().getNamespaceURI());
+                        bytes.length,//
+                        data.getMimeType(),//
+                        field.getLastXPathFragment().getLocalName(),//
+                        field.getLastXPathFragment().getNamespaceURI());
             }
             String xpath = this.getXPath();
             String prefix = null;
@@ -229,30 +233,30 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
             } else {
                 prefixAlreadyDefined = true;
             }
-            
+
             String incxpath = xpath + "/" + prefix + ":Include";
-            
+
             xpath += ("/" + prefix + include);
             XMLField xpathField = new XMLField(xpath);
             xpathField.setNamespaceResolver(resolver);
             record.put(xpathField, c_id);
-            
+
             // Need to call setAttributeNS on the record, unless the xop prefix
             // is defined on the descriptor's resolver already
             XMLField incField = new XMLField(incxpath);
             incField.setNamespaceResolver(resolver);
             Object obj = record.getIndicatingNoEntry(incField);
             if (!prefixAlreadyDefined && obj != null && obj instanceof DOMRecord) {
-                if(((DOMRecord)obj).getDOM().getNodeType() == Node.ELEMENT_NODE) {
-                    ((Element)((DOMRecord)obj).getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, XMLConstants.XOP_URL);
+                if (((DOMRecord) obj).getDOM().getNodeType() == Node.ELEMENT_NODE) {
+                    ((Element) ((DOMRecord) obj).getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, XMLConstants.XOP_URL);
                 }
             }
         } else if (isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
             //AttributeValue should be a data-handler
             try {
                 String c_id = null;
-                if(getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
-                    c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler)attributeValue);
+                if (getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
+                    c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment((DataHandler) attributeValue);
                 } else {
                     XMLBinaryDataHelper.EncodedData data = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                             attributeValue, marshaller, getMimeType(parent));
@@ -274,47 +278,47 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                 record.put(textField, attributeValue);
             } else {
                 byte[] bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
-                attributeValue, marshaller, getMimeType(parent)).getData();
+                        attributeValue, marshaller, getMimeType(parent)).getData();
                 record.put(textField, bytes);
             }
         }
-    } 
-    
+    }
+
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
         // PERF: Direct variable access.
         Object value = row.get(this.field);
-        if(value == null) {
+        if (value == null) {
             return value;
         }
         Object fieldValue = null;
-        XMLUnmarshaller unmarshaller = ((XMLRecord)row).getUnmarshaller();
+        XMLUnmarshaller unmarshaller = ((XMLRecord) row).getUnmarshaller();
         if (value instanceof String) {
             if (this.isSwaRef() && (unmarshaller.getAttachmentUnmarshaller() != null)) {
-                if(getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
-                    fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler((String)value);                    
+                if (getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
+                    fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler((String) value);
                 } else {
-                    fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsByteArray((String)value);
+                    fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsByteArray((String) value);
                 }
             } else if (!this.isSwaRef()) {
                 //should be base64
-                byte[] bytes = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(value);
+                byte[] bytes = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(value);
                 fieldValue = bytes;
             }
         } else {
             //this was an element, so do the XOP/SWAREF/Inline binary cases for an element
-            XMLRecord record = (XMLRecord)value;
+            XMLRecord record = (XMLRecord) value;
 
             if ((unmarshaller.getAttachmentUnmarshaller() != null) && unmarshaller.getAttachmentUnmarshaller().isXOPPackage() && !this.isSwaRef() && !this.shouldInlineBinaryData()) {
                 //look for the include element:
                 String xpath = "";
                 //  need a prefix for XOP
-                NamespaceResolver resolver = ((XMLDescriptor)getDescriptor()).getNamespaceResolver();
+                NamespaceResolver resolver = ((XMLDescriptor) getDescriptor()).getNamespaceResolver();
 
                 // 20061023: handle NPE on null NSR
                 if (resolver == null) {
                     // create and set empty namespace resolver on descriptor
                     resolver = new NamespaceResolver();
-                    ((XMLDescriptor)getDescriptor()).setNamespaceResolver(resolver);
+                    ((XMLDescriptor) getDescriptor()).setNamespaceResolver(resolver);
                 }
                 String prefix = resolver.resolveNamespaceURI(XMLConstants.XOP_URL);
 
@@ -326,7 +330,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                 xpath = prefix + include;
                 XMLField field = new XMLField(xpath);
                 field.setNamespaceResolver(resolver);
-                String includeValue = (String)record.get(field);
+                String includeValue = (String) record.get(field);
                 if (value != null) {
                     if ((getAttributeClassification() == ClassConstants.ABYTE) || (getAttributeClassification() == ClassConstants.APBYTE)) {
                         fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsByteArray(includeValue);
@@ -335,26 +339,26 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                     }
                 }
             } else if ((unmarshaller.getAttachmentUnmarshaller() != null) && isSwaRef()) {
-                String refValue = (String)record.get("text()");
+                String refValue = (String) record.get("text()");
                 if (refValue != null) {
                     fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(refValue);
                 }
             } else {
                 fieldValue = record.get("text()");
                 //should be a base64 string
-                fieldValue = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(fieldValue);
+                fieldValue = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(fieldValue);
             }
         }
         Object attributeValue = fieldValue;
         if (getConverter() != null) {
             if (getConverter() instanceof XMLConverter) {
-                attributeValue = ((XMLConverter)getConverter()).convertDataValueToObjectValue(fieldValue, executionSession, unmarshaller);
+                attributeValue = ((XMLConverter) getConverter()).convertDataValueToObjectValue(fieldValue, executionSession, unmarshaller);
             } else {
                 attributeValue = getConverter().convertDataValueToObjectValue(fieldValue, executionSession);
             }
         }
 
-        attributeValue = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(attributeValue, getAttributeClassification());
+        attributeValue = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(attributeValue, getAttributeClassification(), executionSession);
 
         return attributeValue;
     }

@@ -40,7 +40,7 @@ public class BinaryDataIdentifiedByNameProject extends Project {
 
         XMLBinaryDataMapping photoMapping = new XMLBinaryDataMapping();
         photoMapping.setAttributeName("photo");
-        //photoMapping.setXPath("photos/list/photo");///text()");   
+        //photoMapping.setXPath("photos/list/photo");///text()");
         XMLField field = new XMLField("photo");///text()");
         field.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
         photoMapping.setField(field);

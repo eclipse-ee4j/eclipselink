@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
 import java.io.File;
@@ -262,12 +262,12 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
      * INTERNAL: Return the descriptor for the document.
      */
     protected XMLDescriptor getDescriptor(DOMRecord xmlRecord) throws XMLMarshalException {
-    	XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
+        XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
         QName rootQName = new QName(xmlRecord.getNamespaceURI(), xmlRecord.getLocalName());
         XMLDescriptor xmlDescriptor = xmlContext.getDescriptor(rootQName);
         if (null == xmlDescriptor) {
             // Try to find a descriptor based on the schema type
-            String type = ((Element)xmlRecord.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, "type");
+            String type = ((Element) xmlRecord.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, "type");
             if (null != type) {
                 XPathFragment typeFragment = new XPathFragment(type);
                 String namespaceURI = xmlRecord.resolveNamespacePrefix(typeFragment.getPrefix());
@@ -304,46 +304,41 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         //Try to get the Encoding and Version from DOM3 APIs if available
         String xmlEncoding = "UTF-8";
         String xmlVersion = "1.0";
-        
+
         try {
-            Method getEncoding = PrivilegedAccessHelper.getMethod(xmlRow.getDocument().getClass(), "getXmlEncoding", new Class[]{}, true);
-            Method getVersion = PrivilegedAccessHelper.getMethod(xmlRow.getDocument().getClass(), "getXmlVersion", new Class[]{}, true);
-            
-            xmlEncoding = (String)PrivilegedAccessHelper.invokeMethod(getEncoding, xmlRow.getDocument(), new Object[]{});
-            xmlVersion = (String)PrivilegedAccessHelper.invokeMethod(getVersion, xmlRow.getDocument(), new Object[]{});
-            
-        } catch(Exception ex) {
+            Method getEncoding = PrivilegedAccessHelper.getMethod(xmlRow.getDocument().getClass(), "getXmlEncoding", new Class[] {}, true);
+            Method getVersion = PrivilegedAccessHelper.getMethod(xmlRow.getDocument().getClass(), "getXmlVersion", new Class[] {}, true);
+            xmlEncoding = (String) PrivilegedAccessHelper.invokeMethod(getEncoding, xmlRow.getDocument(), new Object[] {});
+            xmlVersion = (String) PrivilegedAccessHelper.invokeMethod(getVersion, xmlRow.getDocument(), new Object[] {});
+        } catch (Exception ex) {
             //if the methods aren't available, then just use the default values
         }
-        
-        
+
         // handle case where the reference class is a primitive wrapper - in
         // this case, we need to use the conversion manager to convert the 
         // node's value to the primitive wrapper class, then create, 
         // populate and return an XMLRoot
-        if (XMLConversionManager.getDefaultXMLManager().getDefaultJavaTypes().get(referenceClass) != null) {
+        if (XMLConversionManager.getDefaultJavaTypes().get(referenceClass) != null) {
             // we're assuming that since we're unmarshalling to a primitive
-            // wrapper, the root
-            // element has a single text node
+            // wrapper, the root element has a single text node
             Object nodeVal;
             try {
                 Text rootTxt = (Text) xmlRow.getDOM().getFirstChild();
                 nodeVal = rootTxt.getNodeValue();
             } catch (Exception ex) {
                 // here, either the root element doesn't have a text node as a
-                // first child,
-                // or there is no first child at all - in any case, try
-                // converting null
+                // first child, or there is no first child at all - in any case,
+                // try converting null
                 nodeVal = null;
             }
 
             Object obj = XMLConversionManager.getDefaultXMLManager().convertObject(nodeVal, referenceClass);
             XMLRoot xmlRoot = new XMLRoot();
-            xmlRoot.setObject(obj);            
-			String lName = xmlRow.getDOM().getLocalName();
-			if (lName == null) {
-				lName = xmlRow.getDOM().getNodeName();
-			}
+            xmlRoot.setObject(obj);
+            String lName = xmlRow.getDOM().getLocalName();
+            if (lName == null) {
+                lName = xmlRow.getDOM().getNodeName();
+            }
             xmlRoot.setLocalName(lName);
             xmlRoot.setNamespaceURI(xmlRow.getDOM().getNamespaceURI());
             xmlRoot.setEncoding(xmlEncoding);
@@ -355,7 +350,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         // try and get a Unit Of Work from the XMLContext
         XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
         AbstractSession session = xmlContext.getReadSession(referenceClass);
-        
+
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(referenceClass);
         query.setSession(session);
@@ -369,7 +364,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         xmlRow.setDocPresPolicy(xmlContext.getDocumentPreservationPolicy(session));
         XMLObjectBuilder objectBuilder = (XMLObjectBuilder) descriptor.getObjectBuilder();
         Object object = objectBuilder.buildObject(query, xmlRow, null);
-        
+
         // resolve mapping references
         xmlUnmarshaller.resolveReferences(session);
 
@@ -381,11 +376,11 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
         String elementPrefix = xmlRow.getDOM().getPrefix();
         return descriptor.wrapObjectInXMLRoot(object, elementNamespaceUri, elementLocalName, elementPrefix, xmlEncoding, xmlVersion, this.isResultAlwaysXMLRoot);
     }
-    
+
     public boolean isResultAlwaysXMLRoot() {
         return this.isResultAlwaysXMLRoot;
     }
-    
+
     public void setResultAlwaysXMLRoot(boolean alwaysReturnRoot) {
         this.isResultAlwaysXMLRoot = alwaysReturnRoot;
     }

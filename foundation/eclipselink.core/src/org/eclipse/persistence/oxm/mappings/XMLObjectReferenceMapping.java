@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings;
 
 import java.util.*;
@@ -21,7 +21,6 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
-import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.Reference;
@@ -51,59 +50,59 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * mapping references.
  */
 public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMapping {
-	protected HashMap sourceToTargetKeyFieldAssociations;
-	protected Vector sourceToTargetKeys;  // maintain the order of the keys
+    protected HashMap sourceToTargetKeyFieldAssociations;
+    protected Vector sourceToTargetKeys; // maintain the order of the keys
 
-	/**
-	 * PUBLIC:
-	 * The default constructor initializes the sourceToTargetKeyFieldAssociations
-	 * and sourceToTargetKeys data structures.
-	 */
-	public XMLObjectReferenceMapping() {
-		sourceToTargetKeyFieldAssociations = new HashMap();
-		sourceToTargetKeys = new Vector();
-	}
+    /**
+     * PUBLIC:
+     * The default constructor initializes the sourceToTargetKeyFieldAssociations
+     * and sourceToTargetKeys data structures.
+     */
+    public XMLObjectReferenceMapping() {
+        sourceToTargetKeyFieldAssociations = new HashMap();
+        sourceToTargetKeys = new Vector();
+    }
 
-	/**
-	 * PUBLIC:
-	 * Add a source-target xpath pair to the map.
-	 * 
-	 * @param srcXPath
-	 * @param tgtXPath
-	 */
-	public void addSourceToTargetKeyFieldAssociation(String srcXPath, String tgtXPath) {
-		XMLField srcFld = new XMLField(srcXPath);
-		sourceToTargetKeys.add(srcFld);
-		sourceToTargetKeyFieldAssociations.put(srcFld, new XMLField(tgtXPath));
-	}
-    
+    /**
+     * PUBLIC:
+     * Add a source-target xpath pair to the map.
+     * 
+     * @param srcXPath
+     * @param tgtXPath
+     */
+    public void addSourceToTargetKeyFieldAssociation(String srcXPath, String tgtXPath) {
+        XMLField srcFld = new XMLField(srcXPath);
+        sourceToTargetKeys.add(srcFld);
+        sourceToTargetKeyFieldAssociations.put(srcFld, new XMLField(tgtXPath));
+    }
+
     /**    
-	 * INTERNAL:
-	 * Retrieve the target object's primary key value that is mapped to a given
-	 * source xpath (in the source-target key field association list).
-	 * 
-	 * @param sourceObject
-	 * @param xmlFld
-	 * @param session
-	 * @return null if the target object is null, the reference class is null, or
-	 * a primary key field name does not exist on the reference descriptor that
-	 * matches the target field name - otherwise, return the associated primary 
-	 * key value   
-	 */
-	public Object buildFieldValue(Object targetObject, XMLField xmlFld, AbstractSession session) {
-		if (targetObject == null || getReferenceClass() == null) {
-			return null;
-		}
-		ClassDescriptor descriptor = getReferenceDescriptor();
-		ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
-		Vector pks = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
-		int idx = descriptor.getPrimaryKeyFields().indexOf(getSourceToTargetKeyFieldAssociations().get(xmlFld));
-		if (idx == -1) {
-			return null;
-		}
-		return pks.get(idx);
-	}
-	
+     * INTERNAL:
+     * Retrieve the target object's primary key value that is mapped to a given
+     * source xpath (in the source-target key field association list).
+     * 
+     * @param sourceObject
+     * @param xmlFld
+     * @param session
+     * @return null if the target object is null, the reference class is null, or
+     * a primary key field name does not exist on the reference descriptor that
+     * matches the target field name - otherwise, return the associated primary 
+     * key value   
+     */
+    public Object buildFieldValue(Object targetObject, XMLField xmlFld, AbstractSession session) {
+        if (targetObject == null || getReferenceClass() == null) {
+            return null;
+        }
+        ClassDescriptor descriptor = getReferenceDescriptor();
+        ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
+        Vector pks = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
+        int idx = descriptor.getPrimaryKeyFields().indexOf(getSourceToTargetKeyFieldAssociations().get(xmlFld));
+        if (idx == -1) {
+            return null;
+        }
+        return pks.get(idx);
+    }
+
     /**
      * INTERNAL:
      * Create (if necessary) and populate a reference object that will be used
@@ -117,40 +116,39 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
      * @return
      */
     public void buildReference(UnmarshalRecord record, XMLField xmlField, Object object, AbstractSession session) {
-    	ReferenceResolver resolver = ReferenceResolver.getInstance(session);
+        ReferenceResolver resolver = ReferenceResolver.getInstance(session);
         if (resolver == null) {
             return;
         }
-        
-    	Object srcObject = record.getCurrentObject();
+
+        Object srcObject = record.getCurrentObject();
         // the order in which the primary keys are added to the vector is
         // relevant for cache lookup - it must match the ordering of the 
         // reference descriptor's primary key entries
         ClassDescriptor clsDescriptor = session.getClassDescriptor(getReferenceClass());
         Vector pkFieldNames = clsDescriptor.getPrimaryKeyFieldNames();
-    	// if reference is null, create a new instance and set it on the resolver
+        // if reference is null, create a new instance and set it on the resolver
         Reference reference = resolver.getReference(this, srcObject);
-    	if (reference == null) {
-    		Vector pks = new Vector();
-    		pks.setSize(pkFieldNames.size());
-    		reference = new Reference(this, srcObject, getReferenceClass(), pks);
-    		resolver.addReference(reference);
-    		record.reference(reference);
-    	}
-		XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlField);
+        if (reference == null) {
+            Vector pks = new Vector();
+            pks.setSize(pkFieldNames.size());
+            reference = new Reference(this, srcObject, getReferenceClass(), pks);
+            resolver.addReference(reference);
+            record.reference(reference);
+        }
+        XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlField);
         int idx = pkFieldNames.indexOf(tgtFld.getXPath());
-		Vector primaryKeys = reference.getPrimaryKeys();
+        Vector primaryKeys = reference.getPrimaryKeys();
         // fix for bug# 5687430
         // need to get the actual type of the target (i.e. int, String, etc.) 
         // and use the converted value when checking the cache.
-        Object value = XMLConversionManager.getDefaultXMLManager().convertObject(
-                object, clsDescriptor.getTypedField(tgtFld).getType());
+        Object value = session.getDatasourcePlatform().getConversionManager().convertObject(object, clsDescriptor.getTypedField(tgtFld).getType());
         if (value != null) {
             primaryKeys.setElementAt(value, idx);
         }
     }
-    
-	/**
+
+    /**
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
@@ -184,14 +182,14 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
             builder.cascadeRegisterNewForCreate(objectReferenced, uow, visitedObjects);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return a list of XMLFields based on the source XPath values
      * in the source-target key field associations list.
      */
     public Vector getFields() {
-    	return sourceToTargetKeys;
+        return sourceToTargetKeys;
     }
 
     /**
@@ -205,12 +203,12 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
      * @param value
      * @return
      */
-    protected QName getSchemaType(XMLField xmlField, Object value) {
+    protected QName getSchemaType(XMLField xmlField, Object value, AbstractSession session) {
         QName schemaType = null;
         if (xmlField.isTypedTextField()) {
             schemaType = xmlField.getXMLType(value.getClass());
         } else if (xmlField.isUnionField()) {
-            return getSingleValueToWriteForUnion((XMLUnionField)xmlField, value);
+            return getSingleValueToWriteForUnion((XMLUnionField) xmlField, value, session);
         } else if (xmlField.getSchemaType() != null) {
             schemaType = xmlField.getSchemaType();
         }
@@ -227,17 +225,17 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
      * @param value
      * @return
      */
-    protected QName getSingleValueToWriteForUnion(XMLUnionField xmlField, Object value) {
+    protected QName getSingleValueToWriteForUnion(XMLUnionField xmlField, Object value, AbstractSession session) {
         ArrayList schemaTypes = xmlField.getSchemaTypes();
         QName schemaType = null;
         QName nextQName;
         Class javaClass;
         for (int i = 0; i < schemaTypes.size(); i++) {
-            nextQName = (QName)(xmlField).getSchemaTypes().get(i);
+            nextQName = (QName) (xmlField).getSchemaTypes().get(i);
             try {
                 if (nextQName != null) {
                     javaClass = xmlField.getJavaClass(nextQName);
-                    value = XMLConversionManager.getDefaultXMLManager().convertObject(value, javaClass, nextQName);
+                    value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, javaClass, nextQName);
                     schemaType = nextQName;
                     break;
                 }
@@ -251,16 +249,15 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
     }
 
     /**
-	 * INTERNAL:
-	 * Return a list of source-target xmlfield pairs.
-	 * 
-	 * @return
-	 */
-	public HashMap getSourceToTargetKeyFieldAssociations() {
-		return sourceToTargetKeyFieldAssociations;
-	}
-    
-    
+     * INTERNAL:
+     * Return a list of source-target xmlfield pairs.
+     * 
+     * @return
+     */
+    public HashMap getSourceToTargetKeyFieldAssociations() {
+        return sourceToTargetKeyFieldAssociations;
+    }
+
     /**
      * Return a string representation of a given value, based on a given schema type. 
      * 
@@ -271,8 +268,8 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
      * @param value
      * @return
      */
-    protected String getValueToWrite(QName schemaType, Object value) {
-        return (String)XMLConversionManager.getDefaultXMLManager().convertObject(value, ClassConstants.STRING, schemaType);
+    protected String getValueToWrite(QName schemaType, Object value, AbstractSession session) {
+        return (String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType);
     }
 
     /**
@@ -285,8 +282,8 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
      * @see org.eclipse.persistence.oxm.NamespaceResolver
      */
     public void initialize(AbstractSession session) throws DescriptorException {
-        if (getReferenceClass()==null) {
-            setReferenceClass(ConversionManager.getDefaultManager().convertClassNameToClass(getReferenceClassName()));
+        if (getReferenceClass() == null) {
+            setReferenceClass(session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(getReferenceClassName()));
         }
         super.initialize(session);
 
@@ -294,29 +291,29 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         if (!(session.getEventManager().getListeners().contains(resolver))) {
             session.getEventManager().addListener(resolver);
         }
-        
+
         // iterate over each source & target XMLField and set the 
         // appropriate namespace resolver
         XMLDescriptor descriptor = (XMLDescriptor) this.getDescriptor();
         XMLDescriptor targetDescriptor = (XMLDescriptor) getReferenceDescriptor();
         for (int index = 0; index < sourceToTargetKeys.size(); index++) {
             XMLField sourceField = (XMLField) sourceToTargetKeys.get(index);
-            sourceField = (XMLField)descriptor.buildField(sourceField);
+            sourceField = (XMLField) descriptor.buildField(sourceField);
             sourceToTargetKeys.set(index, sourceField);
             XMLField targetField = (XMLField) sourceToTargetKeyFieldAssociations.get(sourceField);
-            targetField = (XMLField)targetDescriptor.buildField(targetField);
+            targetField = (XMLField) targetDescriptor.buildField(targetField);
             sourceToTargetKeyFieldAssociations.put(sourceField, targetField);
         }
     }
-    
+
     /**
-	 * INTERNAL:
-	 * Indicates that this is an XML mapping.
-	 */
-	public boolean isXMLMapping() {
-		return true;
-	}
-	    
+     * INTERNAL:
+     * Indicates that this is an XML mapping.
+     */
+    public boolean isXMLMapping() {
+        return true;
+    }
+
     /**
      * INTERNAL:
      * Extract the primary key values from the row, then create an 
@@ -325,46 +322,45 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
      */
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
         // the order in which the primary keys are added to the vector is
-    	// relevant for cache lookup - it must match the ordering of the 
-    	// reference descriptor's primary key entries
-    	ClassDescriptor descriptor = sourceQuery.getSession().getClassDescriptor(getReferenceClass());
-    	Vector pkFieldNames = descriptor.getPrimaryKeyFieldNames();
-		Vector primaryKeys = new Vector();
-		primaryKeys.setSize(pkFieldNames.size());
-		Iterator keyIt = sourceToTargetKeys.iterator();
-		while (keyIt.hasNext()) {
-	    	XMLField keyFld = (XMLField) keyIt.next();
-			XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(keyFld);
-	    	int idx = pkFieldNames.indexOf(tgtFld.getXPath());
+        // relevant for cache lookup - it must match the ordering of the 
+        // reference descriptor's primary key entries
+        ClassDescriptor descriptor = sourceQuery.getSession().getClassDescriptor(getReferenceClass());
+        Vector pkFieldNames = descriptor.getPrimaryKeyFieldNames();
+        Vector primaryKeys = new Vector();
+        primaryKeys.setSize(pkFieldNames.size());
+        Iterator keyIt = sourceToTargetKeys.iterator();
+        while (keyIt.hasNext()) {
+            XMLField keyFld = (XMLField) keyIt.next();
+            XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(keyFld);
+            int idx = pkFieldNames.indexOf(tgtFld.getXPath());
             if (idx == -1) {
                 continue;
             }
             // fix for bug# 5687430
             // need to get the actual type of the target (i.e. int, String, etc.) 
             // and use the converted value when checking the cache.
-            Object value = XMLConversionManager.getDefaultXMLManager().convertObject(
-                    databaseRow.get(keyFld), descriptor.getTypedField(tgtFld).getType());
-			if (value != null) {
-				primaryKeys.setElementAt(value, idx);
-			}
-		}
-		// store the Reference instance on the resolver for use during mapping
-		// resolution phase
-		ReferenceResolver resolver = ReferenceResolver.getInstance(sourceQuery.getSession());
-		if (resolver != null) {
-			resolver.addReference(new Reference(this, targetObject, referenceClass, primaryKeys));
-		}
-		return null;
-    }	
+            Object value = executionSession.getDatasourcePlatform().getConversionManager().convertObject(databaseRow.get(keyFld), descriptor.getTypedField(tgtFld).getType());
+            if (value != null) {
+                primaryKeys.setElementAt(value, idx);
+            }
+        }
+        // store the Reference instance on the resolver for use during mapping
+        // resolution phase
+        ReferenceResolver resolver = ReferenceResolver.getInstance(sourceQuery.getSession());
+        if (resolver != null) {
+            resolver.addReference(new Reference(this, targetObject, referenceClass, primaryKeys));
+        }
+        return null;
+    }
 
     /**
      * @Override 
      * @param field
      */
     public void setField(DatabaseField field) {
-    	// do nothing.
+        // do nothing.
     }
-    
+
     /**
      * INTERNAL:
      * Set the list of source-target xmlfield pairs.
@@ -374,7 +370,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
     public void setSourceToTargetKeyFieldAssociations(HashMap sourceToTargetKeyFieldAssociations) {
         this.sourceToTargetKeyFieldAssociations = sourceToTargetKeyFieldAssociations;
     }
-    
+
     /**
      * INTERNAL:
      * Write the attribute value from the object to the row.
@@ -382,19 +378,19 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
         // for each xmlField on this mapping
         Object targetObject = getAttributeValueFromObject(object);
-        writeSingleValue(targetObject, object, (XMLRecord)row, session);
+        writeSingleValue(targetObject, object, (XMLRecord) row, session);
     }
-    
+
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
-        for (Iterator fieldIt = getFields().iterator(); fieldIt.hasNext(); ) {
+        for (Iterator fieldIt = getFields().iterator(); fieldIt.hasNext();) {
             XMLField xmlField = (XMLField) fieldIt.next();
             Object fieldValue = buildFieldValue(value, xmlField, session);
             if (fieldValue != null) {
-                QName schemaType = getSchemaType(xmlField, fieldValue);
-                String stringValue = getValueToWrite(schemaType, fieldValue);
+                QName schemaType = getSchemaType(xmlField, fieldValue, session);
+                String stringValue = getValueToWrite(schemaType, fieldValue, session);
                 row.put(xmlField, stringValue);
-           }
+            }
         }
-        
+
     }
 }
