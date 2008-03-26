@@ -32,6 +32,7 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import java.lang.reflect.Constructor;
 
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
@@ -39,6 +40,7 @@ import org.xml.sax.ContentHandler;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 import org.eclipse.persistence.jaxb.attachment.*;
 
@@ -63,6 +65,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 	private ValidationEventHandler validationEventHandler;
 	private XMLMarshaller xmlMarshaller;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
+    private static String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
 
 	/**
 	 * This constructor initializes various settings on the XML marshaller, and
@@ -175,7 +178,15 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 	}
 
 	// TODO: add support for StAX
-	public void marshal(Object object, XMLEventWriter eventWriter) {
+	public void marshal(Object object, XMLEventWriter eventWriter) throws JAXBException {
+		try {
+			Class staxResult = PrivilegedAccessHelper.getClassForName(STAX_RESULT_CLASS_NAME);
+			Constructor cons = PrivilegedAccessHelper.getDeclaredConstructorFor(staxResult, new Class[]{XMLEventWriter.class}, false);
+			Result result = (Result)PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{eventWriter});
+			this.marshal(object, result);
+		} catch(Exception ex) {
+			throw new MarshalException(ex);
+		}
 	}
 
 	public void marshal(Object object, Node node) throws JAXBException {
@@ -235,7 +246,15 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 	}
 
 	// TODO: add support for StAX
-	public void marshal(Object object, XMLStreamWriter streamWriter) {
+	public void marshal(Object object, XMLStreamWriter streamWriter) throws JAXBException {
+		try {
+			Class staxResult = PrivilegedAccessHelper.getClassForName(STAX_RESULT_CLASS_NAME);
+			Constructor cons = PrivilegedAccessHelper.getDeclaredConstructorFor(staxResult, new Class[]{XMLStreamWriter.class}, false);
+			Result result = (Result)PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{streamWriter});
+			this.marshal(object, result);
+		} catch(Exception ex) {
+			throw new MarshalException(ex);
+		}		
 	}
 
 	public void marshal(Object object, Writer writer) throws JAXBException {
