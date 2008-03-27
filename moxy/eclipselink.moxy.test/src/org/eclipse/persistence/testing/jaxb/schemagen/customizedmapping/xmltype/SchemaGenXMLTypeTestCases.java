@@ -40,7 +40,7 @@ public class SchemaGenXMLTypeTestCases extends TestCase {
         String tmpdir = System.getenv("T_WORK");
         try {
             Class[] jClasses = new Class[] { BaseType001c.class };
-            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl()));
+            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
             Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
@@ -60,7 +60,7 @@ public class SchemaGenXMLTypeTestCases extends TestCase {
         String tmpdir = System.getenv("T_WORK");
         try {
             Class[] jClasses = new Class[] { BaseType001c.class };
-            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl()));
+            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
             Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));

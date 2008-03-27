@@ -40,7 +40,7 @@ public class SchemaGenXMLRootElementTestCases extends TestCase {
         String tmpdir = System.getenv("T_WORK");
         try {
             Class[] jClasses = new Class[] { Name001.class };
-            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl()));
+            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
             Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
@@ -60,7 +60,7 @@ public class SchemaGenXMLRootElementTestCases extends TestCase {
         String tmpdir = System.getenv("T_WORK");
         try {
             Class[] jClasses = new Class[] { Name001.class };
-            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl()));
+            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
             Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
@@ -80,7 +80,7 @@ public class SchemaGenXMLRootElementTestCases extends TestCase {
         String tmpdir = System.getenv("T_WORK");
         try {
             Class[] jClasses = new Class[] { Name002.class };
-            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl()));
+            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
             Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
@@ -100,7 +100,7 @@ public class SchemaGenXMLRootElementTestCases extends TestCase {
         String tmpdir = System.getenv("T_WORK");
         try {
             Class[] jClasses = new Class[] { Name002.class };
-            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl()));
+            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
             Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
@@ -121,7 +121,7 @@ public class SchemaGenXMLRootElementTestCases extends TestCase {
         String tmpdir = System.getenv("T_WORK");
         try {
             Class[] jClasses = new Class[] { NameSpace001.class };
-            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl()));
+            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
             Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema1.xsd"));
@@ -142,7 +142,7 @@ public class SchemaGenXMLRootElementTestCases extends TestCase {
         String tmpdir = System.getenv("T_WORK");
         try {
             Class[] jClasses = new Class[] { NameSpace001.class };
-            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl()));
+            Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
             Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema1.xsd"));

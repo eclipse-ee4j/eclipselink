@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
 import java.io.BufferedReader;
@@ -29,6 +29,8 @@ import org.eclipse.persistence.jaxb.compiler.*;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.sessions.Project;
+
+
 /**
  * INTERNAL:
  * <p><b>Purpose:</b>A TopLink specific JAXBContextFactory. This class can be specified in a 
@@ -48,79 +50,95 @@ import org.eclipse.persistence.sessions.Project;
  * @see org.eclipse.persistence.jaxb.JAXBContext
  * @see org.eclipse.persistence.jaxb.compiler.Generator
  */
-
-public class JAXBContextFactory  {
+public class JAXBContextFactory {
     public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties) throws JAXBException {
+        ClassLoader loader = null;
+        if (classesToBeBound.length > 0) {
+            loader = classesToBeBound[0].getClassLoader();
+        }
+        return createContext(classesToBeBound, properties, loader);
+    }
+
+    public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {
         javax.xml.bind.JAXBContext jaxbContext = null;
         XMLContext xmlContext = null;
-        Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl()));
+        Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(classLoader)));
         try {
             Project proj = generator.generateProject();
+            ConversionManager conversionManager = null;
+            if (classLoader != null) {
+                conversionManager = new ConversionManager();
+                conversionManager.setLoader(classLoader);
+            } else {
+                conversionManager = ConversionManager.getDefaultManager();
+            }
             // need to make sure that the java class is set properly on each 
             // descriptor when using java classname - req'd for JOT api implementation 
-            for (Iterator<ClassDescriptor> descriptorIt = proj.getOrderedDescriptors().iterator(); descriptorIt.hasNext(); ) {
+            for (Iterator<ClassDescriptor> descriptorIt = proj.getOrderedDescriptors().iterator(); descriptorIt.hasNext();) {
                 ClassDescriptor descriptor = descriptorIt.next();
                 if (descriptor.getJavaClass() == null) {
-                    descriptor.setJavaClass(ConversionManager.getDefaultManager().convertClassNameToClass(descriptor.getJavaClassName()));
+                    descriptor.setJavaClass(conversionManager.convertClassNameToClass(descriptor.getJavaClassName()));
                 }
             }
-            xmlContext = new XMLContext(proj);
+            xmlContext = new XMLContext(proj, classLoader);
             jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw new JAXBException(ex);
         }
         return jaxbContext;
-        
+
     }
-    
+
     public static javax.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader) throws JAXBException {
         try {
             XMLContext xmlContext = new XMLContext(contextPath, classLoader);
             return new org.eclipse.persistence.jaxb.JAXBContext(xmlContext);
-        } catch(Exception ex) {}
+        } catch (Exception ex) {
+        }
         ArrayList classes = new ArrayList();
         StringTokenizer tokenizer = new StringTokenizer(contextPath, ":");
-        while(tokenizer.hasMoreElements()) {
+        while (tokenizer.hasMoreElements()) {
             String path = tokenizer.nextToken();
             try {
                 Class objectFactory = classLoader.loadClass(path + ".ObjectFactory");
                 Method[] createMethods = objectFactory.getMethods();
-                for(int i = 0; i < createMethods.length; i++) {
-                    if(createMethods[i].getName().startsWith("create") && createMethods[i].getReturnType() != javax.xml.bind.JAXBElement.class) {
+                for (int i = 0; i < createMethods.length; i++) {
+                    if (createMethods[i].getName().startsWith("create") && createMethods[i].getReturnType() != javax.xml.bind.JAXBElement.class) {
                         classes.add(createMethods[i].getReturnType());
                     }
                 }
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 //if there's no object factory, don't worry about it. Check for jaxb.index next
             }
             try {
                 //try to load package info just to be safe
                 classLoader.loadClass(path + ".package-info");
-            } catch(Exception ex){}
+            } catch (Exception ex) {
+            }
             //Next check for a jaxb.index file in case there's one available
             InputStream jaxbIndex = classLoader.getResourceAsStream(path.replace('.', '/') + "/jaxb.index");
-            if(jaxbIndex != null) {
+            if (jaxbIndex != null) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(jaxbIndex));
                 try {
                     String line = reader.readLine();
-                    while(line != null) {
+                    while (line != null) {
                         String className = path + "." + line.trim();
                         try {
                             classes.add(classLoader.loadClass(className));
-                        }catch(Exception ex){
+                        } catch (Exception ex) {
                             //just ignore for now if the class isn't available.
                         }
                         line = reader.readLine();
                     }
-                } catch(Exception ex) {}
+                } catch (Exception ex) {
+                }
             }
         }
         Class[] classArray = new Class[classes.size()];
-        for(int i = 0; i < classes.size(); i++) {
-            classArray[i] = (Class)classes.get(i);
+        for (int i = 0; i < classes.size(); i++) {
+            classArray[i] = (Class) classes.get(i);
         }
-        return createContext(classArray, null);
-    }    
-    
-    
+        return createContext(classArray, null, classLoader);
+    }
+
 }

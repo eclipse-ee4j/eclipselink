@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -76,7 +76,7 @@ public class JAXBTypesafeEnumConverter implements Converter {
                 throw XMLMarshalException.enumClassNotSpecified();
             } else {
                 try {
-                    enumClass = Class.forName(enumClassName);
+                    enumClass = session.getDatasourcePlatform().getConversionManager().getLoader().loadClass(enumClassName);
                 } catch (Exception e) {
                     throw XMLMarshalException.invalidEnumClassSpecified(e, enumClassName);
                 }

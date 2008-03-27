@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
 import java.lang.annotation.Annotation;
@@ -34,9 +34,12 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModel;
  * @see org.eclipse.persistence.jaxb.javamodel.JavaModel
  */
 public class JavaModelImpl implements JavaModel {
-    public JavaModelImpl() {
+    private ClassLoader classLoader;
+
+    public JavaModelImpl(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
-    
+
     public JavaClass getClass(Class jClass) {
         try {
             return new JavaClassImpl(jClass);
@@ -44,17 +47,17 @@ public class JavaModelImpl implements JavaModel {
             return null;
         }
     }
-    
+
     public JavaClass getClass(String classname) {
         try {
-            return new JavaClassImpl(Class.forName(classname));
+            return new JavaClassImpl(classLoader.loadClass(classname));
         } catch (Exception x) {
             return null;
         }
     }
-    
+
     public ClassLoader getClassLoader() {
-        return ClassLoader.getSystemClassLoader();
+        return this.classLoader;
     }
 
     public Annotation getAnnotation(JavaAnnotation janno, Class jClass) {
