@@ -263,6 +263,7 @@
 						<include name="**/XMLMarshallerValidationModeTestCases.java"/>
 						<include name="**/*amespaceTestSuite.java"/>
 						<include name="**/ClassLoaderTestCases.java"/>
+						<include name="**/MappingClassLoaderTestCases.java"/>
 						<exclude name="**/MappingTestSuite.java"/>
 						<exclude name="**/OneTo*TestSuite.java"/>
 						<exclude name="**/DeploymentXMLMappingTestSuite.java"/>
@@ -294,6 +295,7 @@
 					<fileset dir="${eclipselink.moxy.test}/${src.dir}">
 						<include name="**/*TestSuite.java"/>
 						<include name="**/ClassLoaderTestCases.java"/>
+						<include name="**/MappingClassLoaderTestCases.java"/>
 						<exclude name="**/OXTestSuite.java"/>
 						<exclude name="**/DeploymentXMLOXTestSuite.java"/>						
 						<exclude name="org/eclipse/persistence/testing/jaxb/**/*.java"/>
@@ -338,6 +340,7 @@
 						<include name="**/ConverterTestSuite.java"/>
 						<include name="**/*MappingTestSuite.java"/>
 						<include name="**/ClassLoaderTestCases.java"/>
+						<include name="**/MappingClassLoaderTestCases.java"/>
 						<include name="**/*amespaceTestSuite.java"/>
 						<exclude name="org/eclipse/persistence/testing/jaxb/**/*.java"/>
 						<exclude name="org/eclipse/persistence/testing/oxm/mappings/MappingTestSuite.java"/>
@@ -383,6 +386,7 @@
 						<include name="**/ConverterTestSuite.java"/>
 						<include name="**/*MappingTestSuite.java"/>
 						<include name="**/ClassLoaderTestCases.java"/>
+						<include name="**/MappingClassLoaderTestCases.java"/>
 						<include name="**/*amespaceTestSuite.java"/>
 						<exclude name="org/eclipse/persistence/testing/jaxb/**/*.java"/>
 						<exclude name="org/eclipse/persistence/testing/oxm/mappings/MappingTestSuite.java"/>
@@ -419,6 +423,7 @@
 					<fileset dir="${eclipselink.moxy.test}/${src.dir}">
 						<include name="**/*TestSuite.java"/>
 						<include name="**/ClassLoaderTestCases.java"/>
+						<include name="**/MappingClassLoaderTestCases.java"/>
 						<exclude name="**/ReadOnlyTestSuite.java"/>
 						<exclude name="**/OXTestSuite.java"/>
 						<exclude name="**/OneTo*TestSuite.java"/>

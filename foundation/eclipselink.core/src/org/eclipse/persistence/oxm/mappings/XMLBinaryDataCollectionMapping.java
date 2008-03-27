@@ -366,22 +366,19 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                     String xpath = "";
 
                     //  need a prefix for XOP
-                    NamespaceResolver resolver = ((XMLDescriptor) getDescriptor()).getNamespaceResolver();
                     String prefix = null;
-                    if (resolver != null) {
-                        prefix = resolver.resolveNamespaceURI(XMLConstants.XOP_URL);
-                        if (prefix == null) {
-                            prefix = resolver.generatePrefix();
-                            resolver.put(prefix, XMLConstants.XOP_URL);
-                        }
-                    } else {
-                        prefix = XMLConstants.XOP_PREFIX;// "xop";
-                        resolver = new NamespaceResolver();
-                        resolver.put(prefix, XMLConstants.XOP_URL);
+                    NamespaceResolver descriptorResolver = ((XMLDescriptor) getDescriptor()).getNamespaceResolver();
+                    if (descriptorResolver != null) {
+                        prefix = descriptorResolver.resolveNamespaceURI(XMLConstants.XOP_URL);
                     }
+                    if (prefix == null) {
+                        prefix = XMLConstants.XOP_PREFIX;
+                    }
+                    NamespaceResolver tempResolver = new NamespaceResolver();
+                    tempResolver.put(prefix, XMLConstants.XOP_URL);
                     xpath = prefix + ":" + INCLUDE + "/@href";
                     XMLField field = new XMLField(xpath);
-                    field.setNamespaceResolver(resolver);
+                    field.setNamespaceResolver(tempResolver);
                     String includeValue = (String) record.get(field);
                     if (element != null) {
                         if ((getCollectionContentType() == ClassConstants.ABYTE) || (getCollectionContentType() == ClassConstants.APBYTE)) {

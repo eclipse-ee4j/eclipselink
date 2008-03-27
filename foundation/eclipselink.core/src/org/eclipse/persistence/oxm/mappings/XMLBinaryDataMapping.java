@@ -312,24 +312,20 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                 //look for the include element:
                 String xpath = "";
                 //  need a prefix for XOP
-                NamespaceResolver resolver = ((XMLDescriptor) getDescriptor()).getNamespaceResolver();
-
+                String prefix = null;
+                NamespaceResolver descriptorResolver = ((XMLDescriptor) getDescriptor()).getNamespaceResolver();
                 // 20061023: handle NPE on null NSR
-                if (resolver == null) {
-                    // create and set empty namespace resolver on descriptor
-                    resolver = new NamespaceResolver();
-                    ((XMLDescriptor) getDescriptor()).setNamespaceResolver(resolver);
+                if (descriptorResolver != null) {
+                    prefix = descriptorResolver.resolveNamespaceURI(XMLConstants.XOP_URL);
                 }
-                String prefix = resolver.resolveNamespaceURI(XMLConstants.XOP_URL);
-
-                // if XOP namespace is missing - add it
                 if (prefix == null) {
-                    prefix = resolver.generatePrefix();
-                    resolver.put(prefix, XMLConstants.XOP_URL);
+                    prefix = XMLConstants.XOP_PREFIX;
                 }
+                NamespaceResolver tempResolver = new NamespaceResolver();
+                tempResolver.put(prefix, XMLConstants.XOP_URL);
                 xpath = prefix + include;
                 XMLField field = new XMLField(xpath);
-                field.setNamespaceResolver(resolver);
+                field.setNamespaceResolver(tempResolver);
                 String includeValue = (String) record.get(field);
                 if (value != null) {
                     if ((getAttributeClassification() == ClassConstants.ABYTE) || (getAttributeClassification() == ClassConstants.APBYTE)) {
