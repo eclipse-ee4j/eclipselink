@@ -13,7 +13,15 @@
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
 import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
+
+import org.eclipse.persistence.annotations.VariableOneToOne;
+import org.eclipse.persistence.annotations.DiscriminatorClass;
+
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.DiscriminatorType.INTEGER;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.TABLE;
+
 
 @Entity
 @Table(name="CMP3_ITEM")
@@ -26,6 +34,8 @@ public class Item implements java.io.Serializable {
 	private int version;
 	private String name;
 	private String description;
+	private Manufacturer manufacturer;
+	private Distributor distributor;
 
 	public Item() {}
 
@@ -71,5 +81,33 @@ public class Item implements java.io.Serializable {
     
     public void setName(String name) {
         this.name = name; 
+    }
+
+    // The @VariableOneToOne definition purposely left off to test defaulting.
+    public Manufacturer getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(Manufacturer manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    @VariableOneToOne(
+            targetInterface=Distributor.class,
+            cascade=PERSIST,
+            fetch=LAZY,
+            discriminatorColumn=@DiscriminatorColumn(name="DISTRIBUTOR_TYPE", discriminatorType=INTEGER),
+            discriminatorClasses={
+                @DiscriminatorClass(discriminator="1", value=MegaBrands.class),
+                @DiscriminatorClass(discriminator="2", value=Namco.class)
+            }
+    )
+    @JoinColumn(name="DISTRIBUTOR_ID", referencedColumnName="distributorId")
+    public Distributor getDistributor() {
+        return distributor;
+    }
+
+    public void setDistributor(Distributor distributor) {
+        this.distributor = distributor;
     }
 }

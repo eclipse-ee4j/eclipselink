@@ -15,11 +15,8 @@ package org.eclipse.persistence.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.sql.Time;
 
 import javax.persistence.Column;
-
-import org.eclipse.persistence.sessions.Session;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;

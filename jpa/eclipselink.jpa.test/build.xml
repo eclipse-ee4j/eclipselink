@@ -166,7 +166,8 @@
       </copy>
       <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-xml-extended-model}">
           <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
-                   includes="org/eclipse/persistence/testing/models/jpa/xml/advanced/**"/>
+                   includes="org/eclipse/persistence/testing/models/jpa/xml/advanced/**, org/eclipse/persistence/testing/models/jpa/xml/relationships/**"
+                   excludes="org/eclipse/persistence/testing/models/jpa/xml/relationships/unidirectional/**"/>
       </copy>
       <jar jarfile="${eclipselink.jpa.test}/${eclipselink-xml-extended-model}.jar">
           <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-xml-extended-model}">

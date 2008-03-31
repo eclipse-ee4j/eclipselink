@@ -10,16 +10,19 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-
-
 package org.eclipse.persistence.testing.tests.jpa.xml.relationships;
 
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
 import junit.extensions.TestSetup;
+
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.testing.models.jpa.xml.relationships.Lego;
+import org.eclipse.persistence.testing.models.jpa.xml.relationships.Mattel;
+import org.eclipse.persistence.testing.models.jpa.xml.relationships.MegaBrands;
+import org.eclipse.persistence.testing.models.jpa.xml.relationships.Namco;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Customer;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Item;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Order;
@@ -32,53 +35,69 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
     private static Integer customerId;
     private static Integer itemId;
+    private static Integer extendedItemId;
     private static Integer orderId;
+    
+    private String m_persistenceUnit;
     
     public EntityMappingsRelationshipsJUnitTestCase() {
         super();
     }
     
-    public EntityMappingsRelationshipsJUnitTestCase(String name) {
+    public EntityMappingsRelationshipsJUnitTestCase(String name, String persistenceUnit) {
         super(name);
+        
+        m_persistenceUnit = persistenceUnit;
     }
     
-    public static Test suite() {
-        TestSuite suite = new TestSuite("Relationships Model");
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateCustomer"));
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateItem"));
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateOrder"));
+    public static Test suite(final String persistenceUnit) {
+        TestSuite suite = new TestSuite("Relationships Model - " + persistenceUnit);
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateCustomer", persistenceUnit));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateItem", persistenceUnit));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateOrder", persistenceUnit));
 
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testReadCustomer"));
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testReadItem"));
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testReadOrder"));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testReadCustomer", persistenceUnit));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testReadItem", persistenceUnit));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testReadOrder", persistenceUnit));
 
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testNamedQueryOnCustomer"));
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testNamedQueryOnItem"));
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testNamedQueryOnOrder"));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testNamedQueryOnCustomer", persistenceUnit));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testNamedQueryOnItem", persistenceUnit));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testNamedQueryOnOrder", persistenceUnit));
 
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testUpdateCustomer"));
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testUpdateItem"));
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testUpdateOrder"));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testUpdateCustomer", persistenceUnit));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testUpdateItem", persistenceUnit));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testUpdateOrder", persistenceUnit));
 
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteOrder"));
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteCustomer"));
-        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteItem"));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteOrder", persistenceUnit));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteCustomer", persistenceUnit));
+        suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testDeleteItem", persistenceUnit));
+        
+        if (persistenceUnit.equals("extended-relationships")) {
+            suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateExtendedItem", persistenceUnit)); 
+            suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testModifyExtendedItem", persistenceUnit));
+            suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testVerifyExtendedItem", persistenceUnit));
+        }
         
         return new TestSetup(suite) {
             
             protected void setUp(){               
-                DatabaseSession session = JUnitTestCase.getServerSession();   
+                DatabaseSession session = JUnitTestCase.getServerSession(persistenceUnit);   
                 new RelationshipsTableManager().replaceTables(session);
             }
         
             protected void tearDown() {
-                clearCache();
+                clearCache(persistenceUnit);
             }
         };
     }
     
+    public void setUp () {
+        super.setUp();
+        clearCache(m_persistenceUnit);
+    }
+    
     public void testCreateCustomer() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             Customer customer = new Customer();
@@ -95,9 +114,11 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             throw e;
         }
         
+        closeEntityManager(em);
     }
+    
     public void testCreateItem() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             Item item = new Item();
@@ -114,11 +135,12 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-        
+    
+        closeEntityManager(em);
     }
 
     public void testCreateOrder() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             Order order = new Order();
@@ -138,10 +160,12 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
+        
+        closeEntityManager(em);
     }
 
     public void testDeleteCustomer() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             em.remove(em.find(Customer.class, customerId));
@@ -154,10 +178,11 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             throw e;
         }
         assertTrue("Error deleting Customer", em.find(Customer.class, customerId) == null);
+        closeEntityManager(em);
     }
 
     public void testDeleteItem() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             em.remove(em.find(Item.class, itemId));
@@ -170,10 +195,11 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             throw e;
         }
         assertTrue("Error deleting Item", em.find(Item.class, itemId) == null);
+        closeEntityManager(em);
     }
 
     public void testDeleteOrder() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             em.remove(em.find(Order.class, orderId));
@@ -186,44 +212,57 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             throw e;
         }
         assertTrue("Error deleting Order", em.find(Order.class, orderId) == null);
+        closeEntityManager(em);
     }
 
     public void testNamedQueryOnCustomer() {
-        Customer customer = (Customer)createEntityManager().createNamedQuery("findAllXMLCustomers").getSingleResult();
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        Customer customer = (Customer)em.createNamedQuery("findAllXMLCustomers").getSingleResult();
         assertTrue("Error executing named query 'findAllXMLCustomers'", customer != null);
+        closeEntityManager(em);
     }
 
     public void testNamedQueryOnOrder() {
-        EJBQueryImpl query = (EJBQueryImpl) createEntityManager().createNamedQuery("findAllXMLOrdersByItem");
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findAllXMLOrdersByItem");
         query.setParameter("id", itemId);
         Order order = (Order) query.getSingleResult();
         assertTrue("Error executing named query 'findAllXMLOrdersByItem'", order != null);
+        closeEntityManager(em);
     }
 
     public void testNamedQueryOnItem() {
-        EJBQueryImpl query = (EJBQueryImpl) createEntityManager().createNamedQuery("findAllXMLItemsByName");
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        EJBQueryImpl query = (EJBQueryImpl) em.createNamedQuery("findAllXMLItemsByName");
         query.setParameter("1", "Widget");
         Item item = (Item) query.getSingleResult();
         assertTrue("Error executing named query 'findAllXMLItemsByName'", item != null);
+        closeEntityManager(em);
     }
 
     public void testReadCustomer() {
-        Customer customer = createEntityManager().find(Customer.class, customerId);
-        assertTrue("Error reading Customer", customer.getCustomerId() == customerId);
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        Customer customer = em.find(Customer.class, customerId);
+        assertTrue("Error reading Customer", customer.getCustomerId().equals(customerId));
+        closeEntityManager(em);
     }
     
     public void testReadItem() {
-        Item item = createEntityManager().find(Item.class, itemId);
-        assertTrue("Error reading Item", item.getItemId() == itemId);
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        Item item = em.find(Item.class, itemId);
+        assertTrue("Error reading Item", item.getItemId().equals(itemId));
+        closeEntityManager(em);
     }
 
     public void testReadOrder() {
-        Order order = createEntityManager().find(Order.class, orderId);
-        assertTrue("Error reading Order", order.getOrderId() == orderId);
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        Order order = em.find(Order.class, orderId);
+        assertTrue("Error reading Order", order.getOrderId().equals(orderId));
+        closeEntityManager(em);
     }
 
     public void testUpdateCustomer() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             Customer customer = em.find(Customer.class, customerId);
@@ -237,13 +276,14 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-        clearCache();
+        clearCache(m_persistenceUnit);
         Customer newCustomer = em.find(Customer.class, customerId);
         assertTrue("Error updating Customer", newCustomer.getCity().equals("Dallas"));
+        closeEntityManager(em);
     }
 
     public void testUpdateItem() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             Item item = em.find(Item.class, itemId);
@@ -258,14 +298,15 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-        clearCache();
+        clearCache(m_persistenceUnit);
         Item newItem = em.find(Item.class, itemId);
         assertTrue("Error updating Item description", newItem.getDescription().equals("A Widget"));
         assertTrue("Error updating Item image", newItem.getImage().length==1280);
+        closeEntityManager(em);
     }
 
     public void testUpdateOrder() {
-        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager(m_persistenceUnit);
         beginTransaction(em);
         try {
             Customer customer = em.find(Customer.class, customerId);
@@ -280,9 +321,106 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             closeEntityManager(em);
             throw e;
         }
-        clearCache();
+        clearCache(m_persistenceUnit);
         Customer newCustomer = em.find(Customer.class, customerId);
         assertTrue("Error updating Customer", (newCustomer.getOrders().iterator().next()).getQuantity() == 100);
+        closeEntityManager(em);
     }
+    
+    /**
+     * Create a new item that has a variable one to one to a manufacturer.
+     */
+    public void testCreateExtendedItem() {
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        beginTransaction(em);
+        
+        try {
+            Item item = new Item();
+            item.setName("Synergizer2000");
+            item.setDescription("Every kid must have one ... ");
+            
+            // Manufacturer does not cascade persist
+            Mattel mattel = new Mattel();
+            mattel.setName("Mattel Inc.");
+            em.persist(mattel);
+            item.setManufacturer(mattel);
+            
+            // Distributor will cascade persist
+            Namco namco = new Namco();
+            namco.setName("Namco Games");
+            item.setDistributor(namco);
+            
+            em.persist(item);
+            extendedItemId = item.getItemId();
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        closeEntityManager(em);
+    }
+    
+    /**
+     * Read an item, verify it contents, modify it and commit.
+     */
+    public void testModifyExtendedItem() {
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        beginTransaction(em);
+        
+        try {
+            Item item = em.find(Item.class, extendedItemId);
+            item.setName("Willy Waller");
+            item.setDescription("For adults only!");
+            
+            assertTrue("The manufacturer was not persisted", item.getManufacturer() != null);
+            assertTrue("The manufacturer of the item was incorrect", item.getManufacturer().getName().equals("Mattel Inc."));
+            
+            Lego lego = new Lego();
+            lego.setName("The LEGO Group");
+            em.persist(lego);
+            item.setManufacturer(lego);
 
+            assertTrue("The distributor was not persisted", item.getDistributor() != null);
+            assertTrue("The distributor of the item was incorrect", item.getDistributor().getName().equals("Namco Games"));
+                    
+            MegaBrands megaBrands = new MegaBrands();
+            megaBrands.setName("MegaBrands Inc.");
+            em.persist(megaBrands);
+            item.setDistributor(megaBrands);
+            
+            em.merge(item); // no op really ...
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+            throw e;
+        }
+        
+        closeEntityManager(em);
+    }
+    
+    /**
+     * Verify the final contents of item.
+     */
+    public void testVerifyExtendedItem() {
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        Item item = em.find(Item.class, extendedItemId);
+        
+        assertTrue("The manufacturer was not persisted", item.getManufacturer() != null);
+        assertTrue("The manufacturer of the item was incorrect [" + item.getManufacturer().getName() + "]", item.getManufacturer().getName().equals("The LEGO Group"));
+
+        assertTrue("The distributor was not persisted", item.getDistributor() != null);
+        assertTrue("The distributor of the item was incorrect [" + item.getDistributor().getName() + "]", item.getDistributor().getName().equals("MegaBrands Inc."));
+        
+        closeEntityManager(em);
+    }
 }

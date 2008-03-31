@@ -20,17 +20,16 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.persistence.GenerationType;
 import javax.persistence.spi.PersistenceUnitInfo;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.InterfaceAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectAccessor;
@@ -104,6 +103,9 @@ public class MetadataProject {
     
     // The embeddable accessors for this project
     private HashMap<String, EmbeddableAccessor> m_embeddableAccessors;
+    
+    // The interface accessors for this project
+    private HashMap<String, InterfaceAccessor> m_interfaceAccessors;
 
     // Class accessors that have relationships.
     private HashSet<ClassAccessor> m_accessorsWithRelationships;
@@ -155,6 +157,8 @@ public class MetadataProject {
         m_allAccessors = new HashMap<String, ClassAccessor>();
         m_entityAccessors = new HashMap<String, EntityAccessor>();
         m_embeddableAccessors = new HashMap<String, EmbeddableAccessor>();
+        m_interfaceAccessors = new HashMap<String, InterfaceAccessor>();
+        
         m_accessorsWithCustomizer = new HashSet<ClassAccessor>();
         m_accessorsWithRelationships = new HashSet<ClassAccessor>();
 
@@ -166,7 +170,7 @@ public class MetadataProject {
         m_convertAccessors = new HashSet<DirectAccessor>();
         m_structConverters = new HashMap<String, StructConverterMetadata>();
     }
-
+    
     /**
      * INTERNAL:
      * This method will add the descriptor to the actual EclipseLink project,
@@ -191,13 +195,8 @@ public class MetadataProject {
         	}
         }
 
-        ClassDescriptor descriptorOnProject = findDescriptor(descriptor.getJavaClass());
-
-        if (descriptorOnProject == null) {
-            getSession().getProject().addDescriptor(descriptor.getClassDescriptor());
-        } else {
-            descriptor.setDescriptor(descriptorOnProject);
-        }
+        // Add the descriptor to the actual EclipseLink Project.
+        getSession().getProject().addDescriptor(descriptor.getClassDescriptor());
 
         // Keep a map of all the accessors that have been added.
         m_allAccessors.put(accessor.getJavaClassName(), accessor);
@@ -215,16 +214,6 @@ public class MetadataProject {
      */
     public void addAccessorWithRelationships(ClassAccessor accessor) {
         m_accessorsWithRelationships.add(accessor);
-    }
-    
-    /**
-     * INTERNAL:
-     * Add a EntityAccessor to this project.
-     */
-    public void addEntityAccessor(EntityAccessor accessor) {
-    	m_entityAccessors.put(accessor.getJavaClassName(), accessor);
-    	
-    	addAccessor(accessor);
     }
  
     /**
@@ -275,6 +264,28 @@ public class MetadataProject {
     	m_embeddableAccessors.put(accessor.getJavaClassName(), accessor);
     	addAccessor(accessor);
     	accessor.getDescriptor().setIsEmbeddable();
+    }
+    
+    /**
+     * INTERNAL:
+     * Add a EntityAccessor to this project.
+     */
+    public void addEntityAccessor(EntityAccessor accessor) {
+        m_entityAccessors.put(accessor.getJavaClassName(), accessor);
+        
+        addAccessor(accessor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Add a InterfaceAccessor to this project.
+     */
+    public void addInterfaceAccessor(InterfaceAccessor accessor) {
+        m_interfaceAccessors.put(accessor.getJavaClassName(), accessor);
+        
+        // TODO: Add it directly and avoid the persistence unit defaults and
+        // stuff for now.
+        getSession().getProject().addDescriptor(accessor.getDescriptor().getClassDescriptor());
     }
     
     /**
@@ -476,32 +487,12 @@ public class MetadataProject {
         // Add the table generator to the descriptor metadata.
         m_tableGenerators.put(tableGenerator.getGeneratorName(), tableGenerator);    
     }
-
+    
     /**
      * INTERNAL:
      */
     public boolean enableLazyForOneToOne() {
         return m_enableLazyForOneToOne;
-    }
-    
-    /**
-     * INTERNAL:
-     * Search our sessions list of ordered descriptors for a descriptor 
-     * for the class named the same as the given class.
-     * 
-     * We do not use the session based getDescriptor() methods because they 
-     * require the project be initialized with classes.  We are avoiding using 
-     * a project with loaded classes so the project can be constructed prior to 
-     * any class weaving.
-     */
-    public ClassDescriptor findDescriptor(Class cls) {
-        for (ClassDescriptor descriptor : (Vector<ClassDescriptor>) getSession().getProject().getOrderedDescriptors()) {
-            if (descriptor.getJavaClassName().equals(cls.getName())){
-                return descriptor;
-            }
-        }
-        
-        return null;
     }
     
     /**
@@ -575,6 +566,14 @@ public class MetadataProject {
      */
     public List<XMLEntityMappings> getEntityMappings() {
     	return m_entityMappings;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the entity accessor for the given class.
+     */
+    public InterfaceAccessor getInterfaceAccessor(String className) {
+        return m_interfaceAccessors.get(className);
     }
     
     /** 
@@ -660,6 +659,13 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
+    public boolean hasInterface(Class cls) {
+        return m_interfaceAccessors.containsKey(cls.getName());
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public boolean hasMappedSuperclass(Class cls) {
         return m_mappedSuperclasses.containsKey(cls.getName());
     }
@@ -682,6 +688,8 @@ public class MetadataProject {
         processSequencing();
         
         processAccessorsWithRelationships();
+        
+        processInterfaceAccessors();
     }
     
     /**
@@ -951,19 +959,35 @@ public class MetadataProject {
         table.processUniqueConstraints();
     }
 
-     /** 
-      * INTERNAL:
-      */
-     public void setPersistenceUnitMetadata(XMLPersistenceUnitMetadata persistenceUnitMetadata) {
-    	 // Future will require some for of merging/overlaying. Right now
-    	 // will check for conflicts.
-    	 if (m_persistenceUnitMetadata == null) {
-    		 m_persistenceUnitMetadata = persistenceUnitMetadata;
-    	 } else { 
-    		 if (! m_persistenceUnitMetadata.equals(persistenceUnitMetadata)) {
-    			 throw ValidationException.persistenceUnitMetadataConflict(m_persistenceUnitMetadata.getConflict());
-    		 }
-    	 }
-     }
+    /** 
+     * INTERNAL:
+     * This method will iterate through all the entities in the PU and check
+     * if we should add them to a variable one to one mapping that was either
+     * defined (incompletely) or defaulted.
+     */
+    protected void processInterfaceAccessors() {
+        for (EntityAccessor accessor : getEntityAccessors()) {
+            for (Class interfaceClass : accessor.getJavaClass().getInterfaces()) {
+                if (m_interfaceAccessors.containsKey(interfaceClass.getName())) {
+                    m_interfaceAccessors.get(interfaceClass.getName()).addEntityAccessor(accessor);
+                }
+            }
+        }
+    }
+    
+    /** 
+     * INTERNAL:
+     */
+    public void setPersistenceUnitMetadata(XMLPersistenceUnitMetadata persistenceUnitMetadata) {
+        // Future will require some for of merging/overlaying. Right now
+    	// will check for conflicts.
+    	if (m_persistenceUnitMetadata == null) {
+    	    m_persistenceUnitMetadata = persistenceUnitMetadata;
+    	} else { 
+    	    if (! m_persistenceUnitMetadata.equals(persistenceUnitMetadata)) {
+    	        throw ValidationException.persistenceUnitMetadataConflict(m_persistenceUnitMetadata.getConflict());
+    		}
+    	}
+    }
 }
 

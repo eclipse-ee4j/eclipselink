@@ -10,16 +10,18 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-
-
 package org.eclipse.persistence.testing.models.jpa.xml.relationships;
 
-public class Item implements java.io.Serializable {
+import javax.persistence.Transient;
+
+public class Item implements java.io.Serializable {    
 	private Integer itemId;
 	private int version;
 	private String name;
 	private String description;
     private byte[] image;
+	private Manufacturer manufacturer;
+	private Distributor distributor;
 
 	public Item() {}
 
@@ -58,8 +60,26 @@ public class Item implements java.io.Serializable {
     public String getName() { 
         return name; 
     }
-    
+
     public void setName(String name) {
         this.name = name; 
+    }
+
+    @Transient
+    public Manufacturer getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(Manufacturer manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    @Transient
+    public Distributor getDistributor() {
+        return distributor;
+    }
+
+    public void setDistributor(Distributor distributor) {
+        this.distributor = distributor;
     }
 }

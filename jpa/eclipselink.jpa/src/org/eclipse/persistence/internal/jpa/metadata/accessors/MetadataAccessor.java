@@ -578,7 +578,7 @@ public abstract class MetadataAccessor  {
      */
     public boolean isRelationship() {
         if (m_isRelationship == null) {
-            m_isRelationship = new Boolean(isManyToOne() || isManyToMany() || isOneToMany() || isOneToOne());
+            m_isRelationship = new Boolean(isManyToOne() || isManyToMany() || isOneToMany() || isOneToOne() || isVariableOneToOne());
         }
         
         return m_isRelationship.booleanValue(); 
@@ -586,9 +586,9 @@ public abstract class MetadataAccessor  {
     
     /**
      * INTERNAL:
-     * Return true if this accessor represents transformation mapping.
+     * Return true if this accessor represents a variable one to one mapping.
      */
-    public boolean isTransformation() {
+    public boolean isVariableOneToOne() {
         return false;
     }
     
@@ -887,6 +887,4 @@ public abstract class MetadataAccessor  {
 	public void setTypeConverters(List<TypeConverterMetadata> typeConverters) {
 		m_typeConverters = typeConverters;
 	}
-	
-
 }

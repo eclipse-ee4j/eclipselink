@@ -123,7 +123,7 @@ public class MetadataDescriptor {
         m_biDirectionalManyToManyAccessors = new HashMap<String, Map<String, MetadataAccessor>>();
         
         m_descriptor = new RelationalDescriptor();
-        m_descriptor.setExistenceChecking("Check database");
+        m_descriptor.getQueryManager().checkDatabaseForDoesExist();
         m_descriptor.setAlias("");
                 
         setJavaClass(javaClass);
@@ -167,7 +167,6 @@ public class MetadataDescriptor {
 
     /**
      * INTERNAL:
-     * 
      * Store basic collection accessors for later processing and quick look up.
      */
     public void addBasicCollectionAccessor(MetadataAccessor accessor) {
@@ -260,7 +259,6 @@ public class MetadataDescriptor {
     
     /**
       * INTERNAL:
-      * 
       * Store relationship accessors for later processing and quick look up.
       */
     public void addRelationshipAccessor(MetadataAccessor accessor) {
@@ -307,7 +305,7 @@ public class MetadataDescriptor {
      * is found than it assumes fieldOrPropertyName is a property name and 
      * converts it to its corresponding field name and looks for the accessor
      * again. If still no accessor is found and this descriptor metadata is
-     * and an inheritance sublcass, than it will then look on the root metadata
+     * and an inheritance subclass, than it will then look on the root metadata
      * descriptor. Null is returned otherwise.
      */
     public MetadataAccessor getAccessorFor(String fieldOrPropertyName) {
@@ -1034,6 +1032,12 @@ public class MetadataDescriptor {
     public void setJavaClass(Class javaClass) {
         m_javaClass = javaClass;
         m_descriptor.setJavaClassName(javaClass.getName());
+        
+        // If the javaClass is an interface, add it to the java interface name
+        // on the relational descriptor.
+        if (javaClass.isInterface()) {
+            m_descriptor.setJavaInterfaceName(javaClass.getName());
+        }
     }
     
     /**

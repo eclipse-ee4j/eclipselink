@@ -81,7 +81,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testRefreshRemovedEmployee", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testDeleteEmployee", persistenceUnit));
         
-        if (persistenceUnit.equals("extended")) {
+        if (persistenceUnit.equals("extended-advanced")) {
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testReadOnlyClassSetting", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEmployeeChangeTrackingPolicy", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAddressChangeTrackingPolicy", persistenceUnit));
@@ -732,7 +732,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
 
         // test
         // clear cache
-        this.clearCache();        
+        this.clearCache(m_persistenceUnit);        
         // read the employee from the db
         em = createEntityManager(m_persistenceUnit);
         employee = em.find(Employee.class,id);
@@ -794,7 +794,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         int assignedSequenceNumber = add.getId();
         
         em.clear();
-        getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        getServerSession(m_persistenceUnit).getIdentityMapAccessor().initializeAllIdentityMaps();
 
         add = em.find(Address.class, assignedSequenceNumber);
 

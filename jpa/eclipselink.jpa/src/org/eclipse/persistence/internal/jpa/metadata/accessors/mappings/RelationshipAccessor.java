@@ -32,7 +32,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 
@@ -173,7 +172,7 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
 	}
 	
     /**
-      * INTERNAL:
+      * INTERNAL: (Override from MetadataAccessor and overridden in VariableOneToOneAccessor)
       * Return the reference metadata descriptor for this accessor.
       * This method does additional checks to make sure that the target
       * entity is indeed an entity class.
@@ -282,8 +281,10 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * 
-     * Process JoinColumnsMetadata.
+     * Process the join column metadata. Note: if an accessor requires a check 
+     * for association overrides, it should call processJoinColumns(),
+     * otherwise, calling this method directly assumes your accessor doesn't 
+     * support association overrides.
      */	
     protected List<JoinColumnMetadata> processJoinColumns(List<JoinColumnMetadata> joinColumns, MetadataDescriptor descriptor) {
         if (joinColumns.isEmpty()) {
@@ -346,27 +347,22 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
         // The processing of this accessor may have been fast tracked through a 
         // non-owning relationship. If so, no processing is required.
         if (! isProcessed()) {
-            if (getDescriptor().hasMappingForAttributeName(getAttributeName())) {
-                // Only true if there is one that came from Project.xml
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPING, this);
-            } else {
-                // If a Column annotation is specified then throw an exception.
-                if (hasColumn()) {
-                	throw ValidationException.invalidColumnAnnotationOnRelationship(getJavaClass(), getAttributeName());
-                }
+            // If a Column annotation is specified then throw an exception.
+            if (hasColumn()) {
+                throw ValidationException.invalidColumnAnnotationOnRelationship(getJavaClass(), getAttributeName());
+            }
                 
-                // If a Convert annotation is specified then throw an exception.
-                if (hasConvert()) {
-                	throw ValidationException.invalidMappingForConverter(getJavaClass(), getAttributeName());
-                }
+            // If a Convert annotation is specified then throw an exception.
+            if (hasConvert()) {
+                throw ValidationException.invalidMappingForConverter(getJavaClass(), getAttributeName());
+            }
                 
-                // Process the relationship accessor only if the target entity
-                // is not a ValueHolderInterface.
-                if (getTargetEntity() == ValueHolderInterface.class || (getTargetEntity() == void.class && getReferenceClass().getName().equalsIgnoreCase(ValueHolderInterface.class.getName()))) {
-                    // do nothing ... I'm too lazy (or too stupid) to do the negation of this expression :-)
-                } else { 
-                    process();
-                }
+            // Process the relationship accessor only if the target entity
+            // is not a ValueHolderInterface.
+            if (getTargetEntity() == ValueHolderInterface.class || (getTargetEntity() == void.class && getReferenceClass().getName().equalsIgnoreCase(ValueHolderInterface.class.getName()))) {
+                // do nothing ... I'm too lazy (or too stupid) to do the negation of this expression :-)
+            } else { 
+                process();
             }
             
             // Set its processing completed flag to avoid double processing.

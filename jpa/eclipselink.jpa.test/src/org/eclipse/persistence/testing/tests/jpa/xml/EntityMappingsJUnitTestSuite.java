@@ -16,6 +16,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 import org.eclipse.persistence.testing.tests.jpa.xml.advanced.EntityMappingsAdvancedJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.inheritance.EntityMappingsInheritanceJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.inherited.EntityMappingsInheritedJUnitTestCase;
@@ -28,18 +29,23 @@ import org.eclipse.persistence.testing.tests.jpa.xml.merge.EntityMappingsMergeJU
  */
 public class EntityMappingsJUnitTestSuite extends TestCase {
     public static Test suite() {
+        return suite(TestingProperties.JPA_ORM_TESTING);
+    }
+    
+    public static Test suite(String testing) {
         TestSuite suite = new TestSuite("XML Entity Mappings JUnit Test Suite");
-
-        // Default has the JPA orm configuration
-        suite.addTest(EntityMappingsAdvancedJUnitTestCase.suite("default"));
-        // Extended has an EclipseLink orm configuration.
-        suite.addTest(EntityMappingsAdvancedJUnitTestCase.suite("extended"));
         
-        suite.addTest(EntityMappingsRelationshipsJUnitTestCase.suite());
-        suite.addTest(EntityMappingsUnidirectionalRelationshipsJUnitTestCase.suite());
-        suite.addTest(EntityMappingsInheritanceJUnitTestCase.suite());
-        suite.addTest(EntityMappingsInheritedJUnitTestCase.suite());
-        suite.addTest(EntityMappingsMergeJUnitTestSuite.suite());
+        if (testing.equals(TestingProperties.JPA_ORM_TESTING)) {
+            suite.addTest(EntityMappingsAdvancedJUnitTestCase.suite("default"));
+            suite.addTest(EntityMappingsRelationshipsJUnitTestCase.suite("default"));
+            suite.addTest(EntityMappingsUnidirectionalRelationshipsJUnitTestCase.suite());
+            suite.addTest(EntityMappingsInheritanceJUnitTestCase.suite());
+            suite.addTest(EntityMappingsInheritedJUnitTestCase.suite());
+            suite.addTest(EntityMappingsMergeJUnitTestSuite.suite());
+        } else if (testing.equals(TestingProperties.ECLIPSELINK_ORM_TESTING)) {
+            suite.addTest(EntityMappingsAdvancedJUnitTestCase.suite("extended-advanced"));
+            suite.addTest(EntityMappingsRelationshipsJUnitTestCase.suite("extended-relationships"));
+        }
         
         return suite;
     }

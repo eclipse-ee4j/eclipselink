@@ -512,10 +512,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                     
         // Process the discriminator column metadata.
         if (m_discriminatorColumn == null) {
-            new DiscriminatorColumnMetadata(getAnnotation(DiscriminatorColumn.class)).process(getDescriptor(), getAnnotatedElementName());
+            getDescriptor().setClassIndicatorField(new DiscriminatorColumnMetadata(getAnnotation(DiscriminatorColumn.class)).process(getDescriptor(), getAnnotatedElementName()));
         } else {
             // Future log a warning if we are ignoring an annotation.
-            m_discriminatorColumn.process(getDescriptor(), getAnnotatedElementName());
+            getDescriptor().setClassIndicatorField(m_discriminatorColumn.process(getDescriptor(), getAnnotatedElementName()));
         }
                     
         // Process the discriminator value metadata.

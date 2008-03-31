@@ -10,14 +10,10 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-
-
 package org.eclipse.persistence.testing.models.jpa.xml.relationships;
 
-import javax.persistence.Table;
 import java.util.Collection;
-
-@Table(name="CMP3_XML_CUSTOMER") 
+ 
 public class Customer implements java.io.Serializable{
 	private Integer customerId;
 	private int version;

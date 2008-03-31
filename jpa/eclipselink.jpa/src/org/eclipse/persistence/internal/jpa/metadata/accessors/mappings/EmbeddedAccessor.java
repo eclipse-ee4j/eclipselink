@@ -31,7 +31,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -228,31 +227,26 @@ public class EmbeddedAccessor extends MetadataAccessor {
         // look up a mappedBy attribute.
         getDescriptor().addAggregateDescriptor(referenceDescriptor);
         
-        if (getDescriptor().hasMappingForAttributeName(getAttributeName())) {
-            // XML/Annotation merging. XML wins, ignore annotations.
-            getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPING, getDescriptor(), this);
-        } else {
-            // Create an aggregate mapping and do the rest of the work.
-            AggregateObjectMapping mapping = new AggregateObjectMapping();
-            mapping.setIsReadOnly(false);
-            mapping.setIsNullAllowed(true);
-            mapping.setReferenceClassName(getReferenceClassName());
-            mapping.setAttributeName(getAttributeName());    
+        // Create an aggregate mapping and do the rest of the work.
+        AggregateObjectMapping mapping = new AggregateObjectMapping();
+        mapping.setIsReadOnly(false);
+        mapping.setIsNullAllowed(true);
+        mapping.setReferenceClassName(getReferenceClassName());
+        mapping.setAttributeName(getAttributeName());    
         
-            // Will check for PROPERTY access
-            setAccessorMethods(mapping);
+        // Will check for PROPERTY access
+        setAccessorMethods(mapping);
         
-            // Process attribute overrides.
-            for (AttributeOverrideMetadata attributeOverride : m_attributeOverrides) {
-                processAttributeOverride(mapping, attributeOverride);
-            } 
+        // Process attribute overrides.
+        for (AttributeOverrideMetadata attributeOverride : m_attributeOverrides) {
+            processAttributeOverride(mapping, attributeOverride);
+        } 
             
-            // Process association overrides (this is an annotation only thing).
-            processAssociationOverrides(mapping);
+        // Process association overrides (this is an annotation only thing).
+        processAssociationOverrides(mapping);
         
-            // Add the mapping to the descriptor and we are done.
-            getDescriptor().addMapping(mapping);
-        }
+        // Add the mapping to the descriptor and we are done.
+        getDescriptor().addMapping(mapping);
     }
     
     /**

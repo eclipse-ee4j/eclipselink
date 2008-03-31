@@ -24,8 +24,6 @@ import org.eclipse.persistence.annotations.Transformation;
 import org.eclipse.persistence.annotations.WriteTransformer;
 import org.eclipse.persistence.annotations.WriteTransformers;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
@@ -108,35 +106,15 @@ public class TransformationAccessor extends BasicAccessor {
     
     /**
      * INTERNAL:
-     * Return true if this accessor represents transformation mapping.
-     */
-    public boolean isTransformation() {
-        return true;
-    }
-    
-    /**
-     * INTERNAL:
-     * Process a basic accessor.
+     * Process a transformation accessor. Creates a TransformationMapping and 
+     * adds it to descriptor.
      */
     public void process() {
-        if (getDescriptor().hasMappingForAttributeName(getAttributeName())) {
-            // Ignore the mapping if one already exists for it.
-            getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPING, this);
-        } else {
-            processTransformationMapping();
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Creates TransformationMapping and adds it to descriptor. 
-     */
-    protected void processTransformationMapping() {
         TransformationMapping mapping = new TransformationMapping();
         mapping.setAttributeName(getAttributeName());
         mapping.setIsOptional(isOptional());
         mapping.setIsLazy(usesIndirection());
-        if(getMutable() != null) {
+        if (getMutable() != null) {
             mapping.setIsMutable(getMutable().booleanValue());
         }
 
@@ -147,11 +125,11 @@ public class TransformationAccessor extends BasicAccessor {
         // in case of exception the mapped class could be included into exception message.
         getDescriptor().addMapping(mapping);
 
-        if(m_readTransformer != null) {
+        if (m_readTransformer != null) {
             m_readTransformer.process(mapping);
         }
         
-        if(m_writeTransformers.isEmpty()) {
+        if (m_writeTransformers.isEmpty()) {
             mapping.setIsReadOnly(true);
         } else {
             if(m_writeTransformers.size() == 1) {

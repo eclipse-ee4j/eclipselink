@@ -42,6 +42,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.IdAccess
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransformationAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -137,16 +138,20 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 return new ManyToManyAccessor(accessibleObject, this);
             } else if (accessibleObject.isManyToOne(getDescriptor())) {
                 return new ManyToOneAccessor(accessibleObject, this);
-            } else if (accessibleObject.isOneToMany(getDescriptor())) {
-                // A OneToMany can currently default, that is, doesn't require
+            } else if (accessibleObject.isVariableOneToOne(getDescriptor())) {
+                // A VariableOneToOne can default, that is, doesn't require
                 // an annotation to be present.
+                return new VariableOneToOneAccessor(accessibleObject, this);
+            } else if (accessibleObject.isOneToMany(getDescriptor())) {
+                // A OneToMany can default, that is, doesn't require an 
+                // annotation to be present.
                 return new OneToManyAccessor(accessibleObject, this);
             } else if (accessibleObject.isOneToOne(getDescriptor())) {
-                // A OneToOne can currently default, that is, doesn't require
-                // an annotation to be present.
+                // A OneToOne can default, that is, doesn't require an 
+                // annotation to be present.
                 return new OneToOneAccessor(accessibleObject, this);
             } else {
-                // Default case (everything else currently falls into this)
+                // Default case (everything else falls into a Basic)
                 return new BasicAccessor(accessibleObject, this);
             }
         } else {
@@ -279,7 +284,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                         mappedSuperclasses.add(new MappedSuperclassAccessor(parent, getDescriptor(), getProject()));
                     }
                 } else {
-                    mappedSuperclasses.add(accessor.getEntityMappings().reloadMappedSuperclass(accessor, getDescriptor(), getJavaClass().getClassLoader()));
+                    mappedSuperclasses.add(accessor.getEntityMappings().reloadMappedSuperclass(accessor, getDescriptor()));
                 }
             }
                 
@@ -503,7 +508,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                 
     				accessibleObject = new MetadataField(field);
     			}
-            
+    			
     			accessor.init(accessibleObject, this);
     			processAccessor(accessor);
     		}

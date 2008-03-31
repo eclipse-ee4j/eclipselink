@@ -474,7 +474,7 @@ public class XMLEntityMappings {
     	processSqlResultSetMappings(m_sqlResultSetMappings);
 
         // Process the entities from this mapping file.
-        for (ClassAccessor entity : m_entities) {
+        for (EntityAccessor entity : m_entities) {
         	// It may have been fast tracked ...
         	if (! entity.isProcessed()) {
         		// Tell the entity to process itself ...
@@ -738,7 +738,7 @@ public class XMLEntityMappings {
      * We clone/reload a mapped-superclass by writing it out to XML and 
      * reload it through OX.
      */
-    public MappedSuperclassAccessor reloadMappedSuperclass(MappedSuperclassAccessor accessor, MetadataDescriptor descriptor, ClassLoader loader) {
+    public MappedSuperclassAccessor reloadMappedSuperclass(MappedSuperclassAccessor accessor, MetadataDescriptor descriptor) {
     	try {
     		// Create entity mappings object to write out.
     		XMLEntityMappings entityMappingsOut = new XMLEntityMappings();
@@ -750,7 +750,7 @@ public class XMLEntityMappings {
     		// Create a temp file, write it out, read it back in and delete.
     		File file = new File("tempToDelete.xml");
     		XMLEntityMappingsWriter.write(entityMappingsOut, file.toURI());
-    		XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(file.toURL(), loader);
+    		XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(file.toURL(), m_loader);
     		file.delete();
         	
     		// Initialize the newly loaded/built mapped superclass

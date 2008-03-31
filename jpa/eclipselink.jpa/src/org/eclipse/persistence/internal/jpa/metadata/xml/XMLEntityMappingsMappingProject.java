@@ -46,6 +46,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToMan
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransformationAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransientAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
 
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
@@ -56,6 +57,7 @@ import org.eclipse.persistence.internal.jpa.metadata.changetracking.ChangeTracki
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorClassMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
@@ -134,6 +136,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildAssociationOverrideDescriptor());
         addDescriptor(buildAttributeOverrideDescriptor());
         addDescriptor(buildDiscriminatorColumnDescriptor());
+        addDescriptor(buildDiscriminatorClassDescriptor());
         
         addDescriptor(buildNamedQueryDescriptor());
         addDescriptor(buildNamedNativeQueryDescriptor());
@@ -159,6 +162,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildCollectionTableDescriptor());
         addDescriptor(buildBasicCollectionDescriptor());
         addDescriptor(buildBasicMapDescriptor());
+        addDescriptor(buildVariableOneToOneDescriptor());
         
         addDescriptor(buildGeneratedValueDescriptor());
         addDescriptor(buildSequenceGeneratorDescriptor());
@@ -298,6 +302,14 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         oneToOnesMapping.setReferenceClass(OneToOneAccessor.class);
         oneToOnesMapping.setXPath("orm:one-to-one");
         descriptor.addMapping(oneToOnesMapping);
+        
+        XMLCompositeCollectionMapping variableOneToOnesMapping = new XMLCompositeCollectionMapping();
+        variableOneToOnesMapping.setAttributeName("m_variableOneToOnes");
+        variableOneToOnesMapping.setGetMethodName("getVariableOneToOnes");
+        variableOneToOnesMapping.setSetMethodName("setVariableOneToOnes");
+        variableOneToOnesMapping.setReferenceClass(VariableOneToOneAccessor.class);
+        variableOneToOnesMapping.setXPath("orm:variable-one-to-one");
+        descriptor.addMapping(variableOneToOnesMapping);
         
         XMLCompositeCollectionMapping manyToManysMapping = new XMLCompositeCollectionMapping();
         manyToManysMapping.setAttributeName("m_manyToManys");
@@ -681,6 +693,31 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: discriminator-class
+     */
+    protected ClassDescriptor buildDiscriminatorClassDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(DiscriminatorClassMetadata.class);
+
+        XMLDirectMapping discriminatorMapping = new XMLDirectMapping();
+        discriminatorMapping.setAttributeName("m_discriminator");
+        discriminatorMapping.setGetMethodName("getDiscriminator");
+        discriminatorMapping.setSetMethodName("setDiscriminator");
+        discriminatorMapping.setXPath("@discriminator");
+        descriptor.addMapping(discriminatorMapping);
+        
+        XMLDirectMapping valueMapping = new XMLDirectMapping();
+        valueMapping.setAttributeName("m_valueName");
+        valueMapping.setGetMethodName("getValueName");
+        valueMapping.setSetMethodName("setValueName");
+        valueMapping.setXPath("@value");
+        descriptor.addMapping(valueMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: discriminator-column
      */
     protected ClassDescriptor buildDiscriminatorColumnDescriptor() {
@@ -800,14 +837,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         discriminatorValueMapping.setXPath("orm:discriminator-value/text()");
         descriptor.addMapping(discriminatorValueMapping);
         
-        XMLCompositeObjectMapping discriminatorColumnMapping = new XMLCompositeObjectMapping();
-        discriminatorColumnMapping.setAttributeName("m_discriminatorColumn");
-        discriminatorColumnMapping.setGetMethodName("getDiscriminatorColumn");
-        discriminatorColumnMapping.setSetMethodName("setDiscriminatorColumn");
-        discriminatorColumnMapping.setReferenceClass(DiscriminatorColumnMetadata.class);
-        discriminatorColumnMapping.setXPath("orm:discriminator-column");
-        descriptor.addMapping(discriminatorColumnMapping);
-
+        descriptor.addMapping(getDiscriminatorColumnMapping());
         descriptor.addMapping(getOptimisticLockingMapping());
         descriptor.addMapping(getCacheMapping());
         descriptor.addMapping(getConverterMapping());
@@ -1480,20 +1510,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
-     * XSD: readTransformer
-     */
-    protected ClassDescriptor buildReadTransformerDescriptor() {
-        XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(ReadTransformerMetadata.class);
-        
-        descriptor.addMapping(getTransformerClassNameMapping());
-        descriptor.addMapping(getMethodMapping());
-        
-        return descriptor;
-    }
-    
-    /**
-     * INTERNAL:
      * XSD: query-hint
      */
     protected ClassDescriptor buildQueryHintDescriptor() {
@@ -1501,16 +1517,24 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(QueryHintMetadata.class);
         
         descriptor.addMapping(getNameAttributeMapping());
-        
-        XMLDirectMapping valueMapping = new XMLDirectMapping();
-        valueMapping.setAttributeName("m_value");
-        valueMapping.setGetMethodName("getValue");
-        valueMapping.setSetMethodName("setValue");
-        valueMapping.setXPath("@value");
-        descriptor.addMapping(valueMapping);
+        descriptor.addMapping(getValueAttributeMapping());
         
         return descriptor;
     }    
+    
+    /**
+     * INTERNAL:
+     * XSD: read-transformer
+     */
+    protected ClassDescriptor buildReadTransformerDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(ReadTransformerMetadata.class);
+        
+        descriptor.addMapping(getTransformerClassAttributeMapping());
+        descriptor.addMapping(getMethodAttributeMapping());
+        
+        return descriptor;
+    }
 
     /**
      * INTERNAL:
@@ -1838,6 +1862,28 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: variable-one-to-one
+     */
+    protected ClassDescriptor buildVariableOneToOneDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(VariableOneToOneAccessor.class);
+        
+        descriptor.addMapping(getCascadeMapping());
+        descriptor.addMapping(getDiscriminatorColumnMapping());
+        descriptor.addMapping(getDiscriminatorClassMapping());
+        descriptor.addMapping(getJoinColumnMapping());
+        descriptor.addMapping(getPrivateOwnedMapping());
+
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getTargetInterfaceAttributeMapping());
+        descriptor.addMapping(getFetchAttributeMapping());
+        descriptor.addMapping(getOptionalAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: version
      */
     protected ClassDescriptor buildVersionDescriptor() {
@@ -1855,14 +1901,14 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
-     * XSD: writeTransformer
+     * XSD: write-transformer
      */
     protected ClassDescriptor buildWriteTransformerDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(WriteTransformerMetadata.class);
         
-        descriptor.addMapping(getTransformerClassNameMapping());
-        descriptor.addMapping(getMethodMapping());
+        descriptor.addMapping(getTransformerClassAttributeMapping());
+        descriptor.addMapping(getMethodAttributeMapping());
         descriptor.addMapping(getColumnMapping());
         
         return descriptor;
@@ -2121,6 +2167,32 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLCompositeCollectionMapping getDiscriminatorClassMapping() {
+        XMLCompositeCollectionMapping discriminatorClassMapping = new XMLCompositeCollectionMapping();
+        discriminatorClassMapping.setAttributeName("m_discriminatorClasses");
+        discriminatorClassMapping.setGetMethodName("getDiscriminatorClasses");
+        discriminatorClassMapping.setSetMethodName("setDiscriminatorClasses");
+        discriminatorClassMapping.setReferenceClass(DiscriminatorClassMetadata.class);
+        discriminatorClassMapping.setXPath("orm:discriminator-class");
+        return discriminatorClassMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getDiscriminatorColumnMapping() {
+        XMLCompositeObjectMapping discriminatorColumnMapping = new XMLCompositeObjectMapping();
+        discriminatorColumnMapping.setAttributeName("m_discriminatorColumn");
+        discriminatorColumnMapping.setGetMethodName("getDiscriminatorColumn");
+        discriminatorColumnMapping.setSetMethodName("setDiscriminatorColumn");
+        discriminatorColumnMapping.setReferenceClass(DiscriminatorColumnMetadata.class);
+        discriminatorColumnMapping.setXPath("orm:discriminator-column");
+        return discriminatorColumnMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLCompositeCollectionMapping getEntityListenersMapping() {
         XMLCompositeCollectionMapping entityListenersMapping = new XMLCompositeCollectionMapping();
         entityListenersMapping.setAttributeName("m_entityListeners");
@@ -2328,7 +2400,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLDirectMapping getMethodMapping() {
+    protected XMLDirectMapping getMethodAttributeMapping() {
         XMLDirectMapping methodMapping = new XMLDirectMapping();
         methodMapping.setAttributeName("m_method");
         methodMapping.setGetMethodName("getMethod");
@@ -2739,6 +2811,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     }
     
     /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getTargetInterfaceAttributeMapping() {
+        XMLDirectMapping targetInterfaceMapping = new XMLDirectMapping();
+        targetInterfaceMapping.setAttributeName("m_targetEntity");
+        targetInterfaceMapping.setGetMethodName("getTargetEntityName");
+        targetInterfaceMapping.setSetMethodName("setTargetEntityName");
+        targetInterfaceMapping.setXPath("@target-interface");
+        return targetInterfaceMapping;
+    }
+    
+    /**
      * INTERNAL
      */
     protected XMLDirectMapping getTemporalMapping() {
@@ -2754,7 +2838,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL
      */
-    protected XMLDirectMapping getTransformerClassNameMapping() {
+    protected XMLDirectMapping getTransformerClassAttributeMapping() {
         XMLDirectMapping transformerClassNameMapping = new XMLDirectMapping();
         transformerClassNameMapping.setAttributeName("m_transformerClassName");
         transformerClassNameMapping.setGetMethodName("getTransformerClassName");
@@ -2811,6 +2895,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     	updatableMapping.setSetMethodName("setUpdatable");
     	updatableMapping.setXPath("@updatable");
     	return updatableMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getValueAttributeMapping() {
+        XMLDirectMapping valueMapping = new XMLDirectMapping();
+        valueMapping.setAttributeName("m_value");
+        valueMapping.setGetMethodName("getValue");
+        valueMapping.setSetMethodName("setValue");
+        valueMapping.setXPath("@value");
+        return valueMapping;
     }
     
     /**

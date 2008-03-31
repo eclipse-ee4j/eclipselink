@@ -351,6 +351,9 @@ public class ValidationException extends EclipseLinkException {
     public static final int WRITE_TRANSFORMER_HAS_NEITHER_CLASS_NOR_METHOD = 7292;
     public static final int WRITE_TRANSFORMER_HAS_NO_COLUMN_NAME = 7293;
     
+    public static final int MULTIPLE_CLASSES_FOR_THE_SAME_DISCRIMINATOR = 7294;
+    
+    
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -2394,6 +2397,14 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_ATTRIBUTE_OVERRIDE_WITH_SAME_NAME, args));
         validationException.setErrorCode(MULTIPLE_ATTRIBUTE_OVERRIDE_WITH_SAME_NAME);
+        return validationException;
+    }
+        
+    public static ValidationException multipleClassesForTheSameDiscriminator(String discriminator, String attributeName) {
+        Object[] args = {discriminator, attributeName};
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_CLASSES_FOR_THE_SAME_DISCRIMINATOR, args));
+        validationException.setErrorCode(MULTIPLE_CLASSES_FOR_THE_SAME_DISCRIMINATOR);
         return validationException;
     }
     

@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 
 /**
@@ -104,14 +105,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         mapping.setAttributeName(getAttributeName());
         mapping.setReferenceClassName(getReferenceClassName());
         
-        // If the global weave for value holders is true, then use the value
-        // from usesIndirection. Otherwise, force it to false.
-        boolean usesIndirection = (getProject().enableLazyForOneToOne()) ? usesIndirection() : false;
-        if (usesIndirection && getDescriptor().usesPropertyAccess()) {
-            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getSetMethodName()));
-        } else {
-            mapping.setUsesIndirection(usesIndirection);
-        }
+        // Process the indirection.
+        processIndirection(mapping);
         
         // Set the getter and setter methods if access is PROPERTY.
         setAccessorMethods(mapping);
@@ -138,6 +133,21 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
+     * Process the indirection (aka fetch type)
+     */
+    protected void processIndirection(ObjectReferenceMapping mapping) {
+        // If the global weave for value holders is true, the use the value
+        // from usesIndirection. Otherwise, force it to false.
+        boolean usesIndirection = (getProject().enableLazyForOneToOne()) ? usesIndirection() : false;
+        if (usesIndirection && getDescriptor().usesPropertyAccess()) {
+            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getSetMethodName()));
+        } else {
+            mapping.setUsesIndirection(usesIndirection);
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process the @JoinColumn(s) for the owning side of a one to one mapping.
      * The default pk and pk field names are used only with single primary key 
      * entities. The processor should never get as far as to use them with 
@@ -156,10 +166,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         String defaultFKFieldName = getUpperCaseAttributeName() + "_" + defaultPKFieldName;
             
         // Join columns will come from a @JoinColumn(s).
-        List<JoinColumnMetadata> joinColumns = processJoinColumns();
-
         // Add the source foreign key fields to the mapping.
-        for (JoinColumnMetadata joinColumn : joinColumns) {
+        for (JoinColumnMetadata joinColumn : processJoinColumns()) {
             DatabaseField pkField = joinColumn.getPrimaryKeyField();
             pkField.setName(getName(pkField, defaultPKFieldName, MetadataLogger.PK_COLUMN));
             pkField.setTable(getReferenceDescriptor().getPrimaryKeyTable());

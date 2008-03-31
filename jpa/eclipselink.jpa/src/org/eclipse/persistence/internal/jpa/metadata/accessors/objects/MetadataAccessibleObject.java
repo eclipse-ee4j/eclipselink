@@ -36,18 +36,21 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.Version;
 
-
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.BasicMap;
 import org.eclipse.persistence.annotations.ReadTransformer;
+import org.eclipse.persistence.annotations.VariableOneToOne;
 import org.eclipse.persistence.annotations.WriteTransformer;
 import org.eclipse.persistence.annotations.WriteTransformers;
+
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 /**
- * Parent object that is used to hold onto a valid EJB 3.0 decorated method
+ * Parent object that is used to hold onto a valid JPA decorated method
  * or field.
  * 
  * @author Guy Pelletier
@@ -380,6 +383,32 @@ public abstract class MetadataAccessibleObject  {
         return isAnnotationPresent(ReadTransformer.class, descriptor) ||
                isAnnotationPresent(WriteTransformers.class, descriptor) ||
                isAnnotationPresent(WriteTransformer.class, descriptor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if this accessor represents a variable 1-1 relationship.
+     * The method will return true if one of the following conditions is met:
+     *  - There is a VariableOneToOne annotation present, or
+     *  - The raw class is an interface and not a collection or map, nor a 
+     *    ValueHolderInterface.
+     */
+    public boolean isVariableOneToOne(MetadataDescriptor descriptor) {
+        if (isAnnotationNotPresent(VariableOneToOne.class, m_annotatedElement)) {
+            if (getRawClass().isInterface() && 
+                    ! Map.class.isAssignableFrom(getRawClass()) && 
+                    ! Collection.class.isAssignableFrom(getRawClass()) &&
+                    ! getRawClass().equals(ValueHolderInterface.class)) {
+                descriptor.getLogger().logConfigMessage(MetadataLogger.VARIABLE_ONE_TO_ONE_MAPPING, m_annotatedElement);
+                return true;
+            }
+            
+            return false;
+        } else {
+            // Still need to make the call since we may need to ignore it
+            // because of meta-data complete.
+            return isAnnotationPresent(VariableOneToOne.class, descriptor);
+        }
     }
     
     /**

@@ -120,7 +120,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
             fkField.setName(getName(fkField, defaultFKFieldName, FK_CTX));
             // Target table name here is the join table name.
             // If the user had specified a different table name in the join
-            // column, it is igored. Perhaps an error or warning should be
+            // column, it is ignored. Perhaps an error or warning should be
             // fired off.
             fkField.setTable(mapping.getRelationTable());
             

@@ -58,7 +58,7 @@ public class MetadataHelper {
 	}  
     
     /**
-     * INTERNAL: Guy - EmbeddedAccessor calls right now.
+     * INTERNAL:
 	 * Get the methods from a class using the doPriveleged security access. 
      * This call returns only public methods from the given class and its 
      * superclasses.

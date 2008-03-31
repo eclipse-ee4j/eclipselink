@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToMan
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransformationAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransientAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 
@@ -50,6 +51,7 @@ public class XMLAttributes {
 	private List<MetadataAccessor> m_allAccessors;
 	private List<OneToManyAccessor> m_oneToManys;
 	private List<OneToOneAccessor> m_oneToOnes;
+	private List<VariableOneToOneAccessor> m_variableOneToOnes;
     private List<TransformationAccessor> m_transformations;
 	private List<TransientAccessor> m_transients;
 	private List<VersionAccessor> m_versions;
@@ -82,6 +84,7 @@ public class XMLAttributes {
 			m_allAccessors.addAll(m_manyToOnes);
 			m_allAccessors.addAll(m_oneToManys);
 			m_allAccessors.addAll(m_oneToOnes);
+			m_allAccessors.addAll(m_variableOneToOnes);
 		}
 		
 		return m_allAccessors;
@@ -187,6 +190,14 @@ public class XMLAttributes {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<VariableOneToOneAccessor> getVariableOneToOnes() {
+        return m_variableOneToOnes;
+    }
+    
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
 	public List<VersionAccessor> getVersions() {
 		return m_versions;
 	}
@@ -287,6 +298,14 @@ public class XMLAttributes {
 		m_transients = transients;
 	}
 
+	/**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setVariableOneToOnes(List<VariableOneToOneAccessor> variableOneToOnes) {
+        m_variableOneToOnes = variableOneToOnes;
+    }
+    
 	/**
      * INTERNAL:
      * Used for OX mapping.

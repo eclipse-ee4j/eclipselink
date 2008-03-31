@@ -60,7 +60,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         //right now only ForeignKeyRelationships are supported
         this.isForeignKeyRelationship = false;
     }
-
+    
     /**
      * INTERNAL:
      */
@@ -97,12 +97,19 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * A foreign key from the source table and abstract query key from the interface descriptor are added to the
      * mapping. This method is used if there are multiple foreign keys.
      */
-    public void addForeignQueryKeyName(String sourceForeignKeyFieldName, String targetQueryKeyName) {
-        DatabaseField sourceField = new DatabaseField(sourceForeignKeyFieldName);
-
-        getSourceToTargetQueryKeyNames().put(sourceField, targetQueryKeyName);
-        getForeignKeyFields().addElement(sourceField);
+    public void addForeignQueryKeyName(DatabaseField sourceForeignKeyField, String targetQueryKeyName) {
+        getSourceToTargetQueryKeyNames().put(sourceForeignKeyField, targetQueryKeyName);
+        getForeignKeyFields().addElement(sourceForeignKeyField);
         this.setIsForeignKeyRelationship(true);
+    }
+    
+    /**
+     * PUBLIC:
+     * A foreign key from the source table and abstract query key from the interface descriptor are added to the
+     * mapping. This method is used if there are multiple foreign keys.
+     */
+    public void addForeignQueryKeyName(String sourceForeignKeyFieldName, String targetQueryKeyName) {
+        addForeignQueryKeyName(new DatabaseField(sourceForeignKeyFieldName), targetQueryKeyName);
     }
 
     /**
@@ -644,7 +651,7 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
      * INTERNAL:
      * This method set the typeField of the mapping to the parameter field
      */
-    protected void setTypeField(DatabaseField typeField) {
+    public void setTypeField(DatabaseField typeField) {
         this.typeField = typeField;
     }
 

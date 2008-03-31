@@ -27,7 +27,10 @@ public class RelationshipsTableManager extends TableCreator {
         addTableDefinition(buildCMP3_CUSTOMERTable());
         addTableDefinition(buildCMP3_ITEMTable());
         addTableDefinition(buildCMP3_ORDERTable());
-        //addTableDefinition(buildCMP3_ORDER_SEQTable());
+        addTableDefinition(buildMATTELTable());
+        addTableDefinition(buildLEGOTable());
+        addTableDefinition(buildMEGABRANDSTable());
+        addTableDefinition(buildNAMCOTable());
     }
         
     public static TableCreator getCreator(){
@@ -140,6 +143,49 @@ public class RelationshipsTableManager extends TableCreator {
         fieldIMAGE.setShouldAllowNull(true);
         table.addField(fieldIMAGE);
 
+        FieldDefinition fieldDTYPE = new FieldDefinition();
+        fieldDTYPE.setName("DTYPE");
+        fieldDTYPE.setTypeName("VARCHAR2");
+        fieldDTYPE.setSize(80);
+        fieldDTYPE.setSubSize(0);
+        fieldDTYPE.setIsPrimaryKey(false);
+        fieldDTYPE.setIsIdentity(false);
+        fieldDTYPE.setUnique(false);
+        fieldDTYPE.setShouldAllowNull(true);
+        table.addField(fieldDTYPE);
+
+        FieldDefinition fieldMANUFACTURER_ID = new FieldDefinition();
+        fieldMANUFACTURER_ID.setName("MANUFACTURER_ID");
+        fieldMANUFACTURER_ID.setTypeName("NUMBER");
+        fieldMANUFACTURER_ID.setSize(15);
+        fieldMANUFACTURER_ID.setSubSize(0);
+        fieldMANUFACTURER_ID.setIsPrimaryKey(false);
+        fieldMANUFACTURER_ID.setIsIdentity(false);
+        fieldMANUFACTURER_ID.setUnique(false);
+        fieldMANUFACTURER_ID.setShouldAllowNull(true);
+        table.addField(fieldMANUFACTURER_ID);
+        
+        FieldDefinition fieldDISTRIBUTOR_TYPE = new FieldDefinition();
+        fieldDISTRIBUTOR_TYPE.setName("DISTRIBUTOR_TYPE");
+        fieldDISTRIBUTOR_TYPE.setTypeName("VARCHAR2");
+        fieldDISTRIBUTOR_TYPE.setSize(2);
+        fieldDISTRIBUTOR_TYPE.setSubSize(0);
+        fieldDISTRIBUTOR_TYPE.setIsPrimaryKey(false);
+        fieldDISTRIBUTOR_TYPE.setIsIdentity(false);
+        fieldDISTRIBUTOR_TYPE.setUnique(false);
+        fieldDISTRIBUTOR_TYPE.setShouldAllowNull(true);
+        table.addField(fieldDISTRIBUTOR_TYPE);
+        
+        FieldDefinition fieldDISTRIBUTOR_ID = new FieldDefinition();
+        fieldDISTRIBUTOR_ID.setName("DISTRIBUTOR_ID");
+        fieldDISTRIBUTOR_ID.setTypeName("NUMBER");
+        fieldDISTRIBUTOR_ID.setSize(15);
+        fieldDISTRIBUTOR_ID.setSubSize(0);
+        fieldDISTRIBUTOR_ID.setIsPrimaryKey(false);
+        fieldDISTRIBUTOR_ID.setIsIdentity(false);
+        fieldDISTRIBUTOR_ID.setUnique(false);
+        fieldDISTRIBUTOR_ID.setShouldAllowNull(true);
+        table.addField(fieldDISTRIBUTOR_ID);
         return table;
     }
 
@@ -217,31 +263,115 @@ public class RelationshipsTableManager extends TableCreator {
        return table;
     }
 
-    public static TableDefinition buildCMP3_ORDER_SEQTable() {
+    public static TableDefinition buildLEGOTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("CMP3_XML_CUSTOMER_SEQ");
+        table.setName("CMP3_XML_LEGO");
 
-        FieldDefinition fieldSEQ_NAME = new FieldDefinition();
-        fieldSEQ_NAME.setName("SEQ_NAME");
-        fieldSEQ_NAME.setTypeName("VARCHAR");
-        fieldSEQ_NAME.setSize(80);
-        fieldSEQ_NAME.setSubSize(0);
-        fieldSEQ_NAME.setIsPrimaryKey(true);
-        fieldSEQ_NAME.setIsIdentity(false);
-        fieldSEQ_NAME.setUnique(false);
-        fieldSEQ_NAME.setShouldAllowNull(false);
-        table.addField(fieldSEQ_NAME);
+        FieldDefinition fieldCUST_ID = new FieldDefinition();
+        fieldCUST_ID.setName("ID");
+        fieldCUST_ID.setTypeName("NUMBER");
+        fieldCUST_ID.setSize(15);
+        fieldCUST_ID.setSubSize(0);
+        fieldCUST_ID.setIsPrimaryKey(true);
+        fieldCUST_ID.setIsIdentity(false);
+        fieldCUST_ID.setUnique(false);
+        fieldCUST_ID.setShouldAllowNull(false);
+        table.addField(fieldCUST_ID);
 
-        FieldDefinition fieldSEQ_VALUE = new FieldDefinition();
-        fieldSEQ_VALUE.setName("SEQ_COUNT");
-        fieldSEQ_VALUE.setTypeName("NUMERIC");
-        fieldSEQ_VALUE.setSize(15);
-        fieldSEQ_VALUE.setSubSize(0);
-        fieldSEQ_VALUE.setIsPrimaryKey(false);
-        fieldSEQ_VALUE.setIsIdentity(false);
-        fieldSEQ_VALUE.setUnique(false);
-        fieldSEQ_VALUE.setShouldAllowNull(false);
-        table.addField(fieldSEQ_VALUE);
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+    public static TableDefinition buildMATTELTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_XML_MATTEL");
+
+        FieldDefinition fieldCUST_ID = new FieldDefinition();
+        fieldCUST_ID.setName("ID");
+        fieldCUST_ID.setTypeName("NUMBER");
+        fieldCUST_ID.setSize(15);
+        fieldCUST_ID.setSubSize(0);
+        fieldCUST_ID.setIsPrimaryKey(true);
+        fieldCUST_ID.setIsIdentity(false);
+        fieldCUST_ID.setUnique(false);
+        fieldCUST_ID.setShouldAllowNull(false);
+        table.addField(fieldCUST_ID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+    public static TableDefinition buildMEGABRANDSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_XML_MEGABRANDS");
+
+        FieldDefinition fieldCUST_ID = new FieldDefinition();
+        fieldCUST_ID.setName("DISTRIBUTORID");
+        fieldCUST_ID.setTypeName("NUMBER");
+        fieldCUST_ID.setSize(15);
+        fieldCUST_ID.setSubSize(0);
+        fieldCUST_ID.setIsPrimaryKey(true);
+        fieldCUST_ID.setIsIdentity(false);
+        fieldCUST_ID.setUnique(false);
+        fieldCUST_ID.setShouldAllowNull(false);
+        table.addField(fieldCUST_ID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+    public static TableDefinition buildNAMCOTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_XML_NAMCO");
+
+        FieldDefinition fieldCUST_ID = new FieldDefinition();
+        fieldCUST_ID.setName("ID");
+        fieldCUST_ID.setTypeName("NUMBER");
+        fieldCUST_ID.setSize(15);
+        fieldCUST_ID.setSubSize(0);
+        fieldCUST_ID.setIsPrimaryKey(true);
+        fieldCUST_ID.setIsIdentity(false);
+        fieldCUST_ID.setUnique(false);
+        fieldCUST_ID.setShouldAllowNull(false);
+        table.addField(fieldCUST_ID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
 
         return table;
     }

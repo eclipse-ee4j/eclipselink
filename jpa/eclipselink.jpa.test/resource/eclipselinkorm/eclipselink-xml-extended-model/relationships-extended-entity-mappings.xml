@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<entity-mappings version="1.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd">
+<entity-mappings xsi:schemaLocation="xsd/eclipselink_orm_1_0.xsd" version="1.0" xmlns="http://www.eclipse.org/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <description>Relationships Test Model Instance Document</description>
     <persistence-unit-metadata>
         <persistence-unit-defaults>
@@ -8,17 +8,19 @@
     </persistence-unit-metadata>
     <package>org.eclipse.persistence.testing.models.jpa.xml.relationships</package>
     <access>PROPERTY</access>
+    <table-generator name="MANUFACTURER_GENERATOR_TABLE" table="CMP3_XML_MANUFACTURER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="MFT_SEQ"/>
+    <table-generator name="DISTRIBUTOR_GENERATOR_TABLE" table="CMP3_XML_DISTRIBUTOR_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="DTR_SEQ"/>
     <named-query name="findAllXMLCustomers">
-        <query>SELECT OBJECT(thecust) FROM XMLCustomer thecust</query>
+        <query>SELECT OBJECT(thecust) FROM XMLExtendedCustomer thecust</query>
         <hint name="refresh" value="true"/>
     </named-query>
     <named-query name="findAllXMLOrdersByItem">
-        <query>SELECT OBJECT(theorder) FROM XMLOrderBean theorder WHERE theorder.item.itemId = :id</query>
+        <query>SELECT OBJECT(theorder) FROM XMLExtendedOrder theorder WHERE theorder.item.itemId = :id</query>
     </named-query>
     <named-query name="findAllXMLItemsByName">
-        <query>SELECT OBJECT(item) FROM XMLItem item WHERE item.name = ?1</query>
+        <query>SELECT OBJECT(item) FROM XMLExtendedItem item WHERE item.name = ?1</query>
     </named-query>
-    <entity name="XMLCustomer" class="Customer">
+    <entity name="XMLExtendedCustomer" class="Customer">
         <table name="CMP3_XML_CUSTOMER"/>
         <table-generator name="CUSTOMER_GENERATOR_TABLE" table="CMP3_XML_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CUST_SEQ"/>
         <exclude-default-listeners/>
@@ -44,7 +46,7 @@
             </one-to-many>
         </attributes>
     </entity>
-    <entity name="XMLOrderBean" class="Order" metadata-complete="false">
+    <entity name="XMLExtendedOrder" class="Order" metadata-complete="false">
         <table name="CMP3_XML_ORDER"/>
         <table-generator name="ORDER_TABLE_GENERATOR" table="CMP3_XML_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="ORDER_SEQ"/>
         <exclude-default-listeners/>
@@ -74,7 +76,7 @@
             </one-to-one>
         </attributes>
     </entity>
-    <entity name="XMLItem" class="Item" metadata-complete="false">
+    <entity name="XMLExtendedItem" class="Item" metadata-complete="false">
         <table name="CMP3_XML_ITEM"/>
         <table-generator name="ITEM_TABLE_GENERATOR" table="CMP3_XML_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="ITEM_SEQ"/>
         <exclude-default-listeners/>
@@ -93,6 +95,53 @@
             <version name="version">
                 <column name="ITEM_VERSION"/>
             </version>
+            <variable-one-to-one name="manufacturer"/>
+            <variable-one-to-one name="distributor" target-interface="Distributor" fetch="LAZY">                
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+                <discriminator-column name="DISTRIBUTOR_TYPE" discriminator-type="INTEGER"/>
+                <discriminator-class discriminator="1" value="MegaBrands"/>
+                <discriminator-class discriminator="2" value="Namco"/> 
+                <join-column name="DISTRIBUTOR_ID" referenced-column-name="distributorId"/>      
+            </variable-one-to-one>
+        </attributes>
+    </entity>
+    <entity name="XMLLego" class="Lego">
+        <table name="CMP3_XML_LEGO"/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="MANUFACTURER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name"/>
+        </attributes>
+    </entity>
+    <entity name="XMLMattel" class="Mattel">
+        <table name="CMP3_XML_MATTEL"/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="MANUFACTURER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name"/>
+        </attributes>
+    </entity>
+    <entity name="XMLMegaBrands" class="MegaBrands">
+        <table name="CMP3_XML_MEGABRANDS"/>
+        <attributes>
+            <id name="distributorId">
+                <generated-value strategy="TABLE" generator="DISTRIBUTOR_GENERATOR_TABLE"/>
+            </id>
+            <basic name="name"/>
+        </attributes>
+    </entity>
+    <entity name="XMLNamco" class="Namco">
+        <table name="CMP3_XML_NAMCO"/>
+        <attributes>
+            <id name="distributorId">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="DISTRIBUTOR_GENERATOR_TABLE"/>
+            </id>
+            <basic name="name"/>
         </attributes>
     </entity>
 </entity-mappings>

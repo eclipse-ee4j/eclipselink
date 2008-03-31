@@ -109,6 +109,7 @@ public class MetadataLogger  {
     public static final String COLUMN = "metadata_default_column";
     public static final String PK_COLUMN = "metadata_default_pk_column";
     public static final String FK_COLUMN = "metadata_default_fk_column";
+    public static final String QK_COLUMN = "metadata_default_qk_column";
     public static final String MAP_KEY_COLUMN = "metadata_default_key_column";
     public static final String VALUE_COLUMN = "metadata_default_value_column"; // applies to maps and collections
     public static final String SOURCE_PK_COLUMN = "metadata_default_source_pk_column";
@@ -123,10 +124,12 @@ public class MetadataLogger  {
     
     public static final String ONE_TO_ONE_MAPPING = "metadata_default_one_to_one_mapping";
     public static final String ONE_TO_MANY_MAPPING = "metadata_default_one_to_many_mapping";
+    public static final String VARIABLE_ONE_TO_ONE_MAPPING = "metadata_default_variable_one_to_one_mapping";
     public static final String ONE_TO_ONE_MAPPING_REFERENCE_CLASS = "metadata_default_one_to_one_reference_class";
     public static final String ONE_TO_MANY_MAPPING_REFERENCE_CLASS = "metadata_default_one_to_many_reference_class";
     public static final String MANY_TO_ONE_MAPPING_REFERENCE_CLASS = "metadata_default_many_to_one_reference_class";
     public static final String MANY_TO_MANY_MAPPING_REFERENCE_CLASS = "metadata_default_many_to_many_reference_class";
+    public static final String VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS = "metadata_default_variable_one_to_one_reference_class";
     /*************************************************************************/
     
     protected AbstractSession m_session; 
@@ -207,6 +210,7 @@ public class MetadataLogger  {
         m_ctxStrings.put(COLUMN, COLUMN);
         m_ctxStrings.put(PK_COLUMN, PK_COLUMN);
         m_ctxStrings.put(FK_COLUMN, FK_COLUMN);
+        m_ctxStrings.put(QK_COLUMN, QK_COLUMN);        
         m_ctxStrings.put(VALUE_COLUMN, VALUE_COLUMN);
         m_ctxStrings.put(MAP_KEY_COLUMN, MAP_KEY_COLUMN);
         m_ctxStrings.put(SOURCE_PK_COLUMN, SOURCE_PK_COLUMN);
@@ -221,10 +225,12 @@ public class MetadataLogger  {
         
         m_ctxStrings.put(ONE_TO_ONE_MAPPING, ONE_TO_ONE_MAPPING);
         m_ctxStrings.put(ONE_TO_MANY_MAPPING, ONE_TO_MANY_MAPPING);
+        m_ctxStrings.put(VARIABLE_ONE_TO_ONE_MAPPING, VARIABLE_ONE_TO_ONE_MAPPING);
         m_ctxStrings.put(ONE_TO_ONE_MAPPING_REFERENCE_CLASS, ONE_TO_ONE_MAPPING_REFERENCE_CLASS);
         m_ctxStrings.put(ONE_TO_MANY_MAPPING_REFERENCE_CLASS, ONE_TO_MANY_MAPPING_REFERENCE_CLASS);
         m_ctxStrings.put(MANY_TO_ONE_MAPPING_REFERENCE_CLASS, MANY_TO_ONE_MAPPING_REFERENCE_CLASS);
         m_ctxStrings.put(MANY_TO_MANY_MAPPING_REFERENCE_CLASS, MANY_TO_MANY_MAPPING_REFERENCE_CLASS);
+        m_ctxStrings.put(VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS, VARIABLE_ONE_TO_ONE_MAPPING_REFERENCE_CLASS);
     }
     
     /**

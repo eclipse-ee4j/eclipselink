@@ -115,7 +115,6 @@ public class IdAccessor extends BasicAccessor {
     public void process() {
     	// This will initialize the m_field variable.
     	super.process();
-    	
     	String attributeName = getAttributeName();
 
         if (getDescriptor().hasEmbeddedIdAttribute()) {

@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
   * Contributors:
- *     Guy Pelletier (Oracle), February 28, 2007 
+ *     Guy Pelletier (Oracle), February 28, 2008 
  *        - New file introduced for bug 217880.  
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.changetracking;

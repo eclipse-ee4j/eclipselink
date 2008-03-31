@@ -152,35 +152,16 @@ public class BasicAccessor extends DirectAccessor {
      * Process a basic accessor.
      */
     public void process() {
+        // Process a DirectToFieldMapping, that is a Basic that could
+        // be used in conjunction with a Lob, Temporal, Enumerated
+        // or inferred to be used with a serialized mapping.
+        DirectToFieldMapping mapping = new DirectToFieldMapping();
+        
         // Process the @Column or column element if there is one.
         m_field = getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN);
-
-        // Process a @ReturnInsert
-        processReturnInsert(m_field);
-
-        // Process a @ReturnUpdate.
-        processReturnUpdate(m_field);
-
-        if (getDescriptor().hasMappingForAttributeName(getAttributeName())) {
-            // Ignore the mapping if one already exists for it.
-            getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPING, this);
-        } else {
-            // Process a DirectToFieldMapping, that is a Basic that could
-            // be used in conjunction with a Lob, Temporal, Enumerated
-            // or inferred to be used with a serialized mapping.
-            processDirectToFieldMapping(m_field);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Process a Serialized or Basic into a DirectToFieldMapping. If neither 
-     * is found a DirectToFieldMapping is created regardless.
-     */
-    protected void processDirectToFieldMapping(DatabaseField field) {
-        DirectToFieldMapping mapping = new DirectToFieldMapping();
-        mapping.setField(field);
-        mapping.setIsReadOnly(field.isReadOnly());
+        
+        mapping.setField(m_field);
+        mapping.setIsReadOnly(m_field.isReadOnly());
         mapping.setAttributeName(getAttributeName());
         mapping.setIsOptional(isOptional());
         mapping.setIsLazy(usesIndirection());
@@ -199,15 +180,21 @@ public class BasicAccessor extends DirectAccessor {
             mapping.setIsMutable(m_mutable.booleanValue());
         }
 
+        // Process a @ReturnInsert
+        processReturnInsert(m_field);
+
+        // Process a @ReturnUpdate.
+        processReturnUpdate(m_field);
+        
         // Add the mapping to the descriptor.
         getDescriptor().addMapping(mapping);
     }
 
     /**
      * INTERNAL: (Override from DirectAccessor)
-     * Process an @Enumerated. The method may still be called if no @Enumerated
-     * has been specified but the accessor's reference class is a valid 
-     * enumerated type.
+     * Process an Enumerated annotation. The method may still be called if no 
+     * Enumerated annotation has been specified but the accessor's reference 
+     * class is a valid enumerated type.
      */
     protected void processEnumerated(DatabaseMapping mapping) {
         // If the raw class is a collection or map (with generics or not), we 

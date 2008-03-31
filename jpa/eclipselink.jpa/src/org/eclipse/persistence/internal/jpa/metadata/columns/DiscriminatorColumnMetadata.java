@@ -91,8 +91,11 @@ public class DiscriminatorColumnMetadata {
     
     /**
      * INTERNAL:
+     * Process a discriminator column metadata into an EclipseLink 
+     * DatabaseField. What is done with that field is up to the caller 
+     * of this method.
      */
-    public void process(MetadataDescriptor descriptor, String annotatedElementName) {     
+    public DatabaseField process(MetadataDescriptor descriptor, String annotatedElementName) {     
         DatabaseField field = new DatabaseField();
 
         // Process the name
@@ -117,9 +120,9 @@ public class DiscriminatorColumnMetadata {
         
         // Set the table.
         field.setTable(descriptor.getPrimaryTable());
-        
-        // Set the class indicator field on the inheritance policy.
-        descriptor.setClassIndicatorField(field);
+
+        // Return the field for the caller to handle.
+        return field;
     }
     
     /**
