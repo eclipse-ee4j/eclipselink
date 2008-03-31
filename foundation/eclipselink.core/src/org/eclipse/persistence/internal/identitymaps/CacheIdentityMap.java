@@ -111,15 +111,6 @@ public class CacheIdentityMap extends FullIdentityMap {
         }
         return cacheKey;
     }
-    
-    /**
-     * Store the object in the identity map with the linked cache key.
-     */
-    protected void put(CacheKey cacheKey) {
-        super.put(cacheKey);
-        insertLink((LinkedCacheKey)cacheKey);
-        ensureFixedSize();
-    }
 
     /**
      * Remove the LinkedCacheKey from the cache as well as from the linked list.

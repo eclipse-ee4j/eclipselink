@@ -318,11 +318,6 @@ public abstract class IdentityMap implements Serializable, Cloneable {
     public abstract CacheKey put(Vector primaryKey, Object object, Object writeLockValue, long readTime);
 
     /**
-     * Store the CacheKey in the map.
-     */
-    protected abstract void put(CacheKey cacheKey);
-
-    /**
      * Remove the CacheKey with the primaryKey from the map.
      * This is used by DeleteObjectQuery and merge.
      * This is also an advanced (very) user API.

@@ -102,7 +102,7 @@
         <path refid="compile.path"/>
         <pathelement path="${eclipselink.core}/${resource.dir}"/>
         <pathelement path="${eclipselink.jar}"/>
-        <pathelement path="${eclipselink.core.test}/${eclipselink-tests.jar}"/>
+        <pathelement path="${eclipselink.core.test}/${eclipselink.tests.jar}"/>
         <pathelement path="${jdbc.driver.jar}"/>
         <pathelement path="${tools.jar}"/>
     </path>
@@ -161,8 +161,8 @@
              dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Dtest.properties=${test.properties.run}"/>
-            <jvmarg value="-Djava.security.manager"/>
-            <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
+            <jvmarg value="${test.security-manager}"/>
+            <jvmarg value="${test.security-manager.policy}"/>
             <classpath>
                 <path refid="run.classpath"/>
             </classpath>
@@ -177,8 +177,8 @@
         <junit printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Dtest.properties=${test.properties.run}"/>
-            <jvmarg value="-Djava.security.manager"/>
-            <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
+            <jvmarg value="${test.security-manager}"/>
+            <jvmarg value="${test.security-manager.policy}"/>
             <classpath>
                 <path refid="run.classpath"/>
             </classpath>

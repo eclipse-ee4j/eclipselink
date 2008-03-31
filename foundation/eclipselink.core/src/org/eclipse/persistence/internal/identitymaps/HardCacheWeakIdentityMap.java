@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.identitymaps;
 
 import java.util.*;
+
 import org.eclipse.persistence.internal.helper.linkedlist.*;
 
 /**
@@ -70,33 +71,29 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
     }
 
     /**
-     * Also insert the link if the cacheKey is put.
-     */
-    protected CacheKey getCacheKeyIfAbsentPut(CacheKey searchKey) {
-        CacheKey cacheKey = super.getCacheKeyIfAbsentPut(searchKey);
-        if (cacheKey == null) {
-            ReferenceCacheKey referenceCacheKey = (ReferenceCacheKey)searchKey;
-            LinkedNode node = null;
-            synchronized (getReferenceCache()) {
-                node = getReferenceCache().addFirst(buildReference(referenceCacheKey.getObject()));
-            }
-            referenceCacheKey.setReferenceCacheNode(node);
-        }
-        return cacheKey;
-    }
-
-    /**
      * Remove the cache key from the map and the sub-cache list.
      */
     public Object remove(CacheKey cacheKey) {
         if (cacheKey == null) {
             return null;
         }
-        ReferenceCacheKey referenceCacheKey = (ReferenceCacheKey)cacheKey;
-        synchronized (getReferenceCache()) {
-            getReferenceCache().remove(referenceCacheKey.getReferenceCacheNode());
+        LinkedNode node = ((ReferenceCacheKey)cacheKey).getReferenceCacheNode();
+        // Node is initially null while object is being built.
+        if (node != null) {
+            synchronized (this.referenceCache) {
+                this.referenceCache.remove(node);
+            }
         }
         return super.remove(cacheKey);
+    }
+    
+    /**
+     * Store the object in the cache at its primary key, and add to sub-cache list.
+     */
+    public CacheKey put(Vector primaryKey, Object object, Object writeLockValue, long readTime) {
+        CacheKey cacheKey = super.put(primaryKey, object, writeLockValue, readTime);
+        cacheKey.updateAccess();
+        return cacheKey;
     }
 
     /**
@@ -104,10 +101,10 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
      */
     public synchronized void updateMaxSize(int maxSize) {
         setMaxSize(maxSize);
-        synchronized (getReferenceCache()) {
+        synchronized (this.referenceCache) {
             // Remove the LRU items if max size exceeded.
-            while (getReferenceCache().size() > getMaxSize()) {
-                getReferenceCache().removeLast();
+            while (this.referenceCache.size() > this.maxSize) {
+                this.referenceCache.removeLast();
             }
         }
     }
@@ -141,20 +138,23 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
          * the cache node must be moved to the front of the list.
          */
         public void updateAccess() {
+            // Check if the node's contents is null (was removed),
+            // or ref value may have garbage collected so reset it.
+            if ((this.referenceNode != null) && (!hasReference(this.referenceNode.getContents()))) {
+                this.referenceNode.setContents(buildReference(getObject()));
+            }
             // PERF: Synchronize on the linked list.
-            synchronized (getReferenceCache()) {
-                // Check if the node's contents is null (was removed),
-                // also the object is null on initial put of acquired cache key,
-                // or ref value may have garbage collected so reset it.
-                if (!hasReference(getReferenceCacheNode().getContents())) {
-                    getReferenceCacheNode().setContents(buildReference(getObject()));
+            synchronized (referenceCache) {
+                // If reference node is null, add to start (new cache key).
+                if (this.referenceNode == null) {
+                    this.referenceNode = referenceCache.addFirst(buildReference(getObject()));
+                } else {
+                    // This is a fast constant time operations because of the linked list usage.
+                    referenceCache.moveFirst(getReferenceCacheNode());
                 }
-
-                // This is a fast constant time operations because of the linked list usage.
-                getReferenceCache().moveFirst(getReferenceCacheNode());
                 // Remove the old LRU items if max size exceeded (if was removed).
-                while (getReferenceCache().size() > getMaxSize()) {
-                    getReferenceCache().removeLast();
+                while (referenceCache.size() > maxSize) {
+                    referenceCache.removeLast();
                 }
             }
         }

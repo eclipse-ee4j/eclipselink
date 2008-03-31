@@ -181,9 +181,9 @@ public class FetchGroupManager implements Cloneable {
     }
 
     /**
-    * INTERNAL:
-    * Write data of the partially fetched object into the working and backup clones
-    */
+     * INTERNAL:
+     * Write data of the partially fetched object into the working and backup clones
+     */
     public void writePartialIntoClones(Object partialObject, Object workingClone, UnitOfWorkImpl uow) {
         FetchGroup fetchGroupInClone = ((FetchGroupTracker)workingClone)._persistence_getFetchGroup();
         FetchGroup fetchGroupInObject = ((FetchGroupTracker)partialObject)._persistence_getFetchGroup();
@@ -200,15 +200,18 @@ public class FetchGroupManager implements Cloneable {
         ObjectChangePolicy policy = descriptor.getObjectChangePolicy();
         // Turn it 'off' to prevent unwanted events.
         policy.dissableEventProcessing(workingClone);
-        //if refresh is set, force to fill in fetch group data
-        if (((FetchGroupTracker)partialObject)._persistence_shouldRefreshFetchGroup()) {
-            //refresh and fill in the fetch group data
-            refreshFetchGroupIntoClones(partialObject, workingClone, backupClone, fetchGroupInObject, fetchGroupInClone, uow);
-        } else {//no refresh is enforced
-            //revert the unfetched attributes of the clones.
-            revertDataIntoUnfetchedAttributesOfClones(partialObject, workingClone, backupClone, fetchGroupInObject, fetchGroupInClone, uow);
+        try {
+            //if refresh is set, force to fill in fetch group data
+            if (((FetchGroupTracker)partialObject)._persistence_shouldRefreshFetchGroup()) {
+                //refresh and fill in the fetch group data
+                refreshFetchGroupIntoClones(partialObject, workingClone, backupClone, fetchGroupInObject, fetchGroupInClone, uow);
+            } else {//no refresh is enforced
+                //revert the unfetched attributes of the clones.
+                revertDataIntoUnfetchedAttributesOfClones(partialObject, workingClone, backupClone, fetchGroupInObject, fetchGroupInClone, uow);
+            }
+        } finally {
+            policy.enableEventProcessing(workingClone);
         }
-        policy.enableEventProcessing(workingClone);
     }
 
     /**

@@ -91,9 +91,14 @@ public class FullIdentityMap extends IdentityMap {
      * If the CacheKey is missing then put the searchKey in the map.
      * The searchKey should have already been locked. 
      */
-    protected CacheKey getCacheKeyIfAbsentPut(CacheKey cacheKey) {
-        cacheKey.setOwningMap(this);
-        return (CacheKey)((ConcurrentMap)getCacheKeys()).putIfAbsent(cacheKey, cacheKey);
+    protected CacheKey getCacheKeyIfAbsentPut(CacheKey searchKey) {
+        // PERF: First to a get, and get is non-locking, putIfAbsent locks.
+        CacheKey cacheKey = getCacheKeys().get(searchKey);
+        if (cacheKey == null) {
+            searchKey.setOwningMap(this);
+            cacheKey = (CacheKey)((ConcurrentMap)getCacheKeys()).putIfAbsent(searchKey, searchKey);
+        }
+        return cacheKey;
     }
 
     /**
@@ -158,17 +163,11 @@ public class FullIdentityMap extends IdentityMap {
         if (cacheKey != null) {
             // The cache key is locked inside resetCacheKey() to keep other threads from accessing the object.
             resetCacheKey(cacheKey, object, writeLockValue, readTime);
+        } else {
+            return newCacheKey;
         }
 
         return cacheKey;
-    }
-
-    /**
-     * Store the object in the cache with the cache key.
-     */
-    protected void put(CacheKey cacheKey) {
-        cacheKey.setOwningMap(this);
-        getCacheKeys().put(cacheKey, cacheKey);
     }
 
     /**

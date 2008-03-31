@@ -85,7 +85,13 @@ public class CacheKey implements Serializable, Cloneable {
     }
 
     public CacheKey(Vector primaryKey, Object object, Object lockValue, long readTime) {
-        this(primaryKey, object, lockValue);
+        this.key = primaryKey;
+        this.hash = computeHash(primaryKey);
+        this.writeLockValue = lockValue;
+        //bug4649617  use setter instead of this.object = object to avoid hard reference on object in subclasses
+        if (object != null) {
+            setObject(object);
+        }
         this.readTime = readTime;
     }
 
