@@ -101,9 +101,6 @@
         <pathelement path="${eclipselink.core.test}/${run.dir}"/>
         <path refid="compile.path"/>
         <pathelement path="${eclipselink.core}/${resource.dir}"/>
-        <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
-        <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
-        <pathelement path="${eclipselink.extension.oracle}/eclipselink-extension-oracle.jar"/>
         <pathelement path="${eclipselink.jar}"/>
         <pathelement path="${eclipselink.core.test}/${eclipselink-tests.jar}"/>
         <pathelement path="${jdbc.driver.jar}"/>

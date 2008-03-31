@@ -74,9 +74,6 @@ public class TestRunModel extends TestModel {
             tests.addElement("org.eclipse.persistence.testing.tests.relationshipmaintenance.RelationshipsTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.jpql.JPQLTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.simultaneous.SimultaneousTestsModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.lob.LOBTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.lob.LOBSessionBrokerTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.nchar.NcharTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.writing.ComplexUpdateAndUnitOfWorkTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkClientSessionTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkIsolatedClientSessionTestModel");
@@ -113,12 +110,6 @@ public class TestRunModel extends TestModel {
             tests.addElement("org.eclipse.persistence.testing.tests.tableswithspacesmodel.EmployeeWithSpacesTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting.QueryAndSQLCountingTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.identitymaps.cache.CacheIdentityMapTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionNchartTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionLOBTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionNativeBatchWritingTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionTypeTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionCustomSQLTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionInsuranceObjectRelationalTestModel");
             tests.addElement("org.eclipse.persistence.testing.tests.failover.FailoverTestModel");
         }
 
@@ -147,17 +138,6 @@ public class TestRunModel extends TestModel {
             tests.addElement("org.eclipse.persistence.testing.tests.distributedservers.DistributedSessionBrokerServersModel");
             tests.addElement("org.eclipse.persistence.testing.tests.distributedservers.rcm.RCMDistributedServersModel");
             tests.addElement("org.eclipse.persistence.testing.tests.distributedservers.rcm.jms.JMSRCMDistributedServersModel");
-
-            // Requires specific oracle database/driver.
-            tests.addElement("org.eclipse.persistence.testing.tests.queries.oracle.OracleSpecificTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.flashback.FlashbackTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.returning.ReturningPolicyTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.dbchangenotification.DbChangeNotificationTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.proxyauthentication.ProxyAuthenticationTestModel");
-
-            // Requires specific oracle database/driver (oci).
-            tests.addElement("org.eclipse.persistence.testing.tests.xdb.XDBTestModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.xdb.XDBTestModelMWIntegration");
 
             // Can take a long time, can deadlock.
             tests.addElement("org.eclipse.persistence.testing.tests.clientserver.ClientServerTestModel");
@@ -206,6 +186,11 @@ public class TestRunModel extends TestModel {
         models.addElement(buildAllTestModels());
         models.addElement(buildJPATestModel());
         models.addElement(buildPerformanceTestModel());
+        try {
+            models.addElement(Class.forName("org.eclipse.persistence.testing.tests.OracleTestModel").newInstance());
+        } catch (Exception exception) {
+            System.out.println("Failed to set up org.eclipse.persistence.testing.tests.OracleTestModel" + " \n" + exception);
+        }
 
         Vector manualTest = new Vector();
         manualTest.addElement("org.eclipse.persistence.testing.tests.stress.StressTestModel");
