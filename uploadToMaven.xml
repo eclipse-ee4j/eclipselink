@@ -1,35 +1,83 @@
-<project name="Upload EclipseLink artifacts to Maven repository"  basedir="." xmlns:artifact="urn:maven-artifact-ant" default="upload.maven">
+<project name="Upload EclipseLink artifacts to Maven repository"  basedir="." xmlns:artifact="urn:maven-artifact-ant" default="upload.maven.all">
   <path id="maven-ant-tasks.classpath" path="lib/maven-ant-tasks-2.0.8.jar" /> <!-- TODO discuss with Tom where should this value and the actual lib go -->
   <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
            classpathref="maven-ant-tasks.classpath" />
 
-   <target name="upload.maven" >
-       <property file="./build.properties"/> <!-- release.version and build_id are intialized from here -->
-       <echo message="release.version ${release.version}"/>
-       <echo message="build_id ${build_id}"/>
-       
-       <!-- Get the subversion version for current working copy -->
-       <!-- A freshly checked out copy of workspace is guaranteed to not have mixed revisions -->
-       <exec outputproperty="subversion.revision" failonerror="true" executable="svnversion">
-          <arg line="."/>
-       </exec>
-       <echo message="subversion.revision ${subversion.revision}"/>
-       
+   <!-- The repository where maven artifacts will be uploaded -->
+   <artifact:remoteRepository id="eclipselink.repository" url="file:///home/data/httpd/download.eclipse.org/technology/eclipselink/maven.repo" /> 
+   
+   <target name = "upload.maven.init">
+          <property file="./build.properties"/> <!-- release.version and build_id are intialized from here -->
+          <echo message="release.version ${release.version}"/>
+          <echo message="build_id ${build_id}"/>
+          
+          <!-- Get the subversion version for current working copy -->
+          <!-- A freshly checked out copy of workspace is guaranteed to not have mixed revisions -->
+	<exec outputproperty="subversion.revision" failonerror="true" executable="svnversion">
+	  <arg line="."/>
+	</exec>
+	<echo message="subversion.revision ${subversion.revision}"/>
+   </target>
+   
+   <target name = "upload.maven.all" depends = "upload.maven.init">
+     <!-- call upload for each artifact we want to upload -->
+   	 <antcall target="upload.artifact">
+	    <param name="artifactId" value="eclipselink.core"/>
+	    <param name="artifact" value="${eclipselink.core}/${eclipselink.core.jar}"/>
+	    <param name="artifactName" value="EclipseLink Core"/>
+  	 </antcall>
+   	 <antcall target="upload.artifact">
+	    <param name="artifactId" value="eclipselink.jpa"/>
+	    <param name="artifact" value="${eclipselink.jpa}/${eclipselink.jpa.jar}"/>
+	    <param name="artifactName" value="EclipseLink JPA"/>
+  	 </antcall>
+   	 <antcall target="upload.artifact">
+	    <param name="artifactId" value="eclipselink.moxy"/>
+	    <param name="artifact" value="${eclipselink.moxy}/${eclipselink.moxy.jar}"/>
+	    <param name="artifactName" value="EclipseLink Moxy"/>
+  	 </antcall>
+   	 <antcall target="upload.artifact">
+	    <param name="artifactId" value="eclipselink.sdo"/>
+	    <param name="artifact" value="${eclipselink.sdo}/${eclipselink.sdo.jar}"/>
+	    <param name="artifactName" value="EclipseLink SDO"/>
+  	 </antcall>
+   	 <antcall target="upload.artifact">
+	    <param name="artifactId" value="eclipselink.extension.oracle"/>
+	    <param name="artifact" value="${eclipselink.extension.oracle}/${eclipselink.extension.oracle.jar}"/>
+	    <param name="artifactName" value="EclipseLink Oracle Extensions"/>
+  	 </antcall>
+   	 <antcall target="upload.artifact">
+	    <param name="artifactId" value="eclipselink"/>
+	    <param name="artifact" value="${eclipselink.jar}"/>
+	    <param name="artifactName" value="EclipseLink"/>
+  	 </antcall>
+   </target>
+
+   <!-- Uploads a single artifact to maven repository -->
+   <target name="upload.artifact" >
        <!-- Copy pom.template to pom.xml filtering various properties -->
        <copy file="pom.xml.template" tofile="pom.xml" overwrite="true">
          <filterset>
            <filter token="release.version" value="${release.version}"/>
            <filter token="qualifier"       value="${build_id}"/>
            <filter token="subversion.revision" value="${subversion.revision}"/>
+           <filter token="artifactId" value="${artifactId}"/>
+           <filter token="artifactName" value="${artifactName}"/>
           </filterset>
        </copy>
        
        <!-- Delploy the jar to maven repository along with sources -->
        <artifact:pom id="maven.project" file="pom.xml" />
-       <artifact:deploy file="./eclipselink.jar">
+       <artifact:deploy file="${artifact}">
+         <remoteRepository refid="eclipselink.repository"/>
          <pom refid="maven.project"/>
          <artifact:attach file="eclipselink-src.zip" classifier="sources"/>
        </artifact:deploy>
+       
+       <!-- cleanup -->
+       <delete file="pom.xml"/>
+       
    </target>
 </project>
+
 

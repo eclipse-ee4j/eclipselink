@@ -2,9 +2,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.eclipse.persistence</groupId>
-  <artifactId>eclipselink</artifactId>
+  <artifactId>@artifactId@</artifactId>
   <packaging>jar</packaging>
-  <name>EclipseLink</name>
+  <name>@artifactName@</name>
   <description>EclipseLink subversion revision @subversion.revision@</description>
   <version>@release.version@-@qualifier@</version>
   <url>http://www.eclipse.org/eclipselink</url>
@@ -31,12 +31,7 @@
         <url>http://www.eclipse.org/legal/epl-v10.html</url>
       </license>
   </licenses>
-  <distributionManagement>
-    <repository>
-      <id>eclipselink-maven-repo</id>
-      <url>file:///home/data/httpd/download.eclipse.org/technology/eclipselink/maven.repo</url>
-    </repository>
- </distributionManagement>
 </project>
+
 
 
