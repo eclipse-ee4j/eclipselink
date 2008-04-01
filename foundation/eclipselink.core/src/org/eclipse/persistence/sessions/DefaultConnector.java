@@ -47,11 +47,10 @@ public class DefaultConnector implements Connector {
     
     /**
      * PUBLIC:
-     * Construct a Connector with default settings (Sun JDBC-ODBC bridge).
+     * Construct a Connector with default settings
      * The database URL will still need to be set.
      */
     public DefaultConnector() {
-        this("sun.jdbc.odbc.JdbcOdbcDriver", "jdbc:odbc:", "");
     }
 
     /**
@@ -80,9 +79,16 @@ public class DefaultConnector implements Connector {
      * @return java.sql.Connection
      */
     public Connection connect(Properties properties, Session session) throws DatabaseException {
-        // ensure the driver has been loaded and registered
-        if(this.driverClass == null) {
-            this.loadDriverClass(session);
+        // if driver class name is given, ensure the driver has been loaded and registered
+        if(this.driverClassName != null && this.driverClass == null) {
+             this.loadDriverClass(session);
+        }
+         
+        String connectionString = this.getConnectionString();
+        // verify if connection URL is not null and empty
+        if(connectionString == null || connectionString.trim().equals("")) {
+            throw DatabaseException.unableToAcquireConnectionFromDriverException(
+                    this.driverClassName, null, connectionString);
         }
         
         SQLException driverManagerException = null;
@@ -96,7 +102,12 @@ public class DefaultConnector implements Connector {
                 }
             }
         }
-
+        
+        if(this.driverClass == null) {
+            throw DatabaseException.sqlException(driverManagerException, (org.eclipse.persistence.internal.sessions.AbstractSession) session, true);
+        }
+        
+        // try driver class directly 
         // Save secondary exception state and don't clear original exception
 		boolean wrongDriverExceptionOccurred = false;
 		try {
@@ -161,9 +172,14 @@ public class DefaultConnector implements Connector {
      * Return the JDBC connection string.
      * This is a combination of the driver-specific URL header and the database URL.
      */
-    public String getConnectionString() {
-        return this.getDriverURLHeader() + this.getDatabaseURL();
-    }
+     public String getConnectionString() {
+        if(this.getDriverURLHeader() == null) {
+            return this.getDatabaseURL();
+        } else if(this.getDatabaseURL() == null) {
+            return this.getDriverURLHeader();
+        }
+         return this.getDriverURLHeader() + this.getDatabaseURL();
+     }
 
     /**
      * PUBLIC:

@@ -765,9 +765,6 @@ public class EntityManagerSetupImpl {
                 // Process the Object/relational metadata from XML and annotations.
                 PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail);
 
-                // The connector will be reconstructed when the session is actually deployed
-                session.getProject().getLogin().setConnector(new DefaultConnector());
-    
                 if (session.getIntegrityChecker().hasErrors()){
                     session.handleException(new IntegrityException(session.getIntegrityChecker()));
                 }
@@ -991,6 +988,8 @@ public class EntityManagerSetupImpl {
      * our session.  This method gets those properties and sets them on the login.
      */
     protected void updateLoginDefaultConnector(DatasourceLogin login, Map m){
+        //Login info might be already set with sessions.xml and could be overrided by session customizer after this
+        //If login has default connector then JDBC properties update(override) the login info
         if ((login.getConnector() instanceof DefaultConnector)) {
             DatabaseLogin dbLogin = (DatabaseLogin)login;
             // Note: This call does not checked the stored persistenceUnitInfo or extended properties because
