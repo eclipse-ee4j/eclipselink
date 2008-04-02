@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.SessionProfiler;
-
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  * <p><b>Purpose</b>:
  * Mechanism used for all  statement objects.
@@ -172,11 +172,20 @@ public class StatementQueryMechanism extends CallQueryMechanism {
         if (reprepare) {
             // Clear old calls, and reprepare. 
             setCalls(null);
+            trimFieldsForInsert();
             prepareInsertObject();
         }
         insertObject();
     }
 
+    /**
+     * INTERNAL
+     * Remove a potential sequence number field and invoke the ReturningPolicy trimModifyRowsForInsert method
+     */
+    public void trimFieldsForInsert() {
+        getDescriptor().getObjectBuilder().trimFieldsForInsert((AbstractSession)getSession(), getModifyRow());
+    }
+    
     /**
      * Return true if this is a call query mechanism
      */

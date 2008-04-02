@@ -1080,11 +1080,18 @@ public class ObjectBuilder implements Cloneable, Serializable {
             getDescriptor().getOptimisticLockingPolicy().addLockFieldsToUpdateRow(databaseRow, session);
         }
 
-        //** sequencing refactoring
+        // remove any fields from the databaseRow
+        trimFieldsForInsert(session, databaseRow);
+    }
+        
+    /**
+     * INTERNAL
+     * Remove a potential sequence number field and invoke the ReturningPolicy trimModifyRowsForInsert method
+     */
+    public void trimFieldsForInsert(AbstractSession session, AbstractRecord databaseRow) {
         if (getDescriptor().usesSequenceNumbers() && session.getSequencing().shouldAcquireValueAfterInsert(getDescriptor().getJavaClass())) {
             databaseRow.remove(getDescriptor().getSequenceNumberField());
         }
-
         if (getDescriptor().hasReturningPolicy()) {
             getDescriptor().getReturningPolicy().trimModifyRowForInsert(databaseRow);
         }
