@@ -5,8 +5,13 @@
 @REM configured in the Mapping Workbench project.
 set DRIVER_CLASSPATH=
 
-@REM User MUST set JAVA_HOME to point a supported JRE
-set JAVA_HOME=C:\Program Files\Java\jdk1.5.0_07
+@REM User MUST set JAVA_HOME to point a supported JRE. If none
+@REM is provided for INSTALL_JAVA_HOME then the system JAVA_HOME
+@REM value will be used
+set INSTALL_JAVA_HOME=%s_jreDirectory%
+if "%JAVA_HOME%"=="" (
+    set JAVA_HOME=%INSTALL_JAVA_HOME%
+) 
 
 @REM Please do not change any of the following lines:
 
