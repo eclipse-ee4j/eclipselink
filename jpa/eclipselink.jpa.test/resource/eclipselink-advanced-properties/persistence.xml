@@ -31,4 +31,12 @@
              <property name="eclipselink.profiler" value="NoProfiler"/>
         </properties>
     </persistence-unit>
+    <!-- Bug 210280 testing for URL encoded char hex(20)-space and hex(C3A1)-multibyte handling in the PU name -->
+    <persistence-unit name="A JPAADVProperties pu with spaces in the name" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+             <property name="eclipselink.profiler" value="NoProfiler"/>
+        </properties>
+    </persistence-unit>
 </persistence>

@@ -35,6 +35,7 @@ public abstract class EclipseLinkLocalization {
     }
 
     /**
+     * INTERNAL:
      * Return the message for the given exception class and error number.
      * Based on the state of the translate flag - look up translation for the key:value message
      * @param localizationClassName

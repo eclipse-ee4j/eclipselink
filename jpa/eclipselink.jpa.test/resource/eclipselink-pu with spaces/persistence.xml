@@ -1,0 +1,17 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <!-- Bug 210280 testing for URL encoded char handling in the PU path prepended to the PU name -->
+    <persistence-unit name="eclipselink-pu-with-spaces-in-the-path-but-not-the-name" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+             <property name="eclipselink.profiler" value="NoProfiler"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="eclipselink-pu with spaces in the path and name" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+             <property name="eclipselink.profiler" value="NoProfiler"/>
+        </properties>
+    </persistence-unit>
+</persistence>

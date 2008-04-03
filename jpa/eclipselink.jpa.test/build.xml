@@ -81,6 +81,8 @@
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-validation-failed-model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-advanced-field-access-model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-advanced-properties}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-pu_with_spaces}"/>
+        <!--mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-pu_with_multibyte}"/-->
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${jpa-performance}"/>
     </target>
 
@@ -101,7 +103,7 @@
     </target>
 
     <!-- Packages JPA persistent unit test jars. -->
-    <target name="package" depends="config.trunk, config.flat, package.annotation, package.ddl, package.xml-only, package.xml-merge, package.xml-extended, package.validation-failed, package.jpa-advanced-field-access, package.jpa-advanced-properties, package.jpa-performance" description="build EclipseLink jar">
+    <target name="package" depends="config.trunk, config.flat, package.annotation, package.ddl, package.xml-only, package.xml-merge, package.xml-extended, package.validation-failed, package.jpa-advanced-field-access, package.jpa-advanced-properties, package.jpa-pu_with_spaces, package.jpa-performance" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/framework/**/*.class,
@@ -235,6 +237,26 @@
         </jar>
     </target>
 
+    <target name="package.jpa-pu_with_spaces" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-pu_with_spaces}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink-pu_with_spaces}" includes="*.xml"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink-pu_with_spaces}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-pu_with_spaces}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package.jpa-pu_with_multibyte" depends="">
+        <!--copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-pu_with_multibyte}/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink-pu_with_multibyte}" includes="*.xml"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${eclipselink-pu_with_multibyte}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink-pu_with_multibyte}">
+            </fileset>
+        </jar-->
+    </target>
+
     <target name="package.jpa-performance" depends="">
         <copy todir="${eclipselink.jpa.test}/${build.dir}/${jpa-performance}/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${jpa-performance}/META-INF" includes="*.xml"/>
@@ -262,6 +284,8 @@
             <fileset file="${eclipselink.jpa.test}/${eclipselink-validation-failed-model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink-advanced-field-access-model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink-advanced-properties}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink-pu_with_spaces}.jar"/>
+            <!--fileset file="${eclipselink.jpa.test}/${eclipselink-pu_with_multibyte}.jar"/-->
             <fileset file="${eclipselink.jpa.test}/${jpa-performance}.jar"/>
         </delete>
     </target>
@@ -286,6 +310,8 @@
             <pathelement path="${eclipselink.jpa.test}/${eclipselink-validation-failed-model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink-advanced-field-access-model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink-advanced-properties}.jar"/>
+			<pathelement path="${eclipselink.jpa.test}/${eclipselink-pu_with_spaces}.jar"/>
+			<!--pathelement path="${eclipselink.jpa.test}/${eclipselink-pu_with_multibyte}.jar"/-->
             <pathelement path="${eclipselink.jpa.test}/${jpa-performance}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink-struct-converter-model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink-struct-converter-model}-tests.jar"/>
@@ -344,6 +370,8 @@
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-validation-failed-model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-advanced-field-access-model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-advanced-properties}.jar"/>
+			<pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-pu_with_spaces}.jar"/>
+			<!--pathelement path="${eclipselink.jpa.test}/woven-${eclipselink-pu_with_multibyte}.jar"/-->
             <pathelement path="${eclipselink.jpa.test}/woven-${jpa-performance}.jar"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
@@ -518,6 +546,18 @@
                     <path refid="run.classpath"/>
                </classpath>
         </weave>
+        <weave source= "${eclipselink.jpa.test}/${eclipselink-pu_with_spaces}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink-pu_with_spaces}.jar">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave>
+        <!--weave source= "${eclipselink.jpa.test}/${eclipselink-pu_with_multibyte}.jar"
+               target = "${eclipselink.jpa.test}/woven-${eclipselink-pu_with_multibyte}.jar">
+               <classpath>
+                    <path refid="run.classpath"/>
+               </classpath>
+        </weave-->
         <weave source= "${eclipselink.jpa.test}/${jpa-performance}.jar"
                target = "${eclipselink.jpa.test}/woven-${jpa-performance}.jar">
                <classpath>
