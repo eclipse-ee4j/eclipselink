@@ -199,7 +199,10 @@
               <include name="org/eclipse/persistence/**/*.java"/>
               <include name="commonj/sdo/impl/HelperProviderImpl.java"/>
           </fileset>
-      </zip>
+          <fileset dir="${eclipselink.extension.oracle}/${src.dir}">
+              <include name="org/eclipse/persistence/**/*.java"/>
+          </fileset>
+	  </zip>
     </target>
 
     <!-- Generates the Javadocs for all public EclipseLink classes. -->
