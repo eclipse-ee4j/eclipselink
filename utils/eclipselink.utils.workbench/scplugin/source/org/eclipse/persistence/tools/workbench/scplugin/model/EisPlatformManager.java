@@ -45,14 +45,12 @@ public class EisPlatformManager extends SCPlatformManager {
 	protected void buidPlatforms() {
 
 	    this.addPlatform( AQ_ID, "org.eclipse.persistence.eis.adapters.aq.AQPlatform");
-	    this.addPlatform( ATTUNITY_ID, "org.eclipse.persistence.eis.adapters.attunity.AttunityPlatform");
 	    this.addPlatform( MQ_ID, "org.eclipse.persistence.eis.adapters.mqseries.MQPlatform");
 	}
 	
 	private void buidConnectionSpecs() {
 
 	    this.connectionSpecs.put( AQ_ID, "org.eclipse.persistence.eis.adapters.aq.AQEISConnectionSpec");
-	    this.connectionSpecs.put( ATTUNITY_ID, "org.eclipse.persistence.eis.adapters.attunity.AttunityConnectionSpec");
 	    this.connectionSpecs.put( MQ_ID, "org.eclipse.persistence.eis.adapters.mqseries.MQConnectionSpec");
 	}
 	
