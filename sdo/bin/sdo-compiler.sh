@@ -8,8 +8,8 @@ JVM_ARGS=-Xmx256m
 # JVM_ARGS="${JVM_ARGS} -DproxySet=true -Dhttp.proxyHost= -Dhttp.proxyPort="
 
 # Please do not change any of the following lines:
-CLASSPATH=`dirname $0`/../lib/java/api/commonj.sdo.jar:\
-`dirname $0`/../lib/java/api/eclipselink.jar
+CLASSPATH=`dirname $0`/../jlib/sdo/commonj.sdo.jar:\
+`dirname $0`/../jlib/eclipselink.jar
 JAVA_ARGS="$@"
 
 ${JAVA_HOME}/bin/java ${JVM_ARGS} -cp ${CLASSPATH} \
