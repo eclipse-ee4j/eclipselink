@@ -1138,7 +1138,7 @@ public abstract class AbstractPanelTest extends TestCase
 
 				Method method = (Method) iter.next();
 				method.setAccessible(true);
-				method.invoke(this, null);
+				method.invoke(this, (Object[])null);
 			}
 			catch (InvocationTargetException e)
 			{
@@ -1715,7 +1715,7 @@ public abstract class AbstractPanelTest extends TestCase
 
 			try
 			{
-				runMethod.invoke(this.testCase, new Class[0]);
+				runMethod.invoke(this.testCase, (Object[])new Class[0]);
 			}
 			catch (InvocationTargetException e)
 			{
