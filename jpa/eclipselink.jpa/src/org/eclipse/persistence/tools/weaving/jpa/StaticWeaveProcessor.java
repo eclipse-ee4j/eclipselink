@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.tools.weaving.jpa;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -54,6 +55,7 @@ public class StaticWeaveProcessor {
     private ClassLoader classLoader;
     private int logLevel = SessionLog.OFF; 
     
+    private static final int NUMBER_OF_BYTES = 1024;
     /**
      * Constructs an instance of StaticWeaveProcessor
      * @param source the name of the location to be weaved
@@ -261,14 +263,25 @@ public class StaticWeaveProcessor {
                 //if the class bytes can't be read.
                 InputStream is = this.classLoader.getResourceAsStream(entryName);
                 if (is!=null){
-                    originalClassBytes = new byte[is.available()];
-                    is.read(originalClassBytes);
+                    ByteArrayOutputStream baos = null;
+                    try{
+                        baos = new ByteArrayOutputStream();
+                        byte[] bytes = new byte[NUMBER_OF_BYTES];
+                        int bytesRead = is.read(bytes, 0, NUMBER_OF_BYTES);
+                        while (bytesRead >= 0){
+                            baos.write(bytes, 0, bytesRead);
+                            bytesRead = is.read(bytes, 0, NUMBER_OF_BYTES);
+                        }
+                        originalClassBytes = baos.toByteArray();
+                    } finally {
+                        baos.close();
+                    }
                 }else{
                     swoh.addEntry(entryInputStream, newEntry);
                     continue;
                 }
                 
-                //If everything is OK so far, we perform the weaving. we need three paramteres in order to
+                //If everything is OK so far, we perform the weaving. we need three parameters in order to
                 //class to perform weaving for that class, the class name,the class object and class bytes.
                 transferredClassBytes = classTransformer.transform(className.replace('.', '/'), thisClass, originalClassBytes);
                 
