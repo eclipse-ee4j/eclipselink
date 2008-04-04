@@ -202,7 +202,7 @@ public abstract class AbstractPanelTest extends TestCase
 	protected static final String TEST_SUB_PANE_SIGNATURE = "_testSubPane";
 
 	/**
-	 * The IP address of Trân's computer.
+	 * The IP address of Tran's computer.
 	 */
 	static final String TRAN_COMPUTER_IP_ADDRESS = "138.2.91.83";
 

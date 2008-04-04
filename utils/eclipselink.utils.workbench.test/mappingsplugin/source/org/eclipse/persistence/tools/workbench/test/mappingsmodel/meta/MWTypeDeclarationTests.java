@@ -163,11 +163,11 @@ public class MWTypeDeclarationTests extends TestCase {
 	
 	private MWTypeDeclaration getReturnTypeDeclarationFrom(MWMethod mwMethod) throws Exception {
 		Method method = null;
-		method = MWMethod.class.getDeclaredMethod("getReturnTypeDeclaration", null);
+		method = MWMethod.class.getDeclaredMethod("getReturnTypeDeclaration", (Class[])null);
 		method.setAccessible(true);
 
 		MWTypeDeclaration typeDeclaration = null;
-		typeDeclaration = (MWTypeDeclaration) method.invoke(mwMethod, null);
+		typeDeclaration = (MWTypeDeclaration) method.invoke(mwMethod, (Object[])null);
 		
 		return typeDeclaration;
 	}
