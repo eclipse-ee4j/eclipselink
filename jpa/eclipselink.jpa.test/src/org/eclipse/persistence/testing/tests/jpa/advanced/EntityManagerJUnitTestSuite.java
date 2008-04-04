@@ -233,13 +233,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithSpaceInNameButNotInPath"));
         suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithSpaceInPathButNotInName"));
         suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithSpaceInNameAndPath"));
-        // Multibyte tests are only run manually on windows
-        //suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithMultiByteCharInNameButNotInPath"));                
-        //suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithSpaceAndMultiByteCharInNameButNotInPath"));
-        //suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithMultiByteCharInPathButNotInName"));        
-        //suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithMultiByteCharInPathAndName"));
-        //suite.addTest(new EntityManagerJUnitTestSuite("test210280EntityManagerFromPUwithMultiByteCharInPathAndMultiByteWithSpaceInName"));        
-        
         return suite;
     }
 
@@ -5846,47 +5839,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     			"with a path and name both containing spaces was not found.");
     }
 
-    // 210280: Multibyte char tests will only be run manually in windows environments at this point    
-    // UC5 - EM has multi-byte (C3A1) chars in EM name but not in path
-/*    public void test210280EntityManagerFromPUwithMultiByteCharInNameButNotInPath() {
-		// This EM is defined in a persistence.xml that is off eclipselink-advanced-properties (no URL encoded chars in path)    		
-    	privateTest210280EntityManagerWithPossibleSpacesInPathOrName(//
-    			"A-JPAADVProperties-pu-with-multi-byte-á-chars", //
-    			"with a name containing multi-byte chars was not found.");
-    }
-
-    // UC8 - EM has spaces and multi-byte (C3A1) chars in EM name but not in path 
-    public void test210280EntityManagerFromPUwithSpaceAndMultiByteCharInNameButNotInPath() {
-		// This EM is defined in a persistence.xml that is off eclipselink-advanced-properties (no URL encoded chars in path)    		
-    	privateTest210280EntityManagerWithPossibleSpacesInPathOrName(//
-    			"A JPAADVProperties pu with multi-byte á chars and spaces in the name", //
-    			"with a name containing spaces and multi-byte chars was not found.");
-    }
-    
-    // UC6 - EM has multi-byte chars in path but not EM name
-    public void test210280EntityManagerFromPUwithMultiByteCharInPathButNotInName() {
-		// This EM is defined in a persistence.xml that is off [eclipselink-pu-with-multibyte-á-char] (with URL encoded chars in path)    	
-    	privateTest210280EntityManagerWithPossibleSpacesInPathOrName(//
-    			"eclipselink-pu-with-multibyte-in-the-path-but-not-the-name", //
-    			"with a path and name containing multibyte chars was not found.");
-    }
-
-    // UC7 - EM has multi-byte chars in path and EM name
-    public void test210280EntityManagerFromPUwithMultiByteCharInPathAndName() {
-		// This EM is defined in a persistence.xml that is off [eclipselink-pu-with-multibyte-á-char] (with URL encoded chars in path)    	
-    	privateTest210280EntityManagerWithPossibleSpacesInPathOrName(//
-    			"eclipselink-pu-with-multibyte-á-in-the-path-and-name", //
-    			"with a path and name containing multibyte chars was not found.");
-    }
-
-    // UC9 - EM has spaces and multi-byte chars in path and EM name
-    public void test210280EntityManagerFromPUwithMultiByteCharInPathAndMultiByteWithSpaceInName() {
-		// This EM is defined in a persistence.xml that is off [eclipselink-pu-with-multibyte-á-char] (with URL encoded chars in path)    	
-    	privateTest210280EntityManagerWithPossibleSpacesInPathOrName(//
-    			"eclipselink-pu with multibyte á in the path and both spaces and multibyte in the name", //
-    			"with a path and name containing multibyte chars was not found.");
-    }
-*/    
     private void privateTest210280EntityManagerWithPossibleSpacesInPathOrName(String puName, String failureMessagePostScript) {
         EntityManager em = null;    	
     	try {
