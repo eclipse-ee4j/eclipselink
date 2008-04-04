@@ -150,12 +150,12 @@ public final class MWClassRepository
 		new Class[] {
 			java.lang.Object.class,		// rt.jar
 			//some custom jvms have the classes divided between more than one jar which can cause problems
-			//associated with bug #6789722
+			//associated with bug #222471
 			java.util.List.class,
 			java.util.Map.class,
 			java.util.Collection.class,
 			java.util.Set.class,
-			org.eclipse.persistence.indirection.ValueHolderInterface.class		// toplink.jar
+			org.eclipse.persistence.indirection.ValueHolderInterface.class		// eclipselink.jar
 		};
 
 	/** the "core" classes: the names of the MWClasses that are never written out */
