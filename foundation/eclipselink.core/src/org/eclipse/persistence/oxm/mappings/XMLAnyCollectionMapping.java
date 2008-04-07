@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -163,6 +164,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
     private boolean mixedContent = true;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
     private boolean areOtherMappingInThisContext = true;
+    private XMLConverter valueConverter;
 
     public XMLAnyCollectionMapping() {
         this.containerPolicy = ContainerPolicy.buildPolicyFor(ClassConstants.Vector_class);
@@ -259,6 +261,9 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
         if (getField() != null) {
             setField(getDescriptor().buildField(getField()));
         }
+        if(valueConverter != null) {
+        	valueConverter.initialize(this, session);
+        }
     }
 
     /**
@@ -323,11 +328,16 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
         Object container = cp.containerInstance();
         int length = children.getLength();
         for (int i = 0; i < length; i++) {
+        	Object objectValue = null;
             org.w3c.dom.Node next = children.item(i);
             if (isUnmappedContent(next)) {
                 if ((next.getNodeType() == Node.TEXT_NODE) && this.isMixedContent()) {
                     if (next.getNodeValue().trim().length() > 0) {
-                        cp.addInto(next.getNodeValue(), container, session);
+                    	objectValue = next.getNodeValue();
+                        if(getConverter() != null) {
+                        	objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
+                        }                    	
+                        cp.addInto(objectValue, container, session);
                     }
                 } else if (next.getNodeType() == Node.ELEMENT_NODE) {
                     ClassDescriptor referenceDescriptor = null;
@@ -341,12 +351,19 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
 
                         if ((referenceDescriptor != null) && (keepAsElementPolicy != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                             ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
-                            Object objectValue = builder.buildObject(query, nestedRecord, joinManager);
+                            objectValue = builder.buildObject(query, nestedRecord, joinManager);
+                            if(getConverter() != null) {
+                            	objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
+                            }                    	
                             cp.addInto(objectValue, container, session);
                         } else {
                             if ((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                                 XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) next);
-                                cp.addInto(next, container, session);
+                                objectValue = next;
+                                if(getConverter() != null) {
+                                	objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
+                                }                    	
+                                cp.addInto(objectValue, container, session);
                             }
                         }
                     } else {
@@ -375,13 +392,20 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
                         }
                         if ((referenceDescriptor != null) && (getKeepAsElementPolicy() != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                             ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
-                            Object objectValue = builder.buildObject(query, nestedRecord, joinManager);
+                            objectValue = builder.buildObject(query, nestedRecord, joinManager);
                             Object updated = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
 
+                            if(getConverter() != null) {
+                            	updated = getConverter().convertDataValueToObjectValue(updated, session, record.getUnmarshaller());
+                            }                    	
                             cp.addInto(updated, container, session);
                         } else if ((referenceDescriptor == null) && (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) {
                             XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) next);
-                            cp.addInto(next, container, session);
+                            objectValue = next;
+                            if(getConverter() != null) {
+                            	objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
+                            }                    	
+                            cp.addInto(objectValue, container, session);
                         } else {
                             Object value = null;
                             Node textchild = ((Element) next).getFirstChild();
@@ -395,6 +419,9 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
                                         value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, schemaTypeQName);
                                     }
                                 }
+                                if(getConverter() != null) {
+                                	value = getConverter().convertDataValueToObjectValue(value, session, record.getUnmarshaller());
+                                }                    	
 
                                 XMLRoot rootValue = new XMLRoot();
                                 rootValue.setLocalName(next.getLocalName());
@@ -454,6 +481,9 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
         boolean wasXMLRoot = false;
         while (cp.hasNext(iter) && (childNodeCount < childNodes.size())) {
             Object element = cp.next(iter, session);
+            if(this.getConverter() != null) {
+            	element = getConverter().convertObjectValueToDataValue(element, session, record.getMarshaller());
+            }
             Object originalObject = element;
             Node nextChild = null;
             while (childNodeCount < childNodes.size()) {
@@ -815,5 +845,13 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
 
     public boolean isCollectionMapping() {
         return true;
+    }
+    
+    public void setConverter(XMLConverter conv) {
+    	this.valueConverter = conv;
+    }
+    
+    public XMLConverter getConverter() {
+    	return this.valueConverter;
     }
 }

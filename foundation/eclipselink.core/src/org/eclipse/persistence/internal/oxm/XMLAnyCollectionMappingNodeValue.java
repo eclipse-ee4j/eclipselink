@@ -75,6 +75,9 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         Object objectValue;
         while (cp.hasNext(iterator)) {
             objectValue = cp.next(iterator, session);
+            if(xmlAnyCollectionMapping.getConverter() != null) {
+            	objectValue = xmlAnyCollectionMapping.getConverter().convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
+            }
             marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
         }
 
@@ -156,7 +159,11 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         if (null != unmarshalRecord.getChildRecord()) {
             // OBJECT VALUE
             if (!xmlAnyCollectionMapping.usesXMLRoot()) {
-                unmarshalRecord.addAttributeValue(this, unmarshalRecord.getChildRecord().getCurrentObject());
+            	Object objectValue = unmarshalRecord.getChildRecord().getCurrentObject();
+            	if(xmlAnyCollectionMapping.getConverter() != null) {
+            		objectValue = xmlAnyCollectionMapping.getConverter().convertDataValueToObjectValue(objectValue, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+            	}
+                unmarshalRecord.addAttributeValue(this, objectValue);
             }
             if (xmlAnyCollectionMapping.usesXMLRoot()) {
                 Object childObject = unmarshalRecord.getChildRecord().getCurrentObject();
@@ -167,6 +174,9 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                         prefix = unmarshalRecord.resolveNamespaceUri(xPathFragment.getNamespaceURI());
                     }
                     childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix, false);
+                	if(xmlAnyCollectionMapping.getConverter() != null) {
+                		childObject = xmlAnyCollectionMapping.getConverter().convertDataValueToObjectValue(childObject, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+                	}
                     unmarshalRecord.addAttributeValue(this, childObject);
                 }
             }
@@ -178,7 +188,11 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyCollectionMapping.getKeepAsElementPolicy();
             if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() != 0)) {
                 //Grab the fragment and put it into the collection
-                unmarshalRecord.addAttributeValue(this, builder.getNodes().pop());
+            	Object node = builder.getNodes().pop();
+            	if(xmlAnyCollectionMapping.getConverter() != null) {
+            		node = xmlAnyCollectionMapping.getConverter().convertDataValueToObjectValue(node, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+            	}
+                unmarshalRecord.addAttributeValue(this, node);
             } else {
                 //TEXT VALUE
                 endElementProcessText(unmarshalRecord, collection, xPathFragment);
@@ -196,6 +210,9 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
     private void endElementProcessText(UnmarshalRecord unmarshalRecord, Object collection, XPathFragment xPathFragment) {
         Object value = unmarshalRecord.getStringBuffer().toString().trim();
+    	if(xmlAnyCollectionMapping.getConverter() != null) {
+    		value = xmlAnyCollectionMapping.getConverter().convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+    	}
         unmarshalRecord.resetStringBuffer();
         if (!EMPTY_STRING.equals(value) && xmlAnyCollectionMapping.isMixedContent()) {
             QName qname = unmarshalRecord.getTypeQName();

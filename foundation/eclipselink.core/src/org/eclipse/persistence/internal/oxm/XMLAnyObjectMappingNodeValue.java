@@ -68,6 +68,10 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
 
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
         Object objectValue = marshalContext.getAttributeValue(object, xmlAnyObjectMapping);
+        if(xmlAnyObjectMapping.getConverter() != null) {
+        	objectValue = xmlAnyObjectMapping.getConverter().convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
+        }                    	
+        
         if (null == objectValue) {
             return false;
         }
@@ -209,6 +213,9 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         if (null != unmarshalRecord.getChildRecord()) {
             childObject = unmarshalRecord.getChildRecord().getCurrentObject();
             // OBJECT VALUE
+            if(xmlAnyObjectMapping.getConverter() != null) {
+            	childObject = xmlAnyObjectMapping.getConverter().convertDataValueToObjectValue(childObject, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+            }                    	
             if (!xmlAnyObjectMapping.usesXMLRoot()) {
                 unmarshalRecord.setAttributeValue(childObject, xmlAnyObjectMapping);
             } else {
@@ -230,6 +237,9 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
 
     private void endElementProcessText(UnmarshalRecord unmarshalRecord, XPathFragment xPathFragment) {
         Object value = unmarshalRecord.getStringBuffer().toString().trim();
+        if(xmlAnyObjectMapping.getConverter() != null) {
+        	value = xmlAnyObjectMapping.getConverter().convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+        }                    	
         unmarshalRecord.resetStringBuffer();
         if (!EMPTY_STRING.equals(value)) {
             QName qname = unmarshalRecord.getTypeQName();

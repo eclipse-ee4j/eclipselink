@@ -43,6 +43,7 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
@@ -158,6 +159,7 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
     private XMLField field;
     private boolean useXMLRoot;
     private boolean areOtherMappingInThisContext = true;
+    private XMLConverter converter;
 
     public XMLAnyObjectMapping() {
         useXMLRoot = false;
@@ -302,7 +304,11 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
             org.w3c.dom.Node next = (Node) iter.next();
             if (next.getNodeType() == Node.TEXT_NODE) {
                 if ((i == (length - 1)) || (next.getNodeValue().trim().length() > 0)) {
-                    return next.getNodeValue();
+                	Object objectValue = next.getNodeValue();
+                	if(getConverter() != null) {
+                		objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
+                	}
+                    return objectValue;
                 }
             } else if (next.getNodeType() == Node.ELEMENT_NODE) {
                 ClassDescriptor referenceDescriptor = null;
@@ -317,6 +323,9 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
                     if (referenceDescriptor != null) {
                         ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
                         Object objectValue = builder.buildObject(query, nestedRecord, joinManager);
+                    	if(getConverter() != null) {
+                    		objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
+                    	}
                         return objectValue;
                     }
                 } else {
@@ -348,7 +357,9 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
                         ObjectBuilder builder = referenceDescriptor.getObjectBuilder();
                         Object objectValue = builder.buildObject(query, nestedRecord, joinManager);
                         Object updated = ((XMLDescriptor) referenceDescriptor).wrapObjectInXMLRoot(objectValue, next.getNamespaceURI(), next.getLocalName(), next.getPrefix(), false);
-
+                    	if(getConverter() != null) {
+                    		updated = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
+                    	}
                         return updated;
                     } else {
                         Object value = null;
@@ -363,6 +374,9 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
                                     value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, schemaTypeQName);
                                 }
                             }
+                        	if(getConverter() != null) {
+                        		value = getConverter().convertDataValueToObjectValue(value, session, record.getUnmarshaller());
+                        	}
 
                             XMLRoot rootValue = new XMLRoot();
                             rootValue.setLocalName(next.getLocalName());
@@ -405,7 +419,10 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
         DOMRecord record = (DOMRecord) row;
         Node root = record.getDOM();
-
+        Object objectValue = value;
+        if(this.getConverter() != null) {
+        	objectValue = getConverter().convertObjectValueToDataValue(objectValue, session, row.getMarshaller());
+        }
         if (field != null) {
             root = XPathEngine.getInstance().create((XMLField) getField(), root);
         }
@@ -413,29 +430,29 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
 
         XMLField xmlRootField = null;
         boolean wasXMLRoot = false;
-        Object originalObject = value;
+        Object originalObject = objectValue;
         Node toReplace = getNodeToReplace(root);
-        if (usesXMLRoot() && (value instanceof XMLRoot)) {
+        if (usesXMLRoot() && (objectValue instanceof XMLRoot)) {
             xmlRootField = new XMLField();
             wasXMLRoot = true;
             XPathFragment frag = new XPathFragment();
-            if ((((XMLRoot) value)).getRootFragment().getNamespaceURI() != null) {
-                frag.setNamespaceURI(((XMLRoot) value).getNamespaceURI());
+            if ((((XMLRoot) objectValue)).getRootFragment().getNamespaceURI() != null) {
+                frag.setNamespaceURI(((XMLRoot) objectValue).getNamespaceURI());
             } else {
-                frag.setXPath(((XMLRoot) value).getLocalName());
+                frag.setXPath(((XMLRoot) objectValue).getLocalName());
             }
 
-            xmlRootField.setXPathFragment((((XMLRoot) value)).getRootFragment());
+            xmlRootField.setXPathFragment((((XMLRoot) objectValue)).getRootFragment());
             xmlRootField.setNamespaceResolver(row.getNamespaceResolver());
 
-            value = ((XMLRoot) value).getObject();
+            objectValue = ((XMLRoot) objectValue).getObject();
         }
-        if (value instanceof String) {
-            writeSimpleValue(xmlRootField, record, session, originalObject, value, root, toReplace, wasXMLRoot);
+        if (objectValue instanceof String) {
+            writeSimpleValue(xmlRootField, record, session, originalObject, objectValue, root, toReplace, wasXMLRoot);
         } else {
-            XMLDescriptor referenceDescriptor = (XMLDescriptor) session.getDescriptor(value.getClass());
+            XMLDescriptor referenceDescriptor = (XMLDescriptor) session.getDescriptor(objectValue.getClass());
             if (referenceDescriptor == null) {
-                writeSimpleValue(xmlRootField, record, session, originalObject, value, root, toReplace, wasXMLRoot);
+                writeSimpleValue(xmlRootField, record, session, originalObject, objectValue, root, toReplace, wasXMLRoot);
                 return;
             }
             if (wasXMLRoot) {
@@ -452,7 +469,7 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
                 }
             }
 
-            DOMRecord nestedRecord = (DOMRecord) buildCompositeRow(value, session, referenceDescriptor, row, xmlRootField, originalObject, wasXMLRoot);
+            DOMRecord nestedRecord = (DOMRecord) buildCompositeRow(objectValue, session, referenceDescriptor, row, xmlRootField, originalObject, wasXMLRoot);
 
             if ((nestedRecord != null) && (toReplace != null)) {
                 if (nestedRecord.getDOM() != toReplace) {
@@ -664,5 +681,13 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
         if (theNode.getNodeType() == Node.ELEMENT_NODE) {
             ((Element) theNode).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         }
+    }
+    
+    public XMLConverter getConverter() {
+    	return converter;
+    }
+    
+    public void setConverter(XMLConverter converter) {
+    	this.converter = converter;
     }
 }
