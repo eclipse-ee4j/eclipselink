@@ -370,6 +370,7 @@ public class AnnotationsProcessor {
                         property.setElement((JavaHasAnnotations)nextField);
                         XmlAnyElement anyElement = (XmlAnyElement)helper.getAnnotation((JavaHasAnnotations)nextField, XmlAnyElement.class);
                         ((AnyProperty)property).setLax(anyElement.lax());
+                        ((AnyProperty)property).setDomHandlerClass(anyElement.value());
                     } else {
                     	property = new Property(helper);
                     	property.setElement((JavaHasAnnotations)nextField);
@@ -574,6 +575,7 @@ public class AnnotationsProcessor {
             }
             if(helper.isAnnotationPresent(property.getElement(), XmlAnyElement.class)) {
             	XmlAnyElement anyElement = (XmlAnyElement)helper.getAnnotation(property.getElement(), XmlAnyElement.class);
+            	((AnyProperty)property).setDomHandlerClass(anyElement.value());
             	((AnyProperty)property).setLax(anyElement.lax());
             	
             }

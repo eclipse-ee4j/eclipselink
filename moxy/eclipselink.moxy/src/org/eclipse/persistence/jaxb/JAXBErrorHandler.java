@@ -52,4 +52,8 @@ public class JAXBErrorHandler implements ErrorHandler {
             throw exception;
         }
     }
+    
+    public ValidationEventHandler getValidationEventHandler() {
+    	return eventHandler;
+    }
 }

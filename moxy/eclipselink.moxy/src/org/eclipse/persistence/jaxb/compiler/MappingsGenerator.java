@@ -32,6 +32,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaField;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
+import org.eclipse.persistence.internal.jaxb.DomHandlerConverter;
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.oxm.mappings.*;
 import org.eclipse.persistence.internal.jaxb.XMLJavaTypeConverter;
@@ -255,6 +256,10 @@ public class MappingsGenerator {
     		mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
     	} else {
     		mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);
+    	}
+    	if(prop.getDomHandlerClass() != null) {
+    		DomHandlerConverter converter = new DomHandlerConverter(prop.getDomHandlerClass());
+    		mapping.setConverter(converter);
     	}
     	descriptor.addMapping(mapping);
     	return mapping;

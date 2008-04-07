@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.compiler;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
+import javax.xml.bind.annotation.DomHandler;
 
 /**
  *  INTERNAL:
@@ -33,6 +34,7 @@ import org.eclipse.persistence.jaxb.javamodel.Helper;
  */
 public class AnyProperty extends Property {
 	private boolean lax;
+	private Class<? extends DomHandler> domHandlerClass;
 	
 	public AnyProperty(Helper helper) {
 		super(helper);
@@ -48,6 +50,14 @@ public class AnyProperty extends Property {
 	
 	public void setLax(boolean b) {
 		lax = b;
+	}
+	
+	public void setDomHandlerClass(Class<? extends DomHandler> domHandlerClass) {
+		this.domHandlerClass = domHandlerClass;
+	}
+	
+	public Class<? extends DomHandler> getDomHandlerClass() {
+		return this.domHandlerClass;
 	}
 	
 }
