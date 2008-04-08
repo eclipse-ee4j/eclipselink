@@ -462,7 +462,6 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     public String getPlatformClassName() {
         return getDatasourcePlatform().getClass().getName();
     }
-
     /**
      * INTERNAL:
      * Set the name of the Platform to be used.
@@ -505,6 +504,42 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
             }
         }
     }
+    /**
+     * INTERNAL:
+     * Set the name of the Platform to be created using the 
+     * passed in class loader.  If no class loader is passed
+     * in, of if an exception is thrown, call the 
+     * setPlatformClassName method with no classloader.
+     * @see setPlatformClassName(String platformClassName)
+     */
+    public void setPlatformClassName(String platformClassName, ClassLoader loader) throws ValidationException {
+        boolean exceptionCaught = false;
+        Class platformClass = null;
+        try {
+            Platform platform = null;
+            if (loader != null) {
+                platformClass = loader.loadClass(platformClassName);
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                       platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(platformClass));
+                  } catch (PrivilegedActionException exception) {
+                      throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);  
+                  }
+                } else {
+                    platform = (Platform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
+                }
+            }
+            usePlatform(platform);
+        } catch(Exception cne) {
+            exceptionCaught = true;
+        }
+        if (exceptionCaught || (loader == null))
+        {
+            //attempt to load with default classloader
+            this.setPlatformClassName(platformClassName);
+        }
+    }
+
 
     /**
      * ADVANCED:
@@ -738,7 +773,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     public Sequence getSequence(String seqName) {
         return getDatasourcePlatform().getSequence(seqName);
     }
-		
+        
     /**
      * Returns a map of sequence names to Sequences (may be null).
      */

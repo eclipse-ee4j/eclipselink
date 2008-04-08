@@ -48,11 +48,12 @@ public class CMP3TestModel extends TestModel {
 // let's use platform Auto detection 
 //        currentMap.put(PersistenceUnitProperties.TARGET_DATABASE, systemLogin.getPlatform().getClass().getName());
         currentMap.put(PersistenceUnitProperties.LOGGING_LEVEL, AbstractSessionLog.translateLoggingLevelToString(originalSession.getSessionLog().getLevel()));
-        
+        // this property added to test bug fix to 221226
+        currentMap.put(PersistenceUnitProperties.CLASSLOADER, systemLogin.getClass().getClassLoader());  
         currentMap.putAll(JUnitTestCaseHelper.persistencePropertiesTestMap);
 
         if (!currentMap.equals(JUnitTestCaseHelper.propertiesMap)) {
-        	JUnitTestCaseHelper.propertiesMap = currentMap;
+            JUnitTestCaseHelper.propertiesMap = currentMap;
             JUnitTestCase.closeEntityManagerFactory();
             entityManager = null;
         }

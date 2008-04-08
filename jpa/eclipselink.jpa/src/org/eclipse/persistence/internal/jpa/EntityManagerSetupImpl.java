@@ -103,7 +103,7 @@ public class EntityManagerSetupImpl {
     
     // factoryCount>0; session != null; session stored in SessionManager
     public static final String STATE_DEPLOYED       = "Deployed";
-   	
+    
     // factoryCount==0; session==null
     public static final String STATE_PREDEPLOY_FAILED="PredeployFailed";
     
@@ -889,7 +889,7 @@ public class EntityManagerSetupImpl {
 
         String toplinkPlatform = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.TARGET_DATABASE, m, session);
         if (toplinkPlatform != null) {
-            login.setPlatformClassName(toplinkPlatform);
+            login.setPlatformClassName(toplinkPlatform, persistenceUnitInfo.getClassLoader());
         }
         
         PersistenceUnitTransactionType transactionType = persistenceUnitInfo.getTransactionType();

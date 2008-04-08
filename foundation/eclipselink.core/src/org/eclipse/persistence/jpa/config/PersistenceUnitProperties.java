@@ -281,6 +281,13 @@ public class PersistenceUnitProperties {
      * @see FlushClearCache
      */
     public static final String FLUSH_CLEAR_CACHE = "eclipselink.flush-clear.cache";
+
+    /**
+     * Specify the classloader to use to create an EntityManagerFactory in the
+     * property map passed to Persistence.createEntityManagerFactory.
+     */
+	public static final String CLASSLOADER = "eclipselink.classloader";
+
     
     /** INTERNAL: The following properties will not be displayed through logging but instead have an alternate value shown in the log. */
     public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<String, String>(1);
