@@ -80,7 +80,7 @@ public class MetadataDescriptor {
     private List<String> m_idAttributeNames;
     private List<String> m_orderByAttributeNames;
     private List<String> m_idOrderByAttributeNames;
-    private List<MetadataDescriptor> m_aggregateDescriptors;
+    private List<MetadataDescriptor> m_embeddableDescriptors;
     private List<RelationshipAccessor> m_relationshipAccessors;
     private List<BasicCollectionAccessor> m_basicCollectionAccessors;
     
@@ -111,7 +111,7 @@ public class MetadataDescriptor {
         m_idAttributeNames = new ArrayList<String>();
         m_orderByAttributeNames = new ArrayList<String>();
         m_idOrderByAttributeNames = new ArrayList<String>();
-        m_aggregateDescriptors = new ArrayList<MetadataDescriptor>();
+        m_embeddableDescriptors = new ArrayList<MetadataDescriptor>();
         m_relationshipAccessors = new ArrayList<RelationshipAccessor>();
         m_basicCollectionAccessors = new ArrayList<BasicCollectionAccessor>();
         
@@ -142,13 +142,6 @@ public class MetadataDescriptor {
       */
     public void addAccessor(MetadataAccessor accessor) {
         m_accessors.put(accessor.getAttributeName(), accessor);
-    }
-     
-    /**
-     * INTERNAL:
-     */
-    public void addAggregateDescriptor(MetadataDescriptor aggregateDescriptor) {
-        m_aggregateDescriptors.add(aggregateDescriptor);
     }
     
     /**
@@ -189,6 +182,13 @@ public class MetadataDescriptor {
      */
     public void addDefaultEventListener(EntityListenerMetadata listener) {
         m_descriptor.getEventManager().addDefaultEventListener(listener);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addEmbeddableDescriptor(MetadataDescriptor embeddableDescriptor) {
+        m_embeddableDescriptors.add(embeddableDescriptor);
     }
     
     /**
@@ -554,8 +554,8 @@ public class MetadataDescriptor {
         
         // We didn't find a mapping on this descriptor, check our aggregate 
         // descriptors now.
-        for (MetadataDescriptor aggregateDmd : m_aggregateDescriptors) {
-            DatabaseMapping mapping = aggregateDmd.getMappingForAttributeName(attributeName, referencingAccessor);
+        for (MetadataDescriptor embeddableDescriptor : m_embeddableDescriptors) {
+            DatabaseMapping mapping = embeddableDescriptor.getMappingForAttributeName(attributeName, referencingAccessor);
             
             if (mapping != null) {
                 return mapping;

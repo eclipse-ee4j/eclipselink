@@ -115,21 +115,22 @@ public class IdAccessor extends BasicAccessor {
     public void process() {
     	// This will initialize the m_field variable.
     	super.process();
+    	
     	String attributeName = getAttributeName();
 
-        if (getDescriptor().hasEmbeddedIdAttribute()) {
+        if (getOwningDescriptor().hasEmbeddedIdAttribute()) {
         	// We found both an Id and an EmbeddedId, throw an exception.
-        	throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), getDescriptor().getEmbeddedIdAttributeName(), attributeName);
+        	throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), getOwningDescriptor().getEmbeddedIdAttributeName(), attributeName);
         }
 
         // If this entity has a pk class, we need to validate our ids. 
-        getDescriptor().validatePKClassId(attributeName, getReferenceClass());
+        getOwningDescriptor().validatePKClassId(attributeName, getReferenceClass());
 
         // Store the Id attribute name. Used with validation and OrderBy.
-        getDescriptor().addIdAttributeName(attributeName);
+        getOwningDescriptor().addIdAttributeName(attributeName);
 
         // Add the primary key field to the descriptor.            
-        getDescriptor().addPrimaryKeyField(getField());
+        getOwningDescriptor().addPrimaryKeyField(getField());
 
         // Process the generated value for this id.
         processGeneratedValue();
@@ -152,13 +153,13 @@ public class IdAccessor extends BasicAccessor {
     protected void processGeneratedValue() {
         if (m_generatedValue != null) {
             // Set the sequence number field on the descriptor.		
-            DatabaseField existingSequenceNumberField = getDescriptor().getSequenceNumberField();
+            DatabaseField existingSequenceNumberField = getOwningDescriptor().getSequenceNumberField();
 
             if (existingSequenceNumberField == null) {
-                getDescriptor().setSequenceNumberField(getField());
-                getProject().addGeneratedValue(m_generatedValue, getJavaClass());
+                getOwningDescriptor().setSequenceNumberField(getField());
+                getProject().addGeneratedValue(m_generatedValue, getOwningDescriptor().getJavaClass());
             } else {
-                throw ValidationException.onlyOneGeneratedValueIsAllowed(getJavaClass(), existingSequenceNumberField.getQualifiedName(), getField().getQualifiedName());
+                throw ValidationException.onlyOneGeneratedValueIsAllowed(getOwningDescriptor().getJavaClass(), existingSequenceNumberField.getQualifiedName(), getField().getQualifiedName());
             }
         }
     }

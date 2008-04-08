@@ -44,13 +44,16 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 
 /**
- * An embedded relationship accessor.
+ * An embedded relationship accessor. It may define all the same attributes
+ * as an entity, therefore, it also must handle nesting embedded's to the nth
+ * level. An embedded owning descriptor is a reference back to the actual
+ * owning entity's descriptor where the first embedded was discovered.
  * 
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class EmbeddedAccessor extends MetadataAccessor {
-    enum AccessType {FIELD, PROPERTY, UNDEFINED, MIXED};
+    public enum AccessType {FIELD, PROPERTY, UNDEFINED, MIXED};
     
     private List<AttributeOverrideMetadata> m_attributeOverrides;
 
@@ -87,7 +90,7 @@ public class EmbeddedAccessor extends MetadataAccessor {
      * INTERNAL:
      * This method computes access-type based on placement of annotations.
      */
-    protected AccessType computeAccessTypeFromAnnotation(MetadataDescriptor descriptor) {
+    protected AccessType getAccessTypeFromAnnotation(MetadataDescriptor descriptor) {
         boolean fieldAccess = MetadataHelper.havePersistenceAnnotationsDefined(MetadataHelper.getFields(descriptor.getJavaClass()));
         boolean propertyAccess = MetadataHelper.havePersistenceAnnotationsDefined(MetadataHelper.getMethods(descriptor.getJavaClass()));
         
@@ -126,25 +129,23 @@ public class EmbeddedAccessor extends MetadataAccessor {
      *
      * Rule 5: It is an error if *both* fields and properties of an embeddable
      * class are annotated and metadata-complete == false.
-     *
-     * @param emDesc descriptor for the Embeddable class
      */
-    protected AccessType determineAccessTypeOfEmbedded(MetadataDescriptor descriptor) {
+    protected AccessType getAccessTypeOfEmbeddable(EmbeddableAccessor accessor) {
     	AccessType accessType = UNDEFINED;
     	
     	// 1 - get the owning entities' access type.
-        AccessType entityAccessType = getDescriptor().usesPropertyAccess() ? PROPERTY : FIELD;
+        AccessType entityAccessType = getOwningDescriptor().usesPropertyAccess() ? PROPERTY : FIELD;
         
         // 2 - get the access type as specified in XML.
-        AccessType xmlAccessType = descriptor.getXMLAccess() == null ? UNDEFINED : AccessType.valueOf(descriptor.getXMLAccess());
+        AccessType xmlAccessType = accessor.getDescriptor().getXMLAccess() == null ? UNDEFINED : AccessType.valueOf(accessor.getDescriptor().getXMLAccess());
 
-        if (descriptor.ignoreAnnotations()) {
+        if (accessor.getDescriptor().ignoreAnnotations()) {
             // metadata-complete is true, then use XML access-type if defined,
             // else use enclosing entity's access-type.
             accessType = xmlAccessType == UNDEFINED ? entityAccessType : xmlAccessType;
         } else {
         	// Let's look at access via location of annotations.
-            AccessType annotationAccessType = computeAccessTypeFromAnnotation(descriptor);
+            AccessType annotationAccessType = getAccessTypeFromAnnotation(accessor.getDescriptor());
             
             if (annotationAccessType == UNDEFINED && xmlAccessType == UNDEFINED) {
                 // metadata is absent, so we use enclosing entity's access-type
@@ -154,7 +155,7 @@ public class EmbeddedAccessor extends MetadataAccessor {
                 accessType = annotationAccessType;
 
                 if (accessType == MIXED) {
-                	throw ValidationException.bothFieldsAndPropertiesAnnotated(descriptor.getJavaClass());
+                	throw ValidationException.bothFieldsAndPropertiesAnnotated(accessor.getJavaClass());
                 }
             } else if (annotationAccessType == UNDEFINED && xmlAccessType != UNDEFINED) {
                 // access is defined using XML for embeddable class
@@ -166,7 +167,7 @@ public class EmbeddedAccessor extends MetadataAccessor {
             } else {
                 // Annotations are present as well as access is defined using 
             	// XML and they are different, throw an exception.
-            	throw ValidationException.incorrectOverridingOfAccessType(descriptor.getJavaClass(), xmlAccessType.toString(), annotationAccessType.toString());
+            	throw ValidationException.incorrectOverridingOfAccessType(accessor.getJavaClass(), xmlAccessType.toString(), annotationAccessType.toString());
             }
         }
 
@@ -180,7 +181,7 @@ public class EmbeddedAccessor extends MetadataAccessor {
 	public List<AttributeOverrideMetadata> getAttributeOverrides() {
 		return m_attributeOverrides;
 	}
-	
+    
     /**
      * INTERNAL: (Override from MetadataAccessor)
      */
@@ -205,27 +206,21 @@ public class EmbeddedAccessor extends MetadataAccessor {
      * 
      * This method is used to decide if a class metadata or not.
      */
-    protected boolean isMetadataPresent(MetadataDescriptor descriptor) {
-        AccessType annotAccessType = computeAccessTypeFromAnnotation(descriptor);
+    protected boolean isMetadataPresent(EmbeddableAccessor accessor) {
+        MetadataDescriptor descriptor = accessor.getDescriptor();
+        AccessType annotationAccessType = getAccessTypeFromAnnotation(descriptor);
         AccessType xmlAccessType = (descriptor.getXMLAccess() == null) ? UNDEFINED : AccessType.valueOf(descriptor.getXMLAccess());
 
-        return annotAccessType != UNDEFINED || xmlAccessType != UNDEFINED;
+        return annotationAccessType != UNDEFINED || xmlAccessType != UNDEFINED;
     }
     
     /**
      * INTERNAL: (Overridden in EmbeddedIdAccessor)
      * Process an embedded.
      */    
-    public void process() {
-        // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
-        processReturnInsertAndUpdate();
-        
-        // Tell the Embeddable class to process itself
-        MetadataDescriptor referenceDescriptor = processEmbeddableClass();
-        
-        // Store this descriptor metadata. It may be needed again later on to
-        // look up a mappedBy attribute.
-        getDescriptor().addAggregateDescriptor(referenceDescriptor);
+    public void process() {            
+        // Process the embeddable class (and its accessors) first.
+        processEmbeddableClass();
         
         // Create an aggregate mapping and do the rest of the work.
         AggregateObjectMapping mapping = new AggregateObjectMapping();
@@ -241,9 +236,16 @@ public class EmbeddedAccessor extends MetadataAccessor {
         for (AttributeOverrideMetadata attributeOverride : m_attributeOverrides) {
             processAttributeOverride(mapping, attributeOverride);
         } 
-            
+       
         // Process association overrides (this is an annotation only thing).
         processAssociationOverrides(mapping);
+        
+        // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
+        processReturnInsertAndUpdate();
+        
+        // Store this descriptor metadata. It may be needed again later on to
+        // look up a mappedBy attribute etc.
+        getDescriptor().addEmbeddableDescriptor(getReferenceDescriptor());
         
         // Add the mapping to the descriptor and we are done.
         getDescriptor().addMapping(mapping);
@@ -251,16 +253,15 @@ public class EmbeddedAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Process an AssociationOverride annotation for an embedded object, that 
+     * is, an aggregate object mapping in EclipseLink. 
      * 
-     * Process an @AssociationOverride for an embedded object, that is, an 
-     * aggregate object mapping in TopLink. 
-     * 
-     * This functionality is not supported in XML, hence why this method is 
-     * defined here instead of on MetadataProcessor.
+     * This functionality is not supported in XML for JPA. TODO: Add it to 
+     * the EclipseLink XML schema.
      * 
      * Also this functionality is currently optional in the EJB 3.0 spec, but
-     * since TopLink can handle it, it is implemented and assumes the user has
-     * properly configured its use since it will fail silently.
+     * since EclipseLink can handle it, it is implemented and assumes the user 
+     * has properly configured its use since it will fail silently.
 	 */
 	protected void processAssociationOverride(Object associationOverride, AggregateObjectMapping aggregateMapping) {
         MetadataDescriptor aggregateDescriptor = getReferenceDescriptor();
@@ -276,7 +277,7 @@ public class EmbeddedAccessor extends MetadataAccessor {
             for (Annotation joinColumn : (Annotation[]) MetadataHelper.invokeMethod("joinColumns", associationOverride)) { 
                 // We can't change the mapping from the aggregate descriptor
                 // so we have to add field name translations. This needs to be
-                // tested since I am not entirely sure if this will acutally
+                // tested since I am not entirely sure if this will actually
                 // work.
                 // In composite primary key case, how do we association the
                 // foreign keys? Right now we assume the association overrides
@@ -322,37 +323,61 @@ public class EmbeddedAccessor extends MetadataAccessor {
 	protected void processAttributeOverride(AggregateObjectMapping mapping, AttributeOverrideMetadata attributeOverride) {
         String attributeName = attributeOverride.getName();
         
-        // Set the attribute name on the aggregate.
+        // Look for an aggregate mapping for the attribute name.
         DatabaseMapping aggregateMapping = getReferenceDescriptor().getMappingForAttributeName(attributeName);
-        
         if (aggregateMapping == null) {
         	throw ValidationException.invalidEmbeddableAttribute(getReferenceDescriptor().getJavaClass(), attributeName, getJavaClass(), mapping.getAttributeName());
         }
         
-        // A sub-class to a mapped superclass may override an embedded attribute 
-        // override.
+        // A sub-class (entity or mapped superclass) to a mapped superclass may 
+        // override an embedded attribute override. This case will only hit 
+        // since an entity may define attribute overrides to override in a 
+        // mapped superclass. Within an embeddable there is no current way to 
+        // specify attribute overrides (besides on the embedded mapping itself). 
+        // So calling getDescriptor() is correct and calling 
+        // getOwningDescriptor() is incorrect since it would allow attribute 
+        // overrides defined on the owning entity to override nested embedded
+        // attributes.
         if (getDescriptor().hasAttributeOverrideFor(attributeName)) {
-            // Update the field on this metadata column. We do that so that
-            // an embedded id can associate the correct id fields.
+            // Update the field on this metadata column. We do that so that  
+            // an embedded id can associate the correct id fields. 
             attributeOverride.getColumn().setDatabaseField(getDescriptor().getAttributeOverrideFor(attributeName).getColumn().getDatabaseField());
-        } 
+        }
         
-        mapping.addFieldNameTranslation(attributeOverride.getColumn().getDatabaseField().getQualifiedName(), aggregateMapping.getField().getName());
+        // Now make sure we have a table set on the attribute override field.
+        // If we need to default one, it should be the table from the owning
+        // descriptor.
+        DatabaseField overrideField = attributeOverride.getColumn().getDatabaseField();
+        if (overrideField.getTableName().equals("")) {
+            overrideField.setTable(getOwningDescriptor().getPrimaryTable());
+        }
+
+        DatabaseField aggregateField = aggregateMapping.getField();
+        
+        // If override field is to an id field, we need to update the list
+        // of primary keys on the owning descriptor.
+        if (getOwningDescriptor().getPrimaryKeyFields().contains(aggregateField)) {
+            getOwningDescriptor().getPrimaryKeyFields().remove(aggregateField);
+            getOwningDescriptor().addPrimaryKeyField(overrideField);
+        }
+
+        // Set the field name translation on the mapping.
+        mapping.addFieldNameTranslation(overrideField.getQualifiedName(), aggregateField.getName());
 	}
     
     /**
-     * INTERNAL: (Overridden in EmbeddedIdAccessor)
+     * INTERNAL:
      * This method processes an embeddable class, if we have not processed it 
      * yet. The reason for lazy processing of embeddable class is because of 
      * rules  governing access-type of embeddable. See GlassFish issue #831 for 
      * more details.
      *
-     * Be careful while changing order of processing.
+     * Be careful while changing the order of processing.
      */
-    protected MetadataDescriptor processEmbeddableClass() {
-        EmbeddableAccessor embeddableAccessor = getProject().getEmbeddableAccessor(getReferenceClassName());
+    protected void processEmbeddableClass() {
+        EmbeddableAccessor accessor = getProject().getEmbeddableAccessor(getReferenceClassName());
 
-        if (embeddableAccessor == null) {
+        if (accessor == null) {
         	// Before throwing an exception we must make one final check for
         	// an Embeddable annotation on the referenced class. At this point
         	// we know the referenced class was not tagged as an embeddable
@@ -365,38 +390,37 @@ public class EmbeddedAccessor extends MetadataAccessor {
         	if (isAnnotationNotPresent(Embeddable.class, getReferenceClass())) {
         		throw ValidationException.invalidEmbeddedAttribute(getJavaClass(), getAttributeName(), getReferenceClass());
         	} else {
-        		embeddableAccessor = new EmbeddableAccessor(getReferenceClass(), getProject());
-        		getProject().addEmbeddableAccessor(embeddableAccessor);
+        	    accessor = new EmbeddableAccessor(getReferenceClass(), getProject());
+        		getProject().addEmbeddableAccessor(accessor);
         	}
         } 
         
-        MetadataDescriptor embeddableDescriptor = embeddableAccessor.getDescriptor();
-        	
-        if (! embeddableAccessor.isProcessed()) {
-        	AccessType accessType = determineAccessTypeOfEmbedded(embeddableDescriptor);
-            embeddableDescriptor.setUsesPropertyAccess(accessType == PROPERTY ? true : false);
-            embeddableAccessor.process();
-            embeddableAccessor.setIsProcessed();	
+        // Need to set the owning descriptor on the embeddable class before we
+        // proceed any further in the processing.
+        accessor.setOwningDescriptor(getOwningDescriptor());
+
+        if (! accessor.isProcessed()) {
+            accessor.getDescriptor().setUsesPropertyAccess(getAccessTypeOfEmbeddable(accessor) == PROPERTY);
+            accessor.process();
+            accessor.setIsProcessed();	
         }
         	
         // We have already processed this embeddable class. Let's validate 
         // that it is not used in entities with conflicting access type. 
         // Conflicting access-type is not allowed when there is no metadata 
         // in the embeddable class.
-        if (! isMetadataPresent(embeddableDescriptor)) {
-        	if (embeddableDescriptor.usesPropertyAccess() != getDescriptor().usesPropertyAccess()) {
-        		throw ValidationException.conflictingAccessTypeForEmbeddable(embeddableDescriptor.getJavaClass(), embeddableDescriptor.usesPropertyAccess(), getDescriptor().getJavaClass(), getDescriptor().usesPropertyAccess());
+        if (! isMetadataPresent(accessor)) {
+        	if (accessor.getDescriptor().usesPropertyAccess() != getOwningDescriptor().usesPropertyAccess()) {
+        		throw ValidationException.conflictingAccessTypeForEmbeddable(accessor.getJavaClass(), accessor.getDescriptor().usesPropertyAccess(), getOwningDescriptor().getJavaClass(), getOwningDescriptor().usesPropertyAccess());
             }
         }
-        
-        return embeddableDescriptor;
     }
 
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides) {
-		m_attributeOverrides = attributeOverrides;
-	}
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides) {
+        m_attributeOverrides = attributeOverrides;
+    }
 }

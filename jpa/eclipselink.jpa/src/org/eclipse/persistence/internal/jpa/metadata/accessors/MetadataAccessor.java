@@ -86,6 +86,7 @@ public abstract class MetadataAccessor  {
     
     private MetadataAccessibleObject m_accessibleObject;
     private MetadataDescriptor m_descriptor;
+    private MetadataDescriptor m_owningDescriptor;
     private MetadataProject m_project;
    
     private String m_name;
@@ -183,7 +184,7 @@ public abstract class MetadataAccessor  {
     public MetadataDescriptor getDescriptor() {
         return m_descriptor;
     }
-       
+    
     /**
      * INTERNAL:
      */
@@ -281,6 +282,22 @@ public abstract class MetadataAccessor  {
 		return m_objectTypeConverters;
 	}
 	
+    /**
+     * INTERNAL:
+     * In the general case the owning descriptor is the descriptor for this
+     * accessor. However, in an Embeddable (and nested embeddables) the owning
+     * descriptor is the original entities descriptor where the first embedded
+     * was found. The owning descriptor will be copied down the embeddedable
+     * chain. It should not be set otherwise.
+     */
+    public MetadataDescriptor getOwningDescriptor() {
+        if (m_owningDescriptor == null) {
+            return getDescriptor();
+        } else {
+            return m_owningDescriptor;
+        }
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -864,6 +881,13 @@ public abstract class MetadataAccessor  {
 		m_objectTypeConverters = objectTypeConverters;
 	}
 	
+    /**
+     * INTERNAL:
+     */
+    public void setOwningDescriptor(MetadataDescriptor owningDescriptor) {
+        m_owningDescriptor = owningDescriptor;
+    }
+    
     /**
      * INTERNAL: 
      * Used for OX mapping.

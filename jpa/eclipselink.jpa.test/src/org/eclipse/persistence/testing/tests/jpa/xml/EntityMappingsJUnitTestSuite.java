@@ -18,6 +18,7 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 import org.eclipse.persistence.testing.tests.jpa.xml.advanced.EntityMappingsAdvancedJUnitTestCase;
+import org.eclipse.persistence.testing.tests.jpa.xml.complexaggregate.EntityMappingsComplexAggregateJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.inheritance.EntityMappingsInheritanceJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.inherited.EntityMappingsInheritedJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.xml.relationships.EntityMappingsRelationshipsJUnitTestCase;
@@ -45,6 +46,7 @@ public class EntityMappingsJUnitTestSuite extends TestCase {
         } else if (testing.equals(TestingProperties.ECLIPSELINK_ORM_TESTING)) {
             suite.addTest(EntityMappingsAdvancedJUnitTestCase.suite("extended-advanced"));
             suite.addTest(EntityMappingsRelationshipsJUnitTestCase.suite("extended-relationships"));
+            suite.addTest(EntityMappingsComplexAggregateJUnitTestCase.suite("extended-complex-aggregate"));
         }
         
         return suite;

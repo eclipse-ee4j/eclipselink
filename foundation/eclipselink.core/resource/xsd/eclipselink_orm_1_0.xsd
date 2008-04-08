@@ -1552,23 +1552,12 @@
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="struct-converter" type="orm:struct-converter" 
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="attributes" type="orm:embeddable-attributes" 
+      <xsd:element name="attributes" type="orm:attributes" 
                    minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="class" type="xsd:string" use="required"/>
     <xsd:attribute name="access" type="orm:access-type"/>
     <xsd:attribute name="metadata-complete" type="xsd:boolean"/>
-  </xsd:complexType>
-
-  <!-- **************************************************** -->
-
-  <xsd:complexType name="embeddable-attributes">
-    <xsd:sequence>
-      <xsd:element name="basic" type="orm:basic" 
-                   minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="transient" type="orm:transient" 
-                   minOccurs="0" maxOccurs="unbounded"/>
-    </xsd:sequence>
   </xsd:complexType>
 
   <!-- **************************************************** -->

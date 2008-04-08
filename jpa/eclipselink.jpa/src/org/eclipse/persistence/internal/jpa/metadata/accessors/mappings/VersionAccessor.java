@@ -80,7 +80,7 @@ public class VersionAccessor extends BasicAccessor {
                 VersionLockingPolicy policy = isValidVersionLockingType(lockType) ? new VersionLockingPolicy(getField()) : new TimestampLockingPolicy(getField());  
                 policy.storeInObject();
                 policy.setIsCascaded(getDescriptor().usesCascadedOptimisticLocking());
-                getDescriptor().setOptimisticLockingPolicy(policy);
+                getOwningDescriptor().setOptimisticLockingPolicy(policy);
             } else {
                 throw ValidationException.invalidTypeForVersionAttribute(getAttributeName(), lockType, getJavaClass());
             }

@@ -353,6 +353,8 @@ public class ValidationException extends EclipseLinkException {
     
     public static final int MULTIPLE_CLASSES_FOR_THE_SAME_DISCRIMINATOR = 7294;
     
+    public static final int INVALID_MAPPING_FOR_EMBEDDED_ID = 7298;
+    
     
     /**
      * INTERNAL:
@@ -1124,6 +1126,13 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
+    public static ValidationException invalidMappingForEmbeddedId(String sourceAttributeName, Class sourceClass, String embeddedAttributeName, Class embeddedIdClass) {
+        Object[] args = { sourceAttributeName, sourceClass, embeddedAttributeName, embeddedIdClass };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_MAPPING_FOR_EMBEDDED_ID, args));
+        validationException.setErrorCode(INVALID_MAPPING_FOR_EMBEDDED_ID);
+        return validationException;
+    }
+    
     public static ValidationException invalidMergePolicy() {
         Object[] args = {  };
 

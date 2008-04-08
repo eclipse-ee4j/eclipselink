@@ -398,6 +398,13 @@ public abstract class ClassAccessor extends MetadataAccessor {
         if (! accessor.isProcessed()) {
             // Store the accessor for later retrieval.
         	getDescriptor().addAccessor(accessor);
+        	
+        	// The actual owning descriptor for this class accessor. In most
+        	// cases this is the same as our descriptor. However in an
+        	// embeddable class accessor, it will be the owning entities
+        	// descriptor. This was introduced to support nesting embeddables
+        	// to the nth level.
+        	accessor.setOwningDescriptor(getOwningDescriptor());
         
             // Process any converters on this accessor.
             accessor.processConverters();

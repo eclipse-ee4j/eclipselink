@@ -17,8 +17,6 @@ import java.util.HashMap;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 
@@ -58,70 +56,78 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
      */    
     public void process() {
     	// Check if we already processed an EmbeddedId for this entity.
-        if (getDescriptor().hasEmbeddedIdAttribute()) {
-        	throw ValidationException.multipleEmbeddedIdAnnotationsFound(getJavaClass(), getAttributeName(), getDescriptor().getEmbeddedIdAttributeName());
+        if (getOwningDescriptor().hasEmbeddedIdAttribute()) {
+        	throw ValidationException.multipleEmbeddedIdAnnotationsFound(getJavaClass(), getAttributeName(), getOwningDescriptor().getEmbeddedIdAttributeName());
         } 
             
         // Check if we already processed an Id or IdClass.
-        if (getDescriptor().hasPrimaryKeyFields()) {
-        	throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), getAttributeName(), getDescriptor().getIdAttributeName());
+        if (getOwningDescriptor().hasPrimaryKeyFields()) {
+        	throw ValidationException.embeddedIdAndIdAnnotationFound(getJavaClass(), getAttributeName(), getOwningDescriptor().getIdAttributeName());
         }
-            
+        
+        // Now process the embeddable and our embedded metadata. This must be
+        // done now and before the calls below.
+        super.process();
+        
         // Set the PK class.
-        getDescriptor().setPKClass(getReferenceClass());
+        getOwningDescriptor().setPKClass(getReferenceClass());
             
         // Store the embeddedId attribute name.
-        getDescriptor().setEmbeddedIdAttributeName(getAttributeName());
+        getOwningDescriptor().setEmbeddedIdAttributeName(getAttributeName());
         
-        // Process the embeddable mapping specifics.
-        super.process();
-            
-        // Add the fields from the embeddable as primary keys on the owning
-        // metadata descriptor.
-        for (DatabaseField field : m_idFields.values()) {
-            getDescriptor().addPrimaryKeyField(field);
+        // After processing the embeddable class, we need to gather our 
+        // primary keys fields that we will eventually set on the owning 
+        // descriptor metadata.
+        if (getReferenceDescriptor().getMappings().isEmpty()) {
+            AccessType accessType = getReferenceDescriptor().usesPropertyAccess() ? AccessType.PROPERTY : AccessType.FIELD;
+            throw ValidationException.embeddedIdHasNoAttributes(getDescriptor().getJavaClass(), getReferenceDescriptor().getJavaClass(), accessType.name());
+        } else {
+            // Go through all our mappings, the fields from those mappings will
+            // make up the composite primary key.
+            for (DatabaseMapping mapping : getReferenceDescriptor().getMappings()) {
+                if (mapping.isDirectToFieldMapping()) {
+                    if (! m_idFields.containsKey(mapping.getAttributeName())) {
+                        // It may be in our id fields map already if an attribute
+                        // override was specified on the embedded mapping.
+                        m_idFields.put(mapping.getAttributeName(), mapping.getField());
+                    }
+                } else {
+                    // EmbeddedId is solely a JPA feature, so we will not
+                    // allow the expansion of attributes for those types of
+                    // Embeddable classes beyond basics as defined in the spec.
+                    throw ValidationException.invalidMappingForEmbeddedId(getAttributeName(), getJavaClass(), mapping.getAttributeName(), getReferenceDescriptor().getJavaClass());
+                }
+            }
+        
+            // Add all the fields from the embeddable as primary keys on the 
+            // owning metadata descriptor.
+            for (DatabaseField field : m_idFields.values()) {
+                if (!getOwningDescriptor().getPrimaryKeyFieldNames().contains(field.getName())) {
+                    // Set a table if one is not specified. Because embeddables 
+                    // can be re-used we must deal with clones and not change 
+                    // the original fields.
+                    DatabaseField clone = (DatabaseField) field.clone();
+                    if (clone.getTableName().equals("")) {
+                        clone.setTable(getOwningDescriptor().getPrimaryTable());
+                    }
+                    
+                    getOwningDescriptor().addPrimaryKeyField(clone);
+                }
+            }
         }
     }
     
     /**
      * INTERNAL: (Override from EmbeddedAccesor)
-     * Process an attribute override for an  embedded object, that is, an 
+     * Process an attribute override for an embedded object, that is, an 
      * aggregate object mapping in EclipseLink.
 	 */
 	protected void processAttributeOverride(AggregateObjectMapping mapping, AttributeOverrideMetadata attributeOverride) {
         super.processAttributeOverride(mapping, attributeOverride);
         
         // Update our primary key field with the attribute override field.
-        // The super class with ensure the correct field is on the metadata
+        // The super class will ensure the correct field is on the metadata
         // column.
-        DatabaseField field = attributeOverride.getColumn().getDatabaseField();
-        field.setTable(getDescriptor().getPrimaryTable());
-        m_idFields.put(attributeOverride.getName(), field);
+        m_idFields.put(attributeOverride.getName(), attributeOverride.getColumn().getDatabaseField());
 	}
-    
-    /**
-     * INTERNAL: (Override from EmbeddedAccesor)
-     * Process the embeddable class and gather up our 'original' collection of
-     * primary key fields. They are original because they may change with the
-     * specification of an attribute override.
-     */
-    protected MetadataDescriptor processEmbeddableClass() {
-        MetadataDescriptor embeddableDescriptor = super.processEmbeddableClass();
-        
-        // After processing the embeddable class, we need to gather our 
-        // primary keys fields that we will eventually set on the owning 
-        // descriptor metadata.
-        if (embeddableDescriptor.getMappings().isEmpty()) {
-            String accessType = embeddableDescriptor.usesPropertyAccess() ? AccessType.PROPERTY.name() : AccessType.FIELD.name();
-            throw ValidationException.embeddedIdHasNoAttributes(getDescriptor().getJavaClass(), embeddableDescriptor.getJavaClass(), accessType);
-        }
-
-        for (DatabaseMapping mapping : embeddableDescriptor.getMappings()) {
-            DatabaseField field = (DatabaseField) mapping.getField().clone();
-            field.setTable(getDescriptor().getPrimaryTable());
-            m_idFields.put(mapping.getAttributeName(), field);
-        }
-        
-        return embeddableDescriptor;
-    }
 }
