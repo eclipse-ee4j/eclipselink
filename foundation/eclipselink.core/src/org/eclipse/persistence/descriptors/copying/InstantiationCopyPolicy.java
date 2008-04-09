@@ -17,7 +17,10 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.sessions.*;
 
 /**
- * <p><b>Purpose</b>: Creates a copy through creating a new instance.
+ * <p><b>Purpose</b>: This is the default copy policy.
+ * 
+ * It creates a copy by creating a new instance of the object and then using the 
+ * mappings specified for the object to populate the object.
  */
 public class InstantiationCopyPolicy extends AbstractCopyPolicy {
     public InstantiationCopyPolicy() {

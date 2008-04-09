@@ -70,129 +70,118 @@ public class FullRegressionTestSuite extends TestSuite{
     public static Test suite() {
         TestSuite fullSuite = new TestSuite();
         fullSuite.setName("FullRegressionTestSuite");
-        
-        String ormTesting = TestingProperties.getProperty(TestingProperties.ORM_TESTING, TestingProperties.JPA_ORM_TESTING);
-        
-        if (ormTesting.equals(TestingProperties.JPA_ORM_TESTING)) {
-            // Advanced model
-            TestSuite suite = new TestSuite();
-            suite.setName("advanced");
-            suite.addTest(NamedNativeQueryJUnitTest.suite());
-            suite.addTest(CallbackEventJUnitTestSuite.suite());
-            suite.addTest(EntityManagerJUnitTestSuite.suite());
-            suite.addTest(SQLResultSetMappingTestSuite.suite());
-            suite.addTest(JoinedAttributeAdvancedJunitTest.suite());
-            suite.addTest(ReportQueryMultipleReturnTestSuite.suite());
-            suite.addTest(ReportQueryAdvancedJUnitTest.suite());
-            suite.addTest(ExtendedPersistenceContextJUnitTestSuite.suite());
-            suite.addTest(ReportQueryConstructorExpressionTestSuite.suite());
-            suite.addTest(OptimisticConcurrencyJUnitTestSuite.suite());
-            suite.addTest(AdvancedJPAJunitTest.suite());
-            suite.addTest(AdvancedJunitTest.suite());
-            suite.addTest(AdvancedCompositePKJunitTest.suite());
-            fullSuite.addTest(suite);
-    
-            // FieldAccess advanced model
-            suite = new TestSuite();
-            suite.setName("fieldaccess");
-            suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.NamedNativeQueryJUnitTest.suite());
-            suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.CallbackEventJUnitTestSuite.suite());
-            suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EntityManagerJUnitTestSuite.suite());
-            suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.SQLResultSetMappingTestSuite.suite());
-            suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.JoinedAttributeAdvancedJunitTest.suite());
-            suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ReportQueryMultipleReturnTestSuite.suite());
-            suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ExtendedPersistenceContextJUnitTestSuite.suite());
-            suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ReportQueryConstructorExpressionTestSuite.suite());
-            suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.OptimisticConcurrencyJUnitTestSuite.suite());
-            suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.AdvancedJPAJunitTest.suite());
-            suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.AdvancedJunitTest.suite());
-            suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.UniAndBiDirectionalMappingTestSuite.suite());
-            suite.addTestSuite(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.ExpressionJUnitTestSuite.class);
-            suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.VirtualAttributeTestSuite.suite());
-            fullSuite.addTest(suite);
-            
-            // Inheritance model.
-            suite = new TestSuite();
-            suite.setName("inheritance");
-            suite.addTest(LifecycleCallbackJunitTest.suite());
-            suite.addTest(DeleteAllQueryInheritanceJunitTest.suite());
-            suite.addTest(EntityManagerJUnitTestCase.suite());
-            suite.addTest(MixedInheritanceJUnitTestCase.suite());
-            suite.addTest(JoinedAttributeInheritanceJunitTest.suite());
-            fullSuite.addTest(suite);
-            
-            // Inherited model.
-            suite = new TestSuite();
-            suite.setName("inherited");
-            suite.addTest(OrderedListJunitTest.suite());
-            suite.addTest(InheritedModelJunitTest.suite());
-            suite.addTest(InheritedCallbacksJunitTest.suite());
-            suite.addTest(EmbeddableSuperclassJunitTest.suite());
-            fullSuite.addTest(suite);
-            
-            // Relationship model.
-            suite = new TestSuite();
-            suite.setName("relationships");
-            suite.addTestSuite(EMQueryJUnitTestSuite.class);
-            suite.addTestSuite(ExpressionJUnitTestSuite.class);
-            suite.addTest(VirtualAttributeTestSuite.suite());
-            suite.addTest(ValidationTestSuite.suite());
-            suite.addTest(QueryParameterValidationTestSuite.suite());
-            suite.addTest(UniAndBiDirectionalMappingTestSuite.suite());
-            suite.addTest(RelationshipModelJUnitTestSuite.suite());
-            fullSuite.addTest(suite);
-            
-            // JPQL testing model.
-            suite = new TestSuite();
-            suite.setName("jpql");
-            suite.addTest(JUnitJPQLUnitTestSuite.suite());
-            suite.addTest(JUnitJPQLSimpleTestSuite.suite());
-            suite.addTest(JUnitJPQLComplexTestSuite.suite());
-            suite.addTest(JUnitJPQLInheritanceTestSuite.suite());
-            suite.addTest(JUnitJPQLValidationTestSuite.suite());
-            suite.addTest(JUnitJPQLComplexAggregateTestSuite.suite());
-            suite.addTest(JUnitJPQLDateTimeTestSuite.suite());
-            suite.addTest(JUnitJPQLParameterTestSuite.suite());
-            suite.addTest(JUnitJPQLExamplesTestSuite.suite());
-            suite.addTest(JUnitJPQLModifyTestSuite.suite());
-            suite.addTest(JUnitJPQLModifyTestSuite.suite());
-            suite.addTest(AdvancedQueryTestSuite.suite());
-            fullSuite.addTest(suite);
-            
-            // XML model
-            fullSuite.addTest(EntityMappingsJUnitTestSuite.suite());
-    
-            // DDL model
-            fullSuite.addTest(DDLGenerationJUnitTestSuite.suite());
-            
-            // JPA Advanced Properties model
-            fullSuite.addTest(JPAAdvPropertiesJUnitTestCase.suite());
-            
-            // DataTypes model    
-            fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datatypes.NullBindingJUnitTestCase.suite());
-            fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datatypes.arraypks.PrimitiveArrayPKCachingJUnitTestCase.suite());
-    	
-            // DateTime model
-            fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datetime.NullBindingJUnitTestCase.suite());
-    
-            // Lob model
-            fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.lob.LobJUnitTestCase.suite());
-    
-            try {
-    	        Class structConverterClass = Class.forName("org.eclipse.persistence.testing.tests.jpa.structconverter.StructConverterTestSuite");
-    	        Test testCase = (Test)(structConverterClass.getMethod("suite", (Class[])null).invoke(null, (Object[])null));
-    	        fullSuite.addTest(testCase);
-            } catch (Exception e){
-            	// This will usually happen if the Oracle-specific tests are not on the class-path.
-            	System.out.println("WARNING: " + e + " - StructConverterTestSuite not found, most likely because Oracle specific component is not on the classpath.");
-            }
-        } else if (ormTesting.equals(TestingProperties.ECLIPSELINK_ORM_TESTING)) {
-            // Only those sub-suites that handled an extended jpa testing level, 
-            // that is, those that use an eclipselink ORM schema should be 
-            // added here.
-            
-            // XML model
-            fullSuite.addTest(EntityMappingsJUnitTestSuite.suite(TestingProperties.ECLIPSELINK_ORM_TESTING));
+
+        // Advanced model
+        TestSuite suite = new TestSuite();
+        suite.setName("advanced");
+        suite.addTest(NamedNativeQueryJUnitTest.suite());
+        suite.addTest(CallbackEventJUnitTestSuite.suite());
+        suite.addTest(EntityManagerJUnitTestSuite.suite());
+        suite.addTest(SQLResultSetMappingTestSuite.suite());
+        suite.addTest(JoinedAttributeAdvancedJunitTest.suite());
+        suite.addTest(ReportQueryMultipleReturnTestSuite.suite());
+        suite.addTest(ReportQueryAdvancedJUnitTest.suite());
+        suite.addTest(ExtendedPersistenceContextJUnitTestSuite.suite());
+        suite.addTest(ReportQueryConstructorExpressionTestSuite.suite());
+        suite.addTest(OptimisticConcurrencyJUnitTestSuite.suite());
+        suite.addTest(AdvancedJPAJunitTest.suite());
+        suite.addTest(AdvancedJunitTest.suite());
+        suite.addTest(AdvancedCompositePKJunitTest.suite());
+        fullSuite.addTest(suite);
+
+        // FieldAccess advanced model
+        suite = new TestSuite();
+        suite.setName("fieldaccess");
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.NamedNativeQueryJUnitTest.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.CallbackEventJUnitTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EntityManagerJUnitTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.SQLResultSetMappingTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.JoinedAttributeAdvancedJunitTest.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ReportQueryMultipleReturnTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ExtendedPersistenceContextJUnitTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.ReportQueryConstructorExpressionTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.OptimisticConcurrencyJUnitTestSuite.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.AdvancedJPAJunitTest.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.AdvancedJunitTest.suite());
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.UniAndBiDirectionalMappingTestSuite.suite());
+        suite.addTestSuite(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.ExpressionJUnitTestSuite.class);
+        suite.addTest(org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.VirtualAttributeTestSuite.suite());
+        fullSuite.addTest(suite);
+
+        // Inheritance model.
+        suite = new TestSuite();
+        suite.setName("inheritance");
+        suite.addTest(LifecycleCallbackJunitTest.suite());
+        suite.addTest(DeleteAllQueryInheritanceJunitTest.suite());
+        suite.addTest(EntityManagerJUnitTestCase.suite());
+        suite.addTest(MixedInheritanceJUnitTestCase.suite());
+        suite.addTest(JoinedAttributeInheritanceJunitTest.suite());
+        fullSuite.addTest(suite);
+
+        // Inherited model.
+        suite = new TestSuite();
+        suite.setName("inherited");
+        suite.addTest(OrderedListJunitTest.suite());
+        suite.addTest(InheritedModelJunitTest.suite());
+        suite.addTest(InheritedCallbacksJunitTest.suite());
+        suite.addTest(EmbeddableSuperclassJunitTest.suite());
+        fullSuite.addTest(suite);
+
+        // Relationship model.
+        suite = new TestSuite();
+        suite.setName("relationships");
+        suite.addTestSuite(EMQueryJUnitTestSuite.class);
+        suite.addTestSuite(ExpressionJUnitTestSuite.class);
+        suite.addTest(VirtualAttributeTestSuite.suite());
+        suite.addTest(ValidationTestSuite.suite());
+        suite.addTest(QueryParameterValidationTestSuite.suite());
+        suite.addTest(UniAndBiDirectionalMappingTestSuite.suite());
+        suite.addTest(RelationshipModelJUnitTestSuite.suite());
+        fullSuite.addTest(suite);
+
+        // JPQL testing model.
+        suite = new TestSuite();
+        suite.setName("jpql");
+        suite.addTest(JUnitJPQLUnitTestSuite.suite());
+        suite.addTest(JUnitJPQLSimpleTestSuite.suite());
+        suite.addTest(JUnitJPQLComplexTestSuite.suite());
+        suite.addTest(JUnitJPQLInheritanceTestSuite.suite());
+        suite.addTest(JUnitJPQLValidationTestSuite.suite());
+        suite.addTest(JUnitJPQLComplexAggregateTestSuite.suite());
+        suite.addTest(JUnitJPQLDateTimeTestSuite.suite());
+        suite.addTest(JUnitJPQLParameterTestSuite.suite());
+        suite.addTest(JUnitJPQLExamplesTestSuite.suite());
+        suite.addTest(JUnitJPQLModifyTestSuite.suite());
+        suite.addTest(JUnitJPQLModifyTestSuite.suite());
+        suite.addTest(AdvancedQueryTestSuite.suite());
+        fullSuite.addTest(suite);
+
+        // XML model
+        fullSuite.addTest(EntityMappingsJUnitTestSuite.suite());
+
+        // DDL model
+        fullSuite.addTest(DDLGenerationJUnitTestSuite.suite());
+
+        // JPA Advanced Properties model
+        fullSuite.addTest(JPAAdvPropertiesJUnitTestCase.suite());
+
+        // DataTypes model    
+        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datatypes.NullBindingJUnitTestCase.suite());
+        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datatypes.arraypks.PrimitiveArrayPKCachingJUnitTestCase.suite());
+
+        // DateTime model
+        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.datetime.NullBindingJUnitTestCase.suite());
+
+        // Lob model
+        fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.lob.LobJUnitTestCase.suite());
+
+        try {
+            Class structConverterClass = Class.forName("org.eclipse.persistence.testing.tests.jpa.structconverter.StructConverterTestSuite");
+            Test testCase = (Test)(structConverterClass.getMethod("suite", (Class[])null).invoke(null, (Object[])null));
+            fullSuite.addTest(testCase);
+        } catch (Exception e){
+            // This will usually happen if the Oracle-specific tests are not on the class-path.
+            System.out.println("WARNING: " + e + " - StructConverterTestSuite not found, most likely because Oracle specific component is not on the classpath.");
         }
 
         return fullSuite;

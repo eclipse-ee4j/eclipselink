@@ -28,6 +28,7 @@ import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.HockeyTea
 import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.PersonalVitals;
 import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.TeamVitals;
 import org.eclipse.persistence.testing.models.jpa.xml.complexaggregate.Vitals;
+import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 
 public class EntityMappingsComplexAggregateJUnitTestCase extends JUnitTestCase {
     private static HockeyTeamId[] teamIDs = new HockeyTeamId[3];
@@ -44,7 +45,9 @@ public class EntityMappingsComplexAggregateJUnitTestCase extends JUnitTestCase {
         m_persistenceUnit = persistenceUnit;
     }
     
-    public static Test suite(final String persistenceUnit) {
+    public static Test suite() {
+        String ormTesting = TestingProperties.getProperty(TestingProperties.ORM_TESTING, TestingProperties.JPA_ORM_TESTING);
+        final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-complex-aggregate";
         TestSuite suite = new TestSuite("Complex Aggregate Model - " + persistenceUnit);
         
         if (persistenceUnit.equals("extended-complex-aggregate")) {

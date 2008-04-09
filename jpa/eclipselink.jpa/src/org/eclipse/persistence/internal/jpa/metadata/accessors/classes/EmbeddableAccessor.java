@@ -56,6 +56,9 @@ public class EmbeddableAccessor extends ClassAccessor {
         processChangeTracking();
         
         // Process the accessors on this embeddable.
-        processAccessors(); 
+        processAccessors();
+        
+        // Process @CopyPolicy
+        processCopyPolicy();
     }
 }

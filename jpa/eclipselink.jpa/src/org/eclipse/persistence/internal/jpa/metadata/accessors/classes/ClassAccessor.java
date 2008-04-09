@@ -26,8 +26,12 @@ import java.util.List;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
+import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.ChangeTracking;
 import org.eclipse.persistence.annotations.Customizer;
+import org.eclipse.persistence.annotations.CopyPolicy;
+import org.eclipse.persistence.annotations.InstantiationCopyPolicy;
+import org.eclipse.persistence.annotations.CloneCopyPolicy;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -52,7 +56,14 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 
+import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.changetracking.ChangeTrackingMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
+
+import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CopyPolicyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CustomCopyPolicyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.copypolicy.InstantiationCopyPolicyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -74,6 +85,11 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     private ChangeTrackingMetadata m_changeTracking;
     private Class m_customizerClass;
+    
+    // various copy policies.  Represented individually to facilitate XML writing
+    private CustomCopyPolicyMetadata m_customCopyPolicy;
+    private InstantiationCopyPolicyMetadata m_instantiationCopyPolicy;
+    private CloneCopyPolicyMetadata m_cloneCopyPolicy;
     
     private String m_access; // EntityMappings init will process this value.
     private String m_className;
@@ -191,6 +207,32 @@ public abstract class ClassAccessor extends MetadataAccessor {
         return m_className;
     }
     
+    public CopyPolicyMetadata getCopyPolicy(){
+        if (m_cloneCopyPolicy != null){
+            return m_cloneCopyPolicy;
+        } else if (m_instantiationCopyPolicy != null){
+            return m_instantiationCopyPolicy;
+        } else {
+            return m_customCopyPolicy;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping
+     */
+    public CloneCopyPolicyMetadata getCloneCopyPolicy(){
+        return m_cloneCopyPolicy;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping
+     */
+    public CustomCopyPolicyMetadata getCustomCopyPolicy(){
+        return m_customCopyPolicy;
+    }
+    
     /**
      * INTERNAL:
      */
@@ -236,6 +278,14 @@ public abstract class ClassAccessor extends MetadataAccessor {
         }
         
         return field;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping
+     */
+    public InstantiationCopyPolicyMetadata getInstantiationCopyPolicy(){
+        return m_instantiationCopyPolicy;
     }
     
     /**
@@ -567,6 +617,43 @@ public abstract class ClassAccessor extends MetadataAccessor {
         }   
     }
     
+    
+    protected void processCopyPolicy(){
+        if (getCopyPolicy() != null || isAnnotationPresent(CopyPolicy.class) || isAnnotationPresent(InstantiationCopyPolicy.class) || isAnnotationPresent(CloneCopyPolicy.class)) {
+            if (getDescriptor().hasCopyPolicy()){
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_EXISTING_COPY_POLICY, getDescriptor().getJavaClass(), getJavaClass());
+            }
+            if (getCopyPolicy() == null) {
+                boolean foundCopyPolicy = false;
+                Annotation copyPolicy = getAnnotation(CopyPolicy.class);
+                if (copyPolicy != null){
+                    foundCopyPolicy = true;
+                    new CustomCopyPolicyMetadata(copyPolicy).process(getDescriptor(), getJavaClass());
+                }
+                copyPolicy = getAnnotation(InstantiationCopyPolicy.class);
+                if (copyPolicy != null){
+                    if (foundCopyPolicy){
+                        throw ValidationException.multipleCopyPolicyAnnotationsOnSameClass(getJavaClass().getName());
+                    }
+                    foundCopyPolicy = true;
+                    new InstantiationCopyPolicyMetadata(copyPolicy).process(getDescriptor(), getJavaClass());
+                }
+                copyPolicy = getAnnotation(CloneCopyPolicy.class);
+                if (copyPolicy != null){
+                    if (foundCopyPolicy){
+                        throw ValidationException.multipleCopyPolicyAnnotationsOnSameClass(getJavaClass().getName());
+                    }
+                    new CloneCopyPolicyMetadata(copyPolicy).process(getDescriptor(), getJavaClass());
+                }
+            } else {
+                if (isAnnotationPresent(CopyPolicy.class) || isAnnotationPresent(InstantiationCopyPolicy.class) || isAnnotationPresent(CloneCopyPolicy.class)){
+                    getLogger().logWarningMessage(MetadataLogger.IGNORE_COPY_POLICY_ANNOTATION, getJavaClass());
+                }
+                getCopyPolicy().process(getDescriptor(), getJavaClass());
+            }
+        }
+    }
+    
     /**
      * INTERNAL:
      */
@@ -633,6 +720,22 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * set the copy policy metadata
+     */
+    public void setCloneCopyPolicy(CloneCopyPolicyMetadata copyPolicy){
+        m_cloneCopyPolicy = copyPolicy;
+    }
+    
+    /**
+     * INTERNAL:
+     * set the copy policy metadata
+     */
+    public void setCustomCopyPolicy(CustomCopyPolicyMetadata copyPolicy){
+        m_customCopyPolicy = copyPolicy;
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public void setCustomizerClassName(String customizerClassName) {
@@ -645,6 +748,14 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public void setDescription(String description) {
         m_description = description;
+    }
+    
+    /**
+     * INTERNAL:
+     * set the copy policy metadata
+     */
+    public void setInstantiationCopyPolicy(InstantiationCopyPolicyMetadata copyPolicy){
+        m_instantiationCopyPolicy = copyPolicy;
     }
     
     /**

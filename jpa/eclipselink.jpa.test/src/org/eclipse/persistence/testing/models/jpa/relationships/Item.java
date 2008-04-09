@@ -16,6 +16,7 @@ import javax.persistence.*;
 
 import org.eclipse.persistence.annotations.VariableOneToOne;
 import org.eclipse.persistence.annotations.DiscriminatorClass;
+import org.eclipse.persistence.annotations.InstantiationCopyPolicy;
 
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.DiscriminatorType.INTEGER;
@@ -29,6 +30,7 @@ import static javax.persistence.GenerationType.TABLE;
 	name="findAllItemsByName",
 	query="SELECT OBJECT(item) FROM Item item WHERE item.name = ?1"
 )
+@InstantiationCopyPolicy // explicitly exercise the code that sets this (even though it is the default)
 public class Item implements java.io.Serializable {
 	private Integer itemId;
 	private int version;

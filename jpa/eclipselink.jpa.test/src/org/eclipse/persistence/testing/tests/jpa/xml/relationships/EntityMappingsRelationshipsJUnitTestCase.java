@@ -19,6 +19,10 @@ import junit.extensions.TestSetup;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.descriptors.copying.CopyPolicy;
+import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
+import org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy;
+
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Lego;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Mattel;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.MegaBrands;
@@ -27,6 +31,8 @@ import org.eclipse.persistence.testing.models.jpa.xml.relationships.Customer;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Item;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Order;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.RelationshipsTableManager;
+import org.eclipse.persistence.testing.models.jpa.xml.relationships.TestInstantiationCopyPolicy;
+import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 /**
@@ -50,7 +56,10 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         m_persistenceUnit = persistenceUnit;
     }
     
-    public static Test suite(final String persistenceUnit) {
+    public static Test suite() {
+        String ormTesting = TestingProperties.getProperty(TestingProperties.ORM_TESTING, TestingProperties.JPA_ORM_TESTING);
+        final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-relationships";
+
         TestSuite suite = new TestSuite("Relationships Model - " + persistenceUnit);
         suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateCustomer", persistenceUnit));
         suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateItem", persistenceUnit));
@@ -76,6 +85,9 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCreateExtendedItem", persistenceUnit)); 
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testModifyExtendedItem", persistenceUnit));
             suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testVerifyExtendedItem", persistenceUnit));
+            suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCopyPolicy", persistenceUnit));
+            suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testCloneCopyPolicy", persistenceUnit));
+            suite.addTest(new EntityMappingsRelationshipsJUnitTestCase("testInstantiationCopyPolicy", persistenceUnit));
         }
         
         return new TestSetup(suite) {
@@ -422,5 +434,20 @@ public class EntityMappingsRelationshipsJUnitTestCase extends JUnitTestCase {
         assertTrue("The distributor of the item was incorrect [" + item.getDistributor().getName() + "]", item.getDistributor().getName().equals("MegaBrands Inc."));
         
         closeEntityManager(em);
+    }
+    
+    public void testInstantiationCopyPolicy(){
+        assertTrue("The InstantiationCopyPolicy was not properly set.", getServerSession(m_persistenceUnit).getDescriptor(Item.class).getCopyPolicy() instanceof InstantiationCopyPolicy);
+    }
+    
+    public void testCopyPolicy(){
+        assertTrue("The CopyPolicy was not properly set.", getServerSession(m_persistenceUnit).getDescriptor(Order.class).getCopyPolicy() instanceof TestInstantiationCopyPolicy);
+    }
+    
+    public void testCloneCopyPolicy(){
+        CopyPolicy copyPolicy = getServerSession(m_persistenceUnit).getDescriptor(Namco.class).getCopyPolicy();
+        assertTrue("The CloneCopyPolicy was not properly set.", copyPolicy  instanceof CloneCopyPolicy);
+        assertTrue("The method on CloneCopyPolicy was not properly set.", ((CloneCopyPolicy)copyPolicy).getMethodName().equals("cloneNamco"));
+        assertTrue("The workingCopyMethod on CloneCopyPolicy was not properly set.", ((CloneCopyPolicy)copyPolicy).getWorkingCopyMethodName().equals("cloneWorkingCopyNamco"));
     }
 }

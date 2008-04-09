@@ -28,7 +28,18 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 
 /**
- * <p><b>Purpose</b>: Creates a clone through a clone method.
+ * <p><b>Purpose</b>: Allows a clone of an object to be created with a method that returns
+ * the cloned object.  
+ *  
+ * It is possible to define methods for two types of clones
+ * 
+ * 1. methodName can be set to define the method EclipseLink uses to clone objects for it's
+ * own internal use.  The objects created by this method will not be visible to the user, and
+ * instead used as a basis for comparison when a DeferredChangeDetectionPolicy used.  This method will
+ * also be in place of the workingCopyMethod if it is not provided
+ * 
+ * 2. workingCopyMethod this method is used to create the clone that is returned to the user when an
+ * Object is registered in a UnitOfWork
  */
 public class CloneCopyPolicy extends AbstractCopyPolicy {
 

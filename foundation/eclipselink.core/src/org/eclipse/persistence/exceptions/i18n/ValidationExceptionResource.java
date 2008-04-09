@@ -286,6 +286,9 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7292", "WriteTransformer specified for column {[2]} for attribute [{0}] of class [{1}] has neither class nor method. Either class or method is required, but not both of them."},
                                            { "7293", "WriteTransformer specified for attribute [{0}] of class [{1}] either doesn''t have a column or the column doesn''t have name."},
                                            { "7294", "The variable one to one element [{1}] has multiple entities mapped to the same discriminator [{0}]. Each entity that implements the variable one to one interface must have its own unique discriminator."},
+                                           { "7295", "The CloneCopyPolicy specified on class {[0]} does not specify either a method of a workingCopyMethod.  It is required that one of these be specified."},
+                                           { "7296", "Class {[0]} has multiple CopyPolicy Annotations.  Only one CopyPolicyAnnotation is allowed per class."},
+                                           { "7297", "An exception was thrown while reflectively instantiating Class [{0}].  This usually means that this class is specified in your meta data and for some reason java cannot instanitate it reflectively with a no-args constructor.  Check the chained exception for more information.  Note: To see the chained exception you may need to increase your logging level."},
                                            { "7298", "The mapping [{2}] from the embedded id class [{3}] is an invalid mapping for this class. An embeddable class that is used with an embedded id specification (attribute [{0}] from the source [{1}]) can only contain basic mappings. Either remove the non basic mapping or change the embedded id specification on the source to be embedded."},
                                            
  };

@@ -69,6 +69,7 @@ public class MetadataDescriptor {
     private boolean m_hasChangeTracking;
     private boolean m_hasCustomizer;
     private boolean m_hasReadOnly;
+    private boolean m_hasCopyPolicy;
     private Boolean m_usesPropertyAccess;
     private Boolean m_usesCascadedOptimisticLocking;
     
@@ -806,6 +807,15 @@ public class MetadataDescriptor {
     public boolean hasChangeTracking() {
         return m_hasChangeTracking;
     }
+    
+    /**
+     * INTERNAL:
+     * Indicates that a copy Policy annotation or copy policy element 
+     * has already been processed for this descriptor.
+     */
+    public boolean hasCopyPolicy() {
+        return m_hasCopyPolicy;
+    }
 
     /**
      * INTERNAL:
@@ -990,6 +1000,14 @@ public class MetadataDescriptor {
      */
     public void setHasChangeTracking() {
         m_hasChangeTracking = true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates that we have processed a copy policy annotation or copy policy xml element.
+     */
+    public void setHasCopyPolicy() {
+        m_hasCopyPolicy = true;
     }
     
     /**

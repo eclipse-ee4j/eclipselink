@@ -13,11 +13,27 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.testing.models.jpa.xml.relationships;
 
-public class Namco implements Distributor {
+public class Namco implements Distributor, Cloneable {
     private Integer distributorId;
     private String name;
     
     public Namco() {}
+        
+    public Namco clone(){
+        try{
+            return (Namco)super.clone();
+        } catch (CloneNotSupportedException exc){
+            return null;
+        }
+    }
+    
+    public Namco cloneNamco(){
+        return this.clone();
+    }
+    
+    public Namco cloneWorkingCopyNamco(){
+        return this.clone();
+    }
     
     public Integer getDistributorId() { 
         return distributorId; 

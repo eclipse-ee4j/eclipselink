@@ -19,6 +19,9 @@ import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
+import org.eclipse.persistence.descriptors.copying.CopyPolicy;
+import org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.relationships.Lego;
 import org.eclipse.persistence.testing.models.jpa.relationships.Item;
@@ -26,6 +29,8 @@ import org.eclipse.persistence.testing.models.jpa.relationships.Mattel;
 import org.eclipse.persistence.testing.models.jpa.relationships.MegaBrands;
 import org.eclipse.persistence.testing.models.jpa.relationships.Namco;
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
+import org.eclipse.persistence.testing.models.jpa.relationships.Order;
+import org.eclipse.persistence.testing.models.jpa.relationships.TestInstantiationCopyPolicy;
 
 public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
     private static Integer itemId;
@@ -45,6 +50,9 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new RelationshipModelJUnitTestSuite("testCreateItem")); 
         suite.addTest(new RelationshipModelJUnitTestSuite("testModifyItem"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testVerifyItem"));
+        suite.addTest(new RelationshipModelJUnitTestSuite("testInstantiationCopyPolicy"));
+        suite.addTest(new RelationshipModelJUnitTestSuite("testCopyPolicy"));
+        suite.addTest(new RelationshipModelJUnitTestSuite("testCloneCopyPolicy"));
 
         return new TestSetup(suite) {
             protected void setUp(){
@@ -156,5 +164,20 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         assertTrue("The distributor of the item was incorrect", item.getDistributor().getName().equals("MegaBrands Inc."));
         
         closeEntityManager(em);
+    }
+    
+    public void testInstantiationCopyPolicy(){
+        assertTrue("The InstantiationCopyPolicy was not properly set.", getServerSession().getDescriptor(Item.class).getCopyPolicy() instanceof InstantiationCopyPolicy);
+    }
+    
+    public void testCopyPolicy(){
+        assertTrue("The CopyPolicy was not properly set.", getServerSession().getDescriptor(Order.class).getCopyPolicy() instanceof TestInstantiationCopyPolicy);
+    }
+    
+    public void testCloneCopyPolicy(){
+        CopyPolicy copyPolicy = getServerSession().getDescriptor(Namco.class).getCopyPolicy();
+        assertTrue("The CloneCopyPolicy was not properly set.", copyPolicy  instanceof CloneCopyPolicy);
+        assertTrue("The method on CloneCopyPolicy was not properly set.", ((CloneCopyPolicy)copyPolicy).getMethodName().equals("cloneNamco"));
+        assertTrue("The workingCopyMethod on CloneCopyPolicy was not properly set.", ((CloneCopyPolicy)copyPolicy).getWorkingCopyMethodName().equals("cloneWorkingCopyNamco"));
     }
 }

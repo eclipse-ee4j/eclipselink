@@ -48,6 +48,7 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.ReadOnlyClass;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
  
 /**
  * JUnit test case(s) for the TopLink EntityMappingsXMLProcessor.
@@ -70,7 +71,10 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         m_persistenceUnit = persistenceUnit;
     }
     
-    public static Test suite(final String persistenceUnit) {
+    public static Test suite() {
+        String ormTesting = TestingProperties.getProperty(TestingProperties.ORM_TESTING, TestingProperties.JPA_ORM_TESTING);
+        final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-advanced";
+
         TestSuite suite = new TestSuite("Advanced Model - " + persistenceUnit);
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testCreateEmployee", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testReadEmployee", persistenceUnit));

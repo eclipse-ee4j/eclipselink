@@ -21,14 +21,33 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.CloneCopyPolicy;
+
 @Entity
 @Table(name="CMP3_NAMCO")
-public class Namco implements Distributor {
+@CloneCopyPolicy(method="cloneNamco", workingCopyMethod="cloneWorkingCopyNamco")
+public class Namco implements Distributor, Cloneable {
     private Integer distributorId;
     private String name;
     
     public Namco() {}
     
+    public Namco clone(){
+        try{
+            return (Namco)super.clone();
+        } catch (CloneNotSupportedException exc){
+            return null;
+        }
+    }
+    
+    public Namco cloneNamco(){
+        return this.clone();
+    }
+    
+    public Namco cloneWorkingCopyNamco(){
+        return this.clone();
+    }
+        
     @Id
     @GeneratedValue(strategy=TABLE, generator="DISTRIBUTOR_TABLE_GENERATOR")
     @Column(name="ID")
@@ -47,4 +66,6 @@ public class Namco implements Distributor {
     public void setName(String name) {
         this.name = name;
     }
+    
+
 }

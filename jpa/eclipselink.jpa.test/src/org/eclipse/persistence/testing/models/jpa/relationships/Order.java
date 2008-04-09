@@ -17,8 +17,11 @@ import static javax.persistence.GenerationType.*;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 
+import org.eclipse.persistence.annotations.CopyPolicy;
+
 @Entity(name="OrderBean")
 @Table(name="CMP3_ORDER")
+@CopyPolicy(org.eclipse.persistence.testing.models.jpa.relationships.TestInstantiationCopyPolicy.class)
 @NamedQuery(
 	name="findAllOrdersByItem",
 	query="SELECT OBJECT(theorder) FROM OrderBean theorder WHERE theorder.item.itemId = :id"

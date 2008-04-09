@@ -67,6 +67,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadat
 import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CopyPolicyMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.inheritance.InheritanceMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
@@ -93,6 +94,11 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.UniqueConstraintMeta
 import org.eclipse.persistence.internal.jpa.metadata.transformers.ReadTransformerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.transformers.WriteTransformerMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CustomCopyPolicyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.copypolicy.InstantiationCopyPolicyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyMetadata;
+
+import org.eclipse.persistence.mappings.converters.ClassInstanceConverter;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -178,6 +184,10 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildReadTransformerDescriptor());
         addDescriptor(buildWriteTransformerDescriptor());
         addDescriptor(buildTransformationDescriptor());
+        
+        addDescriptor(buildCustomCopyPolicyDescriptor());
+        addDescriptor(buildCloneCopyPolicyDescriptor());
+        addDescriptor(buildInstantiationCopyPolicyDescriptor());
 
         // Set the name spaces on all descriptors.
         NamespaceResolver namespaceResolver = new NamespaceResolver();
@@ -602,6 +612,32 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: clone-copy-policy
+     */
+    protected ClassDescriptor buildCloneCopyPolicyDescriptor(){
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(CloneCopyPolicyMetadata.class);
+        
+        XMLDirectMapping methodMapping = new XMLDirectMapping();
+        methodMapping.setAttributeName("methodName");
+        methodMapping.setGetMethodName("getMethodName");
+        methodMapping.setSetMethodName("setMethodName");
+        methodMapping.setXPath("@method");
+        descriptor.addMapping(methodMapping);
+        
+        XMLDirectMapping workingCopyMethodMapping = new XMLDirectMapping();
+        workingCopyMethodMapping.setAttributeName("workingCopyMethodName");
+        workingCopyMethodMapping.setGetMethodName("getWorkingCopyMethodName");
+        workingCopyMethodMapping.setSetMethodName("setWorkingCopyMethodName");
+        workingCopyMethodMapping.setXPath("@working-copy-method");
+        descriptor.addMapping(workingCopyMethodMapping);
+        
+        return descriptor;
+    }
+    
+    
+    /**
+     * INTERNAL:
      * XSD: collection-table
      */
     protected ClassDescriptor buildCollectionTableDescriptor() {
@@ -687,6 +723,24 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getClassAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: copy-policy
+     */
+    protected ClassDescriptor buildCustomCopyPolicyDescriptor(){
+        XMLDescriptor descriptor = new XMLDescriptor();
+        
+        descriptor.setJavaClass(CustomCopyPolicyMetadata.class);
+        XMLDirectMapping classMapping = new XMLDirectMapping();
+        classMapping.setAttributeName("copyPolicyClassName");
+        classMapping.setGetMethodName("getCopyPolicyClassName");
+        classMapping.setSetMethodName("setCopyPolicyClassName");
+        classMapping.setXPath("@class");
+        descriptor.addMapping(classMapping);
         
         return descriptor;
     }
@@ -883,6 +937,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
         descriptor.addMapping(getReadOnlyAttributeMapping());
+        descriptor.addMapping(getCustomCopyPolicyMapping());
+        descriptor.addMapping(getInstantiationCopyPolicyMapping());
+        descriptor.addMapping(getCloneCopyPolicyMapping());
         
         return descriptor;
     }
@@ -1116,6 +1173,16 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         strategyMapping.setXPath("@strategy");
         descriptor.addMapping(strategyMapping);
         
+        return descriptor;
+    }
+
+    /**
+     * INTERNAL:
+     * XSD: instantiation-copy-policy
+     */
+    protected ClassDescriptor buildInstantiationCopyPolicyDescriptor(){
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(InstantiationCopyPolicyMetadata.class);      
         return descriptor;
     }
     
@@ -2056,6 +2123,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLCompositeObjectMapping getCloneCopyPolicyMapping() {
+        XMLCompositeObjectMapping columnMapping = new XMLCompositeObjectMapping();
+        columnMapping.setAttributeName("m_cloneCopyPolicy");
+        columnMapping.setGetMethodName("getCloneCopyPolicy");
+        columnMapping.setSetMethodName("setCloneCopyPolicy");
+        columnMapping.setReferenceClass(CloneCopyPolicyMetadata.class);
+        columnMapping.setXPath("orm:clone-copy-policy");
+        return columnMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLCompositeObjectMapping getCollectionTableMapping() {
     	XMLCompositeObjectMapping collectionTableMapping = new XMLCompositeObjectMapping();
     	collectionTableMapping.setAttributeName("m_collectionTable");
@@ -2102,7 +2182,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     	columnMapping.setXPath("orm:column");
     	return columnMapping;
     }
-    
+       
     /**
      * INTERNAL:
      */
@@ -2126,6 +2206,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         convertMapping.setSetMethodName("setConvert");
         convertMapping.setXPath("orm:convert/text()");
         return convertMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getCustomCopyPolicyMapping() {
+        XMLCompositeObjectMapping columnMapping = new XMLCompositeObjectMapping();
+        columnMapping.setAttributeName("m_customCopyPolicy");
+        columnMapping.setGetMethodName("getCustomCopyPolicy");
+        columnMapping.setSetMethodName("setCustomCopyPolicy");
+        columnMapping.setReferenceClass(CustomCopyPolicyMetadata.class);
+        columnMapping.setXPath("orm:copy-policy");
+        return columnMapping;
     }
     
     /**
@@ -2294,6 +2387,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     	insertableMapping.setSetMethodName("setInsertable");
     	insertableMapping.setXPath("@insertable");
     	return insertableMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getInstantiationCopyPolicyMapping() {
+        XMLCompositeObjectMapping columnMapping = new XMLCompositeObjectMapping();
+        columnMapping.setAttributeName("m_instantiationCopyPolicy");
+        columnMapping.setGetMethodName("getInstantiationCopyPolicy");
+        columnMapping.setSetMethodName("setInstantiationCopyPolicy");
+        columnMapping.setReferenceClass(InstantiationCopyPolicyMetadata.class);
+        columnMapping.setXPath("orm:instantiation-copy-policy");
+        return columnMapping;
     }
     
     /**

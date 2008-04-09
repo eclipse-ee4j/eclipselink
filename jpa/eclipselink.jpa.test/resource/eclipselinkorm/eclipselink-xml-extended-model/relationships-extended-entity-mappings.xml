@@ -48,6 +48,7 @@
     </entity>
     <entity name="XMLExtendedOrder" class="Order" metadata-complete="false">
         <table name="CMP3_XML_ORDER"/>
+        <copy-policy class="org.eclipse.persistence.testing.models.jpa.xml.relationships.TestInstantiationCopyPolicy"/>
         <table-generator name="ORDER_TABLE_GENERATOR" table="CMP3_XML_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="ORDER_SEQ"/>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
@@ -78,6 +79,7 @@
     </entity>
     <entity name="XMLExtendedItem" class="Item" metadata-complete="false">
         <table name="CMP3_XML_ITEM"/>
+        <instantiation-copy-policy/>
         <table-generator name="ITEM_TABLE_GENERATOR" table="CMP3_XML_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="ITEM_SEQ"/>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
@@ -96,14 +98,14 @@
                 <column name="ITEM_VERSION"/>
             </version>
             <variable-one-to-one name="manufacturer"/>
-            <variable-one-to-one name="distributor" target-interface="Distributor" fetch="LAZY">                
+            <variable-one-to-one name="distributor" target-interface="Distributor" fetch="LAZY">
                 <cascade>
                     <cascade-persist/>
                 </cascade>
                 <discriminator-column name="DISTRIBUTOR_TYPE" discriminator-type="INTEGER"/>
                 <discriminator-class discriminator="1" value="MegaBrands"/>
                 <discriminator-class discriminator="2" value="Namco"/> 
-                <join-column name="DISTRIBUTOR_ID" referenced-column-name="distributorId"/>      
+                <join-column name="DISTRIBUTOR_ID" referenced-column-name="distributorId"/>
             </variable-one-to-one>
         </attributes>
     </entity>
@@ -136,6 +138,7 @@
     </entity>
     <entity name="XMLNamco" class="Namco">
         <table name="CMP3_XML_NAMCO"/>
+        <clone-copy-policy method="cloneNamco" working-copy-method="cloneWorkingCopyNamco"/>
         <attributes>
             <id name="distributorId">
                 <column name="ID"/>

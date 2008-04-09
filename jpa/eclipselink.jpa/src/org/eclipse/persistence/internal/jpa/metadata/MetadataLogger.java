@@ -59,6 +59,9 @@ public class MetadataLogger  {
         
     public static final String IGNORE_CHANGE_TRACKING_ANNOTATION = "annotation_warning_ignore_change_tracking";
     public static final String IGNORE_OPTIMISTIC_LOCKING_ANNOTATION = "annotation_warning_ignore_optimistic_locking";
+    
+    public static final String IGNORE_COPY_POLICY_ANNOTATION = "annotation_warning_ignore_copy_policy";
+
         
     /*************************************************************************/
     /*                       GENERIC IGNORE MESSSAGES                        */ 
@@ -76,7 +79,7 @@ public class MetadataLogger  {
     public static final String IGNORE_MAPPED_SUPERCLASS_CUSTOMIZER = "metadata_warning_ignore_mapped_superclass_customizer";
     public static final String IGNORE_MAPPED_SUPERCLASS_READ_ONLY = "metadata_warning_ignore_mapped_superclass_read_only";
     public static final String IGNORE_INHERITANCE_SUBCLASS_READ_ONLY = "metadata_warning_ignore_inheritance_read_only";
-    
+    public static final String IGNORE_EXISTING_COPY_POLICY = "metadata_warning_ignore_existing_copy_policy";   
     /*************************************************************************/
     /*                       GENERIC DEFAULT MESSSAGES                       */ 
     /*************************************************************************/

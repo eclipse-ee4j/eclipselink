@@ -41,6 +41,7 @@ import org.eclipse.persistence.descriptors.invalidation.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedChangeTracking;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -106,6 +107,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected DescriptorQueryManager queryManager;
     protected ObjectBuilder objectBuilder;
     protected CopyPolicy copyPolicy;
+    protected String copyPolicyClassName;
     protected InstantiationPolicy instantiationPolicy;
     protected InheritancePolicy inheritancePolicy;
     protected InterfacePolicy interfacePolicy;
@@ -886,16 +888,21 @@ public class ClassDescriptor implements Cloneable, Serializable {
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Class descriptorClass = null;
         Class amendmentClass = null;
+        CopyPolicy newCopyPolicy = null;
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
                     descriptorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getJavaClassName(), true, classLoader));
                 } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(getAmendmentClassName(), exception.getException());
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(getJavaClassName(), exception.getException());
                 }
             } else {
                 descriptorClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getJavaClassName(), true, classLoader);
             }
+        } catch (ClassNotFoundException exc){
+            throw ValidationException.classNotFoundWhileConvertingClassNames(getJavaClassName(), exc);
+        }
+        try{
             if (getAmendmentClassName() != null){
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
@@ -909,10 +916,44 @@ public class ClassDescriptor implements Cloneable, Serializable {
             }
         } catch (ClassNotFoundException exc){
             throw ValidationException.classNotFoundWhileConvertingClassNames(getAmendmentClassName(), exc);
+        } 
+        try{
+            Class copyPolicyClass = null;
+            if (copyPolicy == null && getCopyPolicyClassName() != null){
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        copyPolicyClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getCopyPolicyClassName(), true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(getCopyPolicyClassName(), exception.getException());
+                   }
+                } else {
+                    copyPolicyClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getCopyPolicyClassName(), true, classLoader);
+                }
+                if (copyPolicyClass != null){
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                        try {
+                            newCopyPolicy = (CopyPolicy)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(copyPolicyClass));
+                        } catch (PrivilegedActionException exception) {
+                            throw ValidationException.classNotFoundWhileConvertingClassNames(getCopyPolicyClassName(), exception.getException());
+                       }
+                    } else {
+                        newCopyPolicy = (CopyPolicy)org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(copyPolicyClass);
+                    }
+                }
+            }
+        } catch (ClassNotFoundException exc){
+            throw ValidationException.classNotFoundWhileConvertingClassNames(getCopyPolicyClassName(), exc);
+        } catch (IllegalAccessException ex){
+            throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), ex);
+        } catch (InstantiationException e){
+            throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), e);   
         }
         setJavaClass(descriptorClass);
         if (amendmentClass != null){
             setAmendmentClass(amendmentClass);
+        }
+        if (newCopyPolicy != null){
+            setCopyPolicy(newCopyPolicy);
         }
         Iterator mappings = getMappings().iterator();
         while (mappings.hasNext()){
@@ -1266,6 +1307,16 @@ public class ClassDescriptor implements Cloneable, Serializable {
             setCopyPolicy(new InstantiationCopyPolicy());
         }
         return copyPolicy;
+    }
+    
+    /**
+     * INTERNAL:
+     * Returns the name of a Class that implements CopyPolicy
+     * Will be instantiatied as a copy policy at initialization times
+     * using the no-args constructor
+     */
+    public String getCopyPolicyClassName(){
+        return copyPolicyClassName;
     }
 
     /**
@@ -2930,6 +2981,16 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (policy != null) {
             policy.setDescriptor(this);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Sets the name of a Class that implements CopyPolicy
+     * Will be instantiatied as a copy policy at initialization times
+     * using the no-args constructor
+     */
+    public void setCopyPolicyClassName(String className) {
+        copyPolicyClassName = className;
     }
     
     /**

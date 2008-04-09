@@ -353,6 +353,11 @@ public class ValidationException extends EclipseLinkException {
     
     public static final int MULTIPLE_CLASSES_FOR_THE_SAME_DISCRIMINATOR = 7294;
     
+    // Copy Policy
+    public static final int COPY_POLICY_MUST_SPECIFY_METHOD_OR_WORKING_COPY_METHOD = 7295;
+    public static final int MULTIPLE_COPY_POLICY_ANNOTATIONS_ON_SAME_CLASS = 7296;   
+
+    public static final int REFLECTIVE_EXCEPTION_WHILE_CREATING_CLASS_INSTANCE = 7297;
     public static final int INVALID_MAPPING_FOR_EMBEDDED_ID = 7298;
     
     
@@ -2577,4 +2582,43 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(WRITE_TRANSFORMER_HAS_NO_COLUMN_NAME);
         return validationException;
     }
+     
+    /**
+     * PUBLIC:
+     * Cause: An annotation or XML document specifies a CloneCopyPolicy, bug does not supply either a method or
+     * working copy method
+     */
+    public static ValidationException copyPolicyMustSpecifyEitherMethodOrWorkingCopyMethod(String className) {
+        Object[] args = { className };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, COPY_POLICY_MUST_SPECIFY_METHOD_OR_WORKING_COPY_METHOD, args));
+        validationException.setErrorCode(COPY_POLICY_MUST_SPECIFY_METHOD_OR_WORKING_COPY_METHOD);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * Cause: An annotation or XML document specifies a CloneCopyPolicy, bug does not supply either a method or
+     * working copy method
+     */
+    public static ValidationException multipleCopyPolicyAnnotationsOnSameClass(String className) {
+        Object[] args = { className };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_COPY_POLICY_ANNOTATIONS_ON_SAME_CLASS, args));
+        validationException.setErrorCode(MULTIPLE_COPY_POLICY_ANNOTATIONS_ON_SAME_CLASS);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * Cause: When deploying a JPA application, an Exception was thrown while reflectively instantiating a
+     * class that was listed in the metadata.  See the chained exception chain for more information.
+     */
+    public static ValidationException reflectiveExceptionWhileCreatingClassInstance(String className, Exception exception) {
+        Object[] args = { className };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, REFLECTIVE_EXCEPTION_WHILE_CREATING_CLASS_INSTANCE, args), exception);
+        validationException.setErrorCode(REFLECTIVE_EXCEPTION_WHILE_CREATING_CLASS_INSTANCE);
+        return validationException;
+    }
+    
 }

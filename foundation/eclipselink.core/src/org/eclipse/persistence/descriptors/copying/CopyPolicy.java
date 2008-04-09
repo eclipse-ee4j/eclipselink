@@ -24,11 +24,16 @@ import org.eclipse.persistence.sessions.*;
  * <p><b>Purpose</b>: Allows customization of how an object is cloned.
  * An implementer of CopyPolicy can be set on a descriptor to provide
  * special cloning routine for how an object is cloned in a unit of work.
+ * 
  * By default the InstantiationCopyPolicy is used which creates a new instance of
  * the class to be copied into.
- * The MethodBasedCopyPolicy can also be used that uses a clone method in the object
+ * 
+ * The CloneCopyPolicy can also be used that uses a clone method in the object
  * to clone the object.  When a clone method is used it avoid the requirement of having to
  * copy over each of the direct attributes.
+ * 
+ * @see org.eclipse.persistence.descriptors.copying.CloneCopyPolicy
+ * @see org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy
  */
 public interface CopyPolicy extends Cloneable, Serializable {
 

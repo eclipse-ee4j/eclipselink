@@ -559,6 +559,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Process @Customizer
         processCustomizer();
+        
+        // Process @CopyPolicy
+        processCopyPolicy();
     }
     
     /**
