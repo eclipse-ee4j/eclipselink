@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="eclipselink-antlr.jar"/>
+	<classpathentry exported="true" kind="lib" path="eclipselink-asm.jar"/>
+	<classpathentry exported="true" kind="lib" path="ant.jar"/>
+	<classpathentry exported="true" kind="lib" path="activation.jar"/>
+	<classpathentry exported="true" kind="lib" path="connector.jar" sourcepath="connector-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="ejb.jar"/>
+	<classpathentry exported="true" kind="lib" path="jms.jar"/>
+	<classpathentry exported="true" kind="lib" path="jsr173_1.0_api.jar"/>
+	<classpathentry exported="true" kind="lib" path="jta.jar" sourcepath="jta-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="mail.jar"/>
+	<classpathentry exported="true" kind="lib" path="persistence.jar" sourcepath="persistence-src.zip"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

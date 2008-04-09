@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<sessions version="10g (10.1.3 )" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<session xsi:type="database-session">
+		<name>SC-EmployeeTest</name>
+
+		<remote-command>
+			<channel>new_channel</channel>
+			<transport xsi:type="jms-topic-transport">
+				<on-connection-error>KeepConnection</on-connection-error>
+				<topic-host-url>ormi://jms_topic_host</topic-host-url>
+				<topic-connection-factory-name>test-topic-connection-factory-name</topic-connection-factory-name>
+				<topic-name>test-topic-name</topic-name>
+				<jndi-naming-service>
+					<url>new_jndi_url</url>
+					<user-name>New_User</user-name>
+					<password>password</password>
+					<initial-context-factory-name>new_initial_context_factory_name</initial-context-factory-name>
+					<property name="name1" value="value1"/>
+					<property name="name2" value="value2"/>
+				</jndi-naming-service>
+			</transport>
+		</remote-command>
+
+		<event-listener-classes>
+			<event-listener-class>java.net.URL</event-listener-class>
+			<event-listener-class>java.lang.Double</event-listener-class>
+		</event-listener-classes>
+
+		<logging xsi:type="eclipselink-log">
+			<log-level>info</log-level>
+			<file-name>EmployeeSessions.log</file-name>
+		</logging>
+		<primary-project xsi:type="class">test.oracle.models.employee.LargeProject</primary-project>
+		<additional-project xsi:type="class">test.oracle.models.employee.Employee</additional-project>
+		<login xsi:type="database-login">
+			<platform-class>org.eclipse.persistence.oraclespecific.Oracle9Platform</platform-class>
+			<user-name>coretest3</user-name>
+			<password>password</password>
+			<driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+			<connection-url>jdbc:oracle:thin:@144.23.214.115:1521:toplink</connection-url>
+		</login>
+
+	</session>
+
+   <session xsi:type="server-session">
+      <name>SC-ServerSessionTest</name>
+
+      <event-listener-classes/>
+      <primary-project xsi:type="xml">C:\My Documents\XMLSchemaSessions.xml</primary-project>
+
+      <login xsi:type="database-login">
+         <platform-class>org.eclipse.persistence.oraclespecific.Oracle9Platform</platform-class>
+         <user-name>tl</user-name>
+         <password>tl</password>
+         <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+         <connection-url>jdbc:oracle:thin:@tlsvrdb1.ca.oracle.com:1521:TOPLINK</connection-url>
+         <byte-array-binding>false</byte-array-binding>
+         <optimize-data-conversion>false</optimize-data-conversion>
+         <trim-strings>false</trim-strings>
+         <jdbc-batch-writing>false</jdbc-batch-writing>
+         <max-batch-writing-size>0</max-batch-writing-size>
+      </login>
+
+      <connection-pools>
+         <read-connection-pool xsi:type="read-connection-pool">
+            <name>ReadConnectionPool</name>
+            <login xsi:type="database-login">
+               <platform-class>org.eclipse.persistence.oraclespecific.Oracle9Platform</platform-class>
+               <user-name>tl</user-name>
+               <password>tl</password>
+               <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+               <connection-url>jdbc:oracle:thin:@tlsvrdb1.ca.oracle.com:1521:TOPLINK</connection-url>
+               <byte-array-binding>false</byte-array-binding>
+               <optimize-data-conversion>false</optimize-data-conversion>
+               <trim-strings>false</trim-strings>
+               <jdbc-batch-writing>false</jdbc-batch-writing>
+               <max-batch-writing-size>0</max-batch-writing-size>
+            </login>
+         </read-connection-pool>
+         <write-connection-pool xsi:type="connection-pool">
+            <name>WriteConnectionPool</name>
+            <login xsi:type="database-login">
+               <platform-class>org.eclipse.persistence.oraclespecific.Oracle9Platform</platform-class>
+               <user-name>tl</user-name>
+               <password>tl</password>
+               <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+               <connection-url>jdbc:oracle:thin:@tlsvrdb1.ca.oracle.com:1521:TOPLINK</connection-url>
+               <byte-array-binding>false</byte-array-binding>
+               <optimize-data-conversion>false</optimize-data-conversion>
+               <trim-strings>false</trim-strings>
+               <jdbc-batch-writing>false</jdbc-batch-writing>
+               <max-batch-writing-size>0</max-batch-writing-size>
+            </login>
+         </write-connection-pool>
+         <connection-pool xsi:type="connection-pool">
+            <name>MyConnectionPool</name>
+            <login xsi:type="database-login">
+               <platform-class>org.eclipse.persistence.oraclespecific.Oracle9Platform</platform-class>
+               <user-name>tl</user-name>
+               <password>tl</password>
+               <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+               <connection-url>jdbc:oracle:thin:@tlsvrdb1.ca.oracle.com:1521:TOPLINK</connection-url>
+               <byte-array-binding>false</byte-array-binding>
+               <optimize-data-conversion>false</optimize-data-conversion>
+               <trim-strings>false</trim-strings>
+               <jdbc-batch-writing>false</jdbc-batch-writing>
+               <max-batch-writing-size>0</max-batch-writing-size>
+            </login>
+         </connection-pool>
+      </connection-pools>
+   </session>
+
+   <session xsi:type="server-session">
+      <name>SC-EisServerSessionTest</name>
+
+      <event-listener-classes/>
+      <primary-project xsi:type="xml">D:\Development\Mapping Workbench\SC Test\resource\SessionsXMLTestModel\XMLSchemaSessions.xml</primary-project>
+      <login xsi:type="eis-login">
+         <platform-class>org.eclipse.persistence.eis.adapters.aq.AQPlatform</platform-class>
+         <connection-spec-class>java.lang.String</connection-spec-class>
+         <connection-factory-url>http://url</connection-factory-url>
+      </login>
+      <connection-pools>
+         <read-connection-pool>
+            <name>ReadConnectionPool</name>
+            <max-connections>2</max-connections>
+            <min-connections>2</min-connections>
+            <login xsi:type="eis-login">
+               <platform-class>org.eclipse.persistence.eis.adapters.aq.AQPlatform</platform-class>
+               <connection-spec-class>java.lang.String</connection-spec-class>
+               <connection-factory-url>http://url</connection-factory-url>
+            </login>
+         </read-connection-pool>
+         <write-connection-pool>
+            <name>WriteConnectionPool</name>
+            <max-connections>10</max-connections>
+            <min-connections>5</min-connections>
+            <login xsi:type="eis-login"/>
+         </write-connection-pool>
+         <connection-pool>
+            <name>WriteConnectionPool</name>
+            <max-connections>10</max-connections>
+            <min-connections>5</min-connections>
+            <login xsi:type="eis-login"/>
+         </connection-pool>
+         <connection-pool>
+            <name>MyConnectionPool</name>
+            <max-connections>2</max-connections>
+            <min-connections>2</min-connections>
+            <login xsi:type="eis-login">
+               <connection-spec-class>java.lang.String</connection-spec-class>
+               <connection-factory-url>http://url</connection-factory-url>
+            </login>
+         </connection-pool>
+      </connection-pools>
+   </session>
+
+   <session xsi:type="session-broker">
+     <name>SC-SessionBrokerTest</name>
+
+     <session-name>SC-SessionTest</session-name>
+   </session>
+
+	<session xsi:type="database-session">
+		<name>SC-SessionTest</name>
+
+		<remote-command>
+			<channel>new_channel</channel>
+			<transport xsi:type="jms-topic-transport">
+				<on-connection-error>KeepConnection</on-connection-error>
+				<topic-host-url>ormi://jms_topic_host</topic-host-url>
+				<topic-connection-factory-name>test-topic-connection-factory-name</topic-connection-factory-name>
+				<topic-name>test-topic-name</topic-name>
+				<jndi-naming-service>
+					<url>new_jndi_url</url>
+					<user-name>New_User</user-name>
+					<password>password</password>
+					<initial-context-factory-name>new_initial_context_factory_name</initial-context-factory-name>
+					<property name="name1" value="value1"/>
+					<property name="name2" value="value2"/>
+				</jndi-naming-service>
+			</transport>
+		</remote-command>
+
+		<event-listener-classes>
+			<event-listener-class>java.net.URL</event-listener-class>
+			<event-listener-class>java.lang.Double</event-listener-class>
+		</event-listener-classes>
+
+		<logging xsi:type="eclipselink-log">
+			<log-level>info</log-level>
+			<file-name>EmployeeSessions.log</file-name>
+		</logging>
+		<primary-project xsi:type="class">test.oracle.models.employee.LargeProject</primary-project>
+		<additional-project xsi:type="class">test.oracle.models.employee.Employee</additional-project>
+		<login xsi:type="database-login">
+			<platform-class>org.eclipse.persistence.oraclespecific.Oracle9Platform</platform-class>
+			<user-name>coretest3</user-name>
+			<password>password</password>
+			<driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
+			<connection-url>jdbc:oracle:thin:@144.23.214.115:1521:toplink</connection-url>
+		</login>
+
+	</session>
+
+</sessions>

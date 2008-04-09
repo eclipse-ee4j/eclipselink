@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.complexinheritance.Bicycle</name>
+   <class-handle>
+      <type-name>test.oracle.models.complexinheritance.Bicycle</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>Bicycle</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy/>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>VEHICLE</column-table-name>
+               <column-name>ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="direct-to-field">
+         <name>description</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexinheritance.Bicycle</attribute-declaring-type-name>
+            <attribute-name>description</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>VEHICLE</column-table-name>
+            <column-name>BICY_DES</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="relational-direct-collection">
+         <name>partNumbers</name>
+         <inherited>true</inherited>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.complexinheritance.Vehicle</attribute-declaring-type-name>
+            <attribute-name>partNumbers</attribute-name>
+         </attribute-handle>
+         <target-table-handle>
+            <table-name>PARTNUMS</table-name>
+         </target-table-handle>
+         <direct-value-column-handle>
+            <column-table-name>PARTNUMS</column-table-name>
+            <column-name>PART_NUM</column-name>
+         </direct-value-column-handle>
+         <reference-handle>
+            <reference-table-name>PARTNUMS</reference-table-name>
+            <reference-name>PARTNUMS_VEHICLE</reference-name>
+         </reference-handle>
+         <container-policy type="list">
+            <container-class>
+               <uses-default-container-class>true</uses-default-container-class>
+            </container-class>
+         </container-policy>
+      </mapping>
+   </mappings>
+   <inherited-attribute-handles>
+      <attribute-handle>
+         <attribute-declaring-type-name>test.oracle.models.complexinheritance.Vehicle</attribute-declaring-type-name>
+         <attribute-name>partNumbers</attribute-name>
+      </attribute-handle>
+   </inherited-attribute-handles>
+   <inheritance-policy type="relational">
+      <is-root>false</is-root>
+      <parent-descriptor-handle>
+         <descriptor-name>test.oracle.models.complexinheritance.NonFueledVehicle</descriptor-name>
+      </parent-descriptor-handle>
+      <read-subclasses-on-query>false</read-subclasses-on-query>
+   </inheritance-policy>
+   <primary-table-handle>
+      <table-name>VEHICLE</table-name>
+   </primary-table-handle>
+</descriptor>

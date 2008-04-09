@@ -1,0 +1,8 @@
+<employee id="123">
+    	<mailing-address type="home" test="456">
+			<somethingelse name="aaa"/>
+		</mailing-address>
+    	<mailing-address type="work" test="123">
+			<somethingelse name="aaa"/>
+		</mailing-address>
+</employee>

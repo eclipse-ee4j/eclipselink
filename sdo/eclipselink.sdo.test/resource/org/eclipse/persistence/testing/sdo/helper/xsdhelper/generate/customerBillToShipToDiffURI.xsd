@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.url1" xmlns="my.url1" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="my.uri2">
+   <xsd:import schemaLocation="address.xsd" namespace="my.uri2"/>
+   <xsd:import schemaLocation="phone.xsd" namespace="my.uri2"/>
+   <xsd:complexType name="CustomerType">
+      <xsd:sequence>
+         <xsd:element name="billToType" type="ns0:AddressType" minOccurs="0"/>
+         <xsd:element name="shipToType" type="ns0:AddressType" minOccurs="0"/>
+         <xsd:element name="phoneType" type="ns0:PhoneType" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="customerType" type="CustomerType"/>
+</xsd:schema>

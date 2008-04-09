@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:customer xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:firstName>Jane</ns0:firstName>
+   <ns0:lastName>Smith</ns0:lastName>
+</ns0:customer>

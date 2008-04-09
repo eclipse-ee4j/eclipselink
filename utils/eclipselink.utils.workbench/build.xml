@@ -1,0 +1,657 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the terms of
+* the Eclipse Public License v1.0, which accompanies this distribution and is available at
+* http://www.eclipse.org/legal/epl-v10.html.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
+
+<project name="Build All EclipseLink Mapping Workbench" default="all" basedir=".">
+
+    <!-- =================================================================== -->
+    <!--  High level targets                                                 -->
+    <!-- =================================================================== -->
+	
+    <target name="all"  depends="clean, build"/>
+
+    <target name="clean"  depends="clean.iconlib, 
+                                   clean.utility,
+                                   clean.platformsmodel,
+                                   clean.mappingsmodel,
+                                   clean.mappingsio,
+                                   clean.uitools, 
+                                   clean.framework, 
+                                   clean.platformsplugin,
+                                   clean.mappingsplugin, 
+                                   clean.scplugin, 
+                                   clean.workbench"/>
+                                            
+    <target name="clean.utility"         depends="clean.utility.nondebug, clean.utility.debug"/>
+    <target name="clean.uitools"         depends="clean.uitools.nondebug, clean.uitools.debug"/>
+    <target name="clean.platformsmodel"  depends="clean.platformsmodel.nondebug, clean.platformsmodel.debug"/>
+    <target name="clean.mappingsmodel"   depends="clean.mappingsmodel.nondebug, clean.mappingsmodel.debug"/>
+    <target name="clean.mappingsio"      depends="clean.mappingsio.nondebug, clean.mappingsio.debug"/>
+    <target name="clean.framework"       depends="clean.framework.nondebug, clean.framework.debug"/>
+    <target name="clean.platformsplugin" depends="clean.platformsplugin.nondebug, clean.platformsplugin.debug"/>
+    <target name="clean.mappingsplugin"  depends="clean.mappingsplugin.nondebug, clean.mappingsplugin.debug"/>
+    <target name="clean.scplugin"        depends="clean.scplugin.nondebug, clean.scplugin.debug"/>
+    <target name="clean.workbench"       depends="clean.workbench.nondebug, clean.workbench.debug"/>
+
+    <target name="build"  depends="build.iconlib, 
+                                   build.utility,
+                                   build.platformsmodel,
+                                   build.mappingsmodel,
+                                   build.mappingsio, 
+                                   build.uitools, 
+                                   build.framework, 
+                                   build.platformsplugin,
+                                   build.mappingsplugin, 
+                                   build.scplugin, 
+                                   build.workbench"/>
+                                            
+    <target name="build.utility"         depends="build.utility.nondebug, build.utility.debug"/>
+    <target name="build.platformsmodel"  depends="build.platformsmodel.nondebug, build.platformsmodel.debug"/>
+    <target name="build.mappingsmodel"   depends="build.mappingsmodel.nondebug, build.mappingsmodel.debug"/>
+    <target name="build.mappingsio"      depends="build.mappingsio.nondebug, build.mappingsio.debug"/>
+    <target name="build.uitools"         depends="build.uitools.nondebug, build.uitools.debug"/>
+    <target name="build.framework"       depends="build.framework.nondebug, build.framework.debug"/>
+    <target name="build.platformsplugin" depends="build.platformsplugin.nondebug, build.platformsplugin.debug"/>
+    <target name="build.mappingsplugin"  depends="build.mappingsplugin.nondebug, build.mappingsplugin.debug"/>
+    <target name="build.scplugin"        depends="build.scplugin.nondebug, build.scplugin.debug"/>
+    <target name="build.workbench"       depends="build.workbench.nondebug, build.workbench.debug"/>
+
+
+    <!-- =================================================================== -->
+    <!--  Initialization                                                     -->
+    <!-- =================================================================== -->
+
+    <target name="init">
+        <tstamp>
+            <format property="_TodayMD" pattern="MMdd"/>
+            <format property="_TodayDMonthY" pattern="dd, MMMMM yyyy"/>
+            <format property="BldDate" pattern="yyMMdd"/>
+            <format property="BldTime" pattern="HHmm"/>
+            <format property="CurYear" pattern="yyyy"/>
+        </tstamp>
+        <property environment="env"/>
+
+        <property name="_stop_on_err" value="false"/>
+        <property name="_optimize"    value="off"/>
+        <property name="_deprecation" value="off"/>
+        <property name="_debug"       value="on"/>
+        <property name="_targetjvm"   value="1.5"/>
+
+        <echo message="BldDate.BldTime='${BldDate}.${BldTime}'"/>
+        <echo message="java.version='${java.version}'"/>
+        <echo message="os.name='${os.name}'"/>
+        <echo message="os.arch='${os.arch}'"/>
+        <echo message="os.version='${os.version}'"/>
+        <echo message="_stop_on_err='${_stop_on_err}'"/>
+        <echo message="_optimize='${_optimize}'"/>
+        <echo message="_deprecation='${_deprecation}'"/>
+        <echo message="_targetjvm='${_targetjvm}'"/>
+        <echo message="java_home=${java.home}/.."/>
+        <property file="build.properties"/>
+        <mkdir dir="${_buildLogDir}"/>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!--  Clean Non-Debug                                                    -->
+    <!-- =================================================================== -->
+
+    <target name="clean.iconlib">
+        <antcall target="call.clean.iconlib"/>
+    </target>
+
+    <target name="clean.utility.nondebug">
+        <antcall target="call.clean.utility"/>
+    </target>
+
+    <target name="clean.uitools.nondebug">
+        <antcall target="call.clean.uitools"/>
+    </target>
+
+    <target name="clean.framework.nondebug">
+        <antcall target="call.clean.framework"/>
+    </target>
+
+    <target name="clean.platformsmodel.nondebug">
+        <antcall target="call.clean.platformsmodel"/>
+    </target>
+
+    <target name="clean.platformsplugin.nondebug">
+        <antcall target="call.clean.platformsplugin"/>
+    </target>
+
+    <target name="clean.mappingsmodel.nondebug">
+        <antcall target="call.clean.mappingsmodel"/>
+    </target>
+
+    <target name="clean.mappingsio.nondebug">
+        <antcall target="call.clean.mappingsio"/>
+    </target>
+
+    <target name="clean.mappingsplugin.nondebug">
+        <antcall target="call.clean.mappingsplugin"/>
+    </target>
+
+    <target name="clean.scplugin.nondebug">
+        <antcall target="call.clean.scplugin"/>
+    </target>
+
+    <target name="clean.workbench.nondebug" depends="init">
+        <delete file="${libDir}/${mwcore.jarfile}"/>
+        <delete file="${libDir}/${workbench.jarfile}"/>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!--  Clean Debug                                                        -->
+    <!-- =================================================================== -->
+
+    <target name="clean.utility.debug">
+        <antcall target="call.clean.utility">
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean.uitools.debug">
+        <antcall target="call.clean.uitools">
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean.framework.debug">
+        <antcall target="call.clean.framework">
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean.platformsmodel.debug">
+        <antcall target="call.clean.platformsmodel">
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean.platformsplugin.debug">
+        <antcall target="call.clean.platformsplugin">
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean.mappingsmodel.debug">
+        <antcall target="call.clean.mappingsmodel">
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean.mappingsio.debug">
+        <antcall target="call.clean.mappingsio">
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean.mappingsplugin.debug">
+        <antcall target="call.clean.mappingsplugin">
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean.scplugin.debug">
+        <antcall target="call.clean.scplugin">
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="clean.workbench.debug" depends="init">
+        <delete file="${libDir}/${mwcore_g.jarfile}"/>
+        <delete file="${libDir}/${workbench_g.jarfile}"/>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!--  Clean Calls                                                        -->
+    <!-- =================================================================== -->
+
+    <target name="call.clean.iconlib" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${iconlibDir}"
+            target="clean">
+        </ant>
+    </target>
+
+    <target name="call.clean.utility" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${utilityDir}"
+            target="clean">
+        </ant>
+    </target>
+
+    <target name="call.clean.uitools" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${uitoolsDir}"
+            target="clean">
+        </ant>
+    </target>
+
+    <target name="call.clean.framework" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${frameworkDir}"
+            target="clean">
+        </ant>
+    </target>
+
+    <target name="call.clean.platformsmodel" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${platformsmodelDir}"
+            target="clean">
+        </ant>
+    </target>
+
+    <target name="call.clean.platformsplugin" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${platformspluginDir}"
+            target="clean">
+        </ant>
+    </target>
+
+    <target name="call.clean.mappingsmodel" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${mappingsmodelDir}"
+            target="clean">
+        </ant>
+    </target>
+
+    <target name="call.clean.mappingsio" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${mappingsioDir}"
+            target="clean">
+        </ant>
+    </target>
+
+    <target name="call.clean.mappingsplugin" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${mappingspluginDir}"
+            target="clean">
+        </ant>
+    </target>
+
+    <target name="call.clean.scplugin" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${scpluginDir}"
+            target="clean">
+        </ant>
+    </target>
+
+
+	<!-- =================================================================== -->
+    <!--  Build Non-Debug                                                    -->
+    <!-- =================================================================== -->
+
+    <target name="dev"  depends="build.iconlib, 
+                                 build.utility.nondebug,
+    	                         build.platformsmodel.nondebug,
+                                 build.mappingsmodel.nondebug, 
+                                 build.mappingsio.nondebug,  
+                                 build.uitools.nondebug, 
+                                 build.framework.nondebug,
+                                 build.platformsplugin.nondebug, 
+                                 build.mappingsplugin.nondebug, 
+                                 build.scplugin.nondebug,
+                                 build.workbench.nondebug"/>
+
+    <target name="build.iconlib"   depends="call.build.all.iconlib"/>
+
+    <target name="build.utility.nondebug">
+        <antcall target="call.build.all.utility">
+                <param name="_log" value="utility.log"/>
+        </antcall>
+    </target>
+
+    <target name="build.uitools.nondebug">
+        <antcall target="call.build.all.uitools">
+                <param name="_log" value="uitools.log"/>
+        </antcall>
+    </target>
+
+    <target name="build.framework.nondebug">
+        <antcall target="call.build.all.framework">
+                <param name="_log" value="framework.log"/>
+        </antcall>
+    </target>
+
+    <target name="build.platformsmodel.nondebug">
+        <antcall target="call.build.all.platformsmodel">
+                <param name="_log" value="platformsmodel.log"/>
+        </antcall>
+    </target>
+
+    <target name="build.platformsplugin.nondebug">
+        <antcall target="call.build.all.platformsplugin">
+                <param name="_log" value="platformsplugin.log"/>
+        </antcall>
+    </target>
+
+    <target name="build.mappingsmodel.nondebug">
+        <antcall target="call.build.all.mappingsmodel">
+                <param name="_log" value="mappingsmodel.log"/>
+        </antcall>
+    </target>
+
+    <target name="build.mappingsio.nondebug">
+        <antcall target="call.build.all.mappingsio">
+                <param name="_log" value="mappingsio.log"/>
+        </antcall>
+    </target>
+
+    <target name="build.mappingsplugin.nondebug">
+        <antcall target="call.build.all.mappingsplugin">
+                <param name="_log" value="mappingsplugin.log"/>
+        </antcall>
+    </target>
+
+    <target name="build.scplugin.nondebug">
+        <antcall target="call.build.all.scplugin">
+                <param name="_log" value="scplugin.log"/>
+        </antcall>
+    </target>
+
+    <target name="build.workbench.nondebug" depends="jar.mwcore, jar.workbench"/>
+
+
+	<!-- =================================================================== -->
+    <!--  Build Debug                                                        -->
+    <!-- =================================================================== -->
+
+    <target name="dev_g"  depends="build.iconlib,
+                                   build.utility.debug, 
+    	                           build.platformsmodel.debug,
+                                   build.mappingsmodel.debug, 
+                                   build.mappingsio.debug, 
+                                   build.uitools.debug, 
+                                   build.framework.debug,
+                                   build.platformsplugin.debug, 
+                                   build.mappingsplugin.debug,
+                                   build.scplugin.debug, 
+                                   build.workbench.debug"/>
+
+    <target name="build.utility.debug">
+        <antcall target="call.build.all.utility">
+                <param name="_log" value="utility_g.log"/>
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build.uitools.debug">
+        <antcall target="call.build.all.uitools">
+                <param name="_log" value="uitools_g.log"/>
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build.framework.debug">
+        <antcall target="call.build.all.framework">
+                <param name="_log" value="framework_g.log"/>
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build.platformsmodel.debug">
+        <antcall target="call.build.all.platformsmodel">
+                <param name="_log" value="platformsmodel_g.log"/>
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build.platformsplugin.debug">
+        <antcall target="call.build.all.platformsplugin">
+                <param name="_log" value="platformsplugin_g.log"/>
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build.mappingsmodel.debug">
+        <antcall target="call.build.all.mappingsmodel">
+                <param name="_log" value="mappingsmodel_g.log"/>
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build.mappingsio.debug">
+        <antcall target="call.build.all.mappingsio">
+                <param name="_log" value="mappingsio_g.log"/>
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build.mappingsplugin.debug">
+        <antcall target="call.build.all.mappingsplugin">
+                <param name="_log" value="mappingsplugin_g.log"/>
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build.scplugin.debug">
+        <antcall target="call.build.all.scplugin">
+                <param name="_log" value="scplugin_g.log"/>
+                <param name="_g" value="debug"/>
+        </antcall>
+    </target>
+
+    <target name="build.workbench.debug" depends="jar.mwcore_g, jar.workbench_g"/>
+
+
+	<!-- =================================================================== -->
+    <!--  Build Calls                                                        -->
+    <!-- =================================================================== -->
+
+    <target name="call.build.all.iconlib" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${iconlibDir}"
+            target="build.all"
+            output="${_buildLogDir}\iconlib.log">
+        </ant>
+    </target>
+
+    <target name="call.build.all.utility" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${utilityDir}"
+            target="build.all"
+            output="${_buildLogDir}\${_log}">
+        </ant>
+    </target>
+
+     <target name="call.build.all.uitools" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${uitoolsDir}"
+            target="build.all"
+            output="${_buildLogDir}\${_log}">
+        </ant>
+    </target>
+
+     <target name="call.build.all.framework" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${frameworkDir}"
+            target="build.all"
+            output="${_buildLogDir}\${_log}">
+        </ant>
+    </target>
+
+    <target name="call.build.all.platformsmodel" unless="build.failed" depends="init">
+       <ant
+           antfile="build.xml"
+           dir="${platformsmodelDir}"
+           target="build.all"
+           output="${_buildLogDir}\${_log}">
+       </ant>
+   </target>
+
+    <target name="call.build.all.platformsplugin" unless="build.failed" depends="init">
+       <ant
+           antfile="build.xml"
+           dir="${platformspluginDir}"
+           target="build.all"
+           output="${_buildLogDir}\${_log}">
+       </ant>
+   </target>
+
+    <target name="call.build.all.mappingsmodel" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${mappingsmodelDir}"
+            target="build.all"
+            output="${_buildLogDir}\${_log}">
+        </ant>
+    </target>
+
+    <target name="call.build.all.mappingsio" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${mappingsioDir}"
+            target="build.all"
+            output="${_buildLogDir}\${_log}">
+        </ant>
+    </target>
+
+    <target name="call.build.all.mappingsplugin" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${mappingspluginDir}"
+            target="build.all"
+            output="${_buildLogDir}\${_log}">
+        </ant>
+    </target>
+
+    <target name="call.build.all.scplugin" unless="build.failed" depends="init">
+        <ant
+            antfile="build.xml"
+            dir="${scpluginDir}"
+            target="build.all"
+            output="${_buildLogDir}\${_log}">
+        </ant>
+    </target>
+	
+
+    <!-- =================================================================== -->
+    <!--  misc                                                               -->
+    <!-- =================================================================== -->
+
+    <target name="compile.results" unless="build.failed" depends="init">
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!--  JARs                                                               -->
+    <!-- =================================================================== -->
+
+    <target name="jar.mwcore" depends="init">
+        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <jar jarfile="${libDir}/${mwcore.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="${_VendorString}" />
+                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Implementation-Title" value="${workbenchcore.manifest.basepackage}" />
+                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Vendor" value="${_VendorString}" />
+                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Library-Designation" value="${workbenchcore.manifest.libraryName}" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="utility.jar"/>
+                <include name="platformsmodel.jar"/>
+                <include name="mappingsmodel.jar"/>
+                <include name="mappingsio.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+    
+    <target name="jar.mwcore_g" depends="init">
+        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <jar jarfile="${libDir}/${mwcore_g.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="${_VendorString}" />
+                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Implementation-Title" value="${workbenchcore.manifest.basepackage}" />
+                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Vendor" value="${_VendorString}" />
+                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Library-Designation" value="${workbenchcore.manifest.libraryName} (debug)" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="utility_g.jar"/>
+                <include name="platformsmodel_g.jar"/>
+                <include name="mappingsmodel_g.jar"/>
+                <include name="mappingsio_g.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+
+    <target name="jar.workbench" depends="init">
+        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <jar jarfile="${libDir}/${workbench.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="${_VendorString}" />
+                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Implementation-Title" value="${workbench.manifest.basepackage}" />
+                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Vendor" value="${_VendorString}" />
+                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Library-Designation" value="${workbench.manifest.libraryName}" />
+                <attribute name="Main-Class" value="${workbench.manifest.mainclass}" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="iconlib.jar"/>
+                <include name="uitools.jar"/>
+                <include name="framework.jar"/>
+                <include name="platformsplugin.jar"/>
+                <include name="mappingsplugin.jar"/>
+                <include name="scplugin.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+    
+    <target name="jar.workbench_g" depends="init">
+        <echo message="Implementation-Version: ${_VersionStamp}.${_buildNumber}"/>
+        <jar jarfile="${libDir}/${workbench_g.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="${_VendorString}" />
+                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Implementation-Title" value="${workbench.manifest.basepackage}" />
+                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" />
+                <attribute name="Implementation-Vendor" value="${_VendorString}" />
+                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Library-Designation" value="${workbench.manifest.libraryName} (debug)" />
+                <attribute name="Main-Class" value="${workbench.manifest.mainclass}" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="iconlib.jar"/>
+                <include name="uitools_g.jar"/>
+                <include name="framework_g.jar"/>
+                <include name="platformsplugin_g.jar"/>
+                <include name="mappingsplugin_g.jar"/>
+                <include name="scplugin_g.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+
+</project>

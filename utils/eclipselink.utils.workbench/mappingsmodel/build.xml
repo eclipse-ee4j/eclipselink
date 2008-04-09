@@ -1,0 +1,147 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the terms of
+* the Eclipse Public License v1.0, which accompanies this distribution and is available at
+* http://www.eclipse.org/legal/epl-v10.html.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
+
+<project name="Build Mappings Model" default="build.all" basedir=".">
+    <!-- =================================================================== -->
+    <target name="init">
+        <tstamp>
+            <format property="BldDate" pattern="yyMMdd"/>
+            <format property="BldTime" pattern="HHmm"/>
+        </tstamp>
+        <property environment="env"/>
+
+        <property name="_stop_on_err" value="false"/>
+        <property name="_optimize"    value="off"/>
+        <property name="_deprecation" value="off"/>
+        <property name="_debug"       value="on"/>
+        <property name="_targetjvm"   value="1.5"/>
+        <echo message="BldDate.BldTime='${BldDate}.${BldTime}'"/>
+        <echo message="java.version='${java.version}'"/>
+        <echo message="os.name='${os.name}'"/>
+        <echo message="os.arch='${os.arch}'"/>
+        <echo message="os.version='${os.version}'"/>
+        <echo message="_stop_on_err='${_stop_on_err}'"/>
+        <echo message="_optimize='${_optimize}'"/>
+        <echo message="_deprecation='${_deprecation}'"/>
+        <echo message="_targetjvm='${_targetjvm}'"/>
+    </target>
+    <!-- =================================================================== -->
+    <!-- =================================================================== -->
+    <target name="set.release" unless="_g" depends="init">
+        <property name="debugPostfix" value=""/>
+        <property name="_debuglvl"     value="lines,source"/>
+        <property name="_debugOff"    value="true"/>
+        <echo message="_debuglvl='${_debuglvl}'"/>
+        <echo message="_debugOff='${_debugOff}'"/>
+        <echo message="debugPostfix='${debugPostfix}'"/>
+    </target>
+
+    <target name="set.debug" if="_g" depends="set.release">
+        <property name="debugPostfix" value="_g"/>
+        <property name="_debuglvl"     value="lines,vars,source"/>
+        <echo message="_debuglvl='${_debuglvl}'"/>
+        <echo message="_debugOff not defined."/>
+        <echo message="debugPostfix='${debugPostfix}'"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- =================================================================== -->
+
+    <target name="build.all" depends="compile.mappingsmodel, jar.mappingsmodel"/>
+
+
+    <!-- =================================================================== -->
+    <!--  Properties                                                         -->
+    <!-- =================================================================== -->
+    <target name="_properties.init" depends="set.debug">
+        <property file="build.properties"/>
+        <mkdir dir="${_classesDestDir}"/>
+        <mkdir dir="${_jarDestDir}"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Clean                                                              -->
+    <!-- =================================================================== -->
+    <target name="clean" depends="set.debug">
+        <property file="build.properties"/>
+
+        <delete dir="${_classesDestDir}" includeEmptyDirs="true" quiet="true"/>
+        <delete file="${_jarDestDir}/${mappingsmodel.jarfile}" quiet="true"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Compile                                                            -->
+    <!-- =================================================================== -->
+    <target name="compile.mappingsmodel" depends="_properties.init">
+        <mkdir dir="${compile.mappingsmodel.destdir}"/>
+        <javac
+            classpath="${compile.mappingsmodel.classpath}"
+            srcdir="${compile.mappingsmodel.srcdir}"
+            destdir="${compile.mappingsmodel.destdir}"
+            debug="${_debug}"
+            debuglevel="${_debuglvl}"
+            failonerror="${_stop_on_err}"
+            optimize="${_optimize}"
+            deprecation="${_deprecation}"
+            target="${_targetjvm}"
+            includes="**/*.java"
+            excludes="**/*&#35;*/**, **/.ade_path/**"
+        />
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Jar                                                                -->
+    <!-- =================================================================== -->
+    <target name="jar.mappingsmodel" depends="jar.mappingsmodel.lib, jar.mappingsmodel.src"/>
+
+    <target name="jar.mappingsmodel.lib" if="_debugOff" depends="_properties.init">
+        <delete file="${_jarDestDir}/${mappingsmodel.jarfile}"/>
+        <jar jarfile="${_jarDestDir}/${mappingsmodel.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
+                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Implementation-Title" value="org.eclipse.persistence.workbench.mappingsmodel" />
+                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" /> 
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
+                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Library-Designation" value="${_LibraryName}" />
+            </manifest>
+            <fileset
+                dir="${compile.mappingsmodel.destdir}"
+                includes="**/*.class"
+            />
+        </jar>
+    </target>
+    <target name="jar.mappingsmodel.src" unless="_debugOff" depends="_properties.init">
+        <delete file="${_jarDestDir}/${mappingsmodel.jarfile}"/>
+        <jar jarfile="${_jarDestDir}/${mappingsmodel.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
+                <attribute name="Specification-Version" value="${_VersionStamp}" />
+                <attribute name="Implementation-Title" value="org.eclipse.persistence.workbench.mappingsmodel" />
+                <attribute name="Implementation-Version" value="${_VersionStamp}.${_buildNumber}" /> 
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
+                <attribute name="Release-Designation" value="${_releaseVersion}" />
+                <attribute name="Library-Designation" value="${_LibraryName} (debug)" />
+            </manifest>
+            <fileset
+                dir="${compile.mappingsmodel.destdir}"
+                includes="**/*.class"
+            />
+            <fileset
+                dir="${compile.mappingsmodel.srcdir}"
+                includes="**/*.java"
+                excludes="**/*&#35;*/**, **/.ade_path/**"
+            />
+        </jar>
+    </target>
+
+</project>

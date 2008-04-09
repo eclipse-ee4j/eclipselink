@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  jaxb:version="1.0" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb">
+
+	<xs:group name="G1">
+		<xs:annotation>
+			<xs:appinfo>
+				<jaxb:class name="period"/>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="startDate" type="xs:date"/>
+			<xs:element name="endDate" type="xs:date"/>
+		</xs:sequence>
+	</xs:group>
+
+	<xs:element name="employee">
+		<xs:complexType>
+			<xs:group ref="G1"/>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

@@ -1,0 +1,56 @@
+<project name="Eclipse Persistence Services" default="all" basedir=".">
+
+    <property file="${user.home}/build.properties"/>
+    <property file="build.properties"/>
+
+    <available file="${eclipselink.jpa}/${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
+
+    <target name="config-trunk" if="is.trunk">
+        <path id="compile.path">
+            <pathelement path="${eclipselink.jpa}/${eclipselink.core.lib.trunk}/eclipselink-antlr.jar"/>
+            <pathelement path="${eclipselink.jpa}/${eclipselink.core.lib.trunk}/eclipselink-asm.jar"/>
+            <pathelement path="${eclipselink.jpa}/${eclipselink.core.trunk}/${classes.dir}"/>
+            <fileset
+                dir="${eclipselink.jpa}/${eclipselink.core.lib.trunk}"
+                includes="${eclipselink.core.depend}"/>
+        </path>
+    </target>
+
+    <target name="config-flat" unless="is.trunk">
+        <path id="compile.path">
+            <pathelement path="${eclipselink.core.lib}/eclipselink-antlr.jar"/>
+            <pathelement path="${eclipselink.core.lib}/eclipselink-asm.jar"/>
+            <pathelement path="${eclipselink.core}/${classes.dir}"/>
+            <fileset
+                dir="${eclipselink.core.lib}"
+                includes="${eclipselink.core.depend}"/>
+        </path>
+    </target>
+
+    <!-- all -->
+    <target name="all" depends="clean, compile" description="build core classes"/>
+
+    <!-- compile --> 
+    <target name="compile" depends="config-trunk, config-flat" description="compile EclipseLink JPA">
+        <mkdir dir="${eclipselink.jpa}/${classes.dir}"/>
+        <javac srcdir="${eclipselink.jpa}/${src.dir}" 
+               destdir="${eclipselink.jpa}/${classes.dir}"
+               includes="org/eclipse/persistence/**"
+               debug="${javac.debug}" 
+               optimize="${javac.optimize}"
+               source="1.5" 
+               deprecation="${javac.deprecation}"
+               failonerror="true">
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.jpa}/${classes.dir}/org"/>
+        </delete>
+    </target>
+
+</project>

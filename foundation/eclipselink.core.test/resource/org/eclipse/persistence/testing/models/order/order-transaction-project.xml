@@ -1,0 +1,62 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<eclipselink:object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:eclipselink="http://xmlns.oracle.com/ias/xsds/eclipselink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <eclipselink:name>OrderTransaction</eclipselink:name>
+   <eclipselink:class-mapping-descriptors>
+      <eclipselink:class-mapping-descriptor xsi:type="eclipselink:relational-class-mapping-descriptor">
+         <eclipselink:class>org.eclipse.persistence.testing.models.order.OrderTransaction</eclipselink:class>
+         <eclipselink:alias>OrderTransaction</eclipselink:alias>
+         <eclipselink:primary-key>
+            <eclipselink:field table="ORDER_TRANS" name="TRANS_ID" xsi:type="eclipselink:column"/>
+         </eclipselink:primary-key>
+         <eclipselink:events xsi:type="eclipselink:event-policy"/>
+         <eclipselink:querying xsi:type="eclipselink:query-policy"/>
+         <eclipselink:attribute-mappings>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>id</eclipselink:attribute-name>
+               <eclipselink:field table="ORDER_TRANS" name="TRANS_ID" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:one-to-one-mapping">
+               <eclipselink:attribute-name>order</eclipselink:attribute-name>
+               <eclipselink:reference-class>org.eclipse.persistence.testing.models.order.Order</eclipselink:reference-class>
+               <eclipselink:private-owned>true</eclipselink:private-owned>
+               <eclipselink:foreign-key>
+                  <eclipselink:field-reference>
+                     <eclipselink:source-field table="ORDER_TRANS" name="ORDER_ID" xsi:type="eclipselink:column"/>
+                     <eclipselink:target-field table="ORDER" name="@ORDER_ID" xsi:type="eclipselink:column"/>
+                  </eclipselink:field-reference>
+               </eclipselink:foreign-key>
+               <eclipselink:foreign-key-fields>
+                  <eclipselink:field table="ORDER_TRANS" name="ORDER_ID" xsi:type="eclipselink:column"/>
+               </eclipselink:foreign-key-fields>
+               <eclipselink:indirection xsi:type="eclipselink:value-holder-indirection-policy"/>
+               <eclipselink:selection-query xsi:type="eclipselink:read-object-query"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>transactionDate</eclipselink:attribute-name>
+               <eclipselink:field table="ORDER_TRANS" name="TRANS_DATE" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+            <eclipselink:attribute-mapping xsi:type="eclipselink:direct-mapping">
+               <eclipselink:attribute-name>user</eclipselink:attribute-name>
+               <eclipselink:field table="ORDER_TRANS" name="TRANS_USER" xsi:type="eclipselink:column"/>
+            </eclipselink:attribute-mapping>
+         </eclipselink:attribute-mappings>
+         <eclipselink:descriptor-type>independent</eclipselink:descriptor-type>
+         <eclipselink:sequencing>
+            <eclipselink:sequence-name>ORDER_TRANS_SEQ</eclipselink:sequence-name>
+            <eclipselink:sequence-field table="ORDER_TRANS" name="TRANS_ID" xsi:type="eclipselink:column"/>
+         </eclipselink:sequencing>
+         <eclipselink:instantiation/>
+         <eclipselink:copying xsi:type="eclipselink:instantiation-copy-policy"/>
+         <eclipselink:tables>
+            <eclipselink:table name="ORDER_TRANS"/>
+         </eclipselink:tables>
+      </eclipselink:class-mapping-descriptor>
+   </eclipselink:class-mapping-descriptors>
+   <eclipselink:login xsi:type="eclipselink:database-login">
+      <eclipselink:platform-class>org.eclipse.persistence.platform.database.oracle.OraclePlatform</eclipselink:platform-class>
+      <eclipselink:user-name>jsutherl</eclipselink:user-name>
+      <eclipselink:password>BB742416276274A46959A54867978929</eclipselink:password>
+      <eclipselink:driver-class>%%driverClass%%</eclipselink:driver-class>
+      <eclipselink:connection-url>jdbc:oracle:thin:@tlsvrdb5.ca.oracle.com:1521:toplink</eclipselink:connection-url>
+   </eclipselink:login>
+</eclipselink:object-persistence>

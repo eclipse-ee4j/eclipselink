@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<company xsi:type="Company" xmlns:sdo="commonj.sdo" xmlns="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<porder orderDate="1999-10-20">
+		<poID>10</poID>
+		<shipTo name="Alice Smith" country="US" />
+		<billTo name="Robert Smith" country="US" />
+		<item>6</item>
+	</porder>
+	<item itemID="6" name="pencils" />
+	<item itemID="7" name="pens2" />
+</company>

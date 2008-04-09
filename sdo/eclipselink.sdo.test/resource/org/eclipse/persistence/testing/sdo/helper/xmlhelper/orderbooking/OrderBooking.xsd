@@ -1,0 +1,29 @@
+<xsd:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+        targetNamespace="http://www.globalcompany.com/ns/OrderBooking" 
+        xmlns:po="http://www.globalcompany.com/ns/order"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ <xsd:import namespace="http://www.globalcompany.com/ns/order" schemaLocation="OrderBookingPO.xsd"/>
+ <xsd:import namespace="http://www.globalcompany.com/ns/order" schemaLocation="OrderBookingPO2.xsd"/>
+ <xsd:import namespace="http://www.globalcompany.com/ns/OrderBooking/rules" schemaLocation="OrderBookingRules.xsd"/>
+ <xsd:element name="SOAOrderBookingProcessRequest">
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref="po:PurchaseOrder"/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+ <xsd:element name="SOAOrderBookingProcessResponse">
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element name="result" type="xsd:string"/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+ <xsd:element name="SOAOrderBookingProcessFault">
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element name="status" type="xsd:string"/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+</xsd:schema>

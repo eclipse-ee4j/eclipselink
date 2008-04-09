@@ -1,0 +1,4 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<some-root xsi:type="oxm:contact-method-type" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:oxm="http://www.example.com/toplink-oxm">
+  <id>123</id>
+</some-root>

@@ -1,0 +1,64 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://schemas.xmlsoap.org/soap/encoding/"
+           targetNamespace="http://schemas.xmlsoap.org/soap/encoding/" 
+	   xmlns:ns1="importedUri"
+  	   xmlns:ns2="importedUri2"
+	   elementFormDefault="qualified">
+
+ <xs:import namespace="importedUri" schemaLocation="ImportedAG.xsd"/>
+ <xs:include schemaLocation="IncludedAG.xsd"/>
+ <xs:element name="root" type="tns:root"/>
+ <xs:complexType name="root" >
+    <xs:simpleContent>
+      <xs:extension base="xs:string" >
+        <xs:attributeGroup ref="tns:arrayAttributes"/>
+        <xs:attribute name="extra" type="xs:string"/> 
+        <xs:attributeGroup ref="ns1:importedAG"/>
+        <xs:attributeGroup ref="tns:commonAttributes" />
+        <xs:attributeGroup ref="ns2:imported2AG" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="child" >
+      <xs:attributeGroup ref="tns:arrayAttributes"/>
+      <xs:attribute name="childextra" type="xs:string"/> 
+      <xs:attributeGroup ref="tns:includedAG"/>
+      <xs:attributeGroup ref="tns:commonAttributes" />
+  </xs:complexType>
+
+ <xs:element name="wrapper" type="tns:wrapper"/>
+  <xs:complexType name="wrapper" >
+    <xs:sequence>
+      <xs:element name="root" type="tns:root"/>
+      <xs:element name="child" type="tns:child"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:attributeGroup name="arrayAttributes" >
+    <xs:attribute ref="tns:arrayType" />
+    <xs:attribute ref="tns:offset" />
+    <xs:attribute name="position" type="xs:string"/> 
+  </xs:attributeGroup>    
+
+  <xs:attribute name="arrayType" type="xs:string" />
+  <xs:attribute name="offset" type="tns:arrayCoordinate" />
+
+  <xs:simpleType name="arrayCoordinate" >
+    <xs:restriction base="xs:string" />
+  </xs:simpleType>
+
+  <xs:attributeGroup name="commonAttributes" >
+    <xs:annotation>
+	  <xs:documentation>
+	    Attributes common to all elements that function as accessors or 
+        represent independent (multi-ref) values.  The href attribute is
+        intended to be used in a manner like CONREF.  That is, the element
+        content should be empty iff the href attribute appears
+	  </xs:documentation>
+	</xs:annotation>
+    <xs:attribute name="id" type="xs:ID" />
+    <xs:attribute name="href" type="xs:anyURI" />
+    <xs:anyAttribute namespace="##other" processContents="lax" />
+  </xs:attributeGroup>
+</xs:schema>

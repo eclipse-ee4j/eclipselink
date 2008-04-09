@@ -1,0 +1,2 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<person  xsi:type="employee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><firstName>Jane</firstName><lastName>Doe</lastName>Developer</person>

@@ -1,0 +1,9 @@
+<employee>
+    <id>123</id>
+    <mailing-address xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="blahType">
+      <street>1 Any Street</street>
+      <city>Ottawa</city>
+      <province>Ontario</province>
+      <postal-code>A1B 2C3</postal-code>
+    </mailing-address>
+</employee>

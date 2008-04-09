@@ -1,0 +1,17 @@
+<aaa:root xmlns:aaa="http://www.example.com/aaa">
+   <aaa:companies>
+      <ns0:companyXMLRoot xmlns:ns0="http://www.example.com/companyNS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="aaa:company">
+	     <aaa:companyname>theCompany1</aaa:companyname>		
+		 <aaa:departments>
+    	    <ns1:deptXMLRoot xmlns:ns1="http://www.example.com/deptNS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="aaa:dept">
+			   <aaa:deptName>dept1</aaa:deptName>
+			   <aaa:teams>
+   			      <aaa:team xmlns:ns1="http://www.example.com/teamNS1" xmlns:ns0="http://www.example.com/teamNS0">
+	  			     <ns0:teamName>team1</ns0:teamName>
+   			      </aaa:team>
+   			   </aaa:teams>
+	 	    </ns1:deptXMLRoot>    	  
+		 </aaa:departments>
+      </ns0:companyXMLRoot>  
+   </aaa:companies>
+</aaa:root>

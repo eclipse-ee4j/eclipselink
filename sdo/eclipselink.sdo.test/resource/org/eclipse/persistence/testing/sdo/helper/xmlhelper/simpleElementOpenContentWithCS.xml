@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:company xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="myCompany">
+	<customer>
+	   <firstName>Jane</firstName>
+	   <lastName>Smith</lastName>
+	   <ns0:extraName>Jones</ns0:extraName>
+	   <ns0:age>10</ns0:age>
+	   <ns0:price>15</ns0:price>
+	   <ns0:birthDate>1999-05-21</ns0:birthDate>
+	   <ns0:phone>
+		  <areaCode>613</areaCode>
+		  <number>123-4567</number>
+	   </ns0:phone>
+	   <ns0:blahphone>
+		  <areaCode>902</areaCode>
+		  <number>234-5678</number>
+	   </ns0:blahphone>
+	   <ns0:blahphone>
+		  <areaCode>506</areaCode>
+		  <number>345-6789</number>
+	   </ns0:blahphone>
+	   <ns0:order>
+		  <orderName>theOrder</orderName>
+		  <orderQuantity>15</orderQuantity>
+	   </ns0:order>
+	</customer>
+    <theCS logging="false"/>
+</ns0:company>

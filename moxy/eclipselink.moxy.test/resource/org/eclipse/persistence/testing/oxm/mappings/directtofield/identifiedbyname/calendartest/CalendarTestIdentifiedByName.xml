@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<employee id="123" first-name="Jane" last-name="Doe">
+<birth-date>2003-02-01T08:05:06.0</birth-date>
+</employee>

@@ -1,0 +1,51 @@
+<project name="Eclipse Persistence Services" default="all" basedir=".">
+
+    <property file="${user.home}/build.properties"/>
+    <property file="./build.properties"/>
+
+    <path id="compile.path">
+        <fileset
+            dir="${eclipselink.core.lib}"
+            includes="${eclipselink.core.depend}"/>
+        <fileset
+            dir="${oracle.extensions.depend.dir}"
+            includes="${oracle.extensions.depend.jars}"/>
+        <pathelement path="${eclipselink.core}/${classes.dir}"/>
+    </path>
+
+    <!-- all -->
+    <target name="all" depends="clean, compile, build.jar" description="build oracle specific classes"/>
+
+    <!-- compile --> 
+    <target name="compile" depends="" description="Compile EclipseLink's Oracle extensions"> 
+    	<mkdir dir="${classes.dir}"/>
+        <mkdir dir="${eclipselink.extension.oracle}/${classes.dir}"/>
+        <javac srcdir="${eclipselink.extension.oracle}/${src.dir}" 
+               destdir="${eclipselink.extension.oracle}/${classes.dir}"
+               includes="org/eclipse/persistence/**"
+               debug="${javac.debug}" 
+               optimize="${javac.optimize}"
+               source="1.5" 
+               deprecation="${javac.deprecation}"
+               failonerror="true">
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="build.jar" depends="compile" description="build a jar file other projects can use for dependancies if they cannot compile with oracle dependancies">
+      <jar jarfile="${eclipselink.oracle.depend.jar}">
+        <fileset dir="${eclipselink.extension.oracle}/${classes.dir}">
+          <include name="org/eclipse/persistence/**/*.class"/>
+        </fileset>
+      </jar>
+    </target>
+
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.extension.oracle}/${classes.dir}"/>
+        </delete>
+    </target>
+
+</project>

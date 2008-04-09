@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<employee id="123">
+	<responsibilities>
+		<list>
+			<responsibility>100 200 300</responsibility>
+		</list>
+	</responsibilities>
+</employee>

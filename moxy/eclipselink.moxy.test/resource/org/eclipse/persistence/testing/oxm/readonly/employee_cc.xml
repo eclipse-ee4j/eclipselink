@@ -1,0 +1,10 @@
+<employee>
+  <addresses>
+    <address>
+      <street>2010 Contact Drive</street>
+    </address>
+    <address>
+      <street>2001 Odessy Street</street>
+    </address>
+  </addresses>  
+</employee>

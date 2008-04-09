@@ -1,0 +1,5 @@
+<employee>
+  <first-name>Jane</first-name>
+  <last-name>Doe</last-name>
+  <xml-node attribute="attributevalue"/>
+</employee>

@@ -1,0 +1,28 @@
+<xsd:schema targetNamespace="http://example.com/supplier/" xmlns="http://example.com/supplier/"
+     elementFormDefault="qualified" sdoJava:package="mypackage.supplier"
+     xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java"
+     xmlns:ns0="http://example.com/process/">
+    <xsd:import schemaLocation="Process.xsd" namespace="http://example.com/process/"/>
+    <xsd:import namespace="commonj.sdo/java"/>
+    <xsd:import namespace="commonj.sdo/xml"/>
+    <xsd:include schemaLocation="SupplierSite.xsd"/>
+    <xsd:complexType name="SupplierResult">
+        <xsd:complexContent>
+            <xsd:extension base="ns0:MethodResult">
+                <xsd:sequence>
+                    <xsd:element name="Value" type="Supplier" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="Supplier">      
+        <xsd:sequence>
+            <xsd:element name="SupplierId" type="xsd:long" minOccurs="0" sdoXML:dataType="sdoJava:LongObject"/>
+            <xsd:element name="Name" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="OnHoldFlag" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="SupplierSite" type="SupplierSite" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="supplierResult" type="SupplierResult"/>
+    <xsd:element name="supplier" type="Supplier"/>
+</xsd:schema>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri" xmlns="my.uri" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="my.uri2">
+   <xsd:import schemaLocation="Cyclic2ElementRefError.xsd" namespace="my.uri2"/>
+   <xsd:complexType name="PhoneType">
+      <xsd:attribute name="number" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:element name="phoneType" type="PhoneType"/>
+</xsd:schema>

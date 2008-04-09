@@ -1,0 +1,29 @@
+<schema elementFormDefault="qualified" targetNamespace="errorsNamespace" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="errorsNamespace" xmlns:sdoJava="commonj.sdo/java" sdoJava:package="errors">
+   <import namespace="commonj.sdo/java" schemaLocation="includeSdoJava.xsd"/>
+   <element name="ExceptionMessage" type="tns:ExceptionMessage"/>
+   <complexType name="Message">
+      <sequence>
+         <element name="content" type="string" minOccurs="0" maxOccurs="1"/>
+         <element name="severity" type="string" minOccurs="0" maxOccurs="1"/>
+         <element name="detail" type="tns:Message" minOccurs="0" maxOccurs="unbounded"/>
+      </sequence>
+   </complexType>
+   <complexType name="ExceptionMessage">
+      <complexContent>
+         <extension base="tns:Message">
+            <sequence>
+               <element name="exceptionName" type="string" minOccurs="0" maxOccurs="1"/>
+            </sequence>
+         </extension>
+      </complexContent>
+   </complexType>
+   <complexType name="TestErrorMessage">
+      <complexContent>
+         <extension base="tns:ExceptionMessage">
+            <sequence>
+               <element name="extraField" type="string" minOccurs="0" maxOccurs="1"/>
+            </sequence>
+         </extension>
+      </complexContent>
+   </complexType> 
+</schema>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<employee id="123">
+	<responsibilities/>
+	<responsibilities>
+		<list>
+			<responsibility>rake the leaves</responsibility>
+			<responsibility>mow the lawn</responsibility>
+		</list>
+	</responsibilities>
+</employee>

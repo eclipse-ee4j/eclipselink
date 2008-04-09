@@ -1,0 +1,57 @@
+<?xml version = "1.0"?>
+
+<!--/*******************************************************************************
+* Copyright (c) 2007 Oracle. All rights reserved.
+* This program and the accompanying materials are made available under the terms of
+* the Eclipse Public License v1.0, which accompanies this distribution and is available at
+* http://www.eclipse.org/legal/epl-v10.html.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
+	
+<!DOCTYPE project [
+    <!ENTITY buildbody SYSTEM "file:./buildbody.xml"> 
+]>
+<project name = "Test.Ant.Extension" default = "validate.session" basedir = "." xmlns:toplink = "toplinklib">
+	<!-- =================================================================== -->
+	<!--  Properties                                                         -->
+	<!-- =================================================================== -->
+	<target name="init">
+		<property name = "toplink.mwp.dir" value = "${basedir}/temp/mw"/>
+		<property name = "toplink.sessions.dir" value = "${basedir}/sessions10.1.3"/>
+		<property name = "user.classes" value = "${basedir}/../../../jlib/mwtest/mappingsplugin_test.jar"/>
+		<property name = "mwplatforms.classpath" value = "${basedir}/../../../../mwdev/config"/>
+
+		<path id = "toplink.classpath">
+			<pathelement path = "${basedir}/../../../jlib/compile/toplink.jar"/>
+			<pathelement path = "${basedir}/../../../jlib/compile/ejb.jar"/>
+			<pathelement path = "${basedir}/../../../jlib/compile/xmlparserv2.jar"/>
+			<pathelement path = "${basedir}/../../../jlib/run/antlr.jar"/>
+		</path>
+		<path id = "mw.classpath">
+			<pathelement path = "${basedir}/../../../../mwdev/jlib/mw/elmwcore.jar"/>
+			<pathelement path = "${basedir}/../../../../mwdev/jlib/mw/eclipselinkmw.jar"/>
+		</path>
+	
+	    <typedef file = "toplink-ant-lib.xml" classpathref = "mw.classpath" uri = "toplinklib" />
+	</target>
+    <!-- =================================================================== -->
+    <!--  Define task parameter                                                          -->
+    <!-- =================================================================== -->
+    <target name="parameter.definition" depends="init">
+	   	<toplink:ignoreerrorset id = "ignoreErrors">
+	    	<toplink:ignoreerror code = "0233" />
+		</toplink:ignoreerrorset>
+		
+		<toplink:loginspec id = "loginSpec" 
+			url = "jdbc:oracle:thin:@tlsvrdb5.ca.oracle.com:1521:TOPLINK"
+			driverclass = "oracle.jdbc.driver.OracleDriver"
+			user = "tle" />
+    </target>
+    <!-- =================================================================== -->
+    <!--  Include buildbody.xml                                                          -->
+    <!-- =================================================================== -->
+	&buildbody;
+	
+</project>

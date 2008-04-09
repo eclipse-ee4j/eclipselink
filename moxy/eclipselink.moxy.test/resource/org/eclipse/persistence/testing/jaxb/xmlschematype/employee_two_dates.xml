@@ -1,0 +1,5 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns0:employee xmlns:ns0="myns">
+   <start-date>2005-05-24</start-date>
+   <start-time>16:06:53.0</start-time>
+</ns0:employee>

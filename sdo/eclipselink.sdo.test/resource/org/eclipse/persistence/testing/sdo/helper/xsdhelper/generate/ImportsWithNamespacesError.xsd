@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri" xmlns="my.uri" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="my.uri4" xmlns:ns1="my.uri3" xmlns:ns0="my.uri2">
+   <xsd:import schemaLocation="blahQuantity.xsd" namespace="my.uri3"/>
+   <xsd:complexType name="PurchaseOrder">
+      <xsd:sequence>
+         <xsd:element name="shipTo" type="ns0:USAddress" minOccurs="0"/>
+         <xsd:element name="billTo" type="ns0:USAddress" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="quantity" type="ns1:quantityType"/>
+      <xsd:attribute name="partNum" type="ns2:SKU"/>
+   </xsd:complexType>
+   <xsd:element name="purchaseOrder" type="PurchaseOrder"/>
+</xsd:schema>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri2" xmlns="my.uri2" elementFormDefault="qualified" sdoJava:package="uri2.my" xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="addressURI">
+   <xsd:import namespace="commonj.sdo"/>
+   <xsd:import schemaLocation="ImportBug6311853Address.xsd" namespace="addressURI"/>
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:import namespace="commonj.sdo/xml"/>
+   <xsd:complexType name="Person">
+      <xsd:sequence>
+         <xsd:element name="address" type="ns0:Address" minOccurs="0" sdoXML:dataType="sdo:DataObject"/>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:element name="person" type="Person"/>
+</xsd:schema>

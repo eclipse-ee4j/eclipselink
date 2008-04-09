@@ -1,0 +1,81 @@
+<project name="EclipseLink Automated Build" default="all">
+
+  <property name="build.compiler" value="javac1.5"/>
+  <tstamp>
+    <format property="build_date" pattern="yyyyMMdd"/>
+  </tstamp>
+  <property file="/shared/technology/eclipselink/build.properties"/>
+  <condition property="installer_id" value="${build_date}">
+    <equals arg1="${build_id}" arg2="SNAPSHOT"/>
+  </condition>
+  <property name="installer_id" value="${release.version}${build_id}"/>
+  <condition property="download.path" value="${eclipse.download.path}/nightly">
+    <equals arg1="${build_id}" arg2="SNAPSHOT"/>
+  </condition>
+  <property name="download.path" value="${eclipse.download.path}"/>
+
+
+  <target name="all" depends="build.nightly" description="Trigger the automated build and tests"/>
+
+  <target name="build.nightly" depends="clean, build, build.test, test.lrg, publish" description="Trigger the automated build and lrg tests"/>
+
+  <target name="build.continuous" depends="clean, build.no.javadoc, build.test, test.srg" description="Trigger the automated build and run the tests" />
+
+  <target name="get.dependencies">
+    <get src="http://download.eclipse.org/tools/orbit/downloads/drops/R200709171314/bundles/org.junit_3.8.2.v200706111738.zip" dest="junit.zip"/>
+
+    <unzip src="junit.zip" dest="."/>
+    <exec executable="/usr/local/bin/svn">
+      <arg value="co"/>
+      <arg value="-q"/>
+      <arg value="svn+ssh://dev.eclipse.org/svnroot/technology/org.eclipse.persistence/trunk"/>
+    </exec>
+  </target>
+
+  <target name="build" depends="get.dependencies">
+    <ant antfile="build.xml" dir="trunk" target="build.distribution"/>
+  </target>
+
+  <target name="build.no.javadoc" depends="get.dependencies">
+    <ant antfile="build.xml" dir="trunk" target="package.eclipselink.jar"/>
+  </target>
+
+  <target name="build.test" depends="get.dependencies">
+    <ant antfile="build.xml" dir="trunk" target="build.test"/>
+  </target>
+
+  <target name="test.srg">
+    <ant antfile="build.xml" dir="trunk" target="test.core.srg"/>
+  </target>
+
+  <target name="test.lrg">
+    <ant antfile="build.xml" dir="trunk" target="test.core.srg"/>
+    <ant antfile="build.xml" dir="trunk" target="test.jpa"/>
+    <ant antfile="build.xml" dir="trunk" target="test.moxy"/>
+    <ant antfile="build.xml" dir="trunk" target="test.sdo"/>
+  </target>
+
+
+  <target name="publish">
+    <copy file="trunk/${eclipselink.zip.name}${eclipselink.zip.extension}" tofile="${download.path}/${eclipselink.zip.name}-${installer_id}${eclipselink.zip.extension}"/>
+    <copy file="trunk/foundation/eclipselink.core.test/reports/junit-noframes.html" tofile="${download.path}/test-results/core/eclipselink-srg-${installer_id}.html"/>
+    <copy file="trunk/jpa/eclipselink.jpa.test/reports/junit-noframes.html" tofile="${download.path}/test-results/jpa/eclipselink-jpa-lrg-${installer_id}.html"/>
+    <copy file="trunk/moxy/eclipselink.moxy.test/reports/jaxb/junit-noframes.html" tofile="${download.path}/test-results/moxy/eclipselink-jaxb-lrg-${installer_id}.html"/>
+    <copy file="trunk/moxy/eclipselink.moxy.test/reports/oxm/junit-noframes.html" tofile="${download.path}/test-results/moxy/eclipselink-oxm-lrg-${installer_id}.html"/>
+    <copy file="trunk/sdo/eclipselink.sdo.test/reports/true/junit-noframes.html" tofile="${download.path}/test-results/sdo/eclipselink-sdo-lrg-${installer_id}.html"/>
+    <exec executable="/usr/local/bin/svn">
+      <arg value="commit"/>
+      <arg value="-m ${installer_id}"/>
+      <arg value="trunk/eclipselink.jar"/>
+    </exec>
+    <ant antfile="uploadToMaven.xml" dir="trunk" target="upload.maven"/>
+  </target>
+
+
+  <target name="clean">
+    <delete dir="trunk"/>
+    <delete dir="org.junit_3.8.2.v200706111738"/>
+    <delete file="junit.zip"/>
+  </target>
+
+</project>

@@ -1,0 +1,12 @@
+<?xml version="1.0" standalone="yes"?>
+<schema elementFormDefault="qualified"
+	 targetNamespace="http://www.example.org/" xmlns="http://www.w3.org/2001/XMLSchema"
+	 xmlns:tns="http://www.example.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	 xmlns:sdoJava="commonj.sdo/java" sdoJava:package="myPackage">
+	<complexType name="MySDO">
+		<sequence>
+			<element name="stringPart" type="xsd:string"/>
+			<element name="intPart" type="xsd:int"/>
+		</sequence>
+	</complexType>
+</schema>

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="aggregate">
+   <name>test.oracle.models.phone.Service</name>
+   <class-handle>
+      <type-name>test.oracle.models.phone.Service</type-name>
+   </class-handle>
+   <mappings>
+      <mapping type="direct-to-field">
+         <name>billingAddress</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.phone.Service</attribute-declaring-type-name>
+            <attribute-name>billingAddress</attribute-name>
+         </attribute-handle>
+      </mapping>
+      <mapping type="relational-direct-collection">
+         <name>lineAccounts</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.phone.Service</attribute-declaring-type-name>
+            <attribute-name>lineAccounts</attribute-name>
+         </attribute-handle>
+         <target-table-handle>
+            <table-name>LINE_ACCOUNT</table-name>
+         </target-table-handle>
+         <direct-value-column-handle>
+            <column-table-name>LINE_ACCOUNT</column-table-name>
+            <column-name>LINE_ACCOUNT</column-name>
+         </direct-value-column-handle>
+         <reference-handle>
+            <reference-table-name>LINE_ACCOUNT</reference-table-name>
+            <reference-name>LINE_ACCOUNT_COMPANY</reference-name>
+         </reference-handle>
+         <uses-batch-reading>true</uses-batch-reading>
+         <container-policy type="list">
+            <container-class>
+               <uses-default-container-class>true</uses-default-container-class>
+            </container-class>
+         </container-policy>
+      </mapping>
+      <mapping type="variable-one-to-one">
+         <name>primaryContact</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.phone.Service</attribute-declaring-type-name>
+            <attribute-name>primaryContact</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.phone.Contact</descriptor-name>
+         </reference-descriptor-handle>
+         <column-query-key-pairs>
+            <column-query-key-pair>
+               <query-key-name>id</query-key-name>
+            </column-query-key-pair>
+         </column-query-key-pairs>
+         <class-indicator-policy type="relational-field">
+            <indicator-type>
+               <type-handle>
+                  <type-name>java.lang.String</type-name>
+               </type-handle>
+            </indicator-type>
+            <class-indicator-values>
+               <class-indicator-value>
+                  <indicator>E</indicator>
+                  <descriptor-value-handle>
+                     <descriptor-name>test.oracle.models.phone.EmailAddress</descriptor-name>
+                  </descriptor-value-handle>
+               </class-indicator-value>
+               <class-indicator-value>
+                  <indicator>P</indicator>
+                  <descriptor-value-handle>
+                     <descriptor-name>test.oracle.models.phone.PhoneNumber</descriptor-name>
+                  </descriptor-value-handle>
+               </class-indicator-value>
+            </class-indicator-values>
+         </class-indicator-policy>
+      </mapping>
+      <mapping type="one-to-one">
+         <name>primaryContactPerson</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.phone.Service</attribute-declaring-type-name>
+            <attribute-name>primaryContactPerson</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.phone.Person</descriptor-name>
+         </reference-descriptor-handle>
+         <reference-handle>
+            <reference-table-name>HOUSEHOLD</reference-table-name>
+            <reference-name>HOUSEHOLD_PERSON2</reference-name>
+         </reference-handle>
+      </mapping>
+      <mapping type="relational-transformation">
+         <name>rate</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.phone.Service</attribute-declaring-type-name>
+            <attribute-name>rate</attribute-name>
+         </attribute-handle>
+         <attribute-transformer type="method-based">
+            <method-handle>
+               <method-declaring-type-name>test.oracle.models.phone.Service</method-declaring-type-name>
+               <method-signature>calculateRate(org.eclipse.persistence.publicinterface.DatabaseRow)</method-signature>
+            </method-handle>
+         </attribute-transformer>
+         <field-transformer-associations type="relational">
+            <field-transformer type="method-based">
+               <method-handle>
+                  <method-declaring-type-name>test.oracle.models.phone.Service</method-declaring-type-name>
+                  <method-signature>hasLocalService()</method-signature>
+               </method-handle>
+            </field-transformer>
+         </field-transformer-associations>
+         <field-transformer-associations type="relational">
+            <field-transformer type="method-based">
+               <method-handle>
+                  <method-declaring-type-name>test.oracle.models.phone.Service</method-declaring-type-name>
+                  <method-signature>hasLongDistanceService()</method-signature>
+               </method-handle>
+            </field-transformer>
+         </field-transformer-associations>
+         <field-transformer-associations type="relational">
+            <field-transformer type="method-based">
+               <method-handle>
+                  <method-declaring-type-name>test.oracle.models.phone.Service</method-declaring-type-name>
+                  <method-signature>hasDslService()</method-signature>
+               </method-handle>
+            </field-transformer>
+         </field-transformer-associations>
+         <mutable>true</mutable>
+      </mapping>
+      <mapping type="one-to-many">
+         <name>serviceCalls</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.phone.Service</attribute-declaring-type-name>
+            <attribute-name>serviceCalls</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.phone.ServiceCall</descriptor-name>
+         </reference-descriptor-handle>
+         <private-owned>true</private-owned>
+         <reference-handle>
+            <reference-table-name>SERVICE_CALL</reference-table-name>
+            <reference-name>SERVICE_CALL_HOUSEHOLD</reference-name>
+         </reference-handle>
+         <container-policy type="list">
+            <container-class>
+               <uses-default-container-class>true</uses-default-container-class>
+            </container-class>
+         </container-policy>
+         <orderings>
+            <ordering>
+               <ascending>false</ascending>
+               <query-key-handle>
+                  <descriptor-name>test.oracle.models.phone.ServiceCall</descriptor-name>
+                  <query-key-name>id</query-key-name>
+               </query-key-handle>
+            </ordering>
+         </orderings>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>servicePlan</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.phone.Service</attribute-declaring-type-name>
+            <attribute-name>servicePlan</attribute-name>
+         </attribute-handle>
+         <converter type="object-type">
+            <data-type>
+               <type-handle>
+                  <type-name>java.lang.Integer</type-name>
+               </type-handle>
+            </data-type>
+            <attribute-type>
+               <type-handle>
+                  <type-name>java.lang.String</type-name>
+               </type-handle>
+            </attribute-type>
+            <value-pairs>
+               <value-pair>
+                  <data-value>0</data-value>
+                  <attribute-value>Platinum</attribute-value>
+               </value-pair>
+               <value-pair>
+                  <data-value>1</data-value>
+                  <attribute-value>Gold</attribute-value>
+               </value-pair>
+               <value-pair>
+                  <data-value>2</data-value>
+                  <attribute-value>Standard</attribute-value>
+               </value-pair>
+            </value-pairs>
+         </converter>
+      </mapping>
+      <mapping type="many-to-many">
+         <name>users</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.phone.Service</attribute-declaring-type-name>
+            <attribute-name>users</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.phone.Person</descriptor-name>
+         </reference-descriptor-handle>
+         <reference-handle>
+            <reference-table-name>COMPANY_PERSON</reference-table-name>
+            <reference-name>COMPANY_PERSON_COMPANY</reference-name>
+         </reference-handle>
+         <container-policy type="list">
+            <container-class>
+               <uses-default-container-class>true</uses-default-container-class>
+            </container-class>
+         </container-policy>
+         <relation-table-handle>
+            <table-name>COMPANY_PERSON</table-name>
+         </relation-table-handle>
+         <target-reference-handle>
+            <reference-table-name>COMPANY_PERSON</reference-table-name>
+            <reference-name>COMPANY_PERSON_PERSON</reference-name>
+         </target-reference-handle>
+      </mapping>
+   </mappings>
+</descriptor>
