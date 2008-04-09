@@ -221,6 +221,12 @@
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="struct-converter" type="orm:struct-converter" 
                    minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="copy-policy" type="orm:copy-policy" 
+                     minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" 
+                     minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="clone-copy-policy" type="orm:clone-copy-policy" 
+                     minOccurs="0" maxOccurs="1"/>
       <xsd:element name="sequence-generator" type="orm:sequence-generator" 
                    minOccurs="0"/>
       <xsd:element name="table-generator" type="orm:table-generator" 
@@ -1552,8 +1558,14 @@
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="struct-converter" type="orm:struct-converter" 
                    minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="attributes" type="orm:attributes" 
+      <xsd:element name="attributes" type="orm:attributes"
                    minOccurs="0"/>
+      <xsd:element name="copy-policy" type="orm:copy-policy" 
+                     minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" 
+                     minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="clone-copy-policy" type="orm:clone-copy-policy" 
+                     minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="class" type="xsd:string" use="required"/>
     <xsd:attribute name="access" type="orm:access-type"/>
@@ -1613,6 +1625,12 @@
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="struct-converter" type="orm:struct-converter" 
                    minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="copy-policy" type="orm:copy-policy" 
+                     minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" 
+                     minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="clone-copy-policy" type="orm:clone-copy-policy" 
+                     minOccurs="0" maxOccurs="1"/>
       <xsd:element name="exclude-default-listeners" type="orm:emptyType" 
                    minOccurs="0"/>
       <xsd:element name="exclude-superclass-listeners" type="orm:emptyType" 
@@ -1865,6 +1883,114 @@
     </xsd:annotation>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="converter" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="copy-policy">
+    <xsd:annotation>
+      <xsd:documentation>
+        /**
+         * A CopyPolicy is used to set a org.eclipse.persistence.descriptors.copying.CopyPolicy on an Entity.
+         * It is required that a class that implements org.eclipse.persistence.descriptors.copying.CopyPolicy
+         * be specified as the argument.
+         * 
+         * A CopyPolicy should be specified on an Entity or MappedSuperclass.
+         * 
+         * For instance:
+         * @Entity
+         * @CopyPolicy("example.MyCopyPolicy")
+         */
+        public @interface CopyPolicy {
+
+        /*
+        * (Required)
+        * This defines the class of the copy policy.  It must specify a class that implements 
+        * org.eclipse.persistence.descriptors.copying.CopyPolicy
+        */
+        Class value();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+    <!-- **************************************************** -->
+  
+  <xsd:complexType name="instantiation-copy-policy">
+    <xsd:annotation>
+      <xsd:documentation>
+        /**
+         * An InstantiationCopyPolicy is used to set a org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy on an Entity.
+         * InstantiationCopyPolicy is the default CopyPolicy in EclipseLink and therefore this configuration option is only used to override
+         * other types of copy policies
+         * 
+         * An InstantiationCopyPolicy should be specified on an Entity or MappedSuperclass.
+         * 
+         * Example:
+         * @Entity
+         * @InstantiationCopyPolicy 
+         */
+        public @interface InstantiationCopyPolicy {
+        }
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="clone-copy-policy">
+    <xsd:annotation>
+      <xsd:documentation>
+        /**
+         * A CloneCopyPolicy is used to set a org.eclipse.persistence.descriptors.copying.CloneCopyPolicy on an Entity.
+         * A CloneCopyPolicy must specify at one or both of the "method" or "workingCopyMethod".  "workingCopyMethod" is used
+         * to clone objects that will be returned to the user as they are registered in EclipseLink's transactional mechanism, 
+         * the UnitOfWork.  "method" will be used for the clone that is used for comparison in conjunction with EclipseLink's 
+         * DeferredChangeDetectionPolicy
+         *  
+         * A CloneCopyPolicy should be specified on an Entity or MappedSuperclass.
+         * 
+         * Example:
+         * @Entity
+         * @CloneCopyPolicy(method="myCloneMethod")
+         * 
+         * or:
+         * 
+         * @Entity
+         * @CloneCopyPolicy(method="myCloneMethod", workingCopyMethod="myWorkingCopyCloneMethod")
+         * 
+         * or:
+         * 
+          @Entity
+         * @CloneCopyPolicy(workingCopyMethodName="myWorkingCopyClone")
+         */
+        public @interface CloneCopyPolicy {
+
+            /**
+             * (Optional)
+             * Either method or workingCopyMethod must be specified
+             * this defines a method that will be used to create a clone that will be used for comparison by
+             * EclipseLink's DeferredChangeDetectionPolicy
+             * @return
+             */
+            String method();
+            
+            /**
+             * (Optional)
+             * Either method or workingCopyMethod must be specified
+             * this defines a method that will be used to create a clone that will be used to create the 
+             * object returned when registering an Object in an EclipseLink UnitOfWork
+             * @return
+             */
+            String workingCopyMethod();
+            
+        }
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="method" type="xsd:string"/>
+    <xsd:attribute name="working-copy-method" type="xsd:string"/>
   </xsd:complexType>
   
   <!-- **************************************************** -->
