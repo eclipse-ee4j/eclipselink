@@ -79,7 +79,7 @@ public class SessionBeanTests extends JUnitTestCase {
     public EmployeeService getEmployeeService() throws Exception {
         if (service == null) {
             Properties properties = new Properties();
-            String url = System.getProperty("oc4j-url");
+            String url = System.getProperty("server-url");
             if (url != null) {
                 properties.put("java.naming.provider.url", url);
             }
@@ -91,7 +91,12 @@ public class SessionBeanTests extends JUnitTestCase {
                 try {
                     service = (EmployeeService) PortableRemoteObject.narrow(context.lookup("ejb/EmployeeService"), EmployeeService.class);
                 } catch (NameNotFoundException notFoundException2) {
-                    throw new Error("Both lookups failed.");
+                    try {
+                        // WLS likes this one.
+                        service = (EmployeeService) PortableRemoteObject.narrow(context.lookup("EmployeeService#org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService"), EmployeeService.class);
+                    } catch (NameNotFoundException notFoundException3) {
+                        throw new Error("All lookups failed.", notFoundException);
+                    }
                 }
             }
         }

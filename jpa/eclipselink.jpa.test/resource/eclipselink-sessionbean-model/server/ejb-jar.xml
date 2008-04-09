@@ -7,10 +7,6 @@
     <enterprise-beans>
         <session>
             <ejb-name>TestRunner</ejb-name>
-            <remote>org.eclipse.persistence.testing.framework.server.TestRunner</remote>
-            <ejb-class>org.eclipse.persistence.testing.framework.server.TestRunnerBean</ejb-class>
-            <session-type>Stateless</session-type>
-            <transaction-type>Bean</transaction-type>
             <ejb-ref>
                 <ejb-ref-name>ejb/EmployeeService</ejb-ref-name>
                 <ejb-ref-type>Session</ejb-ref-type>

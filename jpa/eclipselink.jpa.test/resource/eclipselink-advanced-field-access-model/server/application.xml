@@ -6,7 +6,4 @@
     <module>
         <ejb>eclipselink-advanced-field-access-model_ejb.jar</ejb>
     </module>
-    <module>
-        <java>eclipselink-advanced-field-access-model_client.jar</java>
-    </module>
 </application>

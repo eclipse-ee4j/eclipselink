@@ -1,4 +1,7 @@
 <!-- This ant project includes the following tasks:
+        - oc4j.install : recreates server installation from download zip
+        - oc4j.setup : creates connection pool
+        - oc4j.reset : removes connection pool
         - oc4j.start : starts server
         - oc4j.stop : stops server
         - oc4j.deploy : deploys ear
@@ -14,6 +17,7 @@
     <property file="${user.home}/oc4j.properties"/>
     <property file="./oc4j.properties"/>
 
+    <!-- XML task used to modify config XML files. -->
     <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
         <classpath>
             <pathelement path="${xmltask.lib}"/>
@@ -37,6 +41,7 @@
         <copy file="${jdbc.driver.jar}" todir="${oc4j.home}/j2ee/home/applib"/>
     </target>
 
+    <!-- Start the server. -->
     <target name="oc4j.start">
         <property file="${user.home}/oc4j.properties"/>
         <property file="./oc4j.properties"/>
@@ -73,7 +78,7 @@
         Note: OC4J server must be up while calling this target
     -->
     <target name="oc4j.reset">
-        <antcall target="remove.managed.datasource" inheritRefs="true"/>
+        <antcall target="remove.datasource" inheritRefs="true"/>
         <antcall target="remove.connection.pool" inheritRefs="true"/>
     </target>
 
@@ -135,6 +140,7 @@
         </java>
     </target>
 
+    <!-- Stop the server. -->
     <target name="oc4j.stop">
         <property file="${user.home}/oc4j.properties"/>
         <property file="./oc4j.properties"/>
@@ -149,6 +155,10 @@
         </java>
     </target>
 
+    <!--
+        Deploy the application ear to the server.
+        Note: OC4J server must be running.
+    -->
     <target name="oc4j.deploy"> 
         <java jar="${oc4j.home}/j2ee/home/admin_client.jar"
             fork="true"
@@ -164,6 +174,10 @@
         </java>
     </target>
 
+    <!--
+        Undeploy the application ear to the server.
+        Note: OC4J server must be running.
+    -->
     <target name="oc4j.undeploy">
         <java jar="${oc4j.home}/j2ee/home/admin_client.jar"
             fork="true"

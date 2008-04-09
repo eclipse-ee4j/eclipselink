@@ -628,8 +628,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (getRedirector() != null) {
             return;
         }
-        // Must always check descriptor as transient for remote.
-        checkDescriptor(session);
         
         // This query is first prepared for global common state, this must be synced.
         if (!isPrePrepared()) {// Avoid the monitor is already prePrepare, must check again for concurrency.      
@@ -642,6 +640,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                     setIsPrePrepared(true);// MUST not set prepare until done as other thread may hit before finishing the prePrepare.
                 }
             }
+        } else {        
+            // Must always check descriptor as transient for remote.
+            checkDescriptor(session);
         }
     }
 

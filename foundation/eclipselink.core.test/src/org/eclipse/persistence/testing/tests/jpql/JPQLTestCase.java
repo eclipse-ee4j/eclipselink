@@ -151,7 +151,6 @@ public class JPQLTestCase extends TransactionalTestCase {
             setReferenceClass(Employee.class);
         }
         getQuery().setEJBQLString(getEjbqlString());
-        //getQuery().setReferenceClass(getReferenceClass());
     }
 
     public void test() throws Exception {
@@ -228,7 +227,6 @@ public class JPQLTestCase extends TransactionalTestCase {
                 setQuery(new ReadAllQuery());
             }
             getQuery().setEJBQLString(getEjbqlString());
-            getQuery().setReferenceClass(getReferenceClass());
         }
         return theQuery;
     }

@@ -31,34 +31,30 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 /**
  * PUBLIC:
  * Implementation of org.eclipse.persistence.platform.server.ServerPlatform
- *
+ * <p>
  * This is the abstract superclass of all platforms for all servers. Each DatabaseSession
  * contains an instance of the receiver, to help the DatabaseSession determine:
- *
- * - Which external transaction controller to use
- * - Whether or not to enable JTA (external transaction control)
- * - How to register/unregister for runtime services (JMX/MBean)
- * - Whether or not to enable runtime services
- * - How to launch container Threads
- *
- * Subclasses already exist to provide configurations for Oc4J, WebLogic, and WebSphere.
- *
+ * <p><ul>
+ * <li> Which external transaction controller to use
+ * <li> Whether or not to enable JTA (external transaction control)
+ * <li> How to register/unregister for runtime services (JMX/MBean)
+ * <li> Whether or not to enable runtime services
+ * <li> How to launch container Threads
+ * </ul><p>
+ * Subclasses already exist to provide configurations for Oc4J, WebLogic, JBoss, and WebSphere.
+ * <p>
  * If the user wants a different external transaction controller class or
  * to provide some different behavior than the provided ServerPlatform(s), we recommend
  * subclassing org.eclipse.persistence.platform.server.ServerPlatformBase (or a subclass),
  * and overriding:
- *
- * ServerPlatformBase.getExternalTransactionControllerClass()
- * ServerPlatformBase.registerMBean()
- * ServerPlatformBase.unregisterMBean()
- *
+ * <ul>
+ * <li>ServerPlatformBase.getExternalTransactionControllerClass()
+ * <li>ServerPlatformBase.registerMBean()
+ * <li>ServerPlatformBase.unregisterMBean()
+ * </ul>
  * for the desired behavior.
  *
- * @see org.eclipse.persistence.platform.server.ServerPlatformBase
- *
- * public API:
- *
- * String getServerNameAndVersion()
+ * @see org.eclipse.persistence.platform.server.ServerPlatform
  */
 public abstract class ServerPlatformBase implements ServerPlatform {
 
@@ -203,12 +199,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * external transaction controller with an instance of my transaction controller class.
      *
      * To change the external transaction controller class, we recommend creating a subclass of
-       * ServerPlatformBase, and overriding getExternalTransactionControllerClass().
-       *
-       * @see ServerPlatformBase
-     *
-     * @return void
-     *
+     * ServerPlatformBase, and overriding getExternalTransactionControllerClass().
      */
     public void initializeExternalTransactionController() {
         this.ensureNotLoggedIn();
@@ -323,8 +314,8 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: registerMBean(): Create and deploy the JMX MBean to provide runtime services for my
      * databaseSession.
-       *
-       * Default is to do nothing.
+     *
+     * Default is to do nothing.
      *
      * @return void
      * @see #isRuntimeServicesEnabled()
@@ -372,7 +363,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL:  This method is used to unwrap the connection wrapped by
      * the application server.  TopLink needs this unwrapped connection for certain
-     * database vendor specific support. (ie TIMESTAMPTZ,NCHAR,XMLTYPE)
+     * database vendor specific support. (i.e. TIMESTAMPTZ,NCHAR,XMLTYPE)
      * 
      * Be default we will use the connection's metadata to try to get the connection
      */
@@ -413,7 +404,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
 
     /**
      * INTERNAL: Make sure that the DatabaseSession has not logged in yet.
-       * Throw a ValidationException if we have.
+     * Throw a ValidationException if we have.
      *
      */
     protected void ensureNotLoggedIn() {
@@ -468,8 +459,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * If a communication error has occurred then the query may be retried.
      * If this platform is unable to determine if the error was communication based it will return
      * false forcing the error to be thrown to the user.
-     */
-    
+     */    
     public boolean wasFailureCommunicationBased(SQLException exception, Accessor connection, AbstractSession sessionForProfile){
         return getDatabaseSession().getPlatform().wasFailureCommunicationBased(exception, connection.getConnection(), sessionForProfile);
     }

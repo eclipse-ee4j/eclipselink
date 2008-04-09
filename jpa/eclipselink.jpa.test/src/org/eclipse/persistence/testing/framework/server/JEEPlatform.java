@@ -22,8 +22,17 @@ import javax.persistence.EntityManagerFactory;
 import javax.transaction.Status;
 import javax.transaction.UserTransaction;
 
+/**
+ * Generic JEE server platform.
+ */
 public class JEEPlatform implements ServerPlatform {
 
+    /** The entity manager for the test is injected and passed to the test server platform. */
+    public static EntityManager entityManager;
+
+    /** The entity manager factory for the test is injected and passed to the test server platform. */
+    public static EntityManagerFactory entityManagerFactory;
+    
     /**
      * Return if the JTA transaction is active.
      */
@@ -119,6 +128,9 @@ public class JEEPlatform implements ServerPlatform {
      * Return the managed EntityManager for the persistence unit.
      */
     public EntityManager getEntityManager(String persistenceUnit) {
+        if (entityManager != null) {
+            return entityManager;
+        }
         String contextName = "java:comp/env/persistence/" + persistenceUnit + "/entity-manager";
         try {
             return (EntityManager)new InitialContext().lookup(contextName);
@@ -131,6 +143,9 @@ public class JEEPlatform implements ServerPlatform {
      * Return the managed EntityManagerFactory for the persistence unit.
      */
     public EntityManagerFactory getEntityManagerFactory(String persistenceUnit) {
+        if (entityManagerFactory != null) {
+            return entityManagerFactory;
+        }
         String contextName = "java:comp/env/persistence/" + persistenceUnit + "/factory";
         try {
             return (EntityManagerFactory)new InitialContext().lookup(contextName);

@@ -7,10 +7,6 @@
     <enterprise-beans>
         <session>
             <ejb-name>TestRunner</ejb-name>
-            <remote>org.eclipse.persistence.testing.framework.server.TestRunner</remote>
-            <ejb-class>org.eclipse.persistence.testing.framework.server.TestRunnerBean</ejb-class>
-            <session-type>Stateless</session-type>
-            <transaction-type>Bean</transaction-type>
             <persistence-context-ref>
                 <persistence-context-ref-name>persistence/fieldaccess/entity-manager</persistence-context-ref-name>
                 <persistence-unit-name>fieldaccess</persistence-unit-name>

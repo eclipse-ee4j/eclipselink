@@ -17,18 +17,38 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 import javax.ejb.EJBException;
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.sessionbean.EmployeeService;
 
 /**
  * Server side JUnit test invocation implemented as a stateless session bean.
  * 
  * @author mschinca
  */
+@Stateless(name="TestRunner", mappedName="TestRunner")
+@Remote(TestRunner.class)
+@TransactionManagement(TransactionManagementType.BEAN)
 public class TestRunnerBean implements TestRunner {
+    
+    /** The entity manager for the test is injected and passed to the test server platform. */
+    @PersistenceContext
+    private EntityManager entityManager;
 
+    /** The entity manager factory for the test is injected and passed to the test server platform. */
+    @PersistenceUnit
+    private EntityManagerFactory entityManagerFactory;
+    
     /**
      * Execute a test case method. The test class is loaded dynamically and
      * must therefore be visible to the TestRunnerBean classloader.
@@ -62,7 +82,10 @@ public class TestRunnerBean implements TestRunner {
         Throwable result = null;
         try {
             if (testInstance instanceof JUnitTestCase) {
-                ((JUnitTestCase)testInstance).runBareServer();
+                JUnitTestCase jpaTest = (JUnitTestCase)testInstance;
+                JEEPlatform.entityManager = this.entityManager;
+                JEEPlatform.entityManagerFactory = this.entityManagerFactory;
+                jpaTest.runBareServer();
             } else {
                 testInstance.runBare();
             }

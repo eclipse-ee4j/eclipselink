@@ -6,7 +6,4 @@
     <module>
         <ejb>eclipselink-sessionbean-model_ejb.jar</ejb>
     </module>
-    <module>
-        <java>eclipselink-sessionbean-model_client.jar</java>
-    </module>
 </application>

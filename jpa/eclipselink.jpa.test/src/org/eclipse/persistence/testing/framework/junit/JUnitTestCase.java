@@ -17,7 +17,6 @@ import java.util.Hashtable;
 import java.util.Properties;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NameNotFoundException;
 import javax.rmi.PortableRemoteObject;
 
 import javax.persistence.*;
@@ -57,11 +56,7 @@ public abstract class JUnitTestCase extends TestCase {
     
     /** Allow a JEE server platform to be set. */
     protected static ServerPlatform serverPlatform;
-    
-    /** Environment location for TestRunner session bean. */
-    public static String testRunnerName = "java:comp/env/ejb/TestRunner";
-    public static String shortTestRunnerName = "ejb/TestRunner";
-    
+        
     /** Sets if the test should be run on the client or server. */
     public Boolean shouldRunTestOnServer;
     
@@ -261,15 +256,15 @@ public abstract class JUnitTestCase extends TestCase {
         }      
     }
 
-    public static ServerSession getServerSession(){
-        return ((org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl)getEntityManagerFactory()).getServerSession();               
+    public static ServerSession getServerSession() {        
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory().createEntityManager()).getServerSession();               
     }
     
-    public static ServerSession getServerSession(String persistenceUnitName){
-        return ((org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl)getEntityManagerFactory(persistenceUnitName)).getServerSession();               
+    public static ServerSession getServerSession(String persistenceUnitName) {
+        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName).createEntityManager()).getServerSession();        
     }
     
-    public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName){
+    public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName) {
         return getEntityManagerFactory(persistenceUnitName,  JUnitTestCaseHelper.getDatabaseProperties());
     }
     
@@ -361,18 +356,14 @@ public abstract class JUnitTestCase extends TestCase {
         Context context = new InitialContext(properties);
         TestRunner runner;
         Throwable exception = null;
-
-        try {
-            runner = (TestRunner) PortableRemoteObject.narrow(context.lookup(testRunnerName), TestRunner.class);
-            exception = runner.runTest(getClass().getName(), getName(), getServerProperties());
-        } catch (NameNotFoundException notFoundException) {
-            try {
-                runner = (TestRunner) PortableRemoteObject.narrow(context.lookup(shortTestRunnerName), TestRunner.class);
-                exception = runner.runTest(getClass().getName(), getName(), getServerProperties());
-            } catch (NameNotFoundException notFoundException2) {
-                exception = new Error("Both lookups failed: " + testRunnerName, notFoundException);
-            }
+        String testrunner = System.getProperty("server.testrunner");
+        if (testrunner == null) {
+            fail("System property 'server.testrunner' must be set.");
         }
+
+
+        runner = (TestRunner) PortableRemoteObject.narrow(context.lookup(testrunner), TestRunner.class);
+        exception = runner.runTest(getClass().getName(), getName(), getServerProperties());
         if (exception != null) {
             throw exception;
         }

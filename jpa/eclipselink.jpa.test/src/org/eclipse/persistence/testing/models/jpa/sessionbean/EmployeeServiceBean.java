@@ -26,7 +26,7 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 /**
  * EmployeeService session bean.
  */
-@Stateless
+@Stateless(mappedName="EmployeeService")
 @Remote(EmployeeService.class)
 public class EmployeeServiceBean implements EmployeeService {
     @PersistenceContext(name="fieldaccess")

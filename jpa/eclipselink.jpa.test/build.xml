@@ -570,6 +570,18 @@
 
     <!-- Server Testing -->
 
+    <target name="server.install">
+        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.install" inheritRefs="true"/>
+    </target>
+
+    <target name="server.setup">
+        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.setup" inheritRefs="true"/>
+    </target>
+
+    <target name="server.reset">
+        <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.reset" inheritRefs="true"/>
+    </target>
+
     <target name="server.start">
         <ant antfile="${eclipselink.jpa.test}/${server.name}.xml" target="${server.name}.start" inheritRefs="true"/>
     </target>
@@ -593,6 +605,8 @@
 
     <!-- Build server test client jar. -->
     <target name="server.build.client-jar" depends="config.trunk, config.flat">
+        <property file="${user.home}/${server.name}.properties"/>
+        <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/META-INF"/>
         <mkdir dir="${eclipselink.jpa.test}/stage/META-INF"/>
         <javac
@@ -611,13 +625,16 @@
         </javac>
         <javac
             srcdir="${eclipselink.core.test.dir}/${src.dir}"
-            destdir="stage"
+            destdir="${eclipselink.jpa.test}/stage"
             debug="${javac.debug}" 
             includes="org/eclipse/persistence/testing/framework/junit/**">
             <classpath refid="compile.path"/>
         </javac>
-        <copy file="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/application-client.xml" todir="stage/META-INF"/>
-        <copy file="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/jndi.properties" todir="stage"/>
+        <copy file="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/application-client.xml" todir="stage/META-INF"/>        
+        <filter token="server.user" value="${server.user}"/>
+        <filter token="server.pwd" value="${server.pwd}"/>
+        <filter token="server.factory" value="${server.factory}"/>
+        <copy file="${eclipselink.jpa.test}/resource/server/jndi.properties" todir="stage" filtering="true"/>
         <jar destfile="${eclipselink.jpa.test}/${build.dir}/${TEST_NAME}_client.jar" basedir="stage"/>
         <delete dir="stage"/>
     </target>
@@ -627,7 +644,28 @@
         <property file="${user.home}/${server.name}.properties"/>
         <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
         <mkdir dir="${eclipselink.jpa.test}/stage/META-INF"/>
-        <!-- javac compile client test cases, which also includes model classes -->
+        <!-- Compile server test framework and test model classes. -->
+        <javac
+            srcdir="${eclipselink.jpa.test}/${src.dir}"
+            destdir="${eclipselink.jpa.test}/stage"
+            debug="${javac.debug}" 
+            includes="${TEST_DIR}/*.java">
+            <classpath refid="compile.path"/>
+        </javac>
+        <javac
+            srcdir="${eclipselink.jpa.test}/${src.dir}"
+            destdir="${eclipselink.jpa.test}/stage"
+            debug="${javac.debug}" 
+            includes="org/eclipse/persistence/testing/framework/**">
+            <classpath refid="compile.path"/>
+        </javac>
+        <javac
+            srcdir="${eclipselink.core.test.dir}/${src.dir}"
+            destdir="${eclipselink.jpa.test}/stage"
+            debug="${javac.debug}" 
+            includes="org/eclipse/persistence/testing/framework/junit/**">
+            <classpath refid="compile.path"/>
+        </javac>
         <javac
             srcdir="${eclipselink.jpa.test}/${src.dir}"
             destdir="${eclipselink.jpa.test}/stage"
@@ -642,7 +680,7 @@
             includes="${MODEL_DIR2}/*.java">
             <classpath refid="compile.path"/>
         </javac>
-        <!-- Copy xml file to related directory -->
+        <!-- Copy and replace platform in persistence.xml. -->
         <copy todir="${eclipselink.jpa.test}/stage/META-INF">
             <fileset dir="${eclipselink.jpa.test}/resource/${MODEL_NAME}/server/">
                 <include name="persistence.xml"/>
@@ -657,13 +695,8 @@
                 <include name="ejb-jar.xml"/>
             </fileset>
         </copy>
-        <!-- Create ejb jar -->
-        <jar destfile="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar" basedir="stage">
-            <manifest> 
-                <attribute name="Class-Path" value="${TEST_NAME}_client.jar"/>
-                <attribute name="Implementation-Vendor" value="Eclipse"/>
-            </manifest> 
-        </jar>
+        <!-- Create ejb jar. -->
+        <jar destfile="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar" basedir="stage"/>
         <delete dir="stage"/>
     </target>
 
@@ -671,7 +704,7 @@
     <target name="server.build.ear">
         <copy overwrite="true" file="./resource/${MODEL_NAME}/server/application.xml" todir="${build.dir}/META-INF"/>
         <ear destfile="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
-            <fileset dir="${eclipselink.jpa.test}/${build.dir}" includes ="${TEST_NAME}_client.jar,${MODEL_NAME}_ejb.jar"/>
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}" includes ="${MODEL_NAME}_ejb.jar"/>
         </ear> 
         <copy file="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" todir="."/>
     </target>
@@ -699,9 +732,7 @@
         <path id="run.path">
             <pathelement path="${eclipselink.jpa.test}/${build.dir}/${TEST_NAME}_client.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar"/>
-            <fileset
-                    dir="${server.lib}"
-                    includes="${server.depend}"/>
+            <fileset dir="${server.lib}" includes="${server.depend}"/>
             <path refid="compile.path"/>
         </path>
         <echo>Running test ${EAR_NAME} on ${server.name}</echo>
@@ -709,8 +740,9 @@
         <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="256m" dir="${run.dir}">
             <sysproperty key="server.platform" value="${server.platform}"/>
             <sysproperty key="server.user" value="${server.user}"/>
-            <sysproperty key="serveer.password" value="${server.pwd}"/>
+            <sysproperty key="server.password" value="${server.pwd}"/>
             <sysproperty key="server.url" value="${server.url}${MODEL_NAME}"/>
+            <sysproperty key="server.testrunner" value="${server.testrunner}"/>
             <sysproperty key="server.run" value="TRUE"/>
             <classpath refid="run.path"/>
             <formatter type="xml"/>
@@ -722,7 +754,8 @@
             </fileset>
             <report format="noframes" todir="${eclipselink.jpa.test}/${report.dir}"/>
         </junitreport>
-        <fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/>
+        <!-- fail is not used as undeploy must be called. -->
+        <!--fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/-->
     </target>
 
     <!-- Server Tests -->
@@ -760,5 +793,17 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EntityManagerJUnitTestSuite"/>
         </antcall>
     </target>
+
+    <!-- Not working yet. -->
+    <!--target name="server.test.advanced">
+        <antcall target="server.run.all" inheritRefs="true">
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-annotation-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/advanced"/>
+            <param name="TEST_NAME" value="eclipselink-advanced-model"/>
+            <param name="EAR_NAME" value="eclipselink-advanced-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedTestSuite"/>
+        </antcall>
+    </target-->
 
 </project>

@@ -12,7 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.wls;
 
+import java.lang.reflect.Method;
+
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.transaction.wls.WebLogicTransactionController;
 
@@ -20,11 +24,12 @@ import org.eclipse.persistence.transaction.wls.WebLogicTransactionController;
  * PUBLIC:
  *
  * This is the concrete subclass responsible for representing WebLogic-specific server behavior.
- *
+ * <p>
  * This platform overrides:
- *
- * getExternalTransactionControllerClass(): to use the WebLogic-specific controller class
- * getServerNameAndVersion(): to call the WebLogic library for this information
+ * <ul>
+ * <li>getExternalTransactionControllerClass(): to use the WebLogic-specific controller class
+ * <li>getServerNameAndVersion(): to call the WebLogic library for this information
+ * </ul>
  */
 public class WebLogicPlatform extends ServerPlatformBase {
 
@@ -38,15 +43,17 @@ public class WebLogicPlatform extends ServerPlatformBase {
     }
 
     /**
-     * PUBLIC: getServerNameAndVersion(): Talk to the WebLogic class library, and get the server name
-     * and version
-     *
-     * @return String serverNameAndVersion
+     * INTERNAL:
+     * Set the WLS version number through reflection.
      */
-    public String getServerNameAndVersion() {
-    	// TODO: Replace with reflection
-    	throw new RuntimeException("TODO: Replace with reflective access");
-        //return weblogic.version.getBuildVersion();
+    public void initializeServerNameAndVersion() {
+        try {
+            Class clazz = PrivilegedAccessHelper.getClassForName("weblogic.version");
+            Method method = PrivilegedAccessHelper.getMethod(clazz, "getBuildVersion", null, false);
+            this.serverNameAndVersion =  (String)PrivilegedAccessHelper.invokeMethod(method, null, null);
+        } catch (Exception exception) {
+            getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, exception);
+        }
     }
 
     /**
@@ -56,9 +63,9 @@ public class WebLogicPlatform extends ServerPlatformBase {
      * @return Class externalTransactionControllerClass
      *
      * @see org.eclipse.persistence.transaction.JTATransactionController
-     * @see ServerPlatformBase.isJTAEnabled()
-     * @see ServerPlatformBase.disableJTA()
-     * @see ServerPlatformBase.initializeExternalTransactionController()
+     * @see ServerPlatformBase#isJTAEnabled()
+     * @see ServerPlatformBase#disableJTA()
+     * @see ServerPlatformBase#initializeExternalTransactionController()
      */
     public Class getExternalTransactionControllerClass() {
     	if (externalTransactionControllerClass == null){
