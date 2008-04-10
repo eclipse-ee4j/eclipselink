@@ -41,33 +41,17 @@ import org.eclipse.persistence.tools.workbench.utility.NameTools;
 final class DescriptorGenerationDialog extends AbstractValidatingDialog {
 	
 	private MWRelationalProject project;
-	private boolean generateEjbs;
 	private JTextField packageNameTextField;
-	private JCheckBox generateAccessorsCheckBox; // only used if generating class descriptors
-	JCheckBox generateLocalInterfacesCheckBox; // only used if generating 2.0 cmp or bmp
-	private JCheckBox generateRemoteInterfacesCheckBox; // only used if generating 2.0 cmp or bmp
-
-
-	public DescriptorGenerationDialog(MWRelationalProject project, boolean generateEjbs, WorkbenchContext workbenchContext) {
+	private JCheckBox generateAccessorsCheckBox; 
+	
+	public DescriptorGenerationDialog(MWRelationalProject project, WorkbenchContext workbenchContext) {
 		super(workbenchContext);
 		this.project = project;
-		this.generateEjbs = generateEjbs;
 		initializeDialog();
 	}
-	
-	private ActionListener buildActionListener() {
-		return new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// the event source should always be the generateLocalInterfacesCheckBox
-				if ( ! DescriptorGenerationDialog.this.generateLocalInterfacesCheckBox.isSelected()) {
-					showNoRelationshipSupportDialog();
-				}
-			}
-		};
-	}
-	
+		
 	public boolean getGenerateAccessors() {
-		return this.generateEjbs ? true : this.generateAccessorsCheckBox.isSelected();
+		return this.generateAccessorsCheckBox.isSelected();
 	}
 		
 	public String getPackageName() {
@@ -75,10 +59,7 @@ final class DescriptorGenerationDialog extends AbstractValidatingDialog {
 	}
 	
 	protected String helpTopicId() {
-		return (this.generateEjbs) ?
-			"dialog.ejbDescriptorGeneration"
-		:
-			"dialog.descriptorGeneration";
+		return	"dialog.descriptorGeneration";
 	}
 
 	private void initializeDialog() {
@@ -126,6 +107,18 @@ final class DescriptorGenerationDialog extends AbstractValidatingDialog {
 		mainPanel.add(this.packageNameTextField, constraints);
 		packageNameLabel.setLabelFor(this.packageNameTextField);
 				
+		this.generateAccessorsCheckBox = new JCheckBox(resourceRepository().getString("DescriptorGenerationDialog_generateAccessingMethods"), true);
+		constraints.gridx = 0;
+		constraints.gridy = 1;
+		constraints.gridwidth = 2;
+		constraints.gridheight = 1;
+		constraints.weightx = 0;
+		constraints.weighty = 0;
+		constraints.fill = GridBagConstraints.NONE;
+		constraints.anchor = GridBagConstraints.LINE_START;
+		constraints.insets = new Insets(5, 0, 0, 0);
+		mainPanel.add(this.generateAccessorsCheckBox, constraints);
+
 		// Push everything to the top
 		Spacer spacer = new Spacer();
 		constraints.gridx = 0;

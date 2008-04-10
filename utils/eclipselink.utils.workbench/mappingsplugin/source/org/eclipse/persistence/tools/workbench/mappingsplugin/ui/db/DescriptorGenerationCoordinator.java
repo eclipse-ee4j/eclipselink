@@ -72,13 +72,13 @@ final class DescriptorGenerationCoordinator {
 	}
 	
 	private void generateClassDescriptorsForTables(RelationalProjectNode projectNode, Collection tables) {
-		generateDescriptorsForTables(projectNode, tables, false);
+		generateDescriptorsForTables(projectNode, tables);
 	}
 	
-	private void generateDescriptorsForTables(RelationalProjectNode projectNode, Collection tables, boolean generateEjbs) {
+	private void generateDescriptorsForTables(RelationalProjectNode projectNode, Collection tables) {
 		if (!checkForProjectSave(projectNode))
 			return;
-		DescriptorGenerationDialog descriptorDialog = new DescriptorGenerationDialog((MWRelationalProject) projectNode.getProject(), generateEjbs, context);
+		DescriptorGenerationDialog descriptorDialog = new DescriptorGenerationDialog((MWRelationalProject) projectNode.getProject(), context);
 		descriptorDialog.show();
 		if (descriptorDialog.wasCanceled()) {
 			return;
@@ -89,7 +89,6 @@ final class DescriptorGenerationCoordinator {
 		boolean generateBidirectionalRelationships = false;
 		if (!possibleRelationships.isEmpty()) {
 			RelationshipGenerationDialog relationshipDialog = new RelationshipGenerationDialog(possibleRelationships, context);
-			relationshipDialog.setGenerateBidirectionalRelationships(generateEjbs);
 			relationshipDialog.show();
 			if (relationshipDialog.wasCanceled()) {
 				return;
@@ -100,20 +99,14 @@ final class DescriptorGenerationCoordinator {
 		MWDescriptorGenerator generator = new MWDescriptorGenerator();
 		generator.setProject((MWRelationalProject) projectNode.getProject());
 		generator.setTables(tables);
-		generator.setGenerateEjbs(generateEjbs);
 		generator.setPackageName(descriptorDialog.getPackageName());
 		generator.setGenerateMethodAccessors(descriptorDialog.getGenerateAccessors());
 		generator.setGenerateBidirectionalRelationships(generateBidirectionalRelationships);
 		generator.setRelationshipsToCreate(relationshipsToCreate);
 		generator.generateClassesAndDescriptors();
 		// show successful dialog
-		String successDialogString = null;
-		if (generateEjbs) {
-			successDialogString = "generateEJB";
-		}
-		else {
-			successDialogString = "generateClassesAndDescriptors";
-		}
+		String successDialogString = "generateClassesAndDescriptors";
+			
 		JOptionPane.showMessageDialog(
 			context.getCurrentWindow(),
 			resourceRepository().getString(successDialogString + ".message"), 
@@ -121,19 +114,7 @@ final class DescriptorGenerationCoordinator {
 			JOptionPane.INFORMATION_MESSAGE);
 			
 	}
-	
-	void generateEjbDescriptorsForAllTables(RelationalProjectNode projectNode) {
-		generateEjbDescriptorsForTables(projectNode, CollectionTools.collection(projectNode.getProject().getDatabase().tables()));
-	}
-	
-	void generateEjbDescriptorsForSelectedTables(RelationalProjectNode projectNode, Collection selectedTables) {
-		generateEjbDescriptorsForTables(projectNode, selectedTables);
-	}
-	
-	private void generateEjbDescriptorsForTables(RelationalProjectNode projectNode, Collection tables) {
-		generateDescriptorsForTables(projectNode, tables, true);
-	}
-	
+		
 	private boolean promptToSaveProject(RelationalProjectNode projectNode) {
 		int selection = JOptionPane.showConfirmDialog(
 			context.getCurrentWindow(),
