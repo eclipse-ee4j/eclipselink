@@ -25,6 +25,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.eis.interactions.*;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
@@ -69,6 +70,9 @@ public class EISPlatform extends DatasourcePlatform {
 
     /** Used to reflectively provide XML record support as DOMRecord is not part of the JCA-CCI spec. */
     protected Method domMethod;
+    
+    /** For XML usage, an XMLConversionManager instance is required */
+    protected XMLConversionManager xmlConversionManager;
 
     /**
      * Default constructor.
@@ -344,5 +348,22 @@ public class EISPlatform extends DatasourcePlatform {
         } else {
             super.appendParameter(call, writer, parameter);
         }
+    }
+    
+    /**
+     * The platform holds its own instance of conversion manager to allow customization.
+     */
+    public ConversionManager getConversionManager() {
+        // For XML we need an XMLConversionManager instance
+        if (isDOMRecordSupported()) {
+            // Lazy init for serialization.
+            if (xmlConversionManager == null) {
+                // Clone the default to allow customers to easily override the conversion manager
+                xmlConversionManager = (XMLConversionManager) XMLConversionManager.getDefaultXMLManager().clone();
+            }
+            return xmlConversionManager;
+        }
+        // For non-XML, return the ConversionManager instance from DatasourcePlatform
+        return super.getConversionManager();
     }
 }

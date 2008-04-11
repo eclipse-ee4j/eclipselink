@@ -35,6 +35,7 @@ public class XMLTransformationRecord extends DOMRecord {
     public XMLTransformationRecord(String rootName, UnmarshalRecord owner) {
         super(rootName);
         owningRecord = owner;
+        session = owner.getSession();
         resolver = new NamespaceResolver();
         initializeNamespaceMaps();
     }

@@ -80,7 +80,6 @@ import org.xml.sax.ext.Locator2;
 public class UnmarshalRecord extends XMLRecord implements ContentHandler, LexicalHandler {
     protected static final String EMPTY_STRING = "";
     public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = new DefaultUnmappedContentHandler();
-    private AbstractSession session;
     private XMLReader xmlReader;
     private TreeObjectBuilder treeObjectBuilder;
     private XPathFragment xPathFragment;
@@ -150,14 +149,6 @@ public class UnmarshalRecord extends XMLRecord implements ContentHandler, Lexica
 
     public String transformToXML() {
         throw XMLMarshalException.operationNotSupported("transformToXML");
-    }
-
-    public AbstractSession getSession() {
-        return this.session;
-    }
-
-    public void setSession(AbstractSession session) {
-        this.session = session;
     }
 
     public XMLReader getXMLReader() {

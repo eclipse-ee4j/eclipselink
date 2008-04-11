@@ -403,7 +403,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             Object fieldValue = null;
             if (attributeValue != null) {
                 fieldValue = buildCompositeRow(attributeValue, session, record);
-            } else if (getNullPolicy().compositeObjectMarshal(record, parent, (XMLField) getField())) {
+            } else if (getNullPolicy().compositeObjectMarshal(record, parent, (XMLField) getField(), session)) {
                 // If the null policy marshal method returns true (i.e. marshalled something)
                 // don't add/put null in the record
                 return;

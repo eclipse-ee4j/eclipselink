@@ -12,15 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.mappings.onetoone.keyonsource.eis.nointeraction;
 
-import java.util.Vector;
-import org.eclipse.persistence.eis.interactions.XMLInteraction;
 import org.eclipse.persistence.eis.interactions.XQueryInteraction;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 import org.eclipse.persistence.eis.EISLogin;
 import org.eclipse.persistence.eis.adapters.xmlfile.XMLFilePlatform;
 import org.eclipse.persistence.eis.adapters.xmlfile.XMLFileEISConnectionSpec;
-import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
 import org.eclipse.persistence.eis.mappings.EISDirectMapping;
 import org.eclipse.persistence.eis.mappings.EISOneToOneMapping;
 import org.eclipse.persistence.eis.EISDescriptor;

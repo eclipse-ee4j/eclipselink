@@ -32,6 +32,7 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
@@ -167,7 +168,7 @@ public class DOMRecord extends XMLRecord {
     public void add(DatabaseField key, Object value) {
         // Value may be a direct value, nested record, or collection of values.
         Object nodeValue = convertToNodeValue(value);
-        XPathEngine.getInstance().create(convertToXMLField(key), dom, nodeValue);
+        XPathEngine.getInstance().create(convertToXMLField(key), dom, nodeValue, session);
     }
 
     /**
@@ -481,13 +482,13 @@ public class DOMRecord extends XMLRecord {
         boolean isEmptyCollection = false;
         if (nodeValue instanceof Collection) {
             isEmptyCollection = ((Collection)nodeValue).size() == 0; 
-            replaced = XPathEngine.getInstance().replaceCollection(convertToXMLField(key), dom, (Collection)nodeValue);
+            replaced = XPathEngine.getInstance().replaceCollection(convertToXMLField(key), dom, (Collection)nodeValue, session);
         } else {
-            replaced = XPathEngine.getInstance().replaceValue(convertToXMLField(key), dom, nodeValue);
+            replaced = XPathEngine.getInstance().replaceValue(convertToXMLField(key), dom, nodeValue, session);
         }
         if (replaced.getLength() == 0) {
             // Replace does nothing if the node did not exist, return no nodes.
-            XPathEngine.getInstance().create(convertToXMLField(key), dom, nodeValue, lastUpdatedField, getDocPresPolicy());
+            XPathEngine.getInstance().create(convertToXMLField(key), dom, nodeValue, lastUpdatedField, getDocPresPolicy(), session);
         } else if (replaced.item(0) == getDOM()) {
             // If the root element/record element was changed must update the record's reference.
             setDOM(getDocument().getDocumentElement());

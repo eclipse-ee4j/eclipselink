@@ -95,10 +95,10 @@ public class XMLBinder {
         if(obj instanceof XMLRoot) {
             obj = ((XMLRoot)obj).getObject();
         }
+        AbstractSession session = context.getSession(obj);
         DOMRecord root = new DOMRecord((Element)associatedNode);
         root.setDocPresPolicy(this.documentPreservationPolicy);
-        AbstractSession session = context.getSession(obj);
-        XMLDescriptor rootDescriptor = (XMLDescriptor)context.getSession(obj).getDescriptor(obj);
+        XMLDescriptor rootDescriptor = (XMLDescriptor) session.getDescriptor(obj);
         ((XMLObjectBuilder)rootDescriptor.getObjectBuilder()).buildIntoNestedRow(root, obj, session);
     }
     /**

@@ -291,7 +291,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         Element root = (Element) record.getDOM();
 
         if (field != null) {
-            root = (Element) XPathEngine.getInstance().create((XMLField) getField(), root);
+            root = (Element) XPathEngine.getInstance().create((XMLField) getField(), root, session);
         }
         List extraNamespaces = new ArrayList();
         NamespaceResolver nr = row.getNamespaceResolver();

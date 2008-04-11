@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings.nullpolicy;
 
 import java.lang.reflect.Method;
@@ -22,13 +22,13 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.sessions.Session;
-
 
 /**
  * PUBLIC:
@@ -69,8 +69,8 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
      * isNullRepresentedByEmptyNode and isNullRepresentedByXsiNil 
      */
     public IsSetNullPolicy() {
-    	super();
-    	isSetPerformedForAbsentNode = false;	
+        super();
+        isSetPerformedForAbsentNode = false;
     }
 
     /**
@@ -78,8 +78,8 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
      * @param anIsSetMethodName
      */
     public IsSetNullPolicy(String anIsSetMethodName) {
-    	this();
-    	setIsSetMethodName(anIsSetMethodName);	
+        this();
+        setIsSetMethodName(anIsSetMethodName);
     }
 
     /**
@@ -90,63 +90,63 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
      * @param aMarshalNullRepresentation
      */
     public IsSetNullPolicy(String anIsSetMethodName, //
-    		boolean bIsNullRepresentedByEmptyNode, boolean bIsNullRepresentedByXsiNil, //
-    		XMLNullRepresentationType aMarshalNullRepresentation) {
-    	this(anIsSetMethodName);
-		setNullRepresentedByEmptyNode(bIsNullRepresentedByEmptyNode);
-		setNullRepresentedByXsiNil(bIsNullRepresentedByXsiNil);
-		setMarshalNullRepresentation(aMarshalNullRepresentation);		
+            boolean bIsNullRepresentedByEmptyNode, boolean bIsNullRepresentedByXsiNil, //
+            XMLNullRepresentationType aMarshalNullRepresentation) {
+        this(anIsSetMethodName);
+        setNullRepresentedByEmptyNode(bIsNullRepresentedByEmptyNode);
+        setNullRepresentedByXsiNil(bIsNullRepresentedByXsiNil);
+        setMarshalNullRepresentation(aMarshalNullRepresentation);
     }
 
     public boolean directMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
-    		Object object, Session session, NamespaceResolver namespaceResolver) {
-    	// Do nothing when the value is not set or we are marshaling as ABSENT_NODE (optional) 
-        if(!isSet(object)) {
+            Object object, Session session, NamespaceResolver namespaceResolver) {
+        // Do nothing when the value is not set or we are marshaling as ABSENT_NODE (optional) 
+        if (!isSet(object)) {
             return false;
         } else {
-        	return super.directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
+            return super.directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
     }
-    
+
     public boolean compositeObjectMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
-    		Object object, Session session, NamespaceResolver namespaceResolver) {
-    	// Do nothing when the value is not set or we are marshaling as ABSENT_NODE (optional)    	
-        if(!isSet(object)) {
+            Object object, Session session, NamespaceResolver namespaceResolver) {
+        // Do nothing when the value is not set or we are marshaling as ABSENT_NODE (optional)    	
+        if (!isSet(object)) {
             return false;
         } else {
-        	return super.compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
+            return super.compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
     }
-    
-    public boolean compositeObjectMarshal(XMLRecord record, Object object, XMLField field) {
-		if(!isSet(object)) {
-			return false;
-		} else {
-			return super.compositeObjectMarshal(record, object, field);
-		}
+
+    public boolean compositeObjectMarshal(XMLRecord record, Object object, XMLField field, AbstractSession session) {
+        if (!isSet(object)) {
+            return false;
+        } else {
+            return super.compositeObjectMarshal(record, object, field, session);
+        }
     }
 
     public void xPathNode(XPathNode xPathNode, NullCapableValue nullCapableValue) {
-    	// isset optional only    	
-    	if(!(isNullRepresentedByXsiNil() || getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL))) {
-    		if(xPathNode.getXPathFragment().isAttribute()) {
-    			return;
-    		}
-    	}
-    	
-    	// get the parent above the text() node    	
+        // isset optional only    	
+        if (!(isNullRepresentedByXsiNil() || getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL))) {
+            if (xPathNode.getXPathFragment().isAttribute()) {
+                return;
+            }
+        }
+
+        // get the parent above the text() node    	
         XPathNode parentNode = xPathNode.getParent();
-        
+
         // isset nillable only        
-    	if(isNullRepresentedByXsiNil() || getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
-    		XPathFragment xPathFragment = new XPathFragment();
-    		xPathFragment.setXPath('@' + XMLConstants.SCHEMA_NIL_ATTRIBUTE);
-    		xPathFragment.setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-        	NodeValue aNodeValue = new NillableNodeValue(nullCapableValue);
-            parentNode.addChild(xPathFragment, aNodeValue, null);        	
+        if (isNullRepresentedByXsiNil() || getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
+            XPathFragment xPathFragment = new XPathFragment();
+            xPathFragment.setXPath('@' + XMLConstants.SCHEMA_NIL_ATTRIBUTE);
+            xPathFragment.setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+            NodeValue aNodeValue = new NillableNodeValue(nullCapableValue);
+            parentNode.addChild(xPathFragment, aNodeValue, null);
         } else {
-        	NodeValue aNodeValue = new OptionalNodeValue(nullCapableValue);
-            parentNode.setNodeValue(aNodeValue);        
+            NodeValue aNodeValue = new OptionalNodeValue(nullCapableValue);
+            parentNode.setNodeValue(aNodeValue);
         }
     }
 
@@ -162,9 +162,9 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
             Class objectClass = object.getClass();
             PrivilegedGetMethod privilegedGetMethod = new PrivilegedGetMethod(objectClass, getIsSetMethodName(), getIsSetParameterTypes(), false);
             Method isSetMethod = privilegedGetMethod.run();
-            PrivilegedMethodInvoker privilegedMethodInvoker = new PrivilegedMethodInvoker(isSetMethod, object, isSetParameters); 
+            PrivilegedMethodInvoker privilegedMethodInvoker = new PrivilegedMethodInvoker(isSetMethod, object, isSetParameters);
             isSet = (Boolean) privilegedMethodInvoker.run();
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return isSet.booleanValue();
@@ -217,5 +217,5 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     public void setIsSetParameters(Object[] parameters) {
         isSetParameters = parameters;
     }
-    
+
 }

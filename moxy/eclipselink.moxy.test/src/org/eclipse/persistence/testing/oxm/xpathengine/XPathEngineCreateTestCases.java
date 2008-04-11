@@ -22,10 +22,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
+import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,6 +39,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
     private Document controlDocument;
     private Element searchNode;
+    private AbstractSession session;
 
     public XPathEngineCreateTestCases(String name) {
         super(name);
@@ -50,6 +54,9 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
         controlDocument = parser.parse(inputStream);
 
         searchNode = (Element) controlDocument.getDocumentElement();
+
+        XMLContext ctx = new XMLContext(new org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLMarshallerTestProject());
+        session = (AbstractSession) ctx.getSession(0);
     }
 
     // ==========================================================================================
@@ -59,8 +66,8 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         String fieldName = "newElement";
         XMLField field = new XMLField(fieldName);
-        XPathEngine.getInstance().create(field, searchNode);
-        XPathEngine.getInstance().create(field, searchNode);
+        XPathEngine.getInstance().create(field, searchNode, session);
+        XPathEngine.getInstance().create(field, searchNode, session);
 
         NodeList verifyNodes = searchNode.getElementsByTagName(fieldName);
 
@@ -80,7 +87,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         String fieldName = "newElement";
         XMLField field = new XMLField(fieldName);
-        Node createdNode = XPathEngine.getInstance().create(field, searchNode, newElementValue);
+        Node createdNode = XPathEngine.getInstance().create(field, searchNode, newElementValue, session);
 
         NodeList verifyNodes = searchNode.getElementsByTagName(fieldName);
 
@@ -99,7 +106,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         String fieldName = "newElement";
         XMLField field = new XMLField(fieldName);
-        Node createdNode = XPathEngine.getInstance().create(field, searchNode, value);
+        Node createdNode = XPathEngine.getInstance().create(field, searchNode, value, session);
 
         NodeList verifyNodes = searchNode.getElementsByTagName(fieldName);
 
@@ -115,8 +122,8 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         String fieldName = "newElement/newChild";
         XMLField field = new XMLField(fieldName);
-        XPathEngine.getInstance().create(field, searchNode);
-        XPathEngine.getInstance().create(field, searchNode);
+        XPathEngine.getInstance().create(field, searchNode, session);
+        XPathEngine.getInstance().create(field, searchNode, session);
 
         NodeList verifyNodes = searchNode.getElementsByTagName("newChild");
 
@@ -143,7 +150,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
         String fieldName = "newElement/newChildWithElementValue";
         XMLField field = new XMLField(fieldName);
 
-        Node created = XPathEngine.getInstance().create(field, searchNode, elementValue);
+        Node created = XPathEngine.getInstance().create(field, searchNode, elementValue, session);
         NodeList verifyNodes = searchNode.getElementsByTagName("newChildWithElementValue");
 
         assertTrue("XPath failed to create the child elements.", verifyNodes != null);
@@ -180,7 +187,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         String fieldName = "newIndexedElement[10]";
         XMLField field = new XMLField(fieldName);
-        XPathEngine.getInstance().create(field, searchNode);
+        XPathEngine.getInstance().create(field, searchNode, session);
 
         NodeList verifyNodes = searchNode.getElementsByTagName("newIndexedElement");
 
@@ -197,7 +204,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         String newElementValue = "newValue";
 
-        Node createdNode = XPathEngine.getInstance().create(field, searchNode, newElementValue);
+        Node createdNode = XPathEngine.getInstance().create(field, searchNode, newElementValue, session);
 
         NodeList verifyNodes = searchNode.getElementsByTagName("newIndexedElement");
 
@@ -219,8 +226,8 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
         String fieldName = "newIndexedElement[10]";
         XMLField field = new XMLField(fieldName);
 
-        Node createdNodeExisting = XPathEngine.getInstance().create(field, searchNode, newElementValue);
-        Node createdNode = XPathEngine.getInstance().create(field, searchNode, newElementValue);
+        Node createdNodeExisting = XPathEngine.getInstance().create(field, searchNode, newElementValue, session);
+        Node createdNode = XPathEngine.getInstance().create(field, searchNode, newElementValue, session);
 
         NodeList verifyNodes = searchNode.getElementsByTagName("newIndexedElement");
 
@@ -240,8 +247,8 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         String fieldName = "newIndexedElement[1]/newChild";
         XMLField field = new XMLField(fieldName);
-        XPathEngine.getInstance().create(field, searchNode);
-        XPathEngine.getInstance().create(field, searchNode);
+        XPathEngine.getInstance().create(field, searchNode, session);
+        XPathEngine.getInstance().create(field, searchNode, session);
 
         NodeList parentNodes = searchNode.getElementsByTagName("newIndexedElement");
         Element indexedElement = (Element) parentNodes.item(0);
@@ -260,7 +267,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         String fieldName = "address/@newAttribute";
         XMLField field = new XMLField(fieldName);
-        XPathEngine.getInstance().create(field, searchNode);
+        XPathEngine.getInstance().create(field, searchNode, session);
 
         NodeList verifyNodes = searchNode.getElementsByTagName("address");
         Element verifyNode = (Element) verifyNodes.item(0);
@@ -281,7 +288,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
         String fieldName = "address/@newAttribute";
         XMLField field = new XMLField(fieldName);
 
-        XPathEngine.getInstance().create(field, searchNode, newAttributeValue);
+        XPathEngine.getInstance().create(field, searchNode, newAttributeValue, session);
 
         NodeList verifyNodes = searchNode.getElementsByTagName("address");
         int length = verifyNodes.getLength();
@@ -303,7 +310,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         String fieldName = "newIndexedElement[5]/@newAttribute";
         XMLField field = new XMLField(fieldName);
-        XPathEngine.getInstance().create(field, searchNode);
+        XPathEngine.getInstance().create(field, searchNode, session);
 
         NodeList verifyNodes = searchNode.getElementsByTagName("newIndexedElement");
         Element verifyElement = (Element) verifyNodes.item(4);
@@ -323,11 +330,11 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         String fieldName = "newElement/@firstAttribute";
         XMLField field = new XMLField(fieldName);
-        XPathEngine.getInstance().create(field, searchNode);
+        XPathEngine.getInstance().create(field, searchNode, session);
 
         String fieldName2 = "newElement/@secondAttribute";
         XMLField field2 = new XMLField(fieldName2);
-        XPathEngine.getInstance().create(field2, searchNode);
+        XPathEngine.getInstance().create(field2, searchNode, session);
 
         NodeList verifyNodes = searchNode.getElementsByTagName("newElement");
 
@@ -348,7 +355,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
         try {
             String fieldName = "newIndexedElement[10.0]";
             XMLField field = new XMLField(fieldName);
-            XPathEngine.getInstance().create(field, searchNode);
+            XPathEngine.getInstance().create(field, searchNode, session);
         } catch (XMLMarshalException validationException) {
             assertTrue("An unexpected XMLMarshalException was caught. " + validationException.getMessage(), validationException.getErrorCode() == XMLMarshalException.INVALID_XPATH_INDEX_STRING);
             return;

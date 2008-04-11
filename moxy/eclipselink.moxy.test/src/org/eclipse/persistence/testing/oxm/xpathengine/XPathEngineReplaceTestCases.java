@@ -19,11 +19,14 @@ import java.io.PrintWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
+import org.eclipse.persistence.sessions.factories.SessionManager;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -35,6 +38,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
 
     private Document controlDocument;
     private Element searchNode;
+    private AbstractSession session;
 
     public XPathEngineReplaceTestCases(String name) {
         super(name);
@@ -49,6 +53,8 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
         controlDocument = parser.parse(inputStream);
 
         searchNode = (Element) controlDocument.getDocumentElement();
+        XMLContext ctx = new XMLContext(new org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLMarshallerTestProject());
+        session = (AbstractSession) ctx.getSession(0);
     }
 
     // ==========================================================================================
@@ -58,7 +64,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
 
         String fieldName = "address/@type";
         XMLField field = new XMLField(fieldName);
-        int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, "FOO").getLength();
+        int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, "FOO", session).getLength();
 
         NodeList verifyNodes = searchNode.getElementsByTagName("address");
 
@@ -78,7 +84,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
 
         String fieldName = "address/phone/@area-code";
         XMLField field = new XMLField(fieldName);
-        int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, "902").getLength();
+        int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, "902", session).getLength();
 
         NodeList verifyNodes = searchNode.getElementsByTagName("phone");
 
@@ -97,7 +103,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
         Element backupNode = (Element) searchNode.cloneNode(true);
         String fieldName = "address/postal-code";
         XMLField field = new XMLField(fieldName);
-        int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, "90210").getLength();
+        int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, "90210", session).getLength();
 
         NodeList verifyNodes = searchNode.getElementsByTagName("postal-code");
         for (int i = 0; i < verifyNodes.getLength(); i++) {
@@ -132,7 +138,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
 
         String fieldName = "address/city";
         XMLField field = new XMLField(fieldName);
-        int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, cityElement).getLength();
+        int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, cityElement, session).getLength();
 
         NodeList verifyNodes = searchNode.getElementsByTagName("city");
         assertTrue("XPath did not replace all of the element values.", verifyNodes.getLength() == nodesReplaced);
@@ -193,7 +199,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
 
         String fieldName = "address/city";
         XMLField field = new XMLField(fieldName);
-        int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, townElement).getLength();
+        int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, townElement, session).getLength();
 
         NodeList verifyNodes = searchNode.getElementsByTagName("city");
         assertTrue("XPath did not replace all of the element values.", verifyNodes.getLength() == nodesReplaced);
@@ -232,7 +238,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
 
         String fieldName = "address/city";
         XMLField field = new XMLField(fieldName);
-        int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, "Halifax").getLength();
+        int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, "Halifax", session).getLength();
 
         NodeList verifyNodes = searchNode.getElementsByTagName("city");
 
@@ -251,7 +257,7 @@ public class XPathEngineReplaceTestCases extends org.eclipse.persistence.testing
         Element backupNode = (Element) searchNode.cloneNode(true);
         String fieldName = "address/phone[3]";
         XMLField field = new XMLField(fieldName);
-        int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, "123-4567").getLength();
+        int nodesReplaced = XPathEngine.getInstance().replaceValue(field, searchNode, "123-4567", session).getLength();
 
         assertTrue("XPath did not replace any element values.", nodesReplaced != 0);
 

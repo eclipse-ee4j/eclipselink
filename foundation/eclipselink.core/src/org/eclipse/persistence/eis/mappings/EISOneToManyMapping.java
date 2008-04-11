@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.eis.EISException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -820,13 +821,13 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
     }
 
     /**
-     * Build and return a database row that contains
-     * a foreign key for the specified reference object.
-     * This will be stored in the nested row(s).
+     * Build and return a database row that contains a foreign key for the specified reference 
+     * object.  This will be stored in the nested row(s).
      */
     protected XMLRecord extractKeyRowFromReferenceObject(Object object, AbstractSession session, XMLRecord parentRecord) {
         Element newNode = XPathEngine.getInstance().createUnownedElement(parentRecord.getDOM(), getForeignKeyGroupingElement());
         XMLRecord result = new DOMRecord(newNode);
+        result.setSession(session);
 
         for (int i = 0; i < this.getSourceForeignKeyFields().size(); i++) {
             DatabaseField fkField = (DatabaseField)getSourceForeignKeyFields().get(i);
@@ -839,7 +840,6 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
             }
         }
         return result;
-
     }
 
     /**
@@ -848,6 +848,10 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
      * Check whether the mapping's attribute should be optimized through batch and joining.
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+        if (((EISDescriptor) this.getDescriptor()).getDataFormat() == EISDescriptor.XML) {
+            ((XMLRecord) row).setSession(executionSession);
+        }
+        
         ReadQuery targetQuery = getSelectionQuery();
         if (!isForeignKeyRelationship) {
             // if the source query is cascading then the target query must use the same settings
@@ -918,11 +922,13 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
                         int valuesSize = ((Vector)values).size();
                         for (int j = 0; j < valuesSize; j++) {
                             XMLRecord newRecord = new DOMRecord("test");
+                            newRecord.setSession(((XMLRecord)row).getSession()); 
                             newRecord.put(this.getSourceForeignKeyFields().get(0), ((Vector)values).get(j));
                             subRows.add(newRecord);
                         }
                     } else {
                         XMLRecord newRecord = new DOMRecord("test");
+                        newRecord.setSession(((XMLRecord)row).getSession()); 
                         newRecord.put(getSourceForeignKeyFields().get(0), values);
                         subRows.add(newRecord);
                     }

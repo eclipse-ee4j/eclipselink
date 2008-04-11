@@ -424,7 +424,7 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
         	objectValue = getConverter().convertObjectValueToDataValue(objectValue, session, row.getMarshaller());
         }
         if (field != null) {
-            root = XPathEngine.getInstance().create((XMLField) getField(), root);
+            root = XPathEngine.getInstance().create((XMLField) getField(), root, session);
         }
         org.w3c.dom.Document doc = record.getDocument();
 
@@ -643,7 +643,7 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
             }
         } else {
             QName qname = ((XMLRoot) originalObject).getSchemaType();
-            Node newNode = XPathEngine.getInstance().create(xmlRootField, root, value);
+            Node newNode = XPathEngine.getInstance().create(xmlRootField, root, value, session);
             if (qname != null) {
                 String typeValue = qname.getLocalPart();
 
@@ -654,12 +654,12 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
                     ((Element) newNode).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, qname.getNamespaceURI());
                 }
                 typeValue = prefix + ":" + qname.getLocalPart();
-                writeXsiTypeAttribute(row, newNode, typeValue);
+                writeXsiTypeAttribute(row, newNode, typeValue, session);
             }
         }
     }
 
-    private void writeXsiTypeAttribute(DOMRecord row, Node theNode, String typeValue) {
+    private void writeXsiTypeAttribute(DOMRecord row, Node theNode, String typeValue, AbstractSession session) {
         String xsiPrefix = null;
         boolean generated = false;
 
@@ -674,7 +674,7 @@ public class XMLAnyObjectMapping extends DatabaseMapping implements XMLMapping {
             xmlField.getLastXPathFragment().setGeneratedPrefix(true);
         }
         xmlField.getLastXPathFragment().setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-        XPathEngine.getInstance().create(xmlField, theNode, typeValue);
+        XPathEngine.getInstance().create(xmlField, theNode, typeValue, session);
     }
 
     private void writeXsiNamespace(Node theNode, String xsiPrefix) {

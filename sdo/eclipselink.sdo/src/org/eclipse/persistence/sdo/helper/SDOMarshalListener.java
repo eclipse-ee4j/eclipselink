@@ -26,8 +26,11 @@ import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSetting;
 import org.eclipse.persistence.sdo.SDOType;
+import org.eclipse.persistence.sdo.helper.delegates.SDOXMLHelperDelegate;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
@@ -141,6 +144,9 @@ public class SDOMarshalListener implements XMLMarshalListener {
 
                 List nextDOSettings = changeSummary.getOldValues(nextModifiedDO);
                 DOMRecord row = new DOMRecord(csNode);
+                
+                Session session = ((SDOXMLHelper)((SDOTypeHelper)typeHelper).getHelperContext().getXMLHelper()).getXmlContext().getSession(0);
+                row.setSession((AbstractSession) session);
 
                 //Iterate through SDOSettings for the current modified Object
                 SDOSetting nextSetting = null;
@@ -194,7 +200,10 @@ public class SDOMarshalListener implements XMLMarshalListener {
                            Element csNode, SDODataObject modifiedObject, List deletedXPaths, String xpathToCS, String sdoPrefix) {
         if (value == null) {
             //Marshal out xsi:nil=true   
-            marshalNilAttribute(prop, new DOMRecord(csNode));                            
+            DOMRecord row = new DOMRecord(csNode);
+            Session session = ((SDOXMLHelper)((SDOTypeHelper)typeHelper).getHelperContext().getXMLHelper()).getXmlContext().getSession(0);
+            row.setSession((AbstractSession) session);
+            marshalNilAttribute(prop, row);                            
             return;
         }
 

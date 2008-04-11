@@ -724,6 +724,7 @@ public class XMLMarshaller {
             if (!isXMLRoot) {
                 xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(object, xmlContext.getDocumentPreservationPolicy(session));
                 xmlRow.setMarshaller(this);
+                //xmlRow.setSession(session);
                 addDescriptorNamespacesToXMLRecord(descriptor, xmlRow);
             }
             return objectToXML(object, descriptor, xmlRow, isXMLRoot);
@@ -833,6 +834,7 @@ public class XMLMarshaller {
         this.copyNamespaces(descriptor.getNamespaceResolver(), resolver);
         boolean shouldCallSetAttributeNS = false;
         boolean isRootDocumentFragment = false;
+        AbstractSession session = xmlContext.getSession(descriptor);
         if (xmlRow != null) {
             isRootDocumentFragment = (xmlRow.getDOM().getNodeType() == Node.DOCUMENT_FRAGMENT_NODE);
         }
@@ -850,7 +852,7 @@ public class XMLMarshaller {
                     }
                     recordName = xmlRootPrefix + ":" + recordName;
                 }
-                xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(((XMLRoot) object).getObject(), xmlContext.getDocumentPreservationPolicy(xmlContext.getSession(descriptor)), recordName, xmlRootUri);
+                xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(((XMLRoot) object).getObject(), xmlContext.getDocumentPreservationPolicy(session), recordName, xmlRootUri);
                 xmlRow.setMarshaller(this);
                 if (!isRootDocumentFragment) {
                     if (shouldCallSetAttributeNS) {
@@ -876,7 +878,7 @@ public class XMLMarshaller {
                 // xsi:type="typevalue"
                 XMLField xsiTypefield = new XMLField("@xsi:type");
                 xsiTypefield.setNamespaceResolver(xmlRow.getNamespaceResolver());
-                XPathEngine.getInstance().create(xsiTypefield, docElement, typeValue);
+                XPathEngine.getInstance().create(xsiTypefield, docElement, typeValue, session);
 
             }
             object = ((XMLRoot) object).getObject();
@@ -890,11 +892,11 @@ public class XMLMarshaller {
         }
         document = xmlRow.getDocument();
 
-        addSchemaLocations(document);
+        addSchemaLocations(document, session);
         return document;
     }
 
-    private void addSchemaLocations(Document document) {
+    private void addSchemaLocations(Document document, AbstractSession session) {
         Element docElement = document.getDocumentElement();
 
         NamespaceResolver resolver = new NamespaceResolver();
@@ -904,17 +906,17 @@ public class XMLMarshaller {
         if ((getSchemaLocation() != null) || (getNoNamespaceSchemaLocation() != null)) {
             XMLField field = new XMLField("@xmlns:xsi");
             field.setNamespaceResolver(resolver);
-            XPathEngine.getInstance().create(field, docElement, XMLConstants.SCHEMA_INSTANCE_URL);
+            XPathEngine.getInstance().create(field, docElement, XMLConstants.SCHEMA_INSTANCE_URL, session);
         }
         if (getSchemaLocation() != null) {
             XMLField field = new XMLField("@xsi:" + XMLConstants.SCHEMA_LOCATION);
             field.setNamespaceResolver(resolver);
-            XPathEngine.getInstance().create(field, docElement, getSchemaLocation());
+            XPathEngine.getInstance().create(field, docElement, getSchemaLocation(), session);
         }
         if (getNoNamespaceSchemaLocation() != null) {
             XMLField field = new XMLField("@xsi:" + XMLConstants.NO_NS_SCHEMA_LOCATION);
             field.setNamespaceResolver(resolver);
-            XPathEngine.getInstance().create(field, docElement, getNoNamespaceSchemaLocation());
+            XPathEngine.getInstance().create(field, docElement, getNoNamespaceSchemaLocation(), session);
         }
     }
 

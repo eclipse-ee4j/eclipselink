@@ -15,7 +15,9 @@ package org.eclipse.persistence.eis.mappings;
 import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
 /**
@@ -91,5 +93,19 @@ public class EISDirectMapping extends AbstractDirectMapping implements EISMappin
         } else {
             row.add(field, fieldValue);
         }
+    }
+
+    /**
+     * INTERNAL:
+     * We override this method in order to set the session on the record if the data
+     * format is XML.
+     * 
+     * Get a value from the object and set that in the respective field of the row.
+     */
+    public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session) {
+        if (((EISDescriptor) this.getDescriptor()).getDataFormat() == EISDescriptor.XML) {
+            ((XMLRecord) row).setSession(session);
+        }
+        super.writeFromObjectIntoRow(object, row, session);
     }
 }

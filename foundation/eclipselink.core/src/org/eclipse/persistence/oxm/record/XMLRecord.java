@@ -15,6 +15,7 @@ package org.eclipse.persistence.oxm.record;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -36,6 +37,7 @@ public abstract class XMLRecord extends AbstractRecord {
     private Object currentObject;
     private QName leafElementType;
     private NamespaceResolver namespaceResolver;
+    protected AbstractSession session;
 
     public XMLRecord() {
         super(null, null);
@@ -198,5 +200,13 @@ public abstract class XMLRecord extends AbstractRecord {
 
     public NamespaceResolver getNamespaceResolver() {
         return namespaceResolver;
+    }
+
+    public AbstractSession getSession() {
+        return session;
+    }
+
+    public void setSession(AbstractSession session) {
+        this.session = session;
     }
 }

@@ -59,6 +59,7 @@ public class DescriptorLevelDocumentPreservationPolicy extends DocumentPreservat
         AbstractSession session = context.getSession(obj);
         XMLDescriptor xmlDescriptor = (XMLDescriptor)session.getDescriptor(obj);
         DOMRecord row = new DOMRecord((Element)node);
+        row.setSession(session);
         Vector pk = xmlDescriptor.getObjectBuilder().extractPrimaryKeyFromRow(row, session);
         if (xmlDescriptor.shouldPreserveDocument() || xmlDescriptor.getPrimaryKeyFieldNames().size() > 0) {
             if ((pk == null) || (pk.size() == 0)) {

@@ -462,12 +462,12 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
         org.w3c.dom.Document doc = record.getDocument();
         XMLField xmlRootField = null;
         if (attributeValue == null) {
-            //            row.put(this.getField(), null);
             return;
         }
         if (field != null) {
-            root = XPathEngine.getInstance().create((XMLField) getField(), record.getDOM());
+            root = XPathEngine.getInstance().create((XMLField) getField(), record.getDOM(), session);
             DOMRecord rootRecord = new DOMRecord(root);
+            rootRecord.setSession(session);
             rootRecord.setDocPresPolicy(record.getDocPresPolicy());
             rootRecord.setNamespaceResolver(record.getNamespaceResolver());
             rootRecord.setMarshaller(record.getMarshaller());
@@ -526,7 +526,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
                 }
 
                 if (xmlRootField != null) {
-                    XPathEngine.getInstance().create(xmlRootField, root, element);
+                    XPathEngine.getInstance().create(xmlRootField, root, element, session);
                 } else {
                     Text textNode = doc.createTextNode((String) element);
                     root.replaceChild(textNode, nextChild);
@@ -552,7 +552,6 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
                 }
 
                 DOMRecord nestedRecord = (DOMRecord) buildCompositeRow(element, session, referenceDescriptor, row, xmlRootField, element, wasXMLRoot);
-
                 if (nestedRecord != null) {
                     if (nestedRecord.getDOM() != nextChild) {
                         root.replaceChild(nestedRecord.getDOM(), nextChild);
@@ -626,7 +625,6 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
             }
 
             DOMRecord nestedRecord = (DOMRecord) buildCompositeRow(element, session, referenceDescriptor, row, xmlRootField, originalObject, wasXMLRoot);
-
             if (nestedRecord != null) {
                 root.appendChild(nestedRecord.getDOM());
             }
@@ -648,7 +646,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
             xmlRootField.setNamespaceResolver(record.getNamespaceResolver());
             QName qname = ((XMLRoot) originalObject).getSchemaType();
 
-            Node newNode = XPathEngine.getInstance().create(xmlRootField, root, element);
+            Node newNode = XPathEngine.getInstance().create(xmlRootField, root, element, session);
 
             if (qname != null) {
                 String typeValue = qname.getLocalPart();
@@ -661,7 +659,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
                 }
                 typeValue = prefix + ":" + qname.getLocalPart();
 
-                writeXsiTypeAttribute(record, newNode, typeValue);
+                writeXsiTypeAttribute(record, newNode, typeValue, session);
             }
         } else {
             Text textNode = doc.createTextNode((String) element);
@@ -819,7 +817,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
         return unmappedNodes;
     }
 
-    private void writeXsiTypeAttribute(DOMRecord row, Node theNode, String typeValue) {
+    private void writeXsiTypeAttribute(DOMRecord row, Node theNode, String typeValue, AbstractSession session) {
         String xsiPrefix = null;
         boolean generated = false;
 
@@ -834,7 +832,7 @@ public class XMLAnyCollectionMapping extends DatabaseMapping implements XMLMappi
             xmlField.getLastXPathFragment().setGeneratedPrefix(true);
         }
         xmlField.getLastXPathFragment().setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
-        XPathEngine.getInstance().create(xmlField, theNode, typeValue);
+        XPathEngine.getInstance().create(xmlField, theNode, typeValue, session);
     }
 
     private void writeXsiNamespace(Node theNode, String xsiPrefix) {

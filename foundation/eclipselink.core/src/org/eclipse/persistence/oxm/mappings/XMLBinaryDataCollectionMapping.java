@@ -253,6 +253,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                     c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, data.getMimeType(), field.getLastXPathFragment().getLocalName(), field.getLastXPathFragment().getNamespaceURI());
                 }
                 DOMRecord include = new DOMRecord(field.getLastXPathFragment().getLocalName());
+                include.setSession(session);
                 include.put(includeField, c_id);
                 element = include;
 

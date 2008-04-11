@@ -22,6 +22,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -206,6 +207,8 @@ public class XMLObjectBuilder extends ObjectBuilder {
      */
     public Object buildObject(ObjectBuildingQuery query, AbstractRecord databaseRow, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
         XMLRecord row = (XMLRecord)databaseRow;
+        row.setSession(query.getSession());
+        
         XMLUnmarshaller unmarshaller = row.getUnmarshaller();
         Object parent = row.getOwningObject();
 
@@ -294,18 +297,8 @@ public class XMLObjectBuilder extends ObjectBuilder {
 
     public AbstractRecord buildRow(AbstractRecord databaseRow, Object object, AbstractSession session, boolean wasXMLRoot) {
         XMLRecord row = (XMLRecord)databaseRow;
-        /*if (isXmlDescriptor() && ((XMLDescriptor)getDescriptor()).shouldPreserveDocument()) {
-            Vector pk = extractPrimaryKeyFromObject(object, session);
-            if ((pk == null) || (pk.size() == 0)) {
-                pk = new Vector();
-                pk.addElement(new WeakObjectWrapper(object));
-            }
-            CacheKey key = session.getIdentityMapAccessorInstance().getCacheKeyForObject(pk, object.getClass(), getDescriptor());
-            if ((key != null) && (key.getRecord() != null)) {
-                row = (XMLRecord)key.getRecord();
-                row.setMarshaller(((XMLRecord)databaseRow).getMarshaller());
-            }
-        }*/
+        row.setSession(session);
+        
         XMLMarshaller marshaller = row.getMarshaller();
         if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
             marshaller.getMarshalListener().beforeMarshal(object);
@@ -385,6 +378,50 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
     }
 
+    /**
+     * Return the row with primary keys and their values from the given expression.
+     */
+    public AbstractRecord extractPrimaryKeyRowFromExpression(Expression expression, AbstractRecord translationRow, AbstractSession session) {
+        AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size());
+        ((XMLRecord)primaryKeyRow).setSession(session);
+
+        expression.getBuilder().setSession(session.getRootSession(null));
+        // Get all the field & values from expression   
+        boolean isValid = expression.extractPrimaryKeyValues(true, getDescriptor(), primaryKeyRow, translationRow);
+        if (!isValid) {
+            return null;
+        }
+
+        // Check that the sizes match up 
+        if (primaryKeyRow.size() != getDescriptor().getPrimaryKeyFields().size()) {
+            return null;
+        }
+
+        return primaryKeyRow;
+    }
+    
+    /**
+     * Return the row with primary keys and their values from the given expression.
+     */
+    public Vector extractPrimaryKeyFromExpression(boolean requiresExactMatch, Expression expression, AbstractRecord translationRow, AbstractSession session) {
+        AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size());
+        ((XMLRecord)primaryKeyRow).setSession(session);
+
+        expression.getBuilder().setSession(session.getRootSession(null));
+        // Get all the field & values from expression.
+        boolean isValid = expression.extractPrimaryKeyValues(requiresExactMatch, getDescriptor(), primaryKeyRow, translationRow);
+        if (requiresExactMatch && (!isValid)) {
+            return null;
+        }
+
+        // Check that the sizes match.
+        if (primaryKeyRow.size() != getDescriptor().getPrimaryKeyFields().size()) {
+            return null;
+        }
+
+        return extractPrimaryKeyFromRow(primaryKeyRow, session);
+    }
+    
     public Vector extractPrimaryKeyFromObject(Object domainObject, AbstractSession session) {
         if (getDescriptor().hasInheritance() && (domainObject.getClass() != getDescriptor().getJavaClass()) && (!domainObject.getClass().getSuperclass().equals(getDescriptor().getJavaClass()))) {
             return session.getDescriptor(domainObject).getObjectBuilder().extractPrimaryKeyFromObject(domainObject, session);
@@ -402,6 +439,8 @@ public class XMLObjectBuilder extends ObjectBuilder {
     public AbstractRecord buildIntoNestedRow(AbstractRecord row, Object object, AbstractSession session, boolean shouldWriteXsiType) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
         XMLRecord record = (XMLRecord)row;
+        record.setSession(session);
+        
         XMLMarshaller marshaller = record.getMarshaller();
 
         if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
@@ -455,10 +494,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                     }
                 }
             }
-
-            
             removeExtraNamespacesFromNamespaceResolver(record, extraNamespaces, session);
-            
         }
 
         // If this descriptor has multiple tables then we need to append the
