@@ -45,7 +45,7 @@
     <target name="weblogic.install">
         <delete dir="${weblogic.domain}"/>
         <mkdir dir="${weblogic.domain}"/>
-        <antcall target="weblogic.start" inheritRefs="true"/>
+        <antcall target="weblogic.start.nosleep" inheritRefs="true"/>
         <copy file="${junit.lib}" todir="${weblogic.domain}/lib"/>
         <copy file="${eclipselink.jar}" todir="${weblogic.domain}/lib"/>
         <copy file="${jdbc.driver.jar}" todir="${weblogic.domain}/lib"/>
@@ -53,7 +53,11 @@
     </target>
 
     <!-- Start the server. -->
-    <target name="weblogic.start">
+    <target name="weblogic.start" depends="weblogic.start.nosleep">
+        <sleep hours="2"/>
+    </target>
+
+    <target name="weblogic.start.nosleep">
         <wlserver fork="true" spawn="true" weblogichome="${weblogic.home}"
             dir="${weblogic.domain}" host="localhost" generateConfig="true" verbose="true"
             username="${server.user}" password="${server.pwd}" action="start">
