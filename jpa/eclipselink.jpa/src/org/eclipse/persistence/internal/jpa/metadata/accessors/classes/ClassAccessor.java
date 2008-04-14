@@ -26,7 +26,6 @@ import java.util.List;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
-import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.ChangeTracking;
 import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.annotations.CopyPolicy;
@@ -56,9 +55,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 
-import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.changetracking.ChangeTrackingMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CopyPolicyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CustomCopyPolicyMetadata;
