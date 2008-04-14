@@ -16,11 +16,9 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
 /**
  * This class only contains the common helper methods that can be accessed at
@@ -65,28 +63,5 @@ final class MetadataHelper {
         } else {
             return null;
         }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    static Object initializeClass(Class clazz) {
-        Object initializedClass;
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    initializedClass = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(clazz));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.errorInstantiatingClass(clazz, exception.getException());
-                }
-            } else {
-                initializedClass = PrivilegedAccessHelper.newInstanceFromClass(clazz);
-            }
-        } catch (IllegalAccessException exception) {
-            throw ValidationException.errorInstantiatingClass(clazz, exception);
-        } catch (InstantiationException exception) {
-            throw ValidationException.errorInstantiatingClass(clazz, exception);
-        }
-        return initializedClass;
     }
 }
