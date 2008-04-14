@@ -14,7 +14,11 @@ package org.eclipse.persistence.tools.workbench.utility.string;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.persistence.tools.workbench.utility.ClassTools;
 import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
@@ -24,6 +28,47 @@ public final class StringTools {
 
 	/** carriage return */
 	public static final String CR = System.getProperty("line.separator");
+
+	/**
+	 * The minimum count to be consider a match between two strings; which is 3.
+	 */
+	public static final int MINIMUM_MATCHING_LETTER = 3;
+
+	/**
+	 * The lowest weight for matching two strings. This means there is no match.
+	 */
+	public static final int NO_MATCH = 0;
+
+	/**
+	 * one of the weight for matching two strings. This means the first
+	 * string contains the second string and is longer than the second one.
+	 */
+	public static final int STRING_CONTAINS = 6;
+
+	/**
+	 * The second lowest weight for matching two strings. This means the first
+	 * string contains a section of the second string.
+	 */
+	public static final int STRING_CONTAINS_PART = 2;
+
+	/**
+	 * One of the weight for matching two strings. This means ...
+	 */
+	public static final int STRING_CONTAINS_PART_CONTINUOUS = 4;
+
+	/**
+	 * The weight of a potiential match between two strings. The value is 10
+	 * since both strings are equals and we have a match.
+	 */
+	public static final int STRINGS_EQUAL = 10;
+
+	/**
+	 * The weight of a potiential match between two strings. The value is 8.
+	 * Both strings are equals but one of them contains a delimitor between
+	 * charater. 
+	 */
+	public static final int STRINGS_EQUAL_WITH_IGNORE_CHARACTERS = 8;
+
 
 
 	// ********** padding/truncating **********
@@ -800,5 +845,1092 @@ public final class StringTools {
 		super();
 		throw new UnsupportedOperationException();
 	}
+	
+	//************* comparison **************
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @return
+	 */
+	public static double calculateHighestMatchWeight(String string1,String string2) {
+		return calculateHighestMatchWeight(string1, string2, new char[0], MINIMUM_MATCHING_LETTER);
+	}
 
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacter
+	 * @return
+	 */
+	public static double calculateHighestMatchWeight(String string1, String string2, char ignoreCharacter) {
+		return calculateHighestMatchWeight(string1, string2, new char[] { ignoreCharacter }, MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacter
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static double calculateHighestMatchWeight(String string1, String string2, char ignoreCharacter, int minimumMatchingLetterCount) {
+		return calculateHighestMatchWeight(string1, string2, new char[] { ignoreCharacter }, minimumMatchingLetterCount);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacters
+	 * @return
+	 */
+	public static double calculateHighestMatchWeight(String string1, String string2, char[] ignoreCharacters) {
+		return calculateHighestMatchWeight(string1, string2, ignoreCharacters, MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacters
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static double calculateHighestMatchWeight(String string1, String string2, char[] ignoreCharacters, int minimumMatchingLetterCount) {
+		if ((string1 == null) || (string2 == null))
+			return 0.0;
+
+		// Test 1: Look if they are equals
+		if (string1.equals(string2)) {
+			return 1.0;
+		}
+
+		// Test 2: Look if string1 and string2 are the same except for the list of
+		//         characters to ignore
+		if (equals(string1, string2, ignoreCharacters)) {
+			return string2.length() / string1.length() * 100.0;
+		}
+
+		// Test 3: Look if string2 is a substring of string1
+		if (string1.indexOf(string2) > -1) {
+			return string2.length() / string1.length() * 100.0;
+		}
+
+		// Test 4: Look if a part - continuous - of string2 is a substring of string1
+		int weight = weightContainsPartContinuous(string1, string2, ignoreCharacters, minimumMatchingLetterCount);
+
+		if (weight >= minimumMatchingLetterCount) {
+			double weight1 = (double) weight / (double) string1.length();
+			double weight2 = (double) weight / (double) string2.length();
+			return (weight1 + weight2) / 2;
+		}
+
+		// Test 5: Find all the substrings and then the common letters between
+		//         string1 and string2 and return the count
+		weight = weightContainsPart(string1, string2, ignoreCharacters, minimumMatchingLetterCount);
+
+		if (weight >= minimumMatchingLetterCount) {
+			double weight1 = (double) weight / (double) string1.length();
+			double weight2 = (double) weight / (double) string2.length();
+			return (weight1 + weight2) / 2;
+		}
+
+		return 0.0;
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static double calculateHighestMatchWeight(String string1, String string2, int minimumMatchingLetterCount) {
+		return calculateHighestMatchWeight(string1, string2, new char[0], minimumMatchingLetterCount);
+	}
+
+	/**
+	 * Calculates the maximum weight between the given two strings. The case is
+	 * not used.
+	 * <p>
+	 * The weight can be one of the following:
+	 * <ul>
+	 * <li>{@link #NO_MATCH} No match was found
+	 * <li>{@link #STRING_CONTAINS_PART_OF_THE_OTHER}
+	 * <li>{@link #STRING_CONTAINS_THE_OTHER}
+	 * <li>{@link #STRINGS_SUBSET_NON_CONTINUOUS}
+	 * <li>{@link #STRINGS_SUBSET_CONTINUOUS}
+	 * <li>{@link #STRINGS_EQUAL_WITH_DELIMITOR} Both strings are equals by
+	 * ignoring one character
+	 * <li>{@link #STRINGS_EQUAL} Both strings are equals
+	 * </ul>
+	 *
+	 * @param string1 The string that is used to verify if the sub-string
+	 * could be the equals, contained or a sub-set
+	 * @param string2 The string to use to check if it is equal, contained or
+	 * partially contained in the main string
+	 * @return The weight of the match
+	 */
+	public static int calculateMatchWeight(String string1, String string2) {
+		return calculateMatchWeight(string1, string2, new char[0], MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates the maximum weight between the given two strings. The case is
+	 * not used.
+	 * <p>
+	 * The weight can be one of the following:
+	 * <ul>
+	 * <li>{@link #NO_MATCH} No match was found
+	 * <li>{@link #STRING_CONTAINS_PART_OF_THE_OTHER}
+	 * <li>{@link #STRING_CONTAINS_THE_OTHER}
+	 * <li>{@link #STRINGS_SUBSET_CONTINUOUS}
+	 * <li>{@link #STRINGS_EQUAL_WITH_DELIMITOR} Both strings are equals by
+	 * ignoring one character
+	 * <li>{@link #STRINGS_EQUAL} Both strings are equals
+	 * </ul>
+	 *
+	 * @param string1 The string that is used to verify if the sub-string
+	 * could be the equals, contained or a sub-set
+	 * @param string2 The string to use to check if it is equal, contained or
+	 * partially contained in the main string
+	 * @param ignoreCharacter The character that can be ignored during the
+	 * calculation or '\0' to not ignore any character
+	 * @return The weight of the match
+	 */
+	public static int calculateMatchWeight(String string1, String string2, char ignoreCharacter) {
+		return calculateMatchWeight(string1, string2, new char[] { ignoreCharacter }, MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacter
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static int calculateMatchWeight(String string1, String string2, char ignoreCharacter, int minimumMatchingLetterCount) {
+		return calculateMatchWeight(string1, string2, new char[] { ignoreCharacter }, minimumMatchingLetterCount);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacters
+	 * @return
+	 */
+	public static int calculateMatchWeight(String string1, String string2, char[] ignoreCharacters) {
+		return calculateMatchWeight(string1, string2, ignoreCharacters, MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates the maximum weight between the given two strings. The case is
+	 * not used.
+	 * <p>
+	 * The weight can be one of the following:
+	 * <ul>
+	 * <li>{@link #NO_MATCH} No match was found
+	 * <li>{@link #STRING_CONTAINS_PART_OF_THE_OTHER}
+	 * <li>{@link #STRING_CONTAINS_THE_OTHER}
+	 * <li>{@link #STRINGS_SUBSET_CONTINUOUS}
+	 * <li>{@link #STRINGS_EQUAL_WITH_DELIMITOR} Both strings are equals by
+	 * ignoring one character
+	 * <li>{@link #STRINGS_EQUAL} Both strings are equals
+	 * </ul>
+	 *
+	 * @param string1 The string that is used to verify if the sub-string
+	 * could be the equals, contained or a sub-set
+	 * @param string2 The string to use to check if it is equal, contained or
+	 * partially contained in the main string
+	 * @param ignoreCharacter The character that can be ignored during the
+	 * calculation or '\0' to not ignore any character
+	 * @return The weight of the match
+	 */
+	public static int calculateMatchWeight(String string1, String string2, char[] ignoreCharacters, int minimumMatchingLetterCount) {
+		if ((string1 == null) || (string2 == null))
+			return NO_MATCH;
+
+		// Test 1: Look if they are equals
+		if (string1.equals(string2)) {
+			return STRINGS_EQUAL;
+		}
+
+		// Test 2: Look if they are the same except for the list of characters to
+		//         ignore
+		if (equals(string1, string2, ignoreCharacters)) {
+			return STRINGS_EQUAL_WITH_IGNORE_CHARACTERS;
+		}
+
+		// Test 3: Look if string2 is a substring of string1
+		if (string1.indexOf(string2) > -1) {
+			return STRING_CONTAINS;
+		}
+
+		// Test 4: Look if a part - continuous - of string2 is a substring of string1
+		if (containsPartContinuous(string1, string2, ignoreCharacters, minimumMatchingLetterCount)) {
+			return STRING_CONTAINS_PART_CONTINUOUS;
+		}
+
+		// Test 5: Look if a part of string2 is a substring of string1
+		if (containsPart(string1, string2, ignoreCharacters, minimumMatchingLetterCount)) {
+			return STRING_CONTAINS_PART;
+		}
+
+		return NO_MATCH;
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static int calculateMatchWeight(String string1, String string2, int minimumMatchingLetterCount) {
+		return calculateMatchWeight(string1, string2, new char[0], minimumMatchingLetterCount);
+	}
+
+	/**
+	 * Calculates the maximum weight between the given two strings. The case is
+	 * not used.
+	 * <p>
+	 * The weight can be one of the following:
+	 * <ul>
+	 * <li>{@link #NO_MATCH} No match was found
+	 * <li>{@link #STRING_CONTAINS_PART_OF_THE_OTHER}
+	 * <li>{@link #STRING_CONTAINS_THE_OTHER}
+	 * <li>{@link #STRINGS_SUBSET_NON_CONTINUOUS}
+	 * <li>{@link #STRINGS_SUBSET_CONTINUOUS}
+	 * <li>{@link #STRINGS_EQUAL_WITH_DELIMITOR} Both strings are equals by
+	 * ignoring one character
+	 * <li>{@link #STRINGS_EQUAL} Both strings are equals
+	 * </ul>
+	 *
+	 * @param string1 The string that is used to verify if the sub-string
+	 * could be the equals, contained or a sub-set
+	 * @param string2 The string to use to check if it is equal, contained
+	 * or partially contained in the main string
+	 * @return The weight of the match
+	 */
+	public static int calculateMatchWeightIgnoreCase(String string1, String string2) {
+		return calculateMatchWeightIgnoreCase(string1, string2, new char[0], MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates the maximum weight between the given two strings. The case is
+	 * not used.
+	 * <p>
+	 * The weight can be one of the following:
+	 * <ul>
+	 * <li>{@link #NO_MATCH} No match was found
+	 * <li>{@link #STRING_CONTAINS_PART_OF_THE_OTHER}
+	 * <li>{@link #STRING_CONTAINS_THE_OTHER}
+	 * <li>{@link #STRINGS_SUBSET_CONTINUOUS}
+	 * <li>{@link #STRINGS_EQUAL_WITH_DELIMITOR} Both strings are equals by
+	 * ignoring one character
+	 * <li>{@link #STRINGS_EQUAL} Both strings are equals
+	 * </ul>
+	 *
+	 * @param string1 The string that is used to verify if the sub-string
+	 * could be the equals, contained or a sub-set
+	 * @param string2 The string to use to check if it is equal, contained
+	 * or partially contained in the main string
+	 * @param ignoreCharacter The character that can be ignored during the
+	 * calculation or '\0' to not ignore any character
+	 * @return The weight of the match
+	 */
+	public static int calculateMatchWeightIgnoreCase(String string1, String string2, char ignoreCharacter) {
+		return calculateMatchWeightIgnoreCase(string1, string2, new char[] { ignoreCharacter }, MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates the maximum weight between the given two strings. The case is
+	 * not used.
+	 * <p>
+	 * The weight can be one of the following:
+	 * <ul>
+	 * <li>{@link #NO_MATCH} No match was found
+	 * <li>{@link #STRING_CONTAINS_PART_OF_THE_OTHER}
+	 * <li>{@link #STRING_CONTAINS_THE_OTHER}
+	 * <li>{@link #STRINGS_SUBSET_CONTINUOUS}
+	 * <li>{@link #STRINGS_EQUAL_WITH_DELIMITOR} Both strings are equals by
+	 * ignoring one character
+	 * <li>{@link #STRINGS_EQUAL} Both strings are equals
+	 * </ul>
+	 *
+	 * @param string1 The string that is used to verify if the sub-string
+	 * could be the equals, contained or a sub-set
+	 * @param string2 The string to use to check if it is equal, contained
+	 * or partially contained in the main string
+	 * @param ignoreCharacter The character that can be ignored during the
+	 * calculation or '\0' to not ignore any character
+	 * @return The weight of the match
+	 */
+	public static int calculateMatchWeightIgnoreCase(String string1, String string2, char[] ignoreCharacters) {
+		return calculateMatchWeightIgnoreCase(string1, string2, ignoreCharacters, MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacters
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static int calculateMatchWeightIgnoreCase(String string1, String string2, char[] ignoreCharacters, int minimumMatchingLetterCount) {
+		if ((string1 == null) || (string2 == null))
+			return NO_MATCH;
+
+		return calculateMatchWeight(string1.toLowerCase(), string2.toLowerCase(), ignoreCharacters, minimumMatchingLetterCount);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static int calculateMatchWeightIgnoreCase(String string1, String string2, int minimumMatchingLetterCount) {
+		return calculateMatchWeightIgnoreCase(string1, string2, new char[0], minimumMatchingLetterCount);
+	}
+	
+	/**
+	 * Determines whether the given two strings are equals. A <code>null</code>
+	 * string is also checked.
+	 *
+	 * @param string1 The first string to compare
+	 * @param string2 The second string to compare
+	 * @return <code>true</code> if both string are equals; <code>false</code> if
+	 * one of them is <code>null</code> or both are <code>null</code>
+	 */
+	public static boolean equals(String string1, String string2) {
+		return (string1 != null) && string1.equals(string2) || (string2 != null) && string2.equals(string1);
+	}
+
+	/**
+	 * Determines if the first string and the second string are the same minus
+	 * ignoring the given character.
+	 * <p>
+	 * Example:<br>
+	 * equals("INT_DOUBLE", "_INT_DOUBLE_", '_') returns <code>true</code><br>
+	 * 
+	 * @param string1 The first string to compare
+	 * @param string2 The second string to compare
+	 * @param ignoreCharacter The character to ignore when comparing the strings
+	 * @return <code>true</code> if both strings are equivalent; <code>false</code>
+	 * otherwise
+	 */
+	public static boolean equals(String string1, String string2, char ignoreCharacter) {
+		return equals(string1, string2, new char[] { ignoreCharacter });
+	}
+
+	/**
+	 * Determines if the first string and the second string are the same minus
+	 * the given list of characters to ignore.
+	 * <p>
+	 * Example:<br>
+	 * equals("INT_DOUBLE", "_INT_DOUBLE_", '_') returns <code>true</code><br>
+	 * 
+	 * @param string1 The first string to compare
+	 * @param string2 The second string to compare
+	 * @param ignoreCharacters The list of characters to ignore when comparing
+	 * the strings
+	 * @return <code>true</code> if both strings are equivalent; <code>false</code>
+	 * otherwise
+	 */
+	public static boolean equals(String string1, String string2, char[] ignoreCharacters) {
+		if ((string1 == null) || (string2 == null))
+			return false;
+
+		for (int index = 0; index < ignoreCharacters.length; index++) {
+			String character = String.valueOf(ignoreCharacters[index]);
+
+			string1 = string1.replaceAll(character, "");
+			string2 = string2.replaceAll(character, "");
+		}
+
+		return string1.equals(string2);
+	}
+
+	/**
+	 * Determines whether the given two strings are equals by ignoring the case
+	 * sensitivity. A <code>null</code> string is also checked.
+	 *
+	 * @param string1 The first string to compare
+	 * @param string2 The second string to compare
+	 * @return <code>true</code> if both string are equals; <code>false</code> if
+	 * one of them is <code>null</code> or both are <code>null</code>
+	 */
+	public static boolean equalsIgnoreCase(String string1, String string2) {
+		return (string1 != null) && string1.equalsIgnoreCase(string2) || (string2 != null) && string2.equalsIgnoreCase(string1);
+	}
+
+	/**
+	 * Determines if the first string and the second string are the same minus
+	 * the given list of characters to ignore.
+	 * <p>
+	 * Example:<br>
+	 * equals("INT_DOUBLE", "_INT_double_", '_') returns <code>true</code><br>
+	 * 
+	 * @param string1 The first string to compare
+	 * @param string2 The second string to compare
+	 * @param ignoreCharacter The character to ignore when comparing the strings
+	 * @return <code>true</code> if both strings are equivalent; <code>false</code>
+	 * otherwise
+	 * @return <code>true</code> if both strings are equivalent; <code>false</code>
+	 * otherwise
+	 */
+	public static boolean equalsIgnoreCase(String string1, String string2, char ignoreCharacter) {
+		if ((string1 == null) || (string2 == null))
+			return false;
+
+		return equals(string1.toLowerCase(), string2.toLowerCase(), new char[] { ignoreCharacter });
+	}
+
+	/**
+	 * Determines if the first string and the second string are the same minus
+	 * the given list of characters to ignore.
+	 * <p>
+	 * Example:<br>
+	 * equals("INT_DOUBLE", "_INT_DOUBLE_", '_') returns <code>true</code><br>
+	 * 
+	 * @param string1 The first string to compare
+	 * @param string2 The second string to compare
+	 * @param ignoreCharacters The list of characters to ignore when comparing
+	 * the strings
+	 * @return <code>true</code> if both strings are equivalent; <code>false</code>
+	 * otherwise
+	 */
+	public static boolean equalsIgnoreCase(String string1, String string2, char[] ignoreCharacters) {
+		if ((string1 == null) || (string2 == null))
+			return false;
+
+		return equals(string1.toLowerCase(), string2.toLowerCase(), ignoreCharacters);
+	}
+	
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @return
+	 */
+	public static int weightContainsPart(String string1, String string2) {
+		return weightContainsPart(string1, string2, new char[0], MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacter
+	 * @return
+	 */
+	public static int weightContainsPart(String string1, String string2, char ignoreCharacter) {
+		return weightContainsPart(string1, string2, new char[] { ignoreCharacter }, MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacter
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static int weightContainsPart(String string1, String string2, char ignoreCharacter, int minimumMatchingLetterCount) {
+		return weightContainsPart(string1, string2, new char[] { ignoreCharacter }, minimumMatchingLetterCount);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacters
+	 * @return
+	 */
+	public static int weightContainsPart(String string1, String string2, char[] ignoreCharacters) {
+		return weightContainsPart(string1, string2, ignoreCharacters, MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacters
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static int weightContainsPart(String string1, String string2, char[] ignoreCharacters, int minimumMatchingLetterCount) {
+		if ((string1 == null) || (string2 == null) ||(minimumMatchingLetterCount < 2))
+			return 0;
+
+		if (string1.length() < minimumMatchingLetterCount)
+			minimumMatchingLetterCount = string1.length();
+
+		string1 = removeIgnoreCharacters(string1, ignoreCharacters);
+		string2 = removeIgnoreCharacters(string2, ignoreCharacters);
+
+		Position[] positions = (string1.length() < string2.length()) ?
+										weightContainsPartImp(string2, string1) :
+										weightContainsPartImp(string1, string2);
+		int count = 0;
+
+		// TODO: Need to check the order and remove any substrings that are not
+		// allowed. Here an example: string1=JohnPascalandAnuj and
+		// string2=JohnAnujPascal, the result is 14 when it should be 10
+		for (int index = positions.length; --index >= 0;) {
+			if (Position.canAddWeight(positions, index)) {
+				count += positions[index].length;
+			}
+			else if (index > 0) {
+				Position[] oldPositions = positions;
+				positions = new Position[positions.length - 1];
+
+				System.arraycopy(oldPositions, 0, positions, 0, index);
+				System.arraycopy(oldPositions, index, positions, index, oldPositions.length - index - 1);
+			}
+		}
+
+		if (count < minimumMatchingLetterCount)
+			return 0;
+
+		return count;
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static int weightContainsPart(String string1, String string2, int minimumMatchingLetterCount) {
+		return weightContainsPart(string1, string2, new char[0], minimumMatchingLetterCount);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @return
+	 */
+	public static int weightContainsPartContinuous(String string1, String string2) {
+		return weightContainsPartContinuous(string1, string2, new char[0], MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacter
+	 * @return
+	 */
+	public static int weightContainsPartContinuous(String string1, String string2, char ignoreCharacter) {
+		return weightContainsPartContinuous(string1, string2, new char[] { ignoreCharacter }, MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacter
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static int weightContainsPartContinuous(String string1, String string2, char ignoreCharacter, int minimumMatchingLetterCount) {
+		return weightContainsPartContinuous(string1, string2, new char[] { ignoreCharacter }, minimumMatchingLetterCount);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacters
+	 * @return
+	 */
+	public static int weightContainsPartContinuous(String string1, String string2, char[] ignoreCharacters) {
+		return weightContainsPartContinuous(string1, string2, ignoreCharacters, MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacters
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static int weightContainsPartContinuous(String string1, String string2, char[] ignoreCharacters, int minimumMatchingLetterCount) {
+		if ((string1 == null) || (string2 == null) || (minimumMatchingLetterCount < 2))
+			return 0;
+
+		string1 = removeIgnoreCharacters(string1, ignoreCharacters);
+		string2 = removeIgnoreCharacters(string2, ignoreCharacters);
+
+//		if (string2.length() < minimumMatchingLetterCount)
+//			minimumMatchingLetterCount = string2.length();
+//
+//		if (string1.length() < minimumMatchingLetterCount)
+//			minimumMatchingLetterCount = Math.min(string1.length(), minimumMatchingLetterCount);
+
+		return weightContainsPartContinuousImp(string1, string2, minimumMatchingLetterCount);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static int weightContainsPartContinuous(String string1, String string2, int minimumMatchingLetterCount) {
+		return weightContainsPartContinuous(string1, string2, new char[0], minimumMatchingLetterCount);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	private static int weightContainsPartContinuousImp(String string1, String string2, int minimumMatchingLetterCount) {
+		int currentLength = string2.length();
+
+		// Can't go smaller than the minimum count
+		if (currentLength < minimumMatchingLetterCount)
+			return 0;
+
+		// First test to see if string2 is a substring of string1
+		if (string1.indexOf(string2) > -1)
+			return currentLength;
+
+		// Truncate on the left and start to test it recursively
+		int weightLeft = weightContainsPartContinuousImp(string1, string2.substring(1, currentLength), minimumMatchingLetterCount);
+
+		// Truncate on the right and start to test it recursively
+		int weightRight = weightContainsPartContinuousImp(string1, string2.substring(0, currentLength - 1), minimumMatchingLetterCount);
+
+		return Math.max(weightLeft, weightRight);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @return
+	 */
+	private static Position[] weightContainsPartImp(String string1, String string2) {
+		int currentLength = string2.length();
+
+		// Can't go smaller than the minimum count
+		if (currentLength == 0)
+			return new Position[0];
+
+		// First test to see if string2 is a substring of string1
+		int index = string1.indexOf(string2);
+
+		if (index > -1) {
+			Position position = new Position(index, currentLength);
+			int string1Length = string1.length();
+
+			// Gather all the locations of string2 in string1
+			while ((index > -1) && (string1Length - index - 2*currentLength >= 0)) {
+				index = string1.indexOf(string2, index + currentLength);
+
+				if (index > -1)
+					position.add(index);
+			}
+
+			return new Position[] { position };
+		}
+
+		// One letter string was testing with indexOf(String)
+		if (currentLength > 1) {
+			// Truncate to the left and start to test it recursively
+			String leftSubString = string2.substring(1, currentLength);
+			Position[] leftPos = weightContainsPartImp(string1, leftSubString);
+
+			// Truncate to the right and start to test it recursively
+			String rightSubString = string2.substring(0, currentLength - 1);
+			Position[] rightPos = weightContainsPartImp(string1, rightSubString);
+
+			return Position.merge(leftPos, rightPos);
+		}
+
+		return new Position[0];
+	}
+	
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacter
+	 * @return
+	 */
+	public static boolean contains(String string1, String string2, char ignoreCharacter) {
+		return contains(string1, string2, new char[] { ignoreCharacter });
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacters
+	 * @return
+	 */
+	public static boolean contains(String string1, String string2, char[] ignoreCharacters) {
+		if ((string1 == null) || (string2 == null))
+			return false;
+
+		string1 = removeIgnoreCharacters(string1, ignoreCharacters);
+		string2 = removeIgnoreCharacters(string2, ignoreCharacters);
+
+		return string1.indexOf(string2) > -1;
+	}
+
+	/**
+	 * Checks to see if the given collection contains the specified string. The
+	 * check is not case-sensitive and <code>toString()</code> is used to retrieve
+	 * a string representation for each object. The collection can contain
+	 * <code>null</code> values.
+	 * 
+	 * @param iter The collection of objects to be tested with the given string
+	 * @param string The string to be compared (case ignored) with all the objects
+	 * contained in the given collection
+	 * @return <code>true</code> if the collection contains the given string,
+	 * case ignored; <code>false</code> otherwise
+	 */
+	public static boolean containsIgnoreCase(Collection collection, String string) {
+		return containsIgnoreCase(collection.iterator(), string);
+	}
+
+	/**
+	 * Checks to see if the given collection contains the specified string. The
+	 * check is not case-sensitive and <code>toString()</code> is used to retrieve
+	 * a string representation for each object. The collection can contain
+	 * <code>null</code> values.
+	 * 
+	 * @param iter The <code>Iterator</code> over the collection of objects to be
+	 * tested with the given string
+	 * @param string The string to be compared (case ignored) with all the objects
+	 * contained in the collection iterated with the given <code>Iterator</code>
+	 * @return <code>true</code> if the collection iterated with the given
+	 * <code>Iterator</code> contains the given string, case ignored;
+	 * <code>false</code> otherwise
+	 */
+	public static boolean containsIgnoreCase(Iterator iter, String string) {
+		if (string == null)
+			return false;
+
+		while (iter.hasNext()) {
+			Object item = iter.next();
+
+			if ((item != null) && string.equalsIgnoreCase(item.toString()))
+				return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @return
+	 */
+	public static boolean containsPart(String string1, String string2) {
+		return containsPart(string1, string2, new char[0], MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacter
+	 * @return
+	 */
+	public static boolean containsPart(String string1, String string2, char ignoreCharacter) {
+		return containsPart(string1, string2, new char[] { ignoreCharacter }, MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacter
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static boolean containsPart(String string1, String string2, char ignoreCharacter, int minimumMatchingLetterCount) {
+		return containsPart(string1, string2, new char[] { ignoreCharacter }, minimumMatchingLetterCount);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacters
+	 * @return
+	 */
+	public static boolean containsPart(String string1, String string2, char[] ignoreCharacters) {
+		return containsPart(string1, string2, ignoreCharacters, MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacters
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static boolean containsPart(String string1, String string2, char[] ignoreCharacters, int minimumMatchingLetterCount) {
+		return weightContainsPart(string1, string2, ignoreCharacters, minimumMatchingLetterCount) >= minimumMatchingLetterCount;
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static boolean containsPart(String string1, String string2, int minimumMatchingLetterCount) {
+		return containsPart(string1, string2, new char[0], minimumMatchingLetterCount);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @return
+	 */
+	public static boolean containsPartContinuous(String string1, String string2) {
+		return containsPartContinuous(string1, string2, new char[0], MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacter
+	 * @return
+	 */
+	public static boolean containsPartContinuous(String string1, String string2, char ignoreCharacter) {
+		return containsPartContinuous(string1, string2, new char[] { ignoreCharacter }, MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacter
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static boolean containsPartContinuous(String string1, String string2, char ignoreCharacter, int minimumMatchingLetterCount) {
+		return containsPartContinuous(string1, string2, new char[0], minimumMatchingLetterCount);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacters
+	 * @return
+	 */
+	public static boolean containsPartContinuous(String string1, String string2, char[] ignoreCharacters) {
+		return containsPartContinuous(string1, string2, ignoreCharacters, MINIMUM_MATCHING_LETTER);
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param ignoreCharacters
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static boolean containsPartContinuous(String string1, String string2, char[] ignoreCharacters, int minimumMatchingLetterCount) {
+		return weightContainsPartContinuous(string1, string2, ignoreCharacters, minimumMatchingLetterCount) >= minimumMatchingLetterCount;
+	}
+
+	/**
+	 * Calculates
+	 *
+	 * @param string1
+	 * @param string2
+	 * @param minimumMatchingLetterCount
+	 * @return
+	 */
+	public static boolean containsPartContinuous(String string1, String string2, int minimumMatchingLetterCount) {
+		return containsPartContinuous(string1, string2, new char[0], minimumMatchingLetterCount);
+	}
+
+	/**
+	 * Removes
+	 *
+	 * @param string
+	 * @param ignoreCharacters
+	 * @return
+	 */
+	public static String removeIgnoreCharacters(String string, char[] ignoreCharacters) {
+		if ((string == null) || (string.length() == 0) || (ignoreCharacters.length == 0)) {
+			return string;
+		}
+
+		for (int index = 0; index < ignoreCharacters.length; index++) {
+			String character = String.valueOf(ignoreCharacters[index]);
+			string = string.replaceAll(character, "");
+		}
+		return string;
+	}
+	/**
+	 * This <code>Position</code> class is used by
+	 * {@link StringUtility#weightContainsPartImp(String, String)}.
+	 */
+	private static class Position {
+		int indices[];
+		int length;
+
+		Position() {
+			super();
+			indices = new int[1];
+			indices[0] = -1;
+		}
+
+		Position(int index, int length) {
+			this();
+			indices[0] = index;
+			this.length = length;
+		}
+
+		private static List asList(Position[] array) {
+			ArrayList list = new ArrayList(array.length);
+
+			for (int index = 0; index < array.length; index++)
+				list.add(array[index]);
+
+			return list;
+		}
+
+		private static boolean canAddWeight(Position[] positions, int index) {
+			// The last one can always be added
+			if (index + 1 == positions.length)
+				return true;
+
+			Position position1 = positions[index];
+			Position position2 = positions[index + 1];
+
+			for (int index1 = 0; index1 < position1.indices.length; index1++) {
+				for (int index2 = 0; index2 < position2.indices.length; index2++) {
+					int posIndex1 = position1.indices[index1];
+					int posIndex2 = position2.indices[index2];
+
+					if (posIndex1 > posIndex2)
+						return true;
+				}
+			}
+
+			return false;
+		}
+
+		static Position[] merge(Position[] positions1, Position[] positions2) {
+			List positions1List = asList(positions1);
+			List positions2List = asList(positions2);
+
+			Iterator iter1 = positions1List.iterator();
+
+			while (iter1.hasNext()) {
+				Position firstPosition = (Position) iter1.next();
+
+				Iterator iter2 = positions2List.iterator();
+
+				while (iter2.hasNext()) {
+					Position secondPosition = (Position) iter2.next();
+
+					if (firstPosition.inside(secondPosition))
+						iter2.remove();
+					else if (secondPosition.inside(firstPosition))
+						iter1.remove();
+				}
+			}
+
+			// Return the result of the merge, which is the remaining of both arrays
+			Position[] positions = new Position[positions1List.size() + positions2List.size()];
+
+			System.arraycopy(positions1List.toArray(), 0, positions, 0,                     positions1List.size());
+			System.arraycopy(positions2List.toArray(), 0, positions, positions1List.size(), positions2List.size());
+
+			return positions;
+		}
+
+		void add(int index) {
+			ensureCapacity();
+			indices[indices.length - 1] = index;
+		}
+
+		private void ensureCapacity() {
+			int[] oldIndices = indices;
+			indices = new int[oldIndices.length + 1];
+			System.arraycopy(oldIndices, 0, indices, 0, oldIndices.length);
+		}
+
+		boolean inside(Position position) {
+			for (int index1 = 0; index1 < indices.length; index1++) {
+				for (int index2 = 0; index2 < position.indices.length; index2++) {
+					if (indices[index1] + length >= position.indices[index2] + position.length && indices[index1] + length >= position.length && indices[index1] <= position.indices[index2]) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	}
 }
