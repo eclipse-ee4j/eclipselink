@@ -67,7 +67,10 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadat
 import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CopyPolicyMetadata;
+
+import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CustomCopyPolicyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.copypolicy.InstantiationCopyPolicyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.inheritance.InheritanceMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
@@ -94,11 +97,6 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.UniqueConstraintMeta
 import org.eclipse.persistence.internal.jpa.metadata.transformers.ReadTransformerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.transformers.WriteTransformerMetadata;
 
-import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CustomCopyPolicyMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.copypolicy.InstantiationCopyPolicyMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyMetadata;
-
-import org.eclipse.persistence.mappings.converters.ClassInstanceConverter;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
