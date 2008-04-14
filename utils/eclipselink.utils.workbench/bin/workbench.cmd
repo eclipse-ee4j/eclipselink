@@ -15,6 +15,7 @@ set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\connector.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\..\jlib\eclipselink.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\elmwcore.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselinkmw.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\..\jlib\jpa\persistence.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\config
 set CLASSPATH=%CLASSPATH%;%DRIVER_CLASSPATH%
 
