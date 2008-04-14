@@ -45,12 +45,8 @@ public class Alpine extends Beer implements Cloneable {
         setSerialNumber(serialNumber);
     }
     
-    public Alpine clone() {
-        try {
-            return (Alpine)super.clone();
-        } catch (CloneNotSupportedException exception) {
-            throw new InternalError(exception.toString());
-        }
+    public Alpine clone() throws CloneNotSupportedException {
+        return (Alpine)super.clone();
     }
     
     public void addInspectionDate(Date date) {

@@ -219,4 +219,28 @@ public class ClassDetails {
         
         return getSuperClassDetails().canWeaveChangeTracking();
     }
+    
+    /**
+     * Returns true if the given class name represents this class, or any
+     * superclass that can be navigated to by recursively navigating up the
+     * structure of superClassDetails stored in this class.
+     * 
+     * Assume java.lang.Object is in the hierarchy
+     *
+     * @param className
+     * @return
+     */
+    public boolean isInMetadataHierarchy(String className){
+        if (className.equals(Object.class.getName().replace('.', '/'))){
+            return true;
+        }            
+        if (className.equals(this.className) || (superClassName != null && className.equals(superClassName))){
+            return true;
+        }
+        if (superClassDetails != null){
+            return superClassDetails.isInMetadataHierarchy(className);
+        }
+        return false;
+    }
+    
 }

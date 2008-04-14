@@ -38,6 +38,10 @@ public class Beer extends Beverage {
         BEER_PRE_PERSIST_COUNT++;
     }
     
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+    
     @Basic
     @Column(name="ALCOHOL_CONTENT")
     public double getAlcoholContent() {

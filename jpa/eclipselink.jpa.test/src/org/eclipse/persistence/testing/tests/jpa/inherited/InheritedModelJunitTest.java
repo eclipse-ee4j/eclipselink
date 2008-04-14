@@ -12,15 +12,23 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
+import java.util.Date;
+
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
 import junit.extensions.TestSetup;
+
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
+import org.eclipse.persistence.testing.models.jpa.inherited.Alpine;
 import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
+import org.eclipse.persistence.testing.models.jpa.inherited.SerialNumber;
  
 public class InheritedModelJunitTest extends JUnitTestCase {
     private static Integer m_blueId;
@@ -46,6 +54,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testReadBlue"));
         suite.addTest(new InheritedModelJunitTest("testCreateBeerConsumer"));
         suite.addTest(new InheritedModelJunitTest("testUpdateBeerConsumer"));
+        suite.addTest(new InheritedModelJunitTest("testInheritedClone"));
 
         return new TestSetup(suite) {
         
@@ -143,4 +152,70 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         closeEntityManager(em);
     }
+    
+    // Test the clone method works with LAZY attributes at multiple levels of an inheritance hierarchy
+    public void testInheritedClone() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        SerialNumber serialNumber = new SerialNumber();
+        em.persist(serialNumber);
+        Alpine alpine = new Alpine(serialNumber);
+        alpine.setBestBeforeDate(Helper.dateFromYearMonthDate(2005, 8, 21));
+        alpine.setAlcoholContent(5.0);
+        alpine.setClassification(Alpine.Classification.BITTER);
+        alpine.addInspectionDate(new Date(System.currentTimeMillis()));
+        alpine.getBeerConsumer();
+        Alpine clone = null;
+        try{
+            clone = (Alpine)alpine.clone();
+        } catch (CloneNotSupportedException ex){
+            fail("Caught CloneNotSupportedException " + ex);
+        }
+        
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setName("Keith Alexander");
+        clone.setBeerConsumer(consumer);
+        consumer.addAlpineBeerToConsume(clone);
+        em.persist(clone);
+        em.persist(consumer);
+        if (alpine.getBeerConsumer() == clone.getBeerConsumer()) {
+            fail("Changing clone beerConsumer changed original.");
+        }
+        commitTransaction(em);
+        Integer alpineId = clone.getId();
+        Integer consumerId = consumer.getId();
+        clearCache();
+        closeEntityManager(em);
+        em = createEntityManager();
+        beginTransaction(em);
+        alpine = em.find(Alpine.class, clone.getId());
+        try{
+            clone = (Alpine)alpine.clone();
+        } catch (CloneNotSupportedException ex){
+            fail("Caught CloneNotSupportedException " + ex);
+        }
+        
+        consumer = new BeerConsumer();
+        consumer.setName("Frank Keith");
+        clone.setBeerConsumer(consumer);
+        consumer.addAlpineBeerToConsume(clone);
+        clone.getBeerConsumer();
+        if (alpine.getBeerConsumer() == clone.getBeerConsumer()) {
+            fail("Changing clone beerConsumer changed original.");
+        }
+        if (alpine.getBeerConsumer() == null) {
+            fail("Changing clone address reset original to null.");
+        }
+        if (clone.getBeerConsumer() != consumer) {
+            fail("Changing clone did not work.");
+        }
+        alpine = em.find(Alpine.class, clone.getId());
+        em.remove(alpine);
+        consumer = em.find(BeerConsumer.class, consumerId);
+        em.remove(consumer);
+        commitTransaction(em);
+        closeEntityManager(em);
+    }
+    
 }

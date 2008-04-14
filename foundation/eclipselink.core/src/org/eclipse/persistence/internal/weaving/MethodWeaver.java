@@ -77,8 +77,16 @@ public class MethodWeaver extends CodeAdapter implements Constants {
     public void visitMethodInsn (final int opcode, final String owner, final String name, final String desc) {
         weaveBeginningOfMethodIfRequired();
         methodStarted = true;
+        String descClassName = "";
+        if (desc.length() > 3){
+            descClassName = desc.substring(3, desc.length()-1);
+        }
         // Need to find and replace super.clone to call _persistence_clone.
-        if (this.tcw.classDetails.shouldWeaveValueHolders() && name.equals("clone") && owner.equals(this.tcw.classDetails.getSuperClassName()) && desc.equals("()Ljava/lang/Object;")) {
+        if (this.tcw.classDetails.shouldWeaveValueHolders() && name.equals("clone") && 
+                /* the following will return true if we are calling a method stored on our direct superclass or one of its superclasses
+                 * that is involved in our metadata hierarchy.
+                 * For completeness, we check to ensure the return type is in that same hierarchy */
+                this.tcw.classDetails.isInMetadataHierarchy(owner) && this.tcw.classDetails.isInMetadataHierarchy(descClassName)){
             super.visitMethodInsn(opcode, this.tcw.classDetails.getClassName(), "_persistence_clone", desc);            
         } else {
             super.visitMethodInsn(opcode, owner, name, desc);

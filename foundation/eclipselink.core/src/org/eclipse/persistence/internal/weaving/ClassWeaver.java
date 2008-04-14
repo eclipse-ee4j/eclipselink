@@ -592,7 +592,7 @@ public class ClassWeaver extends ClassAdapter implements Constants {
         
         for (Iterator iterator = classDetails.getAttributesMap().values().iterator(); iterator.hasNext(); ) {
             AttributeDetails attributeDetails = (AttributeDetails)iterator.next();
-            if (attributeDetails.weaveValueHolders()) {
+            if (attributeDetails.weaveValueHolders() && !attributeDetails.isAttributeOnSuperClass()) {
                 // clone._attribute_vh = this._attribute_vh.clone();
                 cv_clone.visitVarInsn(ALOAD, 2);
                 cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_" + attributeDetails.getAttributeName() + "_vh", ClassWeaver.VHI_SIGNATURE);
