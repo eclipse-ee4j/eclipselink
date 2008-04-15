@@ -19,11 +19,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
+
+import org.eclipse.persistence.annotations.ExistenceChecking;
+
 import static javax.persistence.FetchType.LAZY;
+import static org.eclipse.persistence.annotations.ExistenceType.CHECK_CACHE;
 
 import java.sql.Timestamp;
 
 @MappedSuperclass
+@ExistenceChecking(CHECK_CACHE)
 public class Beer extends Beverage {
     private Timestamp version;
     private double alcoholContent;

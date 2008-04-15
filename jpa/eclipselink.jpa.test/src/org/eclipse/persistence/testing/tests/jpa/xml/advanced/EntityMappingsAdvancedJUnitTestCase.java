@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.Bungalow;
@@ -43,10 +44,12 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.ModelExamples;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.ReadOnlyClass;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.SmallProject;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.TestingProperties;
  
@@ -76,6 +79,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         final String persistenceUnit = ormTesting.equals(TestingProperties.JPA_ORM_TESTING)? "default" : "extended-advanced";
 
         TestSuite suite = new TestSuite("Advanced Model - " + persistenceUnit);
+        
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testCreateEmployee", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testReadEmployee", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testNamedNativeQueryOnAddress", persistenceUnit));
@@ -86,6 +90,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testDeleteEmployee", persistenceUnit));
         
         if (persistenceUnit.equals("extended-advanced")) {
+            suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testExistenceCheckingSetting", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testReadOnlyClassSetting", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testEmployeeChangeTrackingPolicy", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testAddressChangeTrackingPolicy", persistenceUnit));
@@ -120,6 +125,25 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
                 clearCache(persistenceUnit);
             }
         };
+    }
+    
+    /**
+     * Verifies that existence-checking metadata is correctly processed.
+     */
+    public void testExistenceCheckingSetting() {
+        ServerSession session = JUnitTestCase.getServerSession(m_persistenceUnit);
+        
+        ClassDescriptor employeeDescriptor = session.getDescriptor(Employee.class);
+        assertTrue("Employee existence checking was incorrect", employeeDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.CheckDatabase);
+        
+        ClassDescriptor projectDescriptor = session.getDescriptor(Project.class);
+        assertTrue("Project existence checking was incorrect", projectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.CheckCache);
+        
+        ClassDescriptor smallProjectDescriptor = session.getDescriptor(SmallProject.class);
+        assertTrue("SmallProject existence checking was incorrect", smallProjectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.AssumeExistence);
+        
+        ClassDescriptor largeProjectDescriptor = session.getDescriptor(LargeProject.class);
+        assertTrue("LargeProject existence checking was incorrect", largeProjectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.AssumeNonExistence);
     }
     
     /**

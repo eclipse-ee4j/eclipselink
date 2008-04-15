@@ -22,6 +22,7 @@ import junit.extensions.TestSetup;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
+import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
@@ -39,6 +40,9 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Equipment;
 import org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode;
 import org.eclipse.persistence.testing.models.jpa.advanced.GoldBuyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 
 /**
  * This test suite tests TopLink JPA annotations extensions.
@@ -70,6 +74,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedJPAJunitTest");
+        
+        suite.addTest(new AdvancedJPAJunitTest("testExistenceCheckingSetting"));
         
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchAnnotation"));
         suite.addTest(new AdvancedJPAJunitTest("testVerifyEmployeeCacheSettings"));
@@ -125,6 +131,25 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 clearCache();
             }
         };
+    }
+    
+    /**
+     * Verifies that existence-checking metadata is correctly processed.
+     */
+    public void testExistenceCheckingSetting() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
+        ClassDescriptor employeeDescriptor = session.getDescriptor(Employee.class);
+        assertTrue("Employee existence checking was incorrect", employeeDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.CheckDatabase);
+        
+        ClassDescriptor projectDescriptor = session.getDescriptor(Project.class);
+        assertTrue("Project existence checking was incorrect", projectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.CheckCache);
+        
+        ClassDescriptor smallProjectDescriptor = session.getDescriptor(SmallProject.class);
+        assertTrue("SmallProject existence checking was incorrect", smallProjectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.AssumeExistence);
+        
+        ClassDescriptor largeProjectDescriptor = session.getDescriptor(LargeProject.class);
+        assertTrue("LargeProject existence checking was incorrect", largeProjectDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.AssumeNonExistence);
     }
     
     /**

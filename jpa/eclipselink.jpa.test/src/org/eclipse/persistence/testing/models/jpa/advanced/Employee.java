@@ -24,6 +24,7 @@ import org.eclipse.persistence.annotations.CollectionTable;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.Customizer;
+import org.eclipse.persistence.annotations.ExistenceChecking;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Mutable;
@@ -44,6 +45,7 @@ import static javax.persistence.GenerationType.*;
 import static org.eclipse.persistence.annotations.CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS;
 import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
 import static org.eclipse.persistence.annotations.ChangeTrackingType.AUTO;
+import static org.eclipse.persistence.annotations.ExistenceType.CHECK_DATABASE;
 import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_COLUMN;
 
 /**
@@ -124,6 +126,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
     coordinationType=INVALIDATE_CHANGED_OBJECTS
 )
 @ChangeTracking(AUTO)
+@ExistenceChecking(CHECK_DATABASE)
 @Customizer(org.eclipse.persistence.testing.models.jpa.advanced.EmployeeCustomizer.class)
 public class Employee implements Serializable, Cloneable {
     public enum EmployeeStatus {FULL_TIME, PART_TIME, CONTRACT}

@@ -30,7 +30,7 @@ import org.eclipse.persistence.testing.tests.jpa.xml.merge.EntityMappingsMergeJU
  */
 public class EntityMappingsJUnitTestSuite extends TestCase {
     public static Test suite() {
-        return suite(TestingProperties.JPA_ORM_TESTING);
+        return suite(TestingProperties.getProperty(TestingProperties.ORM_TESTING, TestingProperties.JPA_ORM_TESTING));
     }
     
     public static Test suite(String testing) {

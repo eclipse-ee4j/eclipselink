@@ -14,6 +14,10 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.ExistenceChecking;
+
+import static org.eclipse.persistence.annotations.ExistenceType.ASSUME_NON_EXISTENCE;
+
 /**
  * LargeProject subclass of Project.
  * This class in used to test inheritance.
@@ -32,6 +36,7 @@ import javax.persistence.*;
 	query="SELECT new org.eclipse.persistence.testing.models.jpa.advanced.LargeProject(project.name) FROM LargeProject project")
 }
 )
+@ExistenceChecking(ASSUME_NON_EXISTENCE)
 public class LargeProject extends Project {
     private double m_budget;
     

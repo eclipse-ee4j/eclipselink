@@ -43,6 +43,8 @@ import javax.persistence.SqlResultSetMappings;
 import javax.persistence.TableGenerator;
 
 import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.annotations.ExistenceChecking;
+import org.eclipse.persistence.annotations.ExistenceType;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
 import org.eclipse.persistence.annotations.OptimisticLocking;
@@ -83,6 +85,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     private Boolean m_readOnly;
     private CacheMetadata m_cache;
+    private ExistenceType m_existenceChecking;
     private List<EntityListenerMetadata> m_entityListeners;
     private OptimisticLockingMetadata m_optimisticLocking;
     
@@ -160,6 +163,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public String getExcludeSuperclassListeners() {
         return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public ExistenceType getExistenceChecking() {
+        return m_existenceChecking;
     }
     
     /**
@@ -562,6 +573,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Process @CopyPolicy
         processCopyPolicy();
+        
+        // Process @ExistenceChecking
+        processExistenceChecking();
     }
     
     /**
@@ -638,6 +652,31 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             if (isAnnotationPresent(ExcludeSuperclassListeners.class)) {
                 getDescriptor().setExcludeSuperclassListeners(true);
             } 
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the ExistenceChecking value if one is specified (taking
+     * metadata-complete into consideration).
+     */
+    protected void processExistenceChecking() {
+        if (m_existenceChecking != null || isAnnotationPresent(ExistenceChecking.class)) {
+            if (getDescriptor().hasExistenceChecking()) {
+                // Ignore existence-checking on mapped superclass if existence
+                // checking is already defined on the entity.
+                getLogger().logWarningMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING, getJavaClass());
+            } else {
+                if (m_existenceChecking == null) {
+                    getDescriptor().setExistenceChecking((ExistenceType) MetadataHelper.invokeMethod("value", getAnnotation(ExistenceChecking.class)));
+                } else {
+                    if (isAnnotationPresent(ExistenceChecking.class)) {
+                        getLogger().logWarningMessage(MetadataLogger.IGNORE_EXISTENCE_CHECKING_ANNOTATION, getJavaClass());
+                    }
+                    
+                    getDescriptor().setExistenceChecking(m_existenceChecking);
+                }
+            }
         }
     }
     
@@ -909,6 +948,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public void setExcludeSuperclassListeners(String ignore) {
         m_excludeSuperclassListeners = true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setExistenceChecking(ExistenceType checking) {
+        m_existenceChecking = checking;
     }
     
     /**

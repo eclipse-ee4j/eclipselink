@@ -17,13 +17,16 @@ import java.util.Date;
 import java.util.HashMap;
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.ExistenceChecking;
 import org.eclipse.persistence.annotations.Mutable;
 
 import static javax.persistence.TemporalType.DATE;
+import static org.eclipse.persistence.annotations.ExistenceType.CHECK_DATABASE;
 
 @Entity
 @Table(name="CMP3_CANADIAN")
 @AssociationOverride(name="beerConsumer", joinColumns=@JoinColumn(name="CONSUMER_ID"))
+@ExistenceChecking(CHECK_DATABASE)
 public class Canadian extends Beer {
     public enum Flavor { LAGER, LIGHT, ICE, DRY }
 

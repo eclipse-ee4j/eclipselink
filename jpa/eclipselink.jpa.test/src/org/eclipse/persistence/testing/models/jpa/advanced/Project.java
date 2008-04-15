@@ -15,11 +15,13 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 import java.util.*;
 import java.io.Serializable;
 import javax.persistence.*;
+import static org.eclipse.persistence.annotations.ExistenceType.CHECK_CACHE;
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.InheritanceType.*;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.CollectionTable;
+import org.eclipse.persistence.annotations.ExistenceChecking;
 
 /**
  * Employees have a many-to-many relationship with Projects through the
@@ -37,6 +39,7 @@ import org.eclipse.persistence.annotations.CollectionTable;
 	name="findProjectByName",
 	query="SELECT OBJECT(project) FROM Project project WHERE project.name = :name"
 )
+@ExistenceChecking(CHECK_CACHE)
 public class Project implements Serializable {
     public int pre_update_count = 0;
     public int post_update_count = 0;

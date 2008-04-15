@@ -265,6 +265,7 @@
     <xsd:attribute name="access" type="orm:access-type"/>
     <xsd:attribute name="metadata-complete" type="xsd:boolean"/>
     <xsd:attribute name="read-only" type="xsd:boolean"/>
+    <xsd:attribute name="existence-checking" type="orm:existence-type"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -1651,6 +1652,7 @@
     <xsd:attribute name="access" type="orm:access-type"/>
     <xsd:attribute name="metadata-complete" type="xsd:boolean"/>
     <xsd:attribute name="read-only" type="xsd:boolean"/>
+    <xsd:attribute name="existence-checking" type="orm:existence-type"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -2946,6 +2948,61 @@
     <xsd:attribute name="discriminator" type="xsd:string" use="required"/>
     <xsd:attribute name="value" type="xsd:string" use="required"/>
   </xsd:complexType>
+
+  <!-- **************************************************** -->
+  
+	<xsd:simpleType name="existence-type">
+	  <xsd:annotation>
+	    <xsd:documentation>
+	        /**
+           * The ExistenceChecking annotation is used to specify the type of 
+           * checking EclipseLink should use when updating entities.
+           * 
+           * An existence-checking specification is supported on an Entity or 
+           * MappedSuperclass annotation.
+           */
+          public @interface ExistenceChecking {
+            /**
+             * (Optional) Set the existence check for determining
+             * if an insert or update should occur for an object.
+             */
+             ExistenceType value() default CHECK_CACHE;
+          }
+          
+          /**
+           * Assume that if the objects primary key does not include null and 
+           * it is in the cache, then it must exist.
+           */
+          CHECK_CACHE,
+			
+          /**
+           * Perform does exist check on the database.
+           */
+          CHECK_DATABASE,
+			
+          /**
+           * Assume that if the objects primary key does not include null then 
+           * it must exist. This may be used if the application guarantees or 
+           * does not care about the existence check.
+           */
+          ASSUME_EXISTENCE,
+			
+          /**
+           * Assume that the object does not exist. This may be used if the 
+           * application guarantees or does not care about the existence check.  
+           * This will always force an insert to be called.
+           */
+          ASSUME_NON_EXISTENCE
+		
+      </xsd:documentation>
+    </xsd:annotation>	 
+	  <xsd:restriction base="xsd:token">
+	    <xsd:enumeration value="CHECK_CACHE" />
+	    <xsd:enumeration value="CHECK_DATABASE" />
+	    <xsd:enumeration value="ASSUME_EXISTENCE" />
+	    <xsd:enumeration value="ASSUME_NON_EXISTENCE"/>
+	  </xsd:restriction>
+	</xsd:simpleType>	
 	
 </xsd:schema>
 

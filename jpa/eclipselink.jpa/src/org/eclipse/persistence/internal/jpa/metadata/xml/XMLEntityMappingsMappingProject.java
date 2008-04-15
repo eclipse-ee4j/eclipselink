@@ -25,6 +25,7 @@ import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.ChangeTrackingType;
 import org.eclipse.persistence.annotations.Direction;
+import org.eclipse.persistence.annotations.ExistenceType;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.OptimisticLockingType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -896,6 +897,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
         descriptor.addMapping(getStructConverterMapping());
+        descriptor.addMapping(getCustomCopyPolicyMapping());
+        descriptor.addMapping(getInstantiationCopyPolicyMapping());
+        descriptor.addMapping(getCloneCopyPolicyMapping());
         descriptor.addMapping(getSequenceGeneratorMapping());
         descriptor.addMapping(getTableGeneratorMapping());
         descriptor.addMapping(getNamedQueryMapping());
@@ -935,9 +939,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
         descriptor.addMapping(getReadOnlyAttributeMapping());
-        descriptor.addMapping(getCustomCopyPolicyMapping());
-        descriptor.addMapping(getInstantiationCopyPolicyMapping());
-        descriptor.addMapping(getCloneCopyPolicyMapping());
+        descriptor.addMapping(getExistenceCheckingAttributeMapping());
         
         return descriptor;
     }
@@ -1284,6 +1286,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getAccessAttributeMapping());
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
         descriptor.addMapping(getReadOnlyAttributeMapping());
+        descriptor.addMapping(getExistenceCheckingAttributeMapping());
         
         return descriptor;
     }
@@ -2323,6 +2326,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         excludeSuperclassListenersMapping.setNullPolicy(excludeSuperclassListenersPolicy);
         excludeSuperclassListenersMapping.setXPath("orm:exclude-superclass-listeners/text()");
         return excludeSuperclassListenersMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getExistenceCheckingAttributeMapping() {
+        XMLDirectMapping existenceCheckingMapping = new XMLDirectMapping();
+        existenceCheckingMapping.setAttributeName("m_existenceChecking");
+        existenceCheckingMapping.setGetMethodName("getExistenceChecking");
+        existenceCheckingMapping.setSetMethodName("setExistenceChecking");
+        existenceCheckingMapping.setConverter(new EnumTypeConverter(existenceCheckingMapping, ExistenceType.class, false));
+        existenceCheckingMapping.setXPath("@existence-checking");
+        return existenceCheckingMapping;
     }
     
     /**

@@ -21,10 +21,14 @@ import javax.persistence.EntityManager;
 import junit.framework.*;
 import junit.extensions.TestSetup;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.jpa.inherited.Alpine;
 import org.eclipse.persistence.testing.models.jpa.inherited.Canadian;
+import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
 import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.SerialNumber;
 import org.eclipse.persistence.testing.models.jpa.inherited.Certification;
@@ -57,6 +61,7 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("EmbeddableSuperclassJunitTest");
+        suite.addTest(new EmbeddableSuperclassJunitTest("testExistenceCheckingSetting"));
         suite.addTest(new EmbeddableSuperclassJunitTest("testCreateBeerConsumer"));
         suite.addTest(new EmbeddableSuperclassJunitTest("testCreateAlpine"));
         suite.addTest(new EmbeddableSuperclassJunitTest("testCreateCanadian"));
@@ -92,6 +97,22 @@ public class EmbeddableSuperclassJunitTest extends JUnitTestCase {
                 clearCache();
             }
         };
+    }
+    
+    /**
+     * Verifies that existence-checking metadata is correctly processed.
+     */
+    public void testExistenceCheckingSetting() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
+        ClassDescriptor canadianDescriptor = session.getDescriptor(Canadian.class);
+        assertTrue("Canadian existence checking was incorrect", canadianDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.CheckDatabase);
+        
+        ClassDescriptor alpineDescriptor = session.getDescriptor(Alpine.class);
+        assertTrue("Alpine existence checking was incorrect", alpineDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.CheckCache);
+        
+        ClassDescriptor blueDescriptor = session.getDescriptor(Blue.class);
+        assertTrue("Blue existence checking was incorrect", blueDescriptor.getQueryManager().getDoesExistQuery().getExistencePolicy() == DoesExistQuery.CheckCache);
     }
     
     public void testCreateAlpine() {

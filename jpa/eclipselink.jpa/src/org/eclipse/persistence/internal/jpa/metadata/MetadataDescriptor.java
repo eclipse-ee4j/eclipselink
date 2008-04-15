@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.annotations.ExistenceType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
@@ -58,6 +59,7 @@ public class MetadataDescriptor {
     private ClassAccessor m_accessor;
     private ClassDescriptor m_descriptor;
     private DatabaseTable m_primaryTable;
+    private ExistenceType m_existenceChecking;
     
     // This is the parent class that defines the inheritance strategy, and
     // not necessarily the immediate parent class.
@@ -124,8 +126,10 @@ public class MetadataDescriptor {
         m_biDirectionalManyToManyAccessors = new HashMap<String, Map<String, MetadataAccessor>>();
         
         m_descriptor = new RelationalDescriptor();
-        m_descriptor.getQueryManager().checkDatabaseForDoesExist();
         m_descriptor.setAlias("");
+        
+        // This is the default, set it in case no existence-checking is set.
+        m_descriptor.getQueryManager().checkDatabaseForDoesExist();
                 
         setJavaClass(javaClass);
     }
@@ -775,6 +779,13 @@ public class MetadataDescriptor {
     /**
      * INTERNAL:
      */
+    public boolean hasExistenceChecking() {
+        return m_existenceChecking != null;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public boolean hasInheritance() {
         return m_descriptor.hasInheritance();
     }
@@ -983,6 +994,23 @@ public class MetadataDescriptor {
      */
     public void setExcludeSuperclassListeners(boolean excludeSuperclassListeners) {
         m_descriptor.getEventManager().setExcludeSuperclassListeners(excludeSuperclassListeners);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setExistenceChecking(ExistenceType existenceChecking) {
+        m_existenceChecking = existenceChecking;
+        
+        if (existenceChecking.equals(ExistenceType.CHECK_CACHE)) {
+            m_descriptor.getQueryManager().checkCacheForDoesExist();
+        } else if (existenceChecking.equals(ExistenceType.CHECK_DATABASE)) {
+            m_descriptor.getQueryManager().checkDatabaseForDoesExist();
+        } else if (existenceChecking.equals(ExistenceType.ASSUME_EXISTENCE)) {
+            m_descriptor.getQueryManager().assumeExistenceForDoesExist();
+        } else if (existenceChecking.equals(ExistenceType.ASSUME_NON_EXISTENCE)) {
+            m_descriptor.getQueryManager().assumeNonExistenceForDoesExist();
+        }
     }
     
     /**

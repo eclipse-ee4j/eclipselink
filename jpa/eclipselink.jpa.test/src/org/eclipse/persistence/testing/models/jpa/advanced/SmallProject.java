@@ -14,6 +14,10 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.ExistenceChecking;
+
+import static org.eclipse.persistence.annotations.ExistenceType.ASSUME_EXISTENCE;
+
 /**
  * Local interface for the small project bean.
  * This is the bean's public/local interface for the clients usage.
@@ -23,5 +27,6 @@ import javax.persistence.*;
 @Entity
 @Table(name="CMP3_PROJECT")
 @DiscriminatorValue("S")
+@ExistenceChecking(ASSUME_EXISTENCE)
 public class SmallProject extends Project {
 }

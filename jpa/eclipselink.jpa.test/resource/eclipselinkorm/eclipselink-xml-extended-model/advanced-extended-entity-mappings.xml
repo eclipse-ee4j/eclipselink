@@ -4,7 +4,7 @@
     <package>org.eclipse.persistence.testing.models.jpa.xml.advanced</package>
     <converter name="ProvinceConverter" class="ProvinceConverter"/>
     <type-converter name="Long2String" data-type="String" object-type="Long"/>
-    <entity name="XMLEmployee" class="Employee" access="PROPERTY">
+    <entity name="XMLEmployee" class="Employee" access="PROPERTY" existence-checking="CHECK_DATABASE">
         <customizer class="EmployeeCustomizer"/>
         <change-tracking type="AUTO"/>
         <table name="CMP3_XML_EMPLOYEE"/>
@@ -204,7 +204,7 @@
             </many-to-one>
         </attributes>
     </entity>
-    <entity name="XMLLargeProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.LargeProject" access="PROPERTY">
+    <entity name="XMLLargeProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.LargeProject" access="PROPERTY" existence-checking="ASSUME_NON_EXISTENCE">
         <table name="CMP3_XML_LPROJECT"/>
         <discriminator-value>L</discriminator-value>
         <named-query name="findXMLWithBudgetLargerThan">
@@ -213,13 +213,13 @@
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
     </entity>
-    <entity name="XMLSmallProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.SmallProject" access="PROPERTY">
+    <entity name="XMLSmallProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.SmallProject" access="PROPERTY" existence-checking="ASSUME_EXISTENCE">
         <table name="CMP3_XML_PROJECT"/>
         <discriminator-value>S</discriminator-value>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
     </entity>
-    <entity name="XMLProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Project" access="PROPERTY">
+    <entity name="XMLProject" class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Project" access="PROPERTY" existence-checking="CHECK_CACHE">
         <change-tracking type="OBJECT"/>
         <table name="CMP3_XML_PROJECT"/>
         <inheritance strategy="JOINED"/>

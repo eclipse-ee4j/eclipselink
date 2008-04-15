@@ -234,9 +234,10 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_ignore_inheritance_subclass_cache", "Ignoring the cache metadata on the inheritance subclass [{0}]. Cache metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },
         { "metadata_warning_ignore_mapped_superclass_change_tracking", "Ignoring the change tracking metadata on the mapped superclass [{1}] for the entity class [{0}] since it has its own change tracking metadata defined." },
         { "metadata_warning_ignore_mapped_superclass_customizer", "Ignoring the customizer on the mapped superclass [{1}] for the entity class [{0}] since it has its own customizer defined." },
-        { "metadata_warning_ignore_mapped_superclass_read_only", "Ignoring the read only setting the mapped superclass [{1}] for the entity class [{0}] since it has its own read only setting." },
+        { "metadata_warning_ignore_mapped_superclass_read_only", "Ignoring the read only setting on the mapped superclass [{1}] for the entity class [{0}] since it has its own read only setting." },
         { "metadata_warning_ignore_inheritance_subclass_read_only", "Ignoring the read only setting on the inheritance subclass [{0}]. A read only setting should only be specified on the root of the inheritance hierarchy and can not be overridden in an inheritance subclass." },
         { "metadata_warning_ignore_existing_copy_policy", "Ignoring copy policy setting set in [{1}] for the entity class [{0}] since it has a preexisting copy policy. This likely means the policy is set twice, or set somewhere else in the inheritance hierarchy." },
+        { "metadata_warning_ignore_mapped_superclass_existence_checking", "Ignoring the existence checking setting on the mapped superclass [{1}] for the entity class [{0}] since it has its own existence checking setting." },
         
         { "annotation_warning_ignore_annotation", "The annotation [{0}] on the element [{1}] is being ignored because of an XML metadata-complete setting of true for this class." },
         { "annotation_warning_ignore_association_override", "Ignoring the @AssociationOverride named [{0}] defined on the class [{2}] for the entity [{1}] since an association override with the same name was defined in XML." },
@@ -259,6 +260,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "annotation_warning_ignore_change_tracking", "A change tracking policy is already defined on the descriptor for the entity [{0}]. Ignoring @ChangeTracking on the mapped superclass [{1}] for this descriptor." },
         { "annotation_warning_ignore_optimistic_locking", "An optimistic-locking element has been defined for the entity [{0}] in the mapping file [{1}]. Ignoring the @OptimisticLocking defined on this entity." },
         { "annotation_warning_ignore_copy_policy", "A copy policy element has been defined for the entity [{0}] in the mapping file [{1}]. Ignoring the annotation (@CopyPolicy, @InstantiationCopyPolicy, or @CloneCopyPolicy) defined on this entity." },
+        { "annotation_warning_ignore_existence_checking", "An existence-checking setting has been defined for the entity [{0}] in the mapping file [{1}]. Ignoring the @ExistenceChecking defined on this entity." },
         
         { "weaver_null_project", "Weaver session'''s project cannot be null"},
         { "weaver_disable_by_system_property", "Weaving disabled by system property {0}"},		
