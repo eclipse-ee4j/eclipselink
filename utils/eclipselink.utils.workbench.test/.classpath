@@ -18,5 +18,6 @@
 	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/packageRename_g.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_JAR" sourcepath="/ECLIPSELINK_SRC_JAR"/>
 	<classpathentry kind="lib" path="/extension.lib.external/mysql-connector-java-3.1.7-bin.jar"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/run/persistence.jar"/>
 	<classpathentry kind="output" path="class"/>
 </classpath>
