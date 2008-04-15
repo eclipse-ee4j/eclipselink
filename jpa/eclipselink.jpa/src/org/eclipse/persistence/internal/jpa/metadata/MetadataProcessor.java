@@ -185,8 +185,7 @@ public class MetadataProcessor {
         // 1 - Iterate through the classes that are defined in XML and add
     	// their accessors to the project.
         for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
-        	entityMappings.setLoader(m_loader);
-        	entityMappings.initPersistenceUnitClasses(m_project);  
+        	entityMappings.initPersistenceUnitClasses();  
         }
         
         // 2 - Iterate through the classes that are defined in the persistence
@@ -282,7 +281,14 @@ public class MetadataProcessor {
     	// exception. The meta data we find here will be applied in the
     	// initialize call below.
     	for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
-    		entityMappings.processPersistenceUnitMetadata(m_project);
+    	    // Since this our first iteration through the entity mappings list,
+    	    // set the project and loader references. This is very important
+    	    // and must be done first!
+    	    entityMappings.setLoader(m_loader);
+    	    entityMappings.setProject(m_project);
+            
+    	    // Process the persitence unit metadata if defined.
+    		entityMappings.processPersistenceUnitMetadata();
     	}
 
         // 2 - Initialize all the persistence unit class with the meta data we
@@ -291,7 +297,7 @@ public class MetadataProcessor {
 
     	// 3 - Now process the entity mappings metadata.
     	for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
-    		entityMappings.process(m_project);
+    		entityMappings.process();
     	}
     }
 

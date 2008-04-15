@@ -379,16 +379,18 @@ public class XMLEntityMappings {
 	
 	/**
 	 * INTERNAL:
+	 * Assumes the correct class loader has been set before calling this
+	 * method.
 	 */
-	public void initPersistenceUnitClasses(MetadataProject project) {
+	public void initPersistenceUnitClasses() {
     	// Process the entities
     	for (EntityAccessor entity : getEntities()) {
     		// Initialize the class with the package from entity mappings.
     		Class entityClass = getClassForName(entity.getClassName());
-    		entity.init(new MetadataClass(entityClass), new MetadataDescriptor(entityClass, entity), project, this);
+    		entity.init(new MetadataClass(entityClass), new MetadataDescriptor(entityClass, entity), m_project, this);
     		
     		// Add it to the project.
-    		project.addEntityAccessor(entity);
+    		m_project.addEntityAccessor(entity);
     		
     		// Set any entity-mappings default if available. This must be 
     		// done after the accessor has been added to the project since
@@ -401,10 +403,10 @@ public class XMLEntityMappings {
 		for (EmbeddableAccessor embeddable : getEmbeddables()) {
 			// Initialize the class with the package from entity mappings.
 			Class embeddableClass = getClassForName(embeddable.getClassName());
-			embeddable.init(new MetadataClass(embeddableClass), new MetadataDescriptor(embeddableClass, embeddable), project, this);
+			embeddable.init(new MetadataClass(embeddableClass), new MetadataDescriptor(embeddableClass, embeddable), m_project, this);
 			
 			// Add it to the project.
-			project.addEmbeddableAccessor(embeddable);
+			m_project.addEmbeddableAccessor(embeddable);
 			
 			// Set any entity-mappings default if available. This must be 
     		// done after the accessor has been added to the project since
@@ -429,16 +431,14 @@ public class XMLEntityMappings {
 			String mappedSuperclassClassName = getClassForName(mappedSuperclass.getClassName()).getName();
 			
 			// Add it to the project.
-			project.addMappedSuperclass(mappedSuperclassClassName, mappedSuperclass);
+			m_project.addMappedSuperclass(mappedSuperclassClassName, mappedSuperclass);
 		}
 	}
 	
 	/**
 	 * INTERNAL:
 	 */
-	public void process(MetadataProject project) { 
-		m_project = project;
-		
+	public void process() { 
 		// Process the XML converters
 		processConverters(m_converters);
 		
@@ -639,17 +639,17 @@ public class XMLEntityMappings {
      * listeners found will be added to a list in the order that they are read 
      * from the instance document(s). 
 	 */
-	public void processPersistenceUnitMetadata(MetadataProject project) {
+	public void processPersistenceUnitMetadata() {
 		if (m_persistenceUnitMetadata != null) {
 			// This method will take care of any merging or conflicts and
 			// throw an exception if necessary.
-			project.setPersistenceUnitMetadata(m_persistenceUnitMetadata);
+			m_project.setPersistenceUnitMetadata(m_persistenceUnitMetadata);
 
 			// Process the default entity-listeners. No conflict checking will 
 			// be done, that is, any and all default listeners specified across
 			// the persistence unit will be added to the project.
 			for (EntityListenerMetadata defaultListener : m_persistenceUnitMetadata.getDefaultListeners()) {
-				project.addDefaultListener(defaultListener);
+				m_project.addDefaultListener(defaultListener);
 			}
 		}
 	}
@@ -884,6 +884,14 @@ public class XMLEntityMappings {
 	public void setPersistenceUnitMetadata(XMLPersistenceUnitMetadata persistenceUnitMetadata) {
 		m_persistenceUnitMetadata = persistenceUnitMetadata;
 	}
+	
+	/**
+     * INTERNAL:
+     * Set the project reference for this EntityMappings object.
+     */
+    public void setProject(MetadataProject project) {
+        m_project = project;
+    }
 	
 	/**
 	 * INTERNAL:
