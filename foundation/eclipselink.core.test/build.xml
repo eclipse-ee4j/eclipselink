@@ -104,7 +104,7 @@
         <pathelement path="${eclipselink.jar}"/>
         <pathelement path="${eclipselink.core.test}/${eclipselink.tests.jar}"/>
         <pathelement path="${jdbc.driver.jar}"/>
-        <pathelement path="${tools.jar}"/>
+        <pathelement path="${tools.lib}"/>
     </path>
 
     <!-- Default test target, runs test.class from test.properties (default is LRG). -->

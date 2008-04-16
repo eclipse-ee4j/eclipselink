@@ -1,0 +1,85 @@
+<project name="EclipseLink Bootstrap Automated Builds" basedir="." default="build.no.publish">
+<echo message="---- Bootstrap ----"/>
+
+    <target name="init">
+        <condition property="_Win" value="true">
+             <or>
+                <equals arg1="${os.name}" arg2="Windows XP"/>
+                <equals arg1="${os.name}" arg2="Windows NT"/>
+            </or>
+        </condition>
+
+        <property name="build.compiler" value="javac1.5"/>
+        <tstamp>
+            <format property="build_date" pattern="yyyyMMdd"/>
+            <format property="build_time" pattern="HHmm"/>
+        </tstamp>
+        <property environment="env"/>
+        <property name="svn.exec" value="${env.SVN_EXEC}"/>
+
+        <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
+        <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
+        <echo message=" "/>
+        <echo message="build_date.build_time='${build_date}.${build_time}'"/>
+        <echo message="java.version='${java.version}'"/>
+        <echo message="basedir='${basedir}'"/>
+        <echo message="os.name='${os.name}'"/>
+        <echo message="os.arch='${os.arch}'"/>
+        <echo message="os.version='${os.version}'"/>
+    </target>
+
+    <!-- Set svn.exec to os appropriate value (fallback in case env.SVN_EXEC not set) -->
+    <target name="init.linux" unless="_Win" depends="init">
+        <property name="svn.exec" value="/usr/local/bin/svn"/>
+    </target>
+    <target name="init.win" if="_Win" depends="init.linux">
+        <property name="svn.exec" value="svn"/>
+    </target>
+
+    <target name="properties.init" depends="init.win">
+        <echo message="svn.exec='${svn.exec}'"/>
+
+        <!-- # Build environment definitions                                  -->
+        <!-- #  build.root is the directory the branch's build files are in    -->
+        <!-- #                                                                -->
+        <!-- #  branch.name will always be specified  on command-line         -->
+        <!-- #       if used                                                  -->
+        <property name="branch.name"     value=""/>
+        <property name="branch.dir"      value="${branch.name}trunk"/>
+        <property name="autobld.file"       value="autobuild.xml"/>
+        <property name="build.root"       value="${basedir}/${branch.dir}"/>
+        <property name="log.dir"         value="${basedir}/log"/>
+
+        <!-- #  Subversion URL definitions                                    -->
+        <!-- #                                                                -->
+        <!-- #  svn.exec is set by init and depends upon the OS               -->
+        <property name="svn.ro.protocol" value="http:"/>
+        <!-- property name="svn.rw.protocol" value="svn+ssl:"/ -->
+        <property name="svn.rw.protocol" value="file:"/>
+        <!-- property name="svn.base.url"    value="//dev.eclipse.org/svnroot/technology/org.eclipse.persistence"/ -->
+        <property name="svn.base.url"    value="///var/svn/repos/eclipselink"/>
+        <property name="svn.branch.url"  value="${svn.base.url}/${branch.dir}"/>
+        <property name="svn.build.url"   value="${svn.branch.url}/buildsystem"/>
+    </target>
+
+    <target name="get.src" depends="properties.init">
+        <exec executable="${svn.exec}">
+            <arg value="co"/>
+            <arg value="-q"/>
+            <arg value="${svn.rw.protocol}${svn.branch.url}"/>
+        </exec>
+    </target>
+
+    <target name="build" depends="get.src" description="Trigger an automated build without testing or publish">
+        <ant antfile="${autobld.file}" dir="${build.root}" target="build.no.publish"/>
+    </target>
+
+    <target name="nightly"    depends="get.src" description="Trigger the nightly automated build and lrg tests">
+        <ant antfile="${autobld.file}" dir="${build.root}" target="build.nightly"/>
+    </target>
+
+    <target name="cb" depends="get.src" description="Trigger an automated 'continuous build' (compile and run short verify)">
+        <ant antfile="${autobld.file}" dir="${build.root}" target="build.continuous"/>
+    </target>
+
+</project>
