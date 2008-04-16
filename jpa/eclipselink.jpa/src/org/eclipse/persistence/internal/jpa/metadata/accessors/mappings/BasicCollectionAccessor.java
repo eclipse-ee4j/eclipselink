@@ -230,7 +230,10 @@ public class BasicCollectionAccessor extends DirectAccessor {
             // value. If none is found then we'll look for a JPA converter, that 
             // is, Enumerated, Lob and Temporal. With everything falling into 
             // a serialized mapping if no converter whatsoever is found.
-            processMappingConverter(mapping);        	
+            processMappingConverter(mapping);
+            
+            // process properties
+            processProperties(mapping);
         } else {
         	throw ValidationException.invalidTypeForBasicCollectionAttribute(getAttributeName(), getRawClass(), getJavaClass());
         }

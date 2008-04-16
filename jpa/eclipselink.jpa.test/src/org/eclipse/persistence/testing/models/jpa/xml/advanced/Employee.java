@@ -18,6 +18,8 @@ import java.io.Serializable;
 
 import javax.persistence.Transient;
 
+import org.eclipse.persistence.annotations.Properties;
+import org.eclipse.persistence.annotations.Property;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
 
@@ -39,6 +41,12 @@ import org.eclipse.persistence.sessions.Session;
  * which means they should be processed (their mappings are not defined in the
  * XML)
  */
+@Properties({
+    // This @Property should be overridden by a property with the same name defined in xml.
+    @Property(name="ToBeOverriddenByXml", value="false", valueType=Boolean.class),
+    // This property should be set - there's no property with the same name defined in xml.
+    @Property(name="ToBeProcessed", value="true", valueType=Boolean.class)
+})
 public class Employee implements Serializable {
 	public enum Gender { Female, Male }
 	
@@ -190,6 +198,8 @@ public class Employee implements Serializable {
         return id; 
     }
     
+    // Currently the property annotation on an attribute should ignored in case there's orm xml.
+    @Property(name="ToBeIgnored", value="true", valueType=Boolean.class)
     public String getLastName() { 
         return lastName; 
     }

@@ -103,6 +103,9 @@ public class OneToOneAccessor extends ObjectAccessor {
             mapping.setTargetToSourceKeyFields(ownerMapping.getSourceToTargetKeyFields());
         }
         
+        // Process properties
+        processProperties(mapping);
+
         // Add the mapping to the descriptor.
         getDescriptor().addMapping(mapping);
     }

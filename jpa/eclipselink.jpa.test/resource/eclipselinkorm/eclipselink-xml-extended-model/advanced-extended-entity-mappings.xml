@@ -43,27 +43,65 @@
                 <post-load method-name="postLoad"/>
             </entity-listener>
         </entity-listeners>
+        <property name="entityName" value="XMLEmployee"/>
+        <property name="entityIntegerProperty" value="1" value-type="Integer"/>
+        <property name="ToBeOverriddenByXml" value="true" value-type="Boolean"/>
         <attributes>
             <id name="id">
                 <column name="EMP_ID"/>
                 <generated-value strategy="TABLE" generator="XML_EMPLOYEE_TABLE_GENERATOR"/>
+                <property name="attributeName" value="id"/>
             </id>
             <basic name="firstName">
                 <column name="F_NAME"/>
+                <property name="attributeName" value="firstName"/>
             </basic>
             <basic name="lastName">
                 <column name="L_NAME"/>
+                <!-- 
+                    @Property(name="attributeName", value="lastName"),
+                    @Property(name="BooleanProperty", value="true", valueType=Boolean.class),
+                    @Property(name="ByteProperty", value="1", valueType=Byte.class),
+                    @Property(name="CharacterProperty", value="A", valueType=Character.class),
+                    @Property(name="DoubleProperty", value="1", valueType=Double.class),
+                    @Property(name="FloatProperty", value="1", valueType=Float.class),
+                    @Property(name="IntegerProperty", value="1", valueType=Integer.class),
+                    @Property(name="LongProperty", value="1", valueType=Long.class),
+                    @Property(name="ShortProperty", value="1", valueType=Short.class),
+                    @Property(name="BigDecimalProperty", value="1", valueType=java.math.BigDecimal.class),
+                    @Property(name="BigIntegerProperty", value="1", valueType=java.math.BigInteger.class),
+                    @Property(name="TimeProperty", value="13:59:59", valueType=java.sql.Time.class),
+                    @Property(name="TimeStampProperty", value="2008-04-10 13:59:59", valueType=java.sql.Timestamp.class),
+                    @Property(name="DateProperty", value="2008-04-10", valueType=java.sql.Date.class)
+                 -->
+                <property name="attributeName" value="lastName"/>
+                <property name="BooleanProperty" value="true" value-type="java.lang.Boolean"/>
+                <property name="ByteProperty" value="1" value-type="java.lang.Byte"/>
+                <property name="CharacterProperty" value="A"  value-type="java.lang.Character"/>
+                <property name="DoubleProperty" value="1" value-type="java.lang.Double"/>
+                <property name="FloatProperty" value="1" value-type="java.lang.Float"/>
+                <property name="IntegerProperty" value="1" value-type="java.lang.Integer"/>
+                <property name="LongProperty" value="1" value-type="java.lang.Long"/>
+                <property name="ShortProperty" value="1" value-type="java.lang.Short"/>
+                <property name="BigDecimalProperty" value="1" value-type="java.math.BigDecimal"/>
+                <property name="BigIntegerProperty" value="1" value-type="java.math.BigInteger"/>
+                <property name="TimeProperty" value="13:59:59" value-type="java.sql.Time"/>
+                <property name="TimeStampProperty" value="2008-04-10 13:59:59" value-type="java.sql.Timestamp"/>
+                <property name="DateProperty" value="2008-04-10" value-type="java.sql.Date"/>
             </basic>
             <basic name="gender">
                 <column name="GENDER"/>
                 <convert>sex</convert>
+                <property name="attributeName" value="gender"/>
             </basic>
             <basic name="salary">
                 <column table="CMP3_XML_SALARY"/>
+                <property name="attributeName" value="salary"/>
             </basic>
-			      <basic-collection name="responsibilities">
+			<basic-collection name="responsibilities">
               <value-column name="DESCRIPTION"/>
               <collection-table name="CMP3_XML_RESPONS"/>
+              <property name="attributeName" value="responsibilities"/>
             </basic-collection>
             <basic-map name="creditCards" fetch="EAGER">
               <key-column name="CARD"/>
@@ -72,9 +110,11 @@
               <value-converter>Long2String</value-converter>
               <!-- Let the collection table default in this case (EMPLOYEE_CREDITCARDS) -->
               <private-owned/>
+              <property name="attributeName" value="creditCards"/>
             </basic-map>
             <version name="version">
                 <column name="VERSION"/>
+                <property name="attributeName" value="version"/>
             </version>
             <many-to-one name="address" target-entity="Address" fetch="LAZY">
                 <join-column name="ADDR_ID"/>
@@ -82,22 +122,26 @@
                     <cascade-persist/>
                 </cascade>
                 <join-fetch>OUTER</join-fetch>
+                <property name="attributeName" value="address"/>
             </many-to-one>
             <many-to-one name="manager" target-entity="Employee" fetch="LAZY">
                 <join-column name="MANAGER_EMP_ID" referenced-column-name="EMP_ID"/>
                 <cascade>
                     <cascade-persist/>
                 </cascade>
+                <property name="attributeName" value="manager"/>
             </many-to-one>
             <one-to-many name="phoneNumbers" target-entity="PhoneNumber" mapped-by="owner">
                 <cascade>
                     <cascade-all/>
                 </cascade>
+                <property name="attributeName" value="phoneNumbers"/>
             </one-to-many>
             <one-to-many name="managedEmployees" target-entity="Employee" mapped-by="manager">
                 <cascade>
                     <cascade-all/>
                 </cascade>
+                <property name="attributeName" value="managedEmployees"/>
             </one-to-many>
             <many-to-many name="projects" target-entity="Project">
                 <order-by>name</order-by>
@@ -108,6 +152,7 @@
                 <cascade>
                     <cascade-persist/>
                 </cascade>
+                <property name="attributeName" value="projects"/>
             </many-to-many>
             <embedded name="period">
                 <attribute-override name="startDate">
@@ -116,6 +161,7 @@
                 <attribute-override name="endDate">
                     <column name="END_DATE" nullable="true"/>
                 </attribute-override>
+                <property name="attributeName" value="period"/>
             </embedded>
             <transformation name="normalHours" mutable="false">
                 <read-transformer method="buildNormalHours"/>
@@ -125,6 +171,7 @@
                 <write-transformer method="getEndTime">
                     <column name="END_TIME"/>
                 </write-transformer>
+                <property name="attributeName" value="normalHours"/>
             </transformation>
             <transformation name="overtimeHours" mutable="false">
                 <read-transformer transformer-class="AdvancedReadTransformer"/>
@@ -134,6 +181,7 @@
                 <write-transformer transformer-class="AdvancedWriteTransformer">
                     <column name="END_OVERTIME"/>
                 </write-transformer>
+                <property name="attributeName" value="overtimeHours"/>
             </transformation>
         </attributes>
     </entity>
@@ -268,6 +316,8 @@
         </attributes>
     </entity>
     <embeddable class="org.eclipse.persistence.testing.models.jpa.xml.advanced.EmploymentPeriod" access="PROPERTY">
+        <property name="embeddableClassName" value="EmploymentPeriod"/>
+        <property name="ToBeOverriddenByXml" value="true" value-type="Boolean"/>
         <attributes>
             <basic name="startDate">
                 <column name="S_DATE"/>

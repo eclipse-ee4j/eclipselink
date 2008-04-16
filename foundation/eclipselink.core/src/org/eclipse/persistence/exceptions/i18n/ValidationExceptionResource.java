@@ -290,7 +290,10 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7296", "Class {[0]} has multiple CopyPolicy Annotations.  Only one CopyPolicyAnnotation is allowed per class."},
                                            { "7297", "An exception was thrown while reflectively instantiating Class [{0}].  This usually means that this class is specified in your meta data and for some reason java cannot instanitate it reflectively with a no-args constructor.  Check the chained exception for more information.  Note: To see the chained exception you may need to increase your logging level."},
                                            { "7298", "The mapping [{2}] from the embedded id class [{3}] is an invalid mapping for this class. An embeddable class that is used with an embedded id specification (attribute [{0}] from the source [{1}]) can only contain basic mappings. Either remove the non basic mapping or change the embedded id specification on the source to be embedded."},
-                                           
+                                           { "7299", "In orm xml element for class [{0}] has two property elements with name [{1}] and conflicting values [{2}] and [{3}]." },
+                                           { "7300", "Class [{0}] annotated with two @Property annotations with name [{1}] and conflicting values [{2}] and [{3}]." },
+                                           { "7301", "In orm xml element for attribute [{0}] in element for class [{1}] has two property elements with name [{2}] and conflicting values [{3}] and [{4}]." },
+                                           { "7302", "Attribute [{0}] of class [{1}] annotated with two @Property annotations with name [{2}] and conflicting values [{3}] and [{4}]." },
  };
 
     /**

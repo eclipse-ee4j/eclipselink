@@ -85,6 +85,8 @@ public class MetadataLogger  {
     public static final String IGNORE_MAPPED_SUPERCLASS_OPTIMISTIC_LOCKING = "metadata_warning_ignore_mapped_superclass_optimistic_locking";
     public static final String IGNORE_MAPPED_SUPERCLASS_READ_ONLY = "metadata_warning_ignore_mapped_superclass_read_only";
     
+    public static final String IGNORE_PROPERTY_FOR_CLASS = "metadata_warning_ignore_property_for_class";   
+    public static final String IGNORE_PROPERTY_FOR_ATTRIBUTE = "metadata_warning_ignore_property_for_attribute";   
     /*************************************************************************/
     /*                       GENERIC DEFAULT MESSSAGES                       */ 
     /*************************************************************************/
@@ -199,6 +201,8 @@ public class MetadataLogger  {
         m_ctxStrings.put(IGNORE_INHERITANCE_SUBCLASS_READ_ONLY, IGNORE_INHERITANCE_SUBCLASS_READ_ONLY);
         m_ctxStrings.put(IGNORE_EXISTING_COPY_POLICY, IGNORE_EXISTING_COPY_POLICY);
         m_ctxStrings.put(IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING, IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING);
+        m_ctxStrings.put(IGNORE_PROPERTY_FOR_CLASS, IGNORE_PROPERTY_FOR_CLASS);
+        m_ctxStrings.put(IGNORE_PROPERTY_FOR_ATTRIBUTE, IGNORE_PROPERTY_FOR_ATTRIBUTE);
         
         // Common default messages for ORM and annotations.
         m_ctxStrings.put(ALIAS, ALIAS);
@@ -335,6 +339,22 @@ public class MetadataLogger  {
      */
     public void logWarningMessage(String ctx, Object param1, Object param2, Object param3) {
         log(SessionLog.WARNING, ctx, new Object[] {param1, param2, param3});
+    }
+    
+    /**
+     * INTERNAL:
+     * Logging utility method.
+     */
+    public void logWarningMessage(String ctx, Object param1, Object param2, Object param3, Object param4) {
+        log(SessionLog.WARNING, ctx, new Object[] {param1, param2, param3, param4});
+    }
+    
+    /**
+     * INTERNAL:
+     * Logging utility method.
+     */
+    public void logWarningMessage(String ctx, Object param1, Object param2, Object param3, Object param4, Object param5) {
+        log(SessionLog.WARNING, ctx, new Object[] {param1, param2, param3, param4, param5});
     }
     
     /**

@@ -360,6 +360,11 @@ public class ValidationException extends EclipseLinkException {
     public static final int REFLECTIVE_EXCEPTION_WHILE_CREATING_CLASS_INSTANCE = 7297;
     public static final int INVALID_MAPPING_FOR_EMBEDDED_ID = 7298;
     
+    // Properties
+    public static final int CLASS_PROPERTY_CONFLICT_IN_XML = 7299;
+    public static final int CLASS_PROPERTY_CONFLICT_IN_ANNOTATIONS = 7300;
+    public static final int ATTRIBUTE_PROPERTY_CONFLICT_IN_XML = 7301;
+    public static final int ATTRIBUTE_PROPERTY_CONFLICT_IN_ANNOTATIONS = 7302;    
     
     /**
      * INTERNAL:
@@ -2621,4 +2626,47 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
     
+    /**
+     * PUBLIC:
+     * To properties applied to the same class have the same name in orm xml.
+     */
+    public static ValidationException classPropertyConflictInXml(String className, String propertyName, String value1, String value2) {
+        Object[] args = { className, propertyName, value1, value2 };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CLASS_PROPERTY_CONFLICT_IN_XML, args));
+        validationException.setErrorCode(CLASS_PROPERTY_CONFLICT_IN_XML);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * To properties applied to the same class have the same name in annotations.
+     */
+    public static ValidationException classPropertyConflictInAnnotations(String className, String propertyName, String value1, String value2) {
+        Object[] args = { className, propertyName, value1, value2 };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CLASS_PROPERTY_CONFLICT_IN_ANNOTATIONS, args));
+        validationException.setErrorCode(CLASS_PROPERTY_CONFLICT_IN_ANNOTATIONS);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * To properties applied to the same mapping have the same name in orm xml.
+     */
+    public static ValidationException attributePropertyConflictInXml(String attributeName, String className, String propertyName, String value1, String value2) {
+        Object[] args = { attributeName, className, propertyName, value1, value2 };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ATTRIBUTE_PROPERTY_CONFLICT_IN_XML, args));
+        validationException.setErrorCode(ATTRIBUTE_PROPERTY_CONFLICT_IN_XML);
+        return validationException;
+    }
+    
+    /**
+     * PUBLIC:
+     * To properties applied to the same mapping have the same name in annotations.
+     */
+    public static ValidationException attributePropertyConflictInAnnotations(String attributeName, String className, String propertyName, String value1, String value2) {
+        Object[] args = { attributeName, className, propertyName, value1, value2 };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ATTRIBUTE_PROPERTY_CONFLICT_IN_ANNOTATIONS, args));
+        validationException.setErrorCode(ATTRIBUTE_PROPERTY_CONFLICT_IN_ANNOTATIONS);
+        return validationException;
+    }    
 }

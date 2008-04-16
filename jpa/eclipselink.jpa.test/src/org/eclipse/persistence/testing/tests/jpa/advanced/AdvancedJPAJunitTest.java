@@ -12,8 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
+import java.lang.reflect.Array;
 import java.util.Calendar;
 import java.util.Collection;
+
 import javax.persistence.EntityManager;
 
 import junit.framework.*;
@@ -24,6 +26,7 @@ import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidat
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -35,6 +38,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Equipment;
 import org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode;
@@ -74,7 +78,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedJPAJunitTest");
-        
+
         suite.addTest(new AdvancedJPAJunitTest("testExistenceCheckingSetting"));
         
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchAnnotation"));
@@ -102,6 +106,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         suite.addTest(new AdvancedJPAJunitTest("testMethodBasedTransformationMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testClassBasedTransformationMapping"));
+
+        suite.addTest(new AdvancedJPAJunitTest("testProperty"));
                 
         return new TestSetup(suite) {
             protected void setUp() { 
@@ -131,8 +137,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 clearCache();
             }
         };
-    }
-    
+    }    
+
     /**
      * Verifies that existence-checking metadata is correctly processed.
      */
@@ -844,5 +850,99 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         if(errorMsg.length() > 0) {
             fail(errorMsg);
         }
+    }
+
+    /**
+     * Tests Property and Properties annotations
+     */
+    public void testProperty() {
+        EntityManager em = createEntityManager();
+        ClassDescriptor descriptor = ((EntityManagerImpl) em).getServerSession().getDescriptorForAlias("Employee");
+        ClassDescriptor aggregateDescriptor = ((EntityManagerImpl) em).getServerSession().getDescriptor(EmploymentPeriod.class);
+        em.close();
+        
+        String errorMsg = "";
+        
+        if (descriptor == null) {
+            errorMsg += " Descriptor for Employee alias was not found;";
+        }
+        if (aggregateDescriptor == null) {
+            errorMsg += " Descriptor for EmploymentPeriod.class was not found;";
+        }
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+
+        // verify properties set on Employee instance
+        errorMsg += verifyPropertyValue(descriptor, "entityName", String.class, "Employee");
+        errorMsg += verifyPropertyValue(descriptor, "entityIntegerProperty", Integer.class, new Integer(1));
+        
+        // each attribute of Employee was assigned a property attributeName with the value attribute name.
+        for(DatabaseMapping mapping : descriptor.getMappings()) {
+            errorMsg += verifyPropertyValue(mapping, "attributeName", String.class, mapping.getAttributeName());
+        }
+        
+        // attribute m_lastName has many properties of different types
+        DatabaseMapping mapping = descriptor.getMappingForAttributeName("lastName");
+        errorMsg += verifyPropertyValue(mapping, "BooleanProperty", Boolean.class, Boolean.TRUE);
+        errorMsg += verifyPropertyValue(mapping, "ByteProperty", Byte.class, new Byte((byte)1));
+        errorMsg += verifyPropertyValue(mapping, "CharacterProperty", Character.class, new Character('A'));
+        errorMsg += verifyPropertyValue(mapping, "DoubleProperty", Double.class, new Double(1));
+        errorMsg += verifyPropertyValue(mapping, "FloatProperty", Float.class, new Float(1));
+        errorMsg += verifyPropertyValue(mapping, "IntegerProperty", Integer.class, new Integer(1));
+        errorMsg += verifyPropertyValue(mapping, "LongProperty", Long.class, new Long(1));
+        errorMsg += verifyPropertyValue(mapping, "ShortProperty", Short.class, new Short((short)1));
+        errorMsg += verifyPropertyValue(mapping, "BigDecimalProperty", java.math.BigDecimal.class, java.math.BigDecimal.ONE);
+        errorMsg += verifyPropertyValue(mapping, "BigIntegerProperty", java.math.BigInteger.class, java.math.BigInteger.ONE);
+        errorMsg += verifyPropertyValue(mapping, "byte[]Property", byte[].class, new byte[]{1, 2, 3, 4});
+        errorMsg += verifyPropertyValue(mapping, "char[]Property", char[].class, new char[]{'a', 'b', 'c'});
+        errorMsg += verifyPropertyValue(mapping, "Byte[]Property", Byte[].class, new byte[]{1, 2, 3, 4});
+        errorMsg += verifyPropertyValue(mapping, "Character[]Property", Character[].class, new char[]{'a', 'b', 'c'});
+        errorMsg += verifyPropertyValue(mapping, "TimeProperty", java.sql.Time.class, Helper.timeFromString("13:59:59"));
+        errorMsg += verifyPropertyValue(mapping, "TimeStampProperty", java.sql.Timestamp.class, Helper.timestampFromString("2008-04-10 13:59:59"));
+        errorMsg += verifyPropertyValue(mapping, "DateProperty", java.sql.Date.class, Helper.dateFromString("2008-04-10"));
+        
+        // verify property set on EmploymentPeriod embeddable
+        errorMsg += verifyPropertyValue(aggregateDescriptor, "embeddableClassName", String.class, "EmploymentPeriod");
+        
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+    }
+    protected String verifyPropertyValue(ClassDescriptor descriptor, String propertyName, Class expectedPropertyValueType, Object expectedPropertyValue) {
+        return verifyPropertyValue(propertyName, descriptor.getProperty(propertyName), expectedPropertyValueType, expectedPropertyValue, Helper.getShortClassName(descriptor.getJavaClass()) + " descriptor");
+    }
+    protected String verifyPropertyValue(DatabaseMapping mapping, String propertyName, Class expectedPropertyValueType, Object expectedPropertyValue) {
+        return verifyPropertyValue(propertyName, mapping.getProperty(propertyName), expectedPropertyValueType, expectedPropertyValue, mapping.getAttributeName() + " attribute");
+    }
+    protected String verifyPropertyValue(String propertyName, Object propertyValue, Class expectedPropertyValueType, Object expectedPropertyValue, String masterName) {
+        String errorMsg = "";
+        String errorPrefix = " property " + propertyName + " for " + masterName;
+        if(expectedPropertyValueType == null) {
+            if(propertyValue != null) {
+                errorMsg = errorPrefix + " value is " + propertyValue.toString() + " , was expected to be null.";
+            }
+            return errorMsg;
+        }
+        if(propertyValue == null) {
+            errorMsg = errorPrefix + " is missing;";
+        } else if(!expectedPropertyValueType.isInstance(propertyValue)) {
+            errorMsg = errorPrefix + " is instance of " + propertyValue.getClass().getName() + ", " + expectedPropertyValueType.getName() + " was expected;"; 
+        } else {
+            if(propertyValue.getClass().isArray()) {
+                if(Array.getLength(propertyValue) != Array.getLength(expectedPropertyValue)) {
+                    errorMsg = errorPrefix + " has array value of size " + Array.getLength(propertyValue) + ", " + Array.getLength(expectedPropertyValue) + " was expected;"; 
+                } else {
+                    for(int i=0; i < Array.getLength(propertyValue); i++) {
+                        if(!Array.get(propertyValue, i).equals(Array.get(expectedPropertyValue, i))) {
+                            errorMsg = errorPrefix + " has array with "+i+"th element value " + Array.get(propertyValue, i).toString() + ", " + Array.get(expectedPropertyValue, i).toString() + " was expected;"; 
+                        }
+                    }
+                }
+            } else if (!propertyValue.equals(expectedPropertyValue)) {
+                errorMsg = errorPrefix + " has value " + propertyValue.toString() + ", " + expectedPropertyValue.toString() + " was expected;"; 
+            }
+        }
+        return errorMsg;
     }
 }

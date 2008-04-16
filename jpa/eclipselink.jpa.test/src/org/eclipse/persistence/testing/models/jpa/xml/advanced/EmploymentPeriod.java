@@ -15,6 +15,9 @@ package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 import java.util.Date;
 import java.io.*;
 
+import org.eclipse.persistence.annotations.Properties;
+import org.eclipse.persistence.annotations.Property;
+
 /**
  * <p><b>Purpose</b>: Defines the period an Employee worked for the organization
  *    <p><b>Description</b>: The period holds the start date and optionally the 
@@ -22,6 +25,12 @@ import java.io.*;
  *    aggregate relationship of Employee
  *    @see Employee
  */
+@Properties({
+    // This @Property should be overridden by a property with the same name defined in xml.
+    @Property(name="ToBeOverriddenByXml", value="false", valueType=Boolean.class),
+    // This property should be set - there's no property with the same name defined in xml.
+    @Property(name="ToBeProcessed", value="true", valueType=Boolean.class)
+})
 public class EmploymentPeriod implements Serializable {
     private Date startDate;
     private Date endDate;

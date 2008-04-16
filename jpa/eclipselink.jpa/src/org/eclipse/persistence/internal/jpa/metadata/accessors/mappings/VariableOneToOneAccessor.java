@@ -232,6 +232,9 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
         // Process the foreign query keys from the join columns.
         processForeignQueryKeyNames(mapping);
         
+        // Process properties
+        processProperties(mapping);
+        
         // Add the mapping to the descriptor.
         getDescriptor().addMapping(mapping);
     }

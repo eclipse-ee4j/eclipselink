@@ -121,6 +121,9 @@ public class TransformationAccessor extends BasicAccessor {
         // Will check for PROPERTY access.
         setAccessorMethods(mapping);
 
+        // Process properties
+        processProperties(mapping);
+
         // Add the mapping to the descriptor early so that
         // in case of exception the mapped class could be included into exception message.
         getDescriptor().addMapping(mapping);

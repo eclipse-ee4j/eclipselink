@@ -240,6 +240,9 @@ public class EmbeddedAccessor extends MetadataAccessor {
         // Process association overrides (this is an annotation only thing).
         processAssociationOverrides(mapping);
         
+        // process properties
+        processProperties(mapping);
+        
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
         

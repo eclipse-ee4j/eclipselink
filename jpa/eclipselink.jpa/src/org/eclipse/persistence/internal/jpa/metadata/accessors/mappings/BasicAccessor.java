@@ -186,6 +186,9 @@ public class BasicAccessor extends DirectAccessor {
         // Process a @ReturnUpdate.
         processReturnUpdate(m_field);
         
+        // process properties
+        processProperties(mapping);
+        
         // Add the mapping to the descriptor.
         getDescriptor().addMapping(mapping);
     }

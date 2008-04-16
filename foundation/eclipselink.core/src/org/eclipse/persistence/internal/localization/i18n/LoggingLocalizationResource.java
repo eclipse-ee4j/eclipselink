@@ -238,6 +238,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_ignore_inheritance_subclass_read_only", "Ignoring the read only setting on the inheritance subclass [{0}]. A read only setting should only be specified on the root of the inheritance hierarchy and can not be overridden in an inheritance subclass." },
         { "metadata_warning_ignore_existing_copy_policy", "Ignoring copy policy setting set in [{1}] for the entity class [{0}] since it has a preexisting copy policy. This likely means the policy is set twice, or set somewhere else in the inheritance hierarchy." },
         { "metadata_warning_ignore_mapped_superclass_existence_checking", "Ignoring the existence checking setting on the mapped superclass [{1}] for the entity class [{0}] since it has its own existence checking setting." },
+        { "metadata_warning_ignore_property_for_class", "For class [{0}] property [{1}] value [{2}] is overridden with value [{3}]. The property value was set at least twice." },
+        { "metadata_warning_ignore_property_for_attribute", "For attribute [{0}] of class [{1}] property [{2}] value [{3}] is overridden with value [{4}]. The property value was set at least twice." },
         
         { "annotation_warning_ignore_annotation", "The annotation [{0}] on the element [{1}] is being ignored because of an XML metadata-complete setting of true for this class." },
         { "annotation_warning_ignore_association_override", "Ignoring the @AssociationOverride named [{0}] defined on the class [{2}] for the entity [{1}] since an association override with the same name was defined in XML." },

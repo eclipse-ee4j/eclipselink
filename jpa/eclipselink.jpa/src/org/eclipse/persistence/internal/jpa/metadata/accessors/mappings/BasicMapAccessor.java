@@ -191,6 +191,9 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
             
             // Process a converter for value column of this mapping.
             processMappingConverter(mapping, m_valueConverter);	
+            
+            // process properties
+            processProperties(mapping);
         } else {
         	throw ValidationException.invalidTypeForBasicMapAttribute(getAttributeName(), getRawClass(), getJavaClass());
         }

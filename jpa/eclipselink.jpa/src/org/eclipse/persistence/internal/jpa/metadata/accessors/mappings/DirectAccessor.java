@@ -270,6 +270,14 @@ public abstract class DirectAccessor extends MetadataAccessor {
     	}
     }
     
+    /** 
+     * INTERNAL:
+     * Return true if this is DirectAccessor.
+     */
+    public boolean isDirect() {
+        return true;
+    }
+    
     /**
      * INTERNAL:
      */

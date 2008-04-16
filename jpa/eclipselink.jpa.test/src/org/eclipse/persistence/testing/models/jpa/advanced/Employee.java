@@ -31,6 +31,8 @@ import org.eclipse.persistence.annotations.Mutable;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.eclipse.persistence.annotations.Property;
+import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.annotations.WriteTransformer;
@@ -128,6 +130,11 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 @ChangeTracking(AUTO)
 @ExistenceChecking(CHECK_DATABASE)
 @Customizer(org.eclipse.persistence.testing.models.jpa.advanced.EmployeeCustomizer.class)
+@Properties({
+    @Property(name="entityName", value="Employee"),
+    @Property(name="entityIntegerProperty", value="1", valueType=Integer.class)
+}
+)
 public class Employee implements Serializable, Cloneable {
     public enum EmployeeStatus {FULL_TIME, PART_TIME, CONTRACT}
     public enum Gender { Female, Male }
@@ -234,6 +241,7 @@ public class Employee implements Serializable, Cloneable {
     
     @ManyToOne(cascade={PERSIST, MERGE}, fetch=LAZY)
     @JoinColumn(name="ADDR_ID")
+    @Property(name="attributeName", value="address")
     public Address getAddress() { 
         return m_address; 
     }
@@ -263,16 +271,19 @@ public class Employee implements Serializable, Cloneable {
     @ManyToOne(fetch=EAGER)
     @JoinColumn(name="DEPT_ID")
     @JoinFetch(JoinFetchType.OUTER)
+    @Property(name="attributeName", value="department")
     public Department getDepartment() { 
         return department; 
     }
     
     @Column(name="F_NAME")
+    @Property(name="attributeName", value="firstName")
     public String getFirstName() { 
         return m_firstName; 
     }
     
     @Convert("sex")
+    @Property(name="attributeName", value="gender")
     public Gender getGender() { 
         return gender; 
     }
@@ -288,23 +299,47 @@ public class Employee implements Serializable, Cloneable {
         initialValue=50
     )
     @Column(name="EMP_ID")
+    @Property(name="attributeName", value="id")
 	public Integer getId() { 
         return id; 
     }
     
     // Not defined in the XML, this should get processed.
     @Column(name="L_NAME")
+    @Properties({
+        @Property(name="attributeName", value="lastName"),
+        @Property(name="BooleanProperty", value="true", valueType=Boolean.class),
+        @Property(name="ByteProperty", value="1", valueType=Byte.class),
+        @Property(name="CharacterProperty", value="A", valueType=Character.class),
+        @Property(name="DoubleProperty", value="1", valueType=Double.class),
+        @Property(name="FloatProperty", value="1", valueType=Float.class),
+        @Property(name="IntegerProperty", value="1", valueType=Integer.class),
+        @Property(name="LongProperty", value="1", valueType=Long.class),
+        @Property(name="ShortProperty", value="1", valueType=Short.class),
+        @Property(name="BigDecimalProperty", value="1", valueType=java.math.BigDecimal.class),
+        @Property(name="BigIntegerProperty", value="1", valueType=java.math.BigInteger.class),
+        // it's a HEX string therefore it has to have an even number of bytes 
+        @Property(name="byte[]Property", value="01020304", valueType=byte[].class),
+        @Property(name="char[]Property", value="abc", valueType=char[].class),
+        @Property(name="Byte[]Property", value="01020304", valueType=Byte[].class),
+        @Property(name="Character[]Property", value="abc", valueType=Character[].class),
+        @Property(name="TimeProperty", value="13:59:59", valueType=java.sql.Time.class),
+        @Property(name="TimeStampProperty", value="2008-04-10 13:59:59", valueType=java.sql.Timestamp.class),
+        @Property(name="DateProperty", value="2008-04-10", valueType=java.sql.Date.class)
+    })
     public String getLastName() { 
         return m_lastName; 
     }
 
     @OneToMany(cascade=ALL, mappedBy="manager")
+    @Property(name="attributeName", value="managedEmployees")
     public Collection<Employee> getManagedEmployees() { 
         return managedEmployees; 
     }
     
     // Not defined in the XML, this should get processed.
     @ManyToOne(cascade=PERSIST, fetch=LAZY)
+    @Property(name="attributeName", value="manager")
     public Employee getManager() { 
         return manager; 
     }
@@ -315,6 +350,7 @@ public class Employee implements Serializable, Cloneable {
         @WriteTransformer(method="getStartTime", column=@Column(name="START_TIME")),
         @WriteTransformer(method="getEndTime", column=@Column(name="END_TIME"))
     })
+    @Property(name="attributeName", value="normalHours")
     protected Time[] getNormalHours() {
         return normalHours;
     }
@@ -325,12 +361,14 @@ public class Employee implements Serializable, Cloneable {
         @WriteTransformer(transformerClass=org.eclipse.persistence.testing.models.jpa.advanced.AdvancedWriteTransformer.class, column=@Column(name="START_OVERTIME")),
         @WriteTransformer(transformerClass=org.eclipse.persistence.testing.models.jpa.advanced.AdvancedWriteTransformer.class, column=@Column(name="END_OVERTIME"))
     })
+    @Property(name="attributeName", value="overtimeHours")
     protected Time[] getOvertimeHours() {
         return overtimeHours;
     }
 
     @Enumerated(EnumType.STRING)
     @Column(name="PAY_SCALE")
+    @Property(name="attributeName", value="payScale")
     public SalaryRate getPayScale() {
         return payScale;
     }
@@ -340,12 +378,14 @@ public class Employee implements Serializable, Cloneable {
         @AttributeOverride(name="startDate", column=@Column(name="START_DATE", nullable=false)),
         @AttributeOverride(name="endDate", column=@Column(name="END_DATE", nullable=true))
     })
+    @Property(name="attributeName", value="period")
     public EmploymentPeriod getPeriod() {
         return period;
     }
     
     @OneToMany(cascade=ALL, mappedBy="owner")
     @PrivateOwned
+    @Property(name="attributeName", value="phoneNumbers")
     public Collection<PhoneNumber> getPhoneNumbers() { 
         return m_phoneNumbers; 
     }
@@ -358,6 +398,7 @@ public class Employee implements Serializable, Cloneable {
         joinColumns=@JoinColumn(name="EMPLOYEES_EMP_ID", referencedColumnName="EMP_ID")
         //inverseJoinColumns=@JoinColumn(name="PROJECTS_PROJ_ID", referencedColumnName="PROJ_ID")
     )
+    @Property(name="attributeName", value="projects")
     public Collection<Project> getProjects() { 
         return projects; 
     }
@@ -365,16 +406,19 @@ public class Employee implements Serializable, Cloneable {
     @BasicCollection(valueColumn=@Column(name="DESCRIPTION"))
     @CollectionTable(name="CMP3_RESPONS")
     // generics left off the Collection on purpose ...
+    @Property(name="attributeName", value="responsibilities")
     public Collection getResponsibilities() {
         return responsibilities;
     }
 
     @Column(name="ROOM_NUM")
+    @Property(name="attributeName", value="roomNumber")
     public int getRoomNumber() {
         return roomNumber;
     }
     
     @Column(table="CMP3_SALARY")
+    @Property(name="attributeName", value="salary")
     public int getSalary() { 
         return salary; 
     }
@@ -397,17 +441,20 @@ public class Employee implements Serializable, Cloneable {
 
     @Enumerated
     @Column(name="STATUS")
+    @Property(name="attributeName", value="status")
     public EmployeeStatus getStatus() {
         return status;
     }
     
     @Version
     @Column(name="VERSION")
+    @Property(name="attributeName", value="version")
     public Integer getVersion() {
         return version; 
     }
     
     @BasicCollection
+    @Property(name="attributeName", value="workWeek")
     public Set<Weekdays> getWorkWeek() {
         return workWeek;
     }
@@ -555,6 +602,7 @@ public class Employee implements Serializable, Cloneable {
         @AttributeOverride(name="startDate", column=@Column(name="FORMER_START_DATE", nullable=false)),
         @AttributeOverride(name="endDate", column=@Column(name="FORMER_END_DATE", nullable=true))
     })
+    @Property(name="attributeName", value="formerEmployment")
     public FormerEmployment getFormerEmployment() {
             return formerEmployment;
     }

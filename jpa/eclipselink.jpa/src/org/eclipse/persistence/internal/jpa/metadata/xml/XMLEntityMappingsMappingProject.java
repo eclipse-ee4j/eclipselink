@@ -30,6 +30,7 @@ import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.OptimisticLockingType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
@@ -187,6 +188,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildCustomCopyPolicyDescriptor());
         addDescriptor(buildCloneCopyPolicyDescriptor());
         addDescriptor(buildInstantiationCopyPolicyDescriptor());
+        
+        addDescriptor(buildPropertyDescriptor());
 
         // Set the name spaces on all descriptors.
         NamespaceResolver namespaceResolver = new NamespaceResolver();
@@ -368,6 +371,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCollectionTableMapping());
         descriptor.addMapping(getPrivateOwnedMapping());
         descriptor.addMapping(getJoinFetchMapping());
+        descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getFetchAttributeMapping());
         
@@ -402,6 +406,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(enumeratedMapping);
         
         descriptor.addMapping(getConvertMapping());
+        descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getFetchAttributeMapping());
         descriptor.addMapping(getOptionalAttributeMapping());
@@ -445,6 +450,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCollectionTableMapping());
         descriptor.addMapping(getPrivateOwnedMapping());  
         descriptor.addMapping(getJoinFetchMapping());
+        descriptor.addMapping(getPropertiesMapping());
         
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getFetchAttributeMapping());
@@ -808,6 +814,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
         descriptor.addMapping(getStructConverterMapping());
+        descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getAttributesMapping());
         descriptor.addMapping(getClassAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
@@ -825,6 +832,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(EmbeddedAccessor.class);
     	
         descriptor.addMapping(getAttributeOverrideMapping());
+        descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
         
         return descriptor;
@@ -839,6 +847,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(EmbeddedIdAccessor.class);
     	
         descriptor.addMapping(getAttributeOverrideMapping());
+        descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
         
         return descriptor;
@@ -916,6 +925,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPreUpdateMapping());
         descriptor.addMapping(getPostUpdateMapping());
         descriptor.addMapping(getPostLoadMapping());
+        descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getAttributeOverrideMapping());
         
         XMLCompositeCollectionMapping associationOverridesMapping = new XMLCompositeCollectionMapping();
@@ -1151,6 +1161,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getConvertMapping());
         descriptor.addMapping(getTableGeneratorMapping());
         descriptor.addMapping(getSequenceGeneratorMapping());
+        descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getMutableAttributeMapping());
         
@@ -1243,6 +1254,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         // join-table is not supported
         descriptor.addMapping(getCascadeMapping());
         descriptor.addMapping(getJoinFetchMapping());
+        descriptor.addMapping(getPropertiesMapping());
         
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getTargetEntityAttributeMapping()); 
@@ -1280,6 +1292,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPreUpdateMapping());
         descriptor.addMapping(getPostUpdateMapping());
         descriptor.addMapping(getPostLoadMapping());
+        descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getAttributesMapping());
         
         descriptor.addMapping(getClassAttributeMapping());
@@ -1305,6 +1318,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCascadeMapping());
         descriptor.addMapping(getPrivateOwnedMapping());
         descriptor.addMapping(getJoinFetchMapping());
+        descriptor.addMapping(getPropertiesMapping());
         
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getTargetEntityAttributeMapping()); 
@@ -1430,6 +1444,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCascadeMapping());
         descriptor.addMapping(getPrivateOwnedMapping());
         descriptor.addMapping(getJoinFetchMapping());
+        descriptor.addMapping(getPropertiesMapping());
         
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getTargetEntityAttributeMapping()); 
@@ -1489,6 +1504,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCascadeMapping());
         descriptor.addMapping(getPrivateOwnedMapping());
         descriptor.addMapping(getJoinFetchMapping());
+        descriptor.addMapping(getPropertiesMapping());
         
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getTargetEntityAttributeMapping()); 
@@ -1576,6 +1592,38 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         return descriptor;
     }
     
+    /**
+     * INTERNAL:
+     * XSD: property
+     */
+    protected ClassDescriptor buildPropertyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(PropertyMetadata.class);
+        
+        XMLDirectMapping nameMapping = new XMLDirectMapping();
+        nameMapping.setAttributeName("m_name");
+        nameMapping.setGetMethodName("getName");
+        nameMapping.setSetMethodName("setName");
+        nameMapping.setXPath("@name");
+        descriptor.addMapping(nameMapping);
+        
+        XMLDirectMapping valueMapping = new XMLDirectMapping();
+        valueMapping.setAttributeName("m_value");
+        valueMapping.setGetMethodName("getValue");
+        valueMapping.setSetMethodName("setValue");
+        valueMapping.setXPath("@value");
+        descriptor.addMapping(valueMapping);
+        
+        XMLDirectMapping valueTypeMapping = new XMLDirectMapping();
+        valueTypeMapping.setAttributeName("m_valueTypeName");
+        valueTypeMapping.setGetMethodName("getValueTypeName");
+        valueTypeMapping.setSetMethodName("setValueTypeName");
+        valueTypeMapping.setXPath("@value-type");
+        descriptor.addMapping(valueTypeMapping);
+        
+        return descriptor;
+    }
+
     /**
      * INTERNAL:
      * XSD: query-hint
@@ -1873,7 +1921,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         writeTransformersMapping.setReferenceClass(WriteTransformerMetadata.class);
         writeTransformersMapping.setXPath("orm:write-transformer");
         descriptor.addMapping(writeTransformersMapping);
-        
+
+        descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getFetchAttributeMapping());
         descriptor.addMapping(getOptionalAttributeMapping());
@@ -1941,6 +1990,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getDiscriminatorClassMapping());
         descriptor.addMapping(getJoinColumnMapping());
         descriptor.addMapping(getPrivateOwnedMapping());
+        descriptor.addMapping(getPropertiesMapping());
 
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getTargetInterfaceAttributeMapping());
@@ -1961,6 +2011,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getColumnMapping());
         descriptor.addMapping(getTemporalMapping());
         descriptor.addMapping(getConvertMapping());
+        descriptor.addMapping(getPropertiesMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getMutableAttributeMapping());
         
@@ -2776,6 +2827,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         privateOwnedMapping.setNullPolicy(privateOwnedPolicy);
     	privateOwnedMapping.setXPath("orm:private-owned");
     	return privateOwnedMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getPropertiesMapping() {
+        XMLCompositeCollectionMapping typeConvertersMapping = new XMLCompositeCollectionMapping();
+        typeConvertersMapping.setAttributeName("m_properties");
+        typeConvertersMapping.setGetMethodName("getProperties");
+        typeConvertersMapping.setSetMethodName("setProperties");
+        typeConvertersMapping.setReferenceClass(PropertyMetadata.class);
+        typeConvertersMapping.setXPath("orm:property");
+        return typeConvertersMapping;
     }
     
     /**

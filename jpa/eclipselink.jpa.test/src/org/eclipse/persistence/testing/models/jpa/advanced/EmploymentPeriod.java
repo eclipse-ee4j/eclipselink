@@ -30,6 +30,8 @@ import java.sql.Date;
 import java.io.*;
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.Property;
+
 /**
  * <p><b>Purpose</b>: Defines the period an Employee worked for the organization
  *    <p><b>Description</b>: The period holds the start date and optionally the 
@@ -39,6 +41,7 @@ import javax.persistence.*;
  */
 @Embeddable
 @Table(name="CMP3_EMPLOYEE")
+@Property(name="embeddableClassName", value="EmploymentPeriod")
 public class EmploymentPeriod implements Serializable {
     private Date startDate;
     private Date endDate;

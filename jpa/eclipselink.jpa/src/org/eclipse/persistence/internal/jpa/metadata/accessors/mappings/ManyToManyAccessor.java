@@ -118,6 +118,9 @@ public class ManyToManyAccessor extends CollectionAccessor {
 	        mapping.setTargetKeyFields(ownerMapping.getSourceKeyFields());
 	        mapping.setTargetRelationKeyFields(ownerMapping.getSourceRelationKeyFields());
         }
+        
+        // Process properties
+        processProperties(mapping);
 
         // Add the mapping to the descriptor.
         getDescriptor().addMapping(mapping);

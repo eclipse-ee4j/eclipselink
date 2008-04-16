@@ -573,9 +573,12 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Process @CopyPolicy
         processCopyPolicy();
-        
+
         // Process @ExistenceChecking
         processExistenceChecking();
+        
+        // Process properties
+        processProperties();
     }
     
     /**

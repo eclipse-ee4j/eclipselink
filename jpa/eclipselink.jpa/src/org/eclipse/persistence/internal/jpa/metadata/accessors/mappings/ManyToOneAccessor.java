@@ -97,6 +97,9 @@ public class ManyToOneAccessor extends ObjectAccessor {
         // Now process the JoinColumns (if there are any) for this mapping.
         processOwningMappingKeys(mapping);
         
+        // process properties
+        processProperties(mapping);
+        
         // Add the mapping to the descriptor.
         getDescriptor().addMapping(mapping);
     }

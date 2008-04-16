@@ -117,6 +117,9 @@ public class OneToManyAccessor extends CollectionAccessor {
             // Process the JoinTable metadata.
             processJoinTable(mapping);
             
+            // Process properties
+            processProperties(mapping);
+
             // Add the mapping to the descriptor.
             getDescriptor().addMapping(mapping);
         } else {
@@ -138,6 +141,9 @@ public class OneToManyAccessor extends CollectionAccessor {
             for (DatabaseField fkField : keys.keySet()) {
                 mapping.addTargetForeignKeyField(fkField, keys.get(fkField));
             }   
+            
+            // Process properties
+            processProperties(mapping);
             
             // Add the mapping to the descriptor.
             getDescriptor().addMapping(mapping);

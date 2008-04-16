@@ -421,6 +421,14 @@ public abstract class ClassAccessor extends MetadataAccessor {
     	return m_metadataComplete != null && m_metadataComplete;
     }
 
+    /** 
+     * INTERNAL:
+     * Return true if this accessor represents a class.
+     */
+    public boolean isClassAccessor() {
+        return true;
+    }
+    
     /**
      * INTERNAL:
      * Return true is this annotated element is not transient, static or 

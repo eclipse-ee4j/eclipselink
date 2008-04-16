@@ -12,7 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +33,8 @@ import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
+import org.eclipse.persistence.annotations.Properties;
+import org.eclipse.persistence.annotations.Property;
 import org.eclipse.persistence.annotations.ReturnInsert;
 import org.eclipse.persistence.annotations.ReturnUpdate;
 import org.eclipse.persistence.annotations.TypeConverter;
@@ -53,7 +57,6 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMet
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -93,6 +96,8 @@ public abstract class MetadataAccessor  {
     
     private XMLEntityMappings m_entityMappings;
     
+    private List<PropertyMetadata> m_properties;
+    
     /**
      * INTERNAL: 
      * Used for OX mapping.
@@ -111,6 +116,60 @@ public abstract class MetadataAccessor  {
      */
     public MetadataAccessor(MetadataAccessibleObject accessibleObject, MetadataDescriptor descriptor, MetadataProject project) {
     	init(accessibleObject, descriptor, project, null);
+    }
+    
+    /**
+     * INTERNAL:
+     * Look for two properties with the same name - throw ValidationException if such pair found.
+     * Precondition: m_properties != null.
+     */
+    protected void checkForPropertiesConflictsInXml() {
+        checkForPropertiesConflicts(true, 0);
+    }
+    
+    /**
+     * INTERNAL:
+     * Look for two properties with the same name - throw ValidationException if such pair found.
+     * Precondition: m_properties != null.
+     */
+    protected void checkForPropertiesConflictsInAnnotations(int startIndex) {
+        checkForPropertiesConflicts(false, startIndex);
+    }
+    
+    /**
+     * INTERNAL:
+     * Look for two properties with the same name - throw ValidationException if such pair found.
+     * Start search at the startIndex specified.
+     * Precondition: m_properties != null.
+     */
+    protected void checkForPropertiesConflicts(boolean isXml, int startIndex) {
+        int size = m_properties.size() - startIndex;
+        // less than two elements - conflict is impossible.
+        if(size <= 1) {
+            return;
+        }
+        Map<String, PropertyMetadata> map = new HashMap<String, PropertyMetadata>(size);
+        for(int i=0; i < size; i++) {
+            PropertyMetadata property = m_properties.get(startIndex + i);
+            PropertyMetadata existingProperty = map.get(property.getName());
+            if(existingProperty == null) {
+                map.put(property.getName(), property);
+            } else if(!existingProperty.getValue().equals(property.getValue())) {
+                if(getAttributeName() == null) {
+                    if(isXml) {
+                        throw ValidationException.classPropertyConflictInXml(getJavaClassName(), property.getName(), existingProperty.getValue(), property.getValue());
+                    } else {
+                        throw ValidationException.classPropertyConflictInAnnotations(getJavaClassName(), property.getName(), existingProperty.getValue(), property.getValue());
+                    }
+                } else {
+                    if(isXml) {
+                        throw ValidationException.attributePropertyConflictInXml(getAttributeName(), getJavaClassName(), property.getName(), existingProperty.getValue(), property.getValue());
+                    } else {
+                        throw ValidationException.attributePropertyConflictInAnnotations(getAttributeName(), getJavaClassName(), property.getName(), existingProperty.getValue(), property.getValue());
+                    }
+                }
+            }
+        }
     }
     
     /**
@@ -271,7 +330,7 @@ public abstract class MetadataAccessor  {
      * therefore, don't log a message and return name.
      */
     protected String getName(String name, String defaultName, String context) {
-    	return MetadataHelper.getName(name, defaultName, context, getLogger(), getAnnotatedElement().toString());
+    	return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getName(name, defaultName, context, getLogger(), getAnnotatedElement().toString());
     }
     
 	/**
@@ -314,6 +373,14 @@ public abstract class MetadataAccessor  {
         return m_project;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */    
+    public List<PropertyMetadata> getProperties() {
+        return m_properties;
+    }
+    
     /**
      * INTERNAL:
      * Return the raw class for this accessor. 
@@ -424,7 +491,7 @@ public abstract class MetadataAccessor  {
      * the default value. 
      */
     protected Integer getValue(Integer value, Integer defaultValue) {
-        return MetadataHelper.getValue(value, defaultValue);
+        return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getValue(value, defaultValue);
     }
     
     /**
@@ -433,7 +500,7 @@ public abstract class MetadataAccessor  {
      * the default value.
      */
     protected String getValue(String value, String defaultValue) {
-        return MetadataHelper.getValue(value, defaultValue);
+        return org.eclipse.persistence.internal.jpa.metadata.MetadataHelper.getValue(value, defaultValue);
     }
 
     /**
@@ -500,8 +567,74 @@ public abstract class MetadataAccessor  {
         m_descriptor = descriptor;
         m_entityMappings = entityMappings;
         m_accessibleObject = accessibleObject;
+        initProperties();
     }
 
+    /** 
+     * INTERNAL:
+     * Setup and validate m_properties.
+     */
+    protected void initProperties() {
+        boolean shouldProcessPropertyAnnotations;
+        if(m_entityMappings != null) {
+            // xml is processed
+            if(m_properties != null) {
+                for (PropertyMetadata property : m_properties) {
+                    if(property.getValueTypeName() != null && property.getValueTypeName().length() > 0) {
+                        property.setValueType(m_entityMappings.getClassForName(property.getValueTypeName()));
+                    }
+                }
+                // verify that no two properties defined in xml have the same name.
+                checkForPropertiesConflictsInXml();
+            }
+            // should process property annotations only in case it's a class accessor. xml-defined properties should override annotation-defined ones.
+            shouldProcessPropertyAnnotations = isClassAccessor();
+        } else {
+            // annotations are processed - should process property annotations, too.
+            shouldProcessPropertyAnnotations = true;
+        }
+
+        if(shouldProcessPropertyAnnotations) {
+            // the index of the first annotation-defined property in m_properties (if any).
+            int startIndex;
+            if(m_properties != null) {
+                startIndex = m_properties.size();
+            } else {
+                startIndex = 0;
+            }
+            Property property = getAnnotation(Property.class);
+            if (property != null) {
+                addProperty(property);
+            }
+            Properties properties = getAnnotation(Properties.class);
+            if (properties != null) {
+                Property[] propertyArray = properties.value();
+                for(int i=0; i<propertyArray.length; i++) {
+                    addProperty(propertyArray[i]);
+                }
+            }
+            if(m_properties != null) {
+                // verify that no two properties defined in annotations have the same name.
+                checkForPropertiesConflictsInAnnotations(startIndex);
+            }
+        }
+    }
+    
+    /** 
+     * INTERNAL:
+     * Add property.
+     */
+    protected void addProperty(Property property) {
+        PropertyMetadata propertyMetadata = new PropertyMetadata();
+        propertyMetadata.setName((String)MetadataHelper.invokeMethod("name", property));
+        propertyMetadata.setValue((String)MetadataHelper.invokeMethod("value", property));
+        propertyMetadata.setValueType((Class)MetadataHelper.invokeMethod("valueType", property));
+        if(m_properties == null) {
+            m_properties = new ArrayList<PropertyMetadata>();
+        }
+        m_properties.add(propertyMetadata);
+    }
+    
     /** 
      * INTERNAL:
      * Indicates whether the specified annotation is present on the annotated
@@ -540,6 +673,22 @@ public abstract class MetadataAccessor  {
         return false;
     }
     
+    /** 
+     * INTERNAL:
+     * Return true if this accessor represents a class.
+     */
+    public boolean isClassAccessor() {
+        return false;
+    }
+    
+    /** 
+     * INTERNAL:
+     * Return true if this is DirectAccessor.
+     */
+    public boolean isDirect() {
+        return false;
+    }
+
     /**
      * INTERNAL:
      * Return true if this accessor represents an aggregate mapping.
@@ -562,6 +711,14 @@ public abstract class MetadataAccessor  {
      */
     public boolean isManyToOne() {
         return false;
+    }
+    
+    /** 
+     * INTERNAL:
+     * Return true if this accessor represents a mapping.
+     */
+    public boolean isMappingAccessor() {
+        return isDirect() ||  isRelationship() || isEmbedded();
     }
     
     /**
@@ -697,6 +854,53 @@ public abstract class MetadataAccessor  {
         }
         
         return pkJoinColumns;
+    }
+    
+    /**
+     * INTERNAL:
+     * Adds properties to the mapping.
+     */
+    protected void processProperties(DatabaseMapping mapping) {
+        if(m_properties != null && !m_properties.isEmpty()) {
+            processProperties(mapping.getProperties(), mapping.getAttributeName());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Adds properties to the descriptor.
+     */
+    protected void processProperties() {
+        if(m_properties != null && !m_properties.isEmpty()) {
+            processProperties(m_descriptor.getClassDescriptor().getProperties(), null);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Adds properties to the passed map.
+     * Note that if the property is already in the map it should not be overridden -
+     * that's because:
+     * 1) Entity processes its properties before MappedSuperclass from
+     * which it's derived, and Entity's properties should not be overridden by
+     * those of the MappedSuperclass;
+     * 2) In case of any ClassAccessor, property defined in xml are inserted into
+     * m_properties List before the ones defined by annotations: xml-defined
+     * properties should override annotation-defined ones.
+     */
+    protected void processProperties(Map map, String attributeName) {
+        for(PropertyMetadata property : m_properties) {
+            Object overridingConvertedValue = map.get(property.getName()); 
+            if(overridingConvertedValue == null) {
+                map.put(property.getName(), property.getConvertedValue());
+            } else {
+                if(attributeName == null) {
+                    getLogger().logWarningMessage(MetadataLogger.IGNORE_PROPERTY_FOR_CLASS, getDescriptor().getJavaClass(), property.getName(), property.getConvertedValue(), overridingConvertedValue);
+                } else {
+                    getLogger().logWarningMessage(MetadataLogger.IGNORE_PROPERTY_FOR_ATTRIBUTE, attributeName, getDescriptor().getJavaClass(), property.getName(), property.getConvertedValue(), overridingConvertedValue);
+                }
+            }
+        }
     }
     
     /**
@@ -894,6 +1098,14 @@ public abstract class MetadataAccessor  {
      */
     public void setPrimaryKeyJoinColumns(List<PrimaryKeyJoinColumnMetadata> primaryKeyJoinColumns) {
     	m_primaryKeyJoinColumns = primaryKeyJoinColumns;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */    
+    public void setProperties(List<PropertyMetadata> properties) {
+        m_properties = properties;
     }
     
 	/**
