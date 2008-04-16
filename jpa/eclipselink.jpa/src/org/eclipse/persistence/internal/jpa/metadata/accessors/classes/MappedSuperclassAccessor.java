@@ -254,7 +254,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     }
     
     /**
-     * INTERNAL:
+     * INTERNAL: (Overridden in EntityAccessor)
      * Process the items of interest on a mapped superclass.
      */
     public void process() {

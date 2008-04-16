@@ -292,7 +292,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     }
     
     /**
-     * INTERNAL: (Overridden in EmbeddableAccessor and MappedSuperclassAccessor)
+     * INTERNAL: (Override from MappedSuperclassAccessor)
      * Process the items of interest on an entity class. The order of processing 
      * is important, care must be taken if changes must be made.
      */
