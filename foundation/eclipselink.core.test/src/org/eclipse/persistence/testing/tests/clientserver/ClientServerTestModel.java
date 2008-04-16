@@ -110,7 +110,7 @@ public class ClientServerTestModel extends TestModel {
         
         //bug 4438127
         suite.addTest(new NewObjectIdentityTest());
-        // Failover connection management EPS bug 211100
+        // Failover connection management EclipseLink bug 211100
         suite.addTest(new CommunicationFailureTest());
         
         return suite;
