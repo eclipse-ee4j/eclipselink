@@ -1,4 +1,4 @@
-<project name="EclipseLink Bootstrap Automated Builds" basedir="." default="build.no.publish">
+<project name="EclipseLink Bootstrap Automated Builds" basedir="." default="build">
 <echo message="---- Bootstrap ----"/>
 
     <target name="init">
@@ -27,8 +27,9 @@
         <echo message="os.arch='${os.arch}'"/>
         <echo message="os.version='${os.version}'"/>
     </target>
-
-    <!-- Set svn.exec to os appropriate value (fallback in case env.SVN_EXEC not set) -->
+    
+    <!-- Set svn.exec to os appropriate value                                 -->
+    <!--    (fallback in case env.SVN_EXEC not set)                           -->
     <target name="init.linux" unless="_Win" depends="init">
         <property name="svn.exec" value="/usr/local/bin/svn"/>
     </target>
@@ -36,11 +37,18 @@
         <property name="svn.exec" value="svn"/>
     </target>
 
-    <target name="properties.init" depends="init.win">
+    <!-- Setup properties needed if testing using a local repos               -->
+    <!--     (-D_Test=1 defined on command-line)                              -->
+    <target name="init.test if="_Test" depends="init">
+        <property name="svn.rw.protocol" value="file:"/>
+        <property name="svn.base.url"    value="///var/svn/repos/eclipselink"/>
+    <target/>
+    
+    <target name="properties.init" depends="init.win,init.test">
         <echo message="svn.exec='${svn.exec}'"/>
 
         <!-- # Build environment definitions                                  -->
-        <!-- #  build.root is the directory the branch's build files are in    -->
+        <!-- #  build.root is the directory the branch's build files are in   -->
         <!-- #                                                                -->
         <!-- #  branch.name will always be specified  on command-line         -->
         <!-- #       if used                                                  -->
@@ -54,10 +62,8 @@
         <!-- #                                                                -->
         <!-- #  svn.exec is set by init and depends upon the OS               -->
         <property name="svn.ro.protocol" value="http:"/>
-        <!-- property name="svn.rw.protocol" value="svn+ssl:"/ -->
-        <property name="svn.rw.protocol" value="file:"/>
-        <!-- property name="svn.base.url"    value="//dev.eclipse.org/svnroot/technology/org.eclipse.persistence"/ -->
-        <property name="svn.base.url"    value="///var/svn/repos/eclipselink"/>
+        <property name="svn.rw.protocol" value="svn+ssl:"/>
+        <property name="svn.base.url"    value="//dev.eclipse.org/svnroot/technology/org.eclipse.persistence"/>
         <property name="svn.branch.url"  value="${svn.base.url}/${branch.dir}"/>
         <property name="svn.build.url"   value="${svn.branch.url}/buildsystem"/>
     </target>

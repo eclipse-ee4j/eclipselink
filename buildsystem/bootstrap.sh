@@ -105,18 +105,25 @@ else
     DB_PWD=`cat $JDBC_LOGIN_INFO_FILE | cut -d: -f2`
 fi
 
-#Only needed for dev behind firewall
-ANT_OPTS="-Dhttp.proxyHost=www-proxy.us.oracle.com -Xmx128m"
-
 #Set appropriate max Heap for VM and let Ant inherit JavaVM (OS's) proxy settings
-#ANT_OPTS="-Xmx128m"
+ANT_OPTS="-Xmx128m"
 ANT_ARGS="-autoproxy"
+ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -l \"$DATED_LOG\" -Dbranch.name=\"${BRANCH}\""
+
+if [ "$TARGET" = "test" ]
+then
+    #Only needed for dev behind firewall
+    ANT_OPTS="-Dhttp.proxyHost=www-proxy.us.oracle.com $ANT_OPTS"
+    TARGET=build
+    ANT_BASEARG="${ANT_BASEARG} -D_Test=1"
+else
+fi    
 
 export JAVA_HOME ANT_HOME HOME_DIR JUNIT_HOME MAVENANT_DIR BRANCH_DIR PATH CLASSPATH SVN_EXEC ANT_ARGS ANT_OPTS
 
 cd ${HOME_DIR} 
 touch $DATED_LOG
 
-echo "ant --f \"${BOOTSTRAP_BLDFILE}\" -l \"$DATED_LOG\" -Dbranch.name=\"${BRANCH}\" $TARGET"
-ant -f "${BOOTSTRAP_BLDFILE}" -l "$DATED_LOG" -Dbranch.name="${BRANCH}" -Ddb.user="$DB_USER" -Ddb.pwd="$DB_PWD" $TARGET &
+echo "ant ${ANT_BASEARG} $TARGET" >> $DATED_LOG
+ant ${ANT_BASEARG} -Ddb.user="$DB_USER" -Ddb.pwd="$DB_PWD" $TARGET &
 tail -f $DATED_LOG
