@@ -223,7 +223,7 @@ public class JavaSECMPInitializer implements PersistenceInitializationActivator 
      */
     protected static void initializeFromAgent(Instrumentation instrumentation) throws Exception {
         initializeTopLinkLoggingFile();        
-        AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_initialize_from_main", (Object[])null);
+        AbstractSessionLog.getLog().log(SessionLog.FINER, "cmp_init_initialize_from_agent", (Object[])null);
         // Squirrel away the instrumentation for later
         globalInstrumentation = instrumentation;
         // Create JavaSECMPInitializer singleton
