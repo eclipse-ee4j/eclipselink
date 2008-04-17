@@ -1,9 +1,9 @@
-#!/bin/sh
+# !/bin/sh
 
 umask 0002
 TARGET=$1
 BRANCH=$2
-if [ "$TARGET" = "" ]
+if [ ! "$TARGET" = "" ]
 then 
     echo "Target=${TARGET}"
 fi
@@ -22,11 +22,11 @@ then
 fi
 
 #Define common variables and assumed dependencies
-#JAVA_HOME=/shared/common/ibm-java2-ppc-50
-#ANT_HOME=/shared/common/apache-ant-1.6.5
-JAVA_HOME=/shared/common/jdk1.6.0_05
-ANT_HOME=/shared/common/apache-ant-1.7.0
-HOME_DIR=/shared/technology/eclipselink
+JAVA_HOME=/shared/common/ibm-java2-ppc-50
+ANT_HOME=/shared/common/apache-ant-1.6.5
+#JAVA_HOME=/shared/common/jdk1.6.0_05
+#ANT_HOME=/shared/common/apache-ant-1.7.0
+HOME_DIR=/shared/technology/eclipselink/staging2
 LOG_DIR=${HOME_DIR}/log
 JUNIT_HOME=${HOME_DIR}/org.junit_3.8.2.v200706111738
 MAVENANT_DIR=${HOME_DIR}/staging
@@ -107,16 +107,15 @@ fi
 
 #Set appropriate max Heap for VM and let Ant inherit JavaVM (OS's) proxy settings
 ANT_OPTS="-Xmx128m"
-ANT_ARGS="-autoproxy"
 ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -l \"$DATED_LOG\" -Dbranch.name=\"${BRANCH}\""
 
 if [ "$TARGET" = "test" ]
 then
     #Only needed for dev behind firewall
     ANT_OPTS="-Dhttp.proxyHost=www-proxy.us.oracle.com $ANT_OPTS"
+    ANT_ARGS="-autoproxy"
     TARGET=build
     ANT_BASEARG="${ANT_BASEARG} -D_Test=1"
-else
 fi    
 
 export JAVA_HOME ANT_HOME HOME_DIR JUNIT_HOME MAVENANT_DIR BRANCH_DIR PATH CLASSPATH SVN_EXEC ANT_ARGS ANT_OPTS

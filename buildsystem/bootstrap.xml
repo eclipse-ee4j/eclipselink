@@ -39,10 +39,10 @@
 
     <!-- Setup properties needed if testing using a local repos               -->
     <!--     (-D_Test=1 defined on command-line)                              -->
-    <target name="init.test if="_Test" depends="init">
+    <target name="init.test" if="_Test" depends="init">
         <property name="svn.rw.protocol" value="file:"/>
         <property name="svn.base.url"    value="///var/svn/repos/eclipselink"/>
-    <target/>
+    </target>
     
     <target name="properties.init" depends="init.win,init.test">
         <echo message="svn.exec='${svn.exec}'"/>
@@ -62,7 +62,7 @@
         <!-- #                                                                -->
         <!-- #  svn.exec is set by init and depends upon the OS               -->
         <property name="svn.ro.protocol" value="http:"/>
-        <property name="svn.rw.protocol" value="svn+ssl:"/>
+        <property name="svn.rw.protocol" value="svn+ssh:"/>
         <property name="svn.base.url"    value="//dev.eclipse.org/svnroot/technology/org.eclipse.persistence"/>
         <property name="svn.branch.url"  value="${svn.base.url}/${branch.dir}"/>
         <property name="svn.build.url"   value="${svn.branch.url}/buildsystem"/>
@@ -77,7 +77,9 @@
     </target>
 
     <target name="build" depends="get.src" description="Trigger an automated build without testing or publish">
-        <ant antfile="${autobld.file}" dir="${build.root}" target="build.no.publish"/>
+        <!-- need dir made, and to avoid issue of autobld.xml not existing when initially parsed... -->
+        <echo message=" "/>
+        <!-- ant antfile="${autobld.file}" dir="${build.root}" target="build.no.publish"/ -->
     </target>
 
     <target name="nightly"    depends="get.src" description="Trigger the nightly automated build and lrg tests">
