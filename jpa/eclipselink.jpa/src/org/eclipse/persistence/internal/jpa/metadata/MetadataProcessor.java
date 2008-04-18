@@ -206,13 +206,15 @@ public class MetadataProcessor {
         // Go through all the class names we found and add those classes that
         // did not have an XML definition.
         for (String className : classNames) {
-            Class candidateClass = PersistenceUnitProcessor.loadClass(className, m_loader, true);
-            
-            if (PersistenceUnitProcessor.isEntity(candidateClass) && ! m_project.hasEntity(candidateClass)) {
-            	m_project.addEntityAccessor(new EntityAccessor(candidateClass, m_project));
-            } else if (PersistenceUnitProcessor.isEmbeddable(candidateClass) && ! m_project.hasEmbeddable(candidateClass)) {
-            	m_project.addEmbeddableAccessor(new EmbeddableAccessor(candidateClass, m_project));
-            } 
+            Class candidateClass = PersistenceUnitProcessor.loadClass(className, m_loader, true, getProject());
+            // Bug 227630: Do not process a null class whether it was from a NPE or a CNF, a warning or exception is thrown in loadClass() 
+            if (null != candidateClass) {
+                if (PersistenceUnitProcessor.isEntity(candidateClass) && ! m_project.hasEntity(candidateClass)) {
+                    m_project.addEntityAccessor(new EntityAccessor(candidateClass, m_project));
+                } else if (PersistenceUnitProcessor.isEmbeddable(candidateClass) && ! m_project.hasEmbeddable(candidateClass)) {
+                    m_project.addEmbeddableAccessor(new EmbeddableAccessor(candidateClass, m_project));
+                }
+            }
             
             // Mapped-superclasses will be discovered automatically.
         }

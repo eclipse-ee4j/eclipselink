@@ -16,7 +16,7 @@ import org.eclipse.persistence.sessions.*;
 
 /**
  * PUBLIC:
- * This interface is to allow extra customization on a TopLink Session
+ * This interface is to allow extra customization on an EclipseLink Session
  */
 public interface SessionCustomizer {
     public void customize(Session session) throws Exception;

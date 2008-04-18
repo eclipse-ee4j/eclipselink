@@ -208,7 +208,7 @@ public class PersistenceUnitProcessor  {
     }
     
     /**
-     * Get a list of persitence units from the file or directory at the given 
+     * Get a list of persistence units from the file or directory at the given 
      * url. PersistenceUnits are built based on the presence of persistence.xml 
      * in a META-INF directory at the base of the URL.
      * @param archive The url of a jar file or directory to check
@@ -234,7 +234,7 @@ public class PersistenceUnitProcessor  {
     /**
      * Load the given class name with the given class loader.
      */
-    public static Class loadClass(String className, ClassLoader loader, boolean throwExceptionIfNotFound) {
+    public static Class loadClass(String className, ClassLoader loader, boolean throwExceptionIfNotFound, MetadataProject project) {
         Class candidateClass = null;
         
         try {
@@ -245,6 +245,12 @@ public class PersistenceUnitProcessor  {
             } else {
                 AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class", exc.getClass().getName(), exc.getLocalizedMessage() , className);
             }
+        } catch (NullPointerException npe) {
+            // Bug 227630: If any weavable class is not found in the temporary classLoader - disable weaving 
+            AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class_weaving_disabled",//
+                loader, project.getPersistenceUnitInfo().getPersistenceUnitName(), className);
+            // Disable weaving (for 1->1 and many->1)only if the classLoader returns a NPE on loadClass()
+            project.setWeavingEnabled(false);
         } catch (Exception exception){
             AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class", exception.getClass().getName(), exception.getLocalizedMessage() , className);
         }
@@ -354,7 +360,7 @@ public class PersistenceUnitProcessor  {
     }
     
     /**
-     * Build the unique persistence name by concatenating the decoded URL wiht persistence unit name.
+     * Build the unique persistence name by concatenating the decoded URL with persistence unit name.
      * Decoding url is required while persistence on multiple-bytes OS.  
      * @param URL
      * @param puName

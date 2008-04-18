@@ -77,7 +77,7 @@ public class MetadataProject {
     // Persistence unit info that is represented by this project.
     private PersistenceUnitInfo m_persistenceUnitInfo;
     
-    // A list of all the entity mappinds (XML file representation)
+    // A list of all the entity mappings (XML file representation)
     private List<XMLEntityMappings> m_entityMappings;
 
     // The session we are currently processing for.
@@ -87,7 +87,7 @@ public class MetadataProject {
     private MetadataLogger m_logger;
 
     // Boolean to specify if we should weave for value holders.
-    private boolean m_enableLazyForOneToOne;
+    private boolean m_weavingEnabled;
 
     // Persistence unit metadata for this project.
     private XMLPersistenceUnitMetadata m_persistenceUnitMetadata;
@@ -139,12 +139,17 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * Create and return a new MetadataProject with puInfo as its PersistenceUnitInfo, 
+     * session as its Session and weavingEnabled as its global dynamic weaving state.
+     * @param puInfo - the PersistenceUnitInfo
+     * @param session - the Session
+     * @param weavingEnabled - flag for global dynamic weaving state
      */
-    public MetadataProject(PersistenceUnitInfo puInfo, AbstractSession session, boolean enableLazyForOneToOne) {
+    public MetadataProject(PersistenceUnitInfo puInfo, AbstractSession session, boolean weavingEnabled) {
     	m_persistenceUnitInfo = puInfo;
         m_session = session;
         m_logger = new MetadataLogger(session);
-        m_enableLazyForOneToOne = enableLazyForOneToOne;
+        m_weavingEnabled = weavingEnabled;
         
         m_entityMappings = new ArrayList<XMLEntityMappings>();
         m_defaultListeners = new HashMap<String, EntityListenerMetadata>();
@@ -490,9 +495,19 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
+     * This flag represents dynamic weaving state for 1-1, many-1, fetch groups and change tracking
      */
-    public boolean enableLazyForOneToOne() {
-        return m_enableLazyForOneToOne;
+    public boolean isWeavingEnabled() {
+        return m_weavingEnabled;
+    }
+
+    /**
+     * INTERNAL:
+     * This flag represents dynamic weaving state for 1-1, many-1, fetch groups and change tracking  
+     * @param weavingEnabled (false = weaving disabled)
+     */
+    public void setWeavingEnabled(boolean weavingEnabled) {
+        m_weavingEnabled = weavingEnabled;
     }
     
     /**

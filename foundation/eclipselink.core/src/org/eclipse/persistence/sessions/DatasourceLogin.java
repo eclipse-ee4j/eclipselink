@@ -176,7 +176,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * <p>Setting are:<ul>
      * <li>ConcurrentReadWrite - default
      * <li>SynchronizedWrite - only allow a single writer (i.e. unit of work merge) to the cache at once
-     * <li>SynchronizedReadOnWrite - do not allow reading or other unit of work merge ehile a unit of work is in merge
+     * <li>SynchronizedReadOnWrite - do not allow reading or other unit of work merge while a unit of work is in merge
      */
     public int getCacheTransactionIsolation() {
         return cacheTransactionIsolation;

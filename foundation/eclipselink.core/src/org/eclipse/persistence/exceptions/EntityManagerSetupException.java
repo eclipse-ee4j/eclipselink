@@ -39,12 +39,12 @@ public class EntityManagerSetupException extends EclipseLinkException {
     public static final int WRONG_WEAVING_PROPERTY_VALUE = 28022;
     public static final int METHOD_INVOCATION_FAILED = 28023;
     public static final int CANNOT_ACCESS_METHOD_ON_OBJECT=28024;
-    
+    public static final int NO_TEMPORARY_CLASSLOADER_AVAILABLE=28025;    
 
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     public EntityManagerSetupException() {
         super();
@@ -52,7 +52,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     protected EntityManagerSetupException(String message) {
         super(message);
@@ -60,7 +60,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     protected EntityManagerSetupException(String message, Throwable internalException) {
         super(message);
@@ -259,5 +259,18 @@ public class EntityManagerSetupException extends EclipseLinkException {
         return setupException;
     }
 
+    /**
+     * INTERNAL:
+     * The implementation of getNewTempClassLoader is returning null instead of a temporary ClassLoader instance.<br>
+     * @param PUName
+     * @return
+     */
+    public static EntityManagerSetupException noTemporaryClassLoaderAvailable(String PUName) {
+        Object[] args = { PUName };
+        EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(//
+                EntityManagerSetupException.class, NO_TEMPORARY_CLASSLOADER_AVAILABLE, args));
+        setupException.setErrorCode(NO_TEMPORARY_CLASSLOADER_AVAILABLE);
+        return setupException;
+    }
     
 }

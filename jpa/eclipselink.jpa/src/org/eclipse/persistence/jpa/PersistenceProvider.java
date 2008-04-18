@@ -32,7 +32,7 @@ import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 
 /**
- * This is the TopLink EJB 3.0 provider
+ * This is the EclipseLink EJB 3.0 provider
  */
 public class PersistenceProvider implements javax.persistence.spi.PersistenceProvider, PersistenceInitializationActivator {
 

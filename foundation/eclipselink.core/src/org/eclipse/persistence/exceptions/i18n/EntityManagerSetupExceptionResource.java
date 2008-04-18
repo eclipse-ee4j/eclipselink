@@ -23,8 +23,8 @@ import java.util.ListResourceBundle;
 public class EntityManagerSetupExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
                                            { "28001", "A ValidationException was thrown while trying to create session: [{0}] " + ". The most likely causes of this issue are that your [{1}] file is not available on the classpath " + "or it does not contain a session called: [{0}]." },
-                                           { "28002", "TopLink is attemting to load a ServerSession named [{0}] from [{1}], and not getting a ServerSession." },
-                                           { "28003", "TopLink has loaded Session [{0}] from [{1}] and it either does not have a server platform specified or specifies " + "a server platform that does not use and external transaction controller.  Please specify an appropriate server platform if you plan to use JTA." },
+                                           { "28002", "EclipseLink is attempting to load a ServerSession named [{0}] from [{1}], and not getting a ServerSession." },
+                                           { "28003", "EclipseLink has loaded Session [{0}] from [{1}] and it either does not have a server platform specified or specifies " + "a server platform that does not use and external transaction controller.  Please specify an appropriate server platform if you plan to use JTA." },
                                            { "28004", "Error in setup of EntityManager factory: JavaSECMPInitializer.initializeFromMain returned false." },
                                            { "28005", "An Exception was thrown in setup of EntityManager factory." },
                                            { "28006", "ClassNotFound: [{0}] specified in [{1}] property." },
@@ -46,6 +46,7 @@ public class EntityManagerSetupExceptionResource extends ListResourceBundle {
                                            { "28022", "Value [true] for the property [eclipselink.weaving] is incorrect when global instrumentation is null, value should either be null or false." },
                                            { "28023", "The method invocation of the method [{0}] on the object [{1}], of class [{2}], triggered an exception." },
                                            { "28024", "Cannot reflectively access the method [{0}] for object [{1}], of class [{2}]." },
+                                           { "28025", "The persistence unit with name [{0}] has returned a [null] temporary classLoader - weaving has been disabled for this session.  You may use static weaving is an optional workaround." }
    };
 
     /**
