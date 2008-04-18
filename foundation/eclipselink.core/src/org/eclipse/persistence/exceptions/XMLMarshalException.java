@@ -72,10 +72,8 @@ public class XMLMarshalException extends ValidationException {
 
     public static XMLMarshalException marshalException(Exception nestedException) {
         Object[] args = {  };
-
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, MARSHAL_EXCEPTION, args), nestedException);
         exception.setErrorCode(MARSHAL_EXCEPTION);
-        exception.setInternalException(nestedException);
         return exception;
     }
 
