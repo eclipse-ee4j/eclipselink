@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm;
 
 import java.util.ArrayList;
@@ -254,7 +254,7 @@ public class XMLDescriptor extends ClassDescriptor {
     public AbstractRecord buildNestedRowFromFieldValue(Object fieldValue) {
         //----------------------------------------------------------------------------//
         if (fieldValue instanceof XMLRecord) {
-            return (XMLRecord)fieldValue;
+            return (XMLRecord) fieldValue;
         }
 
         //----------------------------------------------------------------------------//
@@ -263,7 +263,7 @@ public class XMLDescriptor extends ClassDescriptor {
             return getObjectBuilder().createRecord();
         }
 
-        Vector nestedRows = (Vector)fieldValue;
+        Vector nestedRows = (Vector) fieldValue;
         if (nestedRows.isEmpty()) {
             return getObjectBuilder().createRecord();
         } else {
@@ -271,7 +271,7 @@ public class XMLDescriptor extends ClassDescriptor {
             if (!(nestedRows.firstElement() instanceof AbstractRecord)) {
                 return getObjectBuilder().createRecord();
             }
-            return (XMLRecord)nestedRows.firstElement();
+            return (XMLRecord) nestedRows.firstElement();
         }
     }
 
@@ -285,7 +285,7 @@ public class XMLDescriptor extends ClassDescriptor {
         if (!(fieldValue instanceof Vector)) {
             return new Vector(0);
         }
-        return (Vector)fieldValue;
+        return (Vector) fieldValue;
     }
 
     /**
@@ -339,7 +339,7 @@ public class XMLDescriptor extends ClassDescriptor {
             fieldValues.add(fieldValue);
             return fieldValues;
         }
-        return (Vector)fieldValue;
+        return (Vector) fieldValue;
     }
 
     /**
@@ -377,7 +377,7 @@ public class XMLDescriptor extends ClassDescriptor {
      */
     public DatabaseField buildField(DatabaseField field) {
         try {
-            XMLField xmlField = (XMLField)field;
+            XMLField xmlField = (XMLField) field;
             xmlField.setNamespaceResolver(this.getNamespaceResolver());
         } catch (ClassCastException e) {
             // Assumes fields are always XML.
@@ -394,35 +394,36 @@ public class XMLDescriptor extends ClassDescriptor {
         // do nothing, since the parent descriptor was already modified during pre-initialize
     }
 
- /**
-     * INTERNAL:
-     * Allow the descriptor to initialize any dependencies on this session.
-     */
- public void preInitialize(AbstractSession session) throws DescriptorException {
+    /**
+        * INTERNAL:
+        * Allow the descriptor to initialize any dependencies on this session.
+        */
+    public void preInitialize(AbstractSession session) throws DescriptorException {
         // Avoid repetitive initialization (this does not solve loops)
         if (isInitialized(PREINITIALIZED)) {
             return;
         }
         setInitializationStage(PREINITIALIZED);
-                       
+
+
         // 4924665 Check for spaces in table names, and add the appropriate quote character
         Iterator tables = this.getTables().iterator();
-        while(tables.hasNext()) {
-            DatabaseTable next = (DatabaseTable)tables.next();
-            if(next.getName().indexOf(' ') != -1) {
+        while (tables.hasNext()) {
+            DatabaseTable next = (DatabaseTable) tables.next();
+            if (next.getName().indexOf(' ') != -1) {
                 //table names contains a space so needs to be quoted.
-                String quoteChar = ((DatasourcePlatform)session.getDatasourcePlatform()).getIdentifierQuoteCharacter();
+                String quoteChar = ((DatasourcePlatform) session.getDatasourcePlatform()).getIdentifierQuoteCharacter();
                 //Ensure this tablename hasn't already been quoted.
-                if(next.getName().indexOf(quoteChar) == -1) {
+                if (next.getName().indexOf(quoteChar) == -1) {
                     next.setName(quoteChar + next.getName() + quoteChar);
                 }
             }
         }
-        
+
         // Allow mapping pre init, must be done before validate.
         for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
             try {
-                DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
+                DatabaseMapping mapping = (DatabaseMapping) mappingsEnum.nextElement();
                 mapping.preInitialize(session);
             } catch (DescriptorException exception) {
                 session.getIntegrityChecker().handleError(exception);
@@ -432,7 +433,7 @@ public class XMLDescriptor extends ClassDescriptor {
         validateBeforeInitialization(session);
 
         preInitializeInheritancePolicy(session);
-        
+
         // Make sure that parent is already preinitialized
         if (hasInheritance()) {
             // The default table will be set in this call once the duplicate
@@ -442,17 +443,16 @@ public class XMLDescriptor extends ClassDescriptor {
             // This must be done now, after validate, before init anything else.
             setInternalDefaultTable();
         }
-        
+
         verifyTableQualifiers(session.getDatasourcePlatform());
         initializeProperties(session);
-     
+
         if (hasInterfacePolicy()) {
             preInterfaceInitialization(session);
         }
-        
+
     }
-    
-    
+
     /**
      * INTERNAL:
      * Post initializations after mappings are initialized.
@@ -468,18 +468,17 @@ public class XMLDescriptor extends ClassDescriptor {
         // Make sure that child is post initialized,
         // this initialize bottom up, unlike the two other phases that to top down.
         if (hasInheritance()) {
-            for (Enumeration childEnum = getInheritancePolicy().getChildDescriptors().elements();
-                     childEnum.hasMoreElements();) {
-                ((ClassDescriptor)childEnum.nextElement()).postInitialize(session);
+            for (Enumeration childEnum = getInheritancePolicy().getChildDescriptors().elements(); childEnum.hasMoreElements();) {
+                ((ClassDescriptor) childEnum.nextElement()).postInitialize(session);
             }
         }
 
         // Allow mapping to perform post initialization.
         for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
+            DatabaseMapping mapping = (DatabaseMapping) mappingsEnum.nextElement();
 
             // This causes post init to be called multiple times in inheritance.
-            mapping.postInitialize(session);          
+            mapping.postInitialize(session);
         }
 
         if (hasInheritance()) {
@@ -504,7 +503,7 @@ public class XMLDescriptor extends ClassDescriptor {
         // May 02, 2000 - Jon D.
         for (int index = 0; index < getFields().size(); index++) {
             DatabaseField field = getFields().elementAt(index);
-            if (field.getType() == null){
+            if (field.getType() == null) {
                 DatabaseMapping mapping = getObjectBuilder().getMappingForField(field);
                 if (mapping != null) {
                     field.setType(mapping.getFieldClassification(field));
@@ -513,9 +512,8 @@ public class XMLDescriptor extends ClassDescriptor {
             field.setIndex(index);
         }
 
-        validateAfterInitialization(session);        
+        validateAfterInitialization(session);
     }
-
 
     /**
      * INTERNAL:
@@ -524,7 +522,7 @@ public class XMLDescriptor extends ClassDescriptor {
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         if (this.hasInheritance()) {
-            ((org.eclipse.persistence.internal.oxm.QNameInheritancePolicy)this.getInheritancePolicy()).setNamespaceResolver(this.getNamespaceResolver());
+            ((org.eclipse.persistence.internal.oxm.QNameInheritancePolicy) this.getInheritancePolicy()).setNamespaceResolver(this.getNamespaceResolver());
         }
 
         // These cached settings on the project must be set even if descriptor is initialized.
@@ -544,39 +542,37 @@ public class XMLDescriptor extends ClassDescriptor {
         if (isChildDescriptor()) {
             getInheritancePolicy().getParentDescriptor().initialize(session);
         }
- 
+
         for (Enumeration mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = (DatabaseMapping)mappingsEnum.nextElement();
+            DatabaseMapping mapping = (DatabaseMapping) mappingsEnum.nextElement();
             validateMappingType(mapping);
             mapping.initialize(session);
-         
+
             // Add all the fields in the mapping to myself.
             Helper.addAllUniqueToVector(getFields(), mapping.getFields());
-        }   
+        }
 
         // If this has inheritance then it needs to be initialized before all fields is set.
         if (hasInheritance()) {
-            getInheritancePolicy().initialize(session);          
+            getInheritancePolicy().initialize(session);
         }
 
-      
         // Initialize the allFields to its fields, this can be done now because the fields have been computed.
-        setAllFields((Vector)getFields().clone());
+        setAllFields((Vector) getFields().clone());
 
         getObjectBuilder().initialize(session);
-
-              if (hasInterfacePolicy()) {
+        if (hasInterfacePolicy()) {
             interfaceInitialization(session);
         }
-       
         if (hasReturningPolicy()) {
             getReturningPolicy().initialize(session);
         }
-        
         getEventManager().initialize(session);
         getCopyPolicy().initialize(session);
-
         getInstantiationPolicy().initialize(session);
+        if (getSchemaReference() != null) {
+            getSchemaReference().initialize(session);
+        }
     }
 
     /**
@@ -617,7 +613,7 @@ public class XMLDescriptor extends ClassDescriptor {
             elementPrefix = elementName.substring(0, colonIndex);
         }
         String elementNamespaceUri = unmarshalRecord.getRootElementNamespaceUri();
-        if(forceWrap || shouldWrapObject(unmarshalRecord.getCurrentObject(), elementNamespaceUri, elementLocalName, elementPrefix)) {
+        if (forceWrap || shouldWrapObject(unmarshalRecord.getCurrentObject(), elementNamespaceUri, elementLocalName, elementPrefix)) {
             XMLRoot xmlRoot = new XMLRoot();
             xmlRoot.setLocalName(elementLocalName);
             xmlRoot.setNamespaceURI(elementNamespaceUri);
@@ -628,7 +624,7 @@ public class XMLDescriptor extends ClassDescriptor {
             xmlRoot.setNoNamespaceSchemaLocation(unmarshalRecord.getNoNamespaceSchemaLocation());
             return xmlRoot;
         }
-        
+
         return wrapObjectInXMLRoot(unmarshalRecord.getCurrentObject(), elementNamespaceUri, elementLocalName, elementPrefix, forceWrap);
     }
 
@@ -649,7 +645,7 @@ public class XMLDescriptor extends ClassDescriptor {
       */
     public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, boolean forceWrap) {
 
-        if(forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix)) {
+        if (forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix)) {
             // if the DOMRecord element != descriptor's default 
             // root element, create an XMLRoot, populate and return it
             XMLRoot xmlRoot = new XMLRoot();
@@ -662,7 +658,7 @@ public class XMLDescriptor extends ClassDescriptor {
     }
 
     public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, String encoding, String version, boolean forceWrap) {
-        if(forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix)) {
+        if (forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix)) {
             // if the DOMRecord element != descriptor's default 
             // root element, create an XMLRoot, populate and return it
             XMLRoot xmlRoot = new XMLRoot();
@@ -674,8 +670,9 @@ public class XMLDescriptor extends ClassDescriptor {
             return xmlRoot;
         }
         return object;
-        
+
     }
+
     public boolean shouldWrapObject(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix) {
         String defaultRootName = getDefaultRootElement();
 
@@ -693,13 +690,15 @@ public class XMLDescriptor extends ClassDescriptor {
 
             // if the DOMRecord element == descriptor's default 
             // root element, return the object as per usual
-            if ((((defaultRootNamespaceUri == null) && (elementNamespaceUri == null)) || ((defaultRootNamespaceUri == null) && (elementNamespaceUri.equals(""))) || ((elementNamespaceUri == null) && (defaultRootNamespaceUri.equals(""))) || (((defaultRootNamespaceUri != null) && (elementNamespaceUri != null)) && (defaultRootNamespaceUri.equals(elementNamespaceUri)))) && (defaultRootName.equals(elementLocalName))) {
+            if ((((defaultRootNamespaceUri == null) && (elementNamespaceUri == null)) || ((defaultRootNamespaceUri == null) && (elementNamespaceUri.equals(""))) || ((elementNamespaceUri == null) && (defaultRootNamespaceUri.equals(""))) || (((defaultRootNamespaceUri != null) && (elementNamespaceUri != null)) && (defaultRootNamespaceUri
+                    .equals(elementNamespaceUri))))
+                    && (defaultRootName.equals(elementLocalName))) {
                 return false;
             }
         }
         return true;
     }
-    
+
     public XMLField getDefaultRootElementField() {
         return defaultRootElementField;
     }

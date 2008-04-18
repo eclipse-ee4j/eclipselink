@@ -307,6 +307,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
         } else {
             //this was an element, so do the XOP/SWAREF/Inline binary cases for an element
             XMLRecord record = (XMLRecord) value;
+                record.setSession(executionSession);
 
             if ((unmarshaller.getAttachmentUnmarshaller() != null) && unmarshaller.getAttachmentUnmarshaller().isXOPPackage() && !this.isSwaRef() && !this.shouldInlineBinaryData()) {
                 //look for the include element:

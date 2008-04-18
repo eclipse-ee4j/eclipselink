@@ -884,7 +884,7 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
 
                 for (int i = 0; i < subRows.size(); i++) {
                     XMLRecord subRow = (XMLRecord)subRows.elementAt(i);
-
+                    subRow.setSession(executionSession);
                     Object object = getIndirectionPolicy().valueFromQuery(targetQuery, subRow, sourceQuery.getSession());
                     if (object instanceof Collection) {
                         java.util.Iterator iter = ((Collection)object).iterator();

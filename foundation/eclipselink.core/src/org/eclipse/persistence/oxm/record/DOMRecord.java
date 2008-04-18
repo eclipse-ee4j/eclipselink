@@ -414,9 +414,8 @@ public class DOMRecord extends XMLRecord {
         return result;
     }
 
-    //----------------------------------------------------------------------------//
     private Object getValueFromAttribute(Attr node, XMLField key) {
-        return key.convertValueBasedOnSchemaType(node.getNodeValue(), XMLConversionManager.getDefaultXMLManager());
+        return key.convertValueBasedOnSchemaType(node.getNodeValue(), (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
     }
 
     private Object getValueFromElement(Element node, Node textChild, XMLField key) {
@@ -425,16 +424,16 @@ public class DOMRecord extends XMLRecord {
     }
 
     private Object convertValue(Element node, XMLField key, Object value) {
+        XMLConversionManager xmlCnvMgr = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
         if (key.isTypedTextField() && (node != null)) {
             String schemaType = node.getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-
             if ((null != schemaType) && (!schemaType.equals(""))) {
                 QName qname = null;
                 int index = schemaType.indexOf(':');
                 if (index == -1) {
                     qname = new QName(schemaType);
                     Class convertClass = key.getJavaClass(qname);
-                    return XMLConversionManager.getDefaultXMLManager().convertObject(value, convertClass);
+                    return xmlCnvMgr.convertObject(value, convertClass);
                 } else {
                     String prefix = schemaType.substring(0, index);
                     String localPart = schemaType.substring(index + 1);
@@ -442,11 +441,11 @@ public class DOMRecord extends XMLRecord {
                     String url = xmlPlatform.resolveNamespacePrefix(node, prefix);
                     qname = new QName(url, localPart);
                     Class convertClass = key.getJavaClass(qname);
-                    return XMLConversionManager.getDefaultXMLManager().convertObject(value, convertClass, qname);
+                    return xmlCnvMgr.convertObject(value, convertClass, qname);
                 }
             }
         }
-        return key.convertValueBasedOnSchemaType(value, XMLConversionManager.getDefaultXMLManager());
+        return key.convertValueBasedOnSchemaType(value, xmlCnvMgr);
     }
 
     /**

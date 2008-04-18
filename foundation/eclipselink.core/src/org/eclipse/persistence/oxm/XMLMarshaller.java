@@ -370,6 +370,7 @@ public class XMLMarshaller {
 
         try {
             Node xmlDocument = objectToXMLNode(object, xmlDescriptor, isXMLRoot);
+            writerRecord.setSession(session);
             if (isFragment()) {
                 writerRecord.node(xmlDocument, xmlDescriptor.getNamespaceResolver());
             } else {
@@ -404,12 +405,10 @@ public class XMLMarshaller {
         if ((object == null) || (contentHandler == null)) {
             throw XMLMarshalException.nullArgumentException();
         }
-
         boolean isXMLRoot = (object instanceof XMLRoot);
         XMLDescriptor xmlDescriptor = getDescriptor(object, isXMLRoot);
 
         AbstractSession session = xmlContext.getSession(xmlDescriptor);
-
         //if it's a simple xml root then session and descriptor will be null
         if ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
             ContentHandlerRecord contentHandlerRecord = new ContentHandlerRecord();
@@ -532,8 +531,7 @@ public class XMLMarshaller {
      */
     public void marshal(Object object, MarshalRecord marshalRecord) {
         boolean isXMLRoot = (object instanceof XMLRoot);
-        XMLDescriptor xmlDescriptor = getDescriptor(object, isXMLRoot);
-        marshal(object, marshalRecord, xmlDescriptor, isXMLRoot);
+        marshal(object, marshalRecord, getDescriptor(object, isXMLRoot), isXMLRoot);
     }
 
     /**
@@ -591,13 +589,17 @@ public class XMLMarshaller {
                 nr.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
             }
         }
+        
         TreeObjectBuilder treeObjectBuilder = null;
         AbstractSession session = null;
         if (descriptor != null) {
             session = xmlContext.getSession(object);
             treeObjectBuilder = (TreeObjectBuilder) descriptor.getObjectBuilder();
+        } else {
+            session = (AbstractSession) xmlContext.getSession(0);
         }
-
+        marshalRecord.setSession(session);
+        
         if (null != rootFragment) {
             marshalRecord.startPrefixMappings(nr);
             if (!isXMLRoot && descriptor.getNamespaceResolver() == null && rootFragment.hasNamespace()) {
@@ -625,8 +627,7 @@ public class XMLMarshaller {
         if (treeObjectBuilder != null) {
             treeObjectBuilder.buildRow(marshalRecord, object, (AbstractSession) session, this);
         } else if (isXMLRoot) {
-            String value = (String) XMLConversionManager.getDefaultXMLManager().convertObject(object, String.class);
-            marshalRecord.characters(value);
+            marshalRecord.characters((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(object, String.class));
         }
 
         if (null != rootFragment) {
@@ -724,16 +725,14 @@ public class XMLMarshaller {
             if (!isXMLRoot) {
                 xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(object, xmlContext.getDocumentPreservationPolicy(session));
                 xmlRow.setMarshaller(this);
-                //xmlRow.setSession(session);
                 addDescriptorNamespacesToXMLRecord(descriptor, xmlRow);
             }
             return objectToXML(object, descriptor, xmlRow, isXMLRoot);
-        } else {
-            MarshalRecord marshalRecord = new NodeRecord();
-            marshalRecord.setMarshaller(this);
-            marshal(object, marshalRecord, descriptor, isXMLRoot);
-            return marshalRecord.getDocument();
         }
+        MarshalRecord marshalRecord = new NodeRecord();
+        marshalRecord.setMarshaller(this);
+        marshal(object, marshalRecord, descriptor, isXMLRoot);
+        return marshalRecord.getDocument();
     }
 
     /**
@@ -762,13 +761,12 @@ public class XMLMarshaller {
             } else {
                 return doc;
             }
-        } else {
-            MarshalRecord marshalRecord = new NodeRecord();
-            marshalRecord.setMarshaller(this);
-            marshalRecord.getNamespaceResolver().setDOM(rootNode);
-            marshal(object, marshalRecord, descriptor, isXMLRoot);
-            return marshalRecord.getDocument();
         }
+        MarshalRecord marshalRecord = new NodeRecord();
+        marshalRecord.setMarshaller(this);
+        marshalRecord.getNamespaceResolver().setDOM(rootNode);
+        marshal(object, marshalRecord, descriptor, isXMLRoot);
+        return marshalRecord.getDocument();
     }
 
     private void addDescriptorNamespacesToXMLRecord(XMLDescriptor xmlDescriptor, XMLRecord record) {
@@ -811,12 +809,11 @@ public class XMLMarshaller {
             XMLRecord xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecord(localRootName, parent);
             xmlRow.setMarshaller(this);
             return objectToXML(object, descriptor, xmlRow, isXMLRoot);
-        } else {
-            MarshalRecord marshalRecord = new NodeRecord(localRootName, parent);
-            marshalRecord.setMarshaller(this);
-            marshal(object, marshalRecord, descriptor, isXMLRoot);
-            return marshalRecord.getDocument();
         }
+        MarshalRecord marshalRecord = new NodeRecord(localRootName, parent);
+        marshalRecord.setMarshaller(this);
+        marshal(object, marshalRecord, descriptor, isXMLRoot);
+        return marshalRecord.getDocument();
     }
 
     /**

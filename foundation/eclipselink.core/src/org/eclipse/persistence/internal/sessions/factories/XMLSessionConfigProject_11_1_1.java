@@ -47,9 +47,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
 
     public ClassDescriptor buildSessionConfigsDescriptor() {
         XMLDescriptor descriptor = (XMLDescriptor)super.buildSessionConfigsDescriptor();
-        descriptor.setSchemaReference(new XMLSchemaClassPathReference("xsd/eclipse_persistence_sessions_1_0.xsd"));
         descriptor.setDefaultRootElement("sessions");
-
         return descriptor;
     }
     

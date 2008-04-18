@@ -13,12 +13,15 @@
 package org.eclipse.persistence.oxm.schema;
 
 import java.net.URL;
-import org.eclipse.persistence.internal.helper.ConversionManager;
+
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * A schema reference for accessing an XML Schema from the class path.
  */
 public class XMLSchemaClassPathReference extends XMLSchemaReference {
+    ClassLoader loader;
+    
     public XMLSchemaClassPathReference() {
         super();
     }
@@ -27,9 +30,13 @@ public class XMLSchemaClassPathReference extends XMLSchemaReference {
         super(resource);
     }
 
+    public void initialize(AbstractSession session) {
+        loader = session.getDatasourcePlatform().getConversionManager().getLoader();
+    }
+    
     public URL getURL() {
-        // The URL must be passed to the resource, not just the input stream as it is require to
-        // resolve relative URL for imports and includes.
-        return ConversionManager.getDefaultManager().getLoader().getResource(this.getResource());
+        // The URL must be passed to the resource, not just the input stream, as it is 
+        // required to resolve the relative URL for imports and includes.
+        return loader.getResource(this.getResource());
     }
 }

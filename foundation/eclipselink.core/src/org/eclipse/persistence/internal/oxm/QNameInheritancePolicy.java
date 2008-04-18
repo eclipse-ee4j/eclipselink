@@ -107,6 +107,8 @@ public class QNameInheritancePolicy extends InheritancePolicy {
      * This method is invoked only for the abstract descriptors.
      */
     public Class classFromRow(AbstractRecord rowFromDatabase, AbstractSession session) throws DescriptorException {
+        ((XMLRecord) rowFromDatabase).setSession(session);
+        
         if (hasClassExtractor() || shouldUseClassNameAsIndicator()) {
             return super.classFromRow(rowFromDatabase, session);
         }

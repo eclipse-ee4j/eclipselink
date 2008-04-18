@@ -314,6 +314,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             //if the methods aren't available, then just use the default values
         }
 
+        XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
+
         // handle case where the reference class is a primitive wrapper - in
         // this case, we need to use the conversion manager to convert the 
         // node's value to the primitive wrapper class, then create, 
@@ -332,7 +334,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
                 nodeVal = null;
             }
   
-            Object obj = XMLConversionManager.getDefaultXMLManager().convertObject(nodeVal, referenceClass);
+            Object obj = ((XMLConversionManager) xmlContext.getSession(0).getDatasourcePlatform().getConversionManager()).convertObject(nodeVal, referenceClass);
             XMLRoot xmlRoot = new XMLRoot();
             xmlRoot.setObject(obj);
             String lName = xmlRow.getDOM().getLocalName();
@@ -348,7 +350,6 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 
         // for XMLObjectReferenceMappings we need a non-shared cache, so
         // try and get a Unit Of Work from the XMLContext
-        XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
         AbstractSession readSession = xmlContext.getReadSession(referenceClass);
 
         ReadObjectQuery query = new ReadObjectQuery();

@@ -361,6 +361,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
             } else {
                 //this was an element, so do the XOP/SWAREF/Inline binary cases for an element
                 XMLRecord record = (XMLRecord) element;
+                    record.setSession(executionSession);
 
                 if ((unmarshaller.getAttachmentUnmarshaller() != null) && unmarshaller.getAttachmentUnmarshaller().isXOPPackage() && !this.isSwaRef() && !this.shouldInlineBinaryData()) {
                     //look for the include element:

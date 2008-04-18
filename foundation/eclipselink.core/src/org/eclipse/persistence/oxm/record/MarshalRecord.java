@@ -41,13 +41,11 @@ import org.w3c.dom.Node;
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
 public abstract class MarshalRecord extends XMLRecord {
-    private XMLConversionManager xcm;
     private ArrayList groupingElements;
     private HashMap positionalNodes;
 
     public MarshalRecord() {
         super();
-        xcm = XMLConversionManager.getDefaultXMLManager();
     }
 
     public HashMap getPositionalNodes() {
@@ -115,6 +113,7 @@ public abstract class MarshalRecord extends XMLRecord {
         }
         XMLField xmlField = convertToXMLField(key);
         XPathFragment lastFragment = xmlField.getLastXPathFragment();
+        XMLConversionManager xcm = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
         if (lastFragment.nameIsText()) {
             String stringValue = (String)xcm.convertObject(value, String.class);
             characters(stringValue);
@@ -122,7 +121,6 @@ public abstract class MarshalRecord extends XMLRecord {
             String stringValue = (String)xcm.convertObject(value, String.class);
             attribute(lastFragment, xmlField.getNamespaceResolver(), stringValue);
         }
-
         // Do nothing for elements        
     }
 

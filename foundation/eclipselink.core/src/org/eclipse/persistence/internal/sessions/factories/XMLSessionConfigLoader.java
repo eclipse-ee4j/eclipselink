@@ -20,7 +20,6 @@ import java.util.Map;
 import org.xml.sax.*;
 import org.w3c.dom.Document;
 
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -348,10 +347,7 @@ public class XMLSessionConfigLoader {
         }
 
         XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-        XMLDescriptor projectDescriptor = (XMLDescriptor)getProject().getDescriptors().get(SessionConfigs.class);
-
         XMLParser parser = xmlPlatform.newXMLParser();
-
         if (validate) {
             parser.setValidationMode(XMLParser.SCHEMA_VALIDATION);
         } else {
@@ -359,7 +355,7 @@ public class XMLSessionConfigLoader {
         }
 
         parser.setWhitespacePreserving(false);
-        parser.setXMLSchema(projectDescriptor.getSchemaReference().getURL());
+        parser.setXMLSchema(loader.getResource("xsd/eclipse_persistence_sessions_1_0.xsd"));
         parser.setEntityResolver(this.entityResolver);
         parser.setErrorHandler(new XMLSessionConfigLoaderErrorHandler());
 

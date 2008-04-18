@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.databaseaccess.QueryStringCall;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.EmptyRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.eis.*;
 
@@ -87,6 +88,10 @@ public class XQueryInteraction extends XMLInteraction implements QueryStringCall
      * Allow the call to translate the XQuery arguments.
      */
     public void translate(AbstractRecord translationRow, AbstractRecord modifyRow, AbstractSession session) {
+        // may need to set the session on the translation row
+        if (translationRow != EmptyRecord.getEmptyRecord() && getQuery() != null && getQuery().getDescriptor() != null) {
+            ((XMLRecord) translationRow).setSession(session);
+        }
         setInputRow(modifyRow);
         translateQueryString(translationRow, modifyRow, session);
     }

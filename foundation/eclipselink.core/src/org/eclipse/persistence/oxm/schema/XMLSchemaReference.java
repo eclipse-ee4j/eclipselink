@@ -21,6 +21,7 @@ import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import javax.xml.namespace.QName;
 
@@ -165,5 +166,14 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
     public boolean isGlobalDefinition() {
         // more than one occurance of "/" indicates a local definition
         return schemaContext.lastIndexOf("/") <= 0;
+    }
+
+    /**
+     * Allow subclasses to perform initialization if required.  This method will
+     * typically be called during the owning descriptor's initialization phase.
+     * 
+     * @param session
+     */
+    public void initialize(AbstractSession session) {
     }
 }

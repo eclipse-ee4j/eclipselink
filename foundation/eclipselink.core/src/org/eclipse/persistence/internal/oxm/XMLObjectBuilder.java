@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Vector;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -379,6 +380,16 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
 
     /**
+     * Override method in superclass in order to set the session on the record.
+     * Each mapping is recursed to assign values from the Record to the attributes in the domain object.
+     */
+    public void buildAttributesIntoObject(Object domainObject, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, boolean forRefresh) throws DatabaseException {
+        ((XMLRecord)databaseRow).setSession(query.getSession().getExecutionSession(query));
+        super.buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, forRefresh);
+    }
+
+    /**
+     * Override method in superclass in order to set the session on the record.
      * Return the row with primary keys and their values from the given expression.
      */
     public AbstractRecord extractPrimaryKeyRowFromExpression(Expression expression, AbstractRecord translationRow, AbstractSession session) {
@@ -401,6 +412,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
     
     /**
+     * Override method in superclass in order to set the session on the record.
      * Return the row with primary keys and their values from the given expression.
      */
     public Vector extractPrimaryKeyFromExpression(boolean requiresExactMatch, Expression expression, AbstractRecord translationRow, AbstractSession session) {
