@@ -176,7 +176,7 @@ public class MethodWeaver extends CodeAdapter implements Constants {
      */
     public void weaveAttributesIfRequired(int opcode, String owner, String name, String desc) {
         AttributeDetails attributeDetails = tcw.classDetails.getAttributeDetailsFromClassOrSuperClass(name);  
-        if ((attributeDetails == null) || (!attributeDetails.hasField()) || (!owner.equals(attributeDetails.getDeclaringType().getInternalName()))) {
+        if ((attributeDetails == null) || (!attributeDetails.hasField()) || (!this.tcw.classDetails.isInMetadataHierarchy(owner))) {
             super.visitFieldInsn(opcode, owner, name, desc);
             return;
         }

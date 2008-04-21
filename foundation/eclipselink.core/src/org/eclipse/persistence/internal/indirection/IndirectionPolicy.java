@@ -185,6 +185,14 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Trigger the instantiation of the value.
+     */
+    public void instantiateObject(Object object, Object attribute) {
+        getRealAttributeValueFromObject(object, attribute);
+    }
+    
+    /**
+     * INTERNAL:
      * Reduce casting clutter....
      */
     protected AbstractTransformationMapping getTransformationMapping() {

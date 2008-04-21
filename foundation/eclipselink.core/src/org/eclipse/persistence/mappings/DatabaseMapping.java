@@ -77,7 +77,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     protected boolean isOptional;
     
     /** Specifies whether this mapping is lazy, this means not included in the default fetch group. */
-    protected boolean isLazy;
+    protected Boolean isLazy;
 
     /** Fields associated with the mappings are cached */
     protected Vector<DatabaseField> fields;
@@ -548,6 +548,14 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     public Object getRealAttributeValueFromObject(Object object, AbstractSession session) throws DescriptorException {
         return getAttributeValueFromObject(object);
     }
+    
+    /**
+     * INTERNAL:
+     * Trigger the instantiation of the attribute if lazy.
+     */
+    public void instantiateAttribute(Object object, AbstractSession session) {
+        // Not lazy by default.
+    }
 
     /**
      * INTERNAL:
@@ -767,15 +775,22 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /**
      * Return if this mapping is lazy.
-     * This can be used for any mapping type to exclude it from the descriptor's
+     * Lazy has different meaning for different mappings.
+     * For basic/direct mappings, this can be used exclude it from the descriptor's
      * default fetch group.  This means that queries will not include the field(s) required
      * by this mapping by default.
      * This can only be used if the descriptor has a FetchGroupManager and class implements
      * the FetchGroupTracker interface (or is weaved).
-     * This is not the same as indirection on relationships (lazy relationships),
-     * as it defers the loading of the source object fields, not the relationship.
+     * <p>
+     * For relationship mappings this should normally be the same value as indirection,
+     * however for eager relationships this can be used with indirection to allow
+     * indirection locking and change tracking, but still always force instantiation.
      */
     public boolean isLazy() {
+        if (isLazy == null) {
+            // False by default for mappings without indirection.
+            isLazy = Boolean.FALSE;
+        }
         return isLazy;
     }
     

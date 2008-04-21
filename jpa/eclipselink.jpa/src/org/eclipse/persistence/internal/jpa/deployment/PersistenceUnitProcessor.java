@@ -122,7 +122,7 @@ public class PersistenceUnitProcessor  {
         // Build a MetadataProcessor to search the mapped classes in orm xml 
         // documents. We hand in a null session since none of the functionality 
         // required uses a session. (At least we hope not)
-        MetadataProcessor processor = new MetadataProcessor(info, null, loader, false);
+        MetadataProcessor processor = new MetadataProcessor(info, null, loader, false, false);
         // Read the mapping files.
         processor.readMappingFiles(false);
         // Return the class set.

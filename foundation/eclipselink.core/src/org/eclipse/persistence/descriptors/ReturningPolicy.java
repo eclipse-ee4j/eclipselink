@@ -772,10 +772,10 @@ public class ReturningPolicy implements Serializable, Cloneable {
         boolean ok = true;
         verifyField(session, field, getDescriptor());
         DatabaseMapping mapping;
-        Vector mappingVector = getDescriptor().getObjectBuilder().getReadOnlyMappingsForField(field);
-        if (mappingVector != null) {
-            for (int j = 0; j < mappingVector.size(); j++) {
-                mapping = (DatabaseMapping)mappingVector.elementAt(j);
+        List readOnlyMappings = getDescriptor().getObjectBuilder().getReadOnlyMappingsForField(field);
+        if (readOnlyMappings != null) {
+            for (int j = 0; j < readOnlyMappings.size(); j++) {
+                mapping = (DatabaseMapping)readOnlyMappings.get(j);
                 ok &= verifyFieldAndMapping(session, field, getDescriptor(), mapping);
             }
         }

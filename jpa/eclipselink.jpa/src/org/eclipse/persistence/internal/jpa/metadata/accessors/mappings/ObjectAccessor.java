@@ -42,16 +42,16 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class ObjectAccessor extends RelationshipAccessor {
-	private Boolean m_isOptional;
+    private Boolean m_isOptional;
 	
-	/**
-	 * INTERNAL:
-	 */
+    /**
+     * INTERNAL:
+     */
     protected ObjectAccessor() {}
     
-	/**
-	 * INTERNAL:
-	 */
+    /**
+     * INTERNAL:
+     */
     protected ObjectAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(accessibleObject, classAccessor);
     }
@@ -144,6 +144,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         } else {
             mapping.setUsesIndirection(usesIndirection);
         }
+        
+        mapping.setIsLazy(isLazy());
     }
     
     /**

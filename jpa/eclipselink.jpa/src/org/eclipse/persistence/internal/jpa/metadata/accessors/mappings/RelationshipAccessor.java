@@ -56,9 +56,9 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
     private String m_mappedBy; 
     private String m_targetEntityName;
 	
-	/**
-	 * INTERNAL:
-	 */
+    /**
+     * INTERNAL:
+     */
     protected RelationshipAccessor() {}
     
     /**
@@ -163,20 +163,20 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
         return mapping;
     }
     
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public String getPrivateOwned() {
-		return null;
-	}
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getPrivateOwned() {
+        return null;
+    }
 	
     /**
-      * INTERNAL: (Override from MetadataAccessor and overridden in VariableOneToOneAccessor)
-      * Return the reference metadata descriptor for this accessor.
-      * This method does additional checks to make sure that the target
-      * entity is indeed an entity class.
-      */
+     * INTERNAL: (Override from MetadataAccessor and overridden in VariableOneToOneAccessor)
+     * Return the reference metadata descriptor for this accessor.
+     * This method does additional checks to make sure that the target
+     * entity is indeed an entity class.
+     */
     public MetadataDescriptor getReferenceDescriptor() {
         MetadataDescriptor descriptor;
        
@@ -213,13 +213,15 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
      * INTERNAL:
      * Return true if this accessor has any primary key join columns specified.
      */
-	public boolean hasPrimaryKeyJoinColumns() {
-		if (getPrimaryKeyJoinColumns() != null && ! getPrimaryKeyJoinColumns().isEmpty()) {
-			return true;
-		} else {
-			return isAnnotationPresent(PrimaryKeyJoinColumns.class) || isAnnotationPresent(PrimaryKeyJoinColumn.class);
-		}
-	}
+    public boolean hasPrimaryKeyJoinColumns() {
+        if (getPrimaryKeyJoinColumns() != null
+                && !getPrimaryKeyJoinColumns().isEmpty()) {
+            return true;
+        } else {
+            return isAnnotationPresent(PrimaryKeyJoinColumns.class)
+                    || isAnnotationPresent(PrimaryKeyJoinColumn.class);
+        }
+    }
     
     /**
      * INTERNAL: (Override from MetadataAccessor)
@@ -239,17 +241,17 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
      * INTERNAL:
      * Return true if this accessor represents a 1-1 primary key relationship.
      */
-	public boolean isOneToOnePrimaryKeyRelationship() {
+    public boolean isOneToOnePrimaryKeyRelationship() {
         return isOneToOne() && hasPrimaryKeyJoinColumns();
     }
     
-	/**
-	 * INTERNAL: (Overridden in ManyToOneAccessor and ManyToManyAccessor)
-	 * Used for OX mapping.
-	 */
-	public boolean isPrivateOwned() {
-		return m_privateOwned;
-	}
+    /**
+     * INTERNAL: (Overridden in ManyToOneAccessor and ManyToManyAccessor)
+     * Used for OX mapping.
+     */
+    public boolean isPrivateOwned() {
+        return m_privateOwned;
+    }
 	
     /**
      * INTERNAL:
@@ -361,7 +363,7 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
             // is not a ValueHolderInterface.
             if (getTargetEntity() == ValueHolderInterface.class || (getTargetEntity() == void.class && getReferenceClass().getName().equalsIgnoreCase(ValueHolderInterface.class.getName()))) {
                 // do nothing ... I'm too lazy (or too stupid) to do the negation of this expression :-)
-            } else { 
+            } else {
                 process();
             }
             
@@ -459,15 +461,27 @@ public abstract class RelationshipAccessor extends MetadataAccessor {
     }
     
     /**
+     * Return if the accessor should be lazy fetched.
+     */
+    public boolean isLazy() {        
+        Enum fetchType = getFetch();
+        
+        if (fetchType == null) {
+                fetchType = getDefaultFetchType();
+        }
+        
+        return fetchType.equals(FetchType.LAZY);
+    }
+    
+    /**
      * INTERNAL:
      */
     public boolean usesIndirection() {
-    	Enum fetchType = getFetch();
+        // If eager weaving is enabled, indirection is always used.
+        if (getProject().weaveEager()) {
+            return true;
+        }
     	
-    	if (fetchType == null) {
-    		fetchType = getDefaultFetchType();
-    	}
-    	
-        return fetchType.equals(FetchType.LAZY);
+        return isLazy();
     }
 }

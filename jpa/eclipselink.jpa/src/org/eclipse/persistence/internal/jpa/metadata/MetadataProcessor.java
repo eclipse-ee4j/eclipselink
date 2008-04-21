@@ -68,10 +68,10 @@ public class MetadataProcessor {
      * Called from EntityManagerSetupImpl. The 'real' EJB 3.0 processing
      * that includes XML and annotations.
      */
-    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean enableLazyForOneToOne) {
+    public MetadataProcessor(PersistenceUnitInfo puInfo, AbstractSession session, ClassLoader loader, boolean enableLazyForOneToOne, boolean weaveEager) {
         m_loader = loader;
         m_session = session;
-        m_project = new MetadataProject(puInfo, session, enableLazyForOneToOne);
+        m_project = new MetadataProject(puInfo, session, enableLazyForOneToOne, weaveEager);
     }
     
     /**

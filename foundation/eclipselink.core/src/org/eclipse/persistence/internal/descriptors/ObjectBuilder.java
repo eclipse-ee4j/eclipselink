@@ -53,32 +53,38 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  */
 public class ObjectBuilder implements Cloneable, Serializable {
     protected ClassDescriptor descriptor;
+    /** Mappings keyed by attribute name. */
     protected Map<String, DatabaseMapping> mappingsByAttribute;
+    /** Mappings keyed by database field. */
     protected Map<DatabaseField, DatabaseMapping> mappingsByField;
-    protected Map<DatabaseField, Vector<DatabaseMapping>> readOnlyMappingsByField;
+    /** List of read-only mappings using a database field. */
+    protected Map<DatabaseField, List<DatabaseMapping>> readOnlyMappingsByField;
     /** Used to maintain identity on the field objects. Ensure they get the correct index/type. */
-    protected Map fieldsMap;
-    // Secondary key field to Primary key field map (joined inheritance or secondary table) 
-    protected Map primaryKeyFieldsBySecondaryField;
-    protected Vector<DatabaseMapping> primaryKeyMappings;
-    protected Vector<Class> primaryKeyClassifications;
-    protected transient Vector<DatabaseMapping> nonPrimaryKeyMappings;
+    protected Map<DatabaseField, DatabaseField> fieldsMap;
+    /** Mapping for the primary key fields. */
+    protected List<DatabaseMapping> primaryKeyMappings;
+    /** The types for the primary key fields, in same order as descriptor's primary key fields. */
+    protected List<Class> primaryKeyClassifications;
+    /** All mapping other than primary key mappings. */
+    protected transient List<DatabaseMapping> nonPrimaryKeyMappings;
+    /** Expression for querying an object by primary key. */
     protected transient Expression primaryKeyExpression;
-
     /** PERF: Cache mapping that use joining. */
-    protected Vector<DatabaseMapping> joinedAttributes = null;
-
+    protected List<DatabaseMapping> joinedAttributes;
     /** PERF: Cache mappings that require cloning. */
-    protected List<DatabaseMapping> cloningMappings;
+    protected List<DatabaseMapping> cloningMappings;    
+    /** PERF: Cache mappings that are eager loaded. */
+    protected List<DatabaseMapping> eagerMappings;
 
     public ObjectBuilder(ClassDescriptor descriptor) {
         this.mappingsByField = new HashMap(20);
-        this.readOnlyMappingsByField = new HashMap(20);
+        this.readOnlyMappingsByField = new HashMap(10);
         this.mappingsByAttribute = new HashMap(20);
         this.fieldsMap = new HashMap(20);
-        this.primaryKeyMappings = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
-        this.nonPrimaryKeyMappings = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(10);
+        this.primaryKeyMappings = new ArrayList(5);
+        this.nonPrimaryKeyMappings = new ArrayList(10);
         this.cloningMappings = new ArrayList(10);
+        this.eagerMappings = new ArrayList(5);
         this.descriptor = descriptor;
     }
 
@@ -182,7 +188,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if (size > 1) {
             handledMappings = new HashSet(size);
         }
-        Vector fields = row.getFields();
+        List fields = row.getFields();
         for (int index = 0; index < size; index++) {
             DatabaseField field = (DatabaseField)fields.get(index);
             assignReturnValueForField(object, query, row, field, handledMappings);
@@ -197,11 +203,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if (mapping != null) {
             assignReturnValueToMapping(object, query, row, field, mapping, handledMappings);
         }
-        Vector mappingVector = getReadOnlyMappingsForField(field);
-        if (mappingVector != null) {
-            int size = mappingVector.size();
+        List readOnlyMappings = getReadOnlyMappingsForField(field);
+        if (readOnlyMappings != null) {
+            int size = readOnlyMappings.size();
             for (int index = 0; index < size; index++) {
-                mapping = (DatabaseMapping)mappingVector.get(index);
+                mapping = (DatabaseMapping)readOnlyMappings.get(index);
                 assignReturnValueToMapping(object, query, row, field, mapping, handledMappings);
             }
         }
@@ -276,7 +282,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         AbstractSession executionSession = query.getSession().getExecutionSession(query);
 
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = getDescriptor().getMappings();
+        List mappings = getDescriptor().getMappings();
 
         // PERF: Cache if all mappings should be read.
         boolean readAllMappings = query.shouldReadAllMappings();
@@ -366,7 +372,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         Expression expression = null;
 
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = getDescriptor().getMappings();
+        List mappings = getDescriptor().getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             if (expression == null) {
@@ -462,6 +468,22 @@ public class ObjectBuilder implements Cloneable, Serializable {
         return domainObject;
     }
 
+
+    /**
+     * Force instantiation to any eager mappings.
+     */
+    public void instantiateEagerMappings(Object object, AbstractSession session) {
+        // Force instantiation to eager mappings.
+        List<DatabaseMapping> eagerMappings = getEagerMappings();
+        if (!eagerMappings.isEmpty()) {
+            int size = eagerMappings.size();
+            for (int index = 0; index < size; index++) {
+                DatabaseMapping mapping = eagerMappings.get(index);
+                mapping.instantiateAttribute(object, session);
+            }
+        }
+    }
+    
     /**
      * For executing all reads on the UnitOfWork, the session when building
      * objects from rows will now be the UnitOfWork.  Useful if the rows were
@@ -538,6 +560,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
         
         // Cache key is used for object locking.
         CacheKey cacheKey = null;
+        // Keep track if we actually built/refresh the object.
+        boolean cacheHit = true;
         try {
             // Check if the objects exists in the identity map.
             if (query.shouldMaintainCache()) {
@@ -577,6 +601,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             }
 
             if (domainObject == null) {
+                cacheHit = false;
                 if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
                     domainObject = ((ReadObjectQuery)query).getSelectionObject();
                 } else {
@@ -596,6 +621,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
                         concreteDescriptor.getFetchGroupManager().setObjectFetchGroup(domainObject, query.getFetchGroup(), session);
                     }
                 }
+                // PERF: Cache the primary key and cache key if implements PersistenceEntity.
+                if (domainObject instanceof PersistenceEntity) {
+                    ((PersistenceEntity)domainObject)._persistence_setCacheKey(cacheKey);
+                    ((PersistenceEntity)domainObject)._persistence_setPKVector(primaryKey);
+                }
             } else {
                 if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
                     copyInto(domainObject, ((ReadObjectQuery)query).getSelectionObject());
@@ -613,6 +643,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     //cached object might be partially fetched, only refresh the fetch group attributes of the query if
                     //the cached partial object is not invalidated and does not contain all data for the fetch group.	
                     if (concreteDescriptor.hasFetchGroupManager() && concreteDescriptor.getFetchGroupManager().isPartialObject(domainObject)) {
+                        cacheHit = false;
                         //only ObjectLevelReadQuery and above support partial objects
                         revertFetchGroupData(domainObject, concreteDescriptor, cacheKey, (query), joinManager, databaseRow, session);
                     } else {
@@ -632,6 +663,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                             }
                         }
                         if (refreshRequired) {
+                            cacheHit = false;
                             // CR #4365 - used to prevent infinite recursion on refresh object cascade all.
                             cacheKey.setLastUpdatedQueryId(query.getQueryId());
                             concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, databaseRow, query, joinManager, true);
@@ -639,6 +671,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                         }
                     }
                 } else if (concreteDescriptor.hasFetchGroupManager() && (concreteDescriptor.getFetchGroupManager().isPartialObject(domainObject) && (!concreteDescriptor.getFetchGroupManager().isObjectValidForFetchGroup(domainObject, query.getFetchGroup())))) {
+                    cacheHit = false;
                     // The fetched object is not sufficient for the fetch group of the query 
                     // refresh attributes of the query's fetch group.
                     concreteDescriptor.getFetchGroupManager().unionFetchGroupIntoObject(domainObject, query.getFetchGroup(), session);
@@ -704,11 +737,10 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
             }
         }
-        // PERF: Cache the primary key and cache key if implements PersistenceEntity.
-        if (domainObject instanceof PersistenceEntity) {
-            ((PersistenceEntity)domainObject)._persistence_setCacheKey(cacheKey);
-            ((PersistenceEntity)domainObject)._persistence_setPKVector(primaryKey);
+        if (!cacheHit) {
+            concreteDescriptor.getObjectBuilder().instantiateEagerMappings(domainObject, session);
         }
+        
         return domainObject;
     }
 
@@ -823,7 +855,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public AbstractRecord buildRow(AbstractRecord databaseRow, Object object, AbstractSession session) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = getDescriptor().getMappings();
+        List mappings = getDescriptor().getMappings();
         int mappingsSize = mappings.size();
         for (int index = 0; index < mappingsSize; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
@@ -858,7 +890,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public AbstractRecord buildRowForShallowInsert(AbstractRecord databaseRow, Object object, AbstractSession session) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = getDescriptor().getMappings();
+        List mappings = getDescriptor().getMappings();
         int mappingsSize = mappings.size();
         for (int index = 0; index < mappingsSize; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
@@ -1139,7 +1171,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         AbstractSession executionSession = query.getSession().getExecutionSession(query);
 
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = getPrimaryKeyMappings();
+        List mappings = getPrimaryKeyMappings();
         int mappingsSize = mappings.size();
         for (int i = 0; i < mappingsSize; i++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(i);
@@ -1160,7 +1192,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         AbstractSession executionSession = query.getSession().getExecutionSession(query);
 
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector pkMappings = getPrimaryKeyMappings();
+        List pkMappings = getPrimaryKeyMappings();
         int mappingsSize = pkMappings.size();
         for (int i = 0; i < mappingsSize; i++) {
             DatabaseMapping mapping = (DatabaseMapping)pkMappings.get(i);
@@ -1170,7 +1202,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 mapping.buildShallowOriginalFromRow(databaseRow, original, null, query, executionSession);
             }
         }
-        Vector mappings = getDescriptor().getMappings();
+        List mappings = getDescriptor().getMappings();
         mappingsSize = mappings.size();
         for (int i = 0; i < mappingsSize; i++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(i);
@@ -1190,7 +1222,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     public void buildAttributesIntoWorkingCopyClone(Object clone, ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, boolean forRefresh) throws DatabaseException, QueryException {
         // PERF: Cache if all mappings should be read.
         boolean readAllMappings = query.shouldReadAllMappings();
-        Vector mappings = this.descriptor.getMappings();
+        List mappings = this.descriptor.getMappings();
         int size = mappings.size();
         for (int index = 0; index < size; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
@@ -1333,6 +1365,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         } finally {
             unitOfWorkCacheKey.release();            
         }
+        instantiateEagerMappings(workingClone, unitOfWork);
 
         return workingClone;
     }
@@ -1396,8 +1429,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
         objectBuilder.setMappingsByField(new HashMap(getMappingsByField()));
         objectBuilder.setFieldsMap(new HashMap(getFieldsMap()));
         objectBuilder.setReadOnlyMappingsByField(new HashMap(getReadOnlyMappingsByField()));
-        objectBuilder.setPrimaryKeyMappings((Vector)getPrimaryKeyMappings().clone());
-        objectBuilder.setNonPrimaryKeyMappings((Vector)getNonPrimaryKeyMappings().clone());
+        objectBuilder.setPrimaryKeyMappings(new ArrayList(getPrimaryKeyMappings()));
+        objectBuilder.setNonPrimaryKeyMappings(new ArrayList(getNonPrimaryKeyMappings()));
 
         return objectBuilder;
     }
@@ -1539,23 +1572,24 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
         List mappings = getCloningMappings();
-        for (int index = 0; index < mappings.size(); index++) {
+        int size = mappings.size();
+        for (int index = 0; index < size; index++) {
             ((DatabaseMapping)mappings.get(index)).buildCopy(copy, original, policy);
         }
 
         if (policy.shouldResetPrimaryKey() && (!(getDescriptor().isAggregateDescriptor() || getDescriptor().isAggregateCollectionDescriptor()))) {
             // Do not reset if any of the keys is mapped through a 1-1, i.e. back reference id has already changed.
             boolean hasOneToOne = false;
-            for (Enumeration keyMappingsEnum = getPrimaryKeyMappings().elements();
-                     keyMappingsEnum.hasMoreElements();) {
-                if (((DatabaseMapping)keyMappingsEnum.nextElement()).isOneToOneMapping()) {
+            List primaryKeyMappings = getPrimaryKeyMappings();
+            size = primaryKeyMappings.size();
+            for (int index = 0; index < size; index++) {
+                if (((DatabaseMapping)primaryKeyMappings.get(index)).isOneToOneMapping()) {
                     hasOneToOne = true;
                 }
             }
             if (!hasOneToOne) {
-                for (Enumeration keyMappingsEnum = getPrimaryKeyMappings().elements();
-                         keyMappingsEnum.hasMoreElements();) {
-                    DatabaseMapping mapping = (DatabaseMapping)keyMappingsEnum.nextElement();
+                for (int index = 0; index < size; index++) {
+                    DatabaseMapping mapping = (DatabaseMapping)primaryKeyMappings.get(index);
 
                     // Only null out direct mappings, as others will be nulled in the respective objects.
                     if (mapping.isDirectToFieldMapping()) {
@@ -1767,7 +1801,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public Vector extractPrimaryKeyFromRow(AbstractRecord databaseRow, AbstractSession session) {
         List primaryKeyFields = getDescriptor().getPrimaryKeyFields();
-        Vector primaryKeyClassifications = getPrimaryKeyClassifications();
+        List primaryKeyClassifications = getPrimaryKeyClassifications();
         int size = primaryKeyFields.size();
         Vector primaryKeyValues = new NonSynchronizedVector(size);
 
@@ -1867,7 +1901,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = getDescriptor().getMappings();
+        List mappings = getDescriptor().getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             ((DatabaseMapping)mappings.get(index)).fixObjectReferences(object, objectDescriptors, processedObjects, query, session);
         }
@@ -1950,7 +1984,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Return the fields map.
      * Used to maintain identity on the field objects. Ensure they get the correct index/type.
      */
-    public Map getFieldsMap() {
+    public Map<DatabaseField, DatabaseField> getFieldsMap() {
         return fieldsMap;
     }
 
@@ -1967,15 +2001,24 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Return all mappings that require cloning.
      * This allows for simple directs to be avoided when using clone copying.
      */
-    public List getCloningMappings() {
+    public List<DatabaseMapping> getCloningMappings() {
         return cloningMappings;
+    }
+    
+    /**
+     * PERF:
+     * Return all mappings that are eager loaded (but use indirection).
+     * This allows for eager mappings to still benefit from indirection for locking and change tracking.
+     */
+    public List<DatabaseMapping> getEagerMappings() {
+        return eagerMappings;
     }
 
     /**
      * INTERNAL:
      * Answers the attributes which are always joined to the original query on reads.
      */
-    public Vector<DatabaseMapping> getJoinedAttributes() {
+    public List<DatabaseMapping> getJoinedAttributes() {
         return joinedAttributes;
     }
 
@@ -2005,7 +2048,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * Return all the read-only mapping for the specified field.
      */
-    public Vector<DatabaseMapping> getReadOnlyMappingsForField(DatabaseField field) {
+    public List<DatabaseMapping> getReadOnlyMappingsForField(DatabaseField field) {
         return getReadOnlyMappingsByField().get(field);
     }
 
@@ -2028,14 +2071,14 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * INTERNAL:
      * Return all the read-only mapping to field associations
      */
-    public Map<DatabaseField, Vector<DatabaseMapping>> getReadOnlyMappingsByField() {
+    public Map<DatabaseField, List<DatabaseMapping>> getReadOnlyMappingsByField() {
         return readOnlyMappingsByField;
     }
 
     /**
      * Return the non primary key mappings.
      */
-    protected Vector<DatabaseMapping> getNonPrimaryKeyMappings() {
+    protected List<DatabaseMapping> getNonPrimaryKeyMappings() {
         return nonPrimaryKeyMappings;
     }
 
@@ -2058,10 +2101,10 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Return primary key classifications.
      * These are used to ensure a consistent type for the pk values.
      */
-    public Vector<Class> getPrimaryKeyClassifications() {
+    public List<Class> getPrimaryKeyClassifications() {
         if (primaryKeyClassifications == null) {
             List primaryKeyFields = getDescriptor().getPrimaryKeyFields();
-            Vector<Class> classifications = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(primaryKeyFields.size());
+            List<Class> classifications = new ArrayList(primaryKeyFields.size());
 
             for (int index = 0; index < primaryKeyFields.size(); index++) {
                 DatabaseMapping mapping = getPrimaryKeyMappings().get(index);
@@ -2087,7 +2130,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * Return primary key mappings.
      */
-    public Vector<DatabaseMapping> getPrimaryKeyMappings() {
+    public List<DatabaseMapping> getPrimaryKeyMappings() {
         return primaryKeyMappings;
     }
 
@@ -2115,10 +2158,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Cache all the mappings by their attribute and fields.
      */
     public void initialize(AbstractSession session) throws DescriptorException {
-        this.getMappingsByField().clear();
-        this.getReadOnlyMappingsByField().clear();
-        this.getMappingsByAttribute().clear();
-        this.getCloningMappings().clear();
+        getMappingsByField().clear();
+        getReadOnlyMappingsByField().clear();
+        getMappingsByAttribute().clear();
+        getCloningMappings().clear();
+        getEagerMappings().clear();
 
         for (Enumeration mappings = getDescriptor().getMappings().elements();
                  mappings.hasMoreElements();) {
@@ -2128,22 +2172,27 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if (!mapping.isWriteOnly()) {
                 getMappingsByAttribute().put(mapping.getAttributeName(), mapping);
             }
+            // Cache mappings that require cloning.
             if (mapping.isCloningRequired()) {
                 getCloningMappings().add(mapping);
+            }
+            // Cache eager mappings.
+            if (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!mapping.isLazy())) {
+                getEagerMappings().add(mapping);
             }
 
             // Add field to mapping association
             for (DatabaseField field : mapping.getFields()) {
 
                 if (mapping.isReadOnly()) {
-                    Vector mappingVector = getReadOnlyMappingsByField().get(field);
+                    List readOnlyMappings = getReadOnlyMappingsByField().get(field);
     
-                    if (mappingVector == null) {
-                        mappingVector = NonSynchronizedVector.newInstance();
-                        getReadOnlyMappingsByField().put(field, mappingVector);
+                    if (readOnlyMappings == null) {
+                        readOnlyMappings = new ArrayList();
+                        getReadOnlyMappingsByField().put(field, readOnlyMappings);
                     }
     
-                    mappingVector.add(mapping);
+                    readOnlyMappings.add(mapping);
                 } else {
                     if (mapping.isAggregateObjectMapping()) {
                         // For Embeddable class, we need to test read-only 
@@ -2154,14 +2203,14 @@ public class ObjectBuilder implements Cloneable, Serializable {
                         DatabaseMapping aggregatedFieldMapping = aggregateObjectBuilder.getMappingForField(field);
     
                         if (aggregatedFieldMapping == null) { // mapping must be read-only
-                            Vector mappingVector = getReadOnlyMappingsByField().get(field);
+                            List readOnlyMappings = getReadOnlyMappingsByField().get(field);
                             
-                            if (mappingVector == null) {
-                                mappingVector = NonSynchronizedVector.newInstance();
-                                getReadOnlyMappingsByField().put(field, mappingVector);
+                            if (readOnlyMappings == null) {
+                                readOnlyMappings = new ArrayList();
+                                getReadOnlyMappingsByField().put(field, readOnlyMappings);
                             }
     
-                            mappingVector.add(mapping);
+                            readOnlyMappings.add(mapping);
                         } else {
                             getMappingsByField().put(field, mapping);
                         }
@@ -2191,13 +2240,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
     public void initializeJoinedAttributes() {
         // For concurrency don't worry about doing this work twice, just make sure
         // if it happens don't add the same joined attributes twice.
-        Vector<DatabaseMapping> joinedAttributes = null;
-        Vector mappings = getDescriptor().getMappings();
+        List<DatabaseMapping> joinedAttributes = null;
+        List mappings = getDescriptor().getMappings();
         for (int i = 0; i < mappings.size(); i++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(i);
             if (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).isJoinFetched()) {
                 if (joinedAttributes == null) {
-                    joinedAttributes = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+                    joinedAttributes = new ArrayList();
                 }
                 joinedAttributes.add(mapping);
             }
@@ -2240,7 +2289,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if (!primaryKeyfields.contains(field)) {
                 DatabaseMapping mapping = getMappingForField(field);
                 if (!getNonPrimaryKeyMappings().contains(mapping)) {
-                    getNonPrimaryKeyMappings().addElement(mapping);
+                    getNonPrimaryKeyMappings().add(mapping);
                 }
             }
         }
@@ -2253,7 +2302,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 throw DescriptorException.noMappingForPrimaryKey(primaryKeyField, getDescriptor());
             }
 
-            getPrimaryKeyMappings().addElement(mapping);
+            getPrimaryKeyMappings().add(mapping);
             if (mapping != null) {
                 mapping.setIsPrimaryKeyMapping(true);
             }
@@ -2338,7 +2387,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public void iterate(DescriptorIterator iterator) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = getDescriptor().getMappings();
+        List mappings = getDescriptor().getMappings();
         int mappingsSize = mappings.size();
         for (int index = 0; index < mappingsSize; index++) {
             ((DatabaseMapping)mappings.get(index)).iterate(iterator);
@@ -2390,7 +2439,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // for GF#1139 Cascade merge operations to relationship mappings even if already registered
         
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = getDescriptor().getMappings();
+        List mappings = getDescriptor().getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             if(!cascadeOnly || mapping.isForeignReferenceMapping()){
@@ -2453,8 +2502,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
         setMappingsByField(Helper.rehashMap(getMappingsByField()));
         setReadOnlyMappingsByField(Helper.rehashMap(getReadOnlyMappingsByField()));
         setFieldsMap(Helper.rehashMap(getFieldsMap()));
-        setPrimaryKeyMappings(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2));
-        setNonPrimaryKeyMappings(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2));
+        setPrimaryKeyMappings(new ArrayList(2));
+        setNonPrimaryKeyMappings(new ArrayList(2));
         initializePrimaryKey(session);
     }
 
@@ -2484,14 +2533,14 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * INTERNAL:
      * All the read-only mappings and their respective field associations are cached for performance improvement.
      */
-    public void setReadOnlyMappingsByField(Map<DatabaseField, Vector<DatabaseMapping>> theReadOnlyFieldMappings) {
+    public void setReadOnlyMappingsByField(Map<DatabaseField, List<DatabaseMapping>> theReadOnlyFieldMappings) {
         readOnlyMappingsByField = theReadOnlyFieldMappings;
     }
 
     /**
      * The non primary key mappings are cached to improve performance.
      */
-    protected void setNonPrimaryKeyMappings(Vector<DatabaseMapping> theNonPrimaryKeyMappings) {
+    protected void setNonPrimaryKeyMappings(List<DatabaseMapping> theNonPrimaryKeyMappings) {
         nonPrimaryKeyMappings = theNonPrimaryKeyMappings;
     }
 
@@ -2499,7 +2548,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Set primary key classifications.
      * These are used to ensure a consistent type for the pk values.
      */
-    protected void setPrimaryKeyClassifications(Vector<Class> primaryKeyClassifications) {
+    protected void setPrimaryKeyClassifications(List<Class> primaryKeyClassifications) {
         this.primaryKeyClassifications = primaryKeyClassifications;
     }
 
@@ -2513,7 +2562,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * The primary key mappings are cached to improve performance.
      */
-    protected void setPrimaryKeyMappings(Vector<DatabaseMapping> thePrimaryKeyMappings) {
+    protected void setPrimaryKeyMappings(List<DatabaseMapping> thePrimaryKeyMappings) {
         primaryKeyMappings = thePrimaryKeyMappings;
     }
 
@@ -2603,7 +2652,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 dataReadQuery.setSessionName(getDescriptor().getSessionName());
 
                 // execute the query and check if there is a valid result
-                Vector queryResults = (Vector)session.executeQuery(dataReadQuery, translationRow);
+                List queryResults = (List)session.executeQuery(dataReadQuery, translationRow);
                 if (!queryResults.isEmpty()) {
                     return false;
                 }

@@ -569,7 +569,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     public void processJoinedMappings() {    
         ObjectBuilder objectBuilder = getDescriptor().getObjectBuilder();
         if (objectBuilder.hasJoinedAttributes()) {
-            Vector mappingJoinedAttributes = objectBuilder.getJoinedAttributes();
+            List mappingJoinedAttributes = objectBuilder.getJoinedAttributes();
             if (!hasJoinedAttributeExpressions()) {
                 for (int i = 0; i < mappingJoinedAttributes.size(); i++) {
                     addJoinedMapping((ForeignReferenceMapping)mappingJoinedAttributes.get(i));

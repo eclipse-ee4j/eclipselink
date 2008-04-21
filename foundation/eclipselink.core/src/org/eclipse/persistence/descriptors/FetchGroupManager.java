@@ -414,7 +414,7 @@ public class FetchGroupManager implements Cloneable {
             FetchGroup fetchGroup = new FetchGroup();
             boolean hasLazy = false;
             for (DatabaseMapping mapping : getDescriptor().getMappings()) {
-                if (!mapping.isLazy()) {
+                if (mapping.isForeignReferenceMapping() || (!mapping.isLazy())) {
                     fetchGroup.addAttribute(mapping.getAttributeName());
                 } else {
                     hasLazy = true;

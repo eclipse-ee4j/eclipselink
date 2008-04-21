@@ -599,7 +599,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Fields are ensured to be unique so if the field has already been built it is returned.
      */
     public DatabaseField buildField(DatabaseField field) {
-        DatabaseField builtField = (DatabaseField)getObjectBuilder().getFieldsMap().get(field);
+        DatabaseField builtField = getObjectBuilder().getFieldsMap().get(field);
         if (builtField == null) {
             builtField = field;
             DatabaseTable table;

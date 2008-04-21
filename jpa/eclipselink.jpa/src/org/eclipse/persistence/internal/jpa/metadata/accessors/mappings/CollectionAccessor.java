@@ -50,16 +50,16 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
     private static final String ASCENDING = "ASC";
     private static final String DESCENDING = "DESC";
     
-	private String m_mapKey;
-	private String m_orderBy;
-	private JoinTableMetadata m_joinTable;
+    private String m_mapKey;
+    private String m_orderBy;
+    private JoinTableMetadata m_joinTable;
 	
-	/**
+    /**
      * INTERNAL:
      */
     protected CollectionAccessor() {}
     
-	/**
+    /**
      * INTERNAL:
      */
     protected CollectionAccessor(MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
@@ -250,6 +250,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor {
         // ** Note the reference class or reference class name needs to be set 
         // on the mapping before setting the indirection policy.
         setIndirectionPolicy(mapping, mapKey, usesIndirection());
+        
+        mapping.setIsLazy(isLazy());
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();

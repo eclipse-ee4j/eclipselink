@@ -675,7 +675,15 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     public Object getRealAttributeValueFromObject(Object object, AbstractSession session) {
         return getIndirectionPolicy().getRealAttributeValueFromObject(object, getAttributeValueFromObject(object));
     }
- 
+    
+    /**
+     * INTERNAL:
+     * Trigger the instantiation of the attribute if lazy.
+     */
+    public void instantiateAttribute(Object object, AbstractSession session) {
+        getIndirectionPolicy().instantiateObject(object, getAttributeValueFromObject(object));
+    }
+    
     /**
      * INTERNAL:
      * Extract and return the appropriate value from the

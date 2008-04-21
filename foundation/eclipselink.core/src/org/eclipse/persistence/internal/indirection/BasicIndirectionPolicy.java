@@ -209,8 +209,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * This will trigger the wrapper to instantiate the value.
      */
     public Object getRealAttributeValueFromObject(Object object, Object attribute) {
-        // Changed for CR 4245. Use a static reference instead of .class
-        if (ClassConstants.ValueHolderInterface_Class.isAssignableFrom(attribute.getClass())) {
+        if (attribute instanceof ValueHolderInterface) {
             return ((ValueHolderInterface)attribute).getValue();
         } else {
             return attribute;

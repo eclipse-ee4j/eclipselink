@@ -39,9 +39,9 @@ public class RelationshipWeaverTestSuite extends TestCase {
     
     class CustomizeMetadataProcessor extends org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor{
         CustomizeMetadataProcessor(AbstractSession session, ClassLoader loader, Collection<Class> entities, boolean enableLazyForOneToOne){
-            super(null, session, loader, enableLazyForOneToOne);
+            super(null, session, loader, enableLazyForOneToOne, false);
             m_loader = loader;
-            m_project = new MetadataProject(null, session, enableLazyForOneToOne);
+            m_project = new MetadataProject(null, session, enableLazyForOneToOne, false);
             m_session = session;
             Collection<String> entityNames = new HashSet<String>(entities.size());
             for (Class entity : entities) {

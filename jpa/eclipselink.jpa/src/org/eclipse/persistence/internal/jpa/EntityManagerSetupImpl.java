@@ -770,17 +770,19 @@ public class EntityManagerSetupImpl {
             
             boolean weaveChangeTracking = false;
             boolean weaveLazy = false;
+            boolean weaveEager = false;
             boolean weaveFetchGroups = false;
             boolean weaveInternal = false;
             if (enableWeaving) {
                 weaveChangeTracking = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_CHANGE_TRACKING, predeployProperties, "true", session));
                 weaveLazy = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_LAZY, predeployProperties, "true", session));
+                weaveEager = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_EAGER, predeployProperties, "false", session));
                 weaveFetchGroups = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_FETCHGROUPS, predeployProperties, "true", session));
                 weaveInternal = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_INTERNAL, predeployProperties, "true", session));
             }
             if (!isSessionLoadedFromSessionsXML ) {
                 // Create an instance of MetadataProcessor for specified persistence unit info
-                processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, enableWeaving);
+                processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, enableWeaving, weaveEager);
                 
                 // Process the Object/relational metadata from XML and annotations.
                 PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail);

@@ -247,13 +247,13 @@ public class CMP3Policy extends CMPPolicy {
             // for this field, not just the writable one and instead of having 
             // multiple sections of duplicate code I will just add the writable 
             // mapping to the list.
-            Vector allMappings = descriptor.getObjectBuilder().getReadOnlyMappingsForField(field);
+            List allMappings = descriptor.getObjectBuilder().getReadOnlyMappingsForField(field);
             if (allMappings == null) {
                 allMappings = new Vector(1);
             } 
             allMappings.add(descriptor.getObjectBuilder().getMappingForField(field));
             
-            Exception elementIsFound = null; // use exception existence to detemine if element was found, so we can throw exception later
+            Exception elementIsFound = null; // use exception existence to determine if element was found, so we can throw exception later
             for (int index = (allMappings.size() - 1); index >= 0; --index) { // start with the writable first
                 DatabaseMapping mapping = (DatabaseMapping) allMappings.get(index);
                 
@@ -264,7 +264,7 @@ public class CMP3Policy extends CMPPolicy {
                 } else if (mapping.isAggregateMapping()) { // in the case of aggregates drill down.
                     ObjectBuilder builder = mapping.getReferenceDescriptor().getObjectBuilder();
                     
-                    Vector aggregateMappings = builder.getReadOnlyMappingsForField(field);
+                    List aggregateMappings = builder.getReadOnlyMappingsForField(field);
                     if ((aggregateMappings != null) && (!aggregateMappings.isEmpty())) {
                         // Add all the mappings from the aggregate to be
                         // processed.

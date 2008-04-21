@@ -143,8 +143,14 @@ public class StaticWeaveClassTransformer {
         
         session.getPlatform().setConversionManager(new JPAConversionManager());
 
+        boolean weaveEager = false;
+        String weaveEagerString = (String)unitInfo.getProperties().get(PersistenceUnitProperties.WEAVING_EAGER);
+        if (weaveEagerString != null && weaveEagerString.equalsIgnoreCase("true")) {
+            weaveEager = true;
+        }
+        
         // Create an instance of MetadataProcessor for specified persistence unit info
-        MetadataProcessor processor = new MetadataProcessor(unitInfo, session, privateClassLoader, true);
+        MetadataProcessor processor = new MetadataProcessor(unitInfo, session, privateClassLoader, true, weaveEager);
         // Process the Object/relational metadata from XML and annotations.
         PersistenceUnitProcessor.processORMetadata(processor, false);
 

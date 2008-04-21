@@ -22,6 +22,7 @@ import javax.persistence.spi.PersistenceProvider;
 
 import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.*;
 
 /**
@@ -119,12 +120,17 @@ public class JPAPerformanceRegressionModel extends TestModel {
         setupProvider();
         getSession().logMessage(getExecutor().getEntityManagerFactory().getClass().toString());
         System.out.println(getExecutor().getEntityManagerFactory().getClass().toString());
-        
-        // Create schema.
-        new EmployeeTableCreator().replaceTables(getDatabaseSession());
-        
         // Populate database.
         EntityManager manager = getExecutor().createEntityManager();
+        // Create schema using session from entity manager to create sequences correctly.
+        try {
+            // Create schema.
+            new EmployeeTableCreator().replaceTables(((JpaEntityManager)manager).getServerSession());
+        } catch (ClassCastException cast) {
+            // Create using DatabaseSession if not EclipseLink JPA.
+            new EmployeeTableCreator().replaceTables(getDatabaseSession());
+        }
+        
         manager.getTransaction().begin();
 
         for (int j = 0; j < 100; j++) {

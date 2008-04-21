@@ -69,7 +69,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     /** Used to reference the other half of a bi-directional relationship. */
     protected DatabaseMapping relationshipPartner;
 
-    /** Set by users, used to retreive the backpointer for this mapping */
+    /** Set by users, used to retrieve the backpointer for this mapping */
     protected String relationshipPartnerAttributeName;
 
     /** Cascading flags used by the EntityManager */
@@ -100,7 +100,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
     /**
      * INTERNAL:
-     * Retreive the value through using batch reading.
+     * Retrieve the value through using batch reading.
      * This executes a single query to read the target for all of the objects and stores the
      * result of the batch query in the original query to allow the other objects to share the results.
      */
@@ -593,7 +593,29 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public Object getRealAttributeValueFromObject(Object object, AbstractSession session) {
         return getIndirectionPolicy().getRealAttributeValueFromObject(object, getAttributeValueFromObject(object));
     }
-
+    
+    /**
+     * Return if this mapping is lazy.
+     * For relationship mappings this should normally be the same value as indirection,
+     * however for eager relationships this can be used with indirection to allow
+     * indirection locking and change tracking, but still always force instantiation.
+     */
+    public boolean isLazy() {
+        if (isLazy == null) {
+            // False by default for mappings without indirection.
+            isLazy = usesIndirection();
+        }
+        return isLazy;
+    }
+    
+    /**
+     * INTERNAL:
+     * Trigger the instantiation of the attribute if lazy.
+     */
+    public void instantiateAttribute(Object object, AbstractSession session) {
+        getIndirectionPolicy().instantiateObject(object, getAttributeValueFromObject(object));
+    }
+    
     /**
      * PUBLIC:
      * Returns the reference class.
@@ -1473,6 +1495,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             nestedQuery.setSession(executionSession);
             //CR #4365 - used to prevent infinite recursion on refresh object cascade all
             nestedQuery.setQueryId(joinManager.getBaseQuery().getQueryId());
+            nestedQuery.setExecutionTime(joinManager.getBaseQuery().getExecutionTime());
             joinManager.getJoinedMappingQueryClones().put(this, nestedQuery);
         }
         // Must also set data results to the nested query if it uses to-many joining.

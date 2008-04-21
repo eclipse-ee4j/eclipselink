@@ -853,11 +853,11 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
      */
     protected void updateChangeSet(ClassDescriptor desc, ObjectChangeSet objectChangeSet, DatabaseField field, Object object, Collection handledMappings) {
         DatabaseMapping mapping;
-        Vector mappingVector = desc.getObjectBuilder().getReadOnlyMappingsForField(field);
-        if (mappingVector != null) {
-            int size = mappingVector.size();
+        List readOnlyMappings = desc.getObjectBuilder().getReadOnlyMappingsForField(field);
+        if (readOnlyMappings != null) {
+            int size = readOnlyMappings.size();
             for (int index = 0; index < size; index++) {
-                mapping = (DatabaseMapping)mappingVector.get(index);
+                mapping = (DatabaseMapping)readOnlyMappings.get(index);
                 updateChangeSet(mapping, objectChangeSet, field, object, handledMappings);
             }
         }

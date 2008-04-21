@@ -188,6 +188,9 @@ public class PersistenceUnitProperties {
     /** Indicates whether LAZY OneToOne mappings should be enabled through weaving - "true" by default. */
     public static final String WEAVING_LAZY = "eclipselink.weaving.lazy";
     
+    /** Indicates whether EAGER mappings should be enabled to use indirection - "false" by default. */
+    public static final String WEAVING_EAGER = "eclipselink.weaving.eager";
+    
     /**
      * Indicates whether AttributeLevelChangeTracking should be enabled through weaving - "true" by default.
      * When this is enabled, only classes with all mappings allowing change tracking will have change tracking enabled.

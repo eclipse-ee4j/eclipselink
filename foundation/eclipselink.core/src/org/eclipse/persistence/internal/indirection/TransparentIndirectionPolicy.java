@@ -290,6 +290,14 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
         // PERF: do not instantiate - this.getContainerPolicy().sizeFor(object);// forgive me for this hack: but we have to do something to trigger the database read
         return attribute;
     }
+    
+    /**
+     * INTERNAL:
+     * Trigger the instantiation of the value.
+     */
+    public void instantiateObject(Object object, Object attribute) {
+        getContainerPolicy().sizeFor(attribute);
+    }
 
     /**
      * INTERNAL:

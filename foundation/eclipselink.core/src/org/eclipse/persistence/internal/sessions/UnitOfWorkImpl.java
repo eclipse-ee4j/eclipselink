@@ -850,6 +850,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 }
             }
         }
+        concreteDescriptor.getObjectBuilder().instantiateEagerMappings(workingClone, this);
         return workingClone;
     }
 
@@ -4231,6 +4232,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             manager.mergeChanges(implementation, null);
         } catch (RuntimeException exception) {
             return handleException(exception);
+        }
+        if (cascadeDepth != MergeManager.NO_CASCADE) {
+            builder.instantiateEagerMappings(clone, this);
         }
         return clone;
     }
