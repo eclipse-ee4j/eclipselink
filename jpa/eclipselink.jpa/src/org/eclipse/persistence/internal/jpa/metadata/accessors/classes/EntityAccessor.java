@@ -393,7 +393,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * at runtime and have the default listeners available to them.
      */
     protected void processDefaultListeners() {
-        for (EntityListenerMetadata defaultListener : getProject().getDefaultListeners().values()) {
+        for (EntityListenerMetadata defaultListener : getProject().getDefaultListeners()) {
             // We need to clone the default listeners. Can't re-use the 
             // same one for all the entities in the persistence unit.
             EntityListenerMetadata listener = (EntityListenerMetadata) defaultListener.clone();

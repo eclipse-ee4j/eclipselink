@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+import java.util.LinkedHashSet;
 
 import javax.persistence.GenerationType;
 import javax.persistence.spi.PersistenceUnitInfo;
@@ -128,7 +129,7 @@ public class MetadataProject {
 
     // Default listeners that need to be applied to each entity in the
     // persistence unit (unless they exclude them).
-    private HashMap<String, EntityListenerMetadata> m_defaultListeners;
+    private Set<EntityListenerMetadata> m_defaultListeners;
     
     // Metadata converters, that is, EclipseLink converters.
     private HashMap<String, AbstractConverterMetadata> m_converters;
@@ -156,7 +157,7 @@ public class MetadataProject {
         m_weaveEager = weaveEager;
         
         m_entityMappings = new ArrayList<XMLEntityMappings>();
-        m_defaultListeners = new HashMap<String, EntityListenerMetadata>();
+        m_defaultListeners = new LinkedHashSet<EntityListenerMetadata>(); // Using a LinkedHashSet as ordering needs to be preserved.
 
         m_namedQueries = new HashMap<String, NamedQueryMetadata>();
         m_namedNativeQueries = new HashMap<String, NamedNativeQueryMetadata>();
@@ -262,7 +263,7 @@ public class MetadataProject {
      * INTERNAL:
      */
     public void addDefaultListener(EntityListenerMetadata defaultListener) {
-    	m_defaultListeners.put(defaultListener.getClassName(), defaultListener);
+    	m_defaultListeners.add(defaultListener);
     }
 
     /**
@@ -568,7 +569,7 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
-    public HashMap<String, EntityListenerMetadata> getDefaultListeners() {
+    public Set<EntityListenerMetadata> getDefaultListeners() {
         return m_defaultListeners;
     }
     

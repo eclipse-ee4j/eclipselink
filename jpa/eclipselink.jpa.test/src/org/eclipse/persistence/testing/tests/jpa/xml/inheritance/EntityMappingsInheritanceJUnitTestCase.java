@@ -33,6 +33,9 @@ import org.eclipse.persistence.testing.models.jpa.xml.inheritance.InheritanceMod
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener2;
 import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.DefaultListener;
+import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.DefaultListener1;
+import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.DefaultListener2;
+import org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.DefaultListener3;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  
@@ -124,12 +127,16 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         assertFalse("The PrePersist callback method on DefaultListener was not called.", prePersistDefaultListenerCountBefore == DefaultListener.PRE_PERSIST_COUNT);
         assertFalse("The PostPersist callback method on DefaultListener was not called.", postPersistDefaultListenerCountBefore == DefaultListener.POST_PERSIST_COUNT);
 
-        assertTrue("An incorrect number of PrePersist notifications where made for the Bus object.", bus.prePersistCalledListenerCount() == 3);
+        assertTrue("An incorrect number of PrePersist notifications where made for the Bus object.", bus.prePersistCalledListenerCount() == 6);
         assertTrue("An incorrect number of PostPersist notifications where made for the Bus object.", bus.postPersistCalledListenerCount() == 3);
-        
-        assertTrue("The PrePersist events were not fired in the correct order.", bus.getPrePersistCalledListenerAt(0) == org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener2.class);
-        assertTrue("The PrePersist events were not fired in the correct order.", bus.getPrePersistCalledListenerAt(1) == org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener3.class);
-        assertTrue("The PrePersist events were not fired in the correct order.", bus.getPrePersistCalledListenerAt(2) == org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener.class);
+
+        assertTrue("The PrePersist events were not fired in the correct order.", bus.getPrePersistCalledListenerAt(0) == DefaultListener1.class);
+        assertTrue("The PrePersist events were not fired in the correct order.", bus.getPrePersistCalledListenerAt(1) == DefaultListener2.class);
+        assertTrue("The PrePersist events were not fired in the correct order.", bus.getPrePersistCalledListenerAt(2) == DefaultListener3.class);
+
+        assertTrue("The PrePersist events were not fired in the correct order.", bus.getPrePersistCalledListenerAt(3) == org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener2.class);
+        assertTrue("The PrePersist events were not fired in the correct order.", bus.getPrePersistCalledListenerAt(4) == org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener3.class);
+        assertTrue("The PrePersist events were not fired in the correct order.", bus.getPrePersistCalledListenerAt(5) == org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener.class);
         
         assertTrue("The PostPersist events were not fired in the correct order.", bus.getPostPersistCalledListenerAt(0) == org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener2.class);
         assertTrue("The PostPersist events were not fired in the correct order.", bus.getPostPersistCalledListenerAt(1) == org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.BusListener3.class);
@@ -145,7 +152,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
             car.setMaxSpeed(300);
             em.persist(car);
             sportsCarId = car.getId();
-            commitTransaction(em);    
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -154,19 +161,19 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         }finally{
             closeEntityManager(em);
         }
-        
+
     }
 
     public void testCreateNonFueledVehicle() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            
+
             Company co = InheritanceModelExamples.companyExample2();
             Boat boat = InheritanceModelExamples.boatExample1(co);
             em.persist(boat);
             boatId = boat.getId();
-            commitTransaction(em);    
+            commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -175,16 +182,16 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         }finally{
             closeEntityManager(em);
         }
-    }    
-    
+    }
+
     public void testDeleteBusFueledVehicle() {
         int postLoadBusCountBefore = Bus.POST_LOAD_COUNT;
         int preRemoveBusCountBefore = Bus.PRE_REMOVE_COUNT;
         int postRemoveBusCountBefore = Bus.POST_REMOVE_COUNT;
-        
+
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         try {
             em.remove(em.find(Bus.class, busId));
             commitTransaction(em);
@@ -192,17 +199,17 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             throw e;
         }
-    
+
         assertTrue("Error deleting FueledVehicle [Bus]", em.find(Bus.class, busId) == null);
         assertFalse("The PostLoad callback method on Bus was not called.", postLoadBusCountBefore == Bus.POST_LOAD_COUNT);
         assertFalse("The PreRemove callback method on Bus was not called.", preRemoveBusCountBefore == Bus.PRE_REMOVE_COUNT);
         assertFalse("The PostRemove callback method on Bus was not called.", postRemoveBusCountBefore == Bus.POST_REMOVE_COUNT);
     }
-    
+
     public void testDeleteFueledVehicle() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -239,7 +246,7 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
         EJBQueryImpl query = (EJBQueryImpl) createEntityManager().createNamedQuery("findSQLMaxSpeedForFerrari");
         List results = query.getResultList();
         assertTrue("Failed to return 1 item", (results.size() == 1));
-        
+
         for (Iterator iterator = results.iterator(); iterator.hasNext(); ){
             Object maxSpeed = iterator.next();
             assertTrue("Failed to return column",(maxSpeed instanceof Number));
@@ -260,12 +267,12 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
     public void testUpdateBusFueledVehicle() {
         int preUpdateBusCountBefore = Bus.PRE_UPDATE_COUNT;
         int postUpdateBusCountBefore = Bus.POST_UPDATE_COUNT;
-        
+
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
+
         Bus bus;
-        
+
         try {
             bus = em.find(Bus.class, busId);
             bus.setDescription("A crappy bus");
@@ -275,39 +282,39 @@ public class EntityMappingsInheritanceJUnitTestCase extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             throw e;
         }
-        
+
         assertFalse("The PreUpdate callback method on Bus was not called.", preUpdateBusCountBefore == Bus.PRE_UPDATE_COUNT);
         assertFalse("The PostUpdate callback method on Bus was not called.", postUpdateBusCountBefore == Bus.POST_UPDATE_COUNT);
-        
+
         int postLoadBusCountBefore = Bus.POST_LOAD_COUNT;
         int postLoadBusCountAfter1;
-        
+
         try {
             // Clear the cache and check that we get a post load (post build internally).
             clearCache();
             em.refresh(bus);
             postLoadBusCountAfter1 = Bus.POST_LOAD_COUNT;
-            
+
             // Don't clear the cache and check that we get a post load (post refresh internally).
             em.refresh(bus);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            
+
             closeEntityManager(em);
             throw e;
         }
-            
+
         assertTrue("Error updating FueledVehicle [Bus]", bus.getDescription().equals("A crappy bus"));
         assertFalse("The PostLoad (on refresh without object in cache) callback method on Bus was not called.", postLoadBusCountBefore == postLoadBusCountAfter1);
         assertFalse("The PostLoad (on refresh with object in cache) callback method on Bus was not called.", postLoadBusCountAfter1 == Bus.POST_LOAD_COUNT);
     }
-    
+
     public void testUpdateFueledVehicle() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
