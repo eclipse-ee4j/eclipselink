@@ -88,6 +88,9 @@ public class MetadataProject {
 
     // Boolean to specify if we should weave for value holders.
     private boolean m_weavingEnabled;
+    
+    // Boolean to specify if we should weave eager relationships.
+    private boolean m_weaveEager;
 
     // Persistence unit metadata for this project.
     private XMLPersistenceUnitMetadata m_persistenceUnitMetadata;
@@ -145,11 +148,12 @@ public class MetadataProject {
      * @param session - the Session
      * @param weavingEnabled - flag for global dynamic weaving state
      */
-    public MetadataProject(PersistenceUnitInfo puInfo, AbstractSession session, boolean weavingEnabled) {
+    public MetadataProject(PersistenceUnitInfo puInfo, AbstractSession session, boolean weavingEnabled, boolean weaveEager) {
     	m_persistenceUnitInfo = puInfo;
         m_session = session;
         m_logger = new MetadataLogger(session);
         m_weavingEnabled = weavingEnabled;
+        m_weaveEager = weaveEager;
         
         m_entityMappings = new ArrayList<XMLEntityMappings>();
         m_defaultListeners = new HashMap<String, EntityListenerMetadata>();
@@ -434,7 +438,7 @@ public class MetadataProject {
         
         // Check for a struct converter with the same name.
         StructConverterMetadata existingStructConverter = m_structConverters.get(structConverter.getName());
-        if (existingStructConverter == null || existingConverter.loadedFromAnnotation() && structConverter.loadedFromXML()) {
+        if (existingStructConverter == null || (existingStructConverter.loadedFromAnnotation() && structConverter.loadedFromXML())) {
             if (existingConverter != null) {
                 // XML -> Annotation override, log a warning.
                 getLogger().logWarningMessage(MetadataLogger.IGNORE_STRUCT_CONVERTER_ANNOTATION, existingConverter.getName(), existingConverter.getLocation(), structConverter.getLocation());
@@ -484,7 +488,7 @@ public class MetadataProject {
             if (sequenceGenerator.getSequenceName().equals(tableGenerator.getPkColumnValue())) {
                 // generator name will be used instead of an empty sequence name / pk column name
                 if (sequenceGenerator.getSequenceName().length() > 0) {
-                    throw ValidationException.conflictingSequenceNameAndTablePkColumnValueSpecified(otherSequenceGenerator.getSequenceName(), otherSequenceGenerator.getLocation(), tableGenerator.getLocation());
+                    throw ValidationException.conflictingSequenceNameAndTablePkColumnValueSpecified(sequenceGenerator.getSequenceName(), sequenceGenerator.getLocation(), tableGenerator.getLocation());
                 }
             }
         }
@@ -499,6 +503,13 @@ public class MetadataProject {
      */
     public boolean isWeavingEnabled() {
         return m_weavingEnabled;
+    }    
+    
+    /**
+     * Return if the project should use indirection for eager relationships.
+     */
+    public boolean weaveEager() {
+        return m_weaveEager;
     }
 
     /**

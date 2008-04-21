@@ -1029,12 +1029,12 @@ public abstract class MetadataAccessor  {
     
     /** 
      * INTERNAL:
-	 * Set the correct indirection policy on a collection mapping. Method
+     * Set the correct indirection policy on a collection mapping. Method
      * assume that the reference class has been set on the mapping before
      * calling this method.
-	 */
-	public void setIndirectionPolicy(CollectionMapping mapping, String mapKey, boolean usesIndirection) {
-		Class rawClass = getRawClass();
+     */
+    public void setIndirectionPolicy(CollectionMapping mapping, String mapKey, boolean usesIndirection) {
+        Class rawClass = getRawClass();
 		
         if (usesIndirection) {            
             if (rawClass == Map.class) {
@@ -1077,13 +1077,13 @@ public abstract class MetadataAccessor  {
         m_name = name;
     }
     
-	/**
+    /**
      * INTERNAL:
      * Used for OX mapping.
      */
-	public void setObjectTypeConverters(List<ObjectTypeConverterMetadata> objectTypeConverters) {
-		m_objectTypeConverters = objectTypeConverters;
-	}
+    public void setObjectTypeConverters(List<ObjectTypeConverterMetadata> objectTypeConverters) {
+        m_objectTypeConverters = objectTypeConverters;
+    }
 	
     /**
      * INTERNAL:
@@ -1103,24 +1103,24 @@ public abstract class MetadataAccessor  {
     /**
      * INTERNAL:
      * Used for OX mapping.
+     */
+    public void setStructConverters(List<StructConverterMetadata> structConverters) {
+        m_structConverters = structConverters;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
      */    
     public void setProperties(List<PropertyMetadata> properties) {
         m_properties = properties;
     }
-    
-	/**
-	 * INTERNAL:
-	 * Used for OX mapping.
-	 */
-	public void setStructConverters(List<StructConverterMetadata> structConverters) {
-		m_structConverters = structConverters;
-	}
 	
-	/**
+    /**
      * INTERNAL:
      * Used for OX mapping.
      */
-	public void setTypeConverters(List<TypeConverterMetadata> typeConverters) {
-		m_typeConverters = typeConverters;
-	}
+    public void setTypeConverters(List<TypeConverterMetadata> typeConverters) {
+        m_typeConverters = typeConverters;
+    }
 }
