@@ -17,17 +17,18 @@ import java.lang.reflect.*;
 
 /**
  * INTERNAL:
- * Privileged Access Helper provides a utility so all calls that require privileged access can use the same code
+ * Privileged Access Helper provides a utility so all calls that require privileged access can use the same code.
  * 
- * For users that wish to use a security manager and disable the use of doPrivileged, users can
- * set one of two system flags (through the java -Dxxxxx option):
- *
- * oracle.j2ee.toplink.security.usedoprivileged=false
- * oracle.j2ee.security.usedoprivileged=false
+ * Do privileged blocks can be used with a security manager to grant a code base (eclipselink.jar) access to certain
+ * Java operations such as reflection.  Generally a security manager is not enabled in a JVM, so this is not an issue.
+ * If a security manager is enabled, then either the application can be configured to have access to operations such as
+ * reflection, or only EclipseLink can be given access.  If only EclipseLink is desired to be given access then
+ * do privileged must be enabled through the System property "eclipselink.security.usedoprivileged"=true.
+ * 
+ * Note the usage of do privileged has major impacts on performance, so should normally be avoided.
  */
 public class PrivilegedAccessHelper {
-    private static boolean shouldUsePrivilegedAccess = false;
-    private static boolean shouldSecurityManagerBeChecked = true;
+    private static Boolean shouldUsePrivilegedAccess = false;
 
     /**
      * Finding a field within a class potentially has to navigate through it's superclasses to eventually
@@ -79,10 +80,6 @@ public class PrivilegedAccessHelper {
 
     /**
      * Execute a java Class.forName() wrap the call in a doPrivileged block if necessary.
-     * @param className
-     * @param initialize
-     * @param loader
-     * @throws java.lang.ClassNotFoundException
      */
     public static Class getClassForName(final String className, final boolean initialize, final ClassLoader loader) throws ClassNotFoundException {
         return Class.forName(className, initialize, loader);
@@ -343,35 +340,25 @@ public class PrivilegedAccessHelper {
 
     /**
      * This method checks to see if calls should be made to doPrivileged.
-     * In general, if a security manager is enabled, it will return true and if one
-     * is not enabled, it will return false.
-     * It will, however, always return false if either of the following two java properties is
-     * set.
-     * oracle.j2ee.toplink.security.usedoprivileged=false
-     * oracle.j2ee.security.usedoprivileged=false
-     * Note: it is not possible to run TopLink using doPrivileged blocks when there is no SecurityManager
+     * It will only return true if a security manager is enabled,
+     * and the "eclipselink.security.usedoprivileged" property is set.
+     * <p>
+     * Note: it is not possible to run EclipseLink using doPrivileged blocks when there is no SecurityManager
      * enabled.
      */
     public static boolean shouldUsePrivilegedAccess() {
         // We will only detect whether to use doPrivileged once.
-        if (shouldSecurityManagerBeChecked) {
-            shouldSecurityManagerBeChecked = false;
-
-            Boolean privilegedPropertySet = (Boolean)AccessController.doPrivileged(new PrivilegedAction() {
-                    public Object run() {
-                        boolean propertySet;
-
-                        // check TopLink and OC4j doPrivileged flag.
-                        String usePrivileged = System.getProperty("oracle.j2ee.toplink.security.usedoprivileged");
-                        String oc4jUsePrivileged = System.getProperty("oracle.j2ee.security.usedoprivileged");
-                        propertySet = (((usePrivileged != null) && usePrivileged.equalsIgnoreCase("false")) || ((oc4jUsePrivileged != null) && oc4jUsePrivileged.equalsIgnoreCase("false")));
-                        return new Boolean(propertySet);
-                    }
-                });
-            if (privilegedPropertySet.booleanValue()) {
-                shouldUsePrivilegedAccess = false;
+        if (shouldUsePrivilegedAccess == null) {
+            if (System.getSecurityManager() != null) {    
+                Boolean privilegedPropertySet = (Boolean)AccessController.doPrivileged(new PrivilegedAction() {
+                        public Object run() {
+                            String usePrivileged = System.getProperty("eclipselink.security.usedoprivileged");
+                            return (usePrivileged != null) && usePrivileged.equalsIgnoreCase("true");
+                        }
+                    });
+                shouldUsePrivilegedAccess = privilegedPropertySet.booleanValue();
             } else {
-                shouldUsePrivilegedAccess = (System.getSecurityManager() != null);
+                shouldUsePrivilegedAccess = false;
             }
         }
         return shouldUsePrivilegedAccess;

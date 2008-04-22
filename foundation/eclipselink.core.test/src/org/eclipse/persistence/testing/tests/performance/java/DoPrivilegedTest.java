@@ -36,7 +36,7 @@ import org.eclipse.persistence.testing.framework.*;
 
 /**
  * This test compares the performance for
- * 1. Derect calls - Baseline
+ * 1. Direct calls - Baseline
  * 2. doPrivileged actions in org.eclipse.persistence.internal.security.PriviledgedAccessController
  * 3. Bypassing doPrivileged actions in org.eclipse.persistence.internal.security.PriviledgedAccessController
  */
@@ -46,9 +46,8 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
         setDescription("This test compares the performance for doPrivileged.");
 
         // check TopLink and OC4j doPrivileged flag.
-        String usePrivileged = System.getProperty("oracle.j2ee.toplink.security.usedoprivileged");
-        String oc4jUsePrivileged = System.getProperty("oracle.j2ee.security.usedoprivileged");
-        if ((System.getSecurityManager() == null) || ((usePrivileged != null) && usePrivileged.equalsIgnoreCase("false")) || ((oc4jUsePrivileged != null) && oc4jUsePrivileged.equalsIgnoreCase("false"))) {
+        String usePrivileged = System.getProperty("eclipselink.security.usedoprivileged");
+        if ((System.getSecurityManager() == null) || ((usePrivileged == null) || usePrivileged.equalsIgnoreCase("false"))) {
             addBypassDoPrivilegedTest();
         } else {
             addDoPrivilegedTest();
@@ -56,7 +55,7 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
     }
 
     /**
-     * Derect calls
+     * Direct calls
      */
     public void test() throws Exception {
         String className = "org.eclipse.persistence.Version";
