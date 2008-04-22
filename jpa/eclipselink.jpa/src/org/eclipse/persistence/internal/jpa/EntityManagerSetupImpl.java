@@ -90,7 +90,7 @@ public class EntityManagerSetupImpl {
     protected boolean isInContainerMode = false;
     protected boolean isSessionLoadedFromSessionsXML=false;
     // indicates whether weaving was used on the first run through predeploy (in STATE_INITIAL)
-    protected boolean enableWeaving = false;
+    protected Boolean enableWeaving = null;
     // indicates that classes have already been woven
     protected boolean isWeavingStatic = false;
     protected SecurableObjectHolder securableObjectHolder = new SecurableObjectHolder();
@@ -657,16 +657,13 @@ public class EntityManagerSetupImpl {
         
         // state is INITIAL, PREDEPLOY_FAILED or UNDEPLOYED
         try {
-            // Internal flag is set when we have a problem with the temporary privateClassLoader
-            boolean weavingWasDisabled = false;
             // Initialize the privateClassLoader right away.
             ClassLoader privateClassLoader = persistenceUnitInfo.getNewTempClassLoader();
             
             // Verify that we received a temporary ClassLoader instance
             if(null == privateClassLoader) {
                 // Bug 227630: The temporary classLoader is null - in violation of the JPA SPI.
-                enableWeaving = false;
-                weavingWasDisabled = true;
+                enableWeaving = Boolean.FALSE;
                 AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_null_temp_classloader",//
                     persistenceUnitInfo.getPersistenceUnitName());
                 // Try to get the normal classLoader
@@ -751,13 +748,15 @@ public class EntityManagerSetupImpl {
                 }
             }
             
-            // this flag is used to disable work done as a result of the LAZY hint on OneToOne mappings
-            if((state == STATE_INITIAL || state == STATE_UNDEPLOYED) && !weavingWasDisabled) {
-                enableWeaving = true;
+            // this flag is used to disable work done as a result of the LAZY hint on OneToOne and ManyToOne mappings
+            if((state == STATE_INITIAL || state == STATE_UNDEPLOYED)) {
+                if(null == enableWeaving) {                    
+                    enableWeaving = Boolean.TRUE;
+                }
                 isWeavingStatic = false;
                 String weaving = getConfigPropertyAsString(PersistenceUnitProperties.WEAVING);
                 if (weaving != null && weaving.equalsIgnoreCase("false")) {
-                    enableWeaving = false;
+                    enableWeaving = Boolean.FALSE;
                 }else if (weaving != null && weaving.equalsIgnoreCase("static")) {
                     isWeavingStatic = true;
                 }
@@ -790,7 +789,7 @@ public class EntityManagerSetupImpl {
                 // Bug 227630: Check if weaving has been disabled by a NPE on loadClass()
                 if(!processor.getProject().isWeavingEnabled()) {
                     // Disable dynamic weaving for the duration of this predeploy()
-                    enableWeaving = false;
+                    enableWeaving = Boolean.FALSE;
                 }
 
                 if (session.getIntegrityChecker().hasErrors()){
