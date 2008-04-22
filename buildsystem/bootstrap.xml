@@ -27,7 +27,7 @@
         <echo message="os.arch='${os.arch}'"/>
         <echo message="os.version='${os.version}'"/>
     </target>
-    
+
     <!-- Set svn.exec to os appropriate value                                 -->
     <!--    (fallback in case env.SVN_EXEC not set)                           -->
     <target name="init.linux" unless="_Win" depends="init">
@@ -43,19 +43,19 @@
         <property name="svn.rw.protocol" value="file:"/>
         <property name="svn.base.url"    value="///var/svn/repos/eclipselink"/>
     </target>
-    
+
     <target name="properties.init" depends="init.win,init.test">
         <echo message="svn.exec='${svn.exec}'"/>
 
         <!-- # Build environment definitions                                  -->
-        <!-- #  build.root is the directory the branch's build files are in   -->
-        <!-- #                                                                -->
+        <!-- #  dir.build.root is the directory the branch's build            -->
+        <!-- #       files are in                                             -->
         <!-- #  branch.name will always be specified  on command-line         -->
         <!-- #       if used                                                  -->
         <property name="branch.name"     value=""/>
         <property name="branch.dir"      value="${branch.name}trunk"/>
-        <property name="autobld.file"       value="autobuild.xml"/>
-        <property name="build.root"       value="${basedir}/${branch.dir}"/>
+        <property name="autobld.file"    value="autobuild.xml"/>
+        <property name="dir.build.root"  value="${basedir}/${branch.dir}"/>
         <property name="log.dir"         value="${basedir}/log"/>
 
         <!-- #  Subversion URL definitions                                    -->
@@ -78,16 +78,16 @@
 
     <target name="build" depends="get.src" description="Trigger an automated build without testing or publish">
         <!-- need dir made, and to avoid issue of autobld.xml not existing when initially parsed... -->
-        <echo message=" "/>
-        <!-- ant antfile="${autobld.file}" dir="${build.root}" target="build.no.publish"/ -->
+        <!-- echo message=" "/ -->
+        <ant antfile="${autobld.file}" dir="${dir.build.root}" target="build.no.publish"/>
     </target>
 
     <target name="nightly"    depends="get.src" description="Trigger the nightly automated build and lrg tests">
-        <ant antfile="${autobld.file}" dir="${build.root}" target="build.nightly"/>
+        <ant antfile="${autobld.file}" dir="${dir.build.root}" target="build.nightly"/>
     </target>
 
     <target name="cb" depends="get.src" description="Trigger an automated 'continuous build' (compile and run short verify)">
-        <ant antfile="${autobld.file}" dir="${build.root}" target="build.continuous"/>
+        <ant antfile="${autobld.file}" dir="${dir.build.root}" target="build.continuous"/>
     </target>
 
 </project>
