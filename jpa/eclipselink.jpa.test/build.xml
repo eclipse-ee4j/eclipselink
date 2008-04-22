@@ -14,6 +14,9 @@
         - server.test.sessionbean : runs the SessionBean tests in the server
         - server.test.fieldaccess.advanced : runs the test in the server
 
+        - test.spring.local
+        - test.spring.container
+
         It requires some configuration of the build.properties and test.properties to run.
     -->
 <project name="Eclipse Persistence Services JPA Testing" default="all" basedir=".">
@@ -90,12 +93,14 @@
     <target name="compile" depends="init, config.trunk, config.flat" description="compile EclipseLink testing">  
         <javac srcdir="${eclipselink.jpa.test}/${src.dir}" 
                destdir="${eclipselink.jpa.test}/${classes.dir}"
-               includes="org/eclipse/persistence/testing/**"
                debug="${javac.debug}" 
                optimize="${javac.optimize}"
                source="1.5" 
                deprecation="${javac.deprecation}"
                failonerror="true">
+            <include name="org/eclipse/persistence/testing/**"/>
+            <exclude name="org/eclipse/persistence/testing/models/jpa/spring/**"/>
+            <exclude name="org/eclipse/persistence/testing/tests/jpa/spring/**"/>
             <classpath>
                 <path refid="compile.path"/>
             </classpath>
@@ -806,4 +811,127 @@
         </antcall>
     </target-->
 
+    <!-- Targets for testing EclipseLink integration with Spring.
+        To be able to run the tests, the third-party Java libraries defined by ${spring.jlib} and ${spring.jotm.jlib} must be available in directories ${spring.jlib.dir} and ${spring.jotm.jlib.dir} respectively. 
+    -->
+    <target name="compile.spring" depends="init, config.trunk, config.flat" description="compile EclipseLink Spring testing">  
+        <delete dir="${eclipselink.jpa.test}/${classes.dir}"/>
+        <delete dir="${eclipselink.jpa.test}/${build.dir}"/>
+        <delete file="${eclipselink.jpa.test}/${jpa-spring}.jar"/>
+        <mkdir dir="${eclipselink.jpa.test}/${classes.dir}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${jpa-spring}"/>
+        <path id="compile.path-spring">
+            <path refid="compile.path"/>
+            <fileset dir="${spring.jlib.dir}" includes="${spring.jlib}"/>
+            <fileset dir="${spring.jotm.jlib.dir}" includes="${spring.jotm.jlib}"/>
+        </path>
+        <javac srcdir="${eclipselink.jpa.test}/${src.dir}" 
+               destdir="${eclipselink.jpa.test}/${classes.dir}"
+               debug="${javac.debug}" 
+               optimize="${javac.optimize}"
+               source="1.5" 
+               deprecation="${javac.deprecation}"
+               failonerror="true">
+            <include name="org/eclipse/persistence/testing/tests/jpa/spring/**"/>
+            <include name="org/eclipse/persistence/testing/models/jpa/spring/**"/>
+            <classpath>
+                <path refid="compile.path-spring"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="package.jpa-spring" depends="compile.spring">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${jpa-spring}">
+            <fileset dir="${eclipselink.jpa.test}/resource/${jpa-spring}" includes="**"/>
+        </copy>
+        <replace dir="${eclipselink.jpa.test}/${build.dir}/${jpa-spring}" token='%%dbURL%%' value="${db.url}">
+            <include name="**"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/${build.dir}/${jpa-spring}" token='%%driverClass%%' value="${db.driver}">
+            <include name="**"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/${build.dir}/${jpa-spring}" token='%%dbUser%%' value="${db.user}">
+            <include name="**"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/${build.dir}/${jpa-spring}" token='%%dbPassword%%' value="${db.pwd}">
+            <include name="**"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.test}/${build.dir}/${jpa-spring}" token='%%dbPlatform%%' value="${db.platform}">
+            <include name="**"/>
+        </replace>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/${jpa-spring}">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}">
+                <include name="org/eclipse/persistence/testing/models/jpa/spring/**"/>
+                <include name="org/eclipse/persistence/testing/tests/jpa/spring/**"/>
+            </fileset>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/${jpa-spring}.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/${jpa-spring}"/>
+        </jar>
+    </target>
+
+    <target name="test.spring.local" depends="package.jpa-spring">
+        <delete dir="${eclipselink.jpa.test}/${run.dir}"/>
+        <delete dir="${eclipselink.jpa.test}/${report.dir}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
+        <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
+            <jvmarg value="${test.agent}"/>
+            <jvmarg value="${test.weaving}"/>
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
+            <classpath>
+                <pathelement path="${eclipselink.jpa.test}/${jpa-spring}.jar"/>
+                <pathelement path="${jdbc.driver.jar}"/>
+                <path refid="compile.path-spring"/>
+            </classpath>
+            <batchtest todir="${eclipselink.jpa.test}/${report.dir}">
+                <fileset dir="${eclipselink.jpa.test}/${src.dir}">
+                    <include name="**/spring/TestLocalEMF.java"/>
+                    <include name="**/spring/TestLocalEMFtransactional.java"/>
+                    <include name="**/spring/dao/TestLocalEMFwithDao.java"/>
+                </fileset>
+                <formatter type="xml"/>
+            </batchtest>
+        </junit>
+        <junitreport todir="${eclipselink.jpa.test}/${report.dir}">
+            <fileset dir="${eclipselink.jpa.test}/${report.dir}">
+                <include name="*.xml"/>
+            </fileset>
+            <report format="noframes" todir="${eclipselink.jpa.test}/${report.dir}"/>
+        </junitreport>
+    </target>
+
+    <target name="test.spring.container" depends="package.jpa-spring">
+        <delete dir="${eclipselink.jpa.test}/${run.dir}"/>
+        <delete dir="${eclipselink.jpa.test}/${report.dir}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
+        <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
+            <jvmarg value="-javaagent:../${spring.jlib.dir}/spring-agent.jar"/>
+            <jvmarg value="${test.weaving}"/>
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
+            <classpath>
+                <pathelement path="${eclipselink.jpa.test}/${jpa-spring}.jar"/>
+                <pathelement path="${jdbc.driver.jar}"/>
+                <path refid="compile.path-spring"/>
+            </classpath>
+            <batchtest todir="${eclipselink.jpa.test}/${report.dir}">
+                <fileset dir="${eclipselink.jpa.test}/${src.dir}">
+                    <include name="**/spring/TestContainerEMF.java"/>
+                    <include name="**/spring/TestContainerEMFtransactional.java"/>
+                    <include name="**/spring/TestJtaContainerEMF.java"/>
+                    <include name="**/spring/dao/TestContainerEMFwithDao.java"/>
+                </fileset>
+                <formatter type="xml"/>
+            </batchtest>
+        </junit>
+        <junitreport todir="${eclipselink.jpa.test}/${report.dir}">
+            <fileset dir="${eclipselink.jpa.test}/${report.dir}">
+                <include name="*.xml"/>
+            </fileset>
+            <report format="noframes" todir="${eclipselink.jpa.test}/${report.dir}"/>
+        </junitreport>
+    </target>
 </project>
