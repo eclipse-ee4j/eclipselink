@@ -49,17 +49,18 @@ public class ExhaustivePartialStringComparatorEngineTests extends TestCase {
 		this.dump(pairs);
 		int i = 0;
 
-		assertEquals("bar", pairs[i].getStringHolder1().getString());
-		assertEquals("bbaarr", pairs[i++].getStringHolder2().getString());
+		assertEquals("dadoorunrun", pairs[i].getStringHolder1().getString());
+		assertEquals("da-doo-run-run", pairs[i++].getStringHolder2().getString());
 
 		assertEquals("foo", pairs[i].getStringHolder1().getString());
 		assertEquals("FOOOOO", pairs[i++].getStringHolder2().getString());
 
-		assertEquals("dadoorunrun", pairs[i].getStringHolder1().getString());
-		assertEquals("da-doo-run-run", pairs[i++].getStringHolder2().getString());
-
 		assertEquals("chickenLittle", pairs[i].getStringHolder1().getString());
 		assertEquals("MyChickenLittle", pairs[i++].getStringHolder2().getString());
+
+		assertEquals("bar", pairs[i].getStringHolder1().getString());
+		assertEquals("bbaarr", pairs[i++].getStringHolder2().getString());
+
 	}
 
 	private StringHolder[] buildStringHoldersSameSize1() {
@@ -90,14 +91,16 @@ public class ExhaustivePartialStringComparatorEngineTests extends TestCase {
 		assertNull(pairs[i].getStringHolder1());
 		assertEquals("MyChickenLittle", pairs[i++].getStringHolder2().getString());
 
-		assertEquals("bar", pairs[i].getStringHolder1().getString());
-		assertEquals("bbaarr", pairs[i++].getStringHolder2().getString());
+		assertEquals("dadoorunrun", pairs[i].getStringHolder1().getString());
+		assertEquals("da-doo-run-run", pairs[i++].getStringHolder2().getString());
 
 		assertEquals("foo", pairs[i].getStringHolder1().getString());
 		assertEquals("FOOOOO", pairs[i++].getStringHolder2().getString());
 
-		assertEquals("dadoorunrun", pairs[i].getStringHolder1().getString());
-		assertEquals("da-doo-run-run", pairs[i++].getStringHolder2().getString());
+		assertEquals("bar", pairs[i].getStringHolder1().getString());
+		assertEquals("bbaarr", pairs[i++].getStringHolder2().getString());
+
+
 	}
 
 	private StringHolder[] buildStringHoldersSmaller1_1() {
@@ -127,14 +130,15 @@ public class ExhaustivePartialStringComparatorEngineTests extends TestCase {
 		assertEquals("foo", pairs[i].getStringHolder1().getString());
 		assertNull(pairs[i++].getStringHolder2());
 
-		assertEquals("bar", pairs[i].getStringHolder1().getString());
-		assertEquals("bbaarr", pairs[i++].getStringHolder2().getString());
-
 		assertEquals("dadoorunrun", pairs[i].getStringHolder1().getString());
 		assertEquals("da-doo-run-run", pairs[i++].getStringHolder2().getString());
 
 		assertEquals("chickenLittle", pairs[i].getStringHolder1().getString());
 		assertEquals("MyChickenLittle", pairs[i++].getStringHolder2().getString());
+
+		assertEquals("bar", pairs[i].getStringHolder1().getString());
+		assertEquals("bbaarr", pairs[i++].getStringHolder2().getString());
+
 	}
 
 	private StringHolder[] buildStringHoldersSmaller2_1() {
@@ -159,8 +163,7 @@ public class ExhaustivePartialStringComparatorEngineTests extends TestCase {
 	}
 
 	private PartialStringComparator buildComparator() {
-		//return new LowerCasePartialStringComparator(PartialStringComparator.JARO_WINKLER);
-		return new LowerCasePartialStringComparator(SimplePartialStringComparator.instance());
+		return new LowerCasePartialStringComparator(PartialStringComparator.DEFAULT_COMPARATOR);
 	}
 
 	private void dump(StringHolderPair[] stringHolderPairs) {
