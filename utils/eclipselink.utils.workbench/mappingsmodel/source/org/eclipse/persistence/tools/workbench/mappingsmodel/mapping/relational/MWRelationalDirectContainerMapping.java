@@ -538,7 +538,7 @@ public abstract class MWRelationalDirectContainerMapping
 		return this.getReference().getSourceTable().columns();
 	}
 
-	private static final PartialStringMatcher COLUMN_NAME_MATCHER = new SimplePartialStringMatcher(PartialStringComparator.EMPTY_COMPARATOR);
+	private static final PartialStringMatcher COLUMN_NAME_MATCHER = new SimplePartialStringMatcher(PartialStringComparator.DEFAULT_COMPARATOR);
 
 
 	// *************  Aggregate support ************

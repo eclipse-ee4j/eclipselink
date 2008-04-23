@@ -273,7 +273,7 @@ public abstract class MWAbstractReferenceMapping extends MWMapping
 		return PARTIAL_STRING_MATCHER.match(string, multiDescriptorStringHolders);
 	}
 
-	private static final PartialStringMatcher PARTIAL_STRING_MATCHER = new SimplePartialStringMatcher(PartialStringComparator.EMPTY_COMPARATOR);
+	private static final PartialStringMatcher PARTIAL_STRING_MATCHER = new SimplePartialStringMatcher(PartialStringComparator.DEFAULT_COMPARATOR);
 
 
 	//********* containment hierarchy *********

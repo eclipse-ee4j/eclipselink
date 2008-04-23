@@ -916,12 +916,16 @@ public final class StringTools {
 		// Test 2: Look if string1 and string2 are the same except for the list of
 		//         characters to ignore
 		if (equals(string1, string2, ignoreCharacters)) {
-			return string2.length() / string1.length() * 100.0;
+			double top = string2.length();
+			double bottom = string1.length();
+			return top/bottom;
 		}
 
 		// Test 3: Look if string2 is a substring of string1
 		if (string1.indexOf(string2) > -1) {
-			return string2.length() / string1.length() * 100.0;
+			double top = string2.length();
+			double bottom = string1.length();
+			return top/bottom;
 		}
 
 		// Test 4: Look if a part - continuous - of string2 is a substring of string1

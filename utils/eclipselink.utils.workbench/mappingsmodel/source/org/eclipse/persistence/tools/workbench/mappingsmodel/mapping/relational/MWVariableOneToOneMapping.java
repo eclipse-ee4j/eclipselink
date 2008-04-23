@@ -468,7 +468,7 @@ public final class MWVariableOneToOneMapping
 		}
 	}
 
-	private static final PartialStringMatcher COLUMN_NAME_MATCHER = new SimplePartialStringMatcher(PartialStringComparator.EMPTY_COMPARATOR);
+	private static final PartialStringMatcher COLUMN_NAME_MATCHER = new SimplePartialStringMatcher(PartialStringComparator.DEFAULT_COMPARATOR);
 
 
 	// ************* runtime conversion ***********

@@ -225,7 +225,7 @@ public final class MWRelationalClassIndicatorFieldPolicy extends MWClassIndicato
 		return COLUMN_NAME_MATCHER.match(string, columnStringHolders);
 	}
 
-	private static final PartialStringMatcher COLUMN_NAME_MATCHER = new SimplePartialStringMatcher(PartialStringComparator.EMPTY_COMPARATOR);
+	private static final PartialStringMatcher COLUMN_NAME_MATCHER = new SimplePartialStringMatcher(PartialStringComparator.DEFAULT_COMPARATOR);
 
 	// ********* Problems ***************
 	

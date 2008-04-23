@@ -128,7 +128,7 @@ public final class MappingsPluginIconResourceFileNameMap extends AbstractIconRes
 		{"approve",     "basic/misc/Approve.gif"},
 		{"automap",     "mw/misc/Automap.gif"},
 		{"synchronize", "mw/misc/Synchronize.gif"},
-		{"urgent",      "basic/help/Forward.gif"},
+		{"urgent",      "basic/misc/Forward.gif"},
 		{"ignore",      "basic/misc/Ignore.gif"},
 		{"shuttle.left",  "basic/misc/shuttleLeft.png"},
 		{"shuttle.right", "basic/misc/shuttleRight.png"},

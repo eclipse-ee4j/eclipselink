@@ -28,7 +28,6 @@ public interface PartialStringComparator {
 	/**
 	 * Probably the most useful of the partial string comparators.
 	 */
-//	PartialStringComparator OLD = new OldPartialStringComparator(OldPartialStringComparator.instance());
+	PartialStringComparator DEFAULT_COMPARATOR = PFPartialStringComparator.instance();
  
-	PartialStringComparator EMPTY_COMPARATOR = new EmptyStringComparator();
 }

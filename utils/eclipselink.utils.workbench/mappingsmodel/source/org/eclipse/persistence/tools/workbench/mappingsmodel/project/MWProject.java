@@ -910,7 +910,7 @@ public abstract class MWProject
 	protected static final PartialStringComparatorEngine CLASS_META_DATA_NAME_COMPARATOR_ENGINE =
 				AffixStrippingPartialStringComparatorEngine.forPrefixStripping(
 					AffixStrippingPartialStringComparatorEngine.forSuffixStripping(
-						new ExhaustivePartialStringComparatorEngine(PartialStringComparator.EMPTY_COMPARATOR),
+						new ExhaustivePartialStringComparatorEngine(PartialStringComparator.DEFAULT_COMPARATOR),
 						CLASS_META_DATA_PARTIAL_STRING_AFFIX_THRESHOLD
 					),
 					CLASS_META_DATA_PARTIAL_STRING_AFFIX_THRESHOLD

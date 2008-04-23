@@ -79,13 +79,13 @@ public abstract class MWRelationalClassDescriptor
 	private Collection userDefinedQueryKeys;
 		public static final String QUERY_KEYS_COLLECTION = "userDefinedQueryKeys";
 
-	protected static final PartialStringMatcher PARTIAL_STRING_MATCHER = new SimplePartialStringMatcher(PartialStringComparator.EMPTY_COMPARATOR);
+	protected static final PartialStringMatcher PARTIAL_STRING_MATCHER = new SimplePartialStringMatcher(PartialStringComparator.DEFAULT_COMPARATOR);
 
 	protected static final float PARTIAL_STRING_AFFIX_THRESHOLD = 0.80f;		// ???
 	protected static final PartialStringComparatorEngine PARTIAL_STRING_COMPARATOR_ENGINE =
 				AffixStrippingPartialStringComparatorEngine.forPrefixStripping(
 					AffixStrippingPartialStringComparatorEngine.forSuffixStripping(
-						new ExhaustivePartialStringComparatorEngine(PartialStringComparator.EMPTY_COMPARATOR),
+						new ExhaustivePartialStringComparatorEngine(PartialStringComparator.DEFAULT_COMPARATOR),
 						PARTIAL_STRING_AFFIX_THRESHOLD
 					),
 					PARTIAL_STRING_AFFIX_THRESHOLD
