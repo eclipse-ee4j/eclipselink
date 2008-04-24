@@ -81,11 +81,11 @@
         <delete dir="${dir.build.deps}/${junit.bundle}"/>
 
         <!-- Generate "dependencies.txt" file -->
-        <echo message="Buildsystem external dependencies come from:" file="${dir.build.deps}/dependencies.txt" append="false"/>
-        <echo message="junit:      ${junit.url}"      file="${dir.build.deps}/dependencies.txt" append="true"/>
-        <echo message="activation: ${activation.url}" file="${dir.build.deps}/dependencies.txt" append="true"/>
-        <echo message="mail:       ${mail.url}"       file="${dir.build.deps}/dependencies.txt" append="true"/>
-        <echo message="mavenant:   ${mavenant.url}"   file="${dir.build.deps}/dependencies.txt" append="true"/>
+        <echo message="Buildsystem external dependencies come from:${line.separator}" file="${dir.build.deps}/dependencies.txt" append="false"/>
+        <echo message="junit:      ${junit.url}${line.separator}"      file="${dir.build.deps}/dependencies.txt" append="true"/>
+        <echo message="activation: ${activation.url}${line.separator}" file="${dir.build.deps}/dependencies.txt" append="true"/>
+        <echo message="mail:       ${mail.url}${line.separator}"       file="${dir.build.deps}/dependencies.txt" append="true"/>
+        <echo message="mavenant:   ${mavenant.url}${line.separator}"   file="${dir.build.deps}/dependencies.txt" append="true"/>
     </target>
 
     <target name="build" depends="get.dependencies">
@@ -98,22 +98,20 @@
 
     <target name="build.test" depends="get.dependencies">
         <!-- Generate Test properties file -->
-        <echo message="# Generated db connection properties (by bootstrap.xml)" file="${coretest.prop.file}" append="false"/>
-        <echo message="jdbc.driver.jar=${jdbc.driver.jar}" file="${coretest.prop.file}" append="true"/>
-        <echo message="db.driver=${db.driver}"             file="${coretest.prop.file}" append="true"/>
-        <echo message="db.url=${db.url}"                   file="${coretest.prop.file}" append="true"/>
-        <echo message="db.user=${db.user}"                 file="${coretest.prop.file}" append="true"/>
-        <echo message="db.pwd=${db.pwd}"                   file="${coretest.prop.file}" append="true"/>
-        <echo message="db.platform=${db.platform}"         file="${coretest.prop.file}" append="true"/>
+        <echo message="# Generated db connection properties (by bootstrap.xml)${line.separator}" file="${coretest.prop.file}" append="false"/>
+        <echo message="jdbc.driver.jar=${jdbc.driver.jar}${line.separator}" file="${coretest.prop.file}" append="true"/>
+        <echo message="db.driver=${db.driver}${line.separator}"             file="${coretest.prop.file}" append="true"/>
+        <echo message="db.url=${db.url}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
+        <echo message="db.user=${db.user}${line.separator}"                 file="${coretest.prop.file}" append="true"/>
+        <echo message="db.pwd=${db.pwd}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
+        <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
 
         <ant antfile="build.xml" dir="${dir.build.root}" target="build.test"/>
         <!-- delete file="${coretest.prop.file}"/ -->
     </target>
 
     <target name="test.srg">
-        <ant antfile="build.xml" dir="${dir.build.root}" target="test.core.srg">
-             <param name="test.properties.run" value=""/>
-        </ant>
+        <ant antfile="build.xml" dir="${dir.build.root}" target="test.core.srg"/>
     </target>
 
     <target name="test.lrg">

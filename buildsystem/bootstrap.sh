@@ -114,8 +114,9 @@ then
     echo "No db Login info available!"
     exit
 else
-    DB_USER=`cat $JDBC_LOGIN_INFO_FILE | cut -d: -f1`
-    DB_PWD=`cat $JDBC_LOGIN_INFO_FILE | cut -d: -f2`
+    DB_USER=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f1`
+    DB_PWD=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f2`
+    DB_URL=`cat $JDBC_LOGIN_INFO_FILE | cut -d'*' -f3`
 fi
 
 #Set appropriate max Heap for VM and let Ant inherit JavaVM (OS's) proxy settings
@@ -142,7 +143,7 @@ touch $DATED_LOG
 echo "Build started at: `date`" >> ${DATED_LOG}
 source ~/.ssh-agent >> ${DATED_LOG}
 echo "ant ${ANT_BASEARG} $TARGET" >> ${DATED_LOG}
-ant ${ANT_BASEARG} -Ddb.user="$DB_USER" -Ddb.pwd="$DB_PWD" $TARGET >> ${DATED_LOG}
+ant ${ANT_BASEARG} -Ddb.user="$DB_USER" -Ddb.pwd="$DB_PWD" -Ddb.url="$DB_URL" $TARGET >> ${DATED_LOG}
 echo "Build completed at: `date`" >> ${DATED_LOG}
 
 #tail -f $DATED_LOG

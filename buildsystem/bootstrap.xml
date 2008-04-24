@@ -75,11 +75,13 @@
         <property name="current.svnrev.file" value="${log.dir}/.current_svn_rev"/>
         <property name="latest.svnrev.file"  value="${log.dir}/.latest_svn_rev"/>
         <!-- available file="${latest.svnrev.file}" property="latest.svnrev.file.present"/ -->
- 
+
         <!-- #  Build and Test dependency Overrides                           -->
         <!-- #                                                                -->
-        <property name="junit.lib"          value="${dir.junit}/junit.jar"/>
-        
+        <property name="junit.lib"           value="${dir.junit}/junit.jar"/>
+        <property name="coretest.prop.file" value="${log.dir}/mysql.jpa.test.properties"/>
+        <property name="test.properties.run" value="${coretest.prop.file}"/>
+
         <echo message="dir.build.deps='${dir.build.deps}'"/>
         <echo message="dir.build.root='${dir.build.root}'"/>
         <echo message="log.dir       ='${log.dir}'"/>
@@ -93,6 +95,7 @@
             <arg value="-q"/>
             <arg value="${svn.rw.protocol}${svn.branch.url}"/>
         </exec>
+        <!-- echo message=" "/ -->
     </target>
 
     <target name="build" depends="get.src" description="Trigger an automated build without testing or publish">
