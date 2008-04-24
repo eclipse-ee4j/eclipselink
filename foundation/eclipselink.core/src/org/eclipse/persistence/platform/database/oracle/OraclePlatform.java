@@ -472,7 +472,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * @param sequenceName Name known by Oracle to be a defined sequence
      */
     public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
-        return new ValueReadQuery("SELECT " + getQualifiedSequenceName(seqName) + ".NEXTVAL FROM DUAL");
+        return new ValueReadQuery("SELECT " + getQualifiedName(seqName) + ".NEXTVAL FROM DUAL");
     }
 
     /**
@@ -482,18 +482,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * @param sequenceName Name known by Oracle to be a defined sequence
      */
     public ValueReadQuery buildSelectQueryForIdentity(String seqName, Integer size) {
-        return new ValueReadQuery("SELECT " + getQualifiedSequenceName(seqName) + ".CURRVAL FROM DUAL");
-    }
-
-    /**
-     * Prepend sequence name with table qualifier (if any)
-     */
-    protected String getQualifiedSequenceName(String seqName) {
-        if (getTableQualifier().equals("")) {
-            return seqName;
-        } else {
-            return getTableQualifier() + "." + seqName;
-        }
+        return new ValueReadQuery("SELECT " + getQualifiedName(seqName) + ".CURRVAL FROM DUAL");
     }
 
     /**

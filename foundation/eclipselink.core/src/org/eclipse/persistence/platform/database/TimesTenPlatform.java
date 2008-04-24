@@ -144,7 +144,7 @@ public class TimesTenPlatform extends DatabasePlatform {
      *    @param sequenceName        Name known by TimesTen to be a defined sequence
      */
     public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
-        return new ValueReadQuery("SELECT " + getQualifiedSequenceName(seqName) + ".NEXTVAL FROM DUAL");
+        return new ValueReadQuery("SELECT " + getQualifiedName(seqName) + ".NEXTVAL FROM DUAL");
     }
 
     /**

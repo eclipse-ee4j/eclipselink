@@ -167,19 +167,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * methods should return non-null query.
      */
     public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
-        return new ValueReadQuery("select nextval(\'"  + getQualifiedSequenceName(seqName) + "\')");
-    }
-
-    /**
-     * INTERNAL:
-     *  Prepend sequence name with table qualifier (if any)
-     */
-    protected String getQualifiedSequenceName(String seqName) {
-        if (getTableQualifier().equals("")) {
-            return seqName;
-        } else {
-            return getTableQualifier() + "." + seqName;
-        }
+        return new ValueReadQuery("select nextval(\'"  + getQualifiedName(seqName) + "\')");
     }
 
     /**

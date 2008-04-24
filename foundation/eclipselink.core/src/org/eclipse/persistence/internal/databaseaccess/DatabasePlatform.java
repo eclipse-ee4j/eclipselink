@@ -1056,14 +1056,17 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     public String getQualifiedSequenceTableName() {
         if (getDefaultSequence() instanceof TableSequence) {
-            String sequenceTableName = ((TableSequence)getDefaultSequence()).getTableName();
-            if (getTableQualifier().equals("")) {
-                return sequenceTableName;
-            } else {
-                return getTableQualifier() + "." + sequenceTableName;
-            }
+            return getQualifiedName(((TableSequence)getDefaultSequence()).getTableName());
         } else {
             throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "getTableName");
+        }
+    }
+
+    public String getQualifiedName(String name) {
+        if (getTableQualifier().equals("")) {
+            return name;
+        } else {
+            return getTableQualifier() + "." + name;
         }
     }
 
