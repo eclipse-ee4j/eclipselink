@@ -30,9 +30,9 @@ public final class StringTools {
 	public static final String CR = System.getProperty("line.separator");
 
 	/**
-	 * The minimum count to be consider a match between two strings; which is 3.
+	 * The minimum count to be consider a match between two strings; which is 2.
 	 */
-	public static final int MINIMUM_MATCHING_LETTER = 3;
+	public static final int MINIMUM_MATCHING_LETTER = 2;
 
 	/**
 	 * The lowest weight for matching two strings. This means there is no match.

@@ -321,7 +321,7 @@ public final class MWRelationalProject
 			if ((descriptorHolder == null) || (tableHolder == null)) {
 				continue;
 			}
-			if (pair.getScore() > 0.50) {		// ???
+			if (pair.getScore() > 0.45) {		// ???
 				((MWTableDescriptor) descriptorHolder.getDescriptor()).setPrimaryTable(tableHolder.getTable());
 			}
 		}

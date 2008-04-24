@@ -19,7 +19,7 @@ import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
 
 public class EmployeeProjectVerifier extends AbstractAutomapVerifier
 {
-	private DescriptorInfo test_oracle_models_employee_Address()
+	private DescriptorInfo org_eclipse_persistence_tools_workbench_test_models_employee_Address()
 	{
 		Hashtable table = new Hashtable();
 
@@ -34,7 +34,7 @@ public class EmployeeProjectVerifier extends AbstractAutomapVerifier
 		return new TableDescriptorInfo(table, "ADDRESS");
 	}
 
-	private DescriptorInfo test_oracle_models_employee_Employee()
+	private DescriptorInfo org_eclipse_persistence_tools_workbench_test_models_employee_Employee()
 	{
 		Hashtable table = new Hashtable();
 
@@ -45,12 +45,12 @@ public class EmployeeProjectVerifier extends AbstractAutomapVerifier
 		table.put("lastName",             new DirectMappingInfo("L_NAME"));
 		table.put("normalHours",          new DirectMappingInfo(null));
 		table.put("salary",               new DirectMappingInfo("SALARY", "SALARY"));
-		table.put("address",              new OneToOneMappingInfo("test.oracle.models.employee.Address", "EMPLOYEE_ADDRESS"));
-		table.put("manager",              new OneToOneMappingInfo("test.oracle.models.employee.Employee", "EMPLOYEE_EMPLOYEE"));
-//		table.put("managedEmployees",     new OneToManyMappingInfo("test.oracle.models.employee.Employee", "EMPLOYEE_EMPLOYEE"));
+		table.put("address",              new OneToOneMappingInfo("org.eclipse.persistence.tools.workbench.test.models.employee.Address", "EMPLOYEE_ADDRESS"));
+		table.put("manager",              new OneToOneMappingInfo("org.eclipse.persistence.tools.workbench.test.models.employee.Employee", "EMPLOYEE_EMPLOYEE"));
+//		table.put("managedEmployees",     new OneToManyMappingInfo("org.eclipse.persistence.tools.workbench.test.models.employee.Employee", "EMPLOYEE_EMPLOYEE"));
 		table.put("managedEmployees",     new DirectCollectionMappingInfo(null, null));
-		table.put("phoneNumbers",         new OneToManyMappingInfo("test.oracle.models.employee.PhoneNumber", "PHONE_EMPLOYEE"));
-		table.put("projects",             new ManyToManyMappingInfo("test.oracle.models.employee.Project", "PROJ_EMP", "PROJ_EMP_EMPLOYEE", "PROJ_EMP_PROJECT"));
+		table.put("phoneNumbers",         new OneToManyMappingInfo("org.eclipse.persistence.tools.workbench.test.models.employee.PhoneNumber", "PHONE_EMPLOYEE"));
+		table.put("projects",             new ManyToManyMappingInfo("org.eclipse.persistence.tools.workbench.test.models.employee.Project", "PROJ_EMP", "PROJ_EMP_EMPLOYEE", "PROJ_EMP_PROJECT"));
 		table.put("responsibilitiesList", new NullMappingInfo()); // TODO
 		table.put("period",               new AggregateMappingInfo());
 		table.put("emailAddressMap",      new NullMappingInfo());
@@ -58,7 +58,7 @@ public class EmployeeProjectVerifier extends AbstractAutomapVerifier
 		return new TableDescriptorInfo(table, new String[] { "EMPLOYEE", "SALARY" });
 	}
 
-	private DescriptorInfo test_oracle_models_employee_Project()
+	private DescriptorInfo org_eclipse_persistence_tools_workbench_test_models_employee_Project()
 	{
 		Hashtable table = new Hashtable();
 
@@ -68,43 +68,37 @@ public class EmployeeProjectVerifier extends AbstractAutomapVerifier
 //		table.put("name",        new DirectMappingInfo("PROJ_NAME"));
 		table.put("name",        new NullMappingInfo());
 		table.put("version",     new DirectMappingInfo("VERSION"));
-		table.put("teamLeader",  new OneToOneMappingInfo("test.oracle.models.employee.Employee", "PROJECT_EMPLOYEE"));
+		table.put("teamLeader",  new OneToOneMappingInfo("org.eclipse.persistence.tools.workbench.test.models.employee.Employee", "PROJECT_EMPLOYEE"));
 
 		return new TableDescriptorInfo(table, "PROJECT");
 	}
 
-	private DescriptorInfo test_oracle_models_employee_LargeProject()
+	private DescriptorInfo org_eclipse_persistence_tools_workbench_test_models_employee_LargeProject()
 	{
 		Hashtable table = new Hashtable();
 
-//		table.put("budget",           new DirectMappingInfo("BUDGET"));
-		table.put("budget",           new NullMappingInfo());
+		table.put("budget",           new DirectMappingInfo("BUDGET"));
+//		table.put("budget",           new NullMappingInfo());
 //		table.put("milestoneVersion", new DirectMappingInfo("MILESTONE"));
 		table.put("milestoneVersion", new NullMappingInfo());
 
-//		return new TableDescriptorInfo(table, "LPROJECT");
-		return new TableDescriptorInfo(table, "RESPONS");	// LPROJECT matches SmallProject better
+		return new TableDescriptorInfo(table, "LPROJECT");
+//		return new TableDescriptorInfo(table, "RESPONS");	// LPROJECT matches SmallProject better
 	}
 
-	private DescriptorInfo test_oracle_models_employee_PhoneNumber()
+	private DescriptorInfo org_eclipse_persistence_tools_workbench_test_models_employee_PhoneNumber()
 	{
 		Hashtable table = new Hashtable();
 
 		table.put("areaCode", new DirectMappingInfo("AREA_CODE"));
 		table.put("number",   new DirectMappingInfo("P_NUMBER"));
 		table.put("type",     new DirectMappingInfo("TYPE"));
-		table.put("owner",     new OneToOneMappingInfo("test.oracle.models.employee.Employee", "PHONE_EMPLOYEE"));
+		table.put("owner",     new OneToOneMappingInfo("org.eclipse.persistence.tools.workbench.test.models.employee.Employee", "PHONE_EMPLOYEE"));
 
 		return new TableDescriptorInfo(table, "PHONE");
 	}
 
-	private DescriptorInfo test_oracle_models_employee_SmallProject()
-	{
-		Hashtable table = new Hashtable();
-		return new TableDescriptorInfo(table, "LPROJECT"); // Should be PROJECT but SmallProject has a higher weight
-	}
-
-	private DescriptorInfo test_oracle_models_employee_EmploymentPeriod()
+	private DescriptorInfo org_eclipse_persistence_tools_workbench_test_models_employee_EmploymentPeriod()
 	{
 		Hashtable table = new Hashtable();
 
@@ -128,32 +122,28 @@ public class EmployeeProjectVerifier extends AbstractAutomapVerifier
 		Hashtable descriptors = new Hashtable();
 
 		// test.oracle.models.employee.Address
-		descriptor = project.descriptorNamed("test.oracle.models.employee.Address");
-		descriptors.put(descriptor, test_oracle_models_employee_Address());
+		descriptor = project.descriptorNamed("org.eclipse.persistence.tools.workbench.test.models.employee.Address");
+		descriptors.put(descriptor, org_eclipse_persistence_tools_workbench_test_models_employee_Address());
 
 		// test.oracle.models.employee.Employee
-		descriptor = project.descriptorNamed("test.oracle.models.employee.Employee");
-		descriptors.put(descriptor, test_oracle_models_employee_Employee());
+		descriptor = project.descriptorNamed("org.eclipse.persistence.tools.workbench.test.models.employee.Employee");
+		descriptors.put(descriptor, org_eclipse_persistence_tools_workbench_test_models_employee_Employee());
 
 		// test.oracle.models.employee.EmploymentPeriod
-		descriptor = project.descriptorNamed("test.oracle.models.employee.EmploymentPeriod");
-		descriptors.put(descriptor, test_oracle_models_employee_EmploymentPeriod());
+		descriptor = project.descriptorNamed("org.eclipse.persistence.tools.workbench.test.models.employee.EmploymentPeriod");
+		descriptors.put(descriptor, org_eclipse_persistence_tools_workbench_test_models_employee_EmploymentPeriod());
 
 		// test.oracle.models.employee.LargeProject
-		descriptor = project.descriptorNamed("test.oracle.models.employee.LargeProject");
-		descriptors.put(descriptor, test_oracle_models_employee_LargeProject());
+		descriptor = project.descriptorNamed("org.eclipse.persistence.tools.workbench.test.models.employee.LargeProject");
+		descriptors.put(descriptor, org_eclipse_persistence_tools_workbench_test_models_employee_LargeProject());
 
 		// test.oracle.models.employee.PhoneNumber
-		descriptor = project.descriptorNamed("test.oracle.models.employee.PhoneNumber");
-		descriptors.put(descriptor, test_oracle_models_employee_PhoneNumber());
+		descriptor = project.descriptorNamed("org.eclipse.persistence.tools.workbench.test.models.employee.PhoneNumber");
+		descriptors.put(descriptor, org_eclipse_persistence_tools_workbench_test_models_employee_PhoneNumber());
 
 		// test.oracle.models.employee.Project
-		descriptor = project.descriptorNamed("test.oracle.models.employee.Project");
-		descriptors.put(descriptor, test_oracle_models_employee_Project());
-
-		// test.oracle.models.employee.SmallProject
-		descriptor = project.descriptorNamed("test.oracle.models.employee.SmallProject");
-		descriptors.put(descriptor, test_oracle_models_employee_SmallProject());
+		descriptor = project.descriptorNamed("org.eclipse.persistence.tools.workbench.test.models.employee.Project");
+		descriptors.put(descriptor, org_eclipse_persistence_tools_workbench_test_models_employee_Project());
 
 		testDescriptors(descriptors);
 	}
