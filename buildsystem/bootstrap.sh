@@ -35,7 +35,7 @@ ANT_HOME=/shared/common/apache-ant-1.6.5
 CUR_DIR=`pwd`
 HOME_DIR=/shared/technology/eclipselink/staging2
 LOG_DIR=${HOME_DIR}/logs
-BRANCH_DIR=${HOME_DIR}/${BRANCH}trunk
+BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
 BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
 START_DATE=`date '+%y%m%d-%H%M'`
 DATED_LOG=${LOG_DIR}/bsb-${BRANCH_NM}_${TARG_NM}_${START_DATE}.log
@@ -44,7 +44,7 @@ JDBC_LOGIN_INFO_FILE=${HOME_DIR}/db.dat
 #Define build dependency dirs (build needs em, NOT compile dependencies)
 JUNIT_HOME=${BLD_DEPS_DIR}/junit
 MAVENANT_DIR=${BLD_DEPS_DIR}/mavenant
-MAILLIB_DIR=${BRANCH_DIR}/foundation/eclipselink.core.lib
+MAILLIB_DIR=${BRANCH_PATH}/foundation/eclipselink.core.lib
 
 PATH=${JAVA_HOME}/bin:${ANT_HOME}/bin:/usr/bin:/usr/local/bin:${PATH}
 CLASSPATH=${CLASSPATH}:${JUNIT_HOME}/junit.jar:${ANT_HOME}/lib/ant-junit.jar:${MAILLIB_DIR}/mail.jar:${MAILLIB_DIR}/activation.jar:${MAVENANT_DIR}/maven-ant-tasks-2.0.8.jar
@@ -121,7 +121,7 @@ fi
 #Set appropriate max Heap for VM and let Ant inherit JavaVM (OS's) proxy settings
 ANT_ARGS=" "
 ANT_OPTS="-Xmx128m"
-ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
+ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" -Declipselink.logging.level=FINEST"
 
 if [ "$TARGET" = "test" ]
 then
@@ -132,7 +132,7 @@ then
     ANT_BASEARG="${ANT_BASEARG} -D_Test=1"
 fi
 
-export ANT_ARGS ANT_OPTS ANT_HOME BRANCH_DIR HOME_DIR LOG_DIR JAVA_HOME JUNIT_HOME MAVENANT_DIR PATH CLASSPATH
+export ANT_ARGS ANT_OPTS ANT_HOME BRANCH_PATH HOME_DIR LOG_DIR JAVA_HOME JUNIT_HOME MAVENANT_DIR PATH CLASSPATH
 export SVN_EXEC BLD_DEPS_DIR JUNIT_HOME
 
 cd ${HOME_DIR}

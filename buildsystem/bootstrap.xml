@@ -15,17 +15,20 @@
             <format property="build_time" pattern="HHmm"/>
         </tstamp>
         <property environment="env"/>
-        <property name="svn.exec" value="${env.SVN_EXEC}"/>
+        <!-- This needs to be here because if not set we need to check OS     -->
+        <!-- and define appropriate default locations for svn                 -->
+        <property name="svn.exec"        value="${env.SVN_EXEC}"/>
 
         <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
         <echo message=" "/>
         <echo message="build_date.build_time='${build_date}.${build_time}'"/>
-        <echo message="java.version='${java.version}'"/>
-        <echo message="basedir='${basedir}'"/>
-        <echo message="os.name='${os.name}'"/>
-        <echo message="os.arch='${os.arch}'"/>
-        <echo message="os.version='${os.version}'"/>
+        <echo message="java.version  ='${java.version}'"/>
+        <echo message="os.name       ='${os.name}'"/>
+        <echo message="os.arch       ='${os.arch}'"/>
+        <echo message="os.version    ='${os.version}'"/>
+        <echo message=" "/>
+        <echo message="basedir       ='${basedir}'"/>
     </target>
 
     <!-- Set svn.exec to os appropriate value                                 -->
@@ -53,23 +56,39 @@
         <!-- #  branch.name will always be specified  on command-line         -->
         <!-- #       if used                                                  -->
         <property name="branch.name"     value=""/>
+        <property name="dir.build.root"  value="${env.BRANCH_PATH}"/>
+        <property name="dir.build.deps"  value="${env.BLD_DEPS_DIR}"/>
+        <property name="log.dir"         value="${env.LOG_DIR}"/>
+        <property name="dir.junit"       value="${env.JUNIT_HOME}"/>
         <property name="branch.dir"      value="${branch.name}trunk"/>
         <property name="autobld.file"    value="autobuild.xml"/>
-        <property name="dir.build.root"  value="${basedir}/${branch.dir}"/>
-        <property name="log.dir"         value="${basedir}/log"/>
 
-        <!-- #  Subversion URL definitions                                    -->
+        <!-- #  Subversion definitions   (URLs, protocols & control files)    -->
         <!-- #                                                                -->
         <!-- #  svn.exec is set by init and depends upon the OS               -->
-        <property name="svn.ro.protocol" value="http:"/>
-        <property name="svn.rw.protocol" value="svn+ssh:"/>
-        <property name="svn.base.url"    value="//dev.eclipse.org/svnroot/technology/org.eclipse.persistence"/>
-        <property name="svn.branch.url"  value="${svn.base.url}/${branch.dir}"/>
-        <property name="svn.build.url"   value="${svn.branch.url}/buildsystem"/>
+        <property name="svn.ro.protocol"     value="http:"/>
+        <property name="svn.protocol"        value="svn:"/>
+        <property name="svn.rw.protocol"     value="svn+ssh:"/>
+        <property name="svn.base.url"        value="//dev.eclipse.org/svnroot/technology/org.eclipse.persistence"/>
+        <property name="svn.branch.url"      value="${svn.base.url}/${branch.dir}"/>
+        <property name="svn.build.url"       value="${svn.branch.url}/buildsystem"/>
+        <property name="current.svnrev.file" value="${log.dir}/.current_svn_rev"/>
+        <property name="latest.svnrev.file"  value="${log.dir}/.latest_svn_rev"/>
+        <!-- available file="${latest.svnrev.file}" property="latest.svnrev.file.present"/ -->
+ 
+        <!-- #  Build and Test dependency Overrides                           -->
+        <!-- #                                                                -->
+        <property name="junit.lib"          value="${dir.junit}/junit.jar"/>
+        
+        <echo message="dir.build.deps='${dir.build.deps}'"/>
+        <echo message="dir.build.root='${dir.build.root}'"/>
+        <echo message="log.dir       ='${log.dir}'"/>
+        <echo message="dir.junit     ='${dir.junit}'"/>
+        <echo message="junit.lib     ='${junit.lib}'"/>
     </target>
 
     <target name="get.src" depends="properties.init">
-        <exec executable="${svn.exec}">
+        <exec executable="${svn.exec}" failonerror="true" logError="true" >
             <arg value="co"/>
             <arg value="-q"/>
             <arg value="${svn.rw.protocol}${svn.branch.url}"/>
@@ -77,17 +96,57 @@
     </target>
 
     <target name="build" depends="get.src" description="Trigger an automated build without testing or publish">
-        <!-- need dir made, and to avoid issue of autobld.xml not existing when initially parsed... -->
-        <!-- echo message=" "/ -->
         <ant antfile="${autobld.file}" dir="${dir.build.root}" target="build.no.publish"/>
     </target>
 
-    <target name="nightly"    depends="get.src" description="Trigger the nightly automated build and lrg tests">
+    <target name="nightly" depends="get.src" description="Trigger the nightly automated build and lrg tests">
         <ant antfile="${autobld.file}" dir="${dir.build.root}" target="build.nightly"/>
     </target>
 
-    <target name="cb" depends="get.src" description="Trigger an automated 'continuous build' (compile and run short verify)">
+    <target name="cb" if="_DoBuild" depends="no.cb" description="Trigger an automated 'continuous build' (compile and run short verify)">
+        <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
+        <antcall target="get.src"/>
         <ant antfile="${autobld.file}" dir="${dir.build.root}" target="build.continuous"/>
+    </target>
+
+    <!-- ============================================================================= -->
+    <!--   Continuous build Order                                                      -->
+    <!--     properties.init    = sets up various properties                           -->
+    <!--     query.svn.changed  = calls 'get.svn.headrev'                              -->
+    <!--                          sets '_DoBuild' if any condition exists where        -->
+    <!--                          the revision files don't match                       -->
+    <!--     get.svn.headrev    = creates a file that contains current head rev info   -->
+    <!--     no.cb              = if head rev unchanged, prints 'no build' message     -->
+    <!--                          otherwise does nothing                               -->
+    <!--     cb                 = if head rev changed, updates latest head rev file    -->
+    <!--                             calls 'get.src' which updates the source tree     -->
+    <!--                             calls the continuous build target                 -->
+    <!--                          otherwise does nothing                               -->
+    <!-- ============================================================================= -->
+    <target name="no.cb" unless="_DoBuild" depends="query.svn.changed">
+        <echo message="----------------------------------"/>
+        <echo message="  ${build_date}.${build_time} build unnecessary"/>
+        <echo message="  "/>
+    </target>
+
+    <target name="query.svn.changed" depends="get.svn.headrev">
+        <condition property="_DoBuild" value="true">
+            <not>
+                <filesmatch file1="${current.svnrev.file}" file2="${latest.svnrev.file}"/>
+            </not>
+        </condition>
+    </target>
+
+    <target name="get.svn.headrev" depends="properties.init">
+        <exec executable="${svn.exec}" failonerror="true" logError="true" output="${current.svnrev.file}">
+            <arg value="info"/>
+            <arg value="--revision"/>
+            <arg value="HEAD"/>
+            <arg value="${svn.protocol}${svn.branch.url}"/>
+        </exec>
+        <exec executable="grep" failonerror="true" logError="true" input="${current.svnrev.file}" output="${current.svnrev.file}">
+            <arg value="Last"/>
+        </exec>
     </target>
 
 </project>

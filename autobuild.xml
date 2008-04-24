@@ -1,17 +1,28 @@
 <project name="EclipseLink Automated Build" basedir="." default="build.nightly">
 <echo message="---- AutoBuild.xml ----"/>
 
-    <target name="build.no.publish" depends="clean, build, build.test"                      description="Trigger the automated build without testing or publish"/>
-    <target name="build.nightly"    depends="clean, build, build.test, test.lrg, publish"   description="Trigger the nightly automated build and lrg tests" />
-    <target name="build.continuous" depends="clean, build.no.javadoc, build.test, test.srg" description="Trigger the automated build and run the tests" />
+    <target name="build.no.publish"  description="Trigger an automated build without testing or publish"
+            depends="clean, build, build.test"
+    />
+    <target name="build.nightly"    description="Trigger the nightly automated build and lrg tests"
+            depends="clean, build, build.test, test.lrg, publish.build"
+    />
+    <target name="build.continuous" description="Trigger an automated build and run the tests if source changes exist"
+            depends="clean, build.no.javadoc, build.test, test.srg"
+    />
 
     <target name="init">
         <property file="${basedir}/autobuild.properties"/>
-        <property name="dir.build.deps" value="${env.BLD_DEPS_DIR}"/>
-        <property name="dir.build.root" value="${env.BRANCH_DIR}"/>
-        <property name="log.dir" value="${env.LOG_DIR}"/>
-        <property name="dir.junit" value="${env.JUNIT_HOME}"/>
-        <property name="junit.lib" value="${dir.junit}/junit.jar"/>
+        <property name="junit.lib"      value="${basedir}/junit.jar"/>
+        <property name="dir.build.root" value="${basedir}"/>
+        <property name="log.dir"        value="${basedir}/log"/>
+
+        <property name="junit.url"      value="http://download.eclipse.org/tools/orbit/downloads/drops/${junit.drop}/bundles/${junit.bundle}.zip"/>
+        <property name="activation.url" value="http://download.eclipse.org/tools/orbit/downloads/drops/${junit.drop}/bundles/javax.activation_1.1.0.v200706111329.jar"/>
+        <property name="mail.url"       value="http://download.eclipse.org/tools/orbit/downloads/drops/${junit.drop}/bundles/javax.mail_1.4.0.v200706111329.jar"/>
+        <property name="mavenant.url"   value="http://archive.apache.org/dist/maven/binaries/maven-ant-tasks-2.0.8.jar"/>
+
+        <property name="coretest.prop.file" value="${log.dir}/mysql.jpa.test.properties"/>
 
         <condition property="installer_id" value="${build_date}">
             <equals arg1="${build_id}" arg2="SNAPSHOT"/>
@@ -21,6 +32,8 @@
             <equals arg1="${build_id}" arg2="SNAPSHOT"/>
         </condition>
         <property name="download.path" value="${eclipse.download.path}"/>
+        <!-- HACK: to fix workbench buildnumber stamping until workbench build files can be fixed -->
+        <property name="_buildNumber" value="${installer_id}"/>
 
         <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
@@ -41,25 +54,38 @@
 
     <target name="clean" depends="init">
         <!-- Removed because build-clean should take care of old build artifacts,
-             and svn should update source (including removing renamed, deleted files).
-            delete dir="${dir.build.root}"/ -->
+             and "svn co" should update source (including updating revision numbers,
+             and cleaning up renamed and deleted files). -->
+        <!-- delete dir="${dir.build.root}"/ -->
         <delete dir="${dir.junit}"/>
         <delete dir="${dir.build.deps}/mail"/>
+        <delete dir="${dir.build.deps}/mavenant"/>
+        <delete file="${dir.build.deps}/dependencies.txt"/>
         <delete file="${dir.build.deps}/junit.zip"/>
         <ant antfile="build.xml" dir="${dir.build.root}" target="clean"/>
     </target>
 
     <target name="get.dependencies" depends="clean">
-        <!-- Get junit, extract it, then copy to expected location and cleanup (flatten won't work) -->
-        <get src="http://download.eclipse.org/tools/orbit/downloads/drops/${junit.drop}/bundles/${junit.bundle}.zip" dest="${dir.build.deps}/junit.zip"/>
-        <unzip src="${dir.build.deps}/junit.zip" dest="${dir.build.deps}"/>
         <mkdir dir="${dir.junit}"/>
+        <mkdir dir="${dir.build.deps}/mail"/>
+        <mkdir dir="${dir.build.deps}/mavenant"/>
+
+        <get src="${activation.url}" dest="${dir.build.deps}/mail/activation.jar"/>
+        <get src="${mail.url}"       dest="${dir.build.deps}/mail/mail.jar"/>
+        <get src="${mavenant.url}"   dest="${dir.build.deps}/mavenant/maven-ant-tasks-2.0.8.jar"/>
+
+        <!-- Get junit, extract it, then copy to expected location and cleanup (flatten won't work) -->
+        <get src="${junit.url}" dest="${dir.build.deps}/junit.zip"/>
+        <unzip src="${dir.build.deps}/junit.zip" dest="${dir.build.deps}"/>
         <copy file="${dir.build.deps}/${junit.bundle}/junit.jar" todir="${dir.junit}"/>
         <delete dir="${dir.build.deps}/${junit.bundle}"/>
 
-        <mkdir dir="${dir.build.deps}/mail"/>
-        <get src="http://download.eclipse.org/tools/orbit/downloads/drops/${junit.drop}/bundles/javax.activation_1.1.0.v200706111329.jar" dest="${dir.build.deps}/mail/activation_1.1.0.jar"/>
-        <get src="http://download.eclipse.org/tools/orbit/downloads/drops/${junit.drop}/bundles/javax.mail_1.4.0.v200706111329.jar" dest="${dir.build.deps}/mail/mail_1.4.0.jar"/>
+        <!-- Generate "dependencies.txt" file -->
+        <echo message="Buildsystem external dependencies come from:" file="${dir.build.deps}/dependencies.txt" append="false"/>
+        <echo message="junit:      ${junit.url}"      file="${dir.build.deps}/dependencies.txt" append="true"/>
+        <echo message="activation: ${activation.url}" file="${dir.build.deps}/dependencies.txt" append="true"/>
+        <echo message="mail:       ${mail.url}"       file="${dir.build.deps}/dependencies.txt" append="true"/>
+        <echo message="mavenant:   ${mavenant.url}"   file="${dir.build.deps}/dependencies.txt" append="true"/>
     </target>
 
     <target name="build" depends="get.dependencies">
@@ -71,11 +97,23 @@
     </target>
 
     <target name="build.test" depends="get.dependencies">
+        <!-- Generate Test properties file -->
+        <echo message="# Generated db connection properties (by bootstrap.xml)" file="${coretest.prop.file}" append="false"/>
+        <echo message="jdbc.driver.jar=${jdbc.driver.jar}" file="${coretest.prop.file}" append="true"/>
+        <echo message="db.driver=${db.driver}"             file="${coretest.prop.file}" append="true"/>
+        <echo message="db.url=${db.url}"                   file="${coretest.prop.file}" append="true"/>
+        <echo message="db.user=${db.user}"                 file="${coretest.prop.file}" append="true"/>
+        <echo message="db.pwd=${db.pwd}"                   file="${coretest.prop.file}" append="true"/>
+        <echo message="db.platform=${db.platform}"         file="${coretest.prop.file}" append="true"/>
+
         <ant antfile="build.xml" dir="${dir.build.root}" target="build.test"/>
+        <!-- delete file="${coretest.prop.file}"/ -->
     </target>
 
     <target name="test.srg">
-        <ant antfile="build.xml" dir="${dir.build.root}" target="test.core.srg"/>
+        <ant antfile="build.xml" dir="${dir.build.root}" target="test.core.srg">
+             <param name="test.properties.run" value=""/>
+        </ant>
     </target>
 
     <target name="test.lrg">
@@ -85,7 +123,9 @@
         <ant antfile="build.xml" dir="${dir.build.root}" target="test.sdo"/>
     </target>
 
-    <target name="publish">
+    <target name="publish.build">
+        <!-- Futute Note: Could avoid these copies by redefining the html output directly...         -->
+        <!--              Would need to ensure that an erroniuos run didn't get partially published. -->
         <copy file="${dir.build.root}/${eclipselink.zip.name}${eclipselink.zip.extension}" tofile="${download.path}/${eclipselink.zip.name}-${installer_id}${eclipselink.zip.extension}"/>
         <copy file="${dir.build.root}/foundation/eclipselink.core.test/reports/junit-noframes.html" tofile="${download.path}/test-results/core/eclipselink-srg-${installer_id}.html"/>
         <copy file="${dir.build.root}/jpa/eclipselink.jpa.test/reports/junit-noframes.html" tofile="${download.path}/test-results/jpa/eclipselink-jpa-lrg-${installer_id}.html"/>
@@ -100,4 +140,13 @@
         <ant antfile="uploadToMaven.xml" dir="${dir.build.root}" target="upload.maven"/>
     </target>
 
+    <!-- Antified "cleanNightly.sh" -->
+    <target name="clean.results">
+        <exec executable="cleanNightly.sh" failonerror="true" logError="true" />
+    </target>
+
+    <!-- Antified "buildNightlyList.sh" -->
+    <target name="publish.results" depends="clean.results">
+        <exec executable="buildNightlyList.sh" failonerror="true" logError="true" />
+    </target>
 </project>
