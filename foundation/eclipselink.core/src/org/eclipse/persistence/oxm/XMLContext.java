@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.Collection;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -177,6 +178,37 @@ public class XMLContext {
         storeXMLDescriptorsByQName(session);
     }
 
+    public XMLContext(Collection projects) {
+    	this(projects, Thread.currentThread().getContextClassLoader());
+    }
+    
+    public XMLContext(Collection projects, ClassLoader classLoader) {
+    	Iterator iterator = projects.iterator();
+    	sessions = new ArrayList(projects.size());
+		descriptorsByQName = new HashMap();
+		descriptorsByGlobalType = new HashMap();
+    	while(iterator.hasNext()) {
+    		Project project = (Project)iterator.next();
+    		if ((project.getDatasourceLogin() == null) || !(project.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
+    			XMLPlatform platform = new SAXPlatform();
+    			platform.getConversionManager().setLoader(classLoader);
+    			project.setLogin(new XMLLogin(platform));
+    		}
+    		DatabaseSession session = project.createDatabaseSession();
+
+    		// turn logging for this session off and leave the global session up
+    		// Note: setting level to SEVERE or WARNING will printout stacktraces for expected exceptions
+    		session.setLogLevel(SessionLog.OFF);
+    		// dont turn off global static logging
+    		//AbstractSessionLog.getLog().log(AbstractSessionLog.INFO, "ox_turn_global_logging_off", getClass());        			
+    		//AbstractSessionLog.getLog().setLevel(AbstractSessionLog.OFF);
+    		setupDocumentPreservationPolicy(session);
+    		session.login();
+    		sessions.add(session);
+    		storeXMLDescriptorsByQName(session);
+    	}
+    }
+    
     private DatabaseSession buildSession(String sessionName, ClassLoader classLoader, XMLSessionConfigLoader sessionLoader) throws XMLMarshalException {
         DatabaseSession dbSession;
         if (classLoader != null) {
