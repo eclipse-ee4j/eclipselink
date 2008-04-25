@@ -544,7 +544,10 @@ public class XMLMarshaller {
     private void marshal(Object object, MarshalRecord marshalRecord, XMLDescriptor descriptor, boolean isXMLRoot) {
         addDescriptorNamespacesToXMLRecord(descriptor, marshalRecord);
         NamespaceResolver nr = marshalRecord.getNamespaceResolver();
-
+        XMLRoot root = null;
+        if(isXMLRoot) {
+        	root = (XMLRoot)object;
+        }
         if (getMarshalListener() != null) {
             getMarshalListener().beforeMarshal(object);
         }
@@ -554,7 +557,6 @@ public class XMLMarshaller {
             if (!isXMLRoot) {
                 marshalRecord.setLeafElementType(descriptor.getDefaultRootElementType());
             } else {
-                XMLRoot root = (XMLRoot) object;
                 if (root.getEncoding() != null) {
                     encoding = root.getEncoding();
                 }
@@ -571,7 +573,6 @@ public class XMLMarshaller {
         String schemaLocation = getSchemaLocation();
         String noNsSchemaLocation = getNoNamespaceSchemaLocation();
         if (isXMLRoot) {
-            XMLRoot root = (XMLRoot) object;
             object = root.getObject();
             if (root.getSchemaLocation() != null) {
                 schemaLocation = root.getSchemaLocation();
@@ -627,7 +628,9 @@ public class XMLMarshaller {
         if (treeObjectBuilder != null) {
             treeObjectBuilder.buildRow(marshalRecord, object, (AbstractSession) session, this);
         } else if (isXMLRoot) {
-            marshalRecord.characters((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(object, String.class));
+        	String value = null;
+      		value = (String) XMLConversionManager.getDefaultXMLManager().convertObject(object, String.class, root.getSchemaType());
+            marshalRecord.characters(value);
         }
 
         if (null != rootFragment) {

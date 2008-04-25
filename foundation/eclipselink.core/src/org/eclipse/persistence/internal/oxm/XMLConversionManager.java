@@ -924,6 +924,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         javaTypes.put(ClassConstants.INTEGER, XMLConstants.INT_QNAME);
         javaTypes.put(ClassConstants.LONG, XMLConstants.LONG_QNAME);
         javaTypes.put(ClassConstants.SHORT, XMLConstants.SHORT_QNAME);
+        javaTypes.put(ClassConstants.UTILDATE, XMLConstants.DATE_TIME_QNAME);
 
         return javaTypes;
     }
