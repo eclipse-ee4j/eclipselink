@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.oxm.xmlmarshaller.twoprojects;
 import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.util.ArrayList;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -151,6 +152,27 @@ public class TwoProjectsTestSuite extends OXTestCase {
         this.assertXMLIdentical(controlDocument, testDocument);
     }
 
+    public void testMarshalCustomerCollectionConstructor() throws Exception {
+    	ArrayList projects = new ArrayList();
+    	projects.add(new CustomerProject());
+    	projects.add(new EmployeeProject());
+        XMLContext xmlContext = new XMLContext(projects);
+        xmlMarshaller = xmlContext.createMarshaller();
+
+        Customer customer = getControlCustomer();
+        Document controlDocument = getControlDocument(XML_RESOURCE_CUSTOMER);
+
+        Document testDocument = parser.newDocument();
+        xmlMarshaller.marshal(customer, testDocument);
+        log("\nExpected:");
+        log(controlDocument);
+        log("\nActual:");
+        log(testDocument);
+        log("");
+
+        this.assertXMLIdentical(controlDocument, testDocument);
+    }
+
     public void testUnmarshalCustomerSAX() throws Exception {
         XMLContext xmlContext = new XMLContext(CONTEXT_PATH_SAX);
         xmlUnmarshaller = xmlContext.createUnmarshaller();
@@ -168,6 +190,26 @@ public class TwoProjectsTestSuite extends OXTestCase {
         this.assertEquals(controlCustomer, testCustomer);
     }
 
+    public void testUnmarshalCustomerCollectionConstructor() throws Exception {
+    	ArrayList projects = new ArrayList();
+    	projects.add(new CustomerProject());
+    	projects.add(new EmployeeProject());
+        XMLContext xmlContext = new XMLContext(projects);
+        xmlUnmarshaller = xmlContext.createUnmarshaller();
+
+        Customer controlCustomer = getControlCustomer();
+        InputStream instream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE_CUSTOMER);
+        Customer testCustomer = (Customer)xmlUnmarshaller.unmarshal(instream);
+
+        log("\nExpected:");
+        log(controlCustomer.toString());
+        log("\nActual:");
+        log(testCustomer.toString());
+        log("");
+
+        this.assertEquals(controlCustomer, testCustomer);
+    }
+    
     public void testMarshalEmployeeSAX() throws Exception {
         XMLContext xmlContext = new XMLContext(CONTEXT_PATH_SAX);
         xmlMarshaller = xmlContext.createMarshaller();
@@ -185,9 +227,51 @@ public class TwoProjectsTestSuite extends OXTestCase {
 
         this.assertXMLIdentical(controlDocument, testDocument);
     }
+    
+    public void testMarshalEmployeeCollectionConstructor() throws Exception {
+    	ArrayList projects = new ArrayList();
+    	projects.add(new CustomerProject());
+    	projects.add(new EmployeeProject());
+        XMLContext xmlContext = new XMLContext(projects);
+        xmlMarshaller = xmlContext.createMarshaller();
+
+        Employee employee = getControlEmployee();
+        Document controlDocument = getControlDocument(XML_RESOURCE_EMPLOYEE);
+
+        Document testDocument = parser.newDocument();
+        xmlMarshaller.marshal(employee, testDocument);
+        log("\nExpected:");
+        log(controlDocument);
+        log("\nActual:");
+        log(testDocument);
+        log("");
+
+        this.assertXMLIdentical(controlDocument, testDocument);
+    }    
 
     public void testUnmarshalEmployeeSAX() throws Exception {
         XMLContext xmlContext = new XMLContext(CONTEXT_PATH_SAX);
+        xmlUnmarshaller = xmlContext.createUnmarshaller();
+
+        Employee controlEmployee = getControlEmployee();
+        InputStream instream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE_EMPLOYEE);
+        Employee testEmployee = (Employee)xmlUnmarshaller.unmarshal(instream);
+
+        log("\nExpected:");
+        log(controlEmployee.toString());
+        log("\nActual:");
+        log(testEmployee.toString());
+        log("");
+
+        this.assertEquals(controlEmployee, testEmployee);
+    }
+
+    public void testUnmarshalEmployeeCollectionConstructor() throws Exception {
+    	ArrayList projects = new ArrayList();
+    	projects.add(new CustomerProject());
+    	projects.add(new EmployeeProject());
+        XMLContext xmlContext = new XMLContext(projects);
+
         xmlUnmarshaller = xmlContext.createUnmarshaller();
 
         Employee controlEmployee = getControlEmployee();

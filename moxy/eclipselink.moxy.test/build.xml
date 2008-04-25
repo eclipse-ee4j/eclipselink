@@ -21,6 +21,7 @@
         <pathelement path="${eclipselink.moxy.test}/${resource.dir}"/>
         <pathelement path="${eclipselink.core}/${classes.dir}"/>
         <pathelement path="${eclipselink.core}/${resource.dir}"/>
+        <pathelement path="${eclipselink.core.lib}/eclipselink-asm.jar"/>
     </path>
     <path id="oxm.compile.path">
         <fileset

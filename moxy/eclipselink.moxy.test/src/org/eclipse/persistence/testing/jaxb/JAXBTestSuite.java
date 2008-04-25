@@ -67,6 +67,11 @@ public class JAXBTestSuite extends TestCase {
         suite.addTest(SchemaGenTestSuite.suite());
         suite.addTest(JAXBDOMTestSuite.suite());
         suite.addTest(JAXBSAXTestSuite.suite());
+        
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.simpledocument.SimpleDocumentStringTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.simpledocument.SimpleDocumentIntegerTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.simpledocument.SimpleDocumentDateTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.simpledocument.SimpleDocumentByteArrayTestCases.class);
         return suite;
     }
 
