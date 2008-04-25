@@ -32,11 +32,17 @@ import org.eclipse.persistence.jaxb.javamodel.JavaField;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
+import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.jaxb.DomHandlerConverter;
+import org.eclipse.persistence.internal.jaxb.WrappedValue;
+
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.oxm.mappings.*;
 import org.eclipse.persistence.internal.jaxb.XMLJavaTypeConverter;
 import org.eclipse.persistence.sessions.Project;
+
+import org.eclipse.persistence.internal.libraries.asm.*;
+import org.eclipse.persistence.internal.libraries.asm.Type;
 
 /**
  * INTERNAL:
@@ -68,14 +74,16 @@ public class MappingsGenerator {
     private JavaClass jotHashSet;
     private HashMap<String, NamespaceInfo> packageToNamespaceMappings;
     private HashMap<String, TypeInfo> typeInfo;
+    private HashMap<Class, QName> generatedClassesToQNames;
     
     public MappingsGenerator(Helper helper) {
         this.helper = helper;
         jotArrayList = helper.getJavaClass(ArrayList.class);
         jotHashSet = helper.getJavaClass(HashSet.class);
+        generatedClassesToQNames = new HashMap<Class, QName>();
     }
     
-    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings) throws Exception {
+    public Project generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap userDefinedSchemaTypes, HashMap<String, NamespaceInfo> packageToNamespaceMappings, HashMap<QName, String> globalElements) throws Exception {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
         this.packageToNamespaceMappings = packageToNamespaceMappings;
@@ -88,6 +96,7 @@ public class MappingsGenerator {
         }
         // now create mappings
         generateMappings();
+        processGlobalElements(globalElements, project);
         return project;
     }
     
@@ -852,4 +861,133 @@ public class MappingsGenerator {
         JavaClass mapCls = helper.getJavaClass(java.util.Map.class);
         return mapCls.isAssignableFrom(property.getType());
     }
+    
+    public void processGlobalElements(HashMap<QName, String> elements, Project project) {
+    	//Find any global elements for classes we've generated descriptors for, and add them as possible
+    	//root elements.
+    	if(elements == null) {
+    		return;
+    	}
+    	Iterator<QName> keys = elements.keySet().iterator();
+    	while(keys.hasNext()) {
+    		QName next = keys.next();
+    		String nextClassName = elements.get(next);
+    		TypeInfo type = this.typeInfo.get(nextClassName);
+    		if(type != null) {
+    			if(next.getNamespaceURI() == null || next.getNamespaceURI().equals("")) {
+    				type.getDescriptor().addRootElement(next.getLocalPart());
+    			} else {
+    				XMLDescriptor descriptor = type.getDescriptor();
+    				String uri = next.getNamespaceURI();
+    				String prefix = descriptor.getNamespaceResolver().resolveNamespaceURI(uri);
+    				if(prefix == null) {
+    					prefix = descriptor.getNamespaceResolver().generatePrefix();
+    					descriptor.getNamespaceResolver().put(prefix, uri);
+    				}
+    				descriptor.addRootElement(prefix + ":" + next.getLocalPart());
+    			}
+    		} else if(helper.isBuiltInJavaType(helper.getJavaClass(nextClassName))) {
+    			//generate a class/descriptor for this element
+    			
+    			String namespaceUri = next.getNamespaceURI();
+    			if(namespaceUri == null || namespaceUri.equals("##default")) {
+    				namespaceUri = "";
+    			}
+    			String packageName = getPackageNameForURI(namespaceUri);
+    			if(packageName == null) {
+    				packageName = "default";
+    			}
+    			String className = packageName + "." + next.getLocalPart() + "ProxyImpl";
+    			Class generatedClass = this.generateWrapperClass(className, nextClassName);
+    			this.generatedClassesToQNames.put(generatedClass, next);
+    			
+    			XMLDescriptor desc = new XMLDescriptor();
+    			desc.setJavaClassName(className);
+    			
+    			XMLDirectMapping mapping = new XMLDirectMapping();
+    			mapping.setAttributeName("value");
+    			mapping.setXPath("text()");
+    			if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
+    				((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+    			}
+    			desc.addMapping(mapping);
+
+    			NamespaceInfo info = getNamespaceInfoForURI(namespaceUri);
+    			
+    			if(info != null) {
+    				NamespaceResolver resolver = info.getNamespaceResolver();
+    				String prefix = resolver.resolveNamespaceURI(namespaceUri);
+    				desc.setNamespaceResolver(resolver);
+    				desc.setDefaultRootElement(prefix + ":" + next.getLocalPart());
+    			} else {
+    				if(namespaceUri.equals("")) {
+    					desc.setDefaultRootElement(next.getLocalPart());
+    				} else {
+    					NamespaceResolver resolver = new NamespaceResolver();
+    					String prefix = resolver.generatePrefix();
+    					resolver.put(prefix, namespaceUri);
+    					desc.setNamespaceResolver(resolver);
+    					desc.setDefaultRootElement(prefix + ":" + next.getLocalPart());
+    				}
+    			}
+    			project.addDescriptor(desc);
+    		}
+    	}
+    }
+    
+    private NamespaceInfo getNamespaceInfoForURI(String namespaceUri) {
+    	Iterator<NamespaceInfo> namespaces = this.packageToNamespaceMappings.values().iterator();
+    	while(namespaces.hasNext()) {
+    		NamespaceInfo next = namespaces.next();
+    		if(next.getNamespace().equals(namespaceUri)) {
+    			return next;
+    		}
+    	}
+    	return null;
+    }
+    
+    private String getPackageNameForURI(String namespaceUri) {
+    	for(String next:this.packageToNamespaceMappings.keySet()) {
+    		if(packageToNamespaceMappings.get(next).getNamespace().equals(namespaceUri)) {
+    			return next;
+    		}
+    	}
+    	return null;
+    }
+    
+    public HashMap<Class, QName> getGeneratedClassesToQName() {
+    	return this.generatedClassesToQNames;
+    }
+    
+    public Class generateWrapperClass(String className, String attributeType) {
+		org.eclipse.persistence.internal.libraries.asm.ClassWriter classWriter = new org.eclipse.persistence.internal.libraries.asm.ClassWriter(false);
+		classWriter.visit(Constants.V1_5, Constants.ACC_PUBLIC, className.replace(".", "/"), org.eclipse.persistence.internal.libraries.asm.Type.getType(Object.class).getInternalName(), new String[]{Type.getType(WrappedValue.class).getInternalName()}, null);
+		
+		CodeVisitor mv = classWriter.visitMethod(Constants.ACC_PUBLIC, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE, new Type[0]), null, null);
+		
+        mv.visitVarInsn(Constants.ALOAD, 0);
+        mv.visitMethodInsn(Constants.INVOKESPECIAL, Type.getType(Object.class).getInternalName(), "<init>", Type.getMethodDescriptor(Type.VOID_TYPE, new Type[0]));
+        mv.visitInsn(Constants.RETURN);
+        mv.visitMaxs(1, 1);
+
+        String fieldType = attributeType.replace(".", "/");
+        if(!(fieldType.startsWith("["))) {
+        	fieldType = "L" + fieldType + ";";
+        }
+       	classWriter.visitField(Constants.ACC_PUBLIC, "value", fieldType, null, null);
+		
+		Type objectType = Type.getType(Object.class);
+		mv = classWriter.visitMethod(Constants.ACC_PUBLIC, "getWrappedValue", Type.getMethodDescriptor(Type.getType(Object.class), new Type[]{}), null, null);
+		mv.visitVarInsn(Constants.ALOAD, 0);
+		mv.visitFieldInsn(Constants.GETFIELD, className.replace(".", "/"), "value", fieldType);
+		mv.visitInsn(Type.getType(Object.class).getOpcode(Constants.IRETURN));
+		mv.visitMaxs(1 + objectType.getSize(), 1);    			
+		classWriter.visitEnd();
+		
+		byte[] classBytes = classWriter.toByteArray();
+		
+		JaxbClassLoader loader = (JaxbClassLoader)helper.getClassLoader();
+		Class generatedClass = loader.generateClass(className, classBytes);
+		return generatedClass;
+    }    	
 }

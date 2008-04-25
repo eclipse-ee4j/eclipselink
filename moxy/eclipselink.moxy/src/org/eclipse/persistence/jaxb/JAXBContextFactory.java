@@ -19,6 +19,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import java.util.HashMap;
+import javax.xml.namespace.QName;
 
 import javax.xml.bind.JAXBException;
 
@@ -28,6 +30,7 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.jaxb.compiler.*;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
+import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.sessions.Project;
 
 
@@ -62,13 +65,14 @@ public class JAXBContextFactory {
     public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, java.util.Map properties, ClassLoader classLoader) throws JAXBException {
         javax.xml.bind.JAXBContext jaxbContext = null;
         XMLContext xmlContext = null;
-        Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(classLoader)));
+        JaxbClassLoader loader = new JaxbClassLoader(classLoader);
+        Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)));
         try {
             Project proj = generator.generateProject();
             ConversionManager conversionManager = null;
             if (classLoader != null) {
                 conversionManager = new ConversionManager();
-                conversionManager.setLoader(classLoader);
+                conversionManager.setLoader(loader);
             } else {
                 conversionManager = ConversionManager.getDefaultManager();
             }
@@ -80,7 +84,7 @@ public class JAXBContextFactory {
                     descriptor.setJavaClass(conversionManager.convertClassNameToClass(descriptor.getJavaClassName()));
                 }
             }
-            xmlContext = new XMLContext(proj, classLoader);
+            xmlContext = new XMLContext(proj, loader);
             jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator);
         } catch (Exception ex) {
             throw new JAXBException(ex);
@@ -101,12 +105,7 @@ public class JAXBContextFactory {
             String path = tokenizer.nextToken();
             try {
                 Class objectFactory = classLoader.loadClass(path + ".ObjectFactory");
-                Method[] createMethods = objectFactory.getMethods();
-                for (int i = 0; i < createMethods.length; i++) {
-                    if (createMethods[i].getName().startsWith("create") && createMethods[i].getReturnType() != javax.xml.bind.JAXBElement.class) {
-                        classes.add(createMethods[i].getReturnType());
-                    }
-                }
+                classes.add(objectFactory);
             } catch (Exception ex) {
                 //if there's no object factory, don't worry about it. Check for jaxb.index next
             }

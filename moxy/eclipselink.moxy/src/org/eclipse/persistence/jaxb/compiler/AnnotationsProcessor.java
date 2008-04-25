@@ -65,6 +65,7 @@ public class AnnotationsProcessor {
     private HashMap<String, QName> userDefinedSchemaTypes;
     private HashMap<String, TypeInfo> typeInfo;
     private HashMap<String, UnmarshalCallback> unmarshalCallbacks;
+    private HashMap<QName, String> globalElements;
     private NamespaceResolver namespaceResolver;
     private Helper helper;
 
@@ -79,7 +80,17 @@ public class AnnotationsProcessor {
         packageToNamespaceMappings = new HashMap<String, NamespaceInfo>(); 
         this.namespaceResolver = new NamespaceResolver();
         
-        for (JavaClass javaClass : classes) {
+        ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
+        //check for ObjectFactories and process them
+        for(JavaClass javaClass:classes) {
+        	if(helper.isAnnotationPresent(javaClass, XmlRegistry.class)) {
+        		this.processObjectFactory(javaClass, classesToProcess);
+        	} else {
+        		classesToProcess.add(javaClass);
+        	}
+        }
+        
+        for (JavaClass javaClass : classesToProcess) {
             if (javaClass == null) { continue; }
 
             createTypeInfoFor(javaClass);
@@ -887,5 +898,47 @@ public class AnnotationsProcessor {
     
     public HashMap<String, UnmarshalCallback> getUnmarshalCallbacks() {
         return this.unmarshalCallbacks;
+    }
+    
+    public JavaClass[] processObjectFactory(JavaClass objectFactoryClass, ArrayList<JavaClass> classes) {
+    	Collection methods = objectFactoryClass.getMethods();
+    	Iterator methodsIter = methods.iterator();
+    	while(methodsIter.hasNext()) {
+    		JavaMethod next = (JavaMethod)methodsIter.next();
+    		if(next.getName().startsWith("create")) {
+    			if(!(next.getReturnType().getName().equals("javax.xml.bind.JAXBElement")) && !classes.contains(next.getReturnType())) {
+    				classes.add(next.getReturnType());
+    			} else {
+    				if(helper.isAnnotationPresent(next, XmlElementDecl.class)) {
+    					XmlElementDecl elementDecl = (XmlElementDecl)helper.getAnnotation(next, XmlElementDecl.class);
+    					String url = elementDecl.namespace();
+    					if("##default".equals(url)) {
+    						url = "";
+    					}
+    					String localName = elementDecl.name();
+    					QName qname = new QName(url, localName);
+    					
+    					JavaClass type = (JavaClass)next.getReturnType().getActualTypeArguments().toArray()[0];
+    					if(this.globalElements == null) {
+    						globalElements = new HashMap<QName, String>();
+    					}
+    					globalElements.put(qname, type.getQualifiedName());
+
+    					if(!helper.isBuiltInJavaType(type) && !classes.contains(type)) {
+    						classes.add(type);
+    					}
+    				}
+    			}
+    		}
+    	}
+    	if(classes.size() > 0) {
+    		return classes.toArray(new JavaClass[classes.size()]);
+    	} else {
+    		return new JavaClass[0];
+    	}
+    }
+    
+    public HashMap<QName, String> getGlobalElements() {
+    	return globalElements;
     }
 }

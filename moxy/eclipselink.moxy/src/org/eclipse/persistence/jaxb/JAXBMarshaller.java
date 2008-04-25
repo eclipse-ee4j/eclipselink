@@ -41,6 +41,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 
 import org.eclipse.persistence.jaxb.attachment.*;
 
@@ -101,6 +102,12 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 		QName qname = elt.getName();
 		xmlroot.setLocalName(qname.getLocalPart());
 		xmlroot.setNamespaceURI(qname.getNamespaceURI());
+		if(elt.getDeclaredType() == ClassConstants.ABYTE || elt.getDeclaredType() == ClassConstants.APBYTE) {
+			xmlroot.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+		} else {
+			xmlroot.setSchemaType((QName)org.eclipse.persistence.internal.oxm.XMLConversionManager.getDefaultJavaTypes().get(elt.getDeclaredType()));
+		}
+		
 		return xmlroot;
 	}
 

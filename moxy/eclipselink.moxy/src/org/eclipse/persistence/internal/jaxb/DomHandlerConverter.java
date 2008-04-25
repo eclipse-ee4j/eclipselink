@@ -30,7 +30,19 @@ import org.xml.sax.ErrorHandler;
 import javax.xml.bind.ValidationEventHandler;
 
 
-
+/**
+ * INTERNAL:
+ * <p><b>Purpose:</b>Provide support for the JAXB DomHandler API through the use of an EclipseLink 
+ * Converter.
+ * <p><b>Responsibilities:</b><ul>
+ * <li>Wrap a provided instance of a DomHandler implementation.</li>
+ * <li>Invoke the createUnmarshaller method on DomHandler and to a transform on unmarshal</li>
+ * <li>Invoke the marshal method on the DomHandler on a marshal</li>
+ * </ul>
+ * 
+ * @author mmacivor
+ *
+ */
 public class DomHandlerConverter implements XMLConverter {
 	private DomHandler domHandler;
 	private XMLTransformer xmlTransformer;

@@ -48,6 +48,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.JAXBErrorHandler;
 import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
 import org.eclipse.persistence.jaxb.attachment.AttachmentUnmarshallerAdapter;
+import org.eclipse.persistence.internal.jaxb.WrappedValue;
 
 /**
  * INTERNAL:
@@ -71,6 +72,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private Schema schema;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
+    private HashMap<Class, QName> generatedClassesToQName;
 
     public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller) {
         super();
@@ -85,8 +87,18 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         try {
-            
-            return xmlUnmarshaller.unmarshal(file);
+            Object value = xmlUnmarshaller.unmarshal(file);
+            if(generatedClassesToQName != null) {
+            	QName qname = this.generatedClassesToQName.get(value.getClass());
+            	if(qname != null) {
+            		Object unwrappedValue = null;
+            		if(value instanceof WrappedValue) {
+            			unwrappedValue = ((WrappedValue)value).getWrappedValue();
+            		}
+            		value = new JAXBElement(qname, unwrappedValue.getClass(), unwrappedValue);
+            	}
+            }
+            return value;
         } catch (Exception e) {
             throw new UnmarshalException(e);
         }
@@ -97,7 +109,18 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         try {
-            return xmlUnmarshaller.unmarshal(inputStream);
+            Object value = xmlUnmarshaller.unmarshal(inputStream);
+            if(generatedClassesToQName != null) {
+            	QName qname = this.generatedClassesToQName.get(value.getClass());
+            	if(qname != null) {
+            		Object unwrappedValue = null;
+            		if(value instanceof WrappedValue) {
+            			unwrappedValue = ((WrappedValue)value).getWrappedValue();
+            		}
+            		value = new JAXBElement(qname, unwrappedValue.getClass(), unwrappedValue);
+            	}
+            }
+            return value;
         } catch (Exception e) {
             throw new UnmarshalException(e);
         }
@@ -108,7 +131,19 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         try {
-            return xmlUnmarshaller.unmarshal(url);
+            Object value = xmlUnmarshaller.unmarshal(url);
+            if(generatedClassesToQName != null) {
+            	QName qname = this.generatedClassesToQName.get(value.getClass());
+            	if(qname != null) {
+            		Object unwrappedValue = null;
+            		if(value instanceof WrappedValue) {
+            			unwrappedValue = ((WrappedValue)value).getWrappedValue();
+            		}
+            		value = new JAXBElement(qname, unwrappedValue.getClass(), unwrappedValue);
+            	
+            	}
+            }
+            return value;
         } catch (Exception e) {
             throw new UnmarshalException(e);
         }
@@ -119,7 +154,18 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         try {
-            return xmlUnmarshaller.unmarshal(inputSource);
+            Object value = xmlUnmarshaller.unmarshal(inputSource);
+            if(generatedClassesToQName != null) {
+            	QName qname = this.generatedClassesToQName.get(value.getClass());
+            	if(qname != null) {
+            		Object unwrappedValue = null;
+            		if(value instanceof WrappedValue) {
+            			unwrappedValue = ((WrappedValue)value).getWrappedValue();
+            		}
+            		value = new JAXBElement(qname, unwrappedValue.getClass(), unwrappedValue);
+            	}
+            }
+            return value;
         } catch (Exception e) {
             throw new UnmarshalException(e);
         }
@@ -130,7 +176,18 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         try {
-            return xmlUnmarshaller.unmarshal(reader);
+            Object value = xmlUnmarshaller.unmarshal(reader);
+            if(generatedClassesToQName != null) {
+            	QName qname = this.generatedClassesToQName.get(value.getClass());
+            	if(qname != null) {
+            		Object unwrappedValue = null;
+            		if(value instanceof WrappedValue) {
+            			unwrappedValue = ((WrappedValue)value).getWrappedValue();
+            		}
+            		value = new JAXBElement(qname, unwrappedValue.getClass(), unwrappedValue);
+            	}
+            }
+            return value;
         } catch(Exception ex) {
             throw new JAXBException(ex);
         }
@@ -140,7 +197,18 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         try {
-            return xmlUnmarshaller.unmarshal(node);
+            Object value = xmlUnmarshaller.unmarshal(node);
+            if(this.generatedClassesToQName != null) {
+            	QName qname = this.generatedClassesToQName.get(value.getClass());
+            	if(qname != null) {
+            		Object unwrappedValue = null;
+            		if(value instanceof WrappedValue) {
+            			unwrappedValue = ((WrappedValue)value).getWrappedValue();
+            		}
+            		value = new JAXBElement(qname, unwrappedValue.getClass(), unwrappedValue);
+            	}
+            }
+            return value;
         } catch (Exception e) {
             throw new UnmarshalException(e);
         }
@@ -208,7 +276,18 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         try {
-            return xmlUnmarshaller.unmarshal(source);
+            Object value = xmlUnmarshaller.unmarshal(source);
+            if(this.generatedClassesToQName != null) {
+            	QName qname = this.generatedClassesToQName.get(value.getClass());
+            	if(qname != null) {
+            		Object unwrappedValue = null;
+            		if(value instanceof WrappedValue) {
+            			unwrappedValue = ((WrappedValue)value).getWrappedValue();
+            		}
+            		value = new JAXBElement(qname, unwrappedValue.getClass(), unwrappedValue);
+            	}
+            }
+            return value;
         } catch (Exception e) {
             throw new UnmarshalException(e);
         }
@@ -266,7 +345,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 		return this.unmarshal(source);
     }
     public UnmarshallerHandler getUnmarshallerHandler() {
-        return new JAXBUnmarshallerHandler(xmlUnmarshaller);
+        return new JAXBUnmarshallerHandler(this);
     }
  
     public void setValidating(boolean validate) throws JAXBException {
@@ -357,6 +436,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
     
     public void setUnmarshalCallbacks(java.util.HashMap callbacks) {
         ((JAXBUnmarshalListener)xmlUnmarshaller.getUnmarshalListener()).setClassBasedUnmarshalEvents(callbacks);
+    }
+    
+    public void setGeneratedClassesToQName(HashMap<Class, QName> classesToQName) {
+    	this.generatedClassesToQName = classesToQName;
     }
     
 }

@@ -72,6 +72,7 @@ public class Helper {
     public final static String INTEGER = "java.lang.Integer";
     public final static String LONG = "java.lang.Long";
     public final static String SHORT = "java.lang.Short";
+    public final static String UTIL_DATE = "java.util.Date";
 
     /**
      * INTERNAL:
@@ -119,6 +120,7 @@ public class Helper {
         javaTypes.put(INTEGER, XMLConstants.INT_QNAME);
         javaTypes.put(LONG, XMLConstants.LONG_QNAME);
         javaTypes.put(SHORT, XMLConstants.SHORT_QNAME);
+        javaTypes.put(UTIL_DATE, XMLConstants.DATE_QNAME);
         return javaTypes;
     }
     
@@ -262,5 +264,8 @@ public class Helper {
     
     public void setJavaModel(JavaModel model) {
         jModel = model;
+    }
+    public ClassLoader getClassLoader() {
+    	return loader;
     }
 }

@@ -20,12 +20,12 @@ import org.xml.sax.SAXException;
 import org.w3c.dom.Document;
 
 public class JAXBUnmarshallerHandler extends SAXDocumentBuilder implements UnmarshallerHandler {
-    private XMLUnmarshaller xmlUnmarshaller;
+    private JAXBUnmarshaller jaxbUnmarshaller;
     private boolean endDocumentTriggered;
 
-    public JAXBUnmarshallerHandler(XMLUnmarshaller newXMLUnmarshaller) {
+    public JAXBUnmarshallerHandler(JAXBUnmarshaller newXMLUnmarshaller) {
         super();
-        xmlUnmarshaller = newXMLUnmarshaller;
+        jaxbUnmarshaller = newXMLUnmarshaller;
     }
 
     public void endDocument() throws SAXException {
@@ -44,6 +44,6 @@ public class JAXBUnmarshallerHandler extends SAXDocumentBuilder implements Unmar
         if ((document == null) || !endDocumentTriggered) {
             throw new IllegalStateException();
         }
-        return xmlUnmarshaller.unmarshal(document);
+        return jaxbUnmarshaller.unmarshal(document);
     }
 }

@@ -93,11 +93,11 @@ public class Generator {
     }
 
     public Project generateProject() throws Exception {
-        return mappingsGenerator.generateProject(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings());
+        return mappingsGenerator.generateProject(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements());
     }
     
     public java.util.Collection<Schema> generateSchema() {
-        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), null);
+        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToNamespaceMappings(), annotationsProcessor.getGlobalElements());
         return schemaGenerator.getAllSchemas();
     }
     
@@ -153,4 +153,9 @@ public class Generator {
     public java.util.HashMap getMarshalCallbacks() {
         return annotationsProcessor.getMarshalCallbacks();
     }
+    
+    public MappingsGenerator getMappingsGenerator() {
+    	return this.mappingsGenerator;
+    }
+    
 }

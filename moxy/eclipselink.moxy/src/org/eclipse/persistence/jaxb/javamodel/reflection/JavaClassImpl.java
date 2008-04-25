@@ -20,6 +20,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -67,6 +68,10 @@ public class JavaClassImpl implements JavaClass {
                     argCollection.add(new JavaClassImpl(pt, (Class) pt.getRawType()));
                 } else if (type instanceof Class) {
                     argCollection.add(new JavaClassImpl((Class) type));
+                } else if(type instanceof GenericArrayType) {
+                	Class genericTypeClass = (Class)((GenericArrayType)type).getGenericComponentType();
+                	genericTypeClass = java.lang.reflect.Array.newInstance(genericTypeClass, 0).getClass();
+                	argCollection.add(new JavaClassImpl(genericTypeClass));
                 }
             }
         }
