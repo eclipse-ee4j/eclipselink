@@ -102,17 +102,20 @@
     </target>
 
     <target name="build" depends="get-src" description="Trigger an automated build without testing or publish">
-        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build.no.publish"/>
+        <echo message="Calling 'build-no-publish' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-no-publish"/>
     </target>
 
     <target name="nightly" depends="get-src" description="Trigger the nightly automated build and lrg tests">
-        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build.nightly"/>
+        <echo message="Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-nightly"/>
     </target>
 
     <target name="cb" if="_DoBuild" depends="no-cb" description="Trigger an automated 'continuous build' (compile and run short verify)">
         <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
-        <antcall target="get.src"/>
-        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build.continuous"/>
+        <antcall target="get-src"/>
+        <echo message="Calling 'build-continuous' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-continuous"/>
     </target>
 
     <!-- ============================================================================= -->

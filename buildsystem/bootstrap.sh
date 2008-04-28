@@ -1,6 +1,7 @@
 # !/bin/sh
 
 umask 0002
+TEST=false
 TARGET=$1
 BRANCH=$2
 if [ ! "$TARGET" = "" ]
@@ -149,7 +150,7 @@ export SVN_EXEC BLD_DEPS_DIR JUNIT_HOME
 cd ${HOME_DIR}
 echo "Results logged to: ${DATED_LOG}"
 
-touch $DATED_LOG
+touch ${DATED_LOG}
 echo "Build started at: `date`" >> ${DATED_LOG}
 source ~/.ssh-agent >> ${DATED_LOG}
 echo "ant ${ANT_BASEARG} $TARGET" >> ${DATED_LOG}
