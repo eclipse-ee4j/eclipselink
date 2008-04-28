@@ -11,6 +11,8 @@
         - build.javadocs : generates Javadocs
         - package.installer.zip : builds installer
         - package.package-renamer.jar : builds packages renamer jar
+        - test.srg : runs all Short ReGression test suites
+        - test.lrg : runs all Long ReGression test suites
         - test.core : runs core tests
         - test.core.srg : runs core SRG
         - test.jpa : runs JPA tests
@@ -28,7 +30,7 @@
     <property file="./build.properties"/>
 
     <!-- versioning -->
-    <!-- ${build_id} will be given by the build system. Manual build is SNAPSHOT. --> 
+    <!-- ${build_id} will be given by the build system. Manual build is SNAPSHOT. -->
     <tstamp>
        <format property="build_date" pattern="yyyyMMdd"/>
     </tstamp>
@@ -39,8 +41,8 @@
     <property name="build_number_string" value="${build_number} - ${build_date}"/>
     <path id="javadoc.path">
         <pathelement path="${eclipselink.jar}"/>
-		<pathelement path="${commonj.sdo.lib}"/>
-		<pathelement path="${eclipselink.core.lib}/eclipselink-antlr.jar"/>
+        <pathelement path="${commonj.sdo.lib}"/>
+        <pathelement path="${eclipselink.core.lib}/eclipselink-antlr.jar"/>
         <pathelement path="${eclipselink.core.lib}/eclipselink-asm.jar"/>
         <pathelement path="${jaxb-api.lib}"/>
         <fileset
@@ -67,7 +69,7 @@
         <ant antfile="${eclipselink.sdo}/build.xml" target="all"/>
     </target>
 
-	<target name="build.workbench">
+    <target name="build.workbench">
         <ant antfile="build.xml" dir="${eclipselink.workbench}" target="all"/>
     </target>
 
@@ -90,14 +92,14 @@
         <ant antfile="build.xml" dir="${eclipselink.workbench.test}" target="all"/>
     </target>
 
-	<!-- Updates and copies the manifest file to build dir.  Extracts the oracle extension jar to the build dir -->
-	<target name="create.build.dir" depends="build.core" description="create the directory used to build jars from">
+    <!-- Updates and copies the manifest file to build dir.  Extracts the oracle extension jar to the build dir -->
+    <target name="create.build.dir" depends="build.core" description="create the directory used to build jars from">
         <unjar src="${eclipselink.extension.oracle}/${eclipselink.oracle.depend.jar}" dest="${build.dir}"/>
         <filter token="VERSION" value="${release.version} ${build_number_string}"/>
         <copy file="${eclipselink.core}/${resource.dir}/META-INF/MANIFEST.MF" tofile="${build.dir}/META-INF/MANIFEST.MF" filtering="true" overwrite="true"/>
-	</target>
-
-	<!-- Packages the eclipselink.jar. -->
+    </target>
+    
+    <!-- Packages the eclipselink.jar. -->
     <target name="package.eclipselink.jar" depends="create.build.dir" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.core}/${classes.dir}">
@@ -140,7 +142,7 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
                 <include name="deprecated/**/*.class"/>
             </fileset>
-			<fileset dir="${eclipselink.core}/${resource.dir}">
+            <fileset dir="${eclipselink.core}/${resource.dir}">
                 <include name="xsd/*.xsd"/>
                 <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
             </fileset>
@@ -155,71 +157,71 @@
             <fileset dir="${eclipselink.core}/${resource.dir}">
                 <include name="META-INF/services/javax.persistence.spi.PersistenceProvider"/>
             </fileset>
-			<fileset dir="${eclipselink.jpa}/${classes.dir}">
+            <fileset dir="${eclipselink.jpa}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
-			</fileset>
-		</jar>
+            </fileset>
+        </jar>
         <jar jarfile="${eclipselink.moxy}/${eclipselink.moxy.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.moxy}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
-		</jar>
+        </jar>
         <jar jarfile="${eclipselink.sdo}/${eclipselink.sdo.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.sdo}/${classes.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
                 <include name="commonj/sdo/impl/HelperProviderImpl.class"/>
             </fileset>
-		</jar>
+        </jar>
         <jar jarfile="${eclipselink.extension.oracle}/${eclipselink.extension.oracle.jar}" manifest="${build.dir}/META-INF/MANIFEST.MF">
             <fileset dir="${build.dir}">
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
-		</jar>
+        </jar>
     </target>
 
     <!-- Packages the eclipselink source jar. -->
     <target name="package.src.jar" description="build EclipseLink source jar">
         <zip zipfile="${eclipselink-src.zip}">
-           <fileset dir="${eclipselink.core}/${src.dir}">
-              <include name="org/eclipse/persistence/**/*.java"/>
-          </fileset>
-          <fileset dir="${eclipselink.jpa}/${src.dir}">
-              <include name="org/eclipse/persistence/**/*.java"/>
-          </fileset>
-          <fileset dir="${eclipselink.core.lib}/${asm}/${src.dir}">
-              <include name="org/eclipse/persistence/internal/libraries/asm/**/*.java"/>
-          </fileset>
-           <fileset dir="${eclipselink.core.lib}/${antlr}/${src.dir}">
-              <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.java"/>
-          </fileset>
-          <fileset dir="${eclipselink.moxy}/${src.dir}">
-              <include name="org/eclipse/persistence/**/*.java"/>
-          </fileset>
-          <fileset dir="${eclipselink.sdo}/${src.dir}">
-              <include name="org/eclipse/persistence/**/*.java"/>
-              <include name="commonj/sdo/impl/HelperProviderImpl.java"/>
-          </fileset>
-          <fileset dir="${eclipselink.extension.oracle}/${src.dir}">
-              <include name="org/eclipse/persistence/**/*.java"/>
-          </fileset>
-	  </zip>
+            <fileset dir="${eclipselink.core}/${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.jpa}/${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.core.lib}/${asm}/${src.dir}">
+                <include name="org/eclipse/persistence/internal/libraries/asm/**/*.java"/>
+            </fileset>
+             <fileset dir="${eclipselink.core.lib}/${antlr}/${src.dir}">
+                <include name="org/eclipse/persistence/internal/libraries/antlr/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.moxy}/${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.sdo}/${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <include name="commonj/sdo/impl/HelperProviderImpl.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.extension.oracle}/${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </zip>
     </target>
 
     <!-- Generates the Javadocs for all public EclipseLink classes. -->
-    <target name="build.javadocs"> 
+    <target name="build.javadocs">
         <property name="javadoc.title" value="${javadoc.prefixTitle}${release.version} ${build_number_string} ${javadoc.postfixTitle} - Incubation"/>
-        <javadoc 
+        <javadoc
             maxmemory="384m"
-			Verbose="false"
-            packagenames="org.eclipse.persistence.**" 
-            destdir="${eclipselink.javadocs}"  
+            Verbose="false"
+            packagenames="org.eclipse.persistence.**"
+            destdir="${eclipselink.javadocs}"
             useexternalfile="yes"
             additionalparam="-breakiterator -quiet"
             windowtitle="${javadoc.title}"
-            > 
-			<classpath>
-				<path refid="javadoc.path"/>
-			</classpath>
+            >
+            <classpath>
+                <path refid="javadoc.path"/>
+            </classpath>
             <tag name ="author" enabled="true" description="Author:" />
             <tag name ="since" scope="all" description="Since:" />
             <tag name ="SBGen" scope="all" description="SBGen:" />
@@ -227,28 +229,28 @@
             <doctitle><![CDATA[${javadoc.title}]]></doctitle>
             <header><![CDATA[${javadoc.title}]]></header>
 
-            <fileset dir="${eclipselink.core}/${src.dir}" defaultexcludes="yes"> 
-                <include name="org/eclipse/persistence/**/*.java"/> 
-                <exclude name="org/eclipse/persistence/internal/**/*.java"/> 
+            <fileset dir="${eclipselink.core}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
             </fileset>
-            <fileset dir="${eclipselink.jpa}/${src.dir}" defaultexcludes="yes"> 
-                <include name="org/eclipse/persistence/**/*.java"/> 
-                <exclude name="org/eclipse/persistence/internal/**/*.java"/> 
-            </fileset> 
-            <fileset dir="${eclipselink.moxy}/${src.dir}" defaultexcludes="yes"> 
-                <include name="org/eclipse/persistence/**/*.java"/> 
-                <exclude name="org/eclipse/persistence/internal/**/*.java"/> 
-            </fileset> 
-            <fileset dir="${eclipselink.sdo}/${src.dir}" defaultexcludes="yes"> 
-                <include name="org/eclipse/persistence/**/*.java"/> 
-                <exclude name="org/eclipse/persistence/internal/**/*.java"/> 
-            </fileset>         
-            <fileset dir="${eclipselink.util.rename.utility}/${src.dir}" defaultexcludes="yes"> 
-                <include name="org/eclipse/persistence/**/*.java"/> 
-                <exclude name="org/eclipse/persistence/internal/**/*.java"/> 
+            <fileset dir="${eclipselink.jpa}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
             </fileset>
-        </javadoc> 
-    </target> 
+            <fileset dir="${eclipselink.moxy}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.sdo}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.util.rename.utility}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+        </javadoc>
+    </target>
 
     <!-- Cleans all build generated files. -->
     <target name="clean" description="Clean the build">
@@ -286,7 +288,7 @@
             <zipfileset dir="${eclipselink.sdo.bin}" includes="${sdo-compiler-scripts}" prefix="eclipselink/bin"/>
             <!-- package-rename.properties -->
             <zipfileset dir="./${eclipselink.util.rename.utility.resource}" includes="${package-rename.properties}" fullpath="eclipselink/config/package-rename.properties"/>
-            <!-- core jar's and zips -->  
+            <!-- core jar's and zips -->
             <zipfileset dir="." prefix="eclipselink/jlib">
                 <include name="${eclipselink.jar}"/>
                 <include name="${eclipselink-src.zip}"/>
@@ -294,31 +296,30 @@
             <zipfileset dir="./${eclipselink.util.rename.utility}" prefix="eclipselink/jlib">
                 <include name="${package-rename.jar}"/>
             </zipfileset>
-            <!-- jpa persistence jar -->  
+            <!-- jpa persistence jar -->
             <zipfileset dir="${eclipselink.core.lib}/" includes="${persistence.jar}" prefix="eclipselink/jlib/jpa"/>
-            <!-- moxy jar's and zips -->  
+            <!-- moxy jar's and zips -->
             <zipfileset dir="${eclipselink.core.lib}/" prefix="eclipselink/jlib/moxy">
                 <include name="${activation.jar}"/>
                 <include name="${mail.jar}"/>
                 <include name="${jsr173_1.0_api.jar}"/>
             </zipfileset>
-            <!-- moxy jar's and zips -->  
+            <!-- moxy jar's and zips -->
             <zipfileset dir="${eclipselink.moxy.lib}/" prefix="eclipselink/jlib/moxy">
                 <include name="${jaxb-api.jar}"/>
                 <include name="${jaxb-xjc.jar}"/>
                 <include name="${jaxb-impl.jar}"/>
             </zipfileset>
-            <!-- grab the sdo jar -->  
+            <!-- grab the sdo jar -->
             <zipfileset dir="${eclipselink.sdo.lib}/" includes="${commonj-sdo.jar}" prefix="eclipselink/jlib/sdo"/>
             <!-- workbench jars -->
             <zipfileset dir="utils/eclipselink.utils.workbench.lib/mw/" includes="elmwcore.jar" prefix="eclipselink/workbench/jlib"/>
             <zipfileset dir="utils/eclipselink.utils.workbench.lib/mw/" includes="eclipselinkmw.jar" prefix="eclipselink/workbench/jlib"/>
             <zipfileset dir="utils/eclipselink.utils.workbench.lib/compile/" includes="xercesImpl.jar" prefix="eclipselink/workbench/jlib"/>
             <zipfileset dir="utils/eclipselink.utils.workbench.lib/run/" includes="connector.jar" prefix="eclipselink/workbench/jlib"/>
-	      <zipfileset dir="utils/eclipselink.utils.workbench/config/" includes="*" prefix="eclipselink/workbench/config"/>
-	      <zipfileset dir="utils/eclipselink.utils.workbench/config/platforms/" includes="*" prefix="eclipselink/workbench/config/platforms"/>
+            <zipfileset dir="utils/eclipselink.utils.workbench/config/" includes="*" prefix="eclipselink/workbench/config"/>
+            <zipfileset dir="utils/eclipselink.utils.workbench/config/platforms/" includes="*" prefix="eclipselink/workbench/config/platforms"/>
             <zipfileset dir="utils/eclipselink.utils.workbench/bin/" includes="*" prefix="eclipselink/workbench/bin"/>
-        
         </zip>
     </target>
 
@@ -341,6 +342,12 @@
     </target>
 
     <!-- Testing -->
+    <target name="test.srg" description="run all the SRG test suites"
+            depends="test.core.srg"
+            />
+    <target name="test.lrg" description="run all the LRG test suites"
+            depends="test.core, test.jpa, test.moxy, test.sdo"
+            />
 
     <!-- Run core LRG. -->
     <target name="test.core" description="run the core tests">

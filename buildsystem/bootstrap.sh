@@ -5,6 +5,11 @@ TARGET=$1
 BRANCH=$2
 if [ ! "$TARGET" = "" ]
 then
+    if [ ! "`echo ${TARGET} | grep '\.test'`" = "" ]
+    then
+        TARGET=`echo ${TARGET} | cut -d. -f1`
+        TEST=true
+    fi   
     TARG_NM=${TARGET}
     echo "Target=${TARGET}"
 else
@@ -122,7 +127,7 @@ fi
 #Set appropriate max Heap for VM and let Ant inherit JavaVM (OS's) proxy settings
 ANT_ARGS=" "
 ANT_OPTS="-Xmx128m"
-ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" -Declipselink.logging.level=FINEST"
+ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
 
 if [ "$TARGET" = "test" ]
 then
@@ -130,6 +135,11 @@ then
     ANT_OPTS="-Dhttp.proxyHost=www-proxy.us.oracle.com $ANT_OPTS"
     ANT_ARGS="-autoproxy"
     TARGET=build
+    ANT_BASEARG="${ANT_BASEARG} -D_RHB=1"
+fi
+
+if [ "$TEST" = "true" ]
+then
     ANT_BASEARG="${ANT_BASEARG} -D_Test=1"
 fi
 
@@ -145,5 +155,3 @@ source ~/.ssh-agent >> ${DATED_LOG}
 echo "ant ${ANT_BASEARG} $TARGET" >> ${DATED_LOG}
 ant ${ANT_BASEARG} -Ddb.user="$DB_USER" -Ddb.pwd="$DB_PWD" -Ddb.url="$DB_URL" $TARGET >> ${DATED_LOG}
 echo "Build completed at: `date`" >> ${DATED_LOG}
-
-#tail -f $DATED_LOG

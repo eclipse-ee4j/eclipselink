@@ -1,4 +1,10 @@
 <project name="EclipseLink Bootstrap Automated Builds" basedir="." default="build">
+
+<!--                THIS FILE NEEDS TO BE KEPT MINIMAL                    -->
+<!--          ONLY project specific info should be defined here           -->
+<!-- Anything that may change on a future branch should be defined in the -->
+<!--                    Branch specific Autobuild.xml                     -->
+
 <echo message="---- Bootstrap ----"/>
 
     <target name="init">
@@ -33,33 +39,38 @@
 
     <!-- Set svn.exec to os appropriate value                                 -->
     <!--    (fallback in case env.SVN_EXEC not set)                           -->
-    <target name="init.linux" unless="_Win" depends="init">
+    <target name="init-linux" unless="_Win" depends="init">
         <property name="svn.exec" value="/usr/local/bin/svn"/>
     </target>
-    <target name="init.win" if="_Win" depends="init.linux">
+    <target name="init-win" if="_Win" depends="init-linux">
         <property name="svn.exec" value="svn"/>
     </target>
 
-    <!-- Setup properties needed if testing using a local repos               -->
-    <!--     (-D_Test=1 defined on command-line)                              -->
-    <target name="init.test" if="_Test" depends="init">
+    <!-- Setup properties needed if testing using a local repos on RedHat     -->
+    <!--     (-D_RHB=1 defined on command-line)                              -->
+    <target name="init-test" if="_RHB" depends="init">
         <property name="svn.rw.protocol" value="file:"/>
         <property name="svn.base.url"    value="///var/svn/repos/eclipselink"/>
     </target>
 
-    <target name="properties.init" depends="init.win,init.test">
+    <target name="properties-init" depends="init-win,init-test">
         <echo message="svn.exec='${svn.exec}'"/>
 
         <!-- # Build environment definitions                                  -->
-        <!-- #  dir.build.root is the directory the branch's build            -->
+        <!-- #  build.root.dir is the directory the branch's build            -->
         <!-- #       files are in                                             -->
         <!-- #  branch.name will always be specified  on command-line         -->
         <!-- #       if used                                                  -->
+        <!-- #  junit.lib and junit.dir are only specified here because they  -->
+        <!-- #       need to be defined in ANT the same as in the CLASSPATH   -->
+        <!-- #       that ANT is invoked with. (the junit used at runtime     -->
+        <!-- #       must be defined in the classpath ANT is invoked with)    -->
         <property name="branch.name"     value=""/>
-        <property name="dir.build.root"  value="${env.BRANCH_PATH}"/>
-        <property name="dir.build.deps"  value="${env.BLD_DEPS_DIR}"/>
+        <property name="build.root.dir"  value="${env.BRANCH_PATH}"/>
+        <property name="build.deps.dir"  value="${env.BLD_DEPS_DIR}"/>
         <property name="log.dir"         value="${env.LOG_DIR}"/>
-        <property name="dir.junit"       value="${env.JUNIT_HOME}"/>
+        <property name="junit.dir"       value="${env.JUNIT_HOME}"/>
+        <property name="junit.lib"       value="${junit.dir}/junit.jar"/>
         <property name="branch.dir"      value="${branch.name}trunk"/>
         <property name="autobld.file"    value="autobuild.xml"/>
 
@@ -75,64 +86,56 @@
         <property name="current.svnrev.file" value="${log.dir}/.current_svn_rev"/>
         <property name="latest.svnrev.file"  value="${log.dir}/.latest_svn_rev"/>
         <!-- available file="${latest.svnrev.file}" property="latest.svnrev.file.present"/ -->
-
-        <!-- #  Build and Test dependency Overrides                           -->
-        <!-- #                                                                -->
-        <property name="junit.lib"           value="${dir.junit}/junit.jar"/>
-        <property name="coretest.prop.file" value="${log.dir}/mysql.jpa.test.properties"/>
-        <property name="test.properties.run" value="${coretest.prop.file}"/>
-
-        <echo message="dir.build.deps='${dir.build.deps}'"/>
-        <echo message="dir.build.root='${dir.build.root}'"/>
-        <echo message="log.dir       ='${log.dir}'"/>
-        <echo message="dir.junit     ='${dir.junit}'"/>
-        <echo message="junit.lib     ='${junit.lib}'"/>
     </target>
 
-    <target name="get.src" depends="properties.init">
+    <!-- Used for Build testing:  Set if "target" in .sh appended by ".test"  -->
+    <target name="no-get-src" if="_Test" depends="properties-init">
+        <echo message="Update of local source Skipped."/>
+    </target>
+    
+    <target name="get-src" unless="_Test" depends="no-get-src">
         <exec executable="${svn.exec}" failonerror="true" logError="true" >
             <arg value="co"/>
             <arg value="-q"/>
             <arg value="${svn.rw.protocol}${svn.branch.url}"/>
         </exec>
-        <!-- echo message=" "/ -->
     </target>
 
-    <target name="build" depends="get.src" description="Trigger an automated build without testing or publish">
-        <ant antfile="${autobld.file}" dir="${dir.build.root}" target="build.no.publish"/>
+    <target name="build" depends="get-src" description="Trigger an automated build without testing or publish">
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build.no.publish"/>
     </target>
 
-    <target name="nightly" depends="get.src" description="Trigger the nightly automated build and lrg tests">
-        <ant antfile="${autobld.file}" dir="${dir.build.root}" target="build.nightly"/>
+    <target name="nightly" depends="get-src" description="Trigger the nightly automated build and lrg tests">
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build.nightly"/>
     </target>
 
-    <target name="cb" if="_DoBuild" depends="no.cb" description="Trigger an automated 'continuous build' (compile and run short verify)">
+    <target name="cb" if="_DoBuild" depends="no-cb" description="Trigger an automated 'continuous build' (compile and run short verify)">
         <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
         <antcall target="get.src"/>
-        <ant antfile="${autobld.file}" dir="${dir.build.root}" target="build.continuous"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build.continuous"/>
     </target>
 
     <!-- ============================================================================= -->
     <!--   Continuous build Order                                                      -->
-    <!--     properties.init    = sets up various properties                           -->
-    <!--     query.svn.changed  = calls 'get.svn.headrev'                              -->
+    <!--     properties-init    = sets up various properties                           -->
+    <!--     query-svn-changed  = calls 'get-svn-headrev'                              -->
     <!--                          sets '_DoBuild' if any condition exists where        -->
     <!--                          the revision files don't match                       -->
-    <!--     get.svn.headrev    = creates a file that contains current head rev info   -->
-    <!--     no.cb              = if head rev unchanged, prints 'no build' message     -->
+    <!--     get-svn-headrev    = creates a file that contains current head rev info   -->
+    <!--     no-cb              = if head rev unchanged, prints 'no build' message     -->
     <!--                          otherwise does nothing                               -->
     <!--     cb                 = if head rev changed, updates latest head rev file    -->
-    <!--                             calls 'get.src' which updates the source tree     -->
+    <!--                             calls 'get-src' which updates the source tree     -->
     <!--                             calls the continuous build target                 -->
     <!--                          otherwise does nothing                               -->
     <!-- ============================================================================= -->
-    <target name="no.cb" unless="_DoBuild" depends="query.svn.changed">
+    <target name="no-cb" unless="_DoBuild" depends="query-svn-changed">
         <echo message="----------------------------------"/>
         <echo message="  ${build_date}.${build_time} build unnecessary"/>
         <echo message="  "/>
     </target>
 
-    <target name="query.svn.changed" depends="get.svn.headrev">
+    <target name="query-svn-changed" depends="get-svn-headrev">
         <condition property="_DoBuild" value="true">
             <not>
                 <filesmatch file1="${current.svnrev.file}" file2="${latest.svnrev.file}"/>
@@ -140,7 +143,7 @@
         </condition>
     </target>
 
-    <target name="get.svn.headrev" depends="properties.init">
+    <target name="get-svn-headrev" depends="properties-init">
         <exec executable="${svn.exec}" failonerror="true" logError="true" output="${current.svnrev.file}">
             <arg value="info"/>
             <arg value="--revision"/>
