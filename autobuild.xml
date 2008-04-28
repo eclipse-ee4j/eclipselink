@@ -1,17 +1,17 @@
 <project name="EclipseLink Automated Build" basedir="." default="build.nightly">
 <echo message="---- AutoBuild.xml ----"/>
 
-    <target name="build.no.publish"  description="Trigger an automated build without testing or publish"
-            depends="clean, build, build.test"
+    <target name="build-no-publish"  description="Trigger an automated build without testing or publish"
+            depends="clean, build, build-test"
     />
-    <target name="build.nightly"    description="Trigger the nightly automated build and lrg tests"
-            depends="clean, build, build.test, test.lrg"
+    <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
+            depends="clean, build, build-test, test-lrg"
     />
     <!-- target name="build.nightly"    description="Trigger the nightly automated build and lrg tests"
-            depends="clean, build, build.test, test.lrg, publish.build"
+            depends="clean, build, build-test, test-lrg, publish-build"
     / -->
-    <target name="build.continuous" description="Trigger an automated build and run the tests if source changes exist"
-            depends="clean, build.no.javadoc, build.test, test.srg"
+    <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
+            depends="clean, build-no-javadoc, build-test, test-srg"
     />
 
     <target name="init">
@@ -67,7 +67,7 @@
         <ant antfile="build.xml" dir="${build.root.dir}" target="clean"/>
     </target>
 
-    <target name="get.dependencies" depends="clean">
+    <target name="get-dependencies" depends="clean">
         <mkdir dir="${junit.dir}"/>
         <mkdir dir="${build.deps.dir}/mail"/>
         <mkdir dir="${build.deps.dir}/mavenant"/>
@@ -90,15 +90,15 @@
         <echo message="mavenant:   ${mavenant.url}${line.separator}"   file="${build.deps.dir}/dependencies.txt" append="true"/>
     </target>
 
-    <target name="build" depends="get.dependencies">
+    <target name="build" depends="get-dependencies">
         <ant antfile="build.xml" dir="${build.root.dir}" target="build.distribution"/>
     </target>
 
-    <target name="build.no.javadoc" depends="get.dependencies">
+    <target name="build-no-javadoc" depends="get-dependencies">
         <ant antfile="build.xml" dir="${build.root.dir}" target="package.eclipselink.jar"/>
     </target>
 
-    <target name="build.test" depends="get.dependencies">
+    <target name="build-test" depends="get-dependencies">
         <!-- Generate Test properties file -->
         <echo message="# Generated db connection properties (by bootstrap.xml)${line.separator}" file="${coretest.prop.file}" append="false"/>
         <echo message="jdbc.driver.jar=${jdbc.driver.jar}${line.separator}" file="${coretest.prop.file}" append="true"/>
@@ -112,19 +112,19 @@
         <!-- delete file="${coretest.prop.file}"/ -->
     </target>
 
-    <target name="test.srg">
+    <target name="test-srg">
         <ant antfile="build.xml" dir="${build.root.dir}" target="test.srg">
             <property name="eclipselink.logging.level" value="${test.logging.level}"/>
         </ant>
     </target>
 
-    <target name="test.lrg">
+    <target name="test-lrg">
         <ant antfile="build.xml" dir="${build.root.dir}" target="test.lrg">
             <property name="eclipselink.logging.level" value="${test.logging.level}"/>
         </ant>
     </target>
 
-    <target name="publish.build">
+    <target name="publish-build">
         <!-- Futute Note: Could avoid these copies by redefining the html output directly...         -->
         <!--              Would need to ensure that an erroniuos run didn't get partially published. -->
         <copy file="${build.root.dir}/${eclipselink.zip.name}${eclipselink.zip.extension}" tofile="${download.path}/${eclipselink.zip.name}-${installer_id}${eclipselink.zip.extension}"/>
@@ -142,12 +142,12 @@
     </target>
 
     <!-- Antified "cleanNightly.sh" -->
-    <target name="clean.results">
+    <target name="clean-results">
         <exec executable="cleanNightly.sh" failonerror="true" logError="true" />
     </target>
 
     <!-- Antified "buildNightlyList.sh" -->
-    <target name="publish.results" depends="clean.results">
+    <target name="publish-results" depends="clean-results">
         <exec executable="buildNightlyList.sh" failonerror="true" logError="true" />
     </target>
 </project>
