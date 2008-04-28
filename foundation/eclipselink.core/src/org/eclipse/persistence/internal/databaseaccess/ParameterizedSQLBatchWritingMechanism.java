@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
@@ -180,16 +181,16 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                		statement.setQueryTimeout(queryTimeoutCache);
                 }
                	
-                // iterate over the parameter lists that were batched.
+                // Iterate over the parameter lists that were batched.
                 for (int statementIndex = 0; statementIndex < this.parameters.size();
                          ++statementIndex) {
-                    // EclipseLink uses Vector internally, may want to change this
-                    Vector parameterList = (Vector)this.parameters.get(statementIndex);
-                    for (int index = 0; index < parameterList.size(); index++) {
-                        session.getPlatform().setParameterValueInDatabaseCall(parameterList, statement, index, session);
+                    List parameterList = (List)this.parameters.get(statementIndex);
+                    int size = parameterList.size();
+                    for (int index = 0; index < size; index++) {
+                        session.getPlatform().setParameterValueInDatabaseCall(parameterList.get(index), statement, index, session);
                     }
 
-                    //batch the parameters to the statement
+                    // Batch the parameters to the statement.
                     statementCount++;
                     executionCount += this.databaseAccessor.getPlatform().addBatch(statement);
                 }
@@ -197,10 +198,11 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                 session.endOperationProfile(SessionProfiler.SQL_PREPARE, null, SessionProfiler.ALL);
             }
         } catch (SQLException exception) {
-            //If this is a connection from an external pool then closeStatement will close the connection.
-            //we must test the connection before that happens.
+            // If this is a connection from an external pool then closeStatement will close the connection.
+            // we must test the connection before that happens.
             RuntimeException exceptionToThrow = this.databaseAccessor.processExceptionForCommError(session, exception, lastCallAppended);
-            try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
+            try {
+                // Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 this.databaseAccessor.closeStatement(statement, session, null);
             } catch (SQLException closeException) {
             }
@@ -209,7 +211,8 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
             }
             throw exceptionToThrow;
         } catch (RuntimeException exception) {
-            try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
+            try {
+                // Ensure that the statement is closed, but still ensure that the real exception is thrown.
                 this.databaseAccessor.closeStatement(statement, session, null);
             } catch (SQLException closeException) {
             }

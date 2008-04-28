@@ -106,9 +106,9 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
      * will simply add to the end of the row
      */
     public void add(DatabaseField key, Object value) {
-        getFields().addElement(key);
-        getValues().addElement(value);
-        resetSize();
+        this.fields.add(key);
+        this.values.add(value);
+        this.size++;
     }
 
     /**
@@ -181,13 +181,13 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
     public boolean containsKey(DatabaseField key) {
         // Optimize check.
         int index = key.getIndex();
-        if ((index >= 0) && (index < getFields().size())) {
-            DatabaseField field = (DatabaseField)getFields().elementAt(index);
+        if ((index >= 0) && (index < this.size)) {
+            DatabaseField field = (DatabaseField)this.fields.get(index);
             if ((field == key) || field.equals(key)) {
                 return true;
             }
         }
-        return getFields().contains(key);
+        return this.fields.contains(key);
     }
 
     /**
@@ -237,7 +237,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
      */
     public Object get(String fieldName) {
         Object value = getIndicatingNoEntry(fieldName);
-        if (value == org.eclipse.persistence.internal.sessions.AbstractRecord.noEntry) {
+        if (value == AbstractRecord.noEntry) {
             return null;
         }
         return value;
@@ -590,15 +590,12 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
      * Add the field-value pair to the row.
      */
     public Object put(DatabaseField key, Object value) {
-        int index = getFields().indexOf(key);
+        int index = this.fields.indexOf(key);
         if (index >= 0) {
-            Object oldValue = getValues().elementAt(index);
-            replaceAt(value, index);
-            return oldValue;
+            return this.values.set(index, value);
         } else {
             add(key, value);
         }
-        resetSize();
 
         return null;
     }
@@ -657,7 +654,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
      * replaces the value at index with value
      */
     public void replaceAt(Object value, int index) {
-        getValues().setElementAt(value, index);
+        this.values.set(index, value);
     }
 
     protected void setFields(Vector fields) {

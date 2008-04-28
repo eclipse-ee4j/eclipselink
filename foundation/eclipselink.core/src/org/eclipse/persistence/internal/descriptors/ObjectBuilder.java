@@ -75,6 +75,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
     protected List<DatabaseMapping> cloningMappings;    
     /** PERF: Cache mappings that are eager loaded. */
     protected List<DatabaseMapping> eagerMappings;
+    /** PERF: Cache relationship mappings. */
+    protected List<DatabaseMapping> relationshipMappings;
+    /** PERF: Cache if is a simple mapping, all direct. */
+    protected boolean isSimple;
+    /** PERF: Cache if has a wrapper policy. */
+    protected boolean hasWrapperPolicy;
 
     public ObjectBuilder(ClassDescriptor descriptor) {
         this.mappingsByField = new HashMap(20);
@@ -85,6 +91,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         this.nonPrimaryKeyMappings = new ArrayList(10);
         this.cloningMappings = new ArrayList(10);
         this.eagerMappings = new ArrayList(5);
+        this.relationshipMappings = new ArrayList(5);
         this.descriptor = descriptor;
     }
 
@@ -228,7 +235,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         } else if (mapping.isTransformationMapping()) {
             ((AbstractTransformationMapping)mapping).readFromReturnRowIntoObject(row, object, query, handledMappings);
         } else {
-            query.getSession().log(SessionLog.FINEST, SessionLog.QUERY, "field_for_unsupported_mapping_returned", field, getDescriptor());
+            query.getSession().log(SessionLog.FINEST, SessionLog.QUERY, "field_for_unsupported_mapping_returned", field, this.descriptor);
         }
     }
 
@@ -240,7 +247,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * @exception  DatabaseException - an error has occurred on the database.
      */
     public Object assignSequenceNumber(Object object, AbstractSession writeSession) throws DatabaseException {
-        DatabaseField sequenceNumberField = getDescriptor().getSequenceNumberField();
+        DatabaseField sequenceNumberField = this.descriptor.getSequenceNumberField();
         Object existingValue = getBaseValueForField(sequenceNumberField, object);
         if (existingValue != null) {
             if (!writeSession.getSequencing().shouldOverrideExistingValue(object.getClass(), existingValue)) {
@@ -282,7 +289,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         AbstractSession executionSession = query.getSession().getExecutionSession(query);
 
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = getDescriptor().getMappings();
+        List mappings = this.descriptor.getMappings();
 
         // PERF: Cache if all mappings should be read.
         boolean readAllMappings = query.shouldReadAllMappings();
@@ -295,7 +302,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // PERF: Avoid events if no listeners.
-        if (getDescriptor().getEventManager().hasAnyEventListeners()) {
+        if (this.descriptor.getEventManager().hasAnyEventListeners()) {
             // Need to run post build or refresh selector, currently check with the query for this,
             // I'm not sure which should be called it case of refresh building a new object, currently refresh is used...
             org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(domainObject);
@@ -311,7 +318,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             } else {
                 event.setEventCode(DescriptorEventManager.PostBuildEvent);
             }
-            getDescriptor().getEventManager().executeEvent(event);
+            this.descriptor.getEventManager().executeEvent(event);
         }
     }
 
@@ -321,7 +328,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public Object buildBackupClone(Object clone, UnitOfWorkImpl unitOfWork) {
         // The copy policy builds clone	.
-        ClassDescriptor descriptor = getDescriptor();
+        ClassDescriptor descriptor = this.descriptor;
         Object backup = descriptor.getCopyPolicy().buildClone(clone, unitOfWork);
 
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
@@ -349,8 +356,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * The row is passed to allow the version number to be extracted from it.
      */
     public Expression buildDeleteExpression(DatabaseTable table, AbstractRecord row) {
-        if (getDescriptor().usesOptimisticLocking() && (getDescriptor().getTables().firstElement().equals(table))) {
-            return getDescriptor().getOptimisticLockingPolicy().buildDeleteExpression(table, primaryKeyExpression, row);
+        if (this.descriptor.usesOptimisticLocking() && (this.descriptor.getTables().firstElement().equals(table))) {
+            return this.descriptor.getOptimisticLockingPolicy().buildDeleteExpression(table, primaryKeyExpression, row);
         } else {
             return buildPrimaryKeyExpression(table);
         }
@@ -372,7 +379,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         Expression expression = null;
 
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = getDescriptor().getMappings();
+        List mappings = this.descriptor.getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             if (expression == null) {
@@ -389,7 +396,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Return a new instance of the receiver's javaClass.
      */
     public Object buildNewInstance() {
-        return getDescriptor().getInstantiationPolicy().buildNewInstance();
+        return this.descriptor.getInstantiationPolicy().buildNewInstance();
     }
     
     /**
@@ -417,7 +424,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         Vector primaryKey = extractPrimaryKeyFromRow(databaseRow, session);
 
         // Check for null primary key, this is not allowed.
-        if ((primaryKey == null) && (!query.hasPartialAttributeExpressions()) && (!getDescriptor().isAggregateCollectionDescriptor())) {
+        if ((primaryKey == null) && (!query.hasPartialAttributeExpressions()) && (!this.descriptor.isAggregateCollectionDescriptor())) {
             // Profile object building.
             session.endOperationProfile(SessionProfiler.OBJECT_BUILDING, query, SessionProfiler.ALL);
 
@@ -432,12 +439,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 throw QueryException.nullPrimaryKeyInBuildingObject(query, databaseRow);
             }
         }
-        ClassDescriptor concreteDescriptor = getDescriptor();
+        ClassDescriptor concreteDescriptor = this.descriptor;
         if (concreteDescriptor.hasInheritance() && concreteDescriptor.getInheritancePolicy().shouldReadSubclasses()) {
             Class classValue = concreteDescriptor.getInheritancePolicy().classFromRow(databaseRow, session);
             concreteDescriptor = session.getDescriptor(classValue);
             if ((concreteDescriptor == null) && query.hasPartialAttributeExpressions()) {
-                concreteDescriptor = getDescriptor();
+                concreteDescriptor = this.descriptor;
             }
             if (concreteDescriptor == null) {
                 // Profile object building.
@@ -796,13 +803,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Build the primary key expression for the secondary table.
      */
     public Expression buildPrimaryKeyExpression(DatabaseTable table) throws DescriptorException {
-        if (getDescriptor().getTables().firstElement().equals(table)) {
+        if (this.descriptor.getTables().firstElement().equals(table)) {
             return getPrimaryKeyExpression();
         }
 
-        Map keyMapping = getDescriptor().getAdditionalTablePrimaryKeyFields().get(table);
+        Map keyMapping = this.descriptor.getAdditionalTablePrimaryKeyFields().get(table);
         if (keyMapping == null) {
-            throw DescriptorException.multipleTablePrimaryKeyNotSpecified(getDescriptor());
+            throw DescriptorException.multipleTablePrimaryKeyNotSpecified(this.descriptor);
         }
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -822,7 +829,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         Expression expression = null;
         Expression subExpression;
         Expression builder = new ExpressionBuilder();
-        List primaryKeyFields = getDescriptor().getPrimaryKeyFields();
+        List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
 
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             Object value = primaryKeyValues.get(index);
@@ -855,7 +862,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public AbstractRecord buildRow(AbstractRecord databaseRow, Object object, AbstractSession session) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = getDescriptor().getMappings();
+        List mappings = this.descriptor.getMappings();
         int mappingsSize = mappings.size();
         for (int index = 0; index < mappingsSize; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
@@ -863,13 +870,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // If this descriptor is involved in inheritance add the class type.
-        if (getDescriptor().hasInheritance()) {
-            getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
+        if (this.descriptor.hasInheritance()) {
+            this.descriptor.getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
         }
 
         // If this descriptor has multiple tables then we need to append the primary keys for 
         // the non default tables.
-        if (!getDescriptor().isAggregateDescriptor()) {
+        if (!this.descriptor.isAggregateDescriptor()) {
             addPrimaryKeyForNonDefaultTable(databaseRow);
         }
 
@@ -890,7 +897,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public AbstractRecord buildRowForShallowInsert(AbstractRecord databaseRow, Object object, AbstractSession session) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = getDescriptor().getMappings();
+        List mappings = this.descriptor.getMappings();
         int mappingsSize = mappings.size();
         for (int index = 0; index < mappingsSize; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
@@ -898,13 +905,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // If this descriptor is involved in inheritance add the class type.
-        if (getDescriptor().hasInheritance()) {
-            getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
+        if (this.descriptor.hasInheritance()) {
+            this.descriptor.getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
         }
 
         // If this descriptor has multiple tables then we need to append the primary keys for 
         // the non default tables.
-        if (!getDescriptor().isAggregateDescriptor()) {
+        if (!this.descriptor.isAggregateDescriptor()) {
             addPrimaryKeyForNonDefaultTable(databaseRow);
         }
 
@@ -930,8 +937,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // If this descriptor is involved in inheritance add the class type.
-        if (getDescriptor().hasInheritance()) {
-            getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
+        if (this.descriptor.hasInheritance()) {
+            this.descriptor.getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
         }
 
         return databaseRow;
@@ -958,13 +965,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // If this descriptor is involved in inheritance add the class type.
-        if (getDescriptor().hasInheritance()) {
-            getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
+        if (this.descriptor.hasInheritance()) {
+            this.descriptor.getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
         }
 
         // If this descriptor has multiple tables then we need to append the primary keys for 
         // the non default tables.
-        if (!getDescriptor().isAggregateDescriptor()) {
+        if (!this.descriptor.isAggregateDescriptor()) {
             addPrimaryKeyForNonDefaultTable(databaseRow);
         }
 
@@ -1011,13 +1018,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // Prs 24801
         // Modified  Dec 11, 2000 TGW with assistance from PWK
         // Prs 27554
-        if (getDescriptor().hasInheritance() && getDescriptor().isAggregateDescriptor()) {
+        if (this.descriptor.hasInheritance() && this.descriptor.isAggregateDescriptor()) {
             if (query.getObject() != null) {
                 if (query.getBackupClone() == null) {
-                    getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
+                    this.descriptor.getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
                 } else {
                     if (!query.getObject().getClass().equals(query.getBackupClone().getClass())) {
-                        getDescriptor().getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
+                        this.descriptor.getInheritancePolicy().addClassIndicatorFieldToRow(databaseRow);
                     }
                 }
             }
@@ -1050,7 +1057,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     public AbstractRecord buildRowForWhereClause(ObjectLevelModifyQuery query) {
         AbstractRecord databaseRow = createRecord();
 
-        for (Iterator mappings = getDescriptor().getMappings().iterator();
+        for (Iterator mappings = this.descriptor.getMappings().iterator();
                  mappings.hasNext();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.next();
             mapping.writeFromObjectIntoRowForWhereClause(query, databaseRow);
@@ -1058,7 +1065,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
         // If this descriptor has multiple tables then we need to append the primary keys for 
         // the non default tables.
-        if (!getDescriptor().isAggregateDescriptor()) {
+        if (!this.descriptor.isAggregateDescriptor()) {
             addPrimaryKeyForNonDefaultTable(databaseRow);
         }
 
@@ -1072,9 +1079,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
         AbstractRecord databaseRow = createRecord(key.size());
         int keySize = key.size();
         for (int index = 0; index < keySize; index++) {
-            DatabaseField field = getDescriptor().getPrimaryKeyFields().get(index);
+            DatabaseField field = this.descriptor.getPrimaryKeyFields().get(index);
             Object value = key.elementAt(index);
-            value = session.getPlatform(getDescriptor().getJavaClass()).getConversionManager().convertObject(value, field.getType());
+            value = session.getPlatform(this.descriptor.getJavaClass()).getConversionManager().convertObject(value, field.getType());
             databaseRow.put(field, value);
         }
 
@@ -1121,11 +1128,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Remove a potential sequence number field and invoke the ReturningPolicy trimModifyRowsForInsert method
      */
     public void trimFieldsForInsert(AbstractSession session, AbstractRecord databaseRow) {
-        if (getDescriptor().usesSequenceNumbers() && session.getSequencing().shouldAcquireValueAfterInsert(getDescriptor().getJavaClass())) {
-            databaseRow.remove(getDescriptor().getSequenceNumberField());
+        if (this.descriptor.usesSequenceNumbers() && session.getSequencing().shouldAcquireValueAfterInsert(this.descriptor.getJavaClass())) {
+            databaseRow.remove(this.descriptor.getSequenceNumberField());
         }
-        if (getDescriptor().hasReturningPolicy()) {
-            getDescriptor().getReturningPolicy().trimModifyRowForInsert(databaseRow);
+        if (this.descriptor.hasReturningPolicy()) {
+            this.descriptor.getReturningPolicy().trimModifyRowForInsert(databaseRow);
         }
     }
 
@@ -1156,8 +1163,8 @@ public class ObjectBuilder implements Cloneable, Serializable {
     public Expression buildUpdateExpression(DatabaseTable table, AbstractRecord transactionRow, AbstractRecord modifyRow) {
         // Only the first table must use the lock check.
         Expression primaryKeyExpression = buildPrimaryKeyExpression(table);
-        if (getDescriptor().usesOptimisticLocking()) {
-            return getDescriptor().getOptimisticLockingPolicy().buildUpdateExpression(table, primaryKeyExpression, transactionRow, modifyRow);
+        if (this.descriptor.usesOptimisticLocking()) {
+            return this.descriptor.getOptimisticLockingPolicy().buildUpdateExpression(table, primaryKeyExpression, transactionRow, modifyRow);
         } else {
             return primaryKeyExpression;
         }
@@ -1202,7 +1209,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 mapping.buildShallowOriginalFromRow(databaseRow, original, null, query, executionSession);
             }
         }
-        List mappings = getDescriptor().getMappings();
+        List mappings = this.descriptor.getMappings();
         mappingsSize = mappings.size();
         for (int i = 0; i < mappingsSize; i++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(i);
@@ -1263,7 +1270,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     protected Object buildWorkingCopyCloneFromRow(ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Vector primaryKey) throws DatabaseException, QueryException {
         AbstractSession session = unitOfWork.getParentIdentityMapSession(query);
-        ClassDescriptor descriptor = getDescriptor();
+        ClassDescriptor descriptor = this.descriptor;
 
         // If the clone already exists then it may only need to be refreshed or returned.
         // We call directly on the identity map to avoid going to the parent,
@@ -1378,7 +1385,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * can use this method of building objects.
      */
     public Object buildWorkingCopyCloneFromResultSet(ObjectBuildingQuery query, JoinedAttributeManager joinManager, ResultSet resultSet, UnitOfWorkImpl unitOfWork, DatabaseAccessor accessor, ResultSetMetaData metaData, DatabasePlatform platform) throws DatabaseException, QueryException {
-        ClassDescriptor descriptor = getDescriptor();
+        ClassDescriptor descriptor = this.descriptor;
         Object primaryKeyObject = getPrimaryKeyMappings().get(0).valueFromResultSet(resultSet, query, unitOfWork, accessor, metaData, 1, platform);
         Vector primaryKey = new Vector(1);
         primaryKey.add(primaryKeyObject);
@@ -1431,7 +1438,10 @@ public class ObjectBuilder implements Cloneable, Serializable {
         objectBuilder.setReadOnlyMappingsByField(new HashMap(getReadOnlyMappingsByField()));
         objectBuilder.setPrimaryKeyMappings(new ArrayList(getPrimaryKeyMappings()));
         objectBuilder.setNonPrimaryKeyMappings(new ArrayList(getNonPrimaryKeyMappings()));
-
+        objectBuilder.cloningMappings = new ArrayList(this.cloningMappings);
+        objectBuilder.eagerMappings = new ArrayList(this.eagerMappings);
+        objectBuilder.relationshipMappings = new ArrayList(this.relationshipMappings);
+        
         return objectBuilder;
     }
 
@@ -1441,11 +1451,14 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * It may raise exceptions as described in the EJB3 specification
      */
     public void cascadePerformRemove(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-        // PERF: Avoid iterator.
-        List mappings = getDescriptor().getMappings();
-        for (int index = 0; index < mappings.size(); index++) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-            mapping.cascadePerformRemoveIfRequired(object, uow, visitedObjects);
+        ObjectBuilder builder = this.descriptor.getObjectBuilder();
+        // PERF: Only process relationships.
+        if (!builder.isSimple()) {
+            List<DatabaseMapping> mappings = builder.getRelationshipMappings();
+            for (int index = 0; index < mappings.size(); index++) {
+                DatabaseMapping mapping = mappings.get(index);
+                mapping.cascadePerformRemoveIfRequired(object, uow, visitedObjects);
+            }
         }
     }
 
@@ -1455,22 +1468,25 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * It may raise exceptions as described in the EJB3 specification
      */
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow) {
-        // PERF: Avoid iterator.
-        List mappings = descriptor.getMappings();
-        int size = mappings.size();
-        FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
-        // Only cascade fetched mappings.
-        if ((fetchGroupManager != null) && fetchGroupManager.isPartialObject(object)) {
-            for (int index = 0; index < size; index++) {
-                DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                if (fetchGroupManager.isAttributeFetched(object, mapping.getAttributeName())) {
+        ObjectBuilder builder = this.descriptor.getObjectBuilder();
+        // PERF: Only process relationships.
+        if (!builder.isSimple()) {
+            List<DatabaseMapping> mappings = builder.getRelationshipMappings();
+            int size = mappings.size();
+            FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
+            // Only cascade fetched mappings.
+            if ((fetchGroupManager != null) && fetchGroupManager.isPartialObject(object)) {
+                for (int index = 0; index < size; index++) {
+                    DatabaseMapping mapping = mappings.get(index);
+                    if (fetchGroupManager.isAttributeFetched(object, mapping.getAttributeName())) {
+                        mapping.cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow);
+                    }
+                }
+            } else {
+                for (int index = 0; index < size; index++) {
+                    DatabaseMapping mapping = mappings.get(index);
                     mapping.cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow);
                 }
-            }
-        } else {
-            for (int index = 0; index < size; index++) {
-                DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                mapping.cascadeDiscoverAndPersistUnregisteredNewObjects(object, newObjects, unregisteredExistingObjects, visitedObjects, uow);
             }
         }
     }
@@ -1481,22 +1497,25 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * It may raise exceptions as described in the EJB3 specification
      */
     public void cascadeRegisterNewForCreate(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
-        // PERF: Avoid iterator.
-        List mappings = descriptor.getMappings();
-        int size = mappings.size();
-        FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
-        // Only cascade fetched mappings.
-        if ((fetchGroupManager != null) && fetchGroupManager.isPartialObject(object)) {
-            for (int index = 0; index < size; index++) {
-                DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                if (fetchGroupManager.isAttributeFetched(object, mapping.getAttributeName())) {
+        ObjectBuilder builder = this.descriptor.getObjectBuilder();
+        // PERF: Only process relationships.
+        if (!builder.isSimple()) {
+            List<DatabaseMapping> mappings = builder.getRelationshipMappings();
+            int size = mappings.size();
+            FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
+            // Only cascade fetched mappings.
+            if ((fetchGroupManager != null) && fetchGroupManager.isPartialObject(object)) {
+                for (int index = 0; index < size; index++) {
+                    DatabaseMapping mapping = mappings.get(index);
+                    if (fetchGroupManager.isAttributeFetched(object, mapping.getAttributeName())) {
+                        mapping.cascadeRegisterNewIfRequired(object, uow, visitedObjects);
+                    }
+                }
+            } else {
+                for (int index = 0; index < size; index++) {
+                    DatabaseMapping mapping = mappings.get(index);
                     mapping.cascadeRegisterNewIfRequired(object, uow, visitedObjects);
                 }
-            }
-        } else {
-            for (int index = 0; index < size; index++) {
-                DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                mapping.cascadeRegisterNewIfRequired(object, uow, visitedObjects);
             }
         }
     }
@@ -1508,7 +1527,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public ObjectChangeSet compareForChange(Object clone, Object backUp, UnitOfWorkChangeSet changeSet, AbstractSession session) {
         // delegate the change comparison to this objects ObjectChangePolicy - TGW
-        return descriptor.getObjectChangePolicy().calculateChanges(clone, backUp, changeSet, session, getDescriptor(), true);
+        return descriptor.getObjectChangePolicy().calculateChanges(clone, backUp, changeSet, session, this.descriptor, true);
     }
 
     /**
@@ -1516,7 +1535,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         // PERF: Avoid iterator.
-        List mappings = getDescriptor().getMappings();
+        List mappings = this.descriptor.getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
 
@@ -1536,7 +1555,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public void copyInto(Object source, Object target, boolean cloneOneToOneValueHolders) {
         // PERF: Avoid iterator.
-        List mappings = getDescriptor().getMappings();
+        List mappings = this.descriptor.getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             Object value = null;
@@ -1577,7 +1596,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             ((DatabaseMapping)mappings.get(index)).buildCopy(copy, original, policy);
         }
 
-        if (policy.shouldResetPrimaryKey() && (!(getDescriptor().isAggregateDescriptor() || getDescriptor().isAggregateCollectionDescriptor()))) {
+        if (policy.shouldResetPrimaryKey() && (!(this.descriptor.isAggregateDescriptor() || this.descriptor.isAggregateCollectionDescriptor()))) {
             // Do not reset if any of the keys is mapped through a 1-1, i.e. back reference id has already changed.
             boolean hasOneToOne = false;
             List primaryKeyMappings = getPrimaryKeyMappings();
@@ -1603,12 +1622,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // PERF: Avoid events if no listeners.
-        if (getDescriptor().getEventManager().hasAnyEventListeners()) {
+        if (this.descriptor.getEventManager().hasAnyEventListeners()) {
             org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(copy);
             event.setSession(policy.getSession());
             event.setOriginalObject(original);
             event.setEventCode(DescriptorEventManager.PostCloneEvent);
-            getDescriptor().getEventManager().executeEvent(event);
+            this.descriptor.getEventManager().executeEvent(event);
         }
 
         return copy;
@@ -1650,12 +1669,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
     public ObjectChangeSet createObjectChangeSet(Object clone, UnitOfWorkChangeSet uowChangeSet, boolean isNew, boolean assignPrimaryKeyIfExisting, AbstractSession session) {
         ObjectChangeSet changes = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(clone);
         if (changes == null) {
-            if (getDescriptor().isAggregateDescriptor()) {
-                changes = new AggregateObjectChangeSet(new Vector(0), getDescriptor().getJavaClass(), clone, uowChangeSet, isNew);
+            if (this.descriptor.isAggregateDescriptor()) {
+                changes = new AggregateObjectChangeSet(new Vector(0), this.descriptor.getJavaClass(), clone, uowChangeSet, isNew);
             } else {
-                changes = new ObjectChangeSet(extractPrimaryKeyFromObject(clone, session, true), getDescriptor().getJavaClass(), clone, uowChangeSet, isNew);
+                changes = new ObjectChangeSet(extractPrimaryKeyFromObject(clone, session, true), this.descriptor.getJavaClass(), clone, uowChangeSet, isNew);
             }
-            changes.setIsAggregate(getDescriptor().isAggregateDescriptor() || getDescriptor().isAggregateCollectionDescriptor());
+            changes.setIsAggregate(this.descriptor.isAggregateDescriptor() || this.descriptor.isAggregateCollectionDescriptor());
             uowChangeSet.addObjectChangeSetForIdentity(changes, clone);
         } else if (assignPrimaryKeyIfExisting) {
             if (!changes.isAggregate()) {
@@ -1678,7 +1697,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         Expression subExp1;
         Expression subExp2;
         Expression subExpression;
-        List primaryKeyFields = getDescriptor().getPrimaryKeyFields();
+        List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
 
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             DatabaseField primaryKeyField = (DatabaseField)primaryKeyFields.get(index);
@@ -1704,13 +1723,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
         expression.getBuilder().setSession(session.getRootSession(null));
         // Get all the field & values from expression.
-        boolean isValid = expression.extractPrimaryKeyValues(requiresExactMatch, getDescriptor(), primaryKeyRow, translationRow);
+        boolean isValid = expression.extractPrimaryKeyValues(requiresExactMatch, this.descriptor, primaryKeyRow, translationRow);
         if (requiresExactMatch && (!isValid)) {
             return null;
         }
 
         // Check that the sizes match.
-        if (primaryKeyRow.size() != getDescriptor().getPrimaryKeyFields().size()) {
+        if (primaryKeyRow.size() != this.descriptor.getPrimaryKeyFields().size()) {
             return null;
         }
 
@@ -1735,7 +1754,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 return key;
             }
         }
-        ClassDescriptor descriptor = getDescriptor();
+        ClassDescriptor descriptor = this.descriptor;
         boolean isNull = false;
         // Allow for inheritance, the concrete descriptor must always be used.
         if (descriptor.hasInheritance() && (domainObject.getClass() != descriptor.getJavaClass()) && (!domainObject.getClass().getSuperclass().equals(descriptor.getJavaClass()))) {
@@ -1800,7 +1819,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * null is returned if the row does not contain the key.
      */
     public Vector extractPrimaryKeyFromRow(AbstractRecord databaseRow, AbstractSession session) {
-        List primaryKeyFields = getDescriptor().getPrimaryKeyFields();
+        List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
         List primaryKeyClassifications = getPrimaryKeyClassifications();
         int size = primaryKeyFields.size();
         Vector primaryKeyValues = new NonSynchronizedVector(size);
@@ -1814,7 +1833,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             Object value = databaseRow.get(field);
             if (value != null) {
                 if (value.getClass() != classification) {
-                    value = session.getPlatform(getDescriptor().getJavaClass()).convertObject(value, classification);
+                    value = session.getPlatform(this.descriptor.getJavaClass()).convertObject(value, classification);
                 }
                 primaryKeyValues.addElement(value);
             } else {
@@ -1833,13 +1852,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
         expression.getBuilder().setSession(session.getRootSession(null));
         // Get all the field & values from expression	
-        boolean isValid = expression.extractPrimaryKeyValues(true, getDescriptor(), primaryKeyRow, translationRow);
+        boolean isValid = expression.extractPrimaryKeyValues(true, this.descriptor, primaryKeyRow, translationRow);
         if (!isValid) {
             return null;
         }
 
         // Check that the sizes match up 
-        if (primaryKeyRow.size() != getDescriptor().getPrimaryKeyFields().size()) {
+        if (primaryKeyRow.size() != this.descriptor.getPrimaryKeyFields().size()) {
             return null;
         }
 
@@ -1858,11 +1877,11 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // PERF: optimize simple primary key case, no need to remap.
-        if (getDescriptor().hasSimplePrimaryKey()) {
+        if (this.descriptor.hasSimplePrimaryKey()) {
             return databaseRow;
         }
         AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size());
-        List primaryKeyFields = getDescriptor().getPrimaryKeyFields();
+        List primaryKeyFields = this.descriptor.getPrimaryKeyFields();
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             // Ensure that the type extracted from the object is the same type as in the descriptor,
             // the main reason for this is that 1-1 can optimize on vh by getting from the row as the row-type.
@@ -1882,12 +1901,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // Allow for inheritance, the concrete descriptor must always be used.
         ClassDescriptor descriptor = null;//this variable will be assigned in the final
 
-        if (getDescriptor().hasInheritance() && (domainObject.getClass() != getDescriptor().getJavaClass()) && ((descriptor = session.getDescriptor(domainObject)).getJavaClass() != getDescriptor().getJavaClass())) {
+        if (this.descriptor.hasInheritance() && (domainObject.getClass() != this.descriptor.getJavaClass()) && ((descriptor = session.getDescriptor(domainObject)).getJavaClass() != this.descriptor.getJavaClass())) {
             return descriptor.getObjectBuilder().extractValueFromObjectForField(domainObject, field, session);
         } else {
             DatabaseMapping mapping = getMappingForField(field);
             if (mapping == null) {
-                throw DescriptorException.missingMappingForField(field, getDescriptor());
+                throw DescriptorException.missingMappingForField(field, this.descriptor);
             }
 
             return mapping.valueFromObject(domainObject, field, session);
@@ -1900,10 +1919,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * with client-side objects.
      */
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
-        // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = getDescriptor().getMappings();
-        for (int index = 0; index < mappings.size(); index++) {
-            ((DatabaseMapping)mappings.get(index)).fixObjectReferences(object, objectDescriptors, processedObjects, query, session);
+        ObjectBuilder builder = this.descriptor.getObjectBuilder();
+        // PERF: Only process relationships.
+        if (!builder.isSimple()) {
+            List<DatabaseMapping> mappings = builder.getRelationshipMappings();
+            for (int index = 0; index < mappings.size(); index++) {
+                mappings.get(index).fixObjectReferences(object, objectDescriptors, processedObjects, query, session);
+            }
         }
     }
 
@@ -1963,7 +1985,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Return the field used for the query key name.
      */
     public DatabaseField getFieldForQueryKeyName(String name) {
-        QueryKey key = getDescriptor().getQueryKeyNamed(name);
+        QueryKey key = this.descriptor.getQueryKeyNamed(name);
         if (key == null) {
             DatabaseMapping mapping = getMappingForAttributeName(name);
             if (mapping == null) {
@@ -2003,6 +2025,22 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public List<DatabaseMapping> getCloningMappings() {
         return cloningMappings;
+    }
+
+    /**
+     * PERF:
+     * Return if the descriptor has no complex mappings, all direct.
+     */
+    public boolean isSimple() {
+        return isSimple;
+    }
+    
+    /**
+     * PERF:
+     * Return all relationship mappings.
+     */
+    public List<DatabaseMapping> getRelationshipMappings() {
+        return relationshipMappings;
     }
     
     /**
@@ -2145,7 +2183,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
         //mapping is either null or not direct to field.
         //check query keys
-        QueryKey queryKey = getDescriptor().getQueryKeyNamed(queryKeyName);
+        QueryKey queryKey = this.descriptor.getQueryKeyNamed(queryKeyName);
         if ((queryKey != null) && queryKey.isDirectQueryKey()) {
             return ((DirectQueryKey)queryKey).getField();
         }
@@ -2163,6 +2201,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         getMappingsByAttribute().clear();
         getCloningMappings().clear();
         getEagerMappings().clear();
+        getRelationshipMappings().clear();
 
         for (Enumeration mappings = getDescriptor().getMappings().elements();
                  mappings.hasMoreElements();) {
@@ -2179,6 +2218,10 @@ public class ObjectBuilder implements Cloneable, Serializable {
             // Cache eager mappings.
             if (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!mapping.isLazy())) {
                 getEagerMappings().add(mapping);
+            }
+            // Cache relationship mappings.
+            if (!mapping.isDirectToFieldMapping()) {
+                getRelationshipMappings().add(mapping);
             }
 
             // Add field to mapping association
@@ -2224,12 +2267,21 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 }
             }
         }
+        this.isSimple = getRelationshipMappings().isEmpty();
 
         initializePrimaryKey(session);
-
         initializeJoinedAttributes();
     }
-
+    
+    /**
+     * INTERNAL:
+     * Post initializations after mappings are initialized.
+     */
+    public void postInitialize(AbstractSession session) throws DescriptorException {
+        // PERF: Cache if needs to unwrap to optimize unwrapping.
+        this.hasWrapperPolicy = getDescriptor().hasWrapperPolicy() || session.getProject().hasProxyIndirection();
+    }
+    
     /**
      * INTERNAL:
      * Iterates through all one to one mappings and checks if any of them use joining.
@@ -2350,7 +2402,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * this allows the stub of the clone to be registered before cloning its parts.
      */
     public Object instantiateClone(Object domainObject, AbstractSession session) {
-        return getDescriptor().getCopyPolicy().buildClone(domainObject, session);
+        return this.descriptor.getCopyPolicy().buildClone(domainObject, session);
     }
 
     /**
@@ -2362,7 +2414,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * this allows the stub of the clone to be registered before cloning its parts.
      */
     public Object instantiateWorkingCopyClone(Object domainObject, AbstractSession session) {
-        return getDescriptor().getCopyPolicy().buildWorkingCopyClone(domainObject, session);
+        return this.descriptor.getCopyPolicy().buildWorkingCopyClone(domainObject, session);
     }
 
     /**
@@ -2374,7 +2426,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * this allows the stub of the clone to be registered before cloning its parts.
      */
     public Object instantiateWorkingCopyCloneFromRow(AbstractRecord row, ObjectBuildingQuery query, Vector primaryKey, UnitOfWorkImpl unitOfWork) {
-        return getDescriptor().getCopyPolicy().buildWorkingCopyCloneFromRow(row, query, primaryKey, unitOfWork);
+        return this.descriptor.getCopyPolicy().buildWorkingCopyCloneFromRow(row, query, primaryKey, unitOfWork);
     }
 
     public boolean isPrimaryKeyMapping(DatabaseMapping mapping) {
@@ -2386,11 +2438,21 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Perform the iteration operation on the objects attributes through the mappings.
      */
     public void iterate(DescriptorIterator iterator) {
-        // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = getDescriptor().getMappings();
+        List<DatabaseMapping> mappings;
+        // Only iterate on relationships if required.
+        if (iterator.shouldIterateOnPrimitives()) {
+            mappings = this.descriptor.getMappings();
+        } else {
+            ObjectBuilder builder = this.descriptor.getObjectBuilder();
+            // PERF: Only process relationships.
+            if (builder.isSimple()) {
+                return;
+            }
+            mappings = builder.getRelationshipMappings();
+        }
         int mappingsSize = mappings.size();
         for (int index = 0; index < mappingsSize; index++) {
-            ((DatabaseMapping)mappings.get(index)).iterate(iterator);
+            mappings.get(index).iterate(iterator);
         }
     }
 
@@ -2409,13 +2471,13 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // PERF: Avoid events if no listeners.
-        if (getDescriptor().getEventManager().hasAnyEventListeners()) {
+        if (this.descriptor.getEventManager().hasAnyEventListeners()) {
             org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(target);
             event.setSession(mergeManager.getSession());
             event.setOriginalObject(source);
             event.setChangeSet(changeSet);
             event.setEventCode(DescriptorEventManager.PostMergeEvent);
-            getDescriptor().getEventManager().executeEvent(event);
+            this.descriptor.getEventManager().executeEvent(event);
         }
     }
 
@@ -2439,7 +2501,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // for GF#1139 Cascade merge operations to relationship mappings even if already registered
         
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List mappings = getDescriptor().getMappings();
+        List mappings = this.descriptor.getMappings();
         for (int index = 0; index < mappings.size(); index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
             if(!cascadeOnly || mapping.isForeignReferenceMapping()){
@@ -2448,12 +2510,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // PERF: Avoid events if no listeners.
-        if (getDescriptor().getEventManager().hasAnyEventListeners()) {
+        if (this.descriptor.getEventManager().hasAnyEventListeners()) {
             org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(target);
             event.setSession(mergeManager.getSession());
             event.setOriginalObject(source);
             event.setEventCode(DescriptorEventManager.PostMergeEvent);
-            getDescriptor().getEventManager().executeEvent(event);
+            this.descriptor.getEventManager().executeEvent(event);
         }
     }
 
@@ -2575,6 +2637,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * This is used for the wrapper policy support and EJB.
      */
     public Object unwrapObject(Object proxy, AbstractSession session) {
+        if (!this.hasWrapperPolicy) {
+            return proxy;
+        }
         if (proxy == null) {
             return null;
         }
@@ -2625,19 +2690,19 @@ public class ObjectBuilder implements Cloneable, Serializable {
         AbstractRecord translationRow = buildRowForTranslation(object, session);
 
         // If a call is used generated SQL cannot be executed, the call must be used.
-        if ((getDescriptor().getQueryManager().getReadObjectQuery() != null) && getDescriptor().getQueryManager().getReadObjectQuery().isCallQuery()) {
+        if ((this.descriptor.getQueryManager().getReadObjectQuery() != null) && this.descriptor.getQueryManager().getReadObjectQuery().isCallQuery()) {
             Object result = session.readObject(object);
             if (result != null) {
                 return false;
             }
         } else {
-            for (Enumeration tables = getDescriptor().getTables().elements();
+            for (Enumeration tables = this.descriptor.getTables().elements();
                      tables.hasMoreElements();) {
                 DatabaseTable table = (DatabaseTable)tables.nextElement();
 
                 SQLSelectStatement sqlStatement = new SQLSelectStatement();
                 sqlStatement.addTable(table);
-                if (table == getDescriptor().getTables().firstElement()) {
+                if (table == this.descriptor.getTables().firstElement()) {
                     sqlStatement.setWhereClause((Expression)getPrimaryKeyExpression().clone());
                 } else {
                     sqlStatement.setWhereClause(buildPrimaryKeyExpression(table));
@@ -2649,7 +2714,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
 
                 DataReadQuery dataReadQuery = new DataReadQuery();
                 dataReadQuery.setSQLStatement(sqlStatement);
-                dataReadQuery.setSessionName(getDescriptor().getSessionName());
+                dataReadQuery.setSessionName(this.descriptor.getSessionName());
 
                 // execute the query and check if there is a valid result
                 List queryResults = (List)session.executeQuery(dataReadQuery, translationRow);
@@ -2660,7 +2725,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         }
 
         // now ask each of the mappings to verify that the object has been deleted.
-        for (Enumeration mappings = getDescriptor().getMappings().elements();
+        for (Enumeration mappings = this.descriptor.getMappings().elements();
                  mappings.hasMoreElements();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
 
@@ -2673,10 +2738,29 @@ public class ObjectBuilder implements Cloneable, Serializable {
     }
 
     /**
+     * Return if the descriptor has a wrapper policy.
+     * Cache for performance.
+     */
+    public boolean hasWrapperPolicy() {
+        return hasWrapperPolicy;
+    }
+
+    /**
+     * Set if the descriptor has a wrapper policy.
+     * Cached for performance.
+     */
+    public void setHasWrapperPolicy(boolean hasWrapperPolicy) {
+        this.hasWrapperPolicy = hasWrapperPolicy;
+    }
+    
+    /**
      * Wrap the object if required.
      * This is used for the wrapper policy support and EJB.
      */
     public Object wrapObject(Object implementation, AbstractSession session) {
+        if (!this.hasWrapperPolicy) {
+            return implementation;
+        }
         if (implementation == null) {
             return null;
         }

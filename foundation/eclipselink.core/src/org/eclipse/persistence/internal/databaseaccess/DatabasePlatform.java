@@ -639,7 +639,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * INTERNAL
      * We support more primitive than JDBC does so we must do conversion before printing or binding.
-     * 2.0p22: protected->public INTERNAL
      */
     public Object convertToDatabaseType(Object value) {
         if (value == null) {
@@ -1020,7 +1019,7 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * Used for determining if an SQL exception was communication based. This SQL should be
-     * as effecient as possible and ensure a round trip to the database.
+     * as efficient as possible and ensure a round trip to the database.
      */
     public String getPingSQL(){
         return pingSQL;
@@ -1239,9 +1238,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Added November 7, 2000 JED
-     * Prs reference: 24501
-     * Tracker reference: 14111
      * Print the int array on the writer. Added to handle int[] passed as parameters to named queries
      * Returns the number of  objects using binding.
      */
@@ -1460,8 +1456,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * supportsAutoCommit can be set to false for JDBC drivers which do not support autocommit
-     * @return boolean
+     * supportsAutoCommit can be set to false for JDBC drivers which do not support autocommit.
      */
     public void setSupportsAutoCommit(boolean supportsAutoCommit) {
         this.supportsAutoCommit = supportsAutoCommit;
@@ -1605,10 +1600,9 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * Should the variable name of a stored procedure call be printed as part of the procedure call
      * e.g. EXECUTE PROCEDURE MyStoredProc(myvariable = ?)
-     * @return
      */
     public boolean shouldPrintStoredProcedureArgumentNameInCall(){
-	    return true;
+        return true;
     }
     
     public boolean shouldTrimStrings() {
@@ -1672,8 +1666,8 @@ public class DatabasePlatform extends DatasourcePlatform {
     
     /**
      * because each platform has different requirements for accessing stored procedures and
-     * the way that we can combine resultsets and output params the stored procedure call
-     * is being executed on the platform
+     * the way that we can combine resultsets and output params, the stored procedure call
+     * is being executed on the platform.
      */
     public Object executeStoredProcedure(DatabaseCall dbCall, PreparedStatement statement, DatabaseAccessor accessor, AbstractSession session) throws SQLException {
         Object result = null;
@@ -1712,65 +1706,70 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
         return result;
     }
-
-    /**
-     *  INTERNAL
-     *  Note that index (not index+1) is used in statement.setObject(index, parameter)
-     *    Binding starts with a 1 not 0, so make sure that index > 0.
-     */
-    public void setParameterValuesInDatabaseCall(DatabaseCall call, Vector parameters,
-        PreparedStatement statement, AbstractSession session) throws SQLException {
-
-        for (int index = 0, l = parameters.size(); index < l; index++) {
-            Object parameter = parameters.get(index);
-            setParameterValueInDatabaseCall(parameter, statement, index+1, session);
-        }
-        
-    }
     
     /**
      * Used for determining if an SQL exception was communication based. This SQL should be
-     * as effecient as possible and ensure a round trip to the database.
+     * as efficient as possible and ensure a round trip to the database.
      */
     public void setPingSQL(String pingSQL) {
         this.pingSQL = pingSQL;
     }
 
     /**
-     *  INTERNAL
-     *  handle complex parameter values if necessary
+     * INTERNAL
+     * Set the parameter in the JDBC statement.
+     * This support a wide range of different parameter types,
+     * and is heavily optimized for common types.
      */
-    public void setParameterValueInDatabaseCall(Object parameter, PreparedStatement statement,
-        int index, AbstractSession session) throws SQLException {
-        // 2.0p22: Added the following conversion before binding into prepared statement
-        parameter = convertToDatabaseType(parameter);
-        if (! setComplexParameterValue(session, statement, index, parameter)) {
-            setPrimitiveParameterValue(statement, index, parameter);
-        }
-    }
-    
-    /**
-     * Set a primitive parameter.
-     * Database platforms that need customised behavior would override this method
-     */
-    protected void setPrimitiveParameterValue(final PreparedStatement statement, final int index, 
-            final Object parameter) throws SQLException {
-        statement.setObject(index, parameter);
-    }
-
-    /**
-     * Set a complex parameter.
-     * @return true if parameter was successfully set by this method, false otherwise.
-     */
-    protected boolean setComplexParameterValue(final AbstractSession session, final PreparedStatement statement, final int index, Object parameter) throws SQLException {
-        if (parameter == null) {
-            // no DatabaseField available
+    public void setParameterValueInDatabaseCall(Object parameter,
+                PreparedStatement statement, int index, AbstractSession session)
+                throws SQLException {
+        // Process common types first.
+        if (parameter instanceof String) {
+            // Check for stream binding of large strings.
+            if (usesStringBinding() && (((String)parameter).length() > getStringBindingSize())) {
+                CharArrayReader reader = new CharArrayReader(((String)parameter).toCharArray());
+                statement.setCharacterStream(index, reader, ((String)parameter).length());
+            }
+            statement.setString(index, (String) parameter);
+        } else if (parameter instanceof Number) {
+            Number number = (Number) parameter;
+            if (number instanceof Integer) {
+                statement.setInt(index, number.intValue());
+            } else if (number instanceof Long) {
+                statement.setLong(index, number.longValue());
+            }  else if (number instanceof BigDecimal) {
+                statement.setBigDecimal(index, (BigDecimal) number);
+            } else if (number instanceof Double) {
+                statement.setDouble(index, number.doubleValue());
+            } else if (number instanceof Float) {
+                statement.setFloat(index, number.floatValue());
+            } else if (number instanceof Short) {
+                statement.setShort(index, number.shortValue());
+            } else if (number instanceof Byte) {
+                statement.setByte(index, number.byteValue());
+            } else if (number instanceof BigInteger) {
+                // Convert to BigDecimal.
+                statement.setBigDecimal(index, new BigDecimal((BigInteger) number));
+            } else {
+                statement.setObject(index, parameter);
+            }
+        }  else if (parameter instanceof java.sql.Date){
+            statement.setDate(index,(java.sql.Date)parameter);
+        } else if (parameter instanceof java.sql.Timestamp){
+            statement.setTimestamp(index,(java.sql.Timestamp)parameter);
+        } else if (parameter instanceof java.sql.Time){
+            statement.setTime(index,(java.sql.Time)parameter);
+        } else if (parameter instanceof Boolean) {
+            statement.setBoolean(index, ((Boolean) parameter).booleanValue());
+        } else if (parameter == null) {
+            // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
             statement.setNull(index, getJDBCType((Class)null));
         } else if (parameter instanceof DatabaseField) {
             // Substituted null value for the corresponding DatabaseField.
-            // Cannot bind null through set object, so we must compute to type, this sucks.
+            // Cannot bind null through set object, so we must compute the type, this sucks.
             // Fix for bug 2730536: for ARRAY/REF/STRUCT types must pass in the 
-            // user defined type to setNull aswell.
+            // user defined type to setNull as well.
             if (parameter instanceof ObjectRelationalDatabaseField) {
                 ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)parameter;
                 statement.setNull(index, field.getSqlType(), field.getSqlTypeName());
@@ -1778,51 +1777,36 @@ public class DatabasePlatform extends DatasourcePlatform {
                 int jdbcType = getJDBCType((DatabaseField)parameter);
                 statement.setNull(index, jdbcType);
             }
-        } else if ((parameter instanceof byte[]) && (usesStreamsForBinding())) {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream((byte[])parameter);
-            statement.setBinaryStream(index, inputStream, ((byte[])parameter).length);
-        } else if ((parameter instanceof String) && usesStringBinding() && (((String)parameter).length() > getStringBindingSize())) {
-            CharArrayReader reader = new CharArrayReader(((String)parameter).toCharArray());
-            statement.setCharacterStream(index, reader, ((String)parameter).length());
+        } else if (parameter instanceof byte[]) {
+            if (usesStreamsForBinding()) {
+                ByteArrayInputStream inputStream = new ByteArrayInputStream((byte[])parameter);
+                statement.setBinaryStream(index, inputStream, ((byte[])parameter).length);
+            } else {
+                statement.setBytes(index, (byte[])parameter);                
+            }
+        }
+        // Next process types that need conversion.
+        else if (parameter instanceof Calendar) {
+            statement.setTimestamp(index, Helper.timestampFromDate(((Calendar)parameter).getTime()));
+        } else if (parameter.getClass() == ClassConstants.UTILDATE) {
+            statement.setTimestamp(index, Helper.timestampFromDate((java.util.Date) parameter));
+        } else if (parameter instanceof Character) {
+            statement.setString(index, ((Character)parameter).toString());
+        } else if (parameter instanceof char[]) {
+            statement.setString(index, new String((char[])parameter));
+        } else if (parameter instanceof Character[]) {
+            statement.setString(index, (String)convertObject(parameter, ClassConstants.STRING));
+        } else if (parameter instanceof Byte[]) {
+            statement.setBytes(index, (byte[])convertObject(parameter, ClassConstants.APBYTE));
         } else if (parameter instanceof BindCallCustomParameter) {
             ((BindCallCustomParameter)(parameter)).set(this, statement, index, session);
         } else if (typeConverters != null && typeConverters.containsKey(parameter.getClass())){
             StructConverter converter = getTypeConverters().get(parameter.getClass());
             parameter = converter.convertToStruct(parameter, getConnection(session, statement.getConnection()));
             statement.setObject(index, parameter);
-        } else if (parameter instanceof java.sql.Date){
-            //Essentials Bug#1878 - Fix the bug that the wrong date is entered into the oracle database 
-            //when the timezone is Korea/Seoul. The bug is fixed by caculating the date with the default 
-            //timezone, which is that of the virtual machine running the application. 
-            statement.setDate(index,(java.sql.Date)parameter);
         } else {
             statement.setObject(index, parameter);
         }
-        return true;
-    }
-
-    /**
-     *  INTERNAL
-     *    Used by SQLCall.prepareStatement(..)
-     *  Note that parameterIndex corresponds to parameters vector and
-     *  index corresponds to statement:
-     *    statement.setObject(parameterIndex + 1, parameters.elementAt(parameterIndex))
-     *    Therefore parameterIndex may be 0.
-     */
-    public void setParameterValueInDatabaseCall(Vector parameters, PreparedStatement statement, int parameterIndex, AbstractSession session) throws SQLException {
-        setParameterValueInDatabaseCall(parameters, statement, parameterIndex, parameterIndex + 1, session);
-    }
-
-    /**
-     *  INTERNAL
-     *    Used by StoredProcedureCall.prepareStatement(..)
-     *  Note that parameterIndex corresponds to parameters vector and
-     *  index corresponds to statement:
-     *    statement.setObject(index, parameters.elementAt(parameterIndex))
-     *    Therefore parameterIndex may be 0, but index > 0.
-     */
-    public void setParameterValueInDatabaseCall(Vector parameters, PreparedStatement statement, int parameterIndex, int index, AbstractSession session) throws SQLException {
-        setParameterValueInDatabaseCall(parameters.elementAt(parameterIndex), statement, index, session);
     }
 
     public boolean usesBatchWriting() {

@@ -640,22 +640,23 @@ public abstract class DatabaseCall extends DatasourceCall {
         Statement statement = accessor.prepareStatement(this, session,shouldUnwrapConnection);
 
         // Setup the max rows returned and query timeout limit.
-        if (getQueryTimeout() > 0) { 
-            statement.setQueryTimeout(getQueryTimeout()); 
+        if (this.queryTimeout > 0) { 
+            statement.setQueryTimeout(this.queryTimeout); 
         } 
-        if (!this.ignoreFirstRowMaxResultsSettings && getMaxRows() > 0) { 
-            statement.setMaxRows(getMaxRows()); 
+        if (!this.ignoreFirstRowMaxResultsSettings && this.maxRows > 0) { 
+            statement.setMaxRows(this.maxRows); 
         }
-        if (getResultSetFetchSize() > 0) { 
-            statement.setFetchSize(getResultSetFetchSize());
+        if (this.resultSetFetchSize > 0) { 
+            statement.setFetchSize(this.resultSetFetchSize);
         } 
 
-        if (!hasParameters()) {
+        List parameters = getParameters();
+        if (parameters == null) {
             return statement;
         }
-
-        for (int index = 0; index < getParameters().size(); index++) {
-            session.getPlatform().setParameterValueInDatabaseCall(this.getParameters(), (PreparedStatement)statement, index, session);
+        int size = parameters.size();
+        for (int index = 0; index < size; index++) {
+            session.getPlatform().setParameterValueInDatabaseCall(parameters.get(index), (PreparedStatement)statement, index+1, session);
         }
 
         return statement;

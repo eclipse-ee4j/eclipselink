@@ -243,12 +243,12 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         Object mergedObject = super.mergeCloneWithReferences(rmiClone, manager);
         
         //iterate over new objects, assign sequences and put in the identitymap
-        IdentityHashMap itable = manager.getMergedNewObjects();
-        Iterator i = itable.values().iterator();
-        while ( i.hasNext() ){
-            Object newObjectClone = i.next();
-            assignSequenceNumber(newObjectClone);
-            registerNewObjectInIdentityMap(newObjectClone, null);
+        Iterator iterator = manager.getMergedNewObjects().values().iterator();
+        while (iterator.hasNext()) {
+            Object newObjectClone = iterator.next();
+            ClassDescriptor descriptor = getDescriptor(newObjectClone);
+            assignSequenceNumber(newObjectClone, descriptor);
+            registerNewObjectInIdentityMap(newObjectClone, null, descriptor);
         }
         
         return mergedObject;
@@ -335,16 +335,16 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * otherwise the superclass method called.
      */
     protected void registerNotRegisteredNewObjectForPersist(Object newObject, ClassDescriptor descriptor) {
-        if(unregisteredDeletedObjectsCloneToBackupAndOriginal != null) {
+        if (unregisteredDeletedObjectsCloneToBackupAndOriginal != null) {
             Object[] backupAndOriginal = (Object[])unregisteredDeletedObjectsCloneToBackupAndOriginal.remove(newObject);
-            if(backupAndOriginal != null) {
+            if (backupAndOriginal != null) {
                 // backup
                 getCloneMapping().put(newObject, backupAndOriginal[0]);
                 // original
                 registerNewObjectClone(newObject, backupAndOriginal[1], descriptor);
 
                 // Check if the new objects should be cached.
-                registerNewObjectInIdentityMap(newObject, newObject);
+                registerNewObjectInIdentityMap(newObject, newObject, descriptor);
                 
                 return;
             }

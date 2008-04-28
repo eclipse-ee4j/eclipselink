@@ -13,9 +13,12 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  *    <p><b>Purpose</b>: Provides DBase specific behavior.
@@ -58,18 +61,30 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
 
         return fieldTypeMapping;
     }
-
+    
+    /**
+     * INTERNAL
+     * We support more primitive than JDBC does so we must do conversion before printing or binding.
+     */
+    public Object convertToDatabaseType(Object value) {
+        Object databaseValue = super.convertToDatabaseType(value);
+        if ((databaseValue instanceof java.sql.Time) || (databaseValue instanceof java.sql.Timestamp)) {
+            databaseValue = databaseValue.toString();
+        }
+        return databaseValue;
+    }
+    
     /**
      * INTERNAL:
      * DBase does not support Time/Timestamp so we must map to strings.
-     * 2.0p22: protected->public INTERNAL
      */
-    public Object convertToDatabaseType(Object value) {
-        Object dbValue = super.convertToDatabaseType(value);
-        if ((dbValue instanceof java.sql.Time) || (dbValue instanceof java.sql.Timestamp)) {
-            return dbValue.toString();
+    public void setParameterValueInDatabaseCall(Object parameter,
+            PreparedStatement statement, int index, AbstractSession session) throws SQLException {
+        Object databaseValue = super.convertToDatabaseType(parameter);
+        if ((databaseValue instanceof java.sql.Time) || (databaseValue instanceof java.sql.Timestamp)) {
+            databaseValue = databaseValue.toString();
         }
-        return dbValue;
+        super.setParameterValueInDatabaseCall(databaseValue, statement, index, session);
     }
 
     /**

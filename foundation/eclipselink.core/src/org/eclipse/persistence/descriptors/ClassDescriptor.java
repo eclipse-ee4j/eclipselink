@@ -2550,6 +2550,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
             }
             field.setIndex(index);
         }
+        getObjectBuilder().postInitialize(session);
 
         validateAfterInitialization(session);
 
@@ -3701,7 +3702,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /**
      * ADVANCED:
      * Sets the WrapperPolicy for this descriptor.
-     * This advacned feature can be used to wrap objects with other classes such as CORBA TIE objects or EJBs.
+     * This advanced feature can be used to wrap objects with other classes such as CORBA TIE objects or EJBs.
      */
     public void setWrapperPolicy(WrapperPolicy wrapperPolicy) {
         this.wrapperPolicy = wrapperPolicy;
@@ -3711,6 +3712,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (wrapperPolicy != null) {
             wrapperPolicy.setDescriptor(this);
         }
+        getObjectBuilder().setHasWrapperPolicy(wrapperPolicy != null);
     }
 
     /**

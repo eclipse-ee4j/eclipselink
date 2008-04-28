@@ -271,9 +271,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * Exceptions are caught and re-thrown as EclipseLink exceptions.
      */
     protected void checkTransactionIsolation(AbstractSession session) throws DatabaseException {
-        if ((!isInTransaction()) && (getLogin() != null) && (((DatabaseLogin)getLogin()).getTransactionIsolation() != -1)) {
+        if ((!this.isInTransaction) && (this.login != null) && (((DatabaseLogin)this.login).getTransactionIsolation() != -1)) {
             try {
-                getConnection().setTransactionIsolation(((DatabaseLogin)getLogin()).getTransactionIsolation());
+                getConnection().setTransactionIsolation(((DatabaseLogin)this.login).getTransactionIsolation());
             } catch (java.sql.SQLException sqlEx) {
                 DatabaseException commException = processExceptionForCommError(session, sqlEx, null);
                 if (commException != null) throw commException;
@@ -518,7 +518,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         }
 
         // If the login is null, then this accessor has never been connected.
-        if (getLogin() == null) {
+        if (this.login == null) {
             throw DatabaseException.databaseAccessorNotConnected();
         }
 
@@ -746,7 +746,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             } else {
                 rowCount = ((PreparedStatement)statement).executeUpdate();
             }
-            if ((!getPlatform().supportsAutoCommit()) && (!isInTransaction())) {
+            if ((!getPlatform().supportsAutoCommit()) && (!this.isInTransaction)) {
                 getPlatform().autoCommit(this);
             }
         } catch (SQLException exception) {
@@ -1006,12 +1006,12 @@ public class DatabaseAccessor extends DatasourceAccessor {
     }
 
     /**
-     *    Return the receiver's connection to its data source. A connection is used to execute queries on,
-     *    and retrieve data from, a data source.
-     *    @see java.sql.Connection
+     * Return the receiver's connection to its data source. A connection is used to execute queries on,
+     * and retrieve data from, a data source.
+     * @see java.sql.Connection
      */
     public Connection getConnection() throws DatabaseException {
-        return (Connection)getDatasourceConnection();
+        return (Connection)this.datasourceConnection;
     }
 
     /**
@@ -1264,7 +1264,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * Return the batch writing mode.
      */
     protected boolean isInBatchWritingMode(AbstractSession session) {
-        return getPlatform().usesBatchWriting() && isInTransaction();
+        return getPlatform().usesBatchWriting() && this.isInTransaction;
     }
 
     /**
@@ -1458,8 +1458,8 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
         //Bug#3214927 The size for ParameterizedBatchWriting represents the number of statements 
         //and the max size is only 100.
-        if (((DatabaseLogin)getLogin()).getMaxBatchWritingSize() == DatabasePlatform.DEFAULT_MAX_BATCH_WRITING_SIZE) {
-            ((DatabaseLogin)getLogin()).setMaxBatchWritingSize(DatabasePlatform.DEFAULT_PARAMETERIZED_MAX_BATCH_WRITING_SIZE);
+        if (((DatabaseLogin)this.login).getMaxBatchWritingSize() == DatabasePlatform.DEFAULT_MAX_BATCH_WRITING_SIZE) {
+            ((DatabaseLogin)this.login).setMaxBatchWritingSize(DatabasePlatform.DEFAULT_PARAMETERIZED_MAX_BATCH_WRITING_SIZE);
         }
     }
 
@@ -1470,8 +1470,8 @@ public class DatabaseAccessor extends DatasourceAccessor {
     public void setActiveBatchWritingMechanismToDynamicSQL() {
         this.activeBatchWritingMechanism = this.dynamicSQLMechanism;
         // Bug#3214927-fix - Also the size must be switched back when switch back from param to dynamic.
-        if (((DatabaseLogin)getLogin()).getMaxBatchWritingSize() == DatabasePlatform.DEFAULT_PARAMETERIZED_MAX_BATCH_WRITING_SIZE) {
-            ((DatabaseLogin)getLogin()).setMaxBatchWritingSize(DatabasePlatform.DEFAULT_MAX_BATCH_WRITING_SIZE);
+        if (((DatabaseLogin)this.login).getMaxBatchWritingSize() == DatabasePlatform.DEFAULT_PARAMETERIZED_MAX_BATCH_WRITING_SIZE) {
+            ((DatabaseLogin)this.login).setMaxBatchWritingSize(DatabasePlatform.DEFAULT_MAX_BATCH_WRITING_SIZE);
         }
     }
 

@@ -118,13 +118,25 @@ public abstract class DatasourceAccessor implements Accessor {
     /**
      *  Indicates that isInTransaction flag is about to change from false to true.
      */
-    protected transient boolean isBeginningTransaction;
+    protected boolean isBeginningTransaction;
 
     /**
      *  Indicates that isInTransaction flag is about to change from true to false
      */
-    protected transient boolean isCompletingTransaction;
+    protected boolean isCompletingTransaction;
 
+    /**
+     * PERF: Cache connection pooling flag.
+     */
+    protected boolean usesExternalConnectionPooling;
+    
+    /**
+     * Back-door to allow isConnect checks.
+     * Since we now support fail-over and retry, removing old isConnected usage which can
+     * cause major performance issues (on Sybase), and minor ones in general.
+     */
+    public static boolean shouldCheckConnection = false;
+    
     /**
      *    Default Constructor.
      */
@@ -155,8 +167,8 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     public void closeJTSConnection() {
         if (usesExternalTransactionController()) {
-            setIsInTransaction(false);
-            if (usesExternalConnectionPooling()) {
+            this.isInTransaction = false;
+            if (this.usesExternalConnectionPooling) {
                 closeConnection();
             }
         }
@@ -197,10 +209,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * Return true if some external connection pool is in use.
      */
     public boolean usesExternalConnectionPooling() {
-        if (getLogin() == null) {
-            throw DatabaseException.databaseAccessorNotConnected();
-        }
-        return getLogin().shouldUseExternalConnectionPooling();
+        return usesExternalConnectionPooling;
     }
 
     /**
@@ -208,10 +217,10 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     public void beginTransaction(AbstractSession session) throws DatabaseException {
         if (usesExternalTransactionController()) {
-            if(session.isExclusiveConnectionRequired() && !isInTransaction() && usesExternalConnectionPooling()) {
+            if (session.isExclusiveConnectionRequired() && !this.isInTransaction && this.usesExternalConnectionPooling) {
                 closeConnection();
             }
-            setIsInTransaction(true);
+            this.isInTransaction = true;
             return;
         }
 
@@ -222,7 +231,7 @@ public abstract class DatasourceAccessor implements Accessor {
             isBeginningTransaction = true;
             incrementCallCount(session);
             basicBeginTransaction(session);
-            setIsInTransaction(true);
+            this.isInTransaction = true;
         } finally {
             isBeginningTransaction = false;
             decrementCallCount();
@@ -249,13 +258,13 @@ public abstract class DatasourceAccessor implements Accessor {
      * Used for load balancing and external pooling.
      */
     public synchronized void decrementCallCount() {
-        int count = getCallCount();
+        int count = this.callCount;
         // Avoid decrementing count if already zero, (failure before increment).
         if (count <= 0) {
             return;
         }
-        setCallCount(count - 1);
-        if (usesExternalConnectionPooling() && (!isInTransaction()) && (currentSession == null || !currentSession.isExclusiveConnectionRequired()) && (count == 1)) {
+        this.callCount--;
+        if (this.usesExternalConnectionPooling && (!this.isInTransaction) && (currentSession == null || !currentSession.isExclusiveConnectionRequired()) && (count == 1)) {
             try {
                 closeConnection();
             } catch (DatabaseException ignore) {
@@ -268,18 +277,18 @@ public abstract class DatasourceAccessor implements Accessor {
      * Used for load balancing and external pooling.
      */
     public synchronized void incrementCallCount(AbstractSession session) {
-        setCallCount(getCallCount() + 1);
+        this.callCount++;
 
-        if (getCallCount() == 1) {
+        if (this.callCount == 1) {
             // If the login is null, then this accessor has never been connected.
-            if (getLogin() == null) {
+            if (this.login == null) {
                 throw DatabaseException.databaseAccessorNotConnected();
             }
 
             // If the connection is no longer connected, it may have timed out.
-            if (getDatasourceConnection() != null) {
-                if (!isConnected()) {
-                    if (isInTransaction()) {
+            if (this.datasourceConnection != null) {
+                if (shouldCheckConnection && !isConnected()) {
+                    if (this.isInTransaction) {
                         throw DatabaseException.databaseAccessorNotConnected();
                     } else {
                         reconnect(session);
@@ -287,16 +296,16 @@ public abstract class DatasourceAccessor implements Accessor {
                 }
             } else {
                 // If ExternalConnectionPooling is used, the connection can be re-established.
-                if (usesExternalConnectionPooling()) {
+                if (this.usesExternalConnectionPooling) {
                     reconnect(session);
                     // either transaction is starting (the method is called from beginTransaction, no externalTransactionController case)
                     // or the connection is required for the session which is
                     //   either in transaction already (will happen in externalTransactionController case);
                     //   or requires exclusive connection.
-                    if(isBeginningTransaction || isInTransaction() || session.isExclusiveConnectionRequired()) {
+                    if (this.isBeginningTransaction || this.isInTransaction || session.isExclusiveConnectionRequired()) {
                         session.postConnectExternalConnection(this);
                         currentSession = session;
-                    } else if(isCompletingTransaction) {
+                    } else if (isCompletingTransaction) {
                         currentSession = session;
                     }
                 } else {
@@ -320,8 +329,8 @@ public abstract class DatasourceAccessor implements Accessor {
      * Exceptions are caught and re-thrown as EclipseLink exceptions.
      */
     protected void connectInternal(Login login, AbstractSession session) throws DatabaseException {
-        setDatasourceConnection(login.connectToDatasource(this, session));
-        setIsConnected(true);
+        this.datasourceConnection = login.connectToDatasource(this, session);
+        this.isConnected = true;
     }
 
     /**
@@ -356,8 +365,8 @@ public abstract class DatasourceAccessor implements Accessor {
             // 'usesExternalTransactionController' on the login, but still acquire a uow that WON'T be
             // synchronized with a global TX.
             if (!session.isSynchronized()) {
-                setIsInTransaction(false);
-                if (usesExternalConnectionPooling()) {
+                this.isInTransaction = false;
+                if (this.usesExternalConnectionPooling) {
                     // closeConnection method uses currentSession and then sets it to null.
                     currentSession = session;
                     closeConnection();
@@ -377,7 +386,7 @@ public abstract class DatasourceAccessor implements Accessor {
             if(sequencingCallback != null) {
                 sequencingCallback.afterCommit(this);
             }
-            setIsInTransaction(false);
+            this.isInTransaction = false;
         } finally {
             isCompletingTransaction = false;
             sequencingCallback = null;
@@ -402,7 +411,7 @@ public abstract class DatasourceAccessor implements Accessor {
             this.setDatasourcePlatform((DatasourcePlatform)session.getDatasourceLogin().getDatasourcePlatform());
             try {
                 connectInternal(login, session);
-                setIsInTransaction(false);
+                this.isInTransaction = false;
             } catch (RuntimeException exception) {
                 session.handleSevere(exception);
             }
@@ -446,22 +455,23 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     protected void setLogin(Login login) {
         this.login = login;
+        this.usesExternalConnectionPooling = login.shouldUseExternalConnectionPooling();        
     }
 
     /**
-     *    Disconnect from the datasource.
+     * Disconnect from the datasource.
      */
     public void disconnect(AbstractSession session) throws DatabaseException {
         session.log(SessionLog.CONFIG, SessionLog.CONNECTION, "disconnect", (Object[])null, this);
 
-        if (getDatasourceConnection() == null) {
+        if (this.datasourceConnection == null) {
             return;
         }
         session.incrementProfile(SessionProfiler.TlDisconnects);
         session.startOperationProfile(SessionProfiler.CONNECT);
         closeDatasourceConnection();
-        setDatasourceConnection(null);
-        setIsInTransaction(false);
+        this.datasourceConnection = null;
+        this.isInTransaction = true;
         session.endOperationProfile(SessionProfiler.CONNECT);
     }
 
@@ -472,18 +482,18 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     public void closeConnection() {
         try {
-            if (getDatasourceConnection() != null) {
+            if (this.datasourceConnection != null) {
                 if (isDatasourceConnected()) {
                     if(currentSession != null) {
                         currentSession.preDisconnectExternalConnection(this);
                     }
                     closeDatasourceConnection();
                 }
-                setDatasourceConnection(null);
+                this.datasourceConnection = null;
             }
         } catch (DatabaseException exception) {
             // Ignore
-            setDatasourceConnection(null);
+            this.datasourceConnection = null;
         } finally {
             currentSession = null;
         }
@@ -495,7 +505,7 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     public Object executeCall(Call call, AbstractRecord translationRow, AbstractSession session) throws DatabaseException {
         // If the login is null, then this accessor has never been connected.
-        if (getLogin() == null) {
+        if (this.login == null) {
             throw DatabaseException.databaseAccessorNotConnected();
         }
 
@@ -521,7 +531,7 @@ public abstract class DatasourceAccessor implements Accessor {
             session.log(SessionLog.CONFIG, SessionLog.CONNECTION, "reconnecting", args, this);
         }
         reconnect(session);
-        setIsInTransaction(false);
+        this.isInTransaction = false;
         this.isValid = true;
         session.getEventManager().postConnect(this);
     }
@@ -534,7 +544,7 @@ public abstract class DatasourceAccessor implements Accessor {
     protected void reconnect(AbstractSession session) throws DatabaseException {
         session.log(SessionLog.FINEST, SessionLog.CONNECTION, "reconnecting_to_external_connection_pool");
         session.startOperationProfile(SessionProfiler.CONNECT);
-        connectInternal(getLogin(), session);
+        connectInternal(this.login, session);
         session.endOperationProfile(SessionProfiler.CONNECT);
     }
 
@@ -566,7 +576,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * Was going to deprecate this, but since most clients are JDBC this is useful.
      */
     public java.sql.Connection getConnection() {
-        return (java.sql.Connection)getDatasourceConnection();
+        return (java.sql.Connection)this.datasourceConnection;
     }
 
     /**
@@ -624,8 +634,8 @@ public abstract class DatasourceAccessor implements Accessor {
             // 'usesExternalTransactionController' on the login, but still acquire a uow that WON'T be
             // synchronized with a global TX.
             if (!session.isSynchronized()) {
-                setIsInTransaction(false);
-                if (usesExternalConnectionPooling()) {
+                this.isInTransaction = false;
+                if (this.usesExternalConnectionPooling) {
                     // closeConnection method uses currentSession and then sets it to null.
                     currentSession = session;
                     closeConnection();
@@ -642,7 +652,7 @@ public abstract class DatasourceAccessor implements Accessor {
             incrementCallCount(session);
             basicRollbackTransaction(session);
         } finally {
-            setIsInTransaction(false);
+            this.isInTransaction = false;
             isCompletingTransaction = false;
             sequencingCallback = null;
             decrementCallCount();
@@ -654,25 +664,25 @@ public abstract class DatasourceAccessor implements Accessor {
      * Return true if some external transaction service is controlling transactions.
      */
     public boolean usesExternalTransactionController() {
-        if (getLogin() == null) {
+        if (this.login == null) {
             throw DatabaseException.databaseAccessorNotConnected();
         }
-        return getLogin().shouldUseExternalTransactionController();
+        return this.login.shouldUseExternalTransactionController();
     }
 
     /**
-     *    Return true if the accessor is currently connected to a data source.
-     *  Return false otherwise.
+     * Return true if the accessor is currently connected to a data source.
+     * Return false otherwise.
      */
     public boolean isConnected() {
-        if ((getDatasourceConnection() == null) && (getLogin() == null)) {
+        if ((this.datasourceConnection == null) && (this.login == null)) {
             return false;
         }
-        if (usesExternalConnectionPooling()) {
+        if (this.usesExternalConnectionPooling) {
             return true;// As can always reconnect.
         }
 
-        if (getDatasourceConnection() == null) {
+        if (this.datasourceConnection == null) {
             return false;
         }
 

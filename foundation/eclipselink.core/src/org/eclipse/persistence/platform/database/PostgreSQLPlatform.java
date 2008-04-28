@@ -14,10 +14,6 @@ package org.eclipse.persistence.platform.database;
 
 import java.io.*;
 import java.util.*;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
@@ -320,45 +316,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      */
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
-    }    
-     
-    /**
-     * Set a primitive parameter.
-     * Postgres jdbc client driver give problem when doing a setObject() for wrapper types.
-     * Ideally this code should be in the DatabasePlatform so that all platforms can use
-     * this. 
-     */        
-    protected void setPrimitiveParameterValue(final PreparedStatement statement, final int index, 
-            final Object parameter) throws SQLException {
-       if (parameter instanceof Number) {
-            Number number = (Number) parameter;
-            if (number instanceof Integer) {
-                statement.setInt(index, number.intValue());
-            } else if (number instanceof Long) {
-                statement.setLong(index, number.longValue());
-            } else if (number instanceof Short) {
-                statement.setShort(index, number.shortValue());
-            } else if (number instanceof Byte) {
-                statement.setByte(index, number.byteValue());
-            } else if (number instanceof Double) {
-                statement.setDouble(index, number.doubleValue());
-            } else if (number instanceof Float) {
-                statement.setFloat(index, number.floatValue());
-            } else if (number instanceof BigDecimal) {
-                statement.setBigDecimal(index, (BigDecimal) number);
-            } else if (number instanceof BigInteger) {
-                statement.setBigDecimal(index, new BigDecimal((BigInteger) number));
-            } else {
-                statement.setObject(index, parameter);
-            }
-        } else if (parameter instanceof String) {
-            statement.setString(index, (String)parameter);
-        } else if (parameter instanceof Boolean) {
-            statement.setBoolean(index, ((Boolean) parameter).booleanValue());
-        } else {
-            statement.setObject(index, parameter);
-        }           
-    }   
+    }
 
     /**
      * INTERNAL:

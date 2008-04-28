@@ -28,7 +28,8 @@ import java.lang.reflect.*;
  * Note the usage of do privileged has major impacts on performance, so should normally be avoided.
  */
 public class PrivilegedAccessHelper {
-    private static Boolean shouldUsePrivilegedAccess = false;
+    private static boolean shouldCheckPrivilegedAccess = true;
+    private static boolean shouldUsePrivilegedAccess = false;
 
     /**
      * Finding a field within a class potentially has to navigate through it's superclasses to eventually
@@ -348,7 +349,7 @@ public class PrivilegedAccessHelper {
      */
     public static boolean shouldUsePrivilegedAccess() {
         // We will only detect whether to use doPrivileged once.
-        if (shouldUsePrivilegedAccess == null) {
+        if (shouldCheckPrivilegedAccess) {
             if (System.getSecurityManager() != null) {    
                 Boolean privilegedPropertySet = (Boolean)AccessController.doPrivileged(new PrivilegedAction() {
                         public Object run() {
@@ -360,6 +361,7 @@ public class PrivilegedAccessHelper {
             } else {
                 shouldUsePrivilegedAccess = false;
             }
+            shouldCheckPrivilegedAccess = false;
         }
         return shouldUsePrivilegedAccess;
     }

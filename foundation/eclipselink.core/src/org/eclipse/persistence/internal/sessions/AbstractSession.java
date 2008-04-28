@@ -326,10 +326,78 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * INTERNAL:
      * Called by beginTransaction() to start a transaction.
      * This starts a real database transaction.
+     * Allows retry if the connection is dead.
      */
     protected void basicBeginTransaction() throws DatabaseException {
+        basicBeginTransaction(0);
+    }
+    
+    /**
+     * INTERNAL:
+     * Called by beginTransaction() to start a transaction.
+     * This starts a real database transaction.
+     * Allows retry if the connection is dead.
+     */
+    protected void basicBeginTransaction(int retryCount) throws DatabaseException {
         try {
             getAccessor().beginTransaction(this);
+        } catch (DatabaseException databaseException) {
+            // Retry if the failure was communication based?  (i.e. timeout, database down, can no longer ping)
+            if ((!getLogin().shouldUseExternalTransactionController()) && databaseException.isCommunicationFailure()) {
+                DatabaseException exceptionToThrow = databaseException;
+                log(SessionLog.INFO, "communication_failure_attempting_query_retry", (Object[])null, null);
+                // Attempt to reconnect connection.
+                while (retryCount < getLogin().getQueryRetryAttemptCount()) {
+                    try {
+                        // if database session then re-establish
+                        // connection
+                        // else the session will just get a new
+                        // connection from the pool
+                        databaseException.getAccessor().reestablishConnection(this);
+                        break;
+                    } catch (DatabaseException ex) {
+                        // failed to get connection because of
+                        // database error.
+                        ++retryCount;
+                        try {
+                            // Give the failover time to recover.
+                            Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
+                            log(SessionLog.INFO, "communication_failure_attempting_query_retry", (Object[])null, null);
+                        } catch (InterruptedException intEx) {
+                            break;
+                        }
+                    }
+                }
+                //retry
+                if (retryCount <= getLogin().getQueryRetryAttemptCount()) {
+                    try {
+                        // attempt to reconnect for a certain number of times.
+                        // servers may take some time to recover.
+                        ++retryCount;
+                        try {
+                            //passing the retry count will prevent a runaway retry where
+                            // we can acquire connections but are unable to execute any queries
+                            if (retryCount > 1){
+                                // We are retrying more than once lets wait to give connection time to restart.
+                                //Give the failover time to recover.
+                                Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
+                            }
+                            basicBeginTransaction(retryCount);
+                            return;
+                        } catch (DatabaseException ex){
+                            //replace original exception with last exception thrown
+                            //this exception could be a data based exception as apposed
+                            //to a connection exception that needs to go back to the customer.
+                            exceptionToThrow = ex;
+                        }
+                    } catch (InterruptedException ex) {
+                        //Ignore interrupted exception.
+                    }
+                }
+                handleException(exceptionToThrow);
+            } else {
+                handleException(databaseException);
+            }
         } catch (RuntimeException exception) {
             handleException(exception);
         }
@@ -1092,46 +1160,51 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                         this.log(SessionLog.INFO, "communication_failure_attempting_query_retry", (Object[])null, null);
                         
                         //attempt to reconnect connection:
-                        if (this.isDatabaseSession()){
-                        	while (retryCount < getLogin().getQueryRetryAttemptCount()){
-	                            try{
-                                    //if database session then re-establish connection
-                                    //else the session will just get a new connection from the pool
+                        if (this.isDatabaseSession()) {
+                            while (retryCount < getLogin().getQueryRetryAttemptCount()) {
+                                try {
+                                    // if database session then re-establish
+                                    // connection
+                                    // else the session will just get a new
+                                    // connection from the pool
                                     databaseException.getAccessor().reestablishConnection(this);
-	                                break;
-	                            }catch (DatabaseException ex){
-	                            	//failed to get connection because of database error.
-	                            	++retryCount;
-	                            	try{
-	                                    Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());  //lets give the failover time to recover.
-	                                    this.log(SessionLog.INFO, "communication_failure_attempting_query_retry", (Object[])null, null);
-	                                }catch (InterruptedException intEx){
-	                                    break;
-	                                }
-	                            }
-                        	}
+                                    break;
+                                } catch (DatabaseException ex) {
+                                    // failed to get connection because of
+                                    // database error.
+                                    ++retryCount;
+                                    try {
+                                        // Give the failover time to recover.
+                                        Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
+                                        log(SessionLog.INFO, "communication_failure_attempting_query_retry", (Object[])null, null);
+                                    } catch (InterruptedException intEx) {
+                                        break;
+                                    }
+                                }
+                            }
                         }
                         //retry
-                        if (retryCount <= getLogin().getQueryRetryAttemptCount()){
-                            try{
+                        if (retryCount <= getLogin().getQueryRetryAttemptCount()) {
+                            try {
                                 // attempt to reconnect for a certain number of times.
                                 // servers may take some time to recover.
                                 ++retryCount;
-                                try{
+                                try {
                                     //passing the retry count will prevent a runaway retry where
                                     // we can acquire connections but are unable to execute any queries
-                                	if (retryCount > 1){
-                                		//we are retrying more than once lets wait to give connection time to restart
-                                        Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());  //lets give the failover time to recover.
-                                	}
+                                    if (retryCount > 1){
+                                        // We are retrying more than once lets wait to give connection time to restart.
+                                        //Give the failover time to recover.
+                                        Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
+                                    }
                                     return executeQuery(query, row, retryCount);
-                                }catch (DatabaseException ex){
+                                } catch (DatabaseException ex){
                                     //replace original exception with last exception thrown
                                     //this exception could be a data based exception as apposed
                                     //to a connection exception that needs to go back to the customer.
                                     exception = ex;
                                 }
-                            }catch (InterruptedException ex){
+                            } catch (InterruptedException ex) {
                                 //Ignore interrupted exception.
                             }
                         }
@@ -1457,11 +1530,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
         // Optimize descriptor lookup through caching the last one accessed.
         ClassDescriptor lastDescriptor = this.lastDescriptorAccessed;
-        if ((lastDescriptor != null) && (lastDescriptor.getJavaClass().equals(theClass))) {
+        if ((lastDescriptor != null) && (lastDescriptor.getJavaClass() == theClass)) {
             return lastDescriptor;
         }
 
-        ClassDescriptor descriptor = (ClassDescriptor)getDescriptors().get(theClass);
+        ClassDescriptor descriptor = (ClassDescriptor)this.project.getDescriptors().get(theClass);
 
         if ((descriptor == null) && hasBroker()) {
             // Also check the broker
@@ -1510,7 +1583,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             return null;
         }
         //Bug#3947714  Check and trigger the proxy here
-        if (getProject().hasProxyIndirection()) {
+        if (this.project.hasProxyIndirection()) {
             return getDescriptor(ProxyIndirectionPolicy.getValueFromProxy(domainObject).getClass());
         }
         return getDescriptor(domainObject.getClass());
@@ -1521,7 +1594,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Return the descriptor for  the alias
      */
     public ClassDescriptor getDescriptorForAlias(String alias) {
-        return project.getDescriptorForAlias(alias);
+        return this.project.getDescriptorForAlias(alias);
     }
 
     /**
@@ -1529,7 +1602,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Return all registered descriptors.
      */
     public Map getDescriptors() {
-        return getProject().getDescriptors();
+        return this.project.getDescriptors();
     }
 
     /**

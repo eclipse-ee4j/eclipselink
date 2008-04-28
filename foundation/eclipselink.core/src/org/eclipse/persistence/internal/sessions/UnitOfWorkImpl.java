@@ -365,21 +365,29 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Normally all ids are assigned during the commit automatically.
      */
     public void assignSequenceNumber(Object object) throws DatabaseException {
-        //** sequencing refactoring
-        startOperationProfile(SessionProfiler.AssignSequence);
-        try {
-            ObjectBuilder builder = getDescriptor(object).getObjectBuilder();
-
-            // This is done outside of a transaction to ensure optimal concurrency and deadlock avoidance in the sequence table.
-            if (builder.getDescriptor().usesSequenceNumbers() && !getSequencing().shouldAcquireValueAfterInsert(object.getClass())) {
+        assignSequenceNumber(object, getDescriptor(object));
+    }
+    
+    /**
+     * INTERNAL:
+     * Assign sequence number to the object.
+     */
+    public void assignSequenceNumber(Object object, ClassDescriptor descriptor) throws DatabaseException {
+        // This is done outside of a transaction to ensure optimal concurrency and deadlock avoidance in the sequence table.
+        if (descriptor.usesSequenceNumbers() && !getSequencing().shouldAcquireValueAfterInsert(object.getClass())) {
+            startOperationProfile(SessionProfiler.AssignSequence);
+            ObjectBuilder builder = descriptor.getObjectBuilder();
+            try {
                 Object implementation = builder.unwrapObject(object, this);
                 builder.assignSequenceNumber(implementation, this);
+            } catch (RuntimeException exception) {
+                handleException(exception);
+            } finally {
+                endOperationProfile(SessionProfiler.AssignSequence);
             }
-        } catch (RuntimeException exception) {
-            handleException(exception);
-        }
-        endOperationProfile(SessionProfiler.AssignSequence);
+        }        
     }
+    
     /**
      * ADVANCED:
      * Assign sequence numbers to all new objects registered in this unit of work,
@@ -425,8 +433,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         Iterator newObjects = objects.keySet().iterator();
         while (newObjects.hasNext()) {
             Object object = newObjects.next();
-            if (getDescriptor(object).usesSequenceNumbers() && ((!isObjectRegistered(object)) || isCloneNewObject(object)) && (shouldAcquireValueBeforeInsertForAll || !sequencing.shouldAcquireValueAfterInsert(object.getClass()))) {
-                getDescriptor(object).getObjectBuilder().assignSequenceNumber(object, this);
+            ClassDescriptor descriptor = getDescriptor(object);
+            if (descriptor.usesSequenceNumbers() && ((!isObjectRegistered(object)) || isCloneNewObject(object)) && (shouldAcquireValueBeforeInsertForAll || !sequencing.shouldAcquireValueAfterInsert(object.getClass()))) {
+                descriptor.getObjectBuilder().assignSequenceNumber(object, this);
             }
         }
         endOperationProfile(SessionProfiler.AssignSequence);
@@ -3743,7 +3752,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 ObjectBuilder builder = descriptor.getObjectBuilder();
                 Object original = builder.buildNewInstance();
 
-                Object backupClone = builder.buildNewInstance();
+                Object backupClone = implementation;
+                if (!descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()) {
+                    backupClone = builder.buildNewInstance();
+                }
                 getCloneMapping().put(implementation, backupClone);
 
                 // Check if the new objects should be cached.
@@ -3871,7 +3883,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         ObjectBuilder builder = descriptor.getObjectBuilder();
         Object original = builder.buildNewInstance();
 
-        Object backupClone = builder.buildNewInstance();
+        Object backupClone = newObject;
+        if (!descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()) {
+            backupClone = builder.buildNewInstance();
+        }
         getCloneMapping().put(newObject, backupClone);
         assignSequenceNumber(newObject);
 
@@ -3887,7 +3902,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     protected void registerNewObjectClone(Object clone, Object original, ClassDescriptor descriptor) {
         // Check if the new objects should be cached.
-        registerNewObjectInIdentityMap(clone, original);
+        registerNewObjectInIdentityMap(clone, original, descriptor);
 
         getNewObjectsCloneToOriginal().put(clone, original);
         getNewObjectsOriginalToClone().put(original, clone);
@@ -3906,12 +3921,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Add the new object to the cache if set to.
      * This is useful for using mergeclone on new objects.
      */
-    protected void registerNewObjectInIdentityMap(Object clone, Object original) {
+    protected void registerNewObjectInIdentityMap(Object clone, Object original, ClassDescriptor descriptor) {
         if (shouldNewObjectsBeCached()) {
             // CR 2728 Added check for sequencing to allow zero primitives for id's if the client
             //is not using sequencing.
             Class cls = clone.getClass();
-            ClassDescriptor descriptor = getDescriptor(cls);
             boolean usesSequences = descriptor.usesSequenceNumbers();
         
             // Also put it in the cache if it has a valid primary key, this allows for double new object merges

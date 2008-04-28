@@ -18,6 +18,7 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.*;
@@ -497,7 +498,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             DatabaseQuery parentQuery = getQueryFromParent(name, arguments);
             if ((parentQuery != null) && parentQuery.isReadQuery()) {
                 parentQuery = (DatabaseQuery)parentQuery.clone();
-                ((ObjectLevelReadQuery)parentQuery).setReferenceClass(getDescriptor().getJavaClass());
+                ((ObjectLevelReadQuery)parentQuery).setReferenceClass(this.descriptor.getJavaClass());
                 addQuery(name, parentQuery);
             }
             return parentQuery;
@@ -592,7 +593,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * This method should only be used recursively by getQuery().
      */
     protected DatabaseQuery getQueryFromParent(String name, Vector arguments) {
-        ClassDescriptor descriptor = getDescriptor();
+        ClassDescriptor descriptor = this.descriptor;
         if (descriptor.hasInheritance()) {
             InheritancePolicy inheritancePolicy = descriptor.getInheritancePolicy();
             ClassDescriptor parent = inheritancePolicy.getParentDescriptor();
@@ -863,7 +864,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * always first be called.
      */
     public DescriptorQueryManager getParentDescriptorQueryManager() {
-        return getDescriptor().getInheritancePolicy().getParentDescriptor().getQueryManager();
+        return this.descriptor.getInheritancePolicy().getParentDescriptor().getQueryManager();
     }
 
     /**
@@ -871,11 +872,14 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Execute the post delete operation for the query
      */
     public void postDelete(DeleteObjectQuery query) {
-        // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = getDescriptor().getMappings();
-        int size = mappings.size();
-        for (int index = 0; index < size; index++) {
-            ((DatabaseMapping)mappings.get(index)).postDelete(query);
+        ObjectBuilder builder = this.descriptor.getObjectBuilder();
+        // PERF: Only process relationships.
+        if (!builder.isSimple()) {
+            List<DatabaseMapping> mappings = builder.getRelationshipMappings();
+            int size = mappings.size();
+            for (int index = 0; index < size; index++) {
+                mappings.get(index).postDelete(query);
+            }
         }
     }
 
@@ -884,11 +888,14 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Execute the post insert operation for the query
      */
     public void postInsert(WriteObjectQuery query) {
-        // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = getDescriptor().getMappings();
-        int size = mappings.size();
-        for (int index = 0; index < size; index++) {
-            ((DatabaseMapping)mappings.get(index)).postInsert(query);
+        ObjectBuilder builder = this.descriptor.getObjectBuilder();
+        // PERF: Only process relationships.
+        if (!builder.isSimple()) {
+            List<DatabaseMapping> mappings = builder.getRelationshipMappings();
+            int size = mappings.size();
+            for (int index = 0; index < size; index++) {
+                mappings.get(index).postInsert(query);
+            }
         }
     }
 
@@ -897,19 +904,23 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Execute the post update operation for the query
      */
     public void postUpdate(WriteObjectQuery query) {
-        // PERF: Only process changed mappings.
-        ObjectChangeSet changeSet = query.getObjectChangeSet();
-        if ((changeSet != null) && (!changeSet.isNew())) {
-            List changeRecords = changeSet.getChanges();
-            for (Iterator iterator = changeRecords.iterator(); iterator.hasNext(); ) {
-                ChangeRecord record = (ChangeRecord)iterator.next();                
-                record.getMapping().postUpdate(query);
-            }
-        } else {
-            Vector mappings = getDescriptor().getMappings();
-            int size = mappings.size();
-            for (int index = 0; index < size; index++) {
-                ((DatabaseMapping)mappings.get(index)).postUpdate(query);
+        ObjectBuilder builder = this.descriptor.getObjectBuilder();
+        // PERF: Only process relationships.
+        if (!builder.isSimple()) {
+            // PERF: Only process changed mappings.
+            ObjectChangeSet changeSet = query.getObjectChangeSet();
+            if ((changeSet != null) && (!changeSet.isNew())) {
+                List changeRecords = changeSet.getChanges();
+                for (Iterator iterator = changeRecords.iterator(); iterator.hasNext(); ) {
+                    ChangeRecord record = (ChangeRecord)iterator.next();                
+                    record.getMapping().postUpdate(query);
+                }
+            } else {
+                List<DatabaseMapping> mappings = builder.getRelationshipMappings();
+                int size = mappings.size();
+                for (int index = 0; index < size; index++) {
+                    mappings.get(index).postUpdate(query);
+                }
             }
         }
     }
@@ -919,11 +930,14 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Execute the pre delete operation for the query
      */
     public void preDelete(DeleteObjectQuery query) {
-        // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = getDescriptor().getMappings();
-        int size = mappings.size();
-        for (int index = 0; index < size; index++) {
-            ((DatabaseMapping)mappings.get(index)).preDelete(query);
+        ObjectBuilder builder = this.descriptor.getObjectBuilder();
+        // PERF: Only process relationships.
+        if (!builder.isSimple()) {
+            List<DatabaseMapping> mappings = builder.getRelationshipMappings();
+            int size = mappings.size();
+            for (int index = 0; index < size; index++) {
+                mappings.get(index).preDelete(query);
+            }
         }
     }
 
@@ -967,11 +981,14 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Execute the pre insert  operation for the query.
      */
     public void preInsert(WriteObjectQuery query) {
-        // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        Vector mappings = getDescriptor().getMappings();
-        int size = mappings.size();
-        for (int index = 0; index < size; index++) {
-            ((DatabaseMapping)mappings.get(index)).preInsert(query);
+        ObjectBuilder builder = this.descriptor.getObjectBuilder();
+        // PERF: Only process relationships.
+        if (!builder.isSimple()) {
+            List<DatabaseMapping> mappings = builder.getRelationshipMappings();
+            int size = mappings.size();
+            for (int index = 0; index < size; index++) {
+                mappings.get(index).preInsert(query);
+            }
         }
     }
 
@@ -980,19 +997,23 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Execute the pre update operation for the query
      */
     public void preUpdate(WriteObjectQuery query) {
-        // PERF: Only process changed mappings.
-        ObjectChangeSet changeSet = query.getObjectChangeSet();
-        if ((changeSet != null) && (!changeSet.isNew())) {
-            List changeRecords = changeSet.getChanges();
-            for (Iterator iterator = changeRecords.iterator(); iterator.hasNext(); ) {
-                ChangeRecord record = (ChangeRecord)iterator.next();
-                record.getMapping().preUpdate(query);
-            }
-        } else {
-            Vector mappings = getDescriptor().getMappings();
-            int size = mappings.size();
-            for (int index = 0; index < size; index++) {
-                ((DatabaseMapping)mappings.get(index)).preUpdate(query);
+        ObjectBuilder builder = this.descriptor.getObjectBuilder();
+        // PERF: Only process relationships.
+        if (!builder.isSimple()) {
+            // PERF: Only process changed mappings.
+            ObjectChangeSet changeSet = query.getObjectChangeSet();
+            if ((changeSet != null) && (!changeSet.isNew())) {
+                List changeRecords = changeSet.getChanges();
+                for (Iterator iterator = changeRecords.iterator(); iterator.hasNext(); ) {
+                    ChangeRecord record = (ChangeRecord)iterator.next();
+                    record.getMapping().preUpdate(query);
+                }
+            } else {
+                List<DatabaseMapping> mappings = builder.getRelationshipMappings();
+                int size = mappings.size();
+                for (int index = 0; index < size; index++) {
+                    mappings.get(index).preUpdate(query);
+                }
             }
         }
     }

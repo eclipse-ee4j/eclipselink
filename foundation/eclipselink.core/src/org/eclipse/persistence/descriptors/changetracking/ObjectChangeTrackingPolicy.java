@@ -17,6 +17,7 @@ import java.beans.PropertyChangeListener;
 
 import java.util.List;
 
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
 import org.eclipse.persistence.internal.descriptors.changetracking.AggregateObjectChangeListener;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -134,16 +135,20 @@ public class ObjectChangeTrackingPolicy extends DeferredChangeDetectionPolicy {
             listener = (ObjectChangeListener)setChangeListener(clone, uow, descriptor);
         }
         dissableEventProcessing(clone);
-        // Must also ensure the listener has been set on collections and aggregates.
-        FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
-        boolean isPartialObject = (fetchGroupManager != null) && fetchGroupManager.isPartialObject(clone);
-        List mappings = descriptor.getMappings();
-        int size = mappings.size();
-        // Only cascade fetched mappings.
-        for (int index = 0; index < size; index++) {
-            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-            if (!isPartialObject || fetchGroupManager.isAttributeFetched(clone, mapping.getAttributeName())) {
-                mapping.setChangeListener(clone, listener, uow);
+        ObjectBuilder builder = descriptor.getObjectBuilder();
+        // Only relationship mappings need to be reset.
+        if (!builder.isSimple()) {
+            // Must also ensure the listener has been set on collections and aggregates.
+            FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
+            boolean isPartialObject = (fetchGroupManager != null) && fetchGroupManager.isPartialObject(clone);
+            List mappings = builder.getRelationshipMappings();
+            int size = mappings.size();
+            // Only cascade fetched mappings.
+            for (int index = 0; index < size; index++) {
+                DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                if (!isPartialObject || fetchGroupManager.isAttributeFetched(clone, mapping.getAttributeName())) {
+                    mapping.setChangeListener(clone, listener, uow);
+                }
             }
         }
         enableEventProcessing(clone);

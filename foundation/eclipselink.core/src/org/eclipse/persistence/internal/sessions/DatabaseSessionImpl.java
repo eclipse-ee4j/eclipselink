@@ -303,14 +303,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
     /**
      * INTERNAL:
-     * Return all registered descriptors.
-     */
-    public Map getDescriptors() {
-        return getProject().getDescriptors();
-    }
-
-    /**
-     * INTERNAL:
      * Return the database platform currently connected to.
      * The platform is used for database specific behavior.
      * NOTE: this must only be used for relational specific usage,
