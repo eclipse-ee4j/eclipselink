@@ -1,5 +1,8 @@
 # !/bin/sh
 
+THIS=$0
+PROGNAME=`basename ${THIS}`
+CUR_DIR=`dirname ${THIS}`
 umask 0002
 TEST=false
 TARGET=$1
@@ -25,20 +28,24 @@ else
     BRANCH_NM="trunk"
 fi
 
-BOOTSTRAP_BLDFILE=bootstrap.xml
 SVN_EXEC=`which svn`
 if [ $? -ne 0 ]
 then
-    echo "Error finding svn install!"
-    exit
+    echo "Cannot autofind svn executable. Using default value."
+    SVN_EXEC=/usr/local/bin/svn
+    if [ ! -f ${SVN_EXEC} ]
+    then
+        echo "Error finding svn install!"
+        exit 1
+    fi
 fi
 
 #Define common variables
+BOOTSTRAP_BLDFILE=bootstrap.xml
 JAVA_HOME=/shared/common/ibm-java2-ppc-50
 ANT_HOME=/shared/common/apache-ant-1.6.5
 #JAVA_HOME=/shared/common/jdk1.6.0_05
 #ANT_HOME=/shared/common/apache-ant-1.7.0
-CUR_DIR=`pwd`
 HOME_DIR=/shared/technology/eclipselink/staging2
 LOG_DIR=${HOME_DIR}/logs
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
@@ -105,14 +112,14 @@ then
     echo "Need to create BLD_DEPS_DIR (${BLD_DEPS_DIR})"
     CreatePath ${BLD_DEPS_DIR}
 fi
-if [ ! -f ./${BOOTSTRAP_BLDFILE} ]
+if [ ! -f ${CUR_DIR}/${BOOTSTRAP_BLDFILE} ]
 then
     echo "Need bootstrap buildfile (${BOOTSTRAP_BLDFILE}) in the current directory to proceed."
     exit 1
 else
     if [ ! "${HOME_DIR}" = "${CUR_DIR}" ]
     then
-        cp ./${BOOTSTRAP_BLDFILE} ${HOME_DIR}/${BOOTSTRAP_BLDFILE}
+        cp ${CUR_DIR}/${BOOTSTRAP_BLDFILE} ${HOME_DIR}/${BOOTSTRAP_BLDFILE}
     fi
 fi
 if [ ! -f $JDBC_LOGIN_INFO_FILE ]
