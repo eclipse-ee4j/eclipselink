@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Oracle
+Bundle-SymbolicName: org.eclipse.persistence.oracle
+Bundle-Version: 0.1
+Export-Package: org.eclipse.persistence.eis.adapters.aq,
+ org.eclipse.persistence.internal.eis.adapters.aq,
+ org.eclipse.persistence.internal.platform.database.oracle,
+ org.eclipse.persistence.internal.platform.database.oracle.xdb,
+ org.eclipse.persistence.mappings.xdb,
+ org.eclipse.persistence.platform.database.oracle,
+ org.eclipse.persistence.platform.database.oracle.converters,
+ org.eclipse.persistence.platform.xml.xdk,
+ org.eclipse.persistence.sessions.factories
+Require-Bundle: org.eclipse.persistence.core;visibility:=reexport

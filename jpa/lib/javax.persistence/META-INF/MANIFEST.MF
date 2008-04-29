@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Java Persistence
+Bundle-SymbolicName: javax.persistence
+Bundle-Version: 1.99
+Bundle-Activator: javax.persistence.osgi.Activator
+Export-Package: javax.persistence,
+ javax.persistence.spi,
+ xsd
+Bundle-ClassPath: src/,
+ .

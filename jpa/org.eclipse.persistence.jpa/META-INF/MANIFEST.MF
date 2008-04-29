@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Jpa
+Bundle-SymbolicName: org.eclipse.persistence.jpa
+Bundle-Version: 0.1
+Require-Bundle: org.eclipse.persistence.core;visibility:=reexport,
+ org.apache.ant_1.7.0;visibility:=reexport

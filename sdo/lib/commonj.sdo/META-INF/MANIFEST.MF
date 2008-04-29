@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Sdo Plug-in
+Bundle-SymbolicName: commonj.sdo_2.1.0
+Bundle-Version: 2.1.0
+Export-Package: commonj.sdo,
+ commonj.sdo.helper,
+ commonj.sdo.impl

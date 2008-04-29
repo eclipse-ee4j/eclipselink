@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Resource Plug-in
+Bundle-SymbolicName: javax.resource_1.5.0
+Bundle-Version: 1.5.0
+Export-Package: javax.resource,
+ javax.resource.cci,
+ javax.resource.spi,
+ javax.resource.spi.endpoint,
+ javax.resource.spi.security,
+ javax.resource.spi.work

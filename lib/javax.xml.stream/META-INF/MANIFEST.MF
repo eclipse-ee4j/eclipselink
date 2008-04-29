@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Stream Plug-in
+Bundle-SymbolicName: javax.xml.stream_1.0.0
+Bundle-Version: 1.0.0
+Export-Package: javax.xml.stream,
+ javax.xml.stream.events,
+ javax.xml.stream.util
