@@ -424,7 +424,7 @@
 
     <!-- Launches the testing browser -->
     <target name="test.browser" depends="config.trunk, config.flat">
-        <echo>Running test browser with ${test.properties}</echo>
+        <echo>Running test browser</echo>
         <mkdir dir="${eclipselink.jpa.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
         <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
@@ -435,7 +435,11 @@
             <jvmarg value="${test.agent}"/>
             <jvmarg value="${test.weaving}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.platform=${db.platform}"/>
             <classpath>
                 <path refid="run.classpath"/>
             </classpath>
@@ -444,13 +448,17 @@
 
     <!-- Generic target for running tests. -->
     <target name="run.test" depends="config.trunk, config.flat">
-        <echo>Running test with ${test.properties} on ${db.url}</echo>
+        <echo>Running test on ${db.url}</echo>
         <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
         <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.platform=${db.platform}"/>
             <classpath>
                 <path refid="${RUN_PATH}"/>
             </classpath>
@@ -469,7 +477,7 @@
 
     <!-- Runs the test using the PromptTestRunner -->
     <target name="run.test.prompt" depends="config.trunk, config.flat">
-        <echo>Running test with ${test.properties} on ${db.url}</echo>
+        <echo>Running test on ${db.url}</echo>
         <mkdir dir="${eclipselink.jpa.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
@@ -480,8 +488,11 @@
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
-            <arg value="pfile=${test.properties.run}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.platform=${db.platform}"/>
             <arg value="testmodel=${TEST_CLASS}"/>
             <arg value="regressionlog=../${report.dir}/test.log"/>
             <arg value="saveresults=true"/>

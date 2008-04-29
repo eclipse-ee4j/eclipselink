@@ -162,7 +162,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
 
     <!-- Launches the testing browser -->
     <target name="test.browser">
-        <echo>Running test browser with ${test.properties}</echo>
+        <echo>Running test browser</echo>
         <mkdir dir="${eclipselink.extension.oracle.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.extension.oracle.test}/${report.dir}"/>
         <copy file="${eclipselink.core.test}/${resource.dir}/java.policy.allpermissions" todir="${eclipselink.extension.oracle.test}/${run.dir}" overwrite="true"/>
@@ -172,7 +172,11 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
              failonerror="true"
              dir="${eclipselink.extension.oracle.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.platform=${db.platform}"/>
             <jvmarg value="-Djava.security.manager"/>
             <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
             <classpath>
@@ -183,12 +187,16 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
 
     <!-- Generic target for running tests. -->
     <target name="run.test">
-        <echo>Running test with ${test.properties} on ${db.url}</echo>
+        <echo>Running test on ${db.url}</echo>
         <mkdir dir="${eclipselink.extension.oracle.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.extension.oracle.test}/${report.dir}"/>
         <junit printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.platform=${db.platform}"/>
             <jvmarg value="-Djava.security.manager"/>
             <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
             <classpath>
@@ -209,7 +217,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
 
     <!-- Runs the test using the PromptTestRunner -->
     <target name="run.test.prompt">
-        <echo>Running test with ${test.properties} on ${db.url}</echo>
+        <echo>Running test on ${db.url}</echo>
         <mkdir dir="${eclipselink.extension.oracle.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.extension.oracle.test}/${report.dir}"/>
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
@@ -218,10 +226,14 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
              failonerror="true"
              dir="${eclipselink.extension.oracle.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.platform=${db.platform}"/>
             <jvmarg value="${test.security-manager}"/>
             <jvmarg value="${test.security-manager.policy}"/>
-            <arg value="pfile=${test.properties.run}" />
+            <arg value="pfile=../test.properties" />
             <arg value="testmodel=${TEST_CLASS}" />
             <arg value="regressionlog=../${report.dir}/test.log" />
             <arg value="saveresults=true" />

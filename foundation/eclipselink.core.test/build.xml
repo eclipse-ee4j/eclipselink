@@ -151,7 +151,7 @@
 
     <!-- Launches the testing browser -->
     <target name="test.browser">
-        <echo>Running test browser with ${test.properties}</echo>
+        <echo>Running test browser</echo>
         <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
         <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
@@ -160,7 +160,6 @@
              failonerror="true"
              dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
             <jvmarg value="${test.security-manager}"/>
             <jvmarg value="${test.security-manager.policy}"/>
             <classpath>
@@ -171,12 +170,16 @@
 
     <!-- Generic target for running tests. -->
     <target name="run.test">
-        <echo>Running test with ${test.properties} on ${db.url}</echo>
+        <echo>Running test on ${db.url}</echo>
         <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
         <junit printsummary="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.platform=${db.platform}"/>
             <jvmarg value="${test.security-manager}"/>
             <jvmarg value="${test.security-manager.policy}"/>
             <classpath>
@@ -197,7 +200,7 @@
 
     <!-- Runs the test using the PromptTestRunner -->
     <target name="run.test.prompt">
-        <echo>Running test with ${test.properties} on ${db.url}</echo>
+        <echo>Running test on ${db.url}</echo>
         <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
         <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
@@ -206,10 +209,13 @@
              failonerror="true"
              dir="${eclipselink.core.test}/${run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.platform=${db.platform}"/>
             <jvmarg value="${test.security-manager}"/>
             <jvmarg value="${test.security-manager.policy}"/>
-            <arg value="pfile=${test.properties.run}" />
             <arg value="testmodel=${TEST_CLASS}" />
             <arg value="regressionlog=../${report.dir}/test.log" />
             <arg value="saveresults=true" />

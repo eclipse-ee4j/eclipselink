@@ -25,42 +25,37 @@ import org.eclipse.persistence.testing.tests.TestRunModel;
  * @author Edwin Tang
  */
 public class PromptTestRunner {
-    protected static final String SESSION_LOG_KEY = "session.log";
-    protected static final String LOG_MESSAGES_KEY = "session.logMessages";
-    protected static final String SESSION_LOG_LEVEL_KEY = "session.log.level";
-    protected static final String HANDLE_ERRORS_KEY = "executor.handleErrors";
-    protected static final String DATABASE_PLATFORM_KEY = "db.platform";
-    protected static final String DRIVER_CLASS_KEY = "db.driver";
-    protected static final String DATABASE_URL_KEY = "db.url";
-    protected static final String USER_NAME_KEY = "db.user";
-    protected static final String PASSWORD_KEY = "db.pwd";
-    protected static final String DEFAULT_SESSION_LOG = "console";
-    protected static final String DEFAULT_LOG_MESSAGES = "false";
-    protected static final String DEFAULT_LOG_LEVEL = "INFO";
-    protected static final String DEFAULT_HANDLE_ERRORS = "true";
-    protected static final String DEFAULT_DATABASE_PLATFORM = "org.eclipse.persistence.platform.database.oracle.OraclePlatform";
-    protected static final String DEFAULT_DRIVER_CLASS = "oracle.jdbc.OracleDriver";
-    protected static final String DEFAULT_DATABASE_URL = "jdbc:oracle:thin:@localhost:1521:ORCL";
-    protected static final String DEFAULT_USER_NAME = "scott";
-    protected static final String DEFAULT_PASSWORD = "tiger";
+    public static final String DB_DRIVER_KEY = "db.driver";
+    public static final String DB_DRIVER_DEFAULT = "oracle.jdbc.OracleDriver";
+    public static final String DB_URL_KEY = "db.url";
+    public static final String DB_URL_DEFAULT = "jdbc:oracle:thin:@localhost:1521:ORCL";
+    public static final String DB_USER_KEY = "db.user";
+    public static final String DB_USER_DEFAULT = "scott";
+    public static final String DB_PWD_KEY = "db.pwd";
+    public static final String DB_PWD_DEFAULT = "tiger";
+    public static final String DB_PLATFORM_KEY = "db.platform";
+    public static final String DB_PLATFORM_DEFAULT = "org.eclipse.persistence.platform.database.oracle.OraclePlatform";
+    public static final String LOGGING_LEVEL_KEY = "eclipselink.logging.level";
+    public static final String LOGGING_LEVEL_DEFAULT = "info";
+
     protected static final String TEST_MODEL_FLAG = "testmodel=";
     protected static final String TEST_ENTITY_FLAG = "testentity=";
-    protected static final String PROPERTIES_FLAG = "pfile=";
     protected static final String REGRESSION_LOG_FLAG = "regressionlog=";
     protected static final String USE_NATIVE_SQL_FLAG = "usenativesql=";
     protected static final String SAVE_RESULTS_FLAG = "saveresults=";
     protected static final String CREATE_DB_CONNECTION_FLAG = "createdbconnection=";
-    private Writer sessionLog;
-    private Writer regressionLog;
-    private boolean shouldHandleErrors = true;
-    private boolean useNativeSQL = false;
-    private boolean saveResults = false;
-    private boolean createDbConnection = true;
+
     private String databasePlatform;
     private String driverClass;
     private String databaseURL;
     private String username;
     private String password;
+
+    private Writer regressionLog;
+    private boolean shouldHandleErrors = true;
+    private boolean useNativeSQL = false;
+    private boolean saveResults = false;
+    private boolean createDbConnection = true;
     private TestModel testModel;
     private TestEntity testEntity;
     private DatabaseSession session;
@@ -77,6 +72,7 @@ public class PromptTestRunner {
      * This method creates a new DatabaseLogin and DatabaseSession and logs in to the database.
      */
     public void login() {
+        getLoginProperties();
         DatabaseLogin login = new org.eclipse.persistence.sessions.DatabaseLogin();
         try {
             login.usePlatform((DatabasePlatform)Class.forName(this.databasePlatform).newInstance());
@@ -92,8 +88,8 @@ public class PromptTestRunner {
             login.useNativeSQL();
         }
         this.session = new org.eclipse.persistence.sessions.Project(login).createDatabaseSession();
-	this.session.setLogLevel(this.sessionLogLevel);
-        this.session.setLog(this.sessionLog);
+        this.session.setLogLevel(this.sessionLogLevel);
+        this.session.setLog(new OutputStreamWriter(System.out));
         this.session.login();
     }
 
@@ -113,7 +109,7 @@ public class PromptTestRunner {
      * This method logs in to the specified database and executes the specified test model.
      */
     public void run(String[] argv) {
-        if ((argv.length < 2) || (argv.length > 6)) {
+        if ((argv.length < 1) || (argv.length > 5)) {
             this.printUsageAndExit();
         }
         for (int i = 0; i < argv.length; i++) {
@@ -190,9 +186,6 @@ public class PromptTestRunner {
                 log("\nWrite regression log file " + regressionLogFileName + " error!");
                 System.exit(1);
             }
-        } else if (arg.startsWith(PROPERTIES_FLAG)) {
-            String propertiesFileName = arg.substring(PROPERTIES_FLAG.length());
-            readPropertiesFile(propertiesFileName);
         } else if (arg.startsWith(USE_NATIVE_SQL_FLAG)) {
             useNativeSQL = arg.substring(USE_NATIVE_SQL_FLAG.length()).equalsIgnoreCase("true");
         } else if (arg.startsWith(SAVE_RESULTS_FLAG)) {
@@ -206,99 +199,64 @@ public class PromptTestRunner {
     }
 
     public void printUsageAndExit() {
-        log("\nUsage:\t java org.eclipse.persistence.testing.framework.PromptTestRunner " + TEST_MODEL_FLAG + "<testModel> " + PROPERTIES_FLAG + "<propertiesFile> [" + TEST_ENTITY_FLAG + "<testEntity> " + REGRESSION_LOG_FLAG + "<regressionLogFile> " + USE_NATIVE_SQL_FLAG + "<shouldUseNativeSQL> " + SAVE_RESULTS_FLAG + "<shouldSaveResults>]" + CREATE_DB_CONNECTION_FLAG + "<shouldCreateDbConnection>]");
+        log("\nUsage:\t java <Java VM arguments> org.eclipse.persistence.testing.framework.PromptTestRunner " + TEST_MODEL_FLAG + "<testModel> [" + TEST_ENTITY_FLAG + "<testEntity> " + REGRESSION_LOG_FLAG + "<regressionLogFile> " + USE_NATIVE_SQL_FLAG + "<shouldUseNativeSQL> " + SAVE_RESULTS_FLAG + "<shouldSaveResults>]" + CREATE_DB_CONNECTION_FLAG + "<shouldCreateDbConnection>]");
         log("\n\tWhere:");
+        log("\n\t<Java VM arguments>: Required, specifies Database Login properties");
         log("\n\t<testModel>: Required, specifies test model class name");
         log("\n\t" + "<testEntity>: Optional, specifies test entity class name(test model, test suite or test case). " + "When specified, the runner will setup the test model and run the test entity only");
         log("\n\t" + "<regressionLogFile>: Optional, specifies file name of regression log, in which there is no label-related info.");
-        log("\n\t<propertiesFile>: Required, specifis properties file name");
         log("\n\t<shouldUseNativeSQL>: Optional, valid values are 'true' and 'false', default value is 'false'.");
         log("\n\t<shouldSaveResults>: Optional, valid values are 'true' and 'false', default value is 'false'.");
         log("\n\t<shouldCreateDbConnection>: Optional, valid values are 'true' and 'false', default value is 'true'.");
-        log("\n\t" + "Template of properties file:");
-        log("\n\t\t" + "# properties for DatabseSession");
-        log("\n\t\t" + "session.log=c:\\temp.txt");
-        log("\n\t\t" + "session.logMessages=false");
-        log("\n\n\t\t" + "# properties for TestExecutor");
-        log("\n\t\t" + "executor.handleErrors=true");
-        log("\n\n\t\t" + "# properties for DatabaseLogin");
-        log("\n\t\t" + "login.databaseplatform=org.eclipse.persistence.platform.database.oracle.OralcePlatform");
-        log("\n\t\t" + "login.driverClass=oracle.jdbc.OracleDriver");
-        log("\n\t\t" + "login.databaseURL=jdbc:oracle:thin:@localhost:1521:ORCL");
-        log("\n\t\t" + "login.username=scott");
-        log("\n\t\t" + "login.password=tiger");
-        log("\n\t" + "Example:  java org.eclipse.persistence.testing.Testframework.PromptTestRunner ");
+        log("\n\t" + "Example:");
+        log("\n\t" + "java");
+        log("\n\t\t-D" + DB_DRIVER_KEY + "=" + DB_DRIVER_DEFAULT);
+        log("\n\t\t-D" + DB_URL_KEY + "=" + DB_URL_DEFAULT);
+        log("\n\t\t-D" + DB_USER_KEY + "=" + DB_USER_DEFAULT);
+        log("\n\t\t-D" + DB_PWD_KEY + "=" + DB_PWD_DEFAULT);
+        log("\n\t\t-D" + DB_PLATFORM_KEY + "=" + DB_PLATFORM_DEFAULT);
+        log("\n\t\t-D" + LOGGING_LEVEL_KEY + "=" + LOGGING_LEVEL_DEFAULT);
+        log("\n\t" + "org.eclipse.persistence.testing.Testframework.PromptTestRunner");
         log("\n\t\t" + TEST_MODEL_FLAG + "org.eclipse.persistence.testing.FeatureTests.FeatureTestModel ");
         log("\n\t\t" + TEST_ENTITY_FLAG + "org.eclipse.persistence.testing.FeatureTests.OptimisticLockingDeleteRowTest ");
-        log("\n\t\t" + PROPERTIES_FLAG + "C:\\titl.properties");
         log("\n\t\t" + REGRESSION_LOG_FLAG + "C:\\temp\\OptimisticLockingDeleteRowTest.log");
         System.exit(0);
     }
 
-    /**
-     * This method reads the specified properties file
-     *
-     * @param pFileName the file name to read
-     */
-    public void readPropertiesFile(String pFileName) {
-        Properties p = new Properties();
-
-        try {
-            p.load(new FileInputStream(pFileName));
-        } catch (IOException e) {
-            log("\nFile read error: " + pFileName);
-            System.exit(1);
-        }
-
-        //set sessionLog
-        try {
-            if (p.getProperty(SESSION_LOG_KEY, DEFAULT_SESSION_LOG).equalsIgnoreCase("console")) {
-                this.sessionLog = new OutputStreamWriter(System.out);
-            } else {
-                this.sessionLog = new FileWriter(p.getProperty(SESSION_LOG_KEY, DEFAULT_SESSION_LOG), true);
-            }
-        } catch (IOException e) {
-            log("\nSession log file write error: " + p.getProperty(SESSION_LOG_KEY, DEFAULT_SESSION_LOG));
-            System.exit(1);
-        }
-
+    public void getLoginProperties() {
         //set sessionLogLevel - value used in setSessionLogLevel(int), default is INFO (5)
-        if (p.getProperty(SESSION_LOG_LEVEL_KEY,DEFAULT_LOG_LEVEL).equalsIgnoreCase("off")) {
+        String loggingLevel = System.getProperty(LOGGING_LEVEL_KEY, LOGGING_LEVEL_DEFAULT);
+        if (loggingLevel.equalsIgnoreCase("off")) {
             this.sessionLogLevel = 8;
         }
-	else if (p.getProperty(SESSION_LOG_LEVEL_KEY,DEFAULT_LOG_LEVEL).equalsIgnoreCase("severe")) {
+        else if (loggingLevel.equalsIgnoreCase("severe")) {
             this.sessionLogLevel = 7;
         }
-	else if (p.getProperty(SESSION_LOG_LEVEL_KEY,DEFAULT_LOG_LEVEL).equalsIgnoreCase("warning")) {
+        else if (loggingLevel.equalsIgnoreCase("warning")) {
             this.sessionLogLevel = 6;
         }
-	else if (p.getProperty(SESSION_LOG_LEVEL_KEY,DEFAULT_LOG_LEVEL).equalsIgnoreCase("config")) {
+        else if (loggingLevel.equalsIgnoreCase("config")) {
             this.sessionLogLevel = 4;
         }
-	else if (p.getProperty(SESSION_LOG_LEVEL_KEY,DEFAULT_LOG_LEVEL).equalsIgnoreCase("fine")) {
+        else if (loggingLevel.equalsIgnoreCase("fine")) {
             this.sessionLogLevel = 3;
         }
-	else if (p.getProperty(SESSION_LOG_LEVEL_KEY,DEFAULT_LOG_LEVEL).equalsIgnoreCase("finer")) {
+        else if (loggingLevel.equalsIgnoreCase("finer")) {
             this.sessionLogLevel = 2;
         }
-	else if (p.getProperty(SESSION_LOG_LEVEL_KEY,DEFAULT_LOG_LEVEL).equalsIgnoreCase("finest")) {
+        else if (loggingLevel.equalsIgnoreCase("finest")) {
             this.sessionLogLevel = 1;
         }
-	else if (p.getProperty(SESSION_LOG_LEVEL_KEY,DEFAULT_LOG_LEVEL).equalsIgnoreCase("all")) {
+        else if (loggingLevel.equalsIgnoreCase("all")) {
             this.sessionLogLevel = 0;
         }
-	else {
+        else {
             this.sessionLogLevel = 5;
         }
-
-        //set shouldHandleErrors
-        if (p.getProperty(HANDLE_ERRORS_KEY, DEFAULT_HANDLE_ERRORS).equalsIgnoreCase("true") || p.getProperty(HANDLE_ERRORS_KEY, DEFAULT_HANDLE_ERRORS).equalsIgnoreCase("false")) {
-            this.shouldHandleErrors = Boolean.valueOf(p.getProperty(HANDLE_ERRORS_KEY, DEFAULT_HANDLE_ERRORS)).booleanValue();
-        }
-        this.databasePlatform = p.getProperty(DATABASE_PLATFORM_KEY, DEFAULT_DATABASE_PLATFORM);
-        this.driverClass = p.getProperty(DRIVER_CLASS_KEY, DEFAULT_DRIVER_CLASS);
-        this.databaseURL = p.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-        this.username = p.getProperty(USER_NAME_KEY, DEFAULT_USER_NAME);
-        this.password = p.getProperty(PASSWORD_KEY, DEFAULT_PASSWORD);
+        this.driverClass = System.getProperty(DB_DRIVER_KEY, DB_DRIVER_DEFAULT);
+        this.databaseURL = System.getProperty(DB_URL_KEY, DB_URL_DEFAULT);
+        this.username = System.getProperty(DB_USER_KEY, DB_USER_DEFAULT);
+        this.password = System.getProperty(DB_PWD_KEY, DB_PWD_DEFAULT);
+        this.databasePlatform = System.getProperty(DB_PLATFORM_KEY, DB_PLATFORM_DEFAULT);
     }
 }

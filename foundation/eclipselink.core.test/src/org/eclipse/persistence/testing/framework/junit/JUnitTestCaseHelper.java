@@ -23,10 +23,17 @@ import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 
 public class JUnitTestCaseHelper {
 
+    public static final String DB_DRIVER_KEY = "db.driver";
+    public static final String DB_URL_KEY = "db.url";
+    public static final String DB_USER_KEY = "db.user";
+    public static final String DB_PWD_KEY = "db.pwd";
+    public static final String DB_PLATFORM_KEY = "db.platform";
+    public static final String LOGGING_LEVEL_KEY = "eclipselink.logging.level";
+
     public static final String TEST_PROPERTIES_FILE_KEY = "test.properties";
     public static final String TEST_PROPERTIES_FILE_DEFAULT = "test.properties";
-	
-	public static Map propertiesMap = null;
+
+    public static Map propertiesMap = null;
     public static Map persistencePropertiesTestMap = new HashMap();
     
     static {
@@ -39,59 +46,81 @@ public class JUnitTestCaseHelper {
         persistencePropertiesTestMap.put(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MIN, "4");
         persistencePropertiesTestMap.put(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MAX, "4");
     }
-	
+
     /**
-     * Read common properties (including database properties) from test.properties file.
+     * Get common properties (including database properties) from System, for unavailable ones, read from test.properties file.
      * The location of properties file can be given by system property <tt>test.properties</tt>.
      * The default location is "test.properties" file in current directory. 
      */
     public static Map getDatabaseProperties(){
         if (propertiesMap == null){
-            Properties properties = new Properties();
-            File testPropertiesFile 
-                = new File(System.getProperty(TEST_PROPERTIES_FILE_KEY, TEST_PROPERTIES_FILE_DEFAULT));
+            String dbDriver = System.getProperty(DB_DRIVER_KEY);
+            String dbUrl = System.getProperty(DB_URL_KEY);
+            String dbUser = System.getProperty(DB_USER_KEY);
+            String dbPwd = System.getProperty(DB_PWD_KEY);
+            String platform = System.getProperty(DB_PLATFORM_KEY);
+            String logLevel = System.getProperty(LOGGING_LEVEL_KEY);
+
+            //if not all of these properties available from System, read unavailable ones from test.properties file
+            if ((dbDriver == null) || (dbUrl == null) || (dbUser == null) || (dbPwd == null) || (platform == null) || (logLevel == null))
+            {
+                Properties properties = new Properties();
+                File testPropertiesFile 
+                    = new File(System.getProperty(TEST_PROPERTIES_FILE_KEY, TEST_PROPERTIES_FILE_DEFAULT));
             
-            URL url = null;
-            if (testPropertiesFile.exists()) {
-                try {
-                    url = testPropertiesFile.toURL();
-                } catch (MalformedURLException exception) {
-                    throw new RuntimeException("Error loading " + testPropertiesFile.getName() + ".", exception);
+                URL url = null;
+                if (testPropertiesFile.exists()) {
+                    try {
+                        url = testPropertiesFile.toURL();
+                    } catch (MalformedURLException exception) {
+                        throw new RuntimeException("Error loading " + testPropertiesFile.getName() + ".", exception);
+                    }
+                }
+                if (url != null){
+                    try{
+                        properties.load(url.openStream());
+                    } catch (java.io.IOException exception){
+                       throw new  RuntimeException("Error loading " + testPropertiesFile.getName() + ".", exception);
+                    }
+                }
+                if (dbDriver == null) {
+                    dbDriver = (String) properties.get("db.driver");
+                }
+                if (dbUrl == null) {
+                    dbUrl = (String) properties.get("db.url");
+                }
+                if (dbUser == null) {
+                    dbUser = (String) properties.get("db.user");
+                }
+                if (dbPwd == null) {
+                    dbPwd = (String) properties.get("db.pwd");
+                }
+                if (platform == null) {
+                    platform = (String) properties.get("db.platform");
+                }
+                if (logLevel == null) {
+                    logLevel = (String) properties.get("eclipselink.logging.level");
                 }
             }
+
             propertiesMap = new HashMap();
-            if (url != null){
-                try{
-                    properties.load(url.openStream());
-                } catch (java.io.IOException exception){
-                   throw new  RuntimeException("Error loading " + testPropertiesFile.getName() + ".", exception);
-                }
-                
-                String dbDriver = (String) properties.get("db.driver");
-                String dbUrl = (String) properties.get("db.url");
-                String dbUser = (String) properties.get("db.user");
-                String dbPwd = (String) properties.get("db.pwd");
-                String platform = (String) properties.get("db.platform");
-                String logLevel = (String) properties.get("eclipselink.logging.level");
-                
-                if (dbDriver != null) {
-                    propertiesMap.put("eclipselink.jdbc.driver", dbDriver);
-                }
-                if (dbUrl != null) {
-                    propertiesMap.put("eclipselink.jdbc.url", dbUrl);
-                }
-                if (dbUser != null) {
-                    propertiesMap.put("eclipselink.jdbc.user", dbUser);
-                }
-                if (dbPwd != null) {
-                    propertiesMap.put("eclipselink.jdbc.password", dbPwd);
-                }
-                if (logLevel != null) {
-                    propertiesMap.put("eclipselink.logging.level", logLevel);
-                }
-                if (platform != null) {
-                    propertiesMap.put("eclipselink.target-database", platform);
-                }
+            if (dbDriver != null) {
+                propertiesMap.put("eclipselink.jdbc.driver", dbDriver);
+            }
+            if (dbUrl != null) {
+                propertiesMap.put("eclipselink.jdbc.url", dbUrl);
+            }
+            if (dbUser != null) {
+                propertiesMap.put("eclipselink.jdbc.user", dbUser);
+            }
+            if (dbPwd != null) {
+                propertiesMap.put("eclipselink.jdbc.password", dbPwd);
+            }
+            if (logLevel != null) {
+                propertiesMap.put("eclipselink.logging.level", logLevel);
+            }
+            if (platform != null) {
+                propertiesMap.put("eclipselink.target-database", platform);
             }
             propertiesMap.putAll(persistencePropertiesTestMap);
         }
