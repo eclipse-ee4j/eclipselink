@@ -52,14 +52,14 @@ public class ExhaustivePartialStringComparatorEngineTests extends TestCase {
 		assertEquals("dadoorunrun", pairs[i].getStringHolder1().getString());
 		assertEquals("da-doo-run-run", pairs[i++].getStringHolder2().getString());
 
+		assertEquals("bar", pairs[i].getStringHolder1().getString());
+		assertEquals("bbaarr", pairs[i++].getStringHolder2().getString());
+
 		assertEquals("foo", pairs[i].getStringHolder1().getString());
 		assertEquals("FOOOOO", pairs[i++].getStringHolder2().getString());
 
 		assertEquals("chickenLittle", pairs[i].getStringHolder1().getString());
 		assertEquals("MyChickenLittle", pairs[i++].getStringHolder2().getString());
-
-		assertEquals("bar", pairs[i].getStringHolder1().getString());
-		assertEquals("bbaarr", pairs[i++].getStringHolder2().getString());
 
 	}
 
@@ -94,12 +94,11 @@ public class ExhaustivePartialStringComparatorEngineTests extends TestCase {
 		assertEquals("dadoorunrun", pairs[i].getStringHolder1().getString());
 		assertEquals("da-doo-run-run", pairs[i++].getStringHolder2().getString());
 
-		assertEquals("foo", pairs[i].getStringHolder1().getString());
-		assertEquals("FOOOOO", pairs[i++].getStringHolder2().getString());
-
 		assertEquals("bar", pairs[i].getStringHolder1().getString());
 		assertEquals("bbaarr", pairs[i++].getStringHolder2().getString());
 
+		assertEquals("foo", pairs[i].getStringHolder1().getString());
+		assertEquals("FOOOOO", pairs[i++].getStringHolder2().getString());
 
 	}
 
@@ -127,17 +126,17 @@ public class ExhaustivePartialStringComparatorEngineTests extends TestCase {
 		this.dump(pairs);
 		int i = 0;
 
-		assertEquals("foo", pairs[i].getStringHolder1().getString());
+		assertEquals("dadoorunrun", pairs[i].getStringHolder1().getString());
 		assertNull(pairs[i++].getStringHolder2());
 
-		assertEquals("dadoorunrun", pairs[i].getStringHolder1().getString());
+		assertEquals("foo", pairs[i].getStringHolder1().getString());
 		assertEquals("da-doo-run-run", pairs[i++].getStringHolder2().getString());
-
-		assertEquals("chickenLittle", pairs[i].getStringHolder1().getString());
-		assertEquals("MyChickenLittle", pairs[i++].getStringHolder2().getString());
 
 		assertEquals("bar", pairs[i].getStringHolder1().getString());
 		assertEquals("bbaarr", pairs[i++].getStringHolder2().getString());
+
+		assertEquals("chickenLittle", pairs[i].getStringHolder1().getString());
+		assertEquals("MyChickenLittle", pairs[i++].getStringHolder2().getString());
 
 	}
 
