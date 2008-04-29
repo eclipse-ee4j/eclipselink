@@ -3888,7 +3888,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             backupClone = builder.buildNewInstance();
         }
         getCloneMapping().put(newObject, backupClone);
-        assignSequenceNumber(newObject);
+        assignSequenceNumber(newObject, descriptor);
 
         // Check if the new objects should be cached.
         registerNewObjectClone(newObject, original, descriptor); //this method calls registerNewObjectInIdentityMap

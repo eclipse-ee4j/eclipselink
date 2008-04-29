@@ -241,15 +241,26 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /**
      * ADVANCED:
-     *  automatically orders database access through the foreign key information provided in 1:1 and 1:m mappings.
+     * EclipseLink automatically orders database access through the foreign key information provided in 1:1 and 1:m mappings.
      * In some case when 1:1 are not defined it may be required to tell the descriptor about a constraint,
      * this defines that this descriptor has a foreign key constraint to another class and must be inserted after
      * instances of the other class.
      */
     public void addConstraintDependencies(Class dependencies) {
-        getConstraintDependencies().addElement(dependencies);
+        addConstraintDependency(dependencies);
     }
-
+    
+    /**
+     * ADVANCED:
+     * EclipseLink automatically orders database access through the foreign key information provided in 1:1 and 1:m mappings.
+     * In some case when 1:1 are not defined it may be required to tell the descriptor about a constraint,
+     * this defines that this descriptor has a foreign key constraint to another class and must be inserted after
+     * instances of the other class.
+     */
+    public void addConstraintDependency(Class dependencies) {
+        getConstraintDependencies().add(dependencies);
+    }
+    
     /**
      * PUBLIC:
      * Add a direct to field mapping to the receiver. The new mapping specifies that

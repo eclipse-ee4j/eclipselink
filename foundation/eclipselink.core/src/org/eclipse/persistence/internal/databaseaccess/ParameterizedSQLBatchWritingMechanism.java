@@ -187,7 +187,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                     List parameterList = (List)this.parameters.get(statementIndex);
                     int size = parameterList.size();
                     for (int index = 0; index < size; index++) {
-                        session.getPlatform().setParameterValueInDatabaseCall(parameterList.get(index), statement, index, session);
+                        session.getPlatform().setParameterValueInDatabaseCall(parameterList.get(index), statement, index+1, session);
                     }
 
                     // Batch the parameters to the statement.
