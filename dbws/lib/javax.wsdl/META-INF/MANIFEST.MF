@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Wsdl Plug-in
-Bundle-SymbolicName: javax.wsdl7
+Bundle-SymbolicName: javax.wsdl
 Bundle-Version: 1.6.2
 Export-Package: com.ibm.wsdl,
  com.ibm.wsdl.extensions,
