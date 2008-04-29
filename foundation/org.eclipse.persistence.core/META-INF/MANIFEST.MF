@@ -4,15 +4,15 @@ Bundle-Name: Core
 Bundle-SymbolicName: org.eclipse.persistence.core
 Bundle-Version: 0.1
 Require-Bundle: javax.activation;visibility:=reexport,
- javax.ejb_3.0.0;visibility:=reexport,
- javax.jms_1.1.0;visibility:=reexport,
  javax.mail;visibility:=reexport,
- javax.persistence_1.0.0;visibility:=reexport,
- javax.resource_1.5.0;visibility:=reexport,
- javax.transaction_1.1.0;visibility:=reexport,
- javax.xml.stream_1.0.0;visibility:=reexport,
  org.eclipse.persistence.antlr,
- org.eclipse.persistence.asm;visibility:=reexport
+ org.eclipse.persistence.asm;visibility:=reexport,
+ javax.ejb;visibility:=reexport,
+ javax.jms;visibility:=reexport,
+ javax.resource;visibility:=reexport,
+ javax.transaction;visibility:=reexport,
+ javax.xml.stream;visibility:=reexport,
+ javax.persistence;bundle-version="1.99.0";visibility:=reexport
 Export-Package: org.eclipse.persistence,
  org.eclipse.persistence.annotations,
  org.eclipse.persistence.descriptors,

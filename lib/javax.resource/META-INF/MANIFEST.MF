@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Resource Plug-in
-Bundle-SymbolicName: javax.resource_1.5.0
+Bundle-SymbolicName: javax.resource
 Bundle-Version: 1.5.0
 Export-Package: javax.resource,
  javax.resource.cci,

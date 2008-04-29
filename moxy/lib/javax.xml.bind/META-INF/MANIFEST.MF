@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Bind Plug-in
-Bundle-SymbolicName: javax.xml.bind_2.0.0
+Bundle-SymbolicName: javax.xml.bind
 Bundle-Version: 2.0.0
 Export-Package: javax.xml.bind,
  javax.xml.bind.annotation,

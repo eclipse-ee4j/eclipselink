@@ -1,11 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Ejb Plug-in
-Bundle-SymbolicName: javax.ejb_3.0.0
+Bundle-SymbolicName: javax.ejb
 Bundle-Version: 3.0.0
 Export-Package: javax.ejb,
  javax.ejb.spi,
  javax.interceptor
 Require-Bundle: javax.mail,
- javax.transaction_1.1.0;visibility:=reexport,
- javax.xml.rpc;visibility:=reexport
+ javax.xml.rpc;visibility:=reexport,
+ javax.transaction

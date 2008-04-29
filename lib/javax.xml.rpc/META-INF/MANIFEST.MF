@@ -20,6 +20,6 @@ Export-Package: javax.xml.messaging,
  javax.xml.rpc.holders,
  javax.xml.rpc.server,
  javax.xml.rpc.soap
-Require-Bundle: javax.xml.soap_1.3.0,
- javax.servlet,
- org.apache.xerces;bundle-version="[2.8.0,3.0.0)";resolution:=optional
+Require-Bundle: javax.servlet,
+ org.apache.xerces;bundle-version="[2.8.0,3.0.0)";resolution:=optional,
+ javax.xml.soap
