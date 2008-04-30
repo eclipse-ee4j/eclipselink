@@ -17,7 +17,6 @@ import java.util.*;
 import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.helper.*;
 
 /**
  * Helper class for RemoteSessionController.

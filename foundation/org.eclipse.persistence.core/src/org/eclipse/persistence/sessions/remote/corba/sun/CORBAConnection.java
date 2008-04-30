@@ -19,7 +19,6 @@ import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.internal.helper.*;
 
 /**
  * This class exists on on the client side which talks to remote session controller through

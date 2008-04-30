@@ -22,6 +22,7 @@ import java.util.logging.Level;
  * Format a TopLink LogRecord into a standard XML format.
  * </p>
  */
+@SuppressWarnings("deprecation")
 public class XMLLogFormatter extends XMLFormatter {
     // Append a two digit number.
     private void a2(StringBuffer sb, int x) {
@@ -32,7 +33,7 @@ public class XMLLogFormatter extends XMLFormatter {
     }
 
     // Append the time and date in ISO 8601 format
-    private void appendISO8601(StringBuffer sb, long millis) {
+	private void appendISO8601(StringBuffer sb, long millis) {
         Date date = new Date(millis);
         sb.append(date.getYear() + 1900);
         sb.append('-');

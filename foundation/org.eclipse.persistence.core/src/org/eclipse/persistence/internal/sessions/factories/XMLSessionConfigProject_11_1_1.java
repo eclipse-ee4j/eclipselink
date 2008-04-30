@@ -16,7 +16,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
-import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.oc4j.Oc4j_11_1_1_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.SunAS9PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_10_PlatformConfig;
