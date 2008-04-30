@@ -1,4 +1,4 @@
-#Wed Apr 30 15:32:02 EDT 2008
+#Wed Apr 30 15:39:11 EDT 2008
 eclipse.preferences.version=1
 org.eclipse.jdt.core.compiler.problem.annotationSuperInterface=warning
 org.eclipse.jdt.core.compiler.problem.autoboxing=ignore
@@ -44,7 +44,7 @@ org.eclipse.jdt.core.compiler.problem.unusedDeclaredThrownException=ignore
 org.eclipse.jdt.core.compiler.problem.unusedDeclaredThrownExceptionWhenOverriding=disabled
 org.eclipse.jdt.core.compiler.problem.unusedImport=warning
 org.eclipse.jdt.core.compiler.problem.unusedLabel=warning
-org.eclipse.jdt.core.compiler.problem.unusedLocal=warning
+org.eclipse.jdt.core.compiler.problem.unusedLocal=ignore
 org.eclipse.jdt.core.compiler.problem.unusedParameter=ignore
 org.eclipse.jdt.core.compiler.problem.unusedParameterWhenImplementingAbstract=disabled
 org.eclipse.jdt.core.compiler.problem.unusedParameterWhenOverridingConcrete=disabled
