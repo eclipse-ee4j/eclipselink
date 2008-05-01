@@ -43,6 +43,8 @@ import org.eclipse.persistence.internal.oxm.schema.model.Sequence;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredArgument;
 import org.eclipse.persistence.tools.dbws.jdbc.DbStoredProcedure;
 import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.SIMPLE_XML_FORMAT_TYPE;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_TIME_QNAME;
@@ -59,11 +61,9 @@ public class Util {
     public enum InOut {
         IN, OUT, INOUT, RETURN
     }
-
+    
     public static final String DEFAULT_WSDL_LOCATION_URI =
-        "http://localhost:8888/";
-    public static final String META_INF_DIR =
-        "META-INF/";
+        "REPLACE_WITH_ENDPOINT_ADDRESS";
     public static final String WEB_INF_DIR =
         "WEB-INF/";
     public static final String SWAREF_FILENAME =
@@ -72,73 +72,27 @@ public class Util {
         "web.xml";
     public static final String DEFAULT_PLATFORM_CLASSNAME = 
         "org.eclipse.persistence.platform.database.oracle.OraclePlatform";
+    public static final String WEBSERVICES_FILENAME =
+        "webservices.xml";
     public static final String ORACLE_WEBSERVICES_FILENAME =
         "oracle-webservices.xml";
     public static final String ORACLE_WEBSERVICES_FILE =
         WEB_INF_DIR + ORACLE_WEBSERVICES_FILENAME;
-    public static final String WSDL_FILENAME =
-        "eclipselink-dbws.wsdl";
-    public static final String WSDL_FILE =
-        WEB_INF_DIR + "wsdl/" + WSDL_FILENAME;
-    public static final String WAR_CLASSES_DIR =
-        "classes/";
-    public static final String INDEX_DOT_HTML = "index.html";
-    public static final String INDEX_HTML =
-        "<html>\n" +
-        "  <head>\n" +
-        "    <title>Empty DBWS Page</title>\n" +
-        "  </head>\n" +
-        "  <body>\n" +
-        "    <p>Empty DBWS Page</p>\n" +
-        "  </body>\n" +
-        "</html>";
-    public static final String ORACLE_WEBSERVICES_DESCRIPTOR =
-        "<oracle-webservices>\n" +
-        "  <provider-description>\n" +
-        "    <wsdl-file>/" + WSDL_FILE + "</wsdl-file>\n" +
-        "    <provider-port>\n" +
-        "      <provider-name>DBWSProvider</provider-name>\n" +
-        "      <implementation-class>oracle.toplink.internal.dbws.oraws.OracleWSDBWSProvider</implementation-class>\n" +
-        "      <servlet-link>Provider</servlet-link>\n" +
-        "    </provider-port>\n" +
-        "  </provider-description>\n" +
-        "</oracle-webservices>";
-    public static final String WEB_XML_PREAMBLE =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<web-app\n" +
-        "  xmlns=\"http://java.sun.com/xml/ns/j2ee\"\n" +
-        "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-        "  xsi:schemaLocation=\"http://java.sun.com/xml/ns/j2ee" +
-        "  http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd\"\n" +
-        "  version=\"2.4\"\n" +
-        "  >\n" +
-        "  <servlet>\n" +
-        "    <servlet-name>Provider</servlet-name>\n" +
-        "    <servlet-class>oracle.j2ee.ws.server.provider.ProviderServlet</servlet-class>\n" +
-        "    <load-on-startup>1</load-on-startup>\n" +
-        "  </servlet>\n" +
-        "  <servlet-mapping>\n" +
-        "    <servlet-name>Provider</servlet-name>\n" +
-        "    <url-pattern>";
-          // contextRoot ^^ here
-    public static final String WEB_XML_POSTSCRIPT =
-            "</url-pattern>\n" +
-        "  </servlet-mapping>\n" +
-        "  <welcome-file-list>\n" +
-        "    <welcome-file>index.html</welcome-file>\n" +
-        "  </welcome-file-list>\n" +
-        "</web-app>\n";
-    public static final String WSI_SWAREF_XSD_FILE =
-        "swaref.xsd";
-    public static final String WSI_SWAREF_XSD =
-        "<xsd:schema targetNamespace=\"http://ws-i.org/profiles/basic/1.1/xsd\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n " +
-        "  <xsd:simpleType name=\"swaRef\">\n " +
-        "    <xsd:restriction base=\"xsd:anyURI\"/>\n " +
-        "  </xsd:simpleType>\n " +
-        "</xsd:schema>";
+    public static final String UNDER_DBWS =
+        "_dbws";
+    public static final String WSDL_DIR =
+        "wsdl";
+    public static final String WSI_SWAREF =
+        "swaref";
+    public static final String WSI_SWAREF_PREFIX =
+        "ref";
+    public static final String WSI_SWAREF_URI =
+        "http://ws-i.org/profiles/basic/1.1/xsd";
+    public static final String WSI_SWAREF_XSD_FILE = 
+        WSI_SWAREF + ".xsd";
     public static final String PK_QUERYNAME =
         "findByPrimaryKey";
-    public static final String THE_INSTANCE_NAME =
+    public static final String THE_INSTANCE_NAME = 
         "theInstance";
     public static final String FINDALL_QUERYNAME =
         "findAll";
@@ -148,8 +102,13 @@ public class Util {
         "update";
     public static final String REMOVE_OPERATION_NAME =
         "delete";
+    public static final String DBWS_PROVIDER_PACKAGE = "_dbws";
+    public static final String DBWS_PROVIDER_NAME = "DBWSProvider";
+    public static final String DBWS_PROVIDER_CLASS_FILE = DBWS_PROVIDER_NAME + ".class";
+    public static final String DBWS_PROVIDER_SOURCE_FILE = DBWS_PROVIDER_NAME + ".java";
 
-    public static final QName SXF_QNAME = new QName("", "sxfType");
+    public static final QName SXF_QNAME = new QName("", SIMPLE_XML_FORMAT_TYPE);
+    public static final QName SXF_QNAME_CURSOR = new QName("", "cursor of " + SIMPLE_XML_FORMAT_TYPE);
     // TODO - expand to cover more cases
     public static QName getXMLTypeFromJDBCType(Short jdbcType) {
         return getXMLTypeFromJDBCType(jdbcType.intValue());
@@ -246,7 +205,7 @@ public class Util {
     */
     public static void addSimpleXMLFormat(Schema schema) {
         ComplexType anyType = new ComplexType();
-        anyType.setName("sxfType");
+        anyType.setName(SIMPLE_XML_FORMAT_TYPE);
         Sequence anySequence = new Sequence();
         Any any = new Any();
         any.setMinOccurs("0");
@@ -254,8 +213,8 @@ public class Util {
         anyType.setSequence(anySequence);
         schema.addTopLevelComplexTypes(anyType);
         Element wrapperElement = new Element();
-        wrapperElement.setName("simple-xml-format");
-        wrapperElement.setType("sxfType");
+        wrapperElement.setName(DEFAULT_SIMPLE_XML_FORMAT_TAG);
+        wrapperElement.setType(SIMPLE_XML_FORMAT_TYPE);
         schema.addTopLevelElement(wrapperElement);
     }
 

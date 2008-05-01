@@ -10,6 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
+
 package org.eclipse.persistence.tools.dbws;
 
 // J2SE imports
@@ -58,12 +59,16 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
 import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
+import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF;
+import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_PREFIX;
+import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_URI;
+import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_XSD_FILE;
 
 public class WSDLGenerator {
 
     public static final String BINDING_SUFFIX = "_SOAP_HTTP";
     public static final String NS_SCHEMA_PREFIX = "xsd";
-    public static final String SERVICE_SUFFIX = "/service";
+    public static final String SERVICE_SUFFIX = "Service";
     public static final String TYPE_SUFFIX = "Type";
     public static final String RESPONSE_SUFFIX = "Response";
     public static final String REQUEST_SUFFIX = "Request";
@@ -76,25 +81,28 @@ public class WSDLGenerator {
     public static final String SOAP_USE = "literal";
     public static final String SOAP_STYLE = "document";
     public static final String SOAP_TRANSPORT = "http://schemas.xmlsoap.org/soap/http";
-    public static final String NS_WSDL_PREFIX = "wsdl";
     public static final String NS_WSDL_SOAP_PREFIX = "soap";
     public static final String NS_WSDL_SOAP = "http://schemas.xmlsoap.org/wsdl/soap/";
-    public static final String NS_WSDL = "http://schemas.xmlsoap.org/wsdl/";
-    public static final String NS_THIS_PREFIX = "tns";
+    public static final String NS_TNS_PREFIX = "tns";
+    public static final String NS_IMPORTED_PREFIX = "ns1";
 
     protected XRServiceModel xrServiceModel;
+    protected String serviceName;
     protected String serviceNameSpace;
+    protected String importedSchemaNameSpace;
     protected String wsdlLocationURI;
     protected boolean hasAttachments;
     protected OutputStream os;
 
     public WSDLGenerator(XRServiceModel xrServiceModel, String wsdlLocationURI, boolean hasAttachments,
-        OutputStream os) {
+        String importedSchemaNameSpace, OutputStream os) {
         this.xrServiceModel = xrServiceModel;
         this.wsdlLocationURI = wsdlLocationURI;
         this.hasAttachments = hasAttachments;
         this.os = os;
-        serviceNameSpace = "urn:" + xrServiceModel.getName() + SERVICE_SUFFIX;
+        this.importedSchemaNameSpace = importedSchemaNameSpace;
+        serviceName = xrServiceModel.getName() + SERVICE_SUFFIX;
+        serviceNameSpace = importedSchemaNameSpace + SERVICE_SUFFIX;
     }
 
     public Definition generateWSDL() throws WSDLException {
@@ -103,11 +111,11 @@ public class WSDLGenerator {
 
         Definition def = factory.newDefinition();
         def.setTargetNamespace(serviceNameSpace);
-        def.setQName(new QName(serviceNameSpace, xrServiceModel.getName()));
-        def.addNamespace(NS_THIS_PREFIX, serviceNameSpace);
+        def.setQName(new QName(serviceNameSpace, serviceName));
+        def.addNamespace(NS_TNS_PREFIX, serviceNameSpace);
+        def.addNamespace(NS_IMPORTED_PREFIX, importedSchemaNameSpace);
         def.addNamespace(NS_SCHEMA_PREFIX, W3C_XML_SCHEMA_NS_URI);
         def.addNamespace(NS_WSDL_SOAP_PREFIX, NS_WSDL_SOAP);
-        def.addNamespace(NS_WSDL_PREFIX, NS_WSDL);
 
         Types types = def.createTypes();
         javax.wsdl.extensions.schema.Schema schema =
@@ -119,12 +127,12 @@ public class WSDLGenerator {
 
         PortType portType = def.createPortType();
         portType.setUndefined(false);
-        portType.setQName(new QName(serviceNameSpace, xrServiceModel.getName() + PORT_SUFFIX));
+        portType.setQName(new QName(serviceNameSpace, serviceName + PORT_SUFFIX));
         def.addPortType(portType);
 
         Binding binding = def.createBinding();
         binding.setUndefined(false);
-        binding.setQName(new QName(serviceNameSpace, xrServiceModel.getName() + BINDING_SUFFIX));
+        binding.setQName(new QName(serviceNameSpace, serviceName + BINDING_SUFFIX));
         binding.setPortType(portType);
         SOAPBinding soap =
             (SOAPBinding) registry.createExtension(Binding.class, new QName(NS_WSDL_SOAP,
@@ -135,9 +143,9 @@ public class WSDLGenerator {
         def.addBinding(binding);
 
         Service ws = def.createService();
-        ws.setQName(new QName(serviceNameSpace, xrServiceModel.getName()));
+        ws.setQName(new QName(serviceNameSpace, serviceName));
         Port port = def.createPort();
-        port.setName(xrServiceModel.getName());
+        port.setName(serviceName);
         port.setBinding(binding);
         SOAPAddress sa =
             (SOAPAddress) registry.createExtension(Port.class, new QName(NS_WSDL_SOAP,
@@ -184,7 +192,7 @@ public class WSDLGenerator {
         }
 
         PortType portType =
-            def.getPortType(new QName(serviceNameSpace, xrServiceModel.getName() + PORT_SUFFIX));
+            def.getPortType(new QName(serviceNameSpace, serviceName + PORT_SUFFIX));
         javax.wsdl.Operation op = def.createOperation();
         op.setUndefined(false);
         op.setName(operation.getName());
@@ -199,13 +207,13 @@ public class WSDLGenerator {
         portType.addOperation(op);
 
         Binding binding =
-            def.getBinding(new QName(serviceNameSpace, xrServiceModel.getName() + BINDING_SUFFIX));
+            def.getBinding(new QName(serviceNameSpace, serviceName + BINDING_SUFFIX));
         BindingOperation bop = def.createBindingOperation();
         bop.setName(operation.getName());
         SOAPOperation so =
             (SOAPOperation) registry.createExtension(BindingOperation.class, new QName(
                 NS_WSDL_SOAP, TAG_SOAP_OPERATION));
-        so.setSoapActionURI(serviceNameSpace + "/" + op.getName());
+        so.setSoapActionURI(serviceNameSpace + ":" + op.getName());
         bop.addExtensibilityElement(so);
         BindingInput bi = def.createBindingInput();
         SOAPBody soapInput =
@@ -235,33 +243,34 @@ public class WSDLGenerator {
         if (descriptor.getNamespaceResolver() == null) {
             descriptor.setNamespaceResolver(new NamespaceResolver());
         }
-        descriptor.getNamespaceResolver().put(NS_THIS_PREFIX, serviceNameSpace);
+        descriptor.getNamespaceResolver().put(NS_TNS_PREFIX, serviceNameSpace);
         descriptor.getNamespaceResolver().put(NS_SCHEMA_PREFIX, W3C_XML_SCHEMA_NS_URI);
         if (hasAttachments) {
-            descriptor.getNamespaceResolver().put("ref", "http://ws-i.org/profiles/basic/1.1/xsd");
+            descriptor.getNamespaceResolver().put(WSI_SWAREF_PREFIX, WSI_SWAREF_URI);
         }
 
         Schema schema = new Schema();
         schema.setTargetNamespace(serviceNameSpace);
         schema.setElementFormDefault(true);
         Import parent = new Import();
-        parent.setNamespace(serviceNameSpace);
-        int idx = wsdlLocationURI.lastIndexOf("/");
-        String s = wsdlLocationURI.substring(0, idx);
-        parent.setSchemaLocation(s + "/" + xrServiceModel.getName() + "/" + DBWS_SCHEMA_XML);
-        schema.getImports().put(parent.getSchemaLocation(), parent);
+        parent.setNamespace(importedSchemaNameSpace);
+        parent.setSchemaLocation(DBWS_SCHEMA_XML);
+        schema.getImports().add(parent);
         if (hasAttachments) {
             Import ref = new Import();
-            ref.setNamespace("http://ws-i.org/profiles/basic/1.1/xsd");
-            // ref.setSchemaLocation("http://ws-i.org/profiles/basic/1.1/swaref.xsd");
-            ref.setSchemaLocation(s + "/" + xrServiceModel.getName() + "/" + "swaref.xsd");
-            schema.getImports().put(ref.getSchemaLocation(), ref);
+            ref.setNamespace(WSI_SWAREF_URI);
+            // ref.setSchemaLocation("http://ws-i.org/profiles/basic/1.1/swaref.xsd"); // later version
+            ref.setSchemaLocation(WSI_SWAREF_XSD_FILE);
+            schema.getImports().add(ref);
         }
 
         for (Operation op : xrServiceModel.getOperationsList()) {
             ComplexType requestType = new ComplexType();
             requestType.setName(op.getName() + TYPE_SUFFIX);
-            Sequence requestSequence = new Sequence();
+            Sequence requestSequence = null;
+            if (op.getParameters().size() > 0) {
+                requestSequence = new Sequence();
+            }
             for (Parameter p : op.getParameters()) {
                 Element arg = new Element();
                 arg.setName(p.getName());
@@ -274,7 +283,7 @@ public class WSDLGenerator {
                     nestedComplexType.setSequence(nestedSequence);
                     Element nestedElement = new Element();
                     nestedElement.setName(abbreviatedTypeLabel);
-                    nestedElement.setType(localPart);
+                    nestedElement.setType(NS_IMPORTED_PREFIX + ":" + localPart);
                     nestedSequence.addElement(nestedElement);
                     arg.setComplexType(nestedComplexType);
                 }
@@ -289,13 +298,14 @@ public class WSDLGenerator {
                 }
                 requestSequence.addElement(arg);
             }
-
-            requestType.setSequence(requestSequence);
+            if (requestSequence != null) {
+                requestType.setSequence(requestSequence);
+            }
             schema.addTopLevelComplexTypes(requestType);
 
             Element requestElement = new Element();
             requestElement.setName(op.getName());
-            requestElement.setType(NS_THIS_PREFIX + ":" + requestType.getName());
+            requestElement.setType(NS_TNS_PREFIX + ":" + requestType.getName());
             schema.addTopLevelElement(requestElement);
 
             // build response message based on operation type
@@ -307,7 +317,7 @@ public class WSDLGenerator {
                 Element result = new Element();
                 result.setName("result");
                 if (q.isAttachment()) {
-                    result.setType("ref:swaRef");
+                    result.setType(WSI_SWAREF_PREFIX + ":" + WSI_SWAREF);
                 }
                 else if (q.isSimpleXMLFormat() ||
                            q.getResultType().equals(new QName(W3C_XML_SCHEMA_NS_URI, "any"))) {
@@ -320,11 +330,23 @@ public class WSDLGenerator {
                 else {
                     if (q.getResultType().getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
                         result.setType(NS_SCHEMA_PREFIX + ":" + q.getResultType().getLocalPart());
-                    } else {
-                        result.setType(q.getResultType().getLocalPart());
                     }
-                    if (q.isCollection()) {
-                        result.setMaxOccurs("unbounded");
+                    else {
+                        String localPart = q.getResultType().getLocalPart();
+                        String abbreviatedTypeLabel = localPart.substring(0,
+                            localPart.indexOf(TYPE_SUFFIX));
+                        ComplexType nestedComplexType = new ComplexType();
+                        Sequence nestedSequence = new Sequence();
+                        nestedComplexType.setSequence(nestedSequence);
+                        Element nestedElement = new Element();
+                        nestedElement.setName(abbreviatedTypeLabel);
+                        nestedElement.setType(NS_IMPORTED_PREFIX + ":" +  localPart);
+                        nestedElement.setMinOccurs("0");
+                        if (q.isCollection()) {
+                            nestedElement.setMaxOccurs("unbounded");
+                        }
+                        nestedSequence.addElement(nestedElement);
+                        result.setComplexType(nestedComplexType);
                     }
                 }
                 responseSequence.addElement(result);
@@ -333,7 +355,7 @@ public class WSDLGenerator {
 
                 Element responseElement = new Element();
                 responseElement.setName(op.getName() + RESPONSE_SUFFIX);
-                responseElement.setType(NS_THIS_PREFIX + ":" + responseType.getName());
+                responseElement.setType(NS_TNS_PREFIX + ":" + responseType.getName());
                 schema.addTopLevelElement(responseElement);
             }
         }

@@ -29,17 +29,17 @@ import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
  * handles binary attachments
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 public class SOAPAttachmentHandler implements XMLAttachmentMarshaller {
-
+    
     private int count = 0;
-    private HashMap<String, DataHandler> attachments = new HashMap<String,DataHandler>();
-
+    private HashMap<String, DataHandler> attachments = new HashMap<String,DataHandler>(); 
+    
     public boolean hasAttachments() {
         return attachments.size() > 0;
     }
-
+    
     public Map<String, DataHandler> getAttachments() {
         return attachments;
     }
@@ -51,19 +51,19 @@ public class SOAPAttachmentHandler implements XMLAttachmentMarshaller {
         return name;
     }
 
-	public String addSwaRefAttachment(byte[] data, int start, int length) {
+    public String addSwaRefAttachment(byte[] data, int start, int length) {
         ++count;
         String name = "cid:ref" + count;
         DataHandler dataHandler = new DataHandler(new ByteArrayDataSource(data,
-    		"application/octet-stream"));
+            "application/octet-stream"));
         attachments.put(name, dataHandler);
         return name;
-	}
-
+    }
+    
     public String addMtomAttachment(DataHandler data, String elementName, String namespace) {
         return null;
     }
-
+    
     public String addMtomAttachment(byte[] data, int start, int offset, String mimeType, String elementName, String namespace) {
         return null;
     }

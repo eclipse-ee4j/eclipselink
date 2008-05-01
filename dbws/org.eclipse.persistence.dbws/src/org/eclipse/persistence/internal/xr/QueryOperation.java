@@ -119,11 +119,12 @@ public class QueryOperation extends Operation {
         QName resultType = result == null ? null : result.getType();
         if (resultType != null) {
             if (!resultType.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
-                if (!xrService.schemaTypes.contains(resultType)) {
+                boolean sxf = resultType.getLocalPart().equals("sxfType") ||
+                    resultType.getLocalPart().equals("cursor of sxfType");
+                if (!sxf && !xrService.schemaTypes.contains(resultType)) {
                     throw DBWSException.resultDoesNotExistForOperation(resultType.toString(), name);
                 }
-                if (!(resultType.getLocalPart().equals("sxfType")) &&
-                    !xrService.descriptorsByType.containsKey(resultType)) {
+                if (!sxf && !xrService.descriptorsByType.containsKey(resultType)) {
                     throw DBWSException.resultHasNoMapping(resultType.toString(), name);
                 }
             }
@@ -222,7 +223,7 @@ public class QueryOperation extends Operation {
         if (descriptor == null) {
             descriptor = new XMLDescriptor();
             descriptor.setAlias("ValueObject");
-            descriptor.setJavaClass(org.eclipse.persistence.internal.xr.ValueObject.class);
+            descriptor.setJavaClass(ValueObject.class);
             XMLDirectMapping mapping = new XMLDirectMapping();
             mapping.setAttributeName("value");
             mapping.setXPath("value");

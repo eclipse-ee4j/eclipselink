@@ -22,21 +22,21 @@ import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 
 /**
- * <p><b>INTERNAL</b>: runtime implementation of TopLink Database Web Service (DBWS)
+ * <p><b>INTERNAL</b>: runtime implementation of EclipseLink Database Web Service (DBWS)
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 public class DBWSAdapter extends XRServiceAdapter {
+    
+    protected Schema extendedSchema;
 
-  protected Schema extendedSchema;
+    public Schema getExtendedSchema() {
+      return extendedSchema;
+    }
 
-  public Schema getExtendedSchema() {
-    return extendedSchema;
-  }
-
-  public void setExtendedSchema(Schema extendedSchema) {
-    this.extendedSchema = extendedSchema;
-  }
+    public void setExtendedSchema(Schema extendedSchema) {
+      this.extendedSchema = extendedSchema;
+    }
 
 }

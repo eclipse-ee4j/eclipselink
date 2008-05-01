@@ -20,6 +20,7 @@ import java.util.Map;
 
 // Java extension imports
 import javax.xml.namespace.QName;
+import static javax.xml.XMLConstants.NULL_NS_URI;
 
 // EclipseLink imports
 import org.eclipse.persistence.exceptions.DBWSException;
@@ -35,10 +36,13 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
+import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.SIMPLE_XML_FORMAT_TYPE;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_SESSION_NAME_SUFFIX;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_SESSION_NAME_SUFFIX;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
-import static org.eclipse.persistence.internal.xr.Util.SEARCH_PATHS;
+import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
+import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
 
 /**
  * <p><b>INTERNAL</b>: helper class that knows how to build a {@link XRServiceAdapter} (a.k.a DBWS). An
@@ -49,7 +53,7 @@ import static org.eclipse.persistence.internal.xr.Util.SEARCH_PATHS;
  * <li>an XML Schema Definition (<tt>.xsd</tt>) file called <tt><b>toplink-dbws-schema.xsd</b></tt>
  * </li>
  * <li>a TopLink <tt>sessions.xml</tt> file called <tt><b>toplink-dbws-sessions.xml</b></tt><br>
- * &nbsp; the naming convention for the <tt>sessions.xml</tt> files can be overridden by the
+ * &nbsp; the naming convention for the <tt>sessions.xml</tt> files can be overriden by the
  * <b>optional</b> <tt>&lt;sessions-file&gt;</tt> entry in the <code>toplink-dbws.xml</code>
  * descriptor file.
  * </li>
@@ -134,7 +138,7 @@ public class XRServiceFactory  {
 
     public XRServiceAdapter buildService() {
 
-        // sub-classes override with specific behavior
+        // sub-classes override with specific behaviour
 
         initializeService(parentClassLoader, xrSchemaStream);
         return xrService;
@@ -142,7 +146,7 @@ public class XRServiceFactory  {
 
     public XRServiceAdapter buildService(XRServiceModel xrServiceModel) {
 
-        // sub-classes override with specific behavior
+        // sub-classes override with specific behaviour
 
         xrService = new XRServiceAdapter();
         xrService.setName(xrServiceModel.getName());
@@ -185,23 +189,43 @@ public class XRServiceFactory  {
         XMLContext xmlContext = new XMLContext(schemaProject);
         XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller();
         Schema schema = (Schema)unmarshaller.unmarshal(xrSchemaStream);
+        NamespaceResolver nr = schema.getNamespaceResolver();
+        String targetNamespace = schema.getTargetNamespace();
+        nr.put(TARGET_NAMESPACE_PREFIX, targetNamespace);
         xrService.schema = schema;
-        xrService.schemaNamespace = schema.getTargetNamespace();
+        xrService.schemaNamespace = targetNamespace;
         for (Iterator i = schema.getTopLevelComplexTypes().keySet().iterator(); i.hasNext();) {
-            String typeLocal = (String) i.next();
-            QName typeName = new QName(schema.getTargetNamespace(), typeLocal);
+            String typeLocal = (String)i.next();
+            QName typeName = null;
+            // special case simple-xml-format
+            if (typeLocal.equals(SIMPLE_XML_FORMAT_TYPE)) {
+                typeName = new QName(typeLocal);
+            }
+            else {
+                typeName = new QName(targetNamespace, typeLocal);
+            }
             xrService.schemaTypes.add(typeName);
         }
         for (Iterator i = schema.getTopLevelElements().keySet().iterator(); i.hasNext();) {
-            String elementNameLocal = (String) i.next();
-            QName elementName = new QName(schema.getTargetNamespace(), elementNameLocal);
+            String elementNameLocal = (String)i.next();
+            QName elementName = null;
+            // special case simple-xml-format
+            if (elementNameLocal.equals(DEFAULT_SIMPLE_XML_FORMAT_TAG)) {
+                elementName = new QName(elementNameLocal);
+            }
+            else {
+                elementName = new QName(targetNamespace, elementNameLocal);
+            }
             Element element = (Element)schema.getTopLevelElements().get(elementNameLocal);
             // ignore elements with inline complex types
             if (element.getComplexType() != null) {
                 continue;
             }
             String typeNameNS = element.getType();
-            QName typeName = resolveName(typeNameNS, schema.getNamespaceResolver());
+            QName typeName = resolveName(typeNameNS, nr);
+            if (elementName.getNamespaceURI() != null && elementName.getNamespaceURI() != NULL_NS_URI) {
+                typeName = new QName(elementName.getNamespaceURI(), typeName.getLocalPart());
+            }
             // ignore elements that reference types outside of this schema
             if (!xrService.schemaTypes.contains(typeName)) {
                 continue;
@@ -221,7 +245,7 @@ public class XRServiceFactory  {
         boolean found = false;
         String sessionsFile =
             xrService.sessionsFile == null ? DBWS_SESSIONS_XML : xrService.sessionsFile;
-        for (String searchPath : SEARCH_PATHS) {
+        for (String searchPath : META_INF_PATHS) {
             String path = searchPath + sessionsFile;
             XMLSessionConfigLoader loader = new XMLSessionConfigLoader(path);
             loader.setShouldLogin(false);
@@ -277,10 +301,20 @@ public class XRServiceFactory  {
             XMLDescriptor xd = (XMLDescriptor)i.next();
             XMLSchemaReference reference = xd.getSchemaReference();
             if (reference == null) {
-                QName rootName = resolveName(xd.getDefaultRootElement(), xd.getNamespaceResolver());
+                QName rootName = resolveName(xd.getDefaultRootElementField().getQualifiedName(),
+                    xd.getNamespaceResolver());
                 QName typeName = xrService.elementTypes.get(rootName);
                 if (typeName == null) {
-                    continue;
+                    for (Iterator<QName> i2 = xrService.schemaTypes.iterator(); i2.hasNext();) {
+                        QName qName = i2.next();
+                        if (qName.equals(rootName)) {
+                            typeName = qName;
+                            break;
+                        }
+                    }
+                    if (typeName == null) {
+                        continue;
+                    }
                 }
                 xrService.descriptorsByElement.put(rootName, xd);
                 xrService.descriptorsByType.put(typeName, xd);
@@ -338,25 +372,14 @@ public class XRServiceFactory  {
         SessionManager manager = SessionManager.getManager();
         Map sessions = manager.getSessions();
         String orSessionName = xrService.name + "-" + DBWS_OR_SESSION_NAME_SUFFIX;
-        if (sessions.containsKey(orSessionName)) {
-            Session session = (Session)manager.getSessions().get(orSessionName);
-            if (session != null) {
-                if (session.isDatabaseSession() && session.isConnected()) {
-                    ((DatabaseSession)session).logout();
-                }
-            }
-            xrService.orSession = null;
+        Session orSession = (Session)sessions.remove(orSessionName);
+        if (orSession != null && orSession.isConnected()) {
+            ((DatabaseSession)orSession).logout();
         }
         String oxSessionName = xrService.name + "-" + DBWS_OX_SESSION_NAME_SUFFIX;
-        if (sessions.containsKey(oxSessionName)) {
-            Session session = (Session)manager.getSessions().get(oxSessionName);
-            if (session != null) {
-                if (session.isDatabaseSession() && session.isConnected()) {
-                    ((DatabaseSession)session).logout();
-                }
-            }
-            xrService.oxSession = null;
-        }
+        sessions.remove(oxSessionName);
+        xrService.orSession = null;
+        xrService.oxSession = null;
     }
 
     /**

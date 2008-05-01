@@ -21,11 +21,14 @@ import java.util.Iterator;
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
 import static org.eclipse.persistence.internal.helper.ClassConstants.OBJECT;
 import static org.eclipse.persistence.internal.xr.Util.SCHEMA_2_CLASS;
@@ -98,17 +101,33 @@ public class ProjectHelper {
             }
         }
         // turn-off dynamic class generation
-        ClassLoader cl =
-            orProject.getDatasourceLogin().getDatasourcePlatform().getConversionManager()
-                .getLoader();
-        if (cl instanceof BaseEntityClassLoader) {
+        ClassLoader cl = null;
+        Login login = orProject.getDatasourceLogin();
+        if (login != null) {
+            Platform platform = login.getDatasourcePlatform();
+            if (platform != null) {
+                ConversionManager conversionManager = platform.getConversionManager();
+                if (conversionManager != null) {
+                    cl = conversionManager.getLoader();
+                }
+            }
+        }
+        if (cl != null && cl instanceof BaseEntityClassLoader) {
             BaseEntityClassLoader becl = (BaseEntityClassLoader)cl;
             becl.dontGenerateSubclasses();
         }
-        cl =
-            oxProject.getDatasourceLogin().getDatasourcePlatform().getConversionManager()
-                .getLoader();
-        if (cl instanceof BaseEntityClassLoader) {
+        cl = null;
+        login = oxProject.getDatasourceLogin();
+        if (login != null) {
+            Platform platform = login.getDatasourcePlatform();
+            if (platform != null) {
+                ConversionManager conversionManager = platform.getConversionManager();
+                if (conversionManager != null) {
+                    cl = conversionManager.getLoader();
+                }
+            }
+        }
+        if (cl != null && cl instanceof BaseEntityClassLoader) {
             BaseEntityClassLoader becl = (BaseEntityClassLoader)cl;
             becl.dontGenerateSubclasses();
         }

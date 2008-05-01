@@ -63,7 +63,10 @@ public class StoredProcedureQueryHandler extends QueryHandler {
     public List<ProcedureOutputArgument> getOutArguments() {
         return outArguments;
     }
-
+    public boolean isStoredFunctionQueryHandler() {
+        return false;
+    }
+    
     @Override
     public void initializeDatabaseQuery(XRServiceAdapter xrService, QueryOperation queryOperation) {
         DatabaseQuery databaseQueryToInitialize;
@@ -78,19 +81,30 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                     if (!xrService.descriptorsByType.containsKey(type)) {
                         // data-read query
                         databaseQueryToInitialize = new DataReadQuery();
-                    }
+                    } 
                     else {
                         // read-all query for the class mapped to the type
                         databaseQueryToInitialize = new ReadAllQuery(xrService.getTypeClass(type));
                     }
                 }
-            }
+            } 
             else {
                 if (getOutArguments().size() == 0 && getInOutArguments().size() == 0) {
-                    // special case - no out args for SP: the return
-                    // will be a single int
-                    // rowcount
-                    databaseQueryToInitialize = new DataModifyQuery();
+                    if (isStoredFunctionQueryHandler()) {
+                        if (!xrService.descriptorsByType.containsKey(type)) {
+                            databaseQueryToInitialize = new ValueReadQuery();
+                        }
+                        else {
+                            // read object query for the class mapped to the type
+                            databaseQueryToInitialize = new ReadObjectQuery(xrService.getTypeClass(type));
+                        }
+                    }
+                    else {
+                        // special case - no out args for SP: the return
+                        // will be a single int
+                        // rowcount
+                        databaseQueryToInitialize = new DataModifyQuery();
+                    }
                 }
                 else {
                     if (!xrService.descriptorsByType.containsKey(type)) {
@@ -151,12 +165,18 @@ public class StoredProcedureQueryHandler extends QueryHandler {
 
         // find OUT parameters
         if (queryOperation.hasResponse()) {
-            if (!queryOperation.isSimpleXMLFormat()) {
+            if (!queryOperation.isSimpleXMLFormat() ||
+                (spCall.isStoredFunctionCall() && !isCursorType(xrService, resultType))) {
                 setSingleResult(xrService, spCall, resultType);
-            } else {
-                if (getOutArguments().isEmpty()) {
+            }
+            else {
+                if (spCall.isStoredFunctionCall() && isCursorType(xrService, resultType)) {
                     spCall.useUnnamedCursorOutputAsResultSet();
-                } else {
+                }
+                else if (getOutArguments().isEmpty()) {
+                    spCall.useUnnamedCursorOutputAsResultSet();
+                }
+                else {
                     for (ProcedureOutputArgument arg : getOutArguments()) {
                         // use argument type
                         if (arg.getResultType() != null && isCursorType(xrService, arg.getResultType())) {
@@ -218,7 +238,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
     }
 
     protected boolean isCursorType(XRServiceAdapter xrService, QName type) {
-        if (type.getLocalPart().equals("sxfType")) {
+        if (type.getLocalPart().startsWith("cursor of")) {
             return true;
         }
         if (xrService.descriptorsByType.containsKey(type) &&

@@ -64,7 +64,7 @@ public class Result {
         this.simpleXMLFormat = simpleXMLFormat;
     }
     public boolean isSimpleXMLFormat () {
-        return simpleXMLFormat == null;
+        return simpleXMLFormat != null;
     }
 
     public boolean isCollection () {

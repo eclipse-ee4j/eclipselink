@@ -17,12 +17,15 @@ package org.eclipse.persistence.dbws;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+import org.xml.sax.Attributes;
 
 // Java extension imports
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 // EclipseLink imports
+import org.eclipse.persistence.descriptors.ClassExtractor;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.xr.Attachment;
 import org.eclipse.persistence.internal.xr.CollectionResult;
 import org.eclipse.persistence.internal.xr.DeleteOperation;
@@ -53,7 +56,10 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
+import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.Session;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_TAG;
 import static org.eclipse.persistence.oxm.XMLConstants.BOOLEAN_QNAME;
@@ -61,7 +67,7 @@ import static org.eclipse.persistence.oxm.XMLConstants.BOOLEAN_QNAME;
 @SuppressWarnings("serial")
 public class DBWSModelProject extends Project {
 
-    protected NamespaceResolver ns;
+    public NamespaceResolver ns;
 
     @SuppressWarnings("unchecked")
     public DBWSModelProject() {
@@ -240,12 +246,51 @@ public class DBWSModelProject extends Project {
         sxf.setReferenceClass(SimpleXMLFormat.class);
         descriptor.addMapping(sxf);
 
-        XMLField isColl =  new XMLField("@isCollection");
-        isColl.setNullable(true);
+        XMLDirectMapping isCollection = new XMLDirectMapping();
+        isCollection.setAttributeAccessor(new AttributeAccessor() {
+            @Override
+            public String getAttributeName() {
+                return "isCollection";
+            }
+            @Override
+            public Object getAttributeValueFromObject(Object object) throws DescriptorException {
+                if (object instanceof CollectionResult) {
+                    return Boolean.TRUE;
+                }
+                return null;
+            }
+            @Override
+            public void setAttributeValueInObject(Object object, Object value)
+                throws DescriptorException {
+            }
+        });
+        isCollection.setXPath("@isCollection");
+        descriptor.addMapping(isCollection);
+        
+        XMLField isColl = new XMLField("@isCollection");
         isColl.setSchemaType(BOOLEAN_QNAME);
         descriptor.getInheritancePolicy().setClassIndicatorField(isColl);
-        descriptor.getInheritancePolicy().addClassIndicator(Result.class, "false");
-        descriptor.getInheritancePolicy().addClassIndicator(CollectionResult.class, "true");
+        descriptor.getInheritancePolicy().setClassExtractor(new ClassExtractor() {
+            @Override
+            public Class<?> extractClassFromRow(Record record, Session session) {
+                Class<?> clz = Result.class;
+                UnmarshalRecord uRecord = (UnmarshalRecord)record;
+                Attributes attrs = uRecord.getAttributes();
+                if (attrs != null) {
+                    for (int i = 0, l = attrs.getLength(); i < l; i++) {
+                        String attributeName = attrs.getQName(i);
+                        if (attributeName.equals("isCollection")) {
+                            String value = attrs.getValue(i);
+                            if (value.equalsIgnoreCase("true")) {
+                                clz = CollectionResult.class;
+                                break;
+                            }
+                        }
+                    }
+                }
+                return clz;
+            }
+        });
 
         return descriptor;
     }

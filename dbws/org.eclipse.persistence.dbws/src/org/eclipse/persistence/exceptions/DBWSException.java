@@ -24,7 +24,7 @@ import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
  * <p><b>PUBLIC</b>: runtime exception for EclipseLink DBWS Service
  *
  * @author Mike Norman - michael.norman@oracle.com
- * @since Oracle TopLink 11.x.x
+ * @since EclipseLink 1.x
  */
 @SuppressWarnings("serial")
 public class DBWSException extends EclipseLinkException {

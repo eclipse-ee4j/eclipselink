@@ -446,8 +446,10 @@ public class Util {
     public static Document TEMP_DOC = XML_PLATFORM.createDocument();
     public static final String DEFAULT_ATTACHMENT_MIMETYPE =
         "application/octet-stream";
-    public static final String[] SEARCH_PATHS =
-        {"meta-inf/", "/meta-inf/", "META-INF/", "/META-INF/"};
+    public static final String[] META_INF_PATHS =
+        {"META-INF/", "meta-inf/", "/META-INF/", "/meta-inf/"};
+    public static final String[] WEB_INF_PATHS =
+        {"WEB-INF/", "web-inf/", "/WEB-INF/", "/web-inf/"};
     public static final String DBWS_SERVICE_XML =
         "eclipselink-dbws.xml";
     public static final String DBWS_OR_LABEL =
@@ -460,10 +462,13 @@ public class Util {
         "eclipselink-" + DBWS_OX_LABEL + ".xml";
     public static final String DBWS_SCHEMA_XML =
         "eclipselink-dbws-schema.xsd";
+    public static final String DBWS_WSDL =
+        "eclipselink-dbws.wsdl";
     public static final String DBWS_SESSIONS_XML =
         "eclipselink-dbws-sessions.xml";
     public static final String DBWS_OR_SESSION_NAME_SUFFIX =
         DBWS_OR_LABEL + "-session";
     public static final String DBWS_OX_SESSION_NAME_SUFFIX =
         DBWS_OX_LABEL + "-session";
+    public static final String TARGET_NAMESPACE_PREFIX = "ns1";
 }

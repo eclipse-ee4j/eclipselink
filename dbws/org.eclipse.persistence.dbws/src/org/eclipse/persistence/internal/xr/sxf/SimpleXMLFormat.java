@@ -25,6 +25,8 @@ public class SimpleXMLFormat {
       "simple-xml-format";
     public static final String DEFAULT_SIMPLE_XML_TAG =
       "simple-xml";
+    public static final String SIMPLE_XML_FORMAT_TYPE =
+      "sxfType";
 
     private String simpleXMLFormatTag;
     private String xmlTag;

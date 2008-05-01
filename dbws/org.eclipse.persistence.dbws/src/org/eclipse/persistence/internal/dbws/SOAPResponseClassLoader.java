@@ -38,37 +38,37 @@ import static org.eclipse.persistence.internal.libraries.asm.Constants.V1_5;
  */
 public class SOAPResponseClassLoader extends ClassLoader {
 
-  public static final String SOAP_RESPONSE_CLASSNAME_SLASHES =
-    SOAPResponse.class.getName().replace('.', '/');
+    public static final String SOAP_RESPONSE_CLASSNAME_SLASHES =
+      SOAPResponse.class.getName().replace('.', '/');
+    
+    public SOAPResponseClassLoader(ClassLoader parent) {
+      super(parent);
+    }
 
-  public SOAPResponseClassLoader(ClassLoader parent) {
-    super(parent);
-  }
+    public Class<?> buildClass(String className) {
+      byte[] data = generateClassBytes(className);
+      return super.defineClass(className, data, 0, data.length);
+    }
+    
+    protected byte[] generateClassBytes(String className) {
+      /*
+       * Pattern is as follows:
+       *   public class 'classname' extends org.eclipse.persistence.internal.dbws.SOAPResponse {
+       *     public 'classname'() {
+       *       super(); 
+       *     }
+       *   }
+       */
+      ClassWriter cw = new ClassWriter(true);
+      cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, className, SOAP_RESPONSE_CLASSNAME_SLASHES, null, null);
+      
+      CodeVisitor cv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+      cv.visitVarInsn(ALOAD, 0);
+      cv.visitMethodInsn(INVOKESPECIAL, SOAP_RESPONSE_CLASSNAME_SLASHES, "<init>", "()V");
+      cv.visitInsn(RETURN);
+      cv.visitMaxs(0, 0);
 
-  public Class<?> buildClass(String className) {
-    byte[] data = generateClassBytes(className);
-    return super.defineClass(className, data, 0, data.length);
-  }
-
-  protected byte[] generateClassBytes(String className) {
-    /*
-     * Pattern is as follows:
-     *   public class 'classname' extends org.eclipse.persistence.internal.dbws.SOAPResponse {
-     *     public 'classname'() {
-     *       super();
-     *     }
-     *   }
-     */
-    ClassWriter cw = new ClassWriter(true);
-    cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, className, SOAP_RESPONSE_CLASSNAME_SLASHES, null, null);
-
-    CodeVisitor cv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
-    cv.visitVarInsn(ALOAD, 0);
-    cv.visitMethodInsn(INVOKESPECIAL, SOAP_RESPONSE_CLASSNAME_SLASHES, "<init>", "()V");
-    cv.visitInsn(RETURN);
-    cv.visitMaxs(0, 0);
-
-    cw.visitEnd();
-    return cw.toByteArray();
-  }
+      cw.visitEnd();
+      return cw.toByteArray();
+    }
 }
