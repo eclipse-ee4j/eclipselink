@@ -124,5 +124,5 @@ public class EclipseLinkQueryHints {
     /**
      * Valid values are all declared in CascadePolicy class.
      */
-    public static final String REFRESH_CASCADE = "toplink.refresh.cascade";
+    public static final String REFRESH_CASCADE = "eclipselink.refresh.cascade";
 }
