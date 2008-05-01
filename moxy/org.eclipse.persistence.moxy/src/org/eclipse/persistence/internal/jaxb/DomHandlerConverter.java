@@ -18,7 +18,6 @@ import javax.xml.bind.annotation.DomHandler;
 
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
-import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -46,7 +45,6 @@ import javax.xml.bind.ValidationEventHandler;
 public class DomHandlerConverter implements XMLConverter {
 	private DomHandler domHandler;
 	private XMLTransformer xmlTransformer;
-	private XMLAnyCollectionMapping mapping;
 	private Class<? extends DomHandler> domHandlerClass;
 	private Class elementClass;
 	private Class resultType;
@@ -56,7 +54,6 @@ public class DomHandlerConverter implements XMLConverter {
 	}
 	
 	public void initialize(DatabaseMapping mapping, Session session) {
-		this.mapping = (XMLAnyCollectionMapping)mapping;
 		try {
 			this.domHandler = domHandlerClass.newInstance();
 			java.lang.reflect.Method createUnmarshallerMethod = domHandlerClass.getDeclaredMethod("createUnmarshaller", new Class[]{ValidationEventHandler.class});

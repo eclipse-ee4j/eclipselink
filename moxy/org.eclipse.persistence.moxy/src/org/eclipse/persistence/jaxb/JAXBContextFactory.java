@@ -15,12 +15,9 @@ package org.eclipse.persistence.jaxb;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-import java.util.HashMap;
-import javax.xml.namespace.QName;
 
 import javax.xml.bind.JAXBException;
 

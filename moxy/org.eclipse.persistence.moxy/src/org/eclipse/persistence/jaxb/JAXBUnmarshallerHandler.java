@@ -14,7 +14,6 @@ package org.eclipse.persistence.jaxb;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshallerHandler;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.xml.sax.SAXException;
 import org.w3c.dom.Document;
