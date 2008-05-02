@@ -449,6 +449,16 @@
     <!-- Generic target for running tests. -->
     <target name="run.test" depends="config.trunk, config.flat">
         <echo>Running test on ${db.url}</echo>
+
+        <condition property="jvmarg.db.platform" value="-Ddb.platform=${db.platform}">
+            <isset property="db.platform"/>
+        </condition>
+        <condition property="jvmarg.db.platform" value="-Ddummy=dummy">
+            <not>
+                <isset property="db.platform"/>
+            </not>
+        </condition>
+
         <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
         <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.test}/${run.dir}">
             <jvmarg value="${TEST_AGENT}"/>
@@ -458,7 +468,7 @@
             <jvmarg value="-Ddb.url=${db.url}"/>
             <jvmarg value="-Ddb.user=${db.user}"/>
             <jvmarg value="-Ddb.pwd=${db.pwd}"/>
-            <jvmarg value="-Ddb.platform=${db.platform}"/>
+            <jvmarg value="${jvmarg.db.platform}"/>
             <classpath>
                 <path refid="${RUN_PATH}"/>
             </classpath>
