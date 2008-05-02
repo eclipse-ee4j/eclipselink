@@ -20,7 +20,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.spi.PersistenceProvider;
 
-import org.eclipse.persistence.testing.models.performance.*;
+import org.eclipse.persistence.testing.models.jpa.performance.Address;
+import org.eclipse.persistence.testing.models.jpa.performance.Employee;
+import org.eclipse.persistence.testing.models.jpa.performance.EmployeeTableCreator;
+import org.eclipse.persistence.testing.models.jpa.performance.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.jpa.performance.PhoneNumber;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.config.CacheUsage;
@@ -35,21 +39,34 @@ public class JPAMemoryLeakModel extends TestModel {
         setDescription("Memory tests that test for memory leaks.");
     }
 
-    public void addRequiredSystems() {
-        addRequiredSystem(new EmployeeSystem());
-    }
-
     public void addTests() {
         addTest(buildReadTest());
         addTest(buildInsertTest());
         addTest(buildUpdateTest());
+        addTest(buildParameterizedBatchWriteTest());
     }
 
     /**
      * Create/populate database.
      */
     public void setup() {
-        // Populate database (through TopLink).
+        setupProvider();
+        getSession().logMessage(getExecutor().getEntityManagerFactory().getClass().toString());
+        System.out.println(getExecutor().getEntityManagerFactory().getClass().toString());
+        // Populate database.
+        EntityManager manager = getExecutor().createEntityManager();
+        // Create schema using session from entity manager to create sequences correctly.
+        try {
+            // Create schema.
+            new EmployeeTableCreator().replaceTables(((JpaEntityManager)manager).getServerSession());
+        } catch (ClassCastException cast) {
+            // Create using DatabaseSession if not EclipseLink JPA.
+            new EmployeeTableCreator().replaceTables(getDatabaseSession());
+        }
+        
+        manager.getTransaction().begin();
+
+        // Populate database
         for (int j = 0; j < 100; j++) {
             Employee empInsert = new Employee();
             empInsert.setFirstName("Brendan");
@@ -70,11 +87,11 @@ public class JPAMemoryLeakModel extends TestModel {
             empInsert.getAddress().setCountry("Canada");
             empInsert.addPhoneNumber(new PhoneNumber("Work Fax", "613", "2255943"));
             empInsert.addPhoneNumber(new PhoneNumber("Home", "613", "2224599"));
-            getDatabaseSession().insertObject(empInsert);
+            manager.persist(empInsert);
         }
-        setupProvider();
-        getSession().logMessage(getExecutor().getEntityManagerFactory().getClass().toString());
-        System.out.println(getExecutor().getEntityManagerFactory().getClass().toString());
+
+        manager.getTransaction().commit();
+        manager.close();
     }
     
     /**
@@ -131,14 +148,12 @@ public class JPAMemoryLeakModel extends TestModel {
                 addWeakReferences(query.getResultList());
                 addWeakReference(manager);
                 addWeakReference(((JpaEntityManager)manager).getUnitOfWork());
-                addWeakReference(((JpaEntityManager)manager).getSession());
+                addWeakReference(((JpaEntityManager)manager).getUnitOfWork().getParent());
                 manager.close();
             }
             
             public void reset() {
-                getSession().executeNonSelectingSQL("Delete from PHONE where P_NUMBER = '9991111'");
                 getSession().executeNonSelectingSQL("Delete from EMPLOYEE where F_NAME = 'NewGuy'");
-                getSession().executeNonSelectingSQL("Delete from ADDRESS where STREET = 'Hasting Perf'");
             }
         };
         test.setName("InsertMemoryLeakTest");
@@ -194,12 +209,57 @@ public class JPAMemoryLeakModel extends TestModel {
                 addWeakReference(query);
                 addWeakReference(manager);
                 addWeakReference(((JpaEntityManager)manager).getUnitOfWork());
-                addWeakReference(((JpaEntityManager)manager).getSession());
+                addWeakReference(((JpaEntityManager)manager).getUnitOfWork().getParent());
                 manager.close();
             }
         };
         test.setName("ReadMemoryLeakTest");
         test.setThreshold(100);
+        return test;
+    }
+    /**
+     * Test for bug 229831 : BATCH WRITING CAUSES MEMORY LEAKS WITH UOW
+     * Tests that parameterized batch insert allows the garbage collection of the persisted objects and uow.
+     */
+    public TestCase buildParameterizedBatchWriteTest() {
+        MemoryLeakTestCase test = new MemoryLeakTestCase() {
+            public void test() {
+                EntityManager manager = createEntityManager();
+                boolean usesBatchWriting = ((JpaEntityManager)manager).getServerSession().getPlatform().usesBatchWriting();
+                if(!usesBatchWriting) {
+                    ((JpaEntityManager)manager).getServerSession().getPlatform().setUsesBatchWriting(true);
+                }
+                boolean shouldBindAllParameters = ((JpaEntityManager)manager).getServerSession().getPlatform().shouldBindAllParameters();
+                if(!shouldBindAllParameters) {
+                    ((JpaEntityManager)manager).getServerSession().getPlatform().setShouldBindAllParameters(true);
+                }
+                manager.getTransaction().begin();
+                for (int count = 0; count < 5; count++) {
+                    Employee employee = new Employee();
+                    employee.setFirstName("NewBatchGuy");
+                    employee.setLastName("Smith");
+    
+                    manager.persist(employee);
+                    addWeakReference(employee);
+                }
+                addWeakReference(manager);
+                addWeakReference(((JpaEntityManager)manager).getUnitOfWork());
+                addWeakReference(((JpaEntityManager)manager).getUnitOfWork().getParent());
+                manager.getTransaction().commit();
+                if(!usesBatchWriting) {
+                    ((JpaEntityManager)manager).getServerSession().getPlatform().setUsesBatchWriting(false);
+                }
+                if(!shouldBindAllParameters) {
+                    ((JpaEntityManager)manager).getServerSession().getPlatform().setShouldBindAllParameters(false);
+                }
+                manager.close();
+            }
+            
+            public void reset() {
+                getSession().executeNonSelectingSQL("Delete from EMPLOYEE where F_NAME = 'NewBatchGuy'");
+            }
+        };
+        test.setName("ParametrizedBatchWriteMemoryLeakTest");
         return test;
     }
 }

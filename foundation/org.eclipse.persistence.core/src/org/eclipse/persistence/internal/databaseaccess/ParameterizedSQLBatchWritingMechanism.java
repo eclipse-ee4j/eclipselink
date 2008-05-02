@@ -111,6 +111,8 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
         this.parameters.clear();
         statementCount = executionCount  = 0;
         clearCacheQueryTimeout();
+        // bug 229831 : BATCH WRITING CAUSES MEMORY LEAKS WITH UOW
+        lastCallAppended = null;
     }
 
     /**
