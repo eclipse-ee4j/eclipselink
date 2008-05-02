@@ -31,7 +31,6 @@ Export-Package: org.eclipse.persistence.internal.jpa,
  org.eclipse.persistence.internal.jpa.transaction,
  org.eclipse.persistence.internal.weaving,
  org.eclipse.persistence.jpa,
- org.eclipse.persistence.jpa.osgi,
  org.eclipse.persistence.queries,
  org.eclipse.persistence.tools.weaving.jpa
 Bundle-Activator: org.eclipse.persistence.jpa.osgi.Activator
