@@ -1,8 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Persistence Plug-in
+Bundle-Name: Javax Persistence
 Bundle-SymbolicName: javax.persistence
 Bundle-Version: 1.99
+Require-Bundle: system.bundle
 Export-Package: javax.persistence,
+ javax.persistence.osgi,
  javax.persistence.spi,
  xsd
+Bundle-Activator: javax.persistence.osgi.Activator
