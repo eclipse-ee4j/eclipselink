@@ -15,7 +15,7 @@ package org.eclipse.persistence.indirection;
 
 /**
  * <b>Purpose</b>:
- * Define an interface for a Container that can also act as a TopLink
+ * Define an interface for a Container that can also act as an EclipseLink
  * "indirection" object; i.e. the Container will only read its contents from
  * the database when necessary (typically, on receipt of the first
  * Container-related message).

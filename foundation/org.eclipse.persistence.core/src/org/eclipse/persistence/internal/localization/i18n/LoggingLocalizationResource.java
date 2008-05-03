@@ -330,6 +330,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "communication_failure_attempting_begintransaction_retry", "Communication failure detected when attempting to create transaction on database.  Attempting to retry begin transaction."},
         { "persistence_unit_processor_error_loading_class_weaving_disabled", "The classLoader [{0}]: for PersistenceLoadProcessor [{1}] failed to load class [{2}]. Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},
         { "persistence_unit_processor_null_temp_classloader", "The classLoader for PersistenceLoadProcessor [{0}] is null. Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},        
+        { "persistence_unit_processor_npe_temp_classloader", "The classLoader [{0}] for PersistenceLoadProcessor [{1}] is causing a NPE on loadClass. Switching classLoader to [{2}].  Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},
+        { "persistence_unit_processor_jboss_temp_classloader_bypassed", "The temporary classLoader for PersistenceLoadProcessor [{0}] is not available.  Switching classLoader to [{1}].  Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},        
+        { "persistence_unit_processor_error_in_class_forname_weaving_disabled", "The classLoader [{0}]: failed to load class [{1}]. Weaving has been disabled for this session. EclipseLink may be unable to get a spec mandated temporary class loader from the server, you may be able to use static weaving as an optional workaround. "},        
 
         
         
@@ -561,7 +564,10 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "communication_failure_attempting_query_retry.MSGID", "TOP-50203"},
         { "communication_failure_attempting_begintransaction_retry.MSGID","TOP-50204"},
         { "persistence_unit_processor_error_loading_class_weaving_disabled.MSGID","TOP-50205"},
-        { "persistence_unit_processor_null_temp_classloader.MSGID","TOP-50206"}        
+        { "persistence_unit_processor_null_temp_classloader.MSGID","TOP-50206"},
+        { "persistence_unit_processor_npe_temp_classloader.MSGID", "TOP-50207"},
+        { "persistence_unit_processor_jboss_temp_classloader_bypassed.MSGID", "TOP-50208"},
+        { "persistence_unit_processor_error_in_class_forname_weaving_disabled.MSGID", "TOP-50209"}        
     }; 
      
     /**

@@ -14,7 +14,10 @@ package org.eclipse.persistence.platform.server;
 
 import java.sql.SQLException;
 
+import javax.persistence.spi.PersistenceUnitInfo;
+
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
@@ -216,4 +219,17 @@ public interface ServerPlatform {
      */
     
     public boolean wasFailureCommunicationBased(SQLException exception, Accessor connection, AbstractSession sessionForProfile);
+    
+    /**
+     * INTERNAL:
+     * JIRA EJBTHREE-572 requires that we use the real classLoader in place of the getNewTempClassLoader().
+     * The override code should stay in place until the UCL3 loader does not throw a NPE on loadClass()
+     * 
+     * @param puInfo - the persistence unit info
+     * @return ClassLoaderHolder - a composite object containing the classLoader and the flag
+     *     that is true if the classLoader returned is temporary
+     *     
+     *  @see org.eclipse.persistence.internal.helper.ClassLoaderHolder
+     */
+    public JPAClassLoaderHolder getNewTempClassLoader(PersistenceUnitInfo puInfo);
 }

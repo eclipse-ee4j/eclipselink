@@ -16,11 +16,14 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.sql.SQLException;
 
+import javax.persistence.spi.PersistenceUnitInfo;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
+import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -83,7 +86,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * for CMP.
      */
     private boolean isCMP;
-    
+
     /**
      * INTERNAL:
      * databaseSession: The instance of DatabaseSession that I am helping.
@@ -464,4 +467,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
         return getDatabaseSession().getPlatform().wasFailureCommunicationBased(exception, connection.getConnection(), sessionForProfile);
     }
 
+    public JPAClassLoaderHolder getNewTempClassLoader(PersistenceUnitInfo puInfo) {
+        return new JPAClassLoaderHolder(puInfo.getNewTempClassLoader(), true);
+    }
 }

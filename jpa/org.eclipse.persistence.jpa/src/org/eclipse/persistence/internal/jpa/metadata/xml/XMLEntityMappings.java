@@ -47,6 +47,7 @@ import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGenerato
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 
 /**
  * Object to hold onto the XML entity mappings metadata.
@@ -121,6 +122,11 @@ public class XMLEntityMappings {
             }
         } catch (ClassNotFoundException exception) {
             throw ValidationException.unableToLoadClass(classname, exception);
+        } catch (NullPointerException npe) {
+            // Bug 229629: If any weavable class is not found in the temporary classLoader - disable weaving 
+            AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_error_loading_class_weaving_disabled",//
+                loader, classname);
+            throw ValidationException.unableToLoadClass(classname, npe);            
         }
     }
     

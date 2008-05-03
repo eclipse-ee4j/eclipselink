@@ -12,8 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.jboss;
 
+import javax.persistence.spi.PersistenceUnitInfo;
+
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.transaction.jboss.JBossTransactionController;
+import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 
 /**
@@ -53,4 +57,23 @@ public class JBossPlatform extends ServerPlatformBase {
     	}
         return externalTransactionControllerClass;
     }
+
+    /**
+     * INTERNAL:
+     * JIRA EJBTHREE-572 requires that we use the real classLoader in place of the getNewTempClassLoader().
+     * The override code should stay in place until the UCL3 loader does not throw a NPE on loadClass()
+     * 
+     * @param puInfo - the persistence unit info
+     * @return ClassLoaderHolder - a composite object containing the classLoader and the flag
+     *     that is true if the classLoader returned is temporary
+     *     
+     *  @see org.eclipse.persistence.internal.helper.ClassLoaderHolder
+     */
+    public JPAClassLoaderHolder getNewTempClassLoader(PersistenceUnitInfo puInfo) {
+        // Bug 6460732: Use real classLoader instead of getNewTempClassLoader for now to avoid a JBoss NPE on loadClass()
+        ClassLoader realClassLoader = puInfo.getClassLoader();
+        AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_jboss_temp_classloader_bypassed",//
+                puInfo.getPersistenceUnitName(), realClassLoader);
+        return new JPAClassLoaderHolder(realClassLoader, false);
+    }    
 }

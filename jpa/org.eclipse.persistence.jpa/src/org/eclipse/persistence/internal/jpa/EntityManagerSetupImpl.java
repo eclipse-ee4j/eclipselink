@@ -44,6 +44,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.platform.server.CustomServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.internal.helper.JPAConversionManager;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
@@ -78,6 +79,7 @@ public class EntityManagerSetupImpl {
      * EntityManagerSetupImpl, MetadataProcessor and MetadataProject
      * play the role of director, builder and product respectively.
      * See processORMetadata which is the factory method.
+     * 
      */
 
     protected MetadataProcessor processor = null;
@@ -643,6 +645,7 @@ public class EntityManagerSetupImpl {
      * @see #deploy(ClassLoader, Map)
      */
     public synchronized ClassTransformer predeploy(PersistenceUnitInfo info, Map extendedProperties) {
+        ClassLoader privateClassLoader = null;
         if (state == STATE_DEPLOY_FAILED) {
             throw new PersistenceException(EntityManagerSetupException.cannotPredeploy(persistenceUnitInfo.getPersistenceUnitName(), state));
         }
@@ -657,25 +660,7 @@ public class EntityManagerSetupImpl {
         
         // state is INITIAL, PREDEPLOY_FAILED or UNDEPLOYED
         try {
-            // Initialize the privateClassLoader right away.
-            ClassLoader privateClassLoader = persistenceUnitInfo.getNewTempClassLoader();
-            
-            // Verify that we received a temporary ClassLoader instance
-            if(null == privateClassLoader) {
-                // Bug 227630: The temporary classLoader is null - in violation of the JPA SPI.
-                enableWeaving = Boolean.FALSE;
-                AbstractSessionLog.getLog().log(AbstractSessionLog.WARNING, "persistence_unit_processor_null_temp_classloader",//
-                    persistenceUnitInfo.getPersistenceUnitName());
-                // Try to get the normal classLoader
-                privateClassLoader = persistenceUnitInfo.getClassLoader();
-                // If we cannot get any classLoader then we stop predeploy
-                if(null == privateClassLoader) {
-                    throw new PersistenceException(EntityManagerSetupException.noTemporaryClassLoaderAvailable(info.getPersistenceUnitName()));  
-                }
-            }
-
             predeployProperties = mergeMaps(extendedProperties, persistenceUnitInfo.getProperties());
-            
             // Translate old properties.
             // This should be done before using properties (i.e. ServerPlatform).
             translateOldProperties(predeployProperties, null);
@@ -695,6 +680,14 @@ public class EntityManagerSetupImpl {
             updateServerPlatform(predeployProperties, realClassLoader);
             // Update loggers and settings for the singleton logger and the session logger.
             updateLoggers(predeployProperties, true, false, realClassLoader);
+            // Get the temporary classLoader based on the platform
+            JPAClassLoaderHolder privateClassLoaderHolder = session.getServerPlatform().getNewTempClassLoader(info);
+            privateClassLoader = privateClassLoaderHolder.getClassLoader();
+            // Bug 229634: If we switched to using the non-temporary classLoader then disable weaving
+            if(!privateClassLoaderHolder.isTempClassLoader()) {
+                // Disable dynamic weaving for the duration of this predeploy()
+                enableWeaving = Boolean.FALSE;
+            }
             
             //Update performance profiler
             updateProfiler(predeployProperties,realClassLoader);
@@ -785,12 +778,6 @@ public class EntityManagerSetupImpl {
                 
                 // Process the Object/relational metadata from XML and annotations.
                 PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail);
-
-                // Bug 227630: Check if weaving has been disabled by a NPE on loadClass()
-                if(!processor.getProject().isWeavingEnabled()) {
-                    // Disable dynamic weaving for the duration of this predeploy()
-                    enableWeaving = Boolean.FALSE;
-                }
 
                 if (session.getIntegrityChecker().hasErrors()){
                     session.handleException(new IntegrityException(session.getIntegrityChecker()));
