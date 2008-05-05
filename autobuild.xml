@@ -4,11 +4,9 @@
     <target name="build-no-publish"  description="Trigger an automated build without testing or publish"
             depends="clean, build, build-test"
     />
-    <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
-            depends="clean, build, build-test, test-lrg"
-    />
-    <!-- target name="build.nightly"    description="Trigger the nightly automated build and lrg tests"
-            depends="clean, build, build-test, test-lrg, publish-build"
+    <target name="build.nightly"    description="Trigger the nightly automated build and lrg tests"
+            depends="clean, build, build-test, test-lrg, publish-build" />
+            <!-- clean-results, publish-results"
     / -->
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-test, test-srg"
@@ -143,11 +141,11 @@
 
     <!-- Antified "cleanNightly.sh" -->
     <target name="clean-results">
-        <exec executable="cleanNightly.sh" failonerror="true" logError="true" />
+        <exec executable="buildsystem/cleanNightly.sh" failonerror="true" logError="true" />
     </target>
 
     <!-- Antified "buildNightlyList.sh" -->
     <target name="publish-results" depends="clean-results">
-        <exec executable="buildNightlyList.sh" failonerror="true" logError="true" />
+        <exec executable="buildsystem/buildNightlyList.sh" failonerror="true" logError="true" />
     </target>
 </project>
