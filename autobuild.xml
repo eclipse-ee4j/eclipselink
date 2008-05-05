@@ -5,9 +5,8 @@
             depends="clean, build, build-test"
     />
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
-            depends="clean, build, build-test, test-lrg, publish-build" />
-            <!-- clean-results, publish-results"
-    / -->
+            depends="clean, build, build-test, test-lrg, publish-build, clean-results, publish-results"
+    />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-test, test-srg"
     />
@@ -136,7 +135,7 @@
             <arg value="-m ${installer_id}"/>
             <arg value="${build.root.dir}/${eclipselink.jar.name}"/>
         </exec>
-        <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload.maven"/>
+        <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload.maven.all"/>
     </target>
 
     <!-- Antified "cleanNightly.sh" -->
