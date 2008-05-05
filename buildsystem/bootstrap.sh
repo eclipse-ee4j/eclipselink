@@ -134,7 +134,7 @@ fi
 #Set appropriate max Heap for VM and let Ant inherit JavaVM (OS's) proxy settings
 ANT_ARGS=" "
 ANT_OPTS="-Xmx128m"
-ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\""
+ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" -DMailLogger.properties.file=${BRANCH_PATH}/buildsystem/maillogger.properties -logger org.apache.tools.ant.listener.MailLogger"
 
 if [ "$TARGET" = "test" ]
 then
