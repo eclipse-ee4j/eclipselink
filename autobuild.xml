@@ -138,17 +138,23 @@
         <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload.maven.all"/>
     </target>
 
+    <target name="fix-permission">
+        <chmod file="${build.root.dir}/buildsystem/cleanNightly.sh" perm="ug+x"/>
+        <chmod file="${build.root.dir}/buildsystem/buildNightlyList.sh" perm="ug+x"/>
+    </target>
+
     <!-- Antified "cleanNightly.sh" -->
-    <target name="clean-results">
-        <exec executable="chmod" failonerror="true" logError="true">
-            <arg value="755"/>
-            <arg value="${build.root.dir}/buildsystem/*.sh"/>
+    <target name="clean-results" depends="fix-permission">
+        <exec executable="/bin/sh" failonerror="true" logError="true" >
+            <arg value="${build.root.dir}/buildsystem/cleanNightly.sh"/>
         </exec>
-        <exec executable="${build.root.dir}/buildsystem/cleanNightly.sh" failonerror="true" logError="true" />
     </target>
 
     <!-- Antified "buildNightlyList.sh" -->
     <target name="publish-results" depends="clean-results">
-        <exec executable="${build.root.dir}/buildsystem/buildNightlyList.sh" failonerror="true" logError="true" />
+        <exec executable="/bin/sh" failonerror="true" logError="true" >
+            <arg value="${build.root.dir}/buildsystem/buildNightlyList.sh"/>
+        </exec>
     </target>
+
 </project>
