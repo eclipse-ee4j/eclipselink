@@ -9,4 +9,5 @@ Export-Package: commonj.sdo.impl,
  org.eclipse.persistence.sdo,
  org.eclipse.persistence.sdo.helper,
  org.eclipse.persistence.sdo.helper.delegates,
- org.eclipse.persistence.sdo.helper.extension
+ org.eclipse.persistence.sdo.helper.extension,
+ org.eclipse.persistence.sdo.types
