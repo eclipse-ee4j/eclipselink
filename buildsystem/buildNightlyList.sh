@@ -34,3 +34,5 @@ cat ./testingtail.txt >> $tmp/testing.xml
 mv -f $tmp/index.xml  /home/data/httpd/download.eclipse.org/technology/eclipselink/downloads.xml
 mv -f $tmp/testing.xml  /home/data/httpd/download.eclipse.org/technology/eclipselink/testing.xml
 rm -rf $tmp
+
+
