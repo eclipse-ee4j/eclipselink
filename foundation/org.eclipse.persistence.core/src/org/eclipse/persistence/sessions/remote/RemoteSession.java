@@ -16,11 +16,13 @@ import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.sessions.Login;
+import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sequencing.SequencingFactory;
 import org.eclipse.persistence.logging.SessionLog;
@@ -86,9 +88,26 @@ public class RemoteSession extends DistributedSession {
      * @see UnitOfWorkImpl
      */
     public UnitOfWorkImpl acquireUnitOfWork() {
+        return acquireUnitOfWork(null);
+    }
+
+    /**
+     * PUBLIC:
+     * Return a unit of work for this session.
+     * The unit of work is an object level transaction that allows
+     * a group of changes to be applied as a unit.
+     *
+     * @see UnitOfWorkImpl
+     * @param referenceMode The reference type the UOW should use internally when
+     * referencing Working clones.  Setting this to WEAK means the UOW will use 
+     * weak references to reference clones and if the application no longer
+     * references the clone the clone may be garbage collected.  If the clone
+     * has uncommitted changes then those changes will be lost.
+     */
+    public UnitOfWorkImpl acquireUnitOfWork(ReferenceMode referenceMode) {
         log(SessionLog.FINER, SessionLog.TRANSACTION, "acquire_unit_of_work");
         setNumberOfActiveUnitsOfWork(getNumberOfActiveUnitsOfWork() + 1);
-        return new RemoteUnitOfWork(this);
+        return new RemoteUnitOfWork(this, referenceMode);
     }
 
     /**

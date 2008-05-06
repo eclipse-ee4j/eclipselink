@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+        Gordon Yorke - VM managed entity detachment
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -24,6 +25,7 @@ import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
+import org.eclipse.persistence.sessions.factories.ReferenceMode;
 
 
 public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
@@ -61,8 +63,8 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     protected transient Set<Class> classesToBeInvalidated;
     
-    public RepeatableWriteUnitOfWork(org.eclipse.persistence.internal.sessions.AbstractSession parentSession){
-        super(parentSession);
+    public RepeatableWriteUnitOfWork(org.eclipse.persistence.internal.sessions.AbstractSession parentSession, ReferenceMode referenceMode){
+        super(parentSession, referenceMode);
         this.shouldTerminateTransaction = true;
         this.shouldNewObjectsBeCached = true;
     }
@@ -243,11 +245,12 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         Object mergedObject = super.mergeCloneWithReferences(rmiClone, manager);
         
         //iterate over new objects, assign sequences and put in the identitymap
-        Iterator iterator = manager.getMergedNewObjects().values().iterator();
-        while (iterator.hasNext()) {
-            Object newObjectClone = iterator.next();
+        IdentityHashMap itable = manager.getMergedNewObjects();
+        Iterator i = itable.values().iterator();
+        while ( i.hasNext() ){
+            Object newObjectClone = i.next();
             ClassDescriptor descriptor = getDescriptor(newObjectClone);
-            assignSequenceNumber(newObjectClone, descriptor);
+            assignSequenceNumber(newObjectClone);
             registerNewObjectInIdentityMap(newObjectClone, null, descriptor);
         }
         
@@ -302,6 +305,8 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             }
             getNewObjectsCloneToOriginal().clear();
             getNewObjectsOriginalToClone().clear();
+            getUnregisteredExistingObjects().clear();
+            getUnregisteredNewObjects().clear();
             
             // bug 4730595: fix puts deleted objects in the UnitOfWorkChangeSet as they are removed.
             getDeletedObjects().clear();
@@ -324,6 +329,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             }
             // Clean up, new objects are now existing.
             setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
+            this.changeTrackedHardList = new ArrayList();
         }
 
     /**
@@ -335,9 +341,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * otherwise the superclass method called.
      */
     protected void registerNotRegisteredNewObjectForPersist(Object newObject, ClassDescriptor descriptor) {
-        if (unregisteredDeletedObjectsCloneToBackupAndOriginal != null) {
+        if(unregisteredDeletedObjectsCloneToBackupAndOriginal != null) {
             Object[] backupAndOriginal = (Object[])unregisteredDeletedObjectsCloneToBackupAndOriginal.remove(newObject);
-            if (backupAndOriginal != null) {
+            if(backupAndOriginal != null) {
                 // backup
                 getCloneMapping().put(newObject, backupAndOriginal[0]);
                 // original

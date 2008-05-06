@@ -46,16 +46,10 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
     		throw new IllegalStateException(TransactionException.transactionIsActive().getMessage());
     	}
     	
-    	if (this.wrapper.getEntityManager().isExtended()){
-    		// so we have a resource local extended em so get the PC from the entity manager
-    		this.wrapper.localUOW = this.wrapper.getEntityManager().getActivePersistenceContext(null);
-    		this.wrapper.localUOW.setShouldTerminateTransaction(false);
-    	} else {
-    		this.wrapper.localUOW = new RepeatableWriteUnitOfWork(this.wrapper.getEntityManager().getServerSession().acquireClientSession());
-    		this.wrapper.localUOW.setShouldTerminateTransaction(false);
-    		this.wrapper.localUOW.setShouldCascadeCloneToJoinedRelationship(true);
-    	}
-    	
+    	// always extended 
+    	this.wrapper.localUOW = this.wrapper.getEntityManager().getActivePersistenceContext(null);
+    	this.wrapper.localUOW.setShouldTerminateTransaction(false);
+   	
     	this.active = true;
     }
 

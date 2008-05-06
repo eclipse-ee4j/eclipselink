@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -36,12 +37,20 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
     protected transient RemoteSessionController parentSessionController;
 
     public RemoteUnitOfWork(RemoteUnitOfWork parent) {
-        super(parent);
-        this.isOnClient = true;
+        this(parent, null);
     }
 
     public RemoteUnitOfWork(RemoteSession parent) {
-        super(parent);
+        this(parent, null);
+        this.isOnClient = true;
+    }
+    public RemoteUnitOfWork(RemoteUnitOfWork parent, ReferenceMode referenceMode) {
+        super(parent, referenceMode);
+        this.isOnClient = true;
+    }
+
+    public RemoteUnitOfWork(RemoteSession parent, ReferenceMode referenceMode) {
+        super(parent, referenceMode);
         this.isOnClient = true;
     }
 
@@ -49,9 +58,16 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
      * The nested unit of work must also be remote.
      */
     public UnitOfWorkImpl acquireUnitOfWork() {
+        return acquireUnitOfWork(null);
+    }
+
+    /**
+     * The nested unit of work must also be remote.
+     */
+    public UnitOfWorkImpl acquireUnitOfWork(ReferenceMode referenceMode) {
         log(SessionLog.FINER, SessionLog.TRANSACTION, "acquire_unit_of_work");
         setNumberOfActiveUnitsOfWork(getNumberOfActiveUnitsOfWork() + 1);
-        RemoteUnitOfWork ruow = new RemoteUnitOfWork(this);
+        RemoteUnitOfWork ruow = new RemoteUnitOfWork(this, referenceMode);
         ruow.discoverAllUnregisteredNewObjectsInParent();
         return ruow;
     }
@@ -162,10 +178,6 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
     protected void commitRootUnitOfWorkOnClient() {
         Map allObjects = collectAndPrepareObjectsForNestedMerge();
 
-        // I must clone because the commitManager will remove the objects from the collection
-        // as the objects are written to the database.
-        setAllClonesCollection(allObjects);
-
         //calculate the change set here as we have special behavior for remote
         // in that the new changesets must be updated within the UOWChangeSet as the
         // primary keys have already been assigned.  This was modified for updating
@@ -175,7 +187,8 @@ public class RemoteUnitOfWork extends UnitOfWorkImpl {
             //may be using the old commit process usesOldCommit()
             setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
             uowChangeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
-            calculateChanges(getAllClones(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
+            calculateChanges(new IdentityHashMap(this.cloneMapping), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
+            resetAllCloneCollection();
         }
         Enumeration classes = uowChangeSet.getNewObjectChangeSets().elements();
         while (classes.hasMoreElements()) {

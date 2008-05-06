@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
@@ -248,7 +249,13 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public IdentityMap buildNewIdentityMap(ClassDescriptor descriptor) throws ValidationException, DescriptorException {
         if (getSession().isUnitOfWork()) {
-            return new UnitOfWorkIdentityMap(32);
+            if (((UnitOfWorkImpl)getSession()).getReferenceMode() == ReferenceMode.FORCE_WEAK){
+                return new WeakUnitOfWorkIdentityMap(32);
+            }else if (((UnitOfWorkImpl)getSession()).getReferenceMode() == ReferenceMode.WEAK && descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()){
+                return new WeakUnitOfWorkIdentityMap(32);        
+            }else {
+                return new UnitOfWorkIdentityMap(32);
+            }
         }
 
         try {

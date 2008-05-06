@@ -19,8 +19,10 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
 
@@ -102,6 +104,23 @@ public interface Session {
      */
     public UnitOfWork acquireUnitOfWork();
 
+    /**
+     * PUBLIC:
+     * Return a unit of work for this session.
+     * The unit of work is an object level transaction that allows
+     * a group of changes to be applied as a unit.
+     *
+     * @see UnitOfWorkImpl
+     * @param referenceMode The reference type the UOW should use internally when
+     * referencing Working clones.  Setting this to WEAK means the UOW will use 
+     * weak references to reference clones that support active object change
+     * tracking and hard references for deferred change tracked objects.
+     * Setting to FORCE_WEAK means that all objects will be referenced by weak
+     * references and if the application no longer references the clone the 
+     * clone may be garbage collected.  If the clone
+     * has uncommitted changes then those changes will be lost.
+     */
+    public UnitOfWork acquireUnitOfWork(ReferenceMode referenceMode);
     /**
      * PUBLIC:
      * Add the query to the session queries with the given name.
@@ -370,6 +389,13 @@ public interface Session {
      * @see #acquireHistoricalSession(org.eclipse.persistence.history.AsOfClause)
      */
     public org.eclipse.persistence.history.AsOfClause getAsOfClause();
+
+    /**
+     *  Stores the default Session wide reference mode that a UnitOfWork will use when referencing
+     *  managed objects.
+     *  @see org.eclipse.persistence.sessions.factories.ReferenceMode
+     */
+    public ReferenceMode getDefaultReferenceMode();
 
     /**
      * ADVANCED:
@@ -774,6 +800,13 @@ public interface Session {
 
 
     /**
+     *  Stores the default Session wide reference mode that a UnitOfWork will use when referencing
+     *  managed objects.
+     *  @see org.eclipse.persistence.sessions.factories.ReferenceMode
+     */
+   public void setDefaultReferenceMode(ReferenceMode defaultReferenceMode);
+   
+   /**
      * PUBLIC:
      * Set the exceptionHandler.
      * Exception handler can catch errors that occur on queries or during database access.

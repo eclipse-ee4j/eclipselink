@@ -165,6 +165,8 @@ public class AttributeChangeListener extends ObjectChangeListener {
         } else {
             throw ValidationException.wrongChangeEvent(evt.getClass());
         }
+        //add to tracker list to prevent GC of clone if using weak references
+        uow.getChangeTrackedHardList().add(owner);
     }
     
     /**

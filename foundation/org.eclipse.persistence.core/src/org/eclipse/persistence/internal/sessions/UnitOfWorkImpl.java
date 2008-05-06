@@ -27,11 +27,13 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
+import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
+import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 
 /**
@@ -225,17 +227,29 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /** PERF: Cache isNestedUnitOfWork check. */
     protected boolean isNestedUnitOfWork;
+    
+    /** This stored the reference mode for this UOW.  If the reference mode is
+     * weak then this unit of work will retain only weak references to non new, 
+     * non-deleted objects allowing for garbage collection.  If ObjectChangeTracking
+     * is used then any objects with changes will not be garbage collected.
+     */
+    protected ReferenceMode referenceMode;
+    
+    // This is list is used during change tracking to keep hard references
+    // to changed objects that may otherwise have been garbage collected.
+    protected ArrayList changeTrackedHardList;
 
     /**
      * INTERNAL:
      * Create and return a new unit of work with the session as its parent.
      */
-    public UnitOfWorkImpl(AbstractSession parent) {
+    public UnitOfWorkImpl(AbstractSession parent, ReferenceMode referenceMode) {
         super();
+        this.referenceMode = referenceMode;
         this.name = parent.getName();
         this.parent = parent;
         // 2612538 - the default size of Map (32) is appropriate
-        this.cloneMapping = new IdentityHashMap();
+        this.cloneMapping = createMap();
         // PERF: lazy-init hashtables (3286089) - cloneToOriginals,
         // newObjectsInParentOriginalToClone, objectsDeletedDuringCommit
         // removedObjects.
@@ -862,51 +876,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         concreteDescriptor.getObjectBuilder().instantiateEagerMappings(workingClone, this);
         return workingClone;
     }
-
-    /**
-     * INTERNAL:
-     * Return the objects that need to be committed.
-     * This is only the registered objects (unregistered new object are now found in calculateChanges).
-     */
-    public Map collectAndPrepareObjectsForCommit() {
-        return new IdentityHashMap(getCloneMapping());
-    }
     
-    /**
-     * INTERNAL:
-     * Prepare for commit.
-     */
-    public Map collectAndPrepareObjectsForOldCommit() {
-        Map changedObjects = new IdentityHashMap(1 + getCloneMapping().size());
-
-        // SPECJ: Avoid for CMP.
-        if (!getProject().isPureCMP2Project()) {
-            assignSequenceNumbers();
-        }
-
-        //assignSequenceNumbers will collect the unregistered new objects and assign id's to all new
-        // objects
-        // Add any registered objects.
-        for (Iterator clonesEnum = getCloneMapping().keySet().iterator(); clonesEnum.hasNext();) {
-            Object clone = clonesEnum.next();
-            changedObjects.put(clone, clone);
-        }
-        for (Iterator unregisteredNewObjectsEnum = getUnregisteredNewObjects().keySet().iterator();
-                 unregisteredNewObjectsEnum.hasNext();) {
-            Object newObject = unregisteredNewObjectsEnum.next();
-            changedObjects.put(newObject, newObject);
-        }
-
-        return changedObjects;
-    }
-
     /**
      * INTERNAL:
      * Prepare for merge in nested uow.
      */
     public Map collectAndPrepareObjectsForNestedMerge() {
         discoverAllUnregisteredNewObjectsInParent();
-        return collectAndPrepareObjectsForCommit();
+        return new IdentityHashMap(this.getCloneMapping());
     }
 
     /**
@@ -1135,16 +1112,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         getParent().getIdentityMapAccessorInstance().acquireWriteLock();//Ensure concurrency
 
         try {
-            // I must clone because the commitManager will remove the objects from the collection
-            // as the objects are written to the database.
-            setAllClonesCollection(collectAndPrepareObjectsForNestedMerge());
             // Iterate over each clone and let the object build merge to clones into the originals.
             // The change set may already exist if using change tracking.
             if (getUnitOfWorkChangeSet() == null) {
                 setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
             }
-            unitOfWorkChangeSet = calculateChanges(getAllClones(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
-
+            unitOfWorkChangeSet = calculateChanges(collectAndPrepareObjectsForNestedMerge(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
+            resetAllCloneCollection(); // no longer needed
             mergeChangesIntoParent();
 
             if (hasDeletedObjects()) {
@@ -1183,6 +1157,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         commitToDatabaseWithChangeSet(true);
         // Merge after commit	
         mergeChangesIntoParent();
+        this.changeTrackedHardList = new ArrayList();
+
     }
 
     /**
@@ -1321,15 +1297,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 // Also must first set the commit manager active.
                 getCommitManager().setIsActive(true);
     
-                // Must clone because the commitManager will remove the objects from the collection
-                // as the objects are written to the database.
-                setAllClonesCollection(collectAndPrepareObjectsForCommit());
                 // Iterate over each clone and let the object build merge to clones into the originals.
                 // The change set may already exist if using change tracking.
                 if (getUnitOfWorkChangeSet() == null) {
                     setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
                 }
-                calculateChanges(getAllClones(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), true);
+                calculateChanges(new IdentityHashMap(this.getCloneMapping()), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), true);
             } catch (RuntimeException exception){
                 // The number of SQL statements been prepared need be stored into UOW 
                 // before any exception being thrown.
@@ -1377,8 +1350,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             // not leave invalid cached sequences on rollback.
             // Also must first set the commit manager active.
             getCommitManager().setIsActive(true);
-            //Set empty collection in allClones for merge.
-            setAllClonesCollection(new IdentityHashMap());
             // Iterate over each clone and let the object build merge to clones into the originals.
             setUnitOfWorkChangeSet(uowChangeSet);
             commitToDatabase(commitTransaction);
@@ -1701,15 +1672,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
-     * This method is used to get a copy of the collection of all clones in the UnitOfWork
-     * @return Map
-     */
-    protected Map getAllClones() {
-        return this.allClones;
-    }
-
-    /**
-     * INTERNAL:
      * Return any new objects matching the expression.
      * Used for in-memory querying.
      */
@@ -1891,7 +1853,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // PERF: lazy-init (3286089)
         if (cloneMapping == null) {
             // 2612538 - the default size of Map (32) is appropriate
-            cloneMapping = new IdentityHashMap();
+            cloneMapping = createMap();
         }
         return cloneMapping;
     }
@@ -1910,7 +1872,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         //Helper.toDo("proper fix, collection merge can have objects disappear for original.");
         if (cloneToOriginals == null) {// Must lazy initialize for remote.
             // 2612538 - the default size of Map (32) is appropriate
-            cloneToOriginals = new IdentityHashMap();
+            cloneToOriginals = createMap();
         }
         return cloneToOriginals;
     }
@@ -1955,7 +1917,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public UnitOfWorkImpl getContainerUnitOfWork() {
         if (containerUnitOfWork == null) {
-            containerUnitOfWork = getParent().acquireNonSynchronizedUnitOfWork();
+            containerUnitOfWork = getParent().acquireNonSynchronizedUnitOfWork(ReferenceMode.WEAK);
         }
         return containerUnitOfWork;
     }
@@ -2571,7 +2533,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (hasDeletedObjects()) {
             return true;
         }
-        Map allObjects = collectAndPrepareObjectsForCommit();
+        Map allObjects = new IdentityHashMap(getCloneMapping());
         UnitOfWorkChangeSet changeSet = calculateChanges(allObjects, new UnitOfWorkChangeSet(), false);
         return changeSet.hasChanges();
     }
@@ -2927,12 +2889,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     protected void mergeChangesIntoParent() {
         UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
-        if (uowChangeSet == null) {
-            // may be using the old commit process usesOldCommit()
-            setUnitOfWorkChangeSet(new UnitOfWorkChangeSet());
-            uowChangeSet = (UnitOfWorkChangeSet)getUnitOfWorkChangeSet();
-            calculateChanges(getAllClones(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet(), false);
-        }
 
         // 3286123 - if no work to be done, skip this part of uow.commit()
         if (hasModifications()) {
@@ -3385,7 +3341,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                      removedObjects.hasNext();) {
                 Object removedObject = removedObjects.next();
                 getCloneMapping().remove(removedObject);
-                getAllClones().remove(removedObject);
                 // PERF: Avoid initialization of new objects if none.
                 if (hasNewObjects()) {
                     Object referenceObjectToRemove = getNewObjectsCloneToOriginal().get(removedObject);
@@ -4760,7 +4715,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         getProperties().remove(LOCK_QUERIES_PROPERTY);
 
         // find next power-of-2 size
-        Map newCloneMapping = new IdentityHashMap(1 + getCloneMapping().size());
+        Map newCloneMapping = createMap(1 + getCloneMapping().size());
 
         for (Iterator cloneEnum = getCloneMapping().keySet().iterator(); cloneEnum.hasNext();) {
             Object clone = cloneEnum.next();
@@ -5043,7 +4998,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public Map getBatchReadObjects() {
         if (batchReadObjects == null) {
             // 2612538 - the default size of Map (32) is appropriate
-            batchReadObjects = new IdentityHashMap();
+            batchReadObjects = createMap();
         }
         return batchReadObjects;
     }
@@ -5128,7 +5083,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public void clear(boolean shouldClearCache) {
         this.cloneToOriginals = null;
-        this.cloneMapping = new IdentityHashMap();
+        this.cloneMapping = createMap();
         this.newObjectsCloneToOriginal = null;
         this.newObjectsOriginalToClone = null;
         this.deletedObjects = null;
@@ -5141,6 +5096,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.unitOfWorkChangeSet = null;
         this.pessimisticLockedObjects = null;
         this.optimisticReadLockObjects = null;
+        this.batchReadObjects = null;
         if(shouldClearCache) {
             this.getIdentityMapAccessor().initializeIdentityMaps();
             if (this.getParent() instanceof IsolatedClientSession) {
@@ -5188,6 +5144,25 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             getProperties().put(DatasourceAccessor.WRITE_STATEMENTS_COUNT_PROPERTY,new Integer(((DatasourceAccessor)getAccessor()).getWriteStatementsCount()));
             getProperties().put(DatasourceAccessor.STOREDPROCEDURE_STATEMENTS_COUNT_PROPERTY,new Integer(((DatasourceAccessor)getAccessor()).getStoredProcedureStatementsCount()));
         }
+    }
+    
+    protected Map createMap(){
+        if (this.referenceMode != null && this.referenceMode != ReferenceMode.HARD) return new IdentityWeakHashMap();
+        return new IdentityHashMap();
+    }
+     
+    protected Map createMap(int size){
+        if (this.referenceMode != null && this.referenceMode != ReferenceMode.HARD) return new IdentityWeakHashMap(size);
+        return new IdentityHashMap(size);
+    }
+
+    public ReferenceMode getReferenceMode() {
+        return referenceMode;
+    }
+
+    public ArrayList getChangeTrackedHardList() {
+        if (changeTrackedHardList == null) changeTrackedHardList = new ArrayList();
+        return changeTrackedHardList;
     }
     
     /**

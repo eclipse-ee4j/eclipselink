@@ -84,37 +84,6 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
             txnController.markTransactionForRollback();
         }
     }
-
-    /**
-     * INTERNAL:
-     * THis method is used to get the active UnitOfWork.  It is special in that it will
-     * return the required RepeatableWriteUnitOfWork required by the EntityManager.  Once 
-     * RepeatableWrite is merged into existing UnitOfWork this code can go away.
-     */
-    public RepeatableWriteUnitOfWork getTransactionalUnitOfWork(Object transaction){
-        if (transaction == null){
-            return null;
-        }
-        if (this.entityManager.shouldPropagatePersistenceContext()){
-            Object newTxnKey = this.txnController.getTransactionKey(transaction);
-            if (this.txnKey == newTxnKey){
-                return this.localUOW;
-            }
-            this.txnKey = newTxnKey;
-            this.localUOW = (RepeatableWriteUnitOfWork)this.txnController.lookupActiveUnitOfWork(transaction);
-            if (this.localUOW == null){
-                this.localUOW = new RepeatableWriteUnitOfWork(entityManager.getServerSession().acquireClientSession());
-                this.localUOW.registerWithTransactionIfRequired();
-                this.localUOW.setShouldCascadeCloneToJoinedRelationship(true);
-                this.txnController.getUnitsOfWork().put(newTxnKey, this.localUOW);
-            }
-        }else if (this.localUOW == null){
-            this.localUOW = new RepeatableWriteUnitOfWork(entityManager.getServerSession().acquireClientSession());
-            this.localUOW.registerWithTransactionIfRequired();
-            this.localUOW.setShouldCascadeCloneToJoinedRelationship(true);
-        }
-        return this.localUOW;
-    }
     
     protected void throwUserTransactionException() {
         throw TransactionException.entityTransactionWithJTANotAllowed();

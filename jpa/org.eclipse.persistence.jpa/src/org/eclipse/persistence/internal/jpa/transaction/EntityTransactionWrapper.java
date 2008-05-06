@@ -53,23 +53,6 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
         return null;
     }
 
-    /**
-     * INTERNAL:
-     * This method is used to get the active UnitOfWork.  It is special in that it will
-     * return the required RepeatableWriteUnitOfWork required by the EntityManager.  Once 
-     * RepeatableWrite is merged into existing UnitOfWork this code can go away.
-     */
-    public RepeatableWriteUnitOfWork getTransactionalUnitOfWork(Object transaction){
-        if (transaction == null){
-            return null;
-        }
-        if (this.localUOW == null){
-            this.localUOW = new RepeatableWriteUnitOfWork(entityManager.getServerSession().acquireClientSession());
-            this.localUOW.setShouldCascadeCloneToJoinedRelationship(true);
-        }
-        return this.localUOW;
-    }
-    
     public EntityManagerImpl getEntityManager(){
         return entityManager;
     }

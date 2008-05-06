@@ -50,16 +50,6 @@ public abstract class TransactionWrapperImpl  {
         }
     }
     
-    /**
-     * INTERNAL:
-     * THis method is used to get the active UnitOfWork.  It is special in that it will
-     * return the required RepeatableWriteUnitOfWork required by the EntityManager.  Once
-     * RepeatableWrite is merged into existing UnitOfWork this code can go away.
-     * @param transaction
-     * @return
-     */
-    public abstract RepeatableWriteUnitOfWork getTransactionalUnitOfWork(Object transaction);
-
     public abstract void registerUnitOfWorkWithTxn(UnitOfWorkImpl uow);
     
     public UnitOfWorkImpl getLocalUnitOfWork(){

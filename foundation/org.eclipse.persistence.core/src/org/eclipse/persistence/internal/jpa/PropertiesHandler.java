@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+        Gordon Yorke - VM managed entity detachment
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -23,6 +24,7 @@ import org.eclipse.persistence.jpa.config.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.sessions.factories.ReferenceMode;
 
 /**
  * 
@@ -460,6 +462,28 @@ public class PropertiesHandler {
         }
     }
 
+    protected static class ReferenceModeProp extends Prop {
+        ReferenceModeProp() {
+            super(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE, ReferenceMode.WEAK.toString());
+            valueArray = new Object[] {
+                ReferenceMode.HARD.toString(),
+                ReferenceMode.WEAK.toString(),
+                ReferenceMode.FORCE_WEAK.toString()
+            };
+        }
+    }
+
+    protected static class DefaultReferenceModeProp extends Prop {
+        DefaultReferenceModeProp() {
+            super(PersistenceUnitProperties.DEFAULT_PERSISTENCE_CONTEXT_REFERENCE_MODE, ReferenceMode.WEAK.toString());
+            valueArray = new Object[] {
+                ReferenceMode.HARD.toString(),
+                ReferenceMode.WEAK.toString(),
+                ReferenceMode.FORCE_WEAK.toString()
+            };
+        }
+    }
+
     protected static class TargetDatabaseProp extends Prop {
         TargetDatabaseProp() {
             super(PersistenceUnitProperties.TARGET_DATABASE, TargetDatabase.DEFAULT);
@@ -572,5 +596,15 @@ public class PropertiesHandler {
                 FlushClearCache.DropInvalidate
             };
         }
+    }
+    
+    protected static class JoinTransactionProp extends Prop {
+        JoinTransactionProp() {
+            super(EntityManagerProperties.JOIN_EXISTING_TRANSACTION, "false");
+            valueArray = new Object[] { 
+                "true",
+                "false"
+            };
+        }  
     }
 }

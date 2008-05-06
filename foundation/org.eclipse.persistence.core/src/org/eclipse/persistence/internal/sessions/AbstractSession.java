@@ -45,6 +45,7 @@ import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.coordination.Command;
+import org.eclipse.persistence.sessions.factories.ReferenceMode;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.Session
@@ -106,7 +107,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /** Stores predefined not yet parsed EJBQL queries.*/
     transient protected List ejbqlPlaceHolderQueries;
 
-    /** Resolves referencial integrity on commits. */
+    /** Resolves referential integrity on commits. */
     transient protected CommitManager commitManager;
 
     /** Tool that log performance information. */
@@ -169,6 +170,13 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * the session's jta connection will be freed during external transaction callback.
      */
     protected boolean isSynchronized;
+    
+    /**
+     *  Stores the default reference mode that a UnitOfWork will use when referencing
+     *  managed objects.
+     *  @see org.eclipse.persistence.sessions.factories.ReferenceMode
+     */
+    protected ReferenceMode defaultReferenceMode = null;
     
     /**
      * INTERNAL:
@@ -235,9 +243,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * INTERNAL:
      * Return a unit of work for this session not registered with the JTS transaction.
      */
-    public UnitOfWorkImpl acquireNonSynchronizedUnitOfWork() {
+    public UnitOfWorkImpl acquireNonSynchronizedUnitOfWork(ReferenceMode referenceMode) {
         setNumberOfActiveUnitsOfWork(getNumberOfActiveUnitsOfWork() + 1);
-        UnitOfWorkImpl unitOfWork = new UnitOfWorkImpl(this);
+        UnitOfWorkImpl unitOfWork = new UnitOfWorkImpl(this, referenceMode);
         if (shouldLog(SessionLog.FINER, SessionLog.TRANSACTION)) {
             log(SessionLog.FINER, SessionLog.TRANSACTION, "acquire_unit_of_work_with_argument", String.valueOf(System.identityHashCode(unitOfWork)));
         }
@@ -267,13 +275,35 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * @see UnitOfWorkImpl
      */
     public UnitOfWorkImpl acquireUnitOfWork() {
-        UnitOfWorkImpl unitOfWork = acquireNonSynchronizedUnitOfWork();
+        UnitOfWorkImpl unitOfWork = acquireNonSynchronizedUnitOfWork(getDefaultReferenceMode());
         unitOfWork.registerWithTransactionIfRequired();
 
         return unitOfWork;
     }
 
     /**
+     * PUBLIC:
+     * Return a unit of work for this session.
+     * The unit of work is an object level transaction that allows
+     * a group of changes to be applied as a unit.
+     *
+     * @see UnitOfWorkImpl
+     * @param referenceMode The reference type the UOW should use internally when
+     * referencing Working clones.  Setting this to WEAK means the UOW will use 
+     * weak references to reference clones that support active object change
+     * tracking and hard references for deferred change tracked objects.
+     * Setting to FORCE_WEAK means that all objects will be referenced by weak
+     * references and if the application no longer references the clone the 
+     * clone may be garbage collected.  If the clone
+     * has uncommitted changes then those changes will be lost.
+     */
+    public UnitOfWorkImpl acquireUnitOfWork(ReferenceMode referenceMode) {
+        UnitOfWorkImpl unitOfWork = acquireNonSynchronizedUnitOfWork(referenceMode);
+        unitOfWork.registerWithTransactionIfRequired();
+
+        return unitOfWork;
+    }
+   /**
      * PUBLIC:
      * Add an alias for the descriptor
      */
@@ -3683,5 +3713,23 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     public boolean isExclusiveConnectionRequired() {
         return false;
+    }
+
+    /**
+     *  Stores the default Session wide reference mode that a UnitOfWork will use when referencing
+     *  managed objects.
+     *  @see org.eclipse.persistence.sessions.factories.ReferenceMode
+     */
+    public ReferenceMode getDefaultReferenceMode() {
+        return defaultReferenceMode;
+    }
+
+    /**
+     *  Stores the default Session wide reference mode that a UnitOfWork will use when referencing
+     *  managed objects.
+     *  @see org.eclipse.persistence.sessions.factories.ReferenceMode
+     */
+   public void setDefaultReferenceMode(ReferenceMode defaultReferenceMode) {
+        this.defaultReferenceMode = defaultReferenceMode;
     }
 }

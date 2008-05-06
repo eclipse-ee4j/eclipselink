@@ -222,7 +222,7 @@ public class SessionFactory {
      */
     public Object detach(Object entity) {
         UnitOfWork uow = 
-            ((org.eclipse.persistence.internal.sessions.AbstractSession)getSharedSession()).acquireNonSynchronizedUnitOfWork();
+            ((org.eclipse.persistence.internal.sessions.AbstractSession)getSharedSession()).acquireNonSynchronizedUnitOfWork(null);
 
         Object copy = uow.registerObject(entity);
         uow.release();
@@ -232,7 +232,7 @@ public class SessionFactory {
 
     public Collection detach(Collection entities) {
         UnitOfWork uow = 
-            ((org.eclipse.persistence.internal.sessions.AbstractSession)getSharedSession()).acquireNonSynchronizedUnitOfWork();
+            ((org.eclipse.persistence.internal.sessions.AbstractSession)getSharedSession()).acquireNonSynchronizedUnitOfWork(null);
 
         Collection copies = uow.registerAllObjects(entities);
         uow.release();

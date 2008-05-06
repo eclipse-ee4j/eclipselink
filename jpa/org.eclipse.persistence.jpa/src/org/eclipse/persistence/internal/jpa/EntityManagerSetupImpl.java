@@ -39,6 +39,7 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
+import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.platform.server.CustomServerPlatform;
@@ -1122,6 +1123,7 @@ public class EntityManagerSetupImpl {
         if (shouldBindString != null) {
             session.getPlatform().setShouldBindAllParameters(Boolean.parseBoolean(shouldBindString));
         }
+        session.setDefaultReferenceMode((ReferenceMode)getConfigPropertyLogDebug(PersistenceUnitProperties.DEFAULT_PERSISTENCE_CONTEXT_REFERENCE_MODE, m, session));
 
         updateLogins(m);
         if (!session.getLogin().shouldUseExternalTransactionController()) {

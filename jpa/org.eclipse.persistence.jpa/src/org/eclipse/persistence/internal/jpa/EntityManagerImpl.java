@@ -32,6 +32,7 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ResultSetMappingQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.factories.ReferenceMode;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
@@ -39,6 +40,7 @@ import org.eclipse.persistence.internal.jpa.transaction.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.jpa.config.EntityManagerProperties;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.jpa.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -81,7 +83,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     //gf3334, this is place holder for properties that passed from createEntityManager 
     protected Map properties;
 
-    private FlushModeType flushMode;
+    protected FlushModeType flushMode;
+    
+    //Stores the reference mode for the UOW options WEAK or HARD
+    protected ReferenceMode referenceMode;
     
     /**
      * Constructor returns an EntityManager assigned to the a particular ServerSession.
@@ -114,7 +119,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         this.extended = true;
         this.propagatePersistenceContext = false;
         this.properties=properties;
-        setBeginEarlyTransaction();
+        processProperties();
         flushMode = FlushModeType.AUTO;
     }
     
@@ -131,7 +136,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         this.extended = true;
         this.propagatePersistenceContext = false;
         this.properties=properties;
-        setBeginEarlyTransaction();
+        processProperties();
         flushMode = FlushModeType.AUTO;
     }
 	
@@ -534,7 +539,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public Session getActiveSession() {
         Object txn = checkForTransaction(false);
         if (txn == null && !this.isExtended()) {
-            return this.serverSession.acquireNonSynchronizedUnitOfWork();
+            return this.serverSession.acquireNonSynchronizedUnitOfWork(this.referenceMode);
         } else {
             return getActivePersistenceContext(txn);
         }
@@ -581,7 +586,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     public Session getSession() {
         if (checkForTransaction(false) == null) {
-            return this.serverSession.acquireNonSynchronizedUnitOfWork();
+            return this.serverSession.acquireNonSynchronizedUnitOfWork(this.referenceMode);
         }
         return null;
     }
@@ -615,10 +620,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             return null;
         }
         if(this.properties!=null){
-            propertyValue=this.properties.get(name);
+            propertyValue=PropertiesHandler.getPropertyValue(name, this.properties);
         }
         if(propertyValue==null){
-            propertyValue=this.factory.getServerSession().getProperty(name);
+            propertyValue=PropertiesHandler.getSessionPropertyValue(name, getServerSession());
         }
         return propertyValue;
     }
@@ -812,27 +817,23 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
     }
     public RepeatableWriteUnitOfWork getActivePersistenceContext(Object txn) {
-        if (this.isExtended()) {
-            // use local uow as it will be local to this EM and not on the txn
-            if (this.extendedPersistenceContext == null || !this.extendedPersistenceContext.isActive()) {
-                this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(this.serverSession.acquireClientSession());
-                this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(true);
-                this.extendedPersistenceContext.setShouldCascadeCloneToJoinedRelationship(true);
-                this.extendedPersistenceContext.setProperties(properties);
+        // use local uow as it will be local to this EM and not on the txn
+        if (this.extendedPersistenceContext == null || !this.extendedPersistenceContext.isActive()) {
+            this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(this.serverSession.acquireClientSession(), this.referenceMode);
+            this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(true);
+            this.extendedPersistenceContext.setShouldCascadeCloneToJoinedRelationship(true);
+            this.extendedPersistenceContext.setProperties(properties);
 
-                if (txn != null) {
-                    // if there is an active txn we must register with it on creation of PC
-                    transaction.registerUnitOfWorkWithTxn(this.extendedPersistenceContext);
-                }
+            if (txn != null) {
+                // if there is an active txn we must register with it on creation of PC
+                transaction.registerUnitOfWorkWithTxn(this.extendedPersistenceContext);
             }
-            if (this.beginEarlyTransaction && txn != null && !this.extendedPersistenceContext.isInTransaction() ) {
-                //gf3334, force persistencecontext early transaction
-               this.extendedPersistenceContext.beginEarlyTransaction();
-            }
-            return this.extendedPersistenceContext;
-        } else {
-            return getTransactionalUnitOfWork_new(txn);
         }
+        if (this.beginEarlyTransaction && txn != null && !this.extendedPersistenceContext.isInTransaction() ) {
+            //gf3334, force persistencecontext early transaction
+            this.extendedPersistenceContext.beginEarlyTransaction();
+        }
+        return this.extendedPersistenceContext;
     }
 
     /**
@@ -845,9 +846,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         else
             return true;
     }
-    protected RepeatableWriteUnitOfWork getTransactionalUnitOfWork_new(Object tnx) {
-        return transaction.getTransactionalUnitOfWork(tnx);
-    }
+
     protected Object checkForTransaction(boolean validateExistence) {
         return transaction.checkForTransaction(validateExistence);
     }
@@ -903,10 +902,14 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Internal method, set begin early transaction if property has been specified.
      */
-    private void setBeginEarlyTransaction(){
-        String beginEarlyTransactionProperty = (String)getProperty(PersistenceUnitProperties.JOIN_EXISTING_TRANSACTION);
+    private void processProperties(){
+        String beginEarlyTransactionProperty = (String)getProperty(EntityManagerProperties.JOIN_EXISTING_TRANSACTION);
         if(beginEarlyTransactionProperty!=null){
             this.beginEarlyTransaction="true".equalsIgnoreCase(beginEarlyTransactionProperty);
+        }
+        String referenceMode = (String)getProperty(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE);
+        if (referenceMode != null){
+            this.referenceMode = ReferenceMode.valueOf(referenceMode);
         }
     }
     

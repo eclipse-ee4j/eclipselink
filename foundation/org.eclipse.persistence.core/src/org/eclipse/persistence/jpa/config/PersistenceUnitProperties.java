@@ -294,8 +294,7 @@ public class PersistenceUnitProperties {
     
     /** INTERNAL: The following properties will not be displayed through logging but instead have an alternate value shown in the log. */
     public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<String, String>(1);
-    //for gf3334, this property force persistence context to read through JTA-managed ("write") connection in case there is an active transaction.    
-    public static final String JOIN_EXISTING_TRANSACTION = "eclipselink.transaction.join-existing";
+
     static {
         PROPERTY_LOG_OVERRIDES.put(JDBC_PASSWORD, "xxxxxx");
     }
@@ -325,6 +324,8 @@ public class PersistenceUnitProperties {
     public static final String DDL_BOTH_GENERATION = "both";
     // This is the default for now to ensure we still play nicely with Glassfish.
     public static final String DEFAULT_DDL_GENERATION_MODE = DDL_DATABASE_GENERATION;
+    
+    public static final String DEFAULT_PERSISTENCE_CONTEXT_REFERENCE_MODE = "eclipselink.persistence-context.reference-mode.default";
     
     
     /** INTERNAL: Return the overridden log string. */

@@ -29,6 +29,11 @@ import org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkCommitResumeOn
 import org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkResumeOnFailureTest;
 import org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkResumeTest;
 import org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkRevertTest;
+import org.eclipse.persistence.testing.tests.unitofwork.referencesettings.ChangeTrackedWeakReferenceTest;
+import org.eclipse.persistence.testing.tests.unitofwork.referencesettings.DeferredChangeWeakReferenceTest;
+import org.eclipse.persistence.testing.tests.unitofwork.referencesettings.ForceWeakReferenceTest;
+import org.eclipse.persistence.testing.tests.unitofwork.referencesettings.HardReferenceTest;
+import org.eclipse.persistence.testing.tests.unitofwork.referencesettings.WeakReferenceTest;
 import org.eclipse.persistence.testing.tests.writing.ComplexUpdateTest;
 import org.eclipse.persistence.testing.tests.writing.UpdateChangeNothingTest;
 import org.eclipse.persistence.testing.tests.writing.UpdateChangeObjectTest;
@@ -121,6 +126,11 @@ public class EmployeeAttributeChangeTrackingTestModel extends EmployeeChangeFlag
         suite.addTest(new DeepMergeCloneSerializedObjectReferenceChangesTest());
         suite.addTest(new TransparentMapTest());
         suite.addTest(new AggregateAttributeChangeTrackingTest());
+        suite.addTest(new ChangeTrackedWeakReferenceTest());
+        suite.addTest(new DeferredChangeWeakReferenceTest());
+        suite.addTest(new ForceWeakReferenceTest());
+        suite.addTest(new HardReferenceTest());
+        suite.addTest(new WeakReferenceTest());
 
         return suite;
     }
