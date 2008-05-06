@@ -121,6 +121,58 @@
         </antcall>
     </target>
 
+    <!-- Runs non-LRG tests -->
+    <target name="test.non-lrg">
+        <!-- Requires user "scott" unlocked and granted special privileges on oracle database -->
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.feature.NativeModeCreatorTestModel"/>
+        </antcall>
+        <!-- Requires usage of Japanese machine and database. -->
+        <!--antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.nls.japanese.NLSMappingWorkbenchIntegrationTestModel"/>
+        </antcall-->
+        <!-- Requires specific LAB databases. -->
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.BrokerTestModel"/>
+        </antcall>
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.MultipleClientBrokersTestModel"/>
+        </antcall>
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.RMISessionBrokerRemoteModel"/>
+        </antcall>
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.sessionbroker.ServerBrokerTestModel"/>
+        </antcall>
+        <!-- Requires remote config. -->
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.RMIRemoteModel"/>
+        </antcall>
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.rmi.IIOP.RMIIIOPRemoteModel"/>
+        </antcall>
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.remote.suncorba.SunCORBARemoteModel"/>
+        </antcall>
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.distributedservers.DistributedSessionBrokerServersModel"/>
+        </antcall>
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.distributedservers.rcm.RCMDistributedServersModel"/>
+        </antcall>
+        <!-- Can take a long time, can deadlock. -->
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.clientserver.ClientServerTestModel"/>
+        </antcall>
+        <!-- Requires EIS datasources config. -->
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.eis.cobol.CobolTestModel"/>
+        </antcall>
+        <antcall target="run.test.prompt" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel"/>
+        </antcall>
+    </target>
+    
     <!-- Runs LRG (TestRunModel). -->
     <target name="test.lrg">
         <antcall target="run.test" inheritRefs="true">
@@ -225,4 +277,36 @@
         </java>
     </target>
 
+    <!-- Execute this target on non-Oracle database platforms only, because a test requires no Oracle JDBC jar in the classpath-->
+    <target name="test.ClassPathTestModel">
+        <echo>Running test on ${db.url}</echo>
+        <mkdir dir="${eclipselink.core.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.core.test}/${report.dir}"/>
+        <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
+             fork="true"
+             maxmemory="512m"
+             failonerror="true"
+             dir="${eclipselink.core.test}/${run.dir}">
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.platform=${db.platform}"/>
+            <jvmarg value=""/>
+            <jvmarg value="${test.security-manager}"/>
+            <jvmarg value="${test.security-manager.policy}"/>
+            <arg value="testmodel=org.eclipse.persistence.testing.tests.classpath.ClassPathTestModel" />
+            <arg value="regressionlog=../${report.dir}/test.log" />
+            <arg value="createdbconnection=false" />
+            <arg value="saveresults=true" />
+            <classpath>
+                <fileset dir="${eclipselink.core.lib}" includes="${eclipselink.core.depend.without.connector.jar}"/>
+                <pathelement path="${eclipselink.jar}"/>
+                <pathelement path="${eclipselink.core.test}/${eclipselink.tests.jar}"/>
+                <pathelement path="${junit.lib}"/>
+                <pathelement path="${jdbc.driver.jar}"/>
+            </classpath>
+        </java>
+    </target>
 </project>

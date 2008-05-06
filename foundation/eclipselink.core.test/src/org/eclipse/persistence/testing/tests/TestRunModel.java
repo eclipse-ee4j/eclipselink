@@ -137,16 +137,13 @@ public class TestRunModel extends TestModel {
             tests.addElement("org.eclipse.persistence.testing.tests.remote.suncorba.SunCORBARemoteModel");
             tests.addElement("org.eclipse.persistence.testing.tests.distributedservers.DistributedSessionBrokerServersModel");
             tests.addElement("org.eclipse.persistence.testing.tests.distributedservers.rcm.RCMDistributedServersModel");
-            tests.addElement("org.eclipse.persistence.testing.tests.distributedservers.rcm.jms.JMSRCMDistributedServersModel");
 
             // Can take a long time, can deadlock.
             tests.addElement("org.eclipse.persistence.testing.tests.clientserver.ClientServerTestModel");
 
             // Requires EIS datasources config.
-            tests.addElement("org.eclipse.persistence.testing.tests.eis.EISTestModel");
-            
-            // Requires weaving agent configured.
-            tests.addElement("org.eclipse.persistence.testing.tests.weaving.EmployeeWeavingTestModel");            
+            tests.addElement("org.eclipse.persistence.testing.tests.eis.cobol.CobolTestModel");
+            tests.addElement("org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel");
         }
 
         for (int index = 0; index < tests.size(); ++index) {

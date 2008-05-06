@@ -31,9 +31,9 @@ public class OracleTestModel extends TestModel {
         }
         List tests = new ArrayList();
 
+        tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.jms.JMSRCMDistributedServersModel");
         tests.add("org.eclipse.persistence.testing.tests.dbchangenotification.DbChangeNotificationTestModel");
-        // Requires EIS datasources config.
-        tests.add("org.eclipse.persistence.testing.tests.eis.EISTestModel");
+        tests.add("org.eclipse.persistence.testing.tests.eis.aq.AQTestModel");
         tests.add("org.eclipse.persistence.testing.tests.lob.LOBTestModel");
         tests.add("org.eclipse.persistence.testing.tests.lob.LOBSessionBrokerTestModel");
         tests.add("org.eclipse.persistence.testing.tests.nchar.NcharTestModel");
