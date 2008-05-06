@@ -50,7 +50,7 @@ public class XMLSchemaFileReference extends XMLSchemaReference {
 
     public URL getURL() {
         try {
-            return this.getFile().toURL();
+            return this.getFile().toURI().toURL();
         } catch (Exception e) {
             throw XMLMarshalException.errorResolvingXMLSchema(e);
         }
