@@ -130,7 +130,7 @@
         <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/jaxb/junit-noframes.html" tofile="${download.path}/test-results/moxy/eclipselink-jaxb-lrg-${installer_id}.html"/>
         <copy file="${build.root.dir}/moxy/eclipselink.moxy.test/reports/oxm/junit-noframes.html" tofile="${download.path}/test-results/moxy/eclipselink-oxm-lrg-${installer_id}.html"/>
         <copy file="${build.root.dir}/sdo/eclipselink.sdo.test/reports/true/junit-noframes.html" tofile="${download.path}/test-results/sdo/eclipselink-sdo-lrg-${installer_id}.html"/>
-        <exec executable="${svn.exec}">
+        <exec executable="${svn.exec}" failonerror="true" logError="true">
             <arg value="commit"/>
             <arg value="-m ${installer_id}"/>
             <arg value="${build.root.dir}/${eclipselink.jar.name}"/>
@@ -140,11 +140,11 @@
 
     <!-- Antified "cleanNightly.sh" -->
     <target name="clean-results">
-        <!--exec executable="buildsystem/cleanNightly.sh" failonerror="true" logError="true" /-->
+        <exec executable="${build.root.dir}/buildsystem/cleanNightly.sh" failonerror="true" logError="true" />
     </target>
 
     <!-- Antified "buildNightlyList.sh" -->
     <target name="publish-results" depends="clean-results">
-        <!--exec executable="buildsystem/buildNightlyList.sh" failonerror="true" logError="true" /-->
+        <exec executable="${build.root.dir}/buildsystem/buildNightlyList.sh" failonerror="true" logError="true" />
     </target>
 </project>
